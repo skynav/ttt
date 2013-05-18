@@ -1,0 +1,31 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#parameter"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
+    schemaLocation="ttaf1-dfxp-datatypes.xsd"/>
+  <xs:attribute name="cellResolution" type="ttd:cellResolution"/>
+  <xs:attribute name="clockMode" type="ttd:clockMode"/>
+  <xs:attribute name="dropMode" type="ttd:dropMode"/>
+  <xs:attribute name="frameRate" type="ttd:frameRate"/>
+  <xs:attribute name="frameRateMultiplier" type="ttd:frameRateMultiplier"/>
+  <xs:attribute name="markerMode" type="ttd:markerMode"/>
+  <xs:attribute name="profile" type="ttd:profile"/>
+  <xs:attribute name="pixelAspectRatio" type="ttd:pixelAspectRatio"/>
+  <xs:attribute name="subFrameRate" type="ttd:subFrameRate"/>
+  <xs:attribute name="tickRate" type="ttd:tickRate"/>
+  <xs:attribute name="timeBase" type="ttd:timeBase"/>
+  <xs:attributeGroup name="Parameter.attrib.class">
+    <xs:attribute ref="ttp:cellResolution"/>
+    <xs:attribute ref="ttp:clockMode"/>
+    <xs:attribute ref="ttp:dropMode"/>
+    <xs:attribute ref="ttp:frameRate"/>
+    <xs:attribute ref="ttp:frameRateMultiplier"/>
+    <xs:attribute ref="ttp:markerMode"/>
+    <xs:attribute ref="ttp:profile"/>
+    <xs:attribute ref="ttp:pixelAspectRatio"/>
+    <xs:attribute ref="ttp:subFrameRate"/>
+    <xs:attribute ref="ttp:tickRate"/>
+    <xs:attribute ref="ttp:timeBase"/>
+  </xs:attributeGroup>
+</xs:schema>

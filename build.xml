@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright 2013 Skynav, Inc. All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SKYNAV, INC. AND ITS CONTRIBUTORS “AS IS” AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL SKYNAV, INC. OR ITS CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<project name="ttv" basedir="." default="clean-test">
+
+<property name="build.dir" value="${basedir}/bld"/>
+<property name="classes.dir" value="${build.dir}/classes"/>
+<property name="artifacts.dir" value="${build.dir}/artifacts"/>
+<property name="source.dir" value="${basedir}/src"/>
+<property name="bindings.dir" value="${source.dir}/bindings"/>
+<property name="generated.dir" value="${source.dir}/generated"/>
+<property name="java.source.dir" value="${source.dir}/java"/>
+<property name="schemas.dir" value="${source.dir}/schemas"/>
+<property name="test.dir" value="${basedir}/tst"/>
+<property name="test.java.source.dir" value="${test.dir}/java"/>
+<property name="test.resources.source.dir" value="${test.dir}/resources"/>
+<property name="test.classes.dir" value="${build.dir}/test-classes"/>
+<property name="test.resources.dir" value="${build.dir}/test-resources"/>
+
+<property name="ttv.jar" value="ttv.jar"/>
+<property name="ttv.main.class" value="com/skynav/ttv/app/TimedTextValidator"/>
+<property name="ttv.target" value="${artifacts.dir}/${ttv.jar}"/>
+<property name="ttv.title" value="Timed Text Validator"/>
+<property name="ttv.version.major" value="0"/>
+<property name="ttv.version.minor" value="0"/>
+<property name="ttv.version.micro" value="0"/>
+<property name="ttv.version.suffix" value="dev"/>
+<property name="ttv.version" value="${ttv.version.major}.${ttv.version.minor}.${ttv.version.micro}${ttv.version.suffix}"/>
+<property name="ttv.vendor" value="Skynav, Inc."/>
+
+<property name="javac.debug" value="true"/>
+<property name="javac.deprecation" value="true"/>
+<property name="javac.fork" value="false"/>
+<property name="javac.optimize" value="false"/>
+<property name="javac.source" value="1.6"/>
+<property name="javac.target" value="1.6"/>
+
+<presetdef name="javac">
+  <javac
+    debug="${javac.debug}"
+    deprecation="${javac.deprecation}"
+    fork="${javac.fork}"
+    includeantruntime="true"
+    optimize="${javac.optimize}"
+    source="${javac.source}"
+    target="${javac.target}"
+  />
+</presetdef>
+
+<property name="junit.errorproperty" value="junit.error"/>
+<property name="junit.failureproperty" value="junit.failure"/>
+<property name="junit.fork" value="true"/>
+<property name="junit.forkmode" value="once"/>
+<property name="junit.formatter.brief" value="true"/>
+<property name="junit.haltonfailure" value="true"/>
+<property name="junit.output.dir" value="${build.dir}/test-output"/>
+<property name="junit.printsummary" value="false"/>
+
+<path id="default-junit-classpath">
+  <pathelement location="${ttv.target}"/>
+  <pathelement location="${test.classes.dir}"/>
+  <pathelement location="${test.resources.dir}"/>
+</path>
+
+<macrodef name="junit-run">
+  <attribute name="testsuite"/>
+  <attribute name="outfile"/>
+  <attribute name="classpath" default="default-junit-classpath"/>
+  <sequential>
+    <condition property="junit.formatter.brief.use">
+      <istrue value="${junit.formatter.brief}"/>
+    </condition>
+    <mkdir dir="${junit.output.dir}"/>
+    <junit
+      errorproperty="${junit.errorproperty}"
+      failureproperty="${junit.failureproperty}"
+      fork="${junit.fork}"
+      forkmode="${junit.forkmode}"
+      haltonfailure="${junit.haltonfailure}"
+      includeantruntime="true"
+      printsummary="${junit.printsummary}">
+      <sysproperty key="java.awt.headless" value="true"/>
+      <formatter type="brief" usefile="false" if="junit.formatter.brief.use"/>
+      <formatter type="plain" usefile="true"/>
+      <formatter type="xml" usefile="true"/>
+      <classpath>
+        <path refid="@{classpath}"/>
+      </classpath>
+      <assertions>
+        <enable/>
+      </assertions>
+      <test name="@{testsuite}" todir="${junit.output.dir}" outfile="@{outfile}"/>
+    </junit>
+  </sequential>
+</macrodef>
+
+<target name="create-xsd-bindings-ttml10" description="Create JAXB Bindings for TTML10 Schema.">
+  <exec executable="xjc" dir="${build.dir}">
+    <arg value="-b"/>
+    <arg value="${bindings.dir}/xsd/ttml10-bindings.xjb"/>
+    <arg value="-d"/>
+    <arg value="${generated.dir}"/>
+    <arg value="${schemas.dir}/xsd/ttml10/ttaf1-dfxp.xsd"/>
+  </exec>
+</target>
+
+<target name="create-xsd-bindings" depends="create-xsd-bindings-ttml10"/>
+
+<target name="generate-code" depends="create-xsd-bindings"/>
+
+<target name="compile">
+  <mkdir dir="${classes.dir}"/>
+  <javac destdir="${classes.dir}">
+    <src path="${java.source.dir}"/>
+    <src path="${generated.dir}"/>
+  </javac>
+</target>
+
+<target name="compile-tests" depends="compile">
+  <mkdir dir="${test.classes.dir}"/>
+  <javac destdir="${test.classes.dir}">
+    <src path="${test.java.source.dir}"/>
+    <classpath>
+      <path location="${classes.dir}"/>
+    </classpath>
+  </javac>
+  <mkdir dir="${test.resources.dir}"/>
+  <copy todir="${test.resources.dir}">
+    <fileset dir="${test.resources.source.dir}"/>
+  </copy>
+</target>
+
+<target name="ensure-artifacts-directory">
+  <mkdir dir="${artifacts.dir}"/>
+</target>
+
+<target name="build-jars" depends="compile">
+  <tstamp>
+    <format property="ts" pattern="yyyyMMdd-HHmmss-z"/>
+  </tstamp>
+  <jar jarfile="${ttv.target}">
+    <fileset dir="${classes.dir}"/>
+    <fileset dir="${schemas.dir}"/>
+    <manifest>
+      <attribute name="Implementation-Title" value="${ttv.title}"/>
+      <attribute name="Implementation-Version" value="${ttv.version}"/>
+      <attribute name="Implementation-Vendor" value="${ttv.vendor}"/>
+      <attribute name="Build-Id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}, Java ${java.runtime.version}, Target Java ${javac.target}])"/>
+      <attribute name="Main-Class" value="${ttv.main.class}"/>
+    </manifest>
+  </jar>
+</target>
+
+<target name="build-artifacts" depends="ensure-artifacts-directory, build-jars"/>
+
+<target name="build" description="Build TTV" depends="build-artifacts"/>
+
+<target name="test-ttml10" description="Run TTML10 tests">
+  <junit-run testsuite="com.skynav.ttv.ttml10.SchemaTestSuite" outfile="TEST-ttml10-schema"/>
+  <junit-run testsuite="com.skynav.ttv.ttml10.ModelTestSuite" outfile="TEST-ttml10-model"/>
+  <junit-run testsuite="com.skynav.ttv.ttml10.UnmarshalTestSuite" outfile="TEST-ttml10-unmarshal"/>
+</target>
+
+<target name="test-validator" description="Run TTV validator application test">
+  <junit-run testsuite="com.skynav.ttv.app.ValidatorTestSuite" outfile="TEST-apps-validator"/>
+</target>
+
+<target name="test-apps" description="Run TTV application tests" depends="test-validator"/>
+
+<target name="test" description="Run all TTV test suites" depends="compile-tests, test-ttml10, test-apps"/>
+
+<target name="clean-classes">
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${classes.dir}"/>
+    <fileset dir="${test.classes.dir}"/>
+  </delete>
+</target>
+
+<target name="clean-resources">
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${test.resources.dir}"/>
+  </delete>
+</target>
+
+<target name="clean-artifacts">
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${artifacts.dir}"/>
+  </delete>
+</target>
+
+<target name="clean-test-output">
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${junit.output.dir}"/>
+  </delete>
+</target>
+
+<target name="clean" depends="clean-classes, clean-resources, clean-artifacts, clean-test-output"/>
+
+<target name="clean-generated">
+  <delete includeemptydirs="true">
+    <fileset dir="${generated.dir}" includes="**/*"/>
+  </delete>
+</target>
+
+<target name="clean-all" depends="clean, clean-generated"/>
+
+<target name="clean-build" description="Clean and build TTV" depends="clean,build"/>
+
+<target name="clean-test" description="Clean, build, and test TTV" depends="clean,build,test"/>
+
+<target name="clean-all-test" description="Thoroughly clean, build and test TTV" depends="clean-all,generate-code,build,test"/>
+
+<target name="run-validator" description="Run validator with TTML10 input files">
+  <java jar="${ttv.target}" fork="true">
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-simple.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-all-elements.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-all-styles.xml"/>
+  </java>
+</target>
+
+</project>

@@ -1,0 +1,13 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#metadata"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
+    schemaLocation="ttaf1-dfxp-datatypes.xsd"/>
+  <xs:attribute name="agent" type="ttd:agent"/>
+  <xs:attribute name="role" type="ttd:role"/>
+  <xs:attributeGroup name="Metadata.attrib.class">
+    <xs:attribute ref="ttm:agent"/>
+    <xs:attribute ref="ttm:role"/>
+  </xs:attributeGroup>
+</xs:schema>

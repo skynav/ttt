@@ -1,0 +1,25 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <xs:include schemaLocation="ttaf1-dfxp-core-attribs.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#metadata"
+    schemaLocation="ttaf1-dfxp-metadata-items.xsd"/>
+  <xs:attributeGroup name="metadata.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="metadata.eltype" mixed="true">
+    <xs:sequence>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0"
+        maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:metadata.attlist"/>
+  </xs:complexType>
+  <xs:element name="metadata" type="tt:metadata.eltype"/>
+  <xs:group name="Metadata.class">
+    <xs:choice>
+      <xs:group ref="ttm:MetadataItems.class"/>
+      <xs:element ref="tt:metadata"/>
+    </xs:choice>
+  </xs:group>
+</xs:schema>

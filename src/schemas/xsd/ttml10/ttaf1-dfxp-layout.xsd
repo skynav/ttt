@@ -1,0 +1,41 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <xs:include schemaLocation="ttaf1-dfxp-core-attribs.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-timing-attribs.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-metadata.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-animation.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-styling.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#styling"
+    schemaLocation="ttaf1-dfxp-styling-attribs.xsd"/>
+  <xs:attributeGroup name="RegionBinding.attrib.class">
+    <xs:attribute name="region" type="xs:IDREF"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="layout.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="region.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="tt:TimedContainer.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="layout.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="tt:region" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:layout.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="region.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Animation.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="tt:style" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:region.attlist"/>
+  </xs:complexType>
+  <xs:element name="layout" type="tt:layout.eltype"/>
+  <xs:element name="region" type="tt:region.eltype"/>
+</xs:schema>

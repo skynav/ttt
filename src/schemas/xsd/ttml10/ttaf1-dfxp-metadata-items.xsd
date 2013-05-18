@@ -1,0 +1,69 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#metadata"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
+    schemaLocation="ttaf1-dfxp-datatypes.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml"
+    schemaLocation="ttaf1-dfxp-core-attribs.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-metadata-attribs.xsd"/>
+  <xs:attributeGroup name="actor.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attribute name="agent" type="xs:IDREF"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="agent.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attribute name="type" type="ttd:metadataAgentType"
+    use="required"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="copyright.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="desc.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="name.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attribute name="type" type="ttd:metadataNameType"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="title.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="actor.eltype">
+    <xs:attributeGroup ref="ttm:actor.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="agent.eltype">
+    <xs:sequence>
+      <xs:element ref="ttm:name" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ttm:actor" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="ttm:agent.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="copyright.eltype" mixed="true">
+    <xs:attributeGroup ref="ttm:copyright.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="desc.eltype" mixed="true">
+    <xs:attributeGroup ref="ttm:desc.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="name.eltype" mixed="true">
+    <xs:attributeGroup ref="ttm:name.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="title.eltype" mixed="true">
+    <xs:attributeGroup ref="ttm:title.attlist"/>
+  </xs:complexType>
+  <xs:element name="actor" type="ttm:actor.eltype"/>
+  <xs:element name="agent" type="ttm:agent.eltype"/>
+  <xs:element name="copyright" type="ttm:copyright.eltype"/>
+  <xs:element name="desc" type="ttm:desc.eltype"/>
+  <xs:element name="name" type="ttm:name.eltype"/>
+  <xs:element name="title" type="ttm:title.eltype"/>
+  <xs:group name="MetadataItems.class">
+    <xs:choice>
+      <xs:element ref="ttm:agent"/>
+      <xs:element ref="ttm:copyright"/>
+      <xs:element ref="ttm:desc"/>
+      <xs:element ref="ttm:title"/>
+    </xs:choice>
+  </xs:group>
+</xs:schema>

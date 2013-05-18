@@ -1,0 +1,113 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <xs:include schemaLocation="ttaf1-dfxp-core-attribs.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-timing-attribs.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-metadata.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-animation.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-layout.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-styling.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#metadata"
+    schemaLocation="ttaf1-dfxp-metadata-attribs.xsd"/>
+  <xs:attributeGroup name="body.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:TimedContainer.attrib.class"/>
+    <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
+    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="div.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:TimedContainer.attrib.class"/>
+    <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
+    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="p.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:TimedContainer.attrib.class"/>
+    <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
+    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="span.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:TimedContainer.attrib.class"/>
+    <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
+    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="br.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="body.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Animation.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="tt:div" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:body.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="div.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Animation.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Block.class" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:div.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="p.eltype" mixed="true">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Animation.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Inline.class" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:p.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="span.eltype" mixed="true">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Animation.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Inline.class" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:span.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="br.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Animation.class" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:br.attlist"/>
+  </xs:complexType>
+  <xs:element name="body" type="tt:body.eltype"/>
+  <xs:element name="div" type="tt:div.eltype"/>
+  <xs:element name="p" type="tt:p.eltype"/>
+  <xs:element name="span" type="tt:span.eltype"/>
+  <xs:element name="br" type="tt:br.eltype"/>
+  <xs:group name="BlockNoDiv.class">
+    <xs:choice>
+      <xs:element ref="tt:p"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="Block.class">
+    <xs:choice>
+      <xs:group ref="tt:BlockNoDiv.class"/>
+      <xs:element ref="tt:div"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="InlineNoSpan.class">
+    <xs:choice>
+      <xs:element ref="tt:br"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="Inline.class">
+    <xs:choice>
+      <xs:group ref="tt:InlineNoSpan.class"/>
+      <xs:element ref="tt:span"/>
+    </xs:choice>
+  </xs:group>
+</xs:schema>

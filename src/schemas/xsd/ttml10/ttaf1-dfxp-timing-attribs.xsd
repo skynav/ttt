@@ -1,0 +1,22 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
+  xmlns:tt="http://www.w3.org/ns/ttml">
+  <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
+    schemaLocation="ttaf1-dfxp-datatypes.xsd"/>
+  <xs:attributeGroup name="TimingInterval.attrib.class">
+    <xs:attribute name="begin" type="ttd:timeCoordinate"/>
+    <xs:attribute name="dur" type="ttd:timeDuration"/>
+    <xs:attribute name="end" type="ttd:timeCoordinate"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="TimingContainer.attrib.class">
+    <xs:attribute name="timeContainer" type="ttd:timeContainer"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="Timed.attrib.class">
+    <xs:attributeGroup ref="tt:TimingInterval.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="TimedContainer.attrib.class">
+    <xs:attributeGroup ref="tt:Timed.attrib.class"/>
+    <xs:attributeGroup ref="tt:TimingContainer.attrib.class"/>
+  </xs:attributeGroup>
+</xs:schema>

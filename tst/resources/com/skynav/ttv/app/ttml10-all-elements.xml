@@ -1,0 +1,71 @@
+<tt:tt
+  tts:extent="640px 480px"
+  xml:lang="en"
+  xml:space="default"
+  ttp:cellResolution="3 5"
+  ttp:clockMode="utc"
+  ttp:dropMode="nonDrop"
+  ttp:frameRate="30"
+  ttp:frameRateMultiplier="1000 1001"
+  ttp:markerMode="discontinuous"
+  ttp:pixelAspectRatio="4 3"
+  ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-presentation"
+  ttp:subFrameRate="2"
+  ttp:tickRate="60"
+  ttp:timeBase="media"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <tt:head>
+    <tt:metadata xml:id="m1"/>
+    <ttm:title xml:id="title">A Title</ttm:title>
+    <ttm:desc xml:id="description">This example TTML document attempts to use every element.</ttm:desc>
+    <ttm:copyright xml:id="copyright">Never and Anon.</ttm:copyright>
+    <ttm:agent xml:id="connery" type="person">
+      <ttm:name type="full">Sir Thomas Sean Connery</ttm:name>
+    </ttm:agent>
+    <ttm:agent xml:id="bond" type="character">
+      <ttm:name type="alias">007</ttm:name>
+      <ttm:actor agent="connery"/>
+    </ttm:agent>
+    <ttp:profile xml:id="profile" use="dfxp-presentation">
+      <tt:metadata xml:id="m2"/>
+      <ttp:features xml:id="f1set" xml:base="http://www.w3.org/ns/ttml/feature/">
+        <tt:metadata/>
+        <ttp:feature xml:id="f1" value="required">#fontStyle-italic</ttp:feature>
+      </ttp:features>
+      <ttp:extensions xml:id="e1set" xml:base="http://www.w3.org/ns/ttml/extension/">
+        <tt:metadata/>
+        <ttp:extension xml:id="e1" value="required">#smpte-tt-image</ttp:extension>
+      </ttp:extensions>
+    </ttp:profile>
+    <tt:styling>
+      <tt:metadata xml:id="m3"/>
+      <tt:style xml:id="s1" tts:color="red"/>
+    </tt:styling>
+    <tt:layout>
+      <tt:metadata xml:id="m4"/>
+      <tt:region xml:id="r1" style="s1">
+        <tt:metadata xml:id="m5"/>
+        <tt:set xml:id="a1" tts:zIndex="-1"/>
+        <tt:style xml:id="s2" tts:color="green"/>
+      </tt:region>
+    </tt:layout>
+  </tt:head>
+  <tt:body region="r1">
+    <tt:metadata xml:id="m6"/>
+    <tt:set xml:id="a2" tts:display="auto"/>
+    <tt:div>
+      <tt:metadata xml:id="m7"/>
+      <tt:set xml:id="a3" tts:writingMode="tb"/>
+      <tt:p ttm:agent="bond">
+        <tt:metadata xml:id="m8"/>
+        <tt:set xml:id="a4" tts:visibility="hidden"/>
+        <tt:span><tt:metadata xml:id="m9"/><tt:set xml:id="a5" tts:fontSize="20px"/>Text 1</tt:span>
+        <tt:br><tt:metadata xml:id="m10"/><tt:set xml:id="a6" tts:display="none"/></tt:br>
+        <tt:span><tt:metadata xml:id="m11"/>Text 2</tt:span>
+      </tt:p>
+    </tt:div>
+  </tt:body>
+</tt:tt>

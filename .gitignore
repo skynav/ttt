@@ -1,0 +1,13 @@
+# ignore build
+bld
+
+# ignore eclipse
+.project
+.settings
+.eclipse
+
+# ignore common detritus
+.DS_Store
+*~
+*.orig
+*.bak

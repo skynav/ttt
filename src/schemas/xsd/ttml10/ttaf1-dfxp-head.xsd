@@ -1,0 +1,25 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <xs:include schemaLocation="ttaf1-dfxp-core-attribs.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-metadata.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-parameters.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-styling.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-layout.xsd"/>
+  <xs:attributeGroup name="head.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="head.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Parameters.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="tt:styling" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="tt:layout" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:head.attlist"/>
+  </xs:complexType>
+  <xs:element name="head" type="tt:head.eltype"/>
+</xs:schema>

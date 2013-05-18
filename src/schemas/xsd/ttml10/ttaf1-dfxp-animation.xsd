@@ -1,0 +1,28 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <xs:include schemaLocation="ttaf1-dfxp-core-attribs.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-timing-attribs.xsd"/>
+  <xs:include schemaLocation="ttaf1-dfxp-metadata.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#styling"
+    schemaLocation="ttaf1-dfxp-styling-attribs.xsd"/>
+  <xs:attributeGroup name="set.attlist">
+    <xs:attributeGroup ref="tt:Core.attrib.class" />
+    <xs:attributeGroup ref="tt:Timed.attrib.class" />
+    <xs:attributeGroup ref="tts:Styling.attrib.class" />
+  </xs:attributeGroup>
+  <xs:complexType name="set.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:set.attlist"/>
+  </xs:complexType>
+  <xs:element name="set" type="tt:set.eltype"/>
+  <xs:group name="Animation.class">
+    <xs:choice>
+      <xs:element ref="tt:set"/>
+    </xs:choice>
+  </xs:group>
+</xs:schema>

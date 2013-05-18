@@ -1,0 +1,13 @@
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <xs:include schemaLocation="ttaf1-dfxp-core-attribs.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#parameter"
+    schemaLocation="ttaf1-dfxp-parameter-items.xsd"/>
+  <xs:group name="Parameters.class">
+    <xs:choice>
+      <xs:group ref="ttp:ParameterItems.class"/>
+    </xs:choice>
+  </xs:group>
+</xs:schema>

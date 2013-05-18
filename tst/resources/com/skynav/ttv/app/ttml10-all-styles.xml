@@ -1,0 +1,363 @@
+<tt tts:extent="640px 480px" xml:lang="en" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <head>
+    <layout>
+      <region xml:id="r1">
+        <!-- legal backgroundColor values (not exhaustive) -->
+        <style tts:backgroundColor="#000000"/>
+        <style tts:backgroundColor="#c0c0c0"/>
+        <style tts:backgroundColor="#808080"/>
+        <style tts:backgroundColor="#ffffff"/>
+        <style tts:backgroundColor="#800000"/>
+        <style tts:backgroundColor="#ff0000"/>
+        <style tts:backgroundColor="#800080"/>
+        <style tts:backgroundColor="#ff00ff"/>
+        <style tts:backgroundColor="#008000"/>
+        <style tts:backgroundColor="#00ff00"/>
+        <style tts:backgroundColor="#808000"/>
+        <style tts:backgroundColor="#ffff00"/>
+        <style tts:backgroundColor="#000080"/>
+        <style tts:backgroundColor="#0000ff"/>
+        <style tts:backgroundColor="#008080"/>
+        <style tts:backgroundColor="#00ffff"/>
+        <style tts:backgroundColor="#00000000"/>
+        <style tts:backgroundColor="#000000ff"/>
+        <style tts:backgroundColor="#c0c0c0ff"/>
+        <style tts:backgroundColor="#808080ff"/>
+        <style tts:backgroundColor="#ffffffff"/>
+        <style tts:backgroundColor="#800000ff"/>
+        <style tts:backgroundColor="#ff0000ff"/>
+        <style tts:backgroundColor="#800080ff"/>
+        <style tts:backgroundColor="#ff00ffff"/>
+        <style tts:backgroundColor="#008000ff"/>
+        <style tts:backgroundColor="#00ff00ff"/>
+        <style tts:backgroundColor="#808000ff"/>
+        <style tts:backgroundColor="#ffff00ff"/>
+        <style tts:backgroundColor="#000080ff"/>
+        <style tts:backgroundColor="#0000ffff"/>
+        <style tts:backgroundColor="#008080ff"/>
+        <style tts:backgroundColor="#00ffffff"/>
+        <style tts:backgroundColor="rgb(0,0,0)"/>
+        <style tts:backgroundColor="rgb(192,192,192)"/>
+        <style tts:backgroundColor="rgb(128,128,128)"/>
+        <style tts:backgroundColor="rgb(255,255,255)"/>
+        <style tts:backgroundColor="rgb(128,0,0)"/>
+        <style tts:backgroundColor="rgb(255,0,0)"/>
+        <style tts:backgroundColor="rgb(128,0,128)"/>
+        <style tts:backgroundColor="rgb(255,0,255)"/>
+        <style tts:backgroundColor="rgb(255,0,255)"/>
+        <style tts:backgroundColor="rgb(0,128,0)"/>
+        <style tts:backgroundColor="rgb(0,255,0)"/>
+        <style tts:backgroundColor="rgb(128,128,0)"/>
+        <style tts:backgroundColor="rgb(255,255,0)"/>
+        <style tts:backgroundColor="rgb(0,0,128)"/>
+        <style tts:backgroundColor="rgb(0,0,255)"/>
+        <style tts:backgroundColor="rgb(0,128,128)"/>
+        <style tts:backgroundColor="rgb(0,255,255)"/>
+        <style tts:backgroundColor="rgb(0,255,255)"/>
+        <style tts:backgroundColor="rgba(0,0,0,0)"/>
+        <style tts:backgroundColor="rgba(0,0,0,255)"/>
+        <style tts:backgroundColor="rgba(192,192,192,255)"/>
+        <style tts:backgroundColor="rgba(128,128,128,255)"/>
+        <style tts:backgroundColor="rgba(255,255,255,255)"/>
+        <style tts:backgroundColor="rgba(128,0,0,255)"/>
+        <style tts:backgroundColor="rgba(255,0,0,255)"/>
+        <style tts:backgroundColor="rgba(128,0,128,255)"/>
+        <style tts:backgroundColor="rgba(255,0,255,255)"/>
+        <style tts:backgroundColor="rgba(255,0,255,255)"/>
+        <style tts:backgroundColor="rgba(0,128,0,255)"/>
+        <style tts:backgroundColor="rgba(0,255,0,255)"/>
+        <style tts:backgroundColor="rgba(128,128,0,255)"/>
+        <style tts:backgroundColor="rgba(255,255,0,255)"/>
+        <style tts:backgroundColor="rgba(0,0,128,255)"/>
+        <style tts:backgroundColor="rgba(0,0,255,255)"/>
+        <style tts:backgroundColor="rgba(0,128,128,255)"/>
+        <style tts:backgroundColor="rgba(0,255,255,255)"/>
+        <style tts:backgroundColor="rgba(0,255,255,255)"/>
+        <style tts:backgroundColor="transparent"/>
+        <style tts:backgroundColor="black"/>
+        <style tts:backgroundColor="silver"/>
+        <style tts:backgroundColor="gray"/>
+        <style tts:backgroundColor="white"/>
+        <style tts:backgroundColor="maroon"/>
+        <style tts:backgroundColor="red"/>
+        <style tts:backgroundColor="purple"/>
+        <style tts:backgroundColor="fuchsia"/>
+        <style tts:backgroundColor="magenta"/>
+        <style tts:backgroundColor="green"/>
+        <style tts:backgroundColor="lime"/>
+        <style tts:backgroundColor="olive"/>
+        <style tts:backgroundColor="yellow"/>
+        <style tts:backgroundColor="navy"/>
+        <style tts:backgroundColor="blue"/>
+        <style tts:backgroundColor="teal"/>
+        <style tts:backgroundColor="aqua"/>
+        <style tts:backgroundColor="cyan"/>
+        <!-- legal color values (not exhaustive) -->
+        <style tts:color="#000000"/>
+        <style tts:color="#c0c0c0"/>
+        <style tts:color="#808080"/>
+        <style tts:color="#ffffff"/>
+        <style tts:color="#800000"/>
+        <style tts:color="#ff0000"/>
+        <style tts:color="#800080"/>
+        <style tts:color="#ff00ff"/>
+        <style tts:color="#008000"/>
+        <style tts:color="#00ff00"/>
+        <style tts:color="#808000"/>
+        <style tts:color="#ffff00"/>
+        <style tts:color="#000080"/>
+        <style tts:color="#0000ff"/>
+        <style tts:color="#008080"/>
+        <style tts:color="#00ffff"/>
+        <style tts:color="#00000000"/>
+        <style tts:color="#000000ff"/>
+        <style tts:color="#c0c0c0ff"/>
+        <style tts:color="#808080ff"/>
+        <style tts:color="#ffffffff"/>
+        <style tts:color="#800000ff"/>
+        <style tts:color="#ff0000ff"/>
+        <style tts:color="#800080ff"/>
+        <style tts:color="#ff00ffff"/>
+        <style tts:color="#008000ff"/>
+        <style tts:color="#00ff00ff"/>
+        <style tts:color="#808000ff"/>
+        <style tts:color="#ffff00ff"/>
+        <style tts:color="#000080ff"/>
+        <style tts:color="#0000ffff"/>
+        <style tts:color="#008080ff"/>
+        <style tts:color="#00ffffff"/>
+        <style tts:color="rgb(0,0,0)"/>
+        <style tts:color="rgb(192,192,192)"/>
+        <style tts:color="rgb(128,128,128)"/>
+        <style tts:color="rgb(255,255,255)"/>
+        <style tts:color="rgb(128,0,0)"/>
+        <style tts:color="rgb(255,0,0)"/>
+        <style tts:color="rgb(128,0,128)"/>
+        <style tts:color="rgb(255,0,255)"/>
+        <style tts:color="rgb(255,0,255)"/>
+        <style tts:color="rgb(0,128,0)"/>
+        <style tts:color="rgb(0,255,0)"/>
+        <style tts:color="rgb(128,128,0)"/>
+        <style tts:color="rgb(255,255,0)"/>
+        <style tts:color="rgb(0,0,128)"/>
+        <style tts:color="rgb(0,0,255)"/>
+        <style tts:color="rgb(0,128,128)"/>
+        <style tts:color="rgb(0,255,255)"/>
+        <style tts:color="rgb(0,255,255)"/>
+        <style tts:color="rgba(0,0,0,0)"/>
+        <style tts:color="rgba(0,0,0,255)"/>
+        <style tts:color="rgba(192,192,192,255)"/>
+        <style tts:color="rgba(128,128,128,255)"/>
+        <style tts:color="rgba(255,255,255,255)"/>
+        <style tts:color="rgba(128,0,0,255)"/>
+        <style tts:color="rgba(255,0,0,255)"/>
+        <style tts:color="rgba(128,0,128,255)"/>
+        <style tts:color="rgba(255,0,255,255)"/>
+        <style tts:color="rgba(255,0,255,255)"/>
+        <style tts:color="rgba(0,128,0,255)"/>
+        <style tts:color="rgba(0,255,0,255)"/>
+        <style tts:color="rgba(128,128,0,255)"/>
+        <style tts:color="rgba(255,255,0,255)"/>
+        <style tts:color="rgba(0,0,128,255)"/>
+        <style tts:color="rgba(0,0,255,255)"/>
+        <style tts:color="rgba(0,128,128,255)"/>
+        <style tts:color="rgba(0,255,255,255)"/>
+        <style tts:color="rgba(0,255,255,255)"/>
+        <style tts:color="transparent"/>
+        <style tts:color="black"/>
+        <style tts:color="silver"/>
+        <style tts:color="gray"/>
+        <style tts:color="white"/>
+        <style tts:color="maroon"/>
+        <style tts:color="red"/>
+        <style tts:color="purple"/>
+        <style tts:color="fuchsia"/>
+        <style tts:color="magenta"/>
+        <style tts:color="green"/>
+        <style tts:color="lime"/>
+        <style tts:color="olive"/>
+        <style tts:color="yellow"/>
+        <style tts:color="navy"/>
+        <style tts:color="blue"/>
+        <style tts:color="teal"/>
+        <style tts:color="aqua"/>
+        <style tts:color="cyan"/>
+        <!-- legal direction values -->
+        <style tts:direction="ltr"/>
+        <style tts:direction="rtl"/>
+        <!-- legal display values -->
+        <style tts:display="auto"/>
+        <style tts:display="none"/>
+        <!-- legal displayAlign values -->
+        <style tts:displayAlign="before"/>
+        <style tts:displayAlign="center"/>
+        <style tts:displayAlign="after"/>
+        <!-- legal extent values (not exhaustive) -->
+        <style tts:extent="auto"/>
+        <style tts:extent="620px 96px"/>
+        <!-- legal fontFamily values (not exhaustive) -->
+        <style tts:fontFamily="default"/>
+        <style tts:fontFamily="monospace"/>
+        <style tts:fontFamily="sansSerif"/>
+        <style tts:fontFamily="serif"/>
+        <style tts:fontFamily="monospaceSansSerif"/>
+        <style tts:fontFamily="monospaceSerif"/>
+        <style tts:fontFamily="proportionalSansSerif"/>
+        <style tts:fontFamily="proportionalSerif"/>
+        <style tts:fontFamily="Courier New"/>
+        <style tts:fontFamily="'Courier New'"/>
+        <style tts:fontFamily="default, Courier New"/>
+        <style tts:fontFamily="default, 'Courier New'"/>
+        <style tts:fontFamily="Courier New, default"/>
+        <style tts:fontFamily="'Courier New', default"/>
+        <!-- legal fontSize values (not exhaustive) -->
+        <style tts:fontSize="1c"/>
+        <style tts:fontSize="40px"/>
+        <style tts:fontSize="40px 50px"/>
+        <style tts:fontSize="40px 1c"/>
+        <!-- legal fontStyle values -->
+        <style tts:fontStyle="normal"/>
+        <style tts:fontStyle="italic"/>
+        <style tts:fontStyle="oblique"/>
+        <!-- legal fontWeight values -->
+        <style tts:fontWeight="normal"/>
+        <style tts:fontWeight="bold"/>
+        <!-- legal lineHeight values (not exhaustive) -->
+        <style tts:lineHeight="normal"/>
+        <style tts:lineHeight="1c"/>
+        <style tts:lineHeight="40px"/>
+        <!-- legal opacity values (not exhaustive) -->
+        <style tts:opacity="0"/>
+        <style tts:opacity="0.5"/>
+        <style tts:opacity="1"/>
+        <!-- legal origin values (not exhaustive) -->
+        <style tts:origin="auto"/>
+        <style tts:origin="10px 100px"/>
+        <style tts:origin="1c 10c"/>
+        <style tts:origin="40px 10c"/>
+        <!-- legal overflow values -->
+        <style tts:overflow="visible"/>
+        <style tts:overflow="hidden"/>
+        <!-- legal padding values (not exhaustive) -->
+        <style tts:padding="1px"/>
+        <style tts:padding="1px 2px"/>
+        <style tts:padding="1px 2px 3px"/>
+        <style tts:padding="1px 2px 3px 4px"/>
+        <!-- legal showBackground values -->
+        <style tts:showBackground="always"/>
+        <style tts:showBackground="whenActive"/>
+        <!-- legal textAlign values -->
+        <style tts:textAlign="left"/>
+        <style tts:textAlign="center"/>
+        <style tts:textAlign="right"/>
+        <style tts:textAlign="start"/>
+        <style tts:textAlign="end"/>
+        <!-- legal textDecoration values -->
+        <style tts:textDecoration="none"/>
+        <style tts:textDecoration="underline"/>
+        <style tts:textDecoration="noUnderline"/>
+        <style tts:textDecoration="lineThrough"/>
+        <style tts:textDecoration="noLineThrough"/>
+        <style tts:textDecoration="overline"/>
+        <style tts:textDecoration="noOverline"/>
+        <style tts:textDecoration="noUnderline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough noUnderline"/>
+        <style tts:textDecoration="noUnderline lineThrough"/>
+        <style tts:textDecoration="lineThrough noUnderline"/>
+        <style tts:textDecoration="underline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough underline"/>
+        <style tts:textDecoration="underline lineThrough"/>
+        <style tts:textDecoration="lineThrough underline"/>
+        <style tts:textDecoration="noUnderline noOverline"/>
+        <style tts:textDecoration="noOverline noUnderline"/>
+        <style tts:textDecoration="noUnderline overline"/>
+        <style tts:textDecoration="overline noUnderline"/>
+        <style tts:textDecoration="underline noOverline"/>
+        <style tts:textDecoration="noOverline underline"/>
+        <style tts:textDecoration="underline overline"/>
+        <style tts:textDecoration="overline underline"/>
+        <style tts:textDecoration="noUnderline noLineThrough noOverline"/>
+        <style tts:textDecoration="noUnderline noOverline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough noUnderline noOverline"/>
+        <style tts:textDecoration="noLineThrough noOverline noUnderline"/>
+        <style tts:textDecoration="noOverline noUnderline noLineThrough"/>
+        <style tts:textDecoration="noOverline noLineThrough noUnderline"/>
+        <style tts:textDecoration="noUnderline noLineThrough overline"/>
+        <style tts:textDecoration="noUnderline overline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough noUnderline overline"/>
+        <style tts:textDecoration="noLineThrough overline noUnderline"/>
+        <style tts:textDecoration="overline noUnderline noLineThrough"/>
+        <style tts:textDecoration="overline noLineThrough noUnderline"/>
+        <style tts:textDecoration="noUnderline lineThrough noOverline"/>
+        <style tts:textDecoration="noUnderline noOverline lineThrough"/>
+        <style tts:textDecoration="lineThrough noUnderline noOverline"/>
+        <style tts:textDecoration="lineThrough noOverline noUnderline"/>
+        <style tts:textDecoration="noOverline noUnderline lineThrough"/>
+        <style tts:textDecoration="noOverline lineThrough noUnderline"/>
+        <style tts:textDecoration="noUnderline lineThrough overline"/>
+        <style tts:textDecoration="noUnderline overline lineThrough"/>
+        <style tts:textDecoration="lineThrough noUnderline overline"/>
+        <style tts:textDecoration="lineThrough overline noUnderline"/>
+        <style tts:textDecoration="overline noUnderline lineThrough"/>
+        <style tts:textDecoration="overline lineThrough noUnderline"/>
+        <style tts:textDecoration="underline noLineThrough noOverline"/>
+        <style tts:textDecoration="underline noOverline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough underline noOverline"/>
+        <style tts:textDecoration="noLineThrough noOverline underline"/>
+        <style tts:textDecoration="noOverline underline noLineThrough"/>
+        <style tts:textDecoration="noOverline noLineThrough underline"/>
+        <style tts:textDecoration="underline noLineThrough overline"/>
+        <style tts:textDecoration="underline overline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough underline overline"/>
+        <style tts:textDecoration="noLineThrough overline underline"/>
+        <style tts:textDecoration="overline underline noLineThrough"/>
+        <style tts:textDecoration="overline noLineThrough underline"/>
+        <style tts:textDecoration="underline lineThrough noOverline"/>
+        <style tts:textDecoration="underline noOverline lineThrough"/>
+        <style tts:textDecoration="lineThrough underline noOverline"/>
+        <style tts:textDecoration="lineThrough noOverline underline"/>
+        <style tts:textDecoration="noOverline underline lineThrough"/>
+        <style tts:textDecoration="noOverline lineThrough underline"/>
+        <style tts:textDecoration="underline lineThrough overline"/>
+        <style tts:textDecoration="underline overline lineThrough"/>
+        <style tts:textDecoration="lineThrough underline overline"/>
+        <style tts:textDecoration="lineThrough overline underline"/>
+        <style tts:textDecoration="overline underline lineThrough"/>
+        <style tts:textDecoration="overline lineThrough underline"/>
+        <!-- legal textOutline values (not exhaustive) -->
+        <style tts:textOutline="yellow 1px"/>
+        <style tts:textOutline="yellow 1px 2px"/>
+        <style tts:textOutline="1px"/>
+        <style tts:textOutline="1px 2px"/>
+        <!-- legal unicodeBidi values -->
+        <style tts:unicodeBidi="normal"/>
+        <style tts:unicodeBidi="embed"/>
+        <style tts:unicodeBidi="bidiOverride"/>
+        <!-- legal visibility values -->
+        <style tts:visibility="visible"/>
+        <style tts:visibility="hidden"/>
+        <!-- legal wrapOption values -->
+        <style tts:wrapOption="wrap"/>
+        <style tts:wrapOption="noWrap"/>
+        <!-- legal writingMode values -->
+        <style tts:writingMode="lrtb"/>
+        <style tts:writingMode="rltb"/>
+        <style tts:writingMode="tbrl"/>
+        <style tts:writingMode="tblr"/>
+        <style tts:writingMode="lr"/>
+        <style tts:writingMode="rl"/>
+        <style tts:writingMode="tb"/>
+        <!-- legal zIndex values (not exhaustive) -->
+        <style tts:zIndex="auto"/>
+        <style tts:zIndex="-1"/>
+        <style tts:zIndex="0"/>
+        <style tts:zIndex="1"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1">
+    <div>
+      <p>Text 1</p>
+    </div>
+  </body>
+</tt>
