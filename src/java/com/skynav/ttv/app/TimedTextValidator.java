@@ -34,12 +34,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.ValidationEventLocator;
+import javax.xml.namespace.QName;
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -49,7 +55,17 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-public class TimedTextValidator implements ErrorHandler, LSResourceResolver {
+import com.skynav.ttv.model.ttml10.tt.TimedText;
+import com.skynav.ttv.model.ttml10.ttp.Profile;
+
+public class TimedTextValidator implements ErrorHandler, LSResourceResolver, ValidationEventHandler {
+
+    // options state
+    private int verbose;
+
+    // processing state
+    private XMLStreamReader reader;
+    private Map<Object, Location> locations;
 
     TimedTextValidator() {
     }
@@ -84,6 +100,16 @@ public class TimedTextValidator implements ErrorHandler, LSResourceResolver {
 
     public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         return null;
+    }
+
+    // javax.xml.bin.ValidationEventHandler
+
+    public boolean handleEvent(ValidationEvent e) {
+        if (e.getSeverity() != ValidationEvent.WARNING) {
+            ValidationEventLocator l = e.getLocator();
+            System.out.println("[" + l.getLineNumber() + ":" + l.getColumnNumber() + "]:" + e.getMessage());
+        }
+        return true;
     }
 
     private URI getCWDAsURI() {
@@ -142,10 +168,27 @@ public class TimedTextValidator implements ErrorHandler, LSResourceResolver {
     }
 
     private int parseLongOption(String args[], int index) {
+        String option = args[index];
+        assert option.length() > 2;
+        option = option.substring(2);
+        if (option.equals("verbose"))
+            this.verbose += 1;
+        else
+            throw new UnknownOptionException("--" + option);
         return index + 1;
     }
 
     private int parseShortOption(String args[], int index) {
+        String option = args[index];
+        assert option.length() == 2;
+        option = option.substring(1);
+        switch (option.charAt(0)) {
+        case 'v':
+            this.verbose += 1;
+            break;
+        default:
+            throw new UnknownOptionException("-" + option);
+        }
         return index + 1;
     }
 
@@ -160,30 +203,69 @@ public class TimedTextValidator implements ErrorHandler, LSResourceResolver {
         }
     }
     
-    private int validate(URL url) {
+    @SuppressWarnings({"rawtypes","unchecked"})
+    private QName getXmlElementDecl(Class jaxbClass, String creatorMethod) {
         try {
-            JAXBContext c = JAXBContext.newInstance("com.skynav.ttv.model.ttml10.tt:com.skynav.ttv.model.ttml10.ttm:com.skynav.ttv.model.ttml10.ttp");
-            Unmarshaller u = c.createUnmarshaller();
+            Class ofc = jaxbClass.getClassLoader().loadClass(jaxbClass.getPackage().getName() + ".ObjectFactory");
+            return ((JAXBElement) ofc.getDeclaredMethod(creatorMethod, jaxbClass).invoke(ofc.newInstance(), new Object[] { null } )).getName();
+        } catch (Exception e) {
+            return new QName("", "");
+        }
+    }
+
+    private Location getLocation(Object object) {
+        Location location = locations.get(object);
+        if (location == null)
+            location = DefaultLocation.DEFAULT;
+        return location;
+    }
+
+    private int ensureAcceptableRootElement(JAXBContext context, Object unmarshalled) {
+        if (unmarshalled instanceof JAXBElement) {
+            @SuppressWarnings("rawtypes")
+            JAXBElement e = (JAXBElement) unmarshalled;
+            Object value = e.getValue();
+            if (value instanceof TimedText)
+                return 0;
+            else if (value instanceof Profile)
+                return 0;
+            else {
+                Location location = getLocation(value);
+                System.out.println("[" + location.getLineNumber() + "," + location.getColumnNumber() + "]:unexpected root element " + e.getName() + "." + " " +
+                    "Expected elements are " +
+                    "<" + getXmlElementDecl(TimedText.class, "createTt") + ">" + "," +
+                    "<" + getXmlElementDecl(Profile.class, "createProfile") + ">");
+                return 1;
+            }
+        } else {
+            System.out.println("[?,?]:unexpected root element, can't introspect non-JAXBElement");
+            return 1;
+        }
+    }
+
+    private void resetValidationState() {
+        this.locations = new java.util.HashMap<Object, Location>();
+        this.reader = null;
+    }
+
+    private int validate(URL url) {
+        resetValidationState();
+        try {
+            JAXBContext context = JAXBContext.newInstance("com.skynav.ttv.model.ttml10.tt:com.skynav.ttv.model.ttml10.ttm:com.skynav.ttv.model.ttml10.ttp");
+            Unmarshaller u = context.createUnmarshaller();
             u.setSchema(createSchema());
-            u.setEventHandler(
-                new ValidationEventHandler() {
-                    public boolean handleEvent(ValidationEvent e) {
-                        if (e.getSeverity() != ValidationEvent.WARNING) {
-                            ValidationEventLocator l = e.getLocator();
-                            System.out.println("[" + l.getLineNumber() + ":" + l.getColumnNumber() + "]:" + e.getMessage());
-                        }
-                        return true;
-                    }
+            u.setEventHandler(this);
+            u.setListener(new Unmarshaller.Listener() {
+                public void beforeUnmarshal(Object target, Object parent) {
+                    locations.put(target, reader.getLocation());
                 }
-            );
-            Object tt =  u.unmarshal(url);
-            return (tt != null) ? 0 : 1;
-        } catch (javax.xml.bind.UnmarshalException e) {
-            e.printStackTrace();
-        } catch (javax.xml.bind.JAXBException e) {
-            e.printStackTrace();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
+            } );
+            XMLInputFactory xif = XMLInputFactory.newFactory();
+            this.reader = xif.createXMLStreamReader(url.openStream());
+            return ensureAcceptableRootElement(context, u.unmarshal(this.reader));
+        } catch (Exception e) {
+            if (this.verbose > 1)
+                e.printStackTrace();
         }
         return 1;
     }
@@ -226,6 +308,25 @@ public class TimedTextValidator implements ErrorHandler, LSResourceResolver {
         static final long serialVersionUID = 0;
         ShowUsageException() {
             super("show usage");
+        }
+    }
+
+    private static class DefaultLocation implements Location {
+        static final DefaultLocation DEFAULT = new DefaultLocation();
+        public int getLineNumber() {
+            return 0;
+        }
+        public int getColumnNumber() {
+            return 0;
+        }
+        public int getCharacterOffset() {
+            return 0;
+        }
+        public String getPublicId() {
+            return "";
+        }
+        public String getSystemId() {
+            return "";
         }
     }
 

@@ -73,10 +73,10 @@
 <property name="junit.failureproperty" value="junit.failure"/>
 <property name="junit.fork" value="true"/>
 <property name="junit.forkmode" value="once"/>
-<property name="junit.formatter.brief" value="true"/>
+<property name="junit.formatter.brief" value="false"/>
 <property name="junit.haltonfailure" value="true"/>
 <property name="junit.output.dir" value="${build.dir}/test-output"/>
-<property name="junit.printsummary" value="false"/>
+<property name="junit.printsummary" value="true"/>
 
 <path id="default-junit-classpath">
   <pathelement location="${ttv.target}"/>

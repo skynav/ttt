@@ -25,15 +25,31 @@
  
 package com.skynav.ttv.app;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import java.net.URL;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-    SimpleValidatorTestCase.class,
-    InvalidityTestCase.class
-})
-public class ValidatorTestSuite {
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import com.skynav.ttv.app.TimedTextValidator;
+
+public class InvalidityTestCase {
+    @Test
+    public void testInvalidRootHtml() throws Exception {
+        URL url = getClass().getResource("ttml10-invalid-root-html.xml");
+        if (url == null)
+            fail("can't find test resource: ttml10-invalid-root-html.xml");
+        String[] args = { url.toString() };
+        assertEquals(1, new TimedTextValidator().run(args));
+    }
+
+    @Test
+    public void testInvalidRootDiv() throws Exception {
+        URL url = getClass().getResource("ttml10-invalid-root-div.xml");
+        if (url == null)
+            fail("can't find test resource: ttml10-invalid-root-div.xml");
+        String[] args = { url.toString() };
+        assertEquals(1, new TimedTextValidator().run(args));
+    }
 }
 
