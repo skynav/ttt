@@ -2,7 +2,7 @@
 
 Timed Text Markup Language (TTML) Validation Tools
 
-The `ttv` tool is used to validate the contents of a [TTML]{http://www.w3.org/TR/ttaf1-dfxp/} document represented using XML as a concrete encoding.
+The `ttv` tool is used to validate the contents of a [TTML](http://www.w3.org/TR/ttaf1-dfxp/) document represented using XML as a concrete encoding.
 
 Validation is performed in four phases in the following order:
 
@@ -14,6 +14,17 @@ Validation is performed in four phases in the following order:
 If errors occur in some phase, then the following phases are skipped.
 
 The first phase, resource checking, attempts to determine (sniff) the character encoding of the resource. To do this, it uses a combination of a BOM (byte order mark) prefix, if present, and an XML encoding declaration, if present. If neither are present (or discernable), then it treats the result as ASCII. Once the encoding has been sniffed, an attempt is made to decode the entire resource using that encoding. If no encoding can be determined, is determined but not supported (by the platform), is determined but not permitted (by TTML), or if the resource cannot be successfully decoded without error using the encoding, then this phase fails.
+
+The encodings which `ttv` can successfully resolve include:
+
+ * `US-ASCII`
+ * `UTF-8`
+ * `UTF-16LE`
+ * `UTF-16BE`
+ * `UTF-32LE`
+ * `UTF-32BE`
+
+If both BOM is present and XML declaration is present and the two encodings differ, then the BOM encoding is used.
 
 The second phrase performs well-formedness testing by attempting to parse the resource as XML but with validation disabled. If the syntax of the resource does not adhere to the XML specification, then this phase fails.
 
