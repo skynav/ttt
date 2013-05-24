@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
 
 import com.skynav.ttv.app.TimedTextValidator;
 
-public class SimpleValidatorTestCase {
+public class ValidTestCases {
     @Test
     public void testValidatorSimple() throws Exception {
         performValidityTest("ttml10-simple.xml");

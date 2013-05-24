@@ -31,9 +31,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    SimpleValidatorTestCase.class,
-    NonWellFormedTestCase.class,
-    InvalidityTestCase.class
+    ValidTestCases.class,
+    NonWellFormedTestCases.class,
+    InvalidTestCases.class
 })
 public class ValidatorTestSuite {
 }
