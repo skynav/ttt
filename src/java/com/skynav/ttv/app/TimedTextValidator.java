@@ -94,6 +94,7 @@ public class TimedTextValidator {
         "  Long Options:\n" +
         "    --debug                  - enable debug output (may be specified multiple times to increase debug level)\n" +
         "    --debug-exceptions       - enable stack traces on exceptions (implies --debug)\n" +
+        "    --disable-warnings       - disable warnings\n" +
         "    --help                   - show usage help\n" +
         "    --list-schemas           - list known schemas\n" +
         "    --schema NICKNAME        - specify schema nickname (default: " + defaultSchemaNickname + ")\n" +
@@ -111,6 +112,7 @@ public class TimedTextValidator {
 
     // options state
     private int debug;
+    private boolean disableWarnings;
     private String schemaNickname;
     private String schemaResourceName;
     private boolean treatWarningAsError;
@@ -183,11 +185,13 @@ public class TimedTextValidator {
     }
 
     private void logWarning(String message) {
-        if (this.treatWarningAsError)
-            logError(message);
-        else {
-            System.out.println("W:" + message);
-            ++this.resourceWarnings;
+        if (!this.disableWarnings) {
+            if (this.treatWarningAsError)
+                logError(message);
+            else {
+                System.out.println("W:" + message);
+                ++this.resourceWarnings;
+            }
         }
     }
 
@@ -228,6 +232,8 @@ public class TimedTextValidator {
             this.debug += 1;
         } else if (option.equals("debug-exceptions")) {
             this.debug += 2;
+        } else if (option.equals("disable-warnings")) {
+            this.disableWarnings = true;
         } else if (option.equals("help")) {
             throw new ShowUsageException();
         } else if (option.equals("schema")) {
@@ -680,9 +686,25 @@ public class TimedTextValidator {
 
     private int validate(List<String> nonOptionArgs) {
         int numFailure = 0;
+        int numSuccess = 0;
         for (String arg : nonOptionArgs) {
             if (validate(arg) != 0)
                 ++numFailure;
+            else
+                ++numSuccess;
+        }
+        if (this.verbose > 0) {
+            StringBuffer sb = new StringBuffer();
+            if (numSuccess > 0)
+                sb.append("Passed " + Integer.toString(numSuccess));
+            if (numFailure > 0) {
+                if (numSuccess > 0)
+                    sb.append(", ");
+                sb.append("Failed " + Integer.toString(numFailure));
+            }
+            if (sb.length() > 0)
+                sb.append(" resources.");
+            logInfo(sb.toString());
         }
         return numFailure > 0 ? 1 : 0;
     }

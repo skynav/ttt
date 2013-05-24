@@ -116,7 +116,8 @@
   </sequential>
 </macrodef>
 
-<target name="create-xsd-bindings-ttml10" description="Create JAXB Bindings for TTML10 Schema.">
+<!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
+<target name="create-xsd-bindings-ttml10">
   <exec executable="xjc" dir="${build.dir}">
     <arg value="-b"/>
     <arg value="${bindings.dir}/xsd/ttml10-bindings.xjb"/>
@@ -126,8 +127,10 @@
   </exec>
 </target>
 
+<!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="create-xsd-bindings" depends="create-xsd-bindings-ttml10"/>
 
+<!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="generate-code" depends="create-xsd-bindings"/>
 
 <target name="compile">
@@ -234,13 +237,18 @@
 
 <target name="clean-test" description="Clean, build, and test TTV" depends="clean,build,test"/>
 
-<target name="clean-all-test" description="Thoroughly clean, build and test TTV" depends="clean-all,generate-code,build,test"/>
+<!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
+<target name="clean-all-test" depends="clean-all,generate-code,build,test"/>
 
-<target name="run-validator" description="Run validator with TTML10 input files">
+<target name="run-valid-tests" description="Run validator with valid TTML10 input files">
   <java jar="${ttv.target}" fork="true">
-    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-simple.xml"/>
-    <!-- <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-all-elements.xml"/> -->
-    <!-- <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-all-styles.xml"/> -->
+    <arg value="-v"/>
+    <arg value="--disable-warnings"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-simple.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-elements.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-styles.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-parameters.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign.xml"/>
   </java>
 </target>
 

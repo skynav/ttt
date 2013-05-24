@@ -53,6 +53,16 @@ public class InvalidTestCases {
         performInvalidityTest("ttml10-invalid-bad-lang.xml");
     }
 
+    @Test
+    public void testInvalidNonUniqueId() throws Exception {
+        performInvalidityTest("ttml10-invalid-non-unique-id.xml");
+    }
+
+    @Test
+    public void testInvalidBadIdReferenceUnresolvable() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-id-reference-unresolvable.xml");
+    }
+
     private void performInvalidityTest(String resourceName) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

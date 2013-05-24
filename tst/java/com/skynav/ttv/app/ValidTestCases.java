@@ -35,27 +35,27 @@ import com.skynav.ttv.app.TimedTextValidator;
 public class ValidTestCases {
     @Test
     public void testValidatorSimple() throws Exception {
-        performValidityTest("ttml10-simple.xml");
+        performValidityTest("ttml10-valid-simple.xml");
     }
 
     @Test
     public void testValidatorAllElements() throws Exception {
-        performValidityTest("ttml10-all-elements.xml");
+        performValidityTest("ttml10-valid-all-elements.xml");
     }
 
     @Test
     public void testValidatorAllStyles() throws Exception {
-        performValidityTest("ttml10-all-styles.xml");
+        performValidityTest("ttml10-valid-all-styles.xml");
     }
 
     @Test
     public void testValidatorAllParameters() throws Exception {
-        performValidityTest("ttml10-all-parameters.xml");
+        performValidityTest("ttml10-valid-all-parameters.xml");
     }
 
     @Test
     public void testValidatorForeign() throws Exception {
-        performValidityTest("ttml10-foreign.xml");
+        performValidityTest("ttml10-valid-foreign.xml");
     }
 
     private void performValidityTest(String resourceName) {
