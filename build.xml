@@ -177,6 +177,10 @@
 
 <target name="build" description="Build TTV" depends="build-artifacts"/>
 
+<target name="test-xml" description="Run XML tests">
+  <junit-run testsuite="com.skynav.xml.helpers.HelpersTestSuite" outfile="TEST-xml-helpers"/>
+</target>
+
 <target name="test-ttml10" description="Run TTML10 tests">
   <junit-run testsuite="com.skynav.ttv.ttml10.SchemaTestSuite" outfile="TEST-ttml10-schema"/>
   <junit-run testsuite="com.skynav.ttv.ttml10.ModelTestSuite" outfile="TEST-ttml10-model"/>
@@ -189,7 +193,7 @@
 
 <target name="test-apps" description="Run TTV application tests" depends="test-validator"/>
 
-<target name="test" description="Run all TTV test suites" depends="compile-tests, test-ttml10, test-apps"/>
+<target name="test" description="Run all TTV test suites" depends="compile-tests, test-xml, test-ttml10, test-apps"/>
 
 <target name="clean-classes">
   <delete includeemptydirs="true" quiet="true">
@@ -235,8 +239,8 @@
 <target name="run-validator" description="Run validator with TTML10 input files">
   <java jar="${ttv.target}" fork="true">
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-simple.xml"/>
-    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-all-elements.xml"/>
-    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-all-styles.xml"/>
+    <!-- <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-all-elements.xml"/> -->
+    <!-- <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-all-styles.xml"/> -->
   </java>
 </target>
 

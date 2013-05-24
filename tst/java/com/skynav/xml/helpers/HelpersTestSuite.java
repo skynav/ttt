@@ -23,46 +23,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.app;
+package com.skynav.xml.helpers;
 
-import java.net.URL;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import org.junit.Test;
-import static org.junit.Assert.fail;
-
-import com.skynav.ttv.app.TimedTextValidator;
-
-public class InvalidityTestCase {
-    @Test
-    public void testInvalidRootHtml() throws Exception {
-        performInvalidityTest("ttml10-invalid-root-html.xml");
-    }
-
-    @Test
-    public void testInvalidRootDiv() throws Exception {
-        performInvalidityTest("ttml10-invalid-root-div.xml");
-    }
-
-    @Test
-    public void testInvalidMissingLanguage() throws Exception {
-        performInvalidityTest("ttml10-invalid-missing-lang.xml");
-    }
-
-    @Test
-    public void testInvalidBadLanguage() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-lang.xml");
-    }
-
-    private void performInvalidityTest(String resourceName) {
-        URL url = getClass().getResource(resourceName);
-        if (url == null)
-            fail("Can't find test resource: " + resourceName + ".");
-        String[] args = { url.toString() };
-        int rv = new TimedTextValidator().run(args);
-        if (rv == 0)
-            fail("Unexpected validation success.");
-        else if (rv != 1)
-            fail("Unexpected validation failure code: expected 1, got " + rv + ".");
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+    SnifferTestCase.class
+})
+public class HelpersTestSuite {
 }
 

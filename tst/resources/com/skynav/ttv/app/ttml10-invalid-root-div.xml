@@ -1,2 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - root element must be tt:tt or ttp:profile - use non-foreign element -->
 <div xmlns="http://www.w3.org/ns/ttml"/>

@@ -28,7 +28,6 @@ package com.skynav.ttv.app;
 import java.net.URL;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import com.skynav.ttv.app.TimedTextValidator;
@@ -36,29 +35,39 @@ import com.skynav.ttv.app.TimedTextValidator;
 public class SimpleValidatorTestCase {
     @Test
     public void testValidatorSimple() throws Exception {
-        URL url = getClass().getResource("ttml10-simple.xml");
-        if (url == null)
-            fail("can't find test resource: ttml10-simple.xml");
-        String[] args = { url.toString() };
-        assertEquals(0, new TimedTextValidator().run(args));
+        performValidityTest("ttml10-simple.xml");
     }
 
     @Test
     public void testValidatorAllElements() throws Exception {
-        URL url = getClass().getResource("ttml10-all-elements.xml");
-        if (url == null)
-            fail("can't find test resource: ttml10-all-elements.xml");
-        String[] args = { url.toString() };
-        assertEquals(0, new TimedTextValidator().run(args));
+        performValidityTest("ttml10-all-elements.xml");
     }
 
     @Test
     public void testValidatorAllStyles() throws Exception {
-        URL url = getClass().getResource("ttml10-all-styles.xml");
+        performValidityTest("ttml10-all-styles.xml");
+    }
+
+    @Test
+    public void testValidatorAllParameters() throws Exception {
+        performValidityTest("ttml10-all-parameters.xml");
+    }
+
+    @Test
+    public void testValidatorForeign() throws Exception {
+        performValidityTest("ttml10-foreign.xml");
+    }
+
+    private void performValidityTest(String resourceName) {
+        URL url = getClass().getResource(resourceName);
         if (url == null)
-            fail("can't find test resource: ttml10-all-styles.xml");
+            fail("Can't find test resource: " + resourceName + ".");
         String[] args = { url.toString() };
-        assertEquals(0, new TimedTextValidator().run(args));
+        int rv = new TimedTextValidator().run(args);
+        if (rv == 1)
+            fail("Unexpected validation failure.");
+        else if (rv != 0)
+            fail("Unexpected validation failure code: expected 0, got " + rv + ".");
     }
 }
 

@@ -32,37 +32,33 @@ import static org.junit.Assert.fail;
 
 import com.skynav.ttv.app.TimedTextValidator;
 
-public class InvalidityTestCase {
+public class NonWellFormedTestCase {
     @Test
-    public void testInvalidRootHtml() throws Exception {
-        performInvalidityTest("ttml10-invalid-root-html.xml");
-    }
-
-    @Test
-    public void testInvalidRootDiv() throws Exception {
-        performInvalidityTest("ttml10-invalid-root-div.xml");
-    }
-
-    @Test
-    public void testInvalidMissingLanguage() throws Exception {
-        performInvalidityTest("ttml10-invalid-missing-lang.xml");
-    }
-
-    @Test
-    public void testInvalidBadLanguage() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-lang.xml");
-    }
-
-    private void performInvalidityTest(String resourceName) {
+    public void testNonWellFormedXMLDeclaration() throws Exception {
+        String resourceName = "ttml10-non-well-formed-xml-declaration.xml";
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
         String[] args = { url.toString() };
         int rv = new TimedTextValidator().run(args);
         if (rv == 0)
-            fail("Unexpected validation success.");
+            fail("Unexpected well-formedness success.");
         else if (rv != 1)
-            fail("Unexpected validation failure code: expected 1, got " + rv + ".");
+            fail("Unexpected well-formedness failure code: expected 1, got " + rv + ".");
+    }
+
+    @Test
+    public void testNonWellFormedStartTag() throws Exception {
+        String resourceName = "ttml10-non-well-formed-start-tag.xml";
+        URL url = getClass().getResource(resourceName);
+        if (url == null)
+            fail("Can't find test resource: " + resourceName + ".");
+        String[] args = { url.toString() };
+        int rv = new TimedTextValidator().run(args);
+        if (rv == 0)
+            fail("Unexpected well-formedness success.");
+        else if (rv != 1)
+            fail("Unexpected well-formedness failure code: expected 1, got " + rv + ".");
     }
 }
 

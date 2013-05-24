@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - with foreign elements and attributes (will be pruned) -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:x="http://example.com/ns/x" x:foobar="baz">
+  <x:foo/>
+  <head/>
+  <x:bar>
+    <x:baz/>
+  </x:bar>
+  <body/>
+</tt>
