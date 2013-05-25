@@ -53,9 +53,13 @@ public class ColorValidator implements StyleValueValidator {
         else if (isNamedColor(value, locator, errorReporter))
             return true;
         else {
-            if (!value.equals(value.trim())) {
+            if (value.length() == 0) {
+                errorReporter.logInfo(locator, "Empty color expression not permitted, got '" + value + "'.");
+            } else if (isAllXMLSpace(value)) {
+                errorReporter.logInfo(locator, "Color expression is entirely XML space characters, got '" + value + "'.");
+            } else if (!value.equals(value.trim())) {
                 if (validate(name, value.trim(), locator, new NullErrorReporter()))
-                    errorReporter.logInfo(locator, "Whitespace padding not permitted on color expression, got '" + value + "'.");
+                    errorReporter.logInfo(locator, "XML space padding not permitted on color expression, got '" + value + "'.");
             }
             errorReporter.logError(locator, "Invalid color value '" + value + "'.");
             return false;
@@ -131,11 +135,11 @@ public class ColorValidator implements StyleValueValidator {
                     return false;
                 }
             } catch (NumberFormatException e) {
-                if (containsWhitespace(component)) {
+                if (containsXMLSpace(component)) {
                     String trimmedComponent = component.trim();
                     try {
                         Integer.parseInt(trimmedComponent);
-                        errorReporter.logInfo(locator, "Whitespace padding not permitted in <rgb(...)> or <rgba(...)> color expression component, got '" + component + "'.");
+                        errorReporter.logInfo(locator, "XML space padding not permitted in <rgb(...)> or <rgba(...)> color expression component, got '" + component + "'.");
                     } catch (NumberFormatException ee) {
                         errorReporter.logInfo(locator, "Component in <rgb(...)> or <rgba(...)> color expression is not a number, got '" + component + "'.");
                     }
@@ -187,19 +191,37 @@ public class ColorValidator implements StyleValueValidator {
     }
 
     private static boolean isLetters(String value) {
-        for (int i = 0, n = value.length(); i < n; ++i) {
+        int length = value.length();
+        if (length == 0)
+            return false;
+        for (int i = 0; i < length; ++i) {
             if (!Character.isLetter(value.charAt(i)))
                 return false;
         }
         return true;
     }
 
-    private static boolean containsWhitespace(String value) {
+    private static boolean containsXMLSpace(String value) {
         for (int i = 0, n = value.length(); i < n; ++i) {
-            if (Character.isWhitespace(value.charAt(i)))
+            if (isXMLSpace(value.charAt(i)))
                 return true;
         }
         return false;
+    }
+
+    private static boolean isAllXMLSpace(String value) {
+        int length = value.length();
+        if (length == 0)
+            return false;
+        for (int i = 0; i < length; ++i) {
+            if (!isXMLSpace(value.charAt(i)))
+                return false;
+        }
+        return true;
+    }
+
+    private static boolean isXMLSpace(char c) {
+        return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
     }
 
 }

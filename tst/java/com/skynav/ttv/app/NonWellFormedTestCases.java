@@ -47,7 +47,7 @@ public class NonWellFormedTestCases {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
-        String[] args = { url.toString() };
+        String[] args = { "-q", url.toString() };
         int rv = new TimedTextValidator().run(args);
         if (rv == 0)
             fail("Unexpected well-formedness success.");
