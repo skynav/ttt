@@ -32,28 +32,28 @@ The third phase performs schema validity testing using an XSD (XML Schema Defini
 
 The fourth phase performs additional semantic (and some syntactic) testing on the resource that is beyond what is tested by the previous three phases. For example, some TTML style properties are specified by the TTML schema using the `xs:string` type, which does not test the form of that string to determine compliance with TTML. In this fourth phase, these values are further tested to determine if they comply with TTML syntactic and semantic rules. In addition, a variety of other constraints specified by TTML are tested during this phase.
 
-The following `xs:string` schema typed TTML style properties are tested for syntactic correctness during this fourth phase:
+The following `xs:string` schema typed TTML style properties are tested for syntactic correctness during this fourth phase (those not yet implemented are noted as *TBD*):
 
  * `tts:color`
  * `tts:backgroundColor`
- * `tts:extent`
- * `tts:fontFamily`
- * `tts:fontSize`
- * `tts:lineHeight`
- * `tts:opacity`
- * `tts:origin`
- * `tts:padding`
- * `tts:textOutline`
- * `tts:zIndex`
+ * `tts:extent` - *TBD*
+ * `tts:fontFamily` - *TBD*
+ * `tts:fontSize` - *TBD*
+ * `tts:lineHeight` - *TBD*
+ * `tts:opacity` - *TBD*
+ * `tts:origin` - *TBD*
+ * `tts:padding` - *TBD*
+ * `tts:textOutline` - *TBD*
+ * `tts:zIndex` - *TBD*
 
 In addition, the following TTML attributes' values are similarly tested:
 
- * `begin`
- * `dur`
- * `end`
- * `ttp:cellResolution`
- * `ttp:frameRateMultiplier`
- * `ttp:pixelAspectRatio`
+ * `begin` - *TBD*
+ * `dur` - *TBD*
+ * `end` - *TBD*
+ * `ttp:cellResolution` - *TBD*
+ * `ttp:frameRateMultiplier` - *TBD*
+ * `ttp:pixelAspectRatio` - *TBD*
 
 A number of additional semantic constraints are tested in the fourth phase, which will (in the meausure of time), be summarizeed here.
 
