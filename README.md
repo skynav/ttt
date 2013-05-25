@@ -1,8 +1,8 @@
-# TTV
+# ttv
 
 Timed Text Markup Language (TTML) Validation Tools
 
-The `TTV` tool is used to validate the contents of a [TTML](http://www.w3.org/TR/ttaf1-dfxp/) document represented using XML as a concrete encoding, and where this document is validated against a specific validation *model*.
+The `ttv` tool is used to validate the contents of a [TTML](http://www.w3.org/TR/ttaf1-dfxp/) document represented using XML as a concrete encoding, and where this document is validated against a specific validation *model*.
 
 Validation is performed in four phases in the following order:
 
@@ -15,7 +15,7 @@ If errors occur in some phase, then the following phases are skipped.
 
 The first phase, resource checking, attempts to determine (sniff) the character encoding of the resource. To do this, it uses a combination of a BOM (byte order mark) prefix, if present, and an XML encoding declaration, if present. If neither are present (or discernable), then it treats the result as ASCII. Once the encoding has been sniffed, an attempt is made to decode the entire resource using that encoding. If no encoding can be determined, is determined but not supported (by the platform), is determined but not permitted (by TTML), or if the resource cannot be successfully decoded without error using the encoding, then this phase fails.
 
-The encodings which `TTV` can successfully resolve include:
+The encodings which `ttv` can successfully resolve include:
 
  * `US-ASCII`
  * `UTF-8`
@@ -128,17 +128,17 @@ Usage: java -jar ttv.jar [options] URL*
     URL                      - an absolute or relative URL; if relative, resolved against current working directory
 </pre>
 
-As a convenience, if a URL argument takes a relative form, then `TTV` attempts to resolve it against the current working directory.
+As a convenience, if a URL argument takes a relative form, then `ttv` attempts to resolve it against the current working directory.
 
-Run `TTV` with the `--list-models` option to determine which validation models are supported, and which is the default model.
+Run `ttv` with the `--list-models` option to determine which validation models are supported, and which is the default model.
 
 ## Testing
 
-We use Junit 4 to perform tests on `TTV`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
+We use Junit 4 to perform tests on `ttv`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
 
 A number of test targets are listed above for invocation from `ant`. The `clean-test` target is useful in order to perform a clean build then run all tests.
 
-In addition, the `run-valid-tests` target will use the command line (not Junit) invocation of `TTV` in order to run `TTV` on all valid test files included in the Junit testing process.
+In addition, the `run-valid-tests` target will use the command line (not Junit) invocation of `ttv` in order to run `ttv` on all valid test files included in the Junit testing process.
 
 The following shows the output of running `ant run-valid-tests`:
 
@@ -196,7 +196,7 @@ Total time: 2 seconds
 
 ## Notes
 
- * At present, `TTV` is being developed using the following versions of tools:
+ * At present, `ttv` is being developed using the following versions of tools:
 
 <pre>
     $ java -version
