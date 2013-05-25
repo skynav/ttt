@@ -23,21 +23,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator;
+package com.skynav.ttv.validator.ttml.style;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.validator.StyleValueValidator;
 
-public interface StyleValidator {
+public class ExtentValidator implements StyleValueValidator {
 
-    /**
-     * Validate style properties of content object.
-     * @param content a JAXB content object
-     * @param locator a locator that corresponds to the lexical location of the content object
-     * @param errorReporter handler for error reporting callbacks
-     * @return true if validation succeeds without error
-     */
-    boolean validate(Object content, Locator locator, ErrorReporter errorReporter);
+    @SuppressWarnings("unused")
+    private Model model;
+
+    public void setModel(Model model) {
+        this.model = model;
+    }
+
+    public boolean validate(String name, String value, Locator locator, ErrorReporter errorReporter) {
+        return true;
+    }
 
 }

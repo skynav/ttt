@@ -27,17 +27,25 @@ package com.skynav.ttv.validator;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
 
-public interface StyleValidator {
+public interface StyleValueValidator {
 
     /**
-     * Validate style properties of content object.
-     * @param content a JAXB content object
+     * Bind to model.
+     * @param model the model that governs this validator
+     */
+    void setModel(Model model);
+
+    /**
+     * Validate style property's value.
+     * @param name style name
+     * @param value style value
      * @param locator a locator that corresponds to the lexical location of the content object
      * @param errorReporter handler for error reporting callbacks
      * @return true if validation succeeds without error
      */
-    boolean validate(Object content, Locator locator, ErrorReporter errorReporter);
+    boolean validate(String name, String value, Locator locator, ErrorReporter errorReporter);
 
 }

@@ -27,6 +27,7 @@ package com.skynav.ttv.model;
 
 import java.util.Map;
 
+import com.skynav.ttv.validator.SemanticsValidator;
 import com.skynav.ttv.validator.StyleValidator;
 
 public interface Model {
@@ -66,7 +67,18 @@ public interface Model {
      * class.
      * @return map from content classes to method names
      */
+    @SuppressWarnings("rawtypes")
     Map<Class,String> getRootClasses();
 
-    StyleValidator createStyleValidator();
+    /**
+     * Obtain semantics validator for model.
+     * @return semantics validator instance
+     */
+    SemanticsValidator getSemanticsValidator();
+
+    /**
+     * Obtain style validator for model.
+     * @return style validator instance
+     */
+    StyleValidator getStyleValidator();
 }

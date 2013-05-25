@@ -30,8 +30,13 @@ import org.xml.sax.Locator;
 public interface ErrorReporter {
     public String message(String message);
     public String message(Locator locator, String message);
-    public void logError(Exception e);
     public void logError(String message);
+    public void logError(Locator locator, String message);
+    public void logError(Exception e);
     public void logWarning(String message);
+    public void logWarning(Locator locator, String message);
     public void logInfo(String message);
+    public void logInfo(Locator locator, String message);
+    public void logDebug(String message);
+    public void logDebug(Locator locator, String message);
 }

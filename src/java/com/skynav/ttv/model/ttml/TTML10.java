@@ -28,8 +28,10 @@ package com.skynav.ttv.model.ttml;
 import java.util.Map;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.validator.SemanticsValidator;
 import com.skynav.ttv.validator.StyleValidator;
 
+@SuppressWarnings("rawtypes")
 public class TTML10 {
     public static final Model MODEL = new TTML10Model();
     private static class TTML10Model implements Model {
@@ -42,8 +44,6 @@ public class TTML10 {
         public String getNamespaceUri() {
             return "http://www.w3.org/ns/ttml";
         }
-        private static String[] jaxbContextPathComponents = new String[] {
-        };
         public String getJAXBContextPath() {
             return "com.skynav.ttv.model.ttml10.tt:com.skynav.ttv.model.ttml10.ttm:com.skynav.ttv.model.ttml10.ttp";
         }
@@ -56,9 +56,23 @@ public class TTML10 {
         public Map<Class,String> getRootClasses() {
             return rootClasses;
         }
-
-        public StyleValidator createStyleValidator() {
-            return new com.skynav.ttv.validator.ttml.TTML10StyleValidator();
+        private SemanticsValidator semanticsValidator;
+        public SemanticsValidator getSemanticsValidator() {
+            synchronized (this) {
+                if (semanticsValidator == null) {
+                    semanticsValidator = new com.skynav.ttv.validator.ttml.TTML10SemanticsValidator(this);
+                }
+            }
+            return semanticsValidator;
+        }
+        private StyleValidator styleValidator;
+        public StyleValidator getStyleValidator() {
+            synchronized (this) {
+                if (styleValidator == null) {
+                    styleValidator = new com.skynav.ttv.validator.ttml.TTML10StyleValidator(this);
+                }
+            }
+            return styleValidator;
         }
     }
 }

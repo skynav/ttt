@@ -76,7 +76,7 @@ Using the `build` target will (re)create the `ttv.jar` target under `bld/artifac
 
 `ant clean-build`
 
-Using the `clean-build` target will first clean (delete) previously built classes and artifacts, and then performs a `build`.
+Using the `clean-build` target will first clean (delete) previously built classes and artifacts, and then perform a `build`.
 
 The full set of (public) `ant` targets can be listed by using `ant -p`, which presently outputs the following:
 
@@ -134,7 +134,7 @@ Run `ttv` with the `--list-models` option to determine which validation models a
 
 ## Testing
 
-We use Junit 4 to perform tests on `ttv`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
+Junit 4 is used to perform tests on `ttv`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
 
 A number of test targets are listed above for invocation from `ant`. The `clean-test` target is useful in order to perform a clean build then run all tests.
 
@@ -211,7 +211,7 @@ Total time: 2 seconds
     4.10
 </pre>
 
- * The primary developer (skynavga) is using Mac OSX 10.8.3 on a MBP 15" Retina.
+ * The primary developer (skynavga) is using Mac OSX 10.8.3 on an MBP 15" Retina.
 
  * Work on the first three testing phases is essentially complete as of May 24, 2013; however, the fourth phase remains work in progress, and, as such, users should not rely upon it until this documentation indicates it is (reasonably) complete.
 

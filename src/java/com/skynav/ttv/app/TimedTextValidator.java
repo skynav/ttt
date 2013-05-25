@@ -128,10 +128,6 @@ public class TimedTextValidator implements ErrorReporter {
     @SuppressWarnings("unused")
     private Charset resourceEncoding;
     private ByteBuffer resourceBufferRaw;
-    @SuppressWarnings("unused")
-    private Object resourceRoot;
-    @SuppressWarnings("unused")
-    private Map<Object,Locator> resourceLocators;
     private int resourceErrors;
     private int resourceWarnings;
 
@@ -159,6 +155,11 @@ public class TimedTextValidator implements ErrorReporter {
     public void logError(String message) {
         System.out.println("E:" + message);
         ++this.resourceErrors;
+    }
+
+    @Override
+    public void logError(Locator locator, String message) {
+        logError(message(locator, message));
     }
 
     private Locator  extractLocator(SAXParseException e) {
@@ -200,7 +201,8 @@ public class TimedTextValidator implements ErrorReporter {
         }
     }
 
-    private void logWarning(Locator locator, String message) {
+    @Override
+    public void logWarning(Locator locator, String message) {
         logWarning(message(locator, message));
     }
 
@@ -216,10 +218,21 @@ public class TimedTextValidator implements ErrorReporter {
         }
     }
 
-    private void logDebug(String message) {
+    @Override
+    public void logInfo(Locator locator, String message) {
+        logInfo(message(locator, message));
+    }
+
+    @Override
+    public void logDebug(String message) {
         if (this.debug > 0) {
             System.out.println("T:" + message);
         }
+    }
+
+    @Override
+    public void logDebug(Locator locator, String message) {
+        logDebug(message(locator, message));
     }
 
     private void logDebug(Exception e) {
@@ -618,6 +631,7 @@ public class TimedTextValidator implements ErrorReporter {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private String getContentClassNames(Map<Class,String> contentClasses) {
         StringBuffer sb = new StringBuffer();
         sb.append('{');
@@ -632,19 +646,15 @@ public class TimedTextValidator implements ErrorReporter {
         return sb.toString();
     }
 
-    private boolean checkRootElement(JAXBContext context, Object root, Map<Class,String> rootClasses, Map<Object,Locator> locators) {
-        if (root instanceof JAXBElement) {
-            @SuppressWarnings("rawtypes")
-            JAXBElement e = (JAXBElement) root;
-            Object contentObject = e.getValue();
-            for (Class rootClass : rootClasses.keySet()) {
-                if (rootClass.isInstance(contentObject))
-                    return true;
-            }
-            Locator locator = locators.get(contentObject);
-            logError(message(locator, "Unexpected root element <" + e.getName() + ">," + " expected one of " + getContentClassNames(rootClasses) + "."));
-        } else
-            logError(message("Unexpected root element, can't introspect non-JAXBElement"));
+    @SuppressWarnings("rawtypes")
+    private boolean checkRootElement(JAXBElement root, Map<Class,String> rootClasses, Map<Object,Locator> locators) {
+        Object contentObject = root.getValue();
+        for (Class rootClass : rootClasses.keySet()) {
+            if (rootClass.isInstance(contentObject))
+                return true;
+        }
+        logError(message(locators.get(contentObject),
+            "Unexpected root element <" + root.getName() + ">," + " expected one of " + getContentClassNames(rootClasses) + "."));
         return false;
     }
 
@@ -668,12 +678,16 @@ public class TimedTextValidator implements ErrorReporter {
                 public void afterUnmarshal(Object target, Object parent) {
                 }
             });
-            Object root = u.unmarshal(source);
-            if (root == null)
+            Object unmarshalled = u.unmarshal(source);
+            if (unmarshalled == null)
                 logError(message("Missing root element."));
-            else if (checkRootElement(context, root, this.model.getRootClasses(), locators)) {
-                this.resourceRoot = root;
-                this.resourceLocators = locators;
+            else if (!(unmarshalled instanceof JAXBElement))
+                logError(message("Unexpected root element, can't introspect non-JAXBElement"));
+            else {
+                @SuppressWarnings("rawtypes")
+                JAXBElement root = (JAXBElement) unmarshalled;
+                if (checkRootElement(root, this.model.getRootClasses(), locators))
+                    this.model.getSemanticsValidator().validate(root.getValue(), locators, this);
             }
         } catch (UnmarshalException e) {
             logError(e);

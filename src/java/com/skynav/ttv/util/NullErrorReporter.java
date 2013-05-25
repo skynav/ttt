@@ -23,21 +23,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator;
+package com.skynav.ttv.util;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.util.ErrorReporter;
-
-public interface StyleValidator {
-
-    /**
-     * Validate style properties of content object.
-     * @param content a JAXB content object
-     * @param locator a locator that corresponds to the lexical location of the content object
-     * @param errorReporter handler for error reporting callbacks
-     * @return true if validation succeeds without error
-     */
-    boolean validate(Object content, Locator locator, ErrorReporter errorReporter);
-
+public class NullErrorReporter implements ErrorReporter {
+    public String message(String message) { return message; }
+    public String message(Locator locator, String message) { return message; }
+    public void logError(String message) {}
+    public void logError(Locator locator, String message) {}
+    public void logError(Exception e) {}
+    public void logWarning(String message) {}
+    public void logWarning(Locator locator, String message) {}
+    public void logInfo(String message) {}
+    public void logInfo(Locator locator, String message) {}
+    public void logDebug(String message) {}
+    public void logDebug(Locator locator, String message) {}
 }
