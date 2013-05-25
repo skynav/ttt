@@ -1,8 +1,8 @@
-# ttv
+# TTV
 
 Timed Text Markup Language (TTML) Validation Tools
 
-The `ttv` tool is used to validate the contents of a [TTML](http://www.w3.org/TR/ttaf1-dfxp/) document represented using XML as a concrete encoding.
+The `TTV` tool is used to validate the contents of a [TTML](http://www.w3.org/TR/ttaf1-dfxp/) document represented using XML as a concrete encoding, and where this document is validated against a specific validation *model*.
 
 Validation is performed in four phases in the following order:
 
@@ -15,7 +15,7 @@ If errors occur in some phase, then the following phases are skipped.
 
 The first phase, resource checking, attempts to determine (sniff) the character encoding of the resource. To do this, it uses a combination of a BOM (byte order mark) prefix, if present, and an XML encoding declaration, if present. If neither are present (or discernable), then it treats the result as ASCII. Once the encoding has been sniffed, an attempt is made to decode the entire resource using that encoding. If no encoding can be determined, is determined but not supported (by the platform), is determined but not permitted (by TTML), or if the resource cannot be successfully decoded without error using the encoding, then this phase fails.
 
-The encodings which `ttv` can successfully resolve include:
+The encodings which `TTV` can successfully resolve include:
 
  * `US-ASCII`
  * `UTF-8`
@@ -57,6 +57,15 @@ In addition, the following TTML attributes' values are similarly tested:
 
 A number of additional semantic constraints are tested in the fourth phase, which will (in the meausure of time), be summarizeed here.
 
+A validation *model* includes the following information:
+
+ * a name (exposed via the `--list-models` option)
+ * a schema resource name (path), used to locate the schema (XSD) resource
+ * a namespace URI string, which must match the target namespace of the schema
+ * a JAXB context path, used when creating the JAXB context for unmarshalling
+ * a collection of acceptable root JAXB content classes, used to validate the root element
+ * additional model specific validation tools used during the semantic validation phase
+
 ## Building
 
 In order to build **ttv**, run *ant* with one of the following targets:
@@ -97,89 +106,97 @@ Usage information can be obtained by using:
 
 At present, this will output the following:
 
-    Usage: java -jar ttv.jar [options] URL*
-      Short Options:
-        -d                       - enable debug output (may be specified multiple times to increase debug level)
-        -v                       - enable verbose output (may be specified multiple times to increase verbosity level)
-        -?                       - show usage help
-      Long Options:
-        --debug                  - enable debug output (may be specified multiple times to increase debug level)
-        --debug-exceptions       - enable stack traces on exceptions (implies --debug)
-        --disable-warnings       - disable warnings
-        --help                   - show usage help
-        --list-schemas           - list known schemas
-        --schema NICKNAME        - specify schema nickname (default: ttml10)
-        --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)
-        --treat-warning-as-error - treat warning as error
-      Non-Option Arguments:
-        URL                      - an absolute or relative URL; if relative, resolved against current working directory
+<pre>
+Timed Text Validator (TTV) 0.0.0dev
+Usage: java -jar ttv.jar [options] URL*
+  Short Options:
+    -d                       - see --debug
+    -q                       - see --quiet
+    -v                       - see --verbose
+    -?                       - see --help
+  Long Options:
+    --debug                  - enable debug output (may be specified multiple times to increase debug level)
+    --debug-exceptions       - enable stack traces on exceptions (implies --debug)
+    --disable-warnings       - disable warnings
+    --help                   - show usage help
+    --list-models            - list known models
+    --model NAME             - specify model name (default: ttml10)
+    --quiet                  - don't show banner
+    --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)
+    --treat-warning-as-error - treat warning as error
+  Non-Option Arguments:
+    URL                      - an absolute or relative URL; if relative, resolved against current working directory
+</pre>
 
-Note that the `--list-schema` and `--schema` options are not fully implemented [so hold off on using them].
+As a convenience, if a URL argument takes a relative form, then `TTV` attempts to resolve it against the current working directory.
 
-As a convenience, if a URL argument takes a relative form, then `ttv` attempts to resolve it against the current working directory.
+Run `TTV` with the `--list-models` option to determine which validation models are supported, and which is the default model.
 
 ## Testing
 
-We use Junit 4 to perform tests on `ttv`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
+We use Junit 4 to perform tests on `TTV`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
 
 A number of test targets are listed above for invocation from `ant`. The `clean-test` target is useful in order to perform a clean build then run all tests.
 
-In addition, the `run-valid-tests` target will use the command line (not Junit) invocation of `ttv` in order to run `ttv` on all valid test files included in the Junit testing process.
+In addition, the `run-valid-tests` target will use the command line (not Junit) invocation of `TTV` in order to run `TTV` on all valid test files included in the Junit testing process.
 
 The following shows the output of running `ant run-valid-tests`:
 
-    Buildfile: /Users/glenn/work/ttv/build.xml
-    Trying to override old definition of task javac
+<pre>
+Buildfile: /Users/glenn/work/ttv/build.xml
+Trying to override old definition of task javac
 
-    run-valid-tests:
-         [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-simple.xml}.
-         [java] I:Checking resource presence and encoding...
-         [java] I:Resource encoding sniffed as UTF-8.
-         [java] I:Resource length 148 bytes, decoded as 148 Java characters (char).
-         [java] I:Checking well-formedness...
-         [java] I:Checking validity...
-         [java] I:Checking semantic validity...
-         [java] I:Passed.
-         [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-elements.xml}.
-         [java] I:Checking resource presence and encoding...
-         [java] I:Resource encoding sniffed as US-ASCII.
-         [java] I:Resource length 2333 bytes, decoded as 2333 Java characters (char).
-         [java] I:Checking well-formedness...
-         [java] I:Checking validity...
-         [java] I:Checking semantic validity...
-         [java] I:Passed.
-         [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-styles.xml}.
-         [java] I:Checking resource presence and encoding...
-         [java] I:Resource encoding sniffed as US-ASCII.
-         [java] I:Resource length 17598 bytes, decoded as 17598 Java characters (char).
-         [java] I:Checking well-formedness...
-         [java] I:Checking validity...
-         [java] I:Checking semantic validity...
-         [java] I:Passed.
-         [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-parameters.xml}.
-         [java] I:Checking resource presence and encoding...
-         [java] I:Resource encoding sniffed as US-ASCII.
-         [java] I:Resource length 1138 bytes, decoded as 1138 Java characters (char).
-         [java] I:Checking well-formedness...
-         [java] I:Checking validity...
-         [java] I:Checking semantic validity...
-         [java] I:Passed.
-         [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-foreign.xml}.
-         [java] I:Checking resource presence and encoding...
-         [java] I:Resource encoding sniffed as UTF-8.
-         [java] I:Resource length 281 bytes, decoded as 281 Java characters (char).
-         [java] I:Checking well-formedness...
-         [java] I:Checking validity...
-         [java] I:Checking semantic validity...
-         [java] I:Passed.
-         [java] I:Passed 5 resources.
+run-valid-tests:
+     [java] Timed Text Validator (TTV) 0.0.0dev
+     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-simple.xml}.
+     [java] I:Checking resource presence and encoding...
+     [java] I:Resource encoding sniffed as UTF-8.
+     [java] I:Resource length 148 bytes, decoded as 148 Java characters (char).
+     [java] I:Checking well-formedness...
+     [java] I:Checking validity...
+     [java] I:Checking semantic validity...
+     [java] I:Passed.
+     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-elements.xml}.
+     [java] I:Checking resource presence and encoding...
+     [java] I:Resource encoding sniffed as US-ASCII.
+     [java] I:Resource length 2333 bytes, decoded as 2333 Java characters (char).
+     [java] I:Checking well-formedness...
+     [java] I:Checking validity...
+     [java] I:Checking semantic validity...
+     [java] I:Passed.
+     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-styles.xml}.
+     [java] I:Checking resource presence and encoding...
+     [java] I:Resource encoding sniffed as US-ASCII.
+     [java] I:Resource length 17598 bytes, decoded as 17598 Java characters (char).
+     [java] I:Checking well-formedness...
+     [java] I:Checking validity...
+     [java] I:Checking semantic validity...
+     [java] I:Passed.
+     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-parameters.xml}.
+     [java] I:Checking resource presence and encoding...
+     [java] I:Resource encoding sniffed as US-ASCII.
+     [java] I:Resource length 1138 bytes, decoded as 1138 Java characters (char).
+     [java] I:Checking well-formedness...
+     [java] I:Checking validity...
+     [java] I:Checking semantic validity...
+     [java] I:Passed.
+     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-foreign.xml}.
+     [java] I:Checking resource presence and encoding...
+     [java] I:Resource encoding sniffed as UTF-8.
+     [java] I:Resource length 281 bytes, decoded as 281 Java characters (char).
+     [java] I:Checking well-formedness...
+     [java] I:Checking validity...
+     [java] I:Checking semantic validity...
+     [java] I:Passed.
+     [java] I:Passed 5 resources.
 
-    BUILD SUCCESSFUL
-    Total time: 2 seconds
+BUILD SUCCESSFUL
+Total time: 2 seconds
+</pre>
 
 ## Notes
 
- * At present, `ttv` is being developed using the following versions of tools:
+ * At present, `TTV` is being developed using the following versions of tools:
 
 <pre>
     $ java -version

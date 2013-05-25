@@ -75,52 +75,53 @@ import org.xml.sax.helpers.LocatorImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import com.skynav.xml.helpers.Sniffer;
-import com.skynav.ttv.model.ttml10.tt.TimedText;
-import com.skynav.ttv.model.ttml10.ttp.Profile;
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.Models;
+import com.skynav.ttv.util.ErrorReporter;
 
-public class TimedTextValidator {
+public class TimedTextValidator implements ErrorReporter {
 
-    private static final String defaultSchemaNickname = "ttml10";
+    private static final Model defaultModel = Models.getDefaultModel();
 
-    private static final String defaultSchemaNamespace = "http://www.w3.org/ns/ttml";
+    // banner text
+    private static final String banner = "Timed Text Validator (TTV) " + Version.CURRENT;
 
     // usage text
     private static final String usage =
         "Usage: java -jar ttv.jar [options] URL*\n" +
         "  Short Options:\n" +
-        "    -d                       - enable debug output (may be specified multiple times to increase debug level)\n" +
-        "    -v                       - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
-        "    -?                       - show usage help\n" +
+        "    -d                       - see --debug\n" +
+        "    -q                       - see --quiet\n" +
+        "    -v                       - see --verbose\n" +
+        "    -?                       - see --help\n" +
         "  Long Options:\n" +
         "    --debug                  - enable debug output (may be specified multiple times to increase debug level)\n" +
         "    --debug-exceptions       - enable stack traces on exceptions (implies --debug)\n" +
         "    --disable-warnings       - disable warnings\n" +
         "    --help                   - show usage help\n" +
-        "    --list-schemas           - list known schemas\n" +
-        "    --schema NICKNAME        - specify schema nickname (default: " + defaultSchemaNickname + ")\n" +
+        "    --list-models            - list known models\n" +
+        "    --model NAME             - specify model name (default: " + defaultModel.getName() + ")\n" +
+        "    --quiet                  - don't show banner\n" +
         "    --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
         "    --treat-warning-as-error - treat warning as error\n" +
         "  Non-Option Arguments:\n" +
         "    URL                      - an absolute or relative URL; if relative, resolved against current working directory\n";
 
-    private static final Map<String,String> schemaResourceNames;
-
-    static {
-        schemaResourceNames = new java.util.HashMap<String,String>();
-        schemaResourceNames.put("ttml10", "xsd/ttml10/ttaf1-dfxp.xsd");
-    }
-
     // options state
     private int debug;
     private boolean disableWarnings;
-    private String schemaNickname;
-    private String schemaResourceName;
+    private boolean listModels;
+    private String modelName;
+    private boolean quiet;
     private boolean treatWarningAsError;
     private int verbose;
 
+    // derived option state
+    private Model model;
+
     // global processing state
     private SchemaFactory schemaFactory;
-    private Map<URL,Schema> schemas;
+    private Map<URL,Schema> schemas = new java.util.HashMap<URL,Schema>();
 
     // per-resource processing state
     private URI resourceUri;
@@ -134,11 +135,11 @@ public class TimedTextValidator {
     private int resourceErrors;
     private int resourceWarnings;
 
-    TimedTextValidator() {
-        this.schemas = new java.util.HashMap<URL,Schema>();
+    public TimedTextValidator() {
     }
 
-    private String message(String message) {
+    @Override
+    public String message(String message) {
         if ((message != null) && (message.length() > 0)) {
             if (message.charAt(0) == '{')
                 return message;
@@ -148,12 +149,14 @@ public class TimedTextValidator {
         return "*** Empty Message ***";
     }
 
-    private String message(Locator locator, String message) {
+    @Override
+    public String message(Locator locator, String message) {
         return "{" + locator.getSystemId() + "}:" +
                "[" + locator.getLineNumber() + ":" + locator.getColumnNumber() + "]: " + message;
     }
 
-    private void logError(String message) {
+    @Override
+    public void logError(String message) {
         System.out.println("E:" + message);
         ++this.resourceErrors;
     }
@@ -179,12 +182,14 @@ public class TimedTextValidator {
             return "{" + this.resourceUri + "}: " + e.getMessage();
     }
 
-    private void logError(Exception e) {
+    @Override
+    public void logError(Exception e) {
         logError(extractMessage(e));
         logDebug(e);
     }
 
-    private void logWarning(String message) {
+    @Override
+    public void logWarning(String message) {
         if (!this.disableWarnings) {
             if (this.treatWarningAsError)
                 logError(message);
@@ -204,7 +209,8 @@ public class TimedTextValidator {
         logDebug(e);
     }
 
-    private void logInfo(String message) {
+    @Override
+    public void logInfo(String message) {
         if (this.verbose > 0) {
             System.out.println("I:" + message);
         }
@@ -236,10 +242,14 @@ public class TimedTextValidator {
             this.disableWarnings = true;
         } else if (option.equals("help")) {
             throw new ShowUsageException();
-        } else if (option.equals("schema")) {
+        } else if (option.equals("list-models")) {
+            this.listModels = true;
+        } else if (option.equals("model")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
-            this.schemaNickname = args[++index];
+            this.modelName = args[++index];
+        } else if (option.equals("quiet")) {
+            this.quiet = true;
         } else if (option.equals("treat-warning-as-error")) {
             this.treatWarningAsError = true;
         } else if (option.equals("verbose")) {
@@ -257,6 +267,9 @@ public class TimedTextValidator {
         case 'd':
             this.debug += 1;
             break;
+        case 'q':
+            this.quiet = true;
+            break;
         case 'v':
             this.verbose += 1;
             break;
@@ -269,13 +282,14 @@ public class TimedTextValidator {
     }
 
     private void processDerivedOptions() {
-        if (this.schemaNickname == null)
-            this.schemaNickname = defaultSchemaNickname;
-        String schemaNickname = this.schemaNickname;
-        if (!schemaResourceNames.containsKey(schemaNickname))
-            throw new InvalidOptionUsageException("schema", "unknown schema nickname: " + schemaNickname);
-        else
-            this.schemaResourceName = schemaResourceNames.get(schemaNickname);
+        Model model;
+        if (this.modelName != null) {
+            model = Models.getModel(this.modelName);
+            if (model == null)
+                throw new InvalidOptionUsageException("model", "unknown model: " + modelName);
+        } else
+            model = Models.getDefaultModel();
+        this.model = model;
     }
 
     private List<String> processOptionsAndArgs(List<String> nonOptionArgs) {
@@ -310,6 +324,22 @@ public class TimedTextValidator {
                 nonOptionArgs.add(args[i]);
         }
         return processOptionsAndArgs(nonOptionArgs);
+    }
+
+    private int listModels() {
+        String defaultModelName = Models.getDefaultModel().getName();
+        StringBuffer sb = new StringBuffer();
+        sb.append("Models:\n");
+        for (String modelName : Models.getModelNames()) {
+            sb.append("  ");
+            sb.append(modelName);
+            if (modelName.equals(defaultModelName)) {
+                sb.append(" (default)");
+            }
+            sb.append("\n");
+        }
+        System.out.println(sb.toString());
+        return 0;
     }
 
     private URI getCWDAsURI() {
@@ -535,12 +565,11 @@ public class TimedTextValidator {
     }
 
     private Schema getSchema(String resourceName) throws SchemaValidationErrorException {
-        return getSchema(getClass().getClassLoader().getResource(schemaResourceName));
+        return getSchema(getClass().getClassLoader().getResource(resourceName));
     }
 
     private Schema getSchema() throws SchemaValidationErrorException {
-        assert this.schemaResourceName != null;
-        return getSchema(this.schemaResourceName);
+        return getSchema(this.model.getSchemaResourceName());
     }
 
     private boolean checkSchemaValidity() {
@@ -549,7 +578,7 @@ public class TimedTextValidator {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            XMLReader filter = new ForeignVocabularyFilter(reader, defaultSchemaNamespace, true);
+            XMLReader filter = new ForeignVocabularyFilter(reader, this.model.getNamespaceUri(), true);
             SAXSource source = new SAXSource(filter, new InputSource(openStream(this.resourceBufferRaw)));
             source.setSystemId(this.resourceUri.toString());
             Validator v = getSchema().newValidator();
@@ -579,22 +608,6 @@ public class TimedTextValidator {
         return resourceErrors == 0;
     }
 
-    private static String[] jaxbContextPathComponents = new String[] {
-        "com.skynav.ttv.model.ttml10.tt",
-        "com.skynav.ttv.model.ttml10.ttm",
-        "com.skynav.ttv.model.ttml10.ttp"
-    };
-    
-    private static String getContextPath() {
-        StringBuffer sb = new StringBuffer();
-        for (String component : jaxbContextPathComponents) {
-            if (sb.length() > 0)
-                sb.append(':');
-            sb.append(component);
-        }
-        return sb.toString();
-    }
-
     @SuppressWarnings({"rawtypes","unchecked"})
     private QName getXmlElementDecl(Class jaxbClass, String creatorMethod) {
         try {
@@ -605,28 +618,34 @@ public class TimedTextValidator {
         }
     }
 
-    private boolean checkRootElement(JAXBContext context, Object root, Map<Object,Locator> locators) {
+    private String getContentClassNames(Map<Class,String> contentClasses) {
+        StringBuffer sb = new StringBuffer();
+        sb.append('{');
+        for (Class contentClass : contentClasses.keySet()) {
+            if (sb.length() > 0)
+                sb.append(",");
+            sb.append('<');
+            sb.append(getXmlElementDecl(contentClass, contentClasses.get(contentClass)));
+            sb.append('>');
+        }
+        sb.append('}');
+        return sb.toString();
+    }
+
+    private boolean checkRootElement(JAXBContext context, Object root, Map<Class,String> rootClasses, Map<Object,Locator> locators) {
         if (root instanceof JAXBElement) {
             @SuppressWarnings("rawtypes")
             JAXBElement e = (JAXBElement) root;
-            Object value = e.getValue();
-            if (value instanceof TimedText)
-                return true;
-            else if (value instanceof Profile)
-                return true;
-            else {
-                Locator locator = locators.get(value);
-                logError(message(locator,
-                    "Unexpected root element <" + e.getName() + ">," + " expected " +
-                    "<" + getXmlElementDecl(TimedText.class, "createTt") + ">" + " or " +
-                    "<" + getXmlElementDecl(Profile.class, "createProfile") + ">" +
-                    "."));
-                return false;
+            Object contentObject = e.getValue();
+            for (Class rootClass : rootClasses.keySet()) {
+                if (rootClass.isInstance(contentObject))
+                    return true;
             }
-        } else {
+            Locator locator = locators.get(contentObject);
+            logError(message(locator, "Unexpected root element <" + e.getName() + ">," + " expected one of " + getContentClassNames(rootClasses) + "."));
+        } else
             logError(message("Unexpected root element, can't introspect non-JAXBElement"));
-            return false;
-        }
+        return false;
     }
 
     private boolean checkSemanticValidity() {
@@ -635,10 +654,10 @@ public class TimedTextValidator {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            final ForeignVocabularyFilter filter = new ForeignVocabularyFilter(reader, defaultSchemaNamespace, false);
+            final ForeignVocabularyFilter filter = new ForeignVocabularyFilter(reader, this.model.getNamespaceUri(), false);
             SAXSource source = new SAXSource(filter, new InputSource(openStream(this.resourceBufferRaw)));
             source.setSystemId(this.resourceUri.toString());
-            JAXBContext context = JAXBContext.newInstance(getContextPath());
+            JAXBContext context = JAXBContext.newInstance(this.model.getJAXBContextPath());
             Unmarshaller u = context.createUnmarshaller();
             final Map<Object,Locator> locators = new java.util.HashMap<Object,Locator>();
             u.setListener(new Unmarshaller.Listener() {
@@ -652,7 +671,7 @@ public class TimedTextValidator {
             Object root = u.unmarshal(source);
             if (root == null)
                 logError(message("Missing root element."));
-            else if (checkRootElement(context, root, locators)) {
+            else if (checkRootElement(context, root, this.model.getRootClasses(), locators)) {
                 this.resourceRoot = root;
                 this.resourceLocators = locators;
             }
@@ -711,12 +730,19 @@ public class TimedTextValidator {
 
     public int run(String[] args) {
         try {
-            return validate(parseArgs(args));
+            List<String> nonOptionArgs = parseArgs(args);
+            if (!this.quiet)
+                System.out.println(banner);
+            if (this.listModels)
+                return listModels();
+            else
+                return validate(nonOptionArgs);
         } catch (ShowUsageException e) {
-            System.err.println(usage);
+            System.out.println(banner);
+            System.out.println(usage);
             return 2;
         } catch (UsageException e) {
-            System.err.println("Usage: " + e.getMessage());
+            System.out.println("Usage: " + e.getMessage());
             return 2;
         }
     }
@@ -771,16 +797,16 @@ public class TimedTextValidator {
 
         private static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
 
-        private String ttmlNamespace;
+        private String namespace;
         private boolean warnPrunes;
 
         private Stack<QName> nameStack = new Stack<QName>();
         private boolean inForeign;
         private Locator currentLocator;
 
-        ForeignVocabularyFilter(XMLReader reader, String ttmlNamespace, boolean warnPrunes) {
+        ForeignVocabularyFilter(XMLReader reader, String namespace, boolean warnPrunes) {
             super(reader);
-            this.ttmlNamespace = ttmlNamespace;
+            this.namespace = namespace;
             this.warnPrunes = warnPrunes;
         }
 
@@ -853,7 +879,7 @@ public class TimedTextValidator {
                 return true;
             else if (nsUri.length() == 0)
                 return true;
-            else if (nsUri.indexOf(ttmlNamespace) == 0)
+            else if (nsUri.indexOf(namespace) == 0)
                 return true;
             else if (nsUri.indexOf(xmlNamespace) == 0)
                 return true;
