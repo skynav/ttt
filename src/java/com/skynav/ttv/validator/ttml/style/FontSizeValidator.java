@@ -29,19 +29,28 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.util.NullErrorReporter;
 import com.skynav.ttv.validator.StyleValueValidator;
 
 public class FontSizeValidator implements StyleValueValidator {
 
-    @SuppressWarnings("unused")
-    private Model model;
-
-    public void setModel(Model model) {
-        this.model = model;
-    }
-
-    public boolean validate(String name, String value, Locator locator, ErrorReporter errorReporter) {
-        return true;
+    public boolean validate(Model model, String name, String value, Locator locator, ErrorReporter errorReporter) {
+        if (ValidatorUtilities.isAuto(value, locator, errorReporter))
+            return true;
+        else if (ValidatorUtilities.isLength(value, locator, errorReporter, 1, 2, ValidatorUtilities.NegativeLengthTreatment.ErrorOnNegative))
+            return true;
+        else {
+            if (value.length() == 0) {
+                errorReporter.logInfo(locator, "Empty " + name + " not permitted, got '" + value + "'.");
+            } else if (ValidatorUtilities.isAllXMLSpace(value)) {
+                errorReporter.logInfo(locator, "The value of " + name + " is entirely XML space characters, got '" + value + "'.");
+            } else if (!value.equals(value.trim())) {
+                if (validate(model, name, value.trim(), locator, new NullErrorReporter()))
+                    errorReporter.logInfo(locator, "XML space padding not permitted on " + name + ", got '" + value + "'.");
+            }
+            errorReporter.logError(locator, "Invalid " + name + " value '" + value + "'.");
+            return false;
+        }
     }
 
 }

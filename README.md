@@ -36,13 +36,13 @@ The following `xs:string` schema typed TTML style properties are tested for synt
 
  * `tts:color`
  * `tts:backgroundColor`
- * `tts:extent` - *TBD*
+ * `tts:extent`
  * `tts:fontFamily` - *TBD*
- * `tts:fontSize` - *TBD*
- * `tts:lineHeight` - *TBD*
+ * `tts:fontSize`
+ * `tts:lineHeight`
  * `tts:opacity` - *TBD*
- * `tts:origin` - *TBD*
- * `tts:padding` - *TBD*
+ * `tts:origin`
+ * `tts:padding`
  * `tts:textOutline` - *TBD*
  * `tts:zIndex` - *TBD*
 
@@ -138,7 +138,7 @@ Junit 4 is used to perform tests on `ttv`. You should have previously installed 
 
 A number of test targets are listed above for invocation from `ant`. The `clean-test` target is useful in order to perform a clean build then run all tests.
 
-In addition, the `run-valid-tests` target will use the command line (not Junit) invocation of `ttv` in order to run `ttv` on all valid test files included in the Junit testing process.
+In addition, the `run-valid-tests` target will use the command line (not Junit) invocation path in order to run `ttv` on all valid test files included in the Junit testing process.
 
 The following shows the output of running `ant run-valid-tests`:
 

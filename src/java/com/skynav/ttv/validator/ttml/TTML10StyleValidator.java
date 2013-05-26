@@ -66,6 +66,7 @@ public class TTML10StyleValidator implements StyleValidator {
         { "zIndex",             "getZIndex",            ZIndexValidator.class          },
     };
 
+    private Model model;
     private Map<String, String> accessors;
     private Map<String, StyleValueValidator> validators;
 
@@ -79,7 +80,7 @@ public class TTML10StyleValidator implements StyleValidator {
             String value = getStyleValue(content, name, accessors.get(name));
             if (value != null) {
                 StyleValueValidator svv = validators.get(name);
-                if (!svv.validate(name, value, locator, errorReporter))
+                if (!svv.validate(model, name, value, locator, errorReporter))
                     failed = true;
             }
         }
@@ -90,7 +91,6 @@ public class TTML10StyleValidator implements StyleValidator {
     private StyleValueValidator createStyleValueValidator(Class validatorClass, Model model) {
         try {
             StyleValueValidator svv = (StyleValueValidator) validatorClass.newInstance();
-            svv.setModel(model);
             return svv;
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
@@ -111,6 +111,7 @@ public class TTML10StyleValidator implements StyleValidator {
             accessors.put(styleName, accessor);
             validators.put(styleName, createStyleValueValidator(validatorClass, model));
         }
+        this.model = model;
         this.accessors = accessors;
         this.validators = validators;
     }

@@ -33,19 +33,14 @@ import com.skynav.ttv.util.ErrorReporter;
 public interface StyleValueValidator {
 
     /**
-     * Bind to model.
-     * @param model the model that governs this validator
-     */
-    void setModel(Model model);
-
-    /**
      * Validate style property's value.
+     * @param model the model that governs this validator
      * @param name style name
      * @param value style value
      * @param locator a locator that corresponds to the lexical location of the content object
      * @param errorReporter handler for error reporting callbacks
      * @return true if validation succeeds without error
      */
-    boolean validate(String name, String value, Locator locator, ErrorReporter errorReporter);
+    boolean validate(Model model, String name, String value, Locator locator, ErrorReporter errorReporter);
 
 }

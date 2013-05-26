@@ -33,14 +33,7 @@ import com.skynav.ttv.validator.StyleValueValidator;
 
 public class FontFamilyValidator implements StyleValueValidator {
 
-    @SuppressWarnings("unused")
-    private Model model;
-
-    public void setModel(Model model) {
-        this.model = model;
-    }
-
-    public boolean validate(String name, String value, Locator locator, ErrorReporter errorReporter) {
+    public boolean validate(Model model, String name, String value, Locator locator, ErrorReporter errorReporter) {
         return true;
     }
 
