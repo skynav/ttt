@@ -36,11 +36,11 @@ public interface StyleValueValidator {
      * Validate style property's value.
      * @param model the model that governs this validator
      * @param name style name
-     * @param value style value
+     * @param valueObject style value
      * @param locator a locator that corresponds to the lexical location of the content object
      * @param errorReporter handler for error reporting callbacks
      * @return true if validation succeeds without error
      */
-    boolean validate(Model model, String name, String value, Locator locator, ErrorReporter errorReporter);
+    boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter);
 
 }

@@ -31,7 +31,6 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.validator.SemanticsValidator;
 import com.skynav.ttv.validator.StyleValidator;
 
-@SuppressWarnings("rawtypes")
 public class TTML10 {
     public static final Model MODEL = new TTML10Model();
     private static class TTML10Model implements Model {
@@ -47,13 +46,13 @@ public class TTML10 {
         public String getJAXBContextPath() {
             return "com.skynav.ttv.model.ttml10.tt:com.skynav.ttv.model.ttml10.ttm:com.skynav.ttv.model.ttml10.ttp";
         }
-        private static final Map<Class,String> rootClasses;
+        private static final Map<Class<?>,String> rootClasses;
         static {
-            rootClasses = new java.util.HashMap<Class,String>();
+            rootClasses = new java.util.HashMap<Class<?>,String>();
             rootClasses.put(com.skynav.ttv.model.ttml10.tt.TimedText.class, "createTt");
             rootClasses.put(com.skynav.ttv.model.ttml10.ttp.Profile.class, "createProfile");
         }
-        public Map<Class,String> getRootClasses() {
+        public Map<Class<?>,String> getRootClasses() {
             return rootClasses;
         }
         private SemanticsValidator semanticsValidator;

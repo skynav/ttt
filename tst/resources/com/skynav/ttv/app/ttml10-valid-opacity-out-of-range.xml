@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:opacity - out of range values - should produce 5 warnings -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <head/>
+  <body>
+    <div tts:opacity="NaN"/>
+    <div tts:opacity="-INF"/>
+    <div tts:opacity="-.0000001"/>
+    <div tts:opacity="1.0000001"/>
+    <div tts:opacity="INF"/>
+  </body>
+</tt>

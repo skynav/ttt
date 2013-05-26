@@ -40,7 +40,7 @@ The following `xs:string` schema typed TTML style properties are tested for synt
  * `tts:fontFamily` - *TBD*
  * `tts:fontSize`
  * `tts:lineHeight`
- * `tts:opacity` - *TBD*
+ * `tts:opacity`
  * `tts:origin`
  * `tts:padding`
  * `tts:textOutline` - *TBD*
@@ -59,7 +59,7 @@ A number of additional semantic constraints are tested in the fourth phase, whic
 
 A validation *model* includes the following information:
 
- * a name (exposed via the `--list-models` option)
+ * a name (exposed via the `--show-models` option)
  * a schema resource name (path), used to locate the schema (XSD) resource
  * a namespace URI string, which must match the target namespace of the schema
  * a JAXB context path, used when creating the JAXB context for unmarshalling
@@ -107,7 +107,7 @@ Usage information can be obtained by using:
 At present, this will output the following:
 
 <pre>
-Timed Text Validator (TTV) 0.0.0dev
+Timed Text Validator (TTV) [0.0.0dev] Copyright 2013 Skynav, Inc.
 Usage: java -jar ttv.jar [options] URL*
   Short Options:
     -d                       - see --debug
@@ -117,20 +117,22 @@ Usage: java -jar ttv.jar [options] URL*
   Long Options:
     --debug                  - enable debug output (may be specified multiple times to increase debug level)
     --debug-exceptions       - enable stack traces on exceptions (implies --debug)
-    --disable-warnings       - disable warnings
+    --disable-warnings       - disable warnings (both hide and don't count warnings)
     --help                   - show usage help
-    --list-models            - list known models
+    --hide-warnings          - hide warnings (but count them)
     --model NAME             - specify model name (default: ttml10)
     --quiet                  - don't show banner
+    --show-models            - show built-in validation models (use with --verbose to show more details)
+    --show-repository        - show source code repository information
     --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)
-    --treat-warning-as-error - treat warning as error
+    --treat-warning-as-error - treat warning as error (overrides --disable-warnings)
   Non-Option Arguments:
     URL                      - an absolute or relative URL; if relative, resolved against current working directory
 </pre>
 
 As a convenience, if a URL argument takes a relative form, then `ttv` attempts to resolve it against the current working directory.
 
-Run `ttv` with the `--list-models` option to determine which validation models are supported, and which is the default model.
+Run `ttv` with the `--show-models` option to determine which validation models are supported, and which is the default model.
 
 ## Testing
 
@@ -147,48 +149,57 @@ Buildfile: /Users/glenn/work/ttv/build.xml
 Trying to override old definition of task javac
 
 run-valid-tests:
-     [java] Timed Text Validator (TTV) 0.0.0dev
-     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-simple.xml}.
-     [java] I:Checking resource presence and encoding...
-     [java] I:Resource encoding sniffed as UTF-8.
-     [java] I:Resource length 148 bytes, decoded as 148 Java characters (char).
-     [java] I:Checking well-formedness...
-     [java] I:Checking validity...
-     [java] I:Checking semantic validity...
-     [java] I:Passed.
-     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-elements.xml}.
-     [java] I:Checking resource presence and encoding...
-     [java] I:Resource encoding sniffed as US-ASCII.
-     [java] I:Resource length 2333 bytes, decoded as 2333 Java characters (char).
-     [java] I:Checking well-formedness...
-     [java] I:Checking validity...
-     [java] I:Checking semantic validity...
-     [java] I:Passed.
-     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-styles.xml}.
-     [java] I:Checking resource presence and encoding...
-     [java] I:Resource encoding sniffed as US-ASCII.
-     [java] I:Resource length 17598 bytes, decoded as 17598 Java characters (char).
-     [java] I:Checking well-formedness...
-     [java] I:Checking validity...
-     [java] I:Checking semantic validity...
-     [java] I:Passed.
-     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-parameters.xml}.
-     [java] I:Checking resource presence and encoding...
-     [java] I:Resource encoding sniffed as US-ASCII.
-     [java] I:Resource length 1138 bytes, decoded as 1138 Java characters (char).
-     [java] I:Checking well-formedness...
-     [java] I:Checking validity...
-     [java] I:Checking semantic validity...
-     [java] I:Passed.
-     [java] I:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-foreign.xml}.
-     [java] I:Checking resource presence and encoding...
-     [java] I:Resource encoding sniffed as UTF-8.
-     [java] I:Resource length 281 bytes, decoded as 281 Java characters (char).
-     [java] I:Checking well-formedness...
-     [java] I:Checking validity...
-     [java] I:Checking semantic validity...
-     [java] I:Passed.
-     [java] I:Passed 5 resources.
+     [java] Timed Text Validator (TTV) [0.0.0dev] Copyright 2013 Skynav, Inc.
+     [java] [I]:Warnings are hidden.
+     [java] [I]:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-simple.xml}.
+     [java] [I]:Checking resource presence and encoding...
+     [java] [I]:Resource encoding sniffed as UTF-8.
+     [java] [I]:Resource length 148 bytes, decoded as 148 Java characters (char).
+     [java] [I]:Checking well-formedness...
+     [java] [I]:Checking validity...
+     [java] [I]:Checking semantics validity...
+     [java] [I]:Passed.
+     [java] [I]:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-elements.xml}.
+     [java] [I]:Checking resource presence and encoding...
+     [java] [I]:Resource encoding sniffed as US-ASCII.
+     [java] [I]:Resource length 2333 bytes, decoded as 2333 Java characters (char).
+     [java] [I]:Checking well-formedness...
+     [java] [I]:Checking validity...
+     [java] [I]:Checking semantics validity...
+     [java] [I]:Passed.
+     [java] [I]:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-styles.xml}.
+     [java] [I]:Checking resource presence and encoding...
+     [java] [I]:Resource encoding sniffed as US-ASCII.
+     [java] [I]:Resource length 17769 bytes, decoded as 17769 Java characters (char).
+     [java] [I]:Checking well-formedness...
+     [java] [I]:Checking validity...
+     [java] [I]:Checking semantics validity...
+     [java] [I]:Passed.
+     [java] [I]:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-parameters.xml}.
+     [java] [I]:Checking resource presence and encoding...
+     [java] [I]:Resource encoding sniffed as US-ASCII.
+     [java] [I]:Resource length 1138 bytes, decoded as 1138 Java characters (char).
+     [java] [I]:Checking well-formedness...
+     [java] [I]:Checking validity...
+     [java] [I]:Checking semantics validity...
+     [java] [I]:Passed.
+     [java] [I]:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-foreign.xml}.
+     [java] [I]:Checking resource presence and encoding...
+     [java] [I]:Resource encoding sniffed as UTF-8.
+     [java] [I]:Resource length 281 bytes, decoded as 281 Java characters (char).
+     [java] [I]:Checking well-formedness...
+     [java] [I]:Checking validity...
+     [java] [I]:Checking semantics validity...
+     [java] [I]:Passed, with 4 warnings.
+     [java] [I]:Validating {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-opacity-out-of-range.xml}.
+     [java] [I]:Checking resource presence and encoding...
+     [java] [I]:Resource encoding sniffed as UTF-8.
+     [java] [I]:Resource length 408 bytes, decoded as 408 Java characters (char).
+     [java] [I]:Checking well-formedness...
+     [java] [I]:Checking validity...
+     [java] [I]:Checking semantics validity...
+     [java] [I]:Passed, with 5 warnings.
+     [java] [I]:Passed 6 resources.
 
 BUILD SUCCESSFUL
 Total time: 2 seconds

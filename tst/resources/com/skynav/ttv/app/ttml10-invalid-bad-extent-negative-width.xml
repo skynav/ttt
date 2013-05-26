@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- valid - tts:extent value - negative -->
+<!-- invalid - tts:extent value - negative width -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
   <head/>
   <body tts:extent="-100.1px 200.0px"/>

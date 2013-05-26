@@ -51,24 +51,27 @@ import com.skynav.ttv.validator.ttml.style.ZIndexValidator;
 
 public class TTML10StyleValidator implements StyleValidator {
 
-    private static Object[][] styleMap = new Object[][] {
+    public static final String getStyleNamespaceUri() {
+        return "http://www.w3.org/ns/ttml#styling";
+    }
+
+    private static Object[][] styleAccessorMap = new Object[][] {
         // property name         accessor method        specialized validator
-        { "backgroundColor",    "getBackgroundColor",   ColorValidator.class           },
-        { "color",              "getColor",             ColorValidator.class           },
-        { "extent",             "getExtent",            ExtentValidator.class          },
-        { "fontFamily",         "getFontFamily",        FontFamilyValidator.class      },
-        { "fontSize",           "getFontSize",          FontSizeValidator.class        },
-        { "lineHeight",         "getLineHeight",        LineHeightValidator.class      },
-        { "opacity",            "getOpacity",           OpacityValidator.class         },
-        { "origin",             "getOrigin",            OriginValidator.class          },
-        { "padding",            "getPadding",           PaddingValidator.class         },
-        { "textOutline",        "getTextOutline",       TextOutlineValidator.class     },
-        { "zIndex",             "getZIndex",            ZIndexValidator.class          },
+        { "backgroundColor",    "getBackgroundColor",   String.class,   ColorValidator.class            },
+        { "color",              "getColor",             String.class,   ColorValidator.class            },
+        { "extent",             "getExtent",            String.class,   ExtentValidator.class           },
+        { "fontFamily",         "getFontFamily",        String.class,   FontFamilyValidator.class       },
+        { "fontSize",           "getFontSize",          String.class,   FontSizeValidator.class         },
+        { "lineHeight",         "getLineHeight",        String.class,   LineHeightValidator.class       },
+        { "opacity",            "getOpacity",           Float.class,    OpacityValidator.class          },
+        { "origin",             "getOrigin",            String.class,   OriginValidator.class           },
+        { "padding",            "getPadding",           String.class,   PaddingValidator.class          },
+        { "textOutline",        "getTextOutline",       String.class,   TextOutlineValidator.class      },
+        { "zIndex",             "getZIndex",            String.class,   ZIndexValidator.class           },
     };
 
     private Model model;
-    private Map<String, String> accessors;
-    private Map<String, StyleValueValidator> validators;
+    private Map<String, StyleAccessor> accessors;
 
     public TTML10StyleValidator(Model model) {
         populate(model);
@@ -77,75 +80,111 @@ public class TTML10StyleValidator implements StyleValidator {
     public boolean validate(Object content, Locator locator, ErrorReporter errorReporter) {
         boolean failed = false;
         for (String name : accessors.keySet()) {
-            String value = getStyleValue(content, name, accessors.get(name));
-            if (value != null) {
-                StyleValueValidator svv = validators.get(name);
-                if (!svv.validate(model, name, value, locator, errorReporter))
-                    failed = true;
-            }
+            StyleAccessor sa = accessors.get(name);
+            if (!sa.validate(model, content, locator, errorReporter))
+                failed = true;
         }
         return !failed;
     }
 
-    @SuppressWarnings("rawtypes")
-    private StyleValueValidator createStyleValueValidator(Class validatorClass, Model model) {
-        try {
-            StyleValueValidator svv = (StyleValueValidator) validatorClass.newInstance();
-            return svv;
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void populate(Model model) {
-        Map<String, String> accessors = new java.util.HashMap<String, String>();
-        Map<String, StyleValueValidator> validators = new java.util.HashMap<String, StyleValueValidator>();
-        for (Object[] styleMapEntry : styleMap) {
-            assert styleMapEntry.length >= 3;
-            String styleName = (String) styleMapEntry[0];
-            String accessor = (String) styleMapEntry[1];
-            @SuppressWarnings("rawtypes")
-            Class validatorClass = (Class) styleMapEntry[2];
-            accessors.put(styleName, accessor);
-            validators.put(styleName, createStyleValueValidator(validatorClass, model));
+        Map<String, StyleAccessor> accessors = new java.util.HashMap<String, StyleAccessor>();
+        for (Object[] styleAccessorEntry : styleAccessorMap) {
+            assert styleAccessorEntry.length >= 4;
+            String styleName = (String) styleAccessorEntry[0];
+            String accessorName = (String) styleAccessorEntry[1];
+            Class<?> valueClass = (Class<?>) styleAccessorEntry[2];
+            Class<?> validatorClass = (Class<?>) styleAccessorEntry[3];
+            accessors.put(styleName, new StyleAccessor(styleName, accessorName, valueClass, validatorClass));
         }
         this.model = model;
         this.accessors = accessors;
-        this.validators = validators;
     }
 
-    private String getStyleValue(Object content, String name, String accessor) {
-        try {
-            @SuppressWarnings("rawtypes")
-            Class contentClass = content.getClass();
-            @SuppressWarnings("unchecked")
-            Method m = contentClass.getMethod(accessor, new Class[]{});
-            return (String) m.invoke(content, new Object[]{});
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            if (content instanceof TimedText)
-                return getStyleValue((TimedText) content, name);
-            else
-                throw new RuntimeException(e);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
+    private static class StyleAccessor {
+
+        private String styleName;
+        private String accessorName;
+        private Class<?> valueClass;
+        private StyleValueValidator validator;
+
+        public StyleAccessor(String styleName, String accessorName, Class<?> valueClass, Class<?> validatorClass) {
+            populate(styleName, accessorName, valueClass, validatorClass);
         }
-    }
 
-    private String getStyleValue(TimedText content, String name) {
-        QName qn = new QName(getStyleNamespaceUri(), name);
-        return content.getOtherAttributes().get(qn);
-    }
+        public boolean validate(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
+            Object value = getStyleValue(content);
+            if (value != null)
+                return validator.validate(model, styleName, value, locator, errorReporter);
+            else
+                return true;
+        }
 
-    private static final String getStyleNamespaceUri() {
-        return "http://www.w3.org/ns/ttml#styling";
+        private StyleValueValidator createStyleValueValidator(Class<?> validatorClass) {
+            try {
+                return (StyleValueValidator) validatorClass.newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private void populate(String styleName, String accessorName, Class<?> valueClass, Class<?> validatorClass) {
+            this.styleName = styleName;
+            this.accessorName = accessorName;
+            this.valueClass = valueClass;
+            this.validator = createStyleValueValidator(validatorClass);
+        }
+
+        private Object getStyleValue(Object content) {
+            try {
+                Class<?> contentClass = content.getClass();
+                Method m = contentClass.getMethod(accessorName, new Class<?>[]{});
+                return convertType(m.invoke(content, new Object[]{}), valueClass);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                if (content instanceof TimedText)
+                    return convertType(getStyleValueAsString((TimedText) content), valueClass);
+                else
+                    throw new RuntimeException(e);
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private String getStyleValueAsString(TimedText content) {
+            return content.getOtherAttributes().get(new QName(getStyleNamespaceUri(), styleName));
+        }
+
+        private Object convertType(Object value, Class<?> targetClass) {
+            if (value == null)
+                return null;
+            else if (value.getClass() == targetClass)
+                return value;
+            else if (value.getClass() == String.class) {
+                if (targetClass == Float.class) {
+                    try {
+                        return Float.valueOf((String) value);
+                    } catch (NumberFormatException e) {
+                        return null;
+                    }
+                } else
+                    return null;
+            } else if (value.getClass() == Float.class) {
+                if (targetClass == String.class)
+                    return ((Float) value).toString();
+                else
+                    return null;
+            } else
+                return null;
+        }
+
     }
 
 }

@@ -34,7 +34,8 @@ import com.skynav.ttv.validator.StyleValueValidator;
 
 public class ColorValidator implements StyleValueValidator {
 
-    public boolean validate(Model model, String name, String value, Locator locator, ErrorReporter errorReporter) {
+    public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        String value = (String) valueObject;
         if (ValidatorUtilities.isColor(value, locator, errorReporter))
             return true;
         else {

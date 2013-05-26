@@ -59,8 +59,8 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidatorNegativeExtent() throws Exception {
-        performValidityTest("ttml10-valid-negative-extent.xml");
+    public void testValidatorOpacityOutOfRange() throws Exception {
+        performValidityTest("ttml10-valid-opacity-out-of-range.xml");
     }
 
     private void performValidityTest(String resourceName) {

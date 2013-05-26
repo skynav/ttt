@@ -67,8 +67,7 @@ public interface Model {
      * class.
      * @return map from content classes to method names
      */
-    @SuppressWarnings("rawtypes")
-    Map<Class,String> getRootClasses();
+    Map<Class<?>,String> getRootClasses();
 
     /**
      * Obtain semantics validator for model.

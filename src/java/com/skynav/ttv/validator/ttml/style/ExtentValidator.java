@@ -34,10 +34,11 @@ import com.skynav.ttv.validator.StyleValueValidator;
 
 public class ExtentValidator implements StyleValueValidator {
 
-    public boolean validate(Model model, String name, String value, Locator locator, ErrorReporter errorReporter) {
+    public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        String value = (String) valueObject;
         if (ValidatorUtilities.isAuto(value, locator, errorReporter))
             return true;
-        else if (ValidatorUtilities.isLength(value, locator, errorReporter, 2, 2, ValidatorUtilities.NegativeLengthTreatment.WarnOnNegative))
+        else if (ValidatorUtilities.isLength(value, locator, errorReporter, 2, 2, ValidatorUtilities.NegativeLengthTreatment.ErrorOnNegative))
             return true;
         else {
             if (value.length() == 0) {

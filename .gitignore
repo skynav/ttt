@@ -2,9 +2,8 @@
 bld
 
 # ignore eclipse
-.project
-.settings
-.eclipse
+.eclipse/.metadata
+.eclipse/ttv/bin
 
 # ignore common detritus
 .DS_Store

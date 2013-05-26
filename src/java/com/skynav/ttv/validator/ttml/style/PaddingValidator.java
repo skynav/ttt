@@ -34,7 +34,8 @@ import com.skynav.ttv.validator.StyleValueValidator;
 
 public class PaddingValidator implements StyleValueValidator {
 
-    public boolean validate(Model model, String name, String value, Locator locator, ErrorReporter errorReporter) {
+    public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        String value = (String) valueObject;
         if (ValidatorUtilities.isLength(value, locator, errorReporter, 1, 4, ValidatorUtilities.NegativeLengthTreatment.ErrorOnNegative))
             return true;
         else {

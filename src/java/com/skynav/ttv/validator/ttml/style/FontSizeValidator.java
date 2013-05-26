@@ -34,7 +34,8 @@ import com.skynav.ttv.validator.StyleValueValidator;
 
 public class FontSizeValidator implements StyleValueValidator {
 
-    public boolean validate(Model model, String name, String value, Locator locator, ErrorReporter errorReporter) {
+    public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        String value = (String) valueObject;
         if (ValidatorUtilities.isAuto(value, locator, errorReporter))
             return true;
         else if (ValidatorUtilities.isLength(value, locator, errorReporter, 1, 2, ValidatorUtilities.NegativeLengthTreatment.ErrorOnNegative))

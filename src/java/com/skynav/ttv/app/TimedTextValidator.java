@@ -84,7 +84,7 @@ public class TimedTextValidator implements ErrorReporter {
     private static final Model defaultModel = Models.getDefaultModel();
 
     // banner text
-    private static final String banner = "Timed Text Validator (TTV) " + Version.CURRENT;
+    private static final String banner = "Timed Text Validator (TTV) [" + Version.CURRENT + "] Copyright 2013 Skynav, Inc.";
 
     // usage text
     private static final String usage =
@@ -97,22 +97,30 @@ public class TimedTextValidator implements ErrorReporter {
         "  Long Options:\n" +
         "    --debug                  - enable debug output (may be specified multiple times to increase debug level)\n" +
         "    --debug-exceptions       - enable stack traces on exceptions (implies --debug)\n" +
-        "    --disable-warnings       - disable warnings\n" +
+        "    --disable-warnings       - disable warnings (both hide and don't count warnings)\n" +
         "    --help                   - show usage help\n" +
-        "    --list-models            - list known models\n" +
+        "    --hide-warnings          - hide warnings (but count them)\n" +
         "    --model NAME             - specify model name (default: " + defaultModel.getName() + ")\n" +
         "    --quiet                  - don't show banner\n" +
+        "    --show-models            - show built-in validation models (use with --verbose to show more details)\n" +
+        "    --show-repository        - show source code repository information\n" +
         "    --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
-        "    --treat-warning-as-error - treat warning as error\n" +
+        "    --treat-warning-as-error - treat warning as error (overrides --disable-warnings)\n" +
         "  Non-Option Arguments:\n" +
         "    URL                      - an absolute or relative URL; if relative, resolved against current working directory\n";
+
+    // usage text
+    private static final String repositoryInfo =
+        "Source Repository: https://github.com/skynav/ttv";
 
     // options state
     private int debug;
     private boolean disableWarnings;
-    private boolean listModels;
+    private boolean hideWarnings;
     private String modelName;
     private boolean quiet;
+    private boolean showModels;
+    private boolean showRepository;
     private boolean treatWarningAsError;
     private int verbose;
 
@@ -125,8 +133,6 @@ public class TimedTextValidator implements ErrorReporter {
 
     // per-resource processing state
     private URI resourceUri;
-    @SuppressWarnings("unused")
-    private Charset resourceEncoding;
     private ByteBuffer resourceBufferRaw;
     private int resourceErrors;
     private int resourceWarnings;
@@ -153,7 +159,7 @@ public class TimedTextValidator implements ErrorReporter {
 
     @Override
     public void logError(String message) {
-        System.out.println("E:" + message);
+        System.out.println("[E]:" + message);
         ++this.resourceErrors;
     }
 
@@ -191,13 +197,12 @@ public class TimedTextValidator implements ErrorReporter {
 
     @Override
     public void logWarning(String message) {
-        if (!this.disableWarnings) {
-            if (this.treatWarningAsError)
-                logError(message);
-            else {
-                System.out.println("W:" + message);
-                ++this.resourceWarnings;
-            }
+        if (this.treatWarningAsError)
+            logError(message);
+        else if (!this.disableWarnings) {
+            if (!this.hideWarnings)
+                System.out.println("[W]:" + message);
+            ++this.resourceWarnings;
         }
     }
 
@@ -214,7 +219,7 @@ public class TimedTextValidator implements ErrorReporter {
     @Override
     public void logInfo(String message) {
         if (this.verbose > 0) {
-            System.out.println("I:" + message);
+            System.out.println("[I]:" + message);
         }
     }
 
@@ -248,21 +253,29 @@ public class TimedTextValidator implements ErrorReporter {
         assert option.length() > 2;
         option = option.substring(2);
         if (option.equals("debug")) {
-            this.debug += 1;
+            if (this.debug < 1)
+                this.debug = 1;
+            else
+                this.debug += 1;
         } else if (option.equals("debug-exceptions")) {
-            this.debug += 2;
+            if (this.debug < 2)
+                this.debug = 2;
         } else if (option.equals("disable-warnings")) {
             this.disableWarnings = true;
         } else if (option.equals("help")) {
             throw new ShowUsageException();
-        } else if (option.equals("list-models")) {
-            this.listModels = true;
+        } else if (option.equals("hide-warnings")) {
+            this.hideWarnings = true;
         } else if (option.equals("model")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             this.modelName = args[++index];
         } else if (option.equals("quiet")) {
             this.quiet = true;
+        } else if (option.equals("show-models")) {
+            this.showModels = true;
+        } else if (option.equals("show-repository")) {
+            this.showRepository = true;
         } else if (option.equals("treat-warning-as-error")) {
             this.treatWarningAsError = true;
         } else if (option.equals("verbose")) {
@@ -339,20 +352,48 @@ public class TimedTextValidator implements ErrorReporter {
         return processOptionsAndArgs(nonOptionArgs);
     }
 
-    private int listModels() {
+    private void showBanner() {
+        if (!this.quiet)
+            System.out.println(banner);
+    }
+
+    private void showProcessingInfo() {
+        if (this.verbose >  0) {
+            if (this.treatWarningAsError)
+                logInfo("Warnings are treated as errors.");
+            else if (this.disableWarnings)
+                logInfo("Warnings are disabled.");
+            else if (this.hideWarnings)
+                logInfo("Warnings are hidden.");
+        }
+    }
+
+    private void showModels() {
         String defaultModelName = Models.getDefaultModel().getName();
         StringBuffer sb = new StringBuffer();
-        sb.append("Models:\n");
+        sb.append("Validation Models:\n");
         for (String modelName : Models.getModelNames()) {
             sb.append("  ");
             sb.append(modelName);
             if (modelName.equals(defaultModelName)) {
                 sb.append(" (default)");
             }
-            sb.append("\n");
+            sb.append('\n');
+            if (this.verbose > 0) {
+                Model model = Models.getModel(modelName);
+                String schemaResourceName = model.getSchemaResourceName();
+                if (schemaResourceName != null) {
+                    sb.append("    XSD: ");
+                    sb.append(schemaResourceName);
+                    sb.append('\n');
+                }
+            }
         }
         System.out.println(sb.toString());
-        return 0;
+    }
+
+    private void showRepository() {
+        System.out.println(repositoryInfo);
     }
 
     private URI getCWDAsURI() {
@@ -466,7 +507,6 @@ public class TimedTextValidator implements ErrorReporter {
 
     private void setResource(URI uri, Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
         this.resourceUri = uri;
-        this.resourceEncoding = charset;
         this.resourceBufferRaw = bufferRaw;
         this.resourceErrors = 0;
         this.resourceWarnings = 0;
@@ -621,21 +661,19 @@ public class TimedTextValidator implements ErrorReporter {
         return resourceErrors == 0;
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
-    private QName getXmlElementDecl(Class jaxbClass, String creatorMethod) {
+    private QName getXmlElementDecl(Class<?> jaxbClass, String creatorMethod) {
         try {
-            Class ofc = jaxbClass.getClassLoader().loadClass(jaxbClass.getPackage().getName() + ".ObjectFactory");
-            return ((JAXBElement) ofc.getDeclaredMethod(creatorMethod, jaxbClass).invoke(ofc.newInstance(), new Object[] { null } )).getName();
+            Class<?> ofc = jaxbClass.getClassLoader().loadClass(jaxbClass.getPackage().getName() + ".ObjectFactory");
+            return ((JAXBElement<?>) ofc.getDeclaredMethod(creatorMethod, jaxbClass).invoke(ofc.newInstance(), new Object[] { null } )).getName();
         } catch (Exception e) {
             return new QName("", "");
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    private String getContentClassNames(Map<Class,String> contentClasses) {
+    private String getContentClassNames(Map<Class<?>,String> contentClasses) {
         StringBuffer sb = new StringBuffer();
         sb.append('{');
-        for (Class contentClass : contentClasses.keySet()) {
+        for (Class<?> contentClass : contentClasses.keySet()) {
             if (sb.length() > 0)
                 sb.append(",");
             sb.append('<');
@@ -646,10 +684,9 @@ public class TimedTextValidator implements ErrorReporter {
         return sb.toString();
     }
 
-    @SuppressWarnings("rawtypes")
-    private boolean checkRootElement(JAXBElement root, Map<Class,String> rootClasses, Map<Object,Locator> locators) {
+    private boolean checkRootElement(JAXBElement<?> root, Map<Class<?>,String> rootClasses, Map<Object,Locator> locators) {
         Object contentObject = root.getValue();
-        for (Class rootClass : rootClasses.keySet()) {
+        for (Class<?> rootClass : rootClasses.keySet()) {
             if (rootClass.isInstance(contentObject))
                 return true;
         }
@@ -658,8 +695,8 @@ public class TimedTextValidator implements ErrorReporter {
         return false;
     }
 
-    private boolean checkSemanticValidity() {
-        logInfo("Checking semantic validity...");
+    private boolean checkSemanticsValidity() {
+        logInfo("Checking semantics validity...");
         try {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
@@ -684,8 +721,7 @@ public class TimedTextValidator implements ErrorReporter {
             else if (!(unmarshalled instanceof JAXBElement))
                 logError(message("Unexpected root element, can't introspect non-JAXBElement"));
             else {
-                @SuppressWarnings("rawtypes")
-                JAXBElement root = (JAXBElement) unmarshalled;
+                JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
                 if (checkRootElement(root, this.model.getRootClasses(), locators))
                     this.model.getSemanticsValidator().validate(root.getValue(), locators, this);
             }
@@ -706,7 +742,7 @@ public class TimedTextValidator implements ErrorReporter {
                 break;
             if (!checkSchemaValidity())
                 break;
-            if (!checkSemanticValidity())
+            if (!checkSemanticsValidity())
                 break;
         } while (false);
         int rv = this.resourceErrors > 0 ? 1 : 0;
@@ -743,22 +779,27 @@ public class TimedTextValidator implements ErrorReporter {
     }
 
     public int run(String[] args) {
+        int rv = 0;
         try {
             List<String> nonOptionArgs = parseArgs(args);
-            if (!this.quiet)
-                System.out.println(banner);
-            if (this.listModels)
-                return listModels();
-            else
-                return validate(nonOptionArgs);
+            showBanner();
+            if (this.showModels)
+                showModels();
+            else if (this.showRepository)
+                showRepository();
+            else {
+                showProcessingInfo();
+                rv = validate(nonOptionArgs);
+            }
         } catch (ShowUsageException e) {
             System.out.println(banner);
             System.out.println(usage);
-            return 2;
+            rv = 2;
         } catch (UsageException e) {
             System.out.println("Usage: " + e.getMessage());
-            return 2;
+            rv = 2;
         }
+        return rv;
     }
 
     public static void main(String[] args) {

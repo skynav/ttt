@@ -64,8 +64,6 @@ import com.skynav.ttv.validator.StyleValidator;
 public class TTML10SemanticsValidator implements SemanticsValidator {
 
     private Model model;
-    @SuppressWarnings("unused")
-    private Object root;
     private Map<Object,Locator> locators;
     private ErrorReporter errorReporter;
     private StyleValidator styleValidator;
@@ -87,7 +85,6 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
 
     private void setState(Object root, Map<Object,Locator> locators, ErrorReporter errorReporter) {
         // passed state
-        this.root = root;
         this.locators = locators;
         this.errorReporter = errorReporter;
         // derived state
@@ -415,9 +412,8 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
     }
 
     private boolean validateContent(Serializable content) {
-        if (content instanceof JAXBElement) {
-            @SuppressWarnings("rawtypes")
-            Object element = ((JAXBElement)content).getValue();
+        if (content instanceof JAXBElement<?>) {
+            Object element = ((JAXBElement<?>)content).getValue();
             if (isMetadata(element))
                 return validateMetadata(element);
             else if (element instanceof Set)
