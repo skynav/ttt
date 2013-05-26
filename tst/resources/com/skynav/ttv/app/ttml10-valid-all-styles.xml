@@ -196,6 +196,7 @@
         <!-- legal extent values (not exhaustive) -->
         <style tts:extent="auto"/>
         <style tts:extent="620px 96px"/>
+        <style tts:extent="620.3px 96.4c"/>
         <!-- legal fontFamily values (not exhaustive) -->
         <style tts:fontFamily="default"/>
         <style tts:fontFamily="monospace"/>
@@ -213,6 +214,7 @@
         <style tts:fontFamily="'Courier New', default"/>
         <!-- legal fontSize values (not exhaustive) -->
         <style tts:fontSize="1c"/>
+        <style tts:fontSize="1.1c"/>
         <style tts:fontSize="40px"/>
         <style tts:fontSize="40px 50px"/>
         <style tts:fontSize="40px 1c"/>
@@ -226,6 +228,7 @@
         <!-- legal lineHeight values (not exhaustive) -->
         <style tts:lineHeight="normal"/>
         <style tts:lineHeight="1c"/>
+        <style tts:lineHeight="1.1c"/>
         <style tts:lineHeight="40px"/>
         <!-- legal opacity values (not exhaustive) -->
         <style tts:opacity="0"/>
@@ -244,6 +247,7 @@
         <style tts:padding="1px 2px"/>
         <style tts:padding="1px 2px 3px"/>
         <style tts:padding="1px 2px 3px 4px"/>
+        <style tts:padding="1.1c 1.2c 1.3c 1.4c"/>
         <!-- legal showBackground values -->
         <style tts:showBackground="always"/>
         <style tts:showBackground="whenActive"/>

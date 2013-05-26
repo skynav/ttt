@@ -2,5 +2,5 @@
 <!-- invalid - tts:extent value - unknown unit -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
   <head/>
-  <body tts:extent="100px 364smoot"/>
+  <body tts:extent="100px 364.4smoot"/>
 </tt>
