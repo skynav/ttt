@@ -193,6 +193,41 @@ public class InvalidTestCases {
         performInvalidityTest("ttml10-invalid-bad-color-unknown-named-color.xml");
     }
 
+    @Test
+    public void testInvalidBadExtentAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtentEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtentCommaDelimiterWithWhitespace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-comma-delimiter-with-whitespace.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtentExtraLength() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-extra-length.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtentMissingLength() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-missing-length.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtentSemicolonDelimiterSansWhitespace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-semicolon-delimiter-sans-whitespace.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtentUnknownUnit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-unknown-unit.xml");
+    }
+
     private void performInvalidityTest(String resourceName) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

@@ -58,6 +58,11 @@ public class ValidTestCases {
         performValidityTest("ttml10-valid-foreign.xml");
     }
 
+    @Test
+    public void testValidatorNegativeExtent() throws Exception {
+        performValidityTest("ttml10-valid-negative-extent.xml");
+    }
+
     private void performValidityTest(String resourceName) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

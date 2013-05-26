@@ -201,7 +201,7 @@ public class ValidatorUtilities {
             return true;
     }
 
-    private static Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d+|\\d.\\.\\d+))(\\w+|%)");
+    private static Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*.\\d+|\\d+))(\\w+|%)");
     private static boolean isLength(String value, Locator locator, ErrorReporter errorReporter, NegativeLengthTreatment treatment) {
         Matcher m = lengthPattern.matcher(value);
         if (m.matches()) {
@@ -231,17 +231,17 @@ public class ValidatorUtilities {
             }
             if (numberValue < 0) {
                 if (treatment == NegativeLengthTreatment.ErrorOnNegative) {
-                    errorReporter.logError(locator, "Negative length " + numberValue + " not permitted.");
+                    errorReporter.logError(locator, "Negative length " + normalize(numberValue) + " not permitted.");
                     return false;
                 } else if (treatment == NegativeLengthTreatment.WarnOnNegative) {
-                    errorReporter.logWarning(locator, "Negative length " + numberValue + " should not be used.");
+                    errorReporter.logWarning(locator, "Negative length " + normalize(numberValue) + " should not be used.");
                 } else if (treatment == NegativeLengthTreatment.InfoOnNegative) {
-                    errorReporter.logInfo(locator, "Negative length " + numberValue + " used.");
+                    errorReporter.logInfo(locator, "Negative length " + normalize(numberValue) + " used.");
                 }
             }
             String units = m.group(2);
             if (!isLengthUnits(units)) {
-                errorReporter.logInfo(locator, "Unknown units '" + units + "' in <length> component, expected one of: 'px', 'em', 'c', or '%'");
+                errorReporter.logInfo(locator, "Unknown units '" + units + "' in <length> component, expected one of {'px','em','c','%'}.");
                 return false;
             }
             return true;
@@ -257,6 +257,13 @@ public class ValidatorUtilities {
                 return true;
         }
         return false;
+    }
+
+    private static String normalize(double number) {
+        if (Math.floor(number) == number)
+            return Long.toString((long) number);
+        else
+            return Double.toString(number);
     }
 
     private static boolean isLengthUnits(String value) {
