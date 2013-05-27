@@ -52,8 +52,8 @@
   </xs:complexType>
   <xs:complexType name="feature.eltype">
     <xs:simpleContent>
-	  <xs:extension base="ttd:featureDesignator">
-	    <xs:attributeGroup ref="ttp:feature.attlist"/>
+      <xs:extension base="ttd:featureDesignator">
+        <xs:attributeGroup ref="ttp:feature.attlist"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -66,8 +66,8 @@
   </xs:complexType>
   <xs:complexType name="extension.eltype">
     <xs:simpleContent>
-	  <xs:extension base="ttd:extensionDesignator">
-	    <xs:attributeGroup ref="ttp:extension.attlist"/>
+      <xs:extension base="ttd:extensionDesignator">
+        <xs:attributeGroup ref="ttp:extension.attlist"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>

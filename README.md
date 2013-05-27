@@ -226,3 +226,49 @@ Total time: 2 seconds
 
  * Work on the first three testing phases is essentially complete as of May 24, 2013; however, the fourth phase remains work in progress, and, as such, users should not rely upon it until this documentation indicates it is (reasonably) complete.
 
+## To Do (Essential)
+
+ * Warn if neither ttp:profile attribute nor ttp:profile element are present. (3.3 P3)
+ * Warn if both ttp:profile attribute and ttp:profile element are present. (5.2 P7)
+ * Error if xml:base on ttp:features is not absolute. (6.1.2 P4)
+ * Error if xml:base on ttp:features isn't equal to standard feature namespace "http://www.w3.org/ns/ttml/feature/". (6.1.2 P4)
+ * Error if absolutized feature designator doesn't conform to feature-designation defined in D.1. (6.1.3. P4)
+ * Warn if absolutized feature designator is not a known standard designator. ([Issue 221](https://www.w3.org/AudioVideo/TT/tracker/issues/221)).
+ * Error if xml:base on ttp:extensions is not absolute. (6.1.4 P4)
+ * Error if absolutized extension designator doesn't conform to extension-designation defined in E.1. (6.1.5. P4)
+ * Validate xs:string typed parameter attribute values on tt element. (6.2)
+ * Error if columns or rows in ttp:cellResolution are zero. (6.2.1 P4)
+ * Error if ttp:frameRate is not greater than zero. (6.2.4 P7)
+ * Error if ttp:frameRateMultiplier numerator or denominator is zero. (6.2.5 P5)
+ * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and dur attribute is specified on any element. (6.2.6 P12, 10.2.3 P3)
+ * Error if width or height in ttp:pixelAspectRation are zero. (6.2.7 P4)
+ * Error if tts:subFrameRate is zero. (6.2.9 P7)
+ * Error if tts:tickRate is zero. (6.2.10 P7)
+ * Error if style attribute references a style element that is a descendant of region, i.e, is not a descendant of styling. (8.1.2 P4)
+ * Error if style attribute IDREF does not reference a style element. ([Issue 220](https://www.w3.org/AudioVideo/TT/tracker/issues/220)).
+ * Error if tts:extent on tt element does not specify two pixel unit length values. (8.2.7 P7)
+ * Validate xs:string typed tts:fontFamily value on styled elements. (8.2.8)
+ * Error if tts:fontSize uses two length values and they do not use the same units. (8.2.9 P6)
+ * Validate xs:string typed tts:textOutline value on styled elements. (8.2.20)
+ * Validate xs:string typed tts:zIndex value on styled elements. (8.2.25)
+ * Error if loop in sequence of chained style references. (8.4.1.3 P3)
+ * Error if region attribute IDREF does not reference a region element. ([Issue 219](https://www.w3.org/AudioVideo/TT/tracker/issues/219)).
+ * Error if no region element specified and region attribute is specified on some element. (9.3.1 P2)
+ * Validate begin, dur, end attributes on timed elements. (10)
+ * Error if time expression uses `f` metric or frame component when tts:timeBase is clock. (10.3.1 P5)
+ * Error if time expression uses sub-frame component when tts:timeBase is clock. (10.3.1 P6)
+ * Error if actor element's agent attribute does not reference an agent element. (12.1.7 P3)
+ * Error if ttm:agent attribute does not reference an agent element. (12.2.1 P2)
+ * Error if other extension namespace takes for that doesn't take a fragment identifier. (E.1 P4)
+
+## To Do (Optional)
+
+ * Notify if use attribute on ttp:profile references a non-standard profile.
+ * Notify if origin attribute uses a negative length value.
+ * Notify if ttp:role uses an "x-" extension role.
+ * Notify on unreferenced style element.
+ * Notify on unreferenced region element.
+ * Notify on unreferenced ttm:agent element.
+ * Notify on presence of both end and dur such that dur (simple duration) is not same as end minus begin (preliminary active duration).
+ * Notify computed time interval of body based on content timing alone.
+

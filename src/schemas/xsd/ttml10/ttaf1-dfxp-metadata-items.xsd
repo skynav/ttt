@@ -14,8 +14,7 @@
   </xs:attributeGroup>
   <xs:attributeGroup name="agent.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
-    <xs:attribute name="type" type="ttd:metadataAgentType"
-    use="required"/>
+    <xs:attribute name="type" type="ttd:metadataAgentType" use="required"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="copyright.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
@@ -25,7 +24,7 @@
   </xs:attributeGroup>
   <xs:attributeGroup name="name.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
-    <xs:attribute name="type" type="ttd:metadataNameType"/>
+    <xs:attribute name="type" type="ttd:metadataNameType" use="required"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="title.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
