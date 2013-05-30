@@ -105,6 +105,8 @@ public class TimedTextValidator implements ErrorReporter {
         "    --show-models            - show built-in validation models (use with --verbose to show more details)\n" +
         "    --show-repository        - show source code repository information\n" +
         "    --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
+        "    --treat-foreign-as TOKEN - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
+             ForeignTreatment.getDefault().name().toLowerCase() + ")\n" +
         "    --treat-warning-as-error - treat warning as error (overrides --disable-warnings)\n" +
         "  Non-Option Arguments:\n" +
         "    URL                      - an absolute or relative URL; if relative, resolved against current working directory\n";
@@ -121,11 +123,13 @@ public class TimedTextValidator implements ErrorReporter {
     private boolean quiet;
     private boolean showModels;
     private boolean showRepository;
+    private String treatForeignAs;
     private boolean treatWarningAsError;
     private int verbose;
 
     // derived option state
     private Model model;
+    private ForeignTreatment foreignTreatment;
 
     // global processing state
     private SchemaFactory schemaFactory;
@@ -136,6 +140,27 @@ public class TimedTextValidator implements ErrorReporter {
     private ByteBuffer resourceBufferRaw;
     private int resourceErrors;
     private int resourceWarnings;
+
+    private enum ForeignTreatment {
+        Error,
+        Warning,
+        Info,
+        Allow;
+
+        public static ForeignTreatment valueOfIgnoringCase(String value) {
+            if (value == null)
+                throw new IllegalArgumentException();
+            for (ForeignTreatment v: values()) {
+                if (value.equalsIgnoreCase(v.name()))
+                    return v;
+            }
+            throw new IllegalArgumentException();
+        }
+
+        public static ForeignTreatment getDefault() {
+            return Warning;
+        }
+    }
 
     public TimedTextValidator() {
     }
@@ -196,19 +221,21 @@ public class TimedTextValidator implements ErrorReporter {
     }
 
     @Override
-    public void logWarning(String message) {
-        if (this.treatWarningAsError)
+    public boolean logWarning(String message) {
+        if (this.treatWarningAsError) {
             logError(message);
-        else if (!this.disableWarnings) {
+            return true;
+        } else if (!this.disableWarnings) {
             if (!this.hideWarnings)
                 System.out.println("[W]:" + message);
             ++this.resourceWarnings;
         }
+        return false;
     }
 
     @Override
-    public void logWarning(Locator locator, String message) {
-        logWarning(message(locator, message));
+    public boolean logWarning(Locator locator, String message) {
+        return logWarning(message(locator, message));
     }
 
     private void logWarning(Exception e) {
@@ -276,6 +303,10 @@ public class TimedTextValidator implements ErrorReporter {
             this.showModels = true;
         } else if (option.equals("show-repository")) {
             this.showRepository = true;
+        } else if (option.equals("treat-foreign-as")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            this.treatForeignAs = args[++index];
         } else if (option.equals("treat-warning-as-error")) {
             this.treatWarningAsError = true;
         } else if (option.equals("verbose")) {
@@ -312,10 +343,18 @@ public class TimedTextValidator implements ErrorReporter {
         if (this.modelName != null) {
             model = Models.getModel(this.modelName);
             if (model == null)
-                throw new InvalidOptionUsageException("model", "unknown model: " + modelName);
+                throw new InvalidOptionUsageException("model", "unknown model: " + this.modelName);
         } else
             model = Models.getDefaultModel();
         this.model = model;
+        if (this.treatForeignAs != null) {
+            try {
+                this.foreignTreatment = ForeignTreatment.valueOfIgnoringCase(this.treatForeignAs);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidOptionUsageException("treat-foreign-as", "unknown token: " + this.treatForeignAs);
+            }
+        } else
+            foreignTreatment = ForeignTreatment.getDefault();
     }
 
     private List<String> processOptionsAndArgs(List<String> nonOptionArgs) {
@@ -631,7 +670,7 @@ public class TimedTextValidator implements ErrorReporter {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            XMLReader filter = new ForeignVocabularyFilter(reader, this.model.getNamespaceUri(), true);
+            XMLReader filter = new ForeignVocabularyFilter(reader, this.model.getNamespaceUri(), this.foreignTreatment);
             SAXSource source = new SAXSource(filter, new InputSource(openStream(this.resourceBufferRaw)));
             source.setSystemId(this.resourceUri.toString());
             Validator v = getSchema().newValidator();
@@ -701,7 +740,7 @@ public class TimedTextValidator implements ErrorReporter {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            final ForeignVocabularyFilter filter = new ForeignVocabularyFilter(reader, this.model.getNamespaceUri(), false);
+            final ForeignVocabularyFilter filter = new ForeignVocabularyFilter(reader, this.model.getNamespaceUri(), ForeignTreatment.Allow);
             SAXSource source = new SAXSource(filter, new InputSource(openStream(this.resourceBufferRaw)));
             source.setSystemId(this.resourceUri.toString());
             JAXBContext context = JAXBContext.newInstance(this.model.getJAXBContextPath());
@@ -853,16 +892,16 @@ public class TimedTextValidator implements ErrorReporter {
         private static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
 
         private String namespace;
-        private boolean warnPrunes;
+        private ForeignTreatment foreignTreatment;
 
         private Stack<QName> nameStack = new Stack<QName>();
         private boolean inForeign;
         private Locator currentLocator;
 
-        ForeignVocabularyFilter(XMLReader reader, String namespace, boolean warnPrunes) {
+        ForeignVocabularyFilter(XMLReader reader, String namespace, ForeignTreatment foreignTreatment) {
             super(reader);
             this.namespace = namespace;
-            this.warnPrunes = warnPrunes;
+            this.foreignTreatment = foreignTreatment;
         }
 
         public Locator getCurrentLocator() {
@@ -877,14 +916,15 @@ public class TimedTextValidator implements ErrorReporter {
 
         @Override
         public void startElement(String nsUri, String localName, String qualName, Attributes attrs) throws SAXException {
-            if (!inForeign && inNonForeignNamespace(nsUri)) {
+            if (foreignTreatment == ForeignTreatment.Allow)
+                super.startElement(nsUri, localName, qualName, attrs);
+            else if (!inForeign && isNonForeignNamespace(nsUri))
                 super.startElement(nsUri, localName, qualName, removeForeign(attrs));
-            } else {
+            else {
                 QName qn = new QName(nsUri, localName);
                 nameStack.push(qn);
                 inForeign = true;
-                if (warnPrunes)
-                    logWarning(currentLocator, "Pruning element in foreign namespace: <" + qn + ">.");
+                logPruning("Pruning element in foreign namespace: <" + qn + ">.");
             }
         }
 
@@ -910,26 +950,24 @@ public class TimedTextValidator implements ErrorReporter {
             boolean hasForeign = false;
             for (int i = 0, n = attrs.getLength(); i < n && !hasForeign; ++i) {
                 String nsUri = attrs.getURI(i);
-                if (inForeignNamespace(nsUri))
+                if (isForeignNamespace(nsUri))
                     hasForeign = true;
             }
             if (hasForeign) {
                 AttributesImpl attrsNew = new AttributesImpl();
                 for (int i = 0, n = attrs.getLength(); i < n; ++i) {
                     String nsUri = attrs.getURI(i);
-                    if (inNonForeignNamespace(nsUri))
+                    if (isNonForeignNamespace(nsUri))
                         attrsNew.addAttribute(attrs.getURI(i), attrs.getLocalName(i), attrs.getQName(i), attrs.getType(i), attrs.getValue(i));
-                    else if (warnPrunes) {
-                        QName qn = new QName(attrs.getURI(i), attrs.getLocalName(i));
-                        logWarning(currentLocator, "Pruning attribute in foreign namespace: <" + qn + ">.");
-                    }
+                    else
+                        logPruning("Pruning attribute in foreign namespace: <" + new QName(attrs.getURI(i), attrs.getLocalName(i)) + ">.");
                 }
                 return attrsNew;
             } else
                 return attrs;
         }
 
-        private boolean inNonForeignNamespace(String nsUri) {
+        private boolean isNonForeignNamespace(String nsUri) {
             if (nsUri == null)
                 return true;
             else if (nsUri.length() == 0)
@@ -942,8 +980,17 @@ public class TimedTextValidator implements ErrorReporter {
                 return false;
         }
 
-        private boolean inForeignNamespace(String nsUri) {
-            return !inNonForeignNamespace(nsUri);
+        private boolean isForeignNamespace(String nsUri) {
+            return !isNonForeignNamespace(nsUri);
+        }
+
+        private void logPruning(String message) {
+            if (foreignTreatment == ForeignTreatment.Error)
+                logError(currentLocator, message);
+            else if (foreignTreatment == ForeignTreatment.Warning)
+                logWarning(currentLocator, message);
+            else if (foreignTreatment == ForeignTreatment.Info)
+                logInfo(currentLocator, message);
         }
     }
 

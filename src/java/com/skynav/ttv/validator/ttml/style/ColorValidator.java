@@ -29,25 +29,16 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.util.NullErrorReporter;
 import com.skynav.ttv.validator.StyleValueValidator;
 
 public class ColorValidator implements StyleValueValidator {
 
     public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (ValidatorUtilities.isColor(value, locator, errorReporter))
+        if (ValidatorUtilities.isColor(value, locator, errorReporter, null))
             return true;
         else {
-            if (value.length() == 0) {
-                errorReporter.logInfo(locator, "Empty " + name + " not permitted, got '" + value + "'.");
-            } else if (ValidatorUtilities.isAllXMLSpace(value)) {
-                errorReporter.logInfo(locator, "The value of " + name + " is entirely XML space characters, got '" + value + "'.");
-            } else if (!value.equals(value.trim())) {
-                if (validate(model, name, value.trim(), locator, new NullErrorReporter()))
-                    errorReporter.logInfo(locator, "XML space padding not permitted on " + name + ", got '" + value + "'.");
-            }
-            errorReporter.logError(locator, "Invalid " + name + " value '" + value + "'.");
+            ValidatorUtilities.badColor(value, locator, errorReporter);
             return false;
         }
     }

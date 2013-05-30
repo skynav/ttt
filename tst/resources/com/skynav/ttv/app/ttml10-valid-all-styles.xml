@@ -239,6 +239,9 @@
         <style tts:origin="10px 100px"/>
         <style tts:origin="1c 10c"/>
         <style tts:origin="40px 10c"/>
+        <style tts:origin="-40px 10c"/>
+        <style tts:origin="40px -10c"/>
+        <style tts:origin="-40.3px -10.1c"/>
         <!-- legal overflow values -->
         <style tts:overflow="visible"/>
         <style tts:overflow="hidden"/>
@@ -248,6 +251,7 @@
         <style tts:padding="1px 2px 3px"/>
         <style tts:padding="1px 2px 3px 4px"/>
         <style tts:padding="1.1c 1.2c 1.3c 1.4c"/>
+        <style tts:padding="1.1c 1.2em 1.3px 1.4%"/>
         <!-- legal showBackground values -->
         <style tts:showBackground="always"/>
         <style tts:showBackground="whenActive"/>
@@ -354,9 +358,11 @@
         <style tts:writingMode="tb"/>
         <!-- legal zIndex values (not exhaustive) -->
         <style tts:zIndex="auto"/>
+        <style tts:zIndex="-99"/>
         <style tts:zIndex="-1"/>
         <style tts:zIndex="0"/>
         <style tts:zIndex="1"/>
+        <style tts:zIndex="100"/>
       </region>
     </layout>
   </head>

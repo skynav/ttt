@@ -47,6 +47,7 @@ import com.skynav.ttv.validator.ttml.style.OpacityValidator;
 import com.skynav.ttv.validator.ttml.style.OriginValidator;
 import com.skynav.ttv.validator.ttml.style.PaddingValidator;
 import com.skynav.ttv.validator.ttml.style.TextOutlineValidator;
+import com.skynav.ttv.validator.ttml.style.ValidatorUtilities;
 import com.skynav.ttv.validator.ttml.style.ZIndexValidator;
 
 public class TTML10StyleValidator implements StyleValidator {
@@ -113,11 +114,33 @@ public class TTML10StyleValidator implements StyleValidator {
         }
 
         public boolean validate(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
+            boolean success = false;
             Object value = getStyleValue(content);
-            if (value != null)
-                return validator.validate(model, styleName, value, locator, errorReporter);
+            if (value != null) {
+                if (value instanceof String)
+                    success = validate(model, (String) value, locator, errorReporter);
+                else if (!validator.validate(model, styleName, value, locator, errorReporter))
+                    errorReporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
+                else
+                    success = true;
+            } else
+                success = true;
+            return success;
+        }
+
+        private boolean validate(Model model, String value, Locator locator, ErrorReporter errorReporter) {
+            boolean success = false;
+            if (value.length() == 0)
+                errorReporter.logError(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
+            else if (ValidatorUtilities.isAllXMLSpace(value))
+                errorReporter.logError(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
+            else if (!value.equals(value.trim()))
+                errorReporter.logError(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
+            else if (!validator.validate(model, styleName, value, locator, errorReporter))
+                errorReporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
             else
-                return true;
+                success = true;
+            return success;
         }
 
         private StyleValueValidator createStyleValueValidator(Class<?> validatorClass) {

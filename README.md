@@ -28,11 +28,13 @@ If both BOM is present and XML declaration is present and the two encodings diff
 
 The second phrase performs well-formedness testing by attempting to parse the resource as XML but with validation disabled. If the syntax of the resource does not adhere to the XML specification, then this phase fails.
 
-The third phase performs schema validity testing using an XSD (XML Schema Definition) schema. By default, the published TTML XSD schema is used. However, provisions are being made to support alternative schemas, either built-in to the tool or provided by the user. During this phase, elements and attributes in foreign (non-TTML and non-XML) namespaces are pruned by a filtering process before attempting validation. As a consequence, the potential validity of foreign namespace vocabulary is not assessed. [A future version of this tool may provide a mechanism to validate foreign vocabulary.] If a schema validation error occurs, then this phase fails.
+The third phase performs schema validity testing using an XSD (XML Schema Definition) schema. The schema used during validation is determined by the specified (or default) validation model. Different models may specify different schemas. If a schema validation error occurs, then this phase fails.
 
-The fourth phase performs additional semantic (and some syntactic) testing on the resource that is beyond what is tested by the previous three phases. For example, some TTML style properties are specified by the TTML schema using the `xs:string` type, which does not test the form of that string to determine compliance with TTML. In this fourth phase, these values are further tested to determine if they comply with TTML syntactic and semantic rules. In addition, a variety of other constraints specified by TTML are tested during this phase.
+Unless `--treat-foreign-as` is specified as `allow`, elements and attributes in foreign (non-TTML and non-XML) namespaces are pruned by a filtering process before attempting schema validation. In this case, potential validity of foreign namespace vocabulary is not assessed. If `--treat-foreign-as` is specified as `allow`, then foreign vocabulary is not pruned, which, depending on the schema, may result in schema validation errors if the schema is not designed to permit foreign attributes or elements.
 
-The following `xs:string` schema typed TTML style properties are tested for syntactic correctness during this fourth phase (those not yet implemented are noted as *TBD*):
+The fourth phase performs additional semantic (and some syntactic) testing on the resource that is beyond what is tested by the previous three phases. For example, some TTML attributes are typed by the TTML schema as `xs:string`, which does not test the form of that string to determine compliance with TTML. In this fourth phase, these attributes are further validated to determine if they comply with TTML syntactic and semantic rules. In addition, a variety of other constraints specified by TTML are tested during this phase.
+
+The following `xs:string` schema typed attributes are tested for syntactic correctness during this fourth phase (those not yet validated are noted as *TBD*):
 
  * `tts:color`
  * `tts:backgroundColor`
@@ -40,13 +42,12 @@ The following `xs:string` schema typed TTML style properties are tested for synt
  * `tts:fontFamily` - *TBD*
  * `tts:fontSize`
  * `tts:lineHeight`
- * `tts:opacity`
  * `tts:origin`
  * `tts:padding`
- * `tts:textOutline` - *TBD*
- * `tts:zIndex` - *TBD*
+ * `tts:textOutline`
+ * `tts:zIndex`
 
-In addition, the following TTML attributes' values are similarly tested:
+In addition, the following similarly typed attributes are similarly validated in this phase:
 
  * `begin` - *TBD*
  * `dur` - *TBD*
@@ -125,6 +126,7 @@ Usage: java -jar ttv.jar [options] URL*
     --show-models            - show built-in validation models (use with --verbose to show more details)
     --show-repository        - show source code repository information
     --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)
+    --treat-foreign-as TOKEN - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: info)
     --treat-warning-as-error - treat warning as error (overrides --disable-warnings)
   Non-Option Arguments:
     URL                      - an absolute or relative URL; if relative, resolved against current working directory
@@ -222,6 +224,8 @@ Total time: 2 seconds
     4.10
 </pre>
 
+ * An (Helios) Eclipse workspace and `ttv` project are available under the `.eclipse` directory.
+
  * The primary developer (skynavga) is using Mac OSX 10.8.3 on an MBP 15" Retina.
 
  * Work on the first three testing phases is essentially complete as of May 24, 2013; however, the fourth phase remains work in progress, and, as such, users should not rely upon it until this documentation indicates it is (reasonably) complete.
@@ -248,7 +252,6 @@ Total time: 2 seconds
  * Error if style attribute IDREF does not reference a style element. ([Issue 220](https://www.w3.org/AudioVideo/TT/tracker/issues/220)).
  * Error if tts:extent on tt element does not specify two pixel unit length values. (8.2.7 P7)
  * Validate xs:string typed tts:fontFamily value on styled elements. (8.2.8)
- * Error if tts:fontSize uses two length values and they do not use the same units. (8.2.9 P6)
  * Validate xs:string typed tts:textOutline value on styled elements. (8.2.20)
  * Validate xs:string typed tts:zIndex value on styled elements. (8.2.25)
  * Error if loop in sequence of chained style references. (8.4.1.3 P3)
@@ -271,4 +274,5 @@ Total time: 2 seconds
  * Notify on unreferenced ttm:agent element.
  * Notify on presence of both end and dur such that dur (simple duration) is not same as end minus begin (preliminary active duration).
  * Notify computed time interval of body based on content timing alone.
-
+ * Notify (or warn) if computed color or computed background color are problematic for color impaired viewers.
+ * Notify (or warn) if computed color and computed background color are low contrast.

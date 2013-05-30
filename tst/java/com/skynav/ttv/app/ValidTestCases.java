@@ -67,7 +67,7 @@ public class ValidTestCases {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
-        String[] args = { "-q", url.toString() };
+        String[] args = { "-q", "-v", url.toString() };
         int rv = new TimedTextValidator().run(args);
         if (rv == 1)
             fail("Unexpected validation failure.");

@@ -2,5 +2,5 @@
 <!-- invalid - bad tts:color value - rgb hash extra digit -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
   <head/>
-  <body tts:color="#0000000"/>
+  <body tts:color="#1234567"/>
 </tt>

@@ -29,27 +29,20 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.util.NullErrorReporter;
 import com.skynav.ttv.validator.StyleValueValidator;
+import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.MixedUnitsTreatment;
+import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.NegativeTreatment;
 
 public class OriginValidator implements StyleValueValidator {
 
     public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (ValidatorUtilities.isAuto(value, locator, errorReporter))
+        if (ValidatorUtilities.isAuto(value))
             return true;
-        else if (ValidatorUtilities.isLength(value, locator, errorReporter, 2, 2, ValidatorUtilities.NegativeLengthTreatment.InfoOnNegative))
+        else if (ValidatorUtilities.isLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Allow, MixedUnitsTreatment.Allow, null))
             return true;
         else {
-            if (value.length() == 0) {
-                errorReporter.logInfo(locator, "Empty " + name + " not permitted, got '" + value + "'.");
-            } else if (ValidatorUtilities.isAllXMLSpace(value)) {
-                errorReporter.logInfo(locator, "The value of " + name + " is entirely XML space characters, got '" + value + "'.");
-            } else if (!value.equals(value.trim())) {
-                if (validate(model, name, value.trim(), locator, new NullErrorReporter()))
-                    errorReporter.logInfo(locator, "XML space padding not permitted on " + name + ", got '" + value + "'.");
-            }
-            errorReporter.logError(locator, "Invalid " + name + " value '" + value + "'.");
+            ValidatorUtilities.badLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Allow, MixedUnitsTreatment.Allow);
             return false;
         }
     }

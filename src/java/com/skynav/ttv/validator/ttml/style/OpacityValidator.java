@@ -39,10 +39,10 @@ public class OpacityValidator implements StyleValueValidator {
         if (value.isNaN()) {
             errorReporter.logWarning(locator, "Not a Number 'NaN' should not be used with " + name + "; use '0' instead.");
         } else if (value.isInfinite()) {
-                if (opacity < 0)
-                    errorReporter.logWarning(locator, "Negative Infinity '-INF' should not be used with " + name + "; use '0' instead.");
-                else
-                    errorReporter.logWarning(locator, "Positive Infinity 'INF' should not be used with " + name + "; use '1' instead.");
+            if (opacity < 0)
+                errorReporter.logWarning(locator, "Negative Infinity '-INF' should not be used with " + name + "; use '0' instead.");
+            else
+                errorReporter.logWarning(locator, "Positive Infinity 'INF' should not be used with " + name + "; use '1' instead.");
         } else if (opacity < 0) {
             errorReporter.logWarning(locator, "Negative values should not be used with " + name + "; use '0' instead.");
         } else if (opacity > 1) {

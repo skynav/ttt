@@ -29,33 +29,22 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.util.NullErrorReporter;
 import com.skynav.ttv.validator.StyleValueValidator;
+import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.MixedUnitsTreatment;
+import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.NegativeTreatment;
 
 public class LineHeightValidator implements StyleValueValidator {
 
     public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (isNormal(value, locator, errorReporter))
+        if (ValidatorUtilities.isNormal(value))
             return true;
-        else if (ValidatorUtilities.isLength(value, locator, errorReporter, 1, 1, ValidatorUtilities.NegativeLengthTreatment.ErrorOnNegative))
+        else if (ValidatorUtilities.isLengths(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error, null))
             return true;
         else {
-            if (value.length() == 0) {
-                errorReporter.logInfo(locator, "Empty " + name + " not permitted, got '" + value + "'.");
-            } else if (ValidatorUtilities.isAllXMLSpace(value)) {
-                errorReporter.logInfo(locator, "The value of " + name + " is entirely XML space characters, got '" + value + "'.");
-            } else if (!value.equals(value.trim())) {
-                if (validate(model, name, value.trim(), locator, new NullErrorReporter()))
-                    errorReporter.logInfo(locator, "XML space padding not permitted on " + name + ", got '" + value + "'.");
-            }
-            errorReporter.logError(locator, "Invalid " + name + " value '" + value + "'.");
+            ValidatorUtilities.badLengths(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error);
             return false;
         }
-    }
-
-    private static boolean isNormal(String value, Locator locator, ErrorReporter errorReporter) {
-        return value.equals("auto");
     }
 
 }

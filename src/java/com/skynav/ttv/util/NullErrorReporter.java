@@ -28,13 +28,14 @@ package com.skynav.ttv.util;
 import org.xml.sax.Locator;
 
 public class NullErrorReporter implements ErrorReporter {
+    public static final NullErrorReporter Reporter = new NullErrorReporter();
     public String message(String message) { return message; }
     public String message(Locator locator, String message) { return message; }
     public void logError(String message) {}
     public void logError(Locator locator, String message) {}
     public void logError(Exception e) {}
-    public void logWarning(String message) {}
-    public void logWarning(Locator locator, String message) {}
+    public boolean logWarning(String message) { return false; }
+    public boolean logWarning(Locator locator, String message) { return false; }
     public void logInfo(String message) {}
     public void logInfo(Locator locator, String message) {}
     public void logDebug(String message) {}

@@ -30,11 +30,21 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.validator.StyleValueValidator;
+import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.NegativeTreatment;
+import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.ZeroTreatment;
 
 public class ZIndexValidator implements StyleValueValidator {
 
     public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        return true;
+        String value = (String) valueObject;
+        if (ValidatorUtilities.isAuto(value))
+            return true;
+        else if (ValidatorUtilities.isIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Allow, ZeroTreatment.Allow, null))
+            return true;
+        else {
+            ValidatorUtilities.badIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, ZeroTreatment.Error);
+            return false;
+        }
     }
 
 }

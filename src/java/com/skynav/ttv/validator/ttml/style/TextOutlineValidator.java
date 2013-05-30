@@ -30,11 +30,71 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.validator.StyleValueValidator;
+import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.NegativeTreatment;
 
 public class TextOutlineValidator implements StyleValueValidator {
 
     public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        return true;
+        boolean failed = false;
+        String value = (String) valueObject;
+        String [] components = value.split("[ \t\r\n]+");
+        int componentIndex = 0;
+        int numComponents = components.length;
+        String color = null;
+        String thickness = null;
+        String blur = null;
+        if (componentIndex < numComponents) {
+            if (ValidatorUtilities.maybeColor(components[componentIndex]))
+                color = components[componentIndex++];
+        }
+        if (componentIndex < numComponents) {
+            if (ValidatorUtilities.maybeLength(components[componentIndex]))
+                thickness = components[componentIndex++];
+        }
+        if (componentIndex < numComponents) {
+            if (ValidatorUtilities.maybeLength(components[componentIndex]))
+                blur = components[componentIndex++];
+        }
+        if (color != null) {
+            if (!ValidatorUtilities.isColor(color, locator, errorReporter, null)) {
+                ValidatorUtilities.badColor(color, locator, errorReporter);
+                errorReporter.logInfo(locator, "Bad <color> expression in color component '" + color + "'.");
+                failed = true;
+            } else if (thickness == null) {
+                errorReporter.logInfo(locator, "Missing <length> expression after <color> expression '" + color + "'.");
+                failed = true;
+            }
+        }
+        if (thickness != null) {
+            if (!ValidatorUtilities.isLength(thickness, locator, errorReporter, NegativeTreatment.Error, null)) {
+                ValidatorUtilities.badLength(thickness, locator, errorReporter, NegativeTreatment.Error);
+                errorReporter.logInfo(locator, "Bad <length> expression in thickness component '" + thickness + "'.");
+                failed = true;
+            } else if (blur != null) {
+                if (!ValidatorUtilities.isLength(blur, locator, errorReporter, NegativeTreatment.Error, null)) {
+                    ValidatorUtilities.badLength(blur, locator, errorReporter, NegativeTreatment.Error);
+                    errorReporter.logInfo(locator, "Bad <length> expression in blur component '" + blur + "'.");
+                    failed = true;
+                }
+            }
+        }
+        String afterComponent;
+        if (blur != null)
+            afterComponent = "blur";
+        else if (thickness != null)
+            afterComponent = "thickness";
+        else if (color != null)
+            afterComponent = "color";
+        else
+            afterComponent = null;
+        while (componentIndex < numComponents) {
+            String unparsedComponent = components[componentIndex++];
+            errorReporter.logInfo(locator,
+                "Unparsed component '" + unparsedComponent + "'" +
+                ((afterComponent != null) ? (" after <" + afterComponent + "> expression") : "") + ".");
+            failed = true;
+        }
+        return !failed;
     }
 
 }
