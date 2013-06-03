@@ -80,7 +80,7 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
         else if (root instanceof Profile)
             return validate((Profile)root);
         else
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unexpected JAXB content object of type '" + root.getClass().getName() +  "'.");
     }
 
     private void setState(Object root, Map<Object,Locator> locators, ErrorReporter errorReporter) {
@@ -384,7 +384,11 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
     }
 
     private boolean validateMetadata(Object metadata) {
-        if (metadata instanceof Actor)
+        if (metadata instanceof String)
+            return true;
+        else if (metadata instanceof JAXBElement<?>)
+            return validateMetadata(((JAXBElement<?>)metadata).getValue());
+        else if (metadata instanceof Actor)
             return validate((Actor)metadata);
         else if (metadata instanceof Agent)
             return validate((Agent)metadata);
@@ -399,7 +403,7 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
         else if (metadata instanceof Title)
             return validate((Title)metadata);
         else
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unexpected JAXB content object of type '" + metadata.getClass().getName() +  "'.");
     }
 
     private boolean validateBlock(Object block) {
@@ -408,7 +412,7 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
         else if (block instanceof Paragraph)
             return validate((Paragraph) block);
         else
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unexpected JAXB content object of type '" + block.getClass().getName() +  "'.");
     }
 
     private boolean validateContent(Serializable content) {
@@ -423,11 +427,12 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
             else if (element instanceof Break)
                 return validate((Break) element);
             else
-                throw new IllegalStateException();
+                throw new IllegalStateException("Unexpected JAXB content object of type '" + element.getClass().getName() +  "'.");
         } else if (content instanceof String) {
             return true;
         } else {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unexpected JAXB object of type '" + content.getClass().getName() +  "'.");
+
         }
     }
 
