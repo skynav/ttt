@@ -44,8 +44,10 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.UnmappableCharacterException;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Stack;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
@@ -258,7 +260,7 @@ public class TimedTextValidator implements ErrorReporter {
     @Override
     public void logDebug(String message) {
         if (this.debug > 0) {
-            System.out.println("T:" + message);
+            System.out.println("[D]:" + message);
         }
     }
 
@@ -640,6 +642,7 @@ public class TimedTextValidator implements ErrorReporter {
             }
         });
         try {
+            logDebug("Loading (and validting) schema at " + url + "...");
             return sf.newSchema(url);
         } catch (SAXException e) {
             logError(e);
@@ -657,7 +660,29 @@ public class TimedTextValidator implements ErrorReporter {
     }
 
     private Schema getSchema(String resourceName) throws SchemaValidationErrorException {
-        return getSchema(getClass().getClassLoader().getResource(resourceName));
+        logDebug("Searching for built-in schema at " + resourceName + "...");
+        try {
+            URL urlSchema = null;
+            Enumeration<URL> resources = getClass().getClassLoader().getResources(resourceName);
+            while (resources.hasMoreElements()) {
+                URL url = resources.nextElement();
+                String urlPath = url.getPath();
+                if (urlPath.indexOf(resourceName) == (urlPath.length() - resourceName.length())) {
+                    logDebug("Found resource match at " + url + ".");
+                    urlSchema = url;
+                    break;
+                } else {
+                    logDebug("Skipping partial resource match at " + url + ".");
+                }
+            }
+            if (urlSchema == null) {
+                logDebug("Can't find schema resource " + resourceName + ".");
+                throw new SchemaValidationErrorException(new MissingResourceException("Can't find schema resource " + resourceName + ".", getClass().getName(), resourceName));
+            }
+            return getSchema(urlSchema);
+        } catch (IOException e) {
+            throw new SchemaValidationErrorException(e);
+        }
     }
 
     private Schema getSchema() throws SchemaValidationErrorException {
@@ -689,7 +714,7 @@ public class TimedTextValidator implements ErrorReporter {
         } catch (ParserConfigurationException e) {
             logError(e);
         } catch (SchemaValidationErrorException e) {
-            // Already logged error via default handler overrides above.
+            logError(e);
         } catch (SAXParseException e) {
             // Already logged error via default handler overrides above.
         } catch (SAXException e) {
