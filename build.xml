@@ -190,7 +190,7 @@
   <junit-run testsuite="com.skynav.ttv.ttml10.UnmarshalTestSuite" outfile="TEST-ttml10-unmarshal"/>
 </target>
 
-<target name="test-verifier" description="Run TTV verifier application test">
+<target name="test-verifier" description="Run TTV verification test suite">
   <junit-run testsuite="com.skynav.ttv.app.VerifierTestSuite" outfile="TEST-apps-verifier"/>
 </target>
 

@@ -34,6 +34,8 @@ Unless `--treat-foreign-as` is specified as `allow`, elements and attributes in 
 
 The fourth phase performs additional semantic (and some syntactic) testing on the resource that is beyond what is tested by the previous three phases. For example, some TTML attributes are typed by the TTML schema as `xs:string`, which does not test the form of that string to determine compliance with TTML. In this fourth phase, these attributes are further verified to determine if they comply with TTML syntactic and semantic rules. In addition, a variety of other constraints specified by TTML are tested during this phase.
 
+If desired, the `--until-phase` option may be used to cause verification to stop at a particular phase, thus skipping subsequent phases.
+
 The following `xs:string` schema typed attributes are tested for syntactic correctness during this fourth phase (those not yet verified are noted as *TBD*):
 
  * `tts:color`
@@ -86,18 +88,18 @@ The full set of (public) `ant` targets can be listed by using `ant -p`, which pr
     build            Build TTV
     clean-build      Clean and build TTV
     clean-test       Clean, build, and test TTV
-    run-valid-tests  Run validator with valid TTML10 input files
+    run-valid-tests  Run verifier with valid TTML10 input files
     test             Run all TTV test suites
     test-apps        Run TTV application tests
     test-ttml10      Run TTML10 tests
-    test-validator   Run TTV validator application test
+    test-verifier    Run TTV verification test suite
     test-xml         Run XML tests
 
     Default target: clean-test
 
 ## Running
 
-In order to run the validator, use the following (or an equivalent):
+In order to run the verifier, use the following (or an equivalent):
 
 `java -jar bld/artifacts/ttv.jar ttml.xml`
 
@@ -108,7 +110,7 @@ Usage information can be obtained by using:
 At present, this will output the following:
 
 <pre>
-Timed Text Validator (TTV) [0.0.0dev] Copyright 2013 Skynav, Inc.
+Timed Text Verifier (TTV) [0.0.0dev] Copyright 2013 Skynav, Inc.
 Usage: java -jar ttv.jar [options] URL*
   Short Options:
     -d                       - see --debug
@@ -126,8 +128,9 @@ Usage: java -jar ttv.jar [options] URL*
     --show-models            - show built-in verification models (use with --verbose to show more details)
     --show-repository        - show source code repository information
     --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)
-    --treat-foreign-as TOKEN - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: info)
+    --treat-foreign-as TOKEN - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: warning)
     --treat-warning-as-error - treat warning as error (overrides --disable-warnings)
+    --until-phase PHASE      - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: all)
   Non-Option Arguments:
     URL                      - an absolute or relative URL; if relative, resolved against current working directory
 </pre>
