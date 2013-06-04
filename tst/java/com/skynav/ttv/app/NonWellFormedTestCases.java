@@ -30,7 +30,7 @@ import java.net.URL;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 
-import com.skynav.ttv.app.TimedTextValidator;
+import com.skynav.ttv.app.TimedTextVerifier;
 
 public class NonWellFormedTestCases {
     @Test
@@ -48,11 +48,11 @@ public class NonWellFormedTestCases {
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
         String[] args = { "-q", url.toString() };
-        int rv = new TimedTextValidator().run(args);
+        int rv = new TimedTextVerifier().run(args);
         if (rv == 0)
-            fail("Unexpected well-formedness success.");
+            fail("Unexpected success.");
         else if (rv != 1)
-            fail("Unexpected well-formedness failure code: expected 1, got " + rv + ".");
+            fail("Unexpected failure code: expected 1, got " + rv + ".");
     }
 }
 

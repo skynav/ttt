@@ -30,36 +30,36 @@ import java.net.URL;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 
-import com.skynav.ttv.app.TimedTextValidator;
+import com.skynav.ttv.app.TimedTextVerifier;
 
 public class ValidTestCases {
     @Test
-    public void testValidatorSimple() throws Exception {
+    public void testValidSimple() throws Exception {
         performValidityTest("ttml10-valid-simple.xml");
     }
 
     @Test
-    public void testValidatorAllElements() throws Exception {
+    public void testValidAllElements() throws Exception {
         performValidityTest("ttml10-valid-all-elements.xml");
     }
 
     @Test
-    public void testValidatorAllStyles() throws Exception {
+    public void testValidAllStyles() throws Exception {
         performValidityTest("ttml10-valid-all-styles.xml");
     }
 
     @Test
-    public void testValidatorAllParameters() throws Exception {
+    public void testValidAllParameters() throws Exception {
         performValidityTest("ttml10-valid-all-parameters.xml");
     }
 
     @Test
-    public void testValidatorForeign() throws Exception {
+    public void testValidForeign() throws Exception {
         performValidityTest("ttml10-valid-foreign.xml");
     }
 
     @Test
-    public void testValidatorOpacityOutOfRange() throws Exception {
+    public void testValidOpacityOutOfRange() throws Exception {
         performValidityTest("ttml10-valid-opacity-out-of-range.xml");
     }
 
@@ -68,7 +68,7 @@ public class ValidTestCases {
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
         String[] args = { "-q", "-v", url.toString() };
-        int rv = new TimedTextValidator().run(args);
+        int rv = new TimedTextVerifier().run(args);
         if (rv == 1)
             fail("Unexpected validation failure.");
         else if (rv != 0)

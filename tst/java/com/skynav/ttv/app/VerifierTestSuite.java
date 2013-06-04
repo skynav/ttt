@@ -35,6 +35,6 @@ import org.junit.runners.Suite.SuiteClasses;
     NonWellFormedTestCases.class,
     InvalidTestCases.class
 })
-public class ValidatorTestSuite {
+public class VerifierTestSuite {
 }
 

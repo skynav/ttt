@@ -40,9 +40,9 @@
 <property name="test.resources.dir" value="${build.dir}/test-resources"/>
 
 <property name="ttv.jar" value="ttv.jar"/>
-<property name="ttv.main.class" value="com/skynav/ttv/app/TimedTextValidator"/>
+<property name="ttv.main.class" value="com/skynav/ttv/app/TimedTextVerifier"/>
 <property name="ttv.target" value="${artifacts.dir}/${ttv.jar}"/>
-<property name="ttv.title" value="Timed Text Validator"/>
+<property name="ttv.title" value="Timed Text Verifier"/>
 <property name="ttv.version.major" value="0"/>
 <property name="ttv.version.minor" value="0"/>
 <property name="ttv.version.micro" value="0"/>
@@ -190,11 +190,11 @@
   <junit-run testsuite="com.skynav.ttv.ttml10.UnmarshalTestSuite" outfile="TEST-ttml10-unmarshal"/>
 </target>
 
-<target name="test-validator" description="Run TTV validator application test">
-  <junit-run testsuite="com.skynav.ttv.app.ValidatorTestSuite" outfile="TEST-apps-validator"/>
+<target name="test-verifier" description="Run TTV verifier application test">
+  <junit-run testsuite="com.skynav.ttv.app.VerifierTestSuite" outfile="TEST-apps-verifier"/>
 </target>
 
-<target name="test-apps" description="Run TTV application tests" depends="test-validator"/>
+<target name="test-apps" description="Run TTV application tests" depends="test-verifier"/>
 
 <target name="test" description="Run all TTV test suites" depends="compile-tests, test-xml, test-ttml10, test-apps"/>
 
@@ -240,7 +240,7 @@
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="clean-all-test" depends="clean-all,generate-code,build,test"/>
 
-<target name="run-valid-tests" description="Run validator with valid TTML10 input files">
+<target name="run-valid-tests" description="Run verifier with valid TTML10 input files">
   <java jar="${ttv.target}" fork="true">
     <arg value="-v"/>
     <arg value="--hide-warnings"/>

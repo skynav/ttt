@@ -30,7 +30,7 @@ import java.net.URL;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 
-import com.skynav.ttv.app.TimedTextValidator;
+import com.skynav.ttv.app.TimedTextVerifier;
 
 public class InvalidTestCases {
     @Test
@@ -513,11 +513,11 @@ public class InvalidTestCases {
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
         String[] args = { "-q", "-v", url.toString() };
-        int rv = new TimedTextValidator().run(args);
+        int rv = new TimedTextVerifier().run(args);
         if (rv == 0)
-            fail("Unexpected validation success.");
+            fail("Unexpected success.");
         else if (rv != 1)
-            fail("Unexpected validation failure code: expected 1, got " + rv + ".");
+            fail("Unexpected failure code: expected 1, got " + rv + ".");
     }
 }
 

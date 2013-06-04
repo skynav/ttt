@@ -81,12 +81,12 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
 import com.skynav.ttv.util.ErrorReporter;
 
-public class TimedTextValidator implements ErrorReporter {
+public class TimedTextVerifier implements ErrorReporter {
 
     private static final Model defaultModel = Models.getDefaultModel();
 
     // banner text
-    private static final String banner = "Timed Text Validator (TTV) [" + Version.CURRENT + "] Copyright 2013 Skynav, Inc.";
+    private static final String banner = "Timed Text Verifier (TTV) [" + Version.CURRENT + "] Copyright 2013 Skynav, Inc.";
 
     // usage text
     private static final String usage =
@@ -104,12 +104,14 @@ public class TimedTextValidator implements ErrorReporter {
         "    --hide-warnings          - hide warnings (but count them)\n" +
         "    --model NAME             - specify model name (default: " + defaultModel.getName() + ")\n" +
         "    --quiet                  - don't show banner\n" +
-        "    --show-models            - show built-in validation models (use with --verbose to show more details)\n" +
+        "    --show-models            - show built-in verification models (use with --verbose to show more details)\n" +
         "    --show-repository        - show source code repository information\n" +
         "    --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
         "    --treat-foreign-as TOKEN - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
              ForeignTreatment.getDefault().name().toLowerCase() + ")\n" +
         "    --treat-warning-as-error - treat warning as error (overrides --disable-warnings)\n" +
+        "    --until-phase PHASE      - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
+             Phase.getDefault().name().toLowerCase() + ")\n" +
         "  Non-Option Arguments:\n" +
         "    URL                      - an absolute or relative URL; if relative, resolved against current working directory\n";
 
@@ -126,18 +128,21 @@ public class TimedTextValidator implements ErrorReporter {
     private boolean showModels;
     private boolean showRepository;
     private String treatForeignAs;
+    private String untilPhase;
     private boolean treatWarningAsError;
     private int verbose;
 
     // derived option state
     private Model model;
     private ForeignTreatment foreignTreatment;
+    private Phase lastPhase;
 
     // global processing state
     private SchemaFactory schemaFactory;
     private Map<URL,Schema> schemas = new java.util.HashMap<URL,Schema>();
 
     // per-resource processing state
+    private Phase currentPhase;
     private URI resourceUri;
     private ByteBuffer resourceBufferRaw;
     private int resourceErrors;
@@ -164,7 +169,35 @@ public class TimedTextValidator implements ErrorReporter {
         }
     }
 
-    public TimedTextValidator() {
+    private enum Phase {
+        // N.B. Do not change the following order, since ordinal() is used below.
+        None,
+        Resource,
+        WellFormedness,
+        Validity,
+        Semantics,
+        All;
+
+        public boolean isEnabled(Phase phase) {
+            return phase.ordinal() <= ordinal();
+        }
+
+        public static Phase valueOfIgnoringCase(String value) {
+            if (value == null)
+                throw new IllegalArgumentException();
+            for (Phase v: values()) {
+                if (value.equalsIgnoreCase(v.name()))
+                    return v;
+            }
+            throw new IllegalArgumentException();
+        }
+
+        public static Phase getDefault() {
+            return All;
+        }
+    }
+
+    public TimedTextVerifier() {
     }
 
     @Override
@@ -240,9 +273,10 @@ public class TimedTextValidator implements ErrorReporter {
         return logWarning(message(locator, message));
     }
 
-    private void logWarning(Exception e) {
-        logWarning(extractMessage(e));
+    private boolean logWarning(Exception e) {
+        boolean treatedAsError = logWarning(extractMessage(e));
         logDebug(e);
+        return treatedAsError;
     }
 
     @Override
@@ -311,6 +345,10 @@ public class TimedTextValidator implements ErrorReporter {
             this.treatForeignAs = args[++index];
         } else if (option.equals("treat-warning-as-error")) {
             this.treatWarningAsError = true;
+        } else if (option.equals("until-phase")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            this.untilPhase = args[++index];
         } else if (option.equals("verbose")) {
             this.verbose += 1;
         } else
@@ -357,6 +395,14 @@ public class TimedTextValidator implements ErrorReporter {
             }
         } else
             foreignTreatment = ForeignTreatment.getDefault();
+        if (this.untilPhase != null) {
+            try {
+                this.lastPhase = Phase.valueOfIgnoringCase(this.untilPhase);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidOptionUsageException("until-phase", "unknown token: " + this.untilPhase);
+            }
+        } else
+            lastPhase = Phase.getDefault();
     }
 
     private List<String> processOptionsAndArgs(List<String> nonOptionArgs) {
@@ -412,7 +458,7 @@ public class TimedTextValidator implements ErrorReporter {
     private void showModels() {
         String defaultModelName = Models.getDefaultModel().getName();
         StringBuffer sb = new StringBuffer();
-        sb.append("Validation Models:\n");
+        sb.append("Verification Models:\n");
         for (String modelName : Models.getModelNames()) {
             sb.append("  ");
             sb.append(modelName);
@@ -553,8 +599,13 @@ public class TimedTextValidator implements ErrorReporter {
         this.resourceWarnings = 0;
     }
 
-    private boolean checkResource(String uri) {
-        logInfo("Checking resource presence and encoding...");
+    private boolean verifyResource(String uri) {
+        this.currentPhase = Phase.Resource;
+        if (!this.lastPhase.isEnabled(Phase.Resource)) {
+            logInfo("Skipping resource presence and encoding verification phase (" + this.currentPhase.ordinal() + ").");
+            return true;
+        } else
+            logInfo("Verifying resource presence and encoding phase (" + this.currentPhase.ordinal() + ")...");
         URI uriResource = resolve(uri);
         if (uriResource != null) {
             ByteBuffer bytesBuffer = readResource(uriResource);
@@ -587,8 +638,13 @@ public class TimedTextValidator implements ErrorReporter {
         }
     }
 
-    private boolean checkWellFormedness() {
-        logInfo("Checking well-formedness...");
+    private boolean verifyWellFormedness() {
+        this.currentPhase = Phase.WellFormedness;
+        if (!this.lastPhase.isEnabled(Phase.WellFormedness)) {
+            logInfo("Skipping XML well-formedness verification phase (" + this.currentPhase.ordinal() + ").");
+            return true;
+        } else
+            logInfo("Verifying XML well-formedness phase (" + this.currentPhase.ordinal() + ")...");
         try {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setValidating(false);
@@ -596,17 +652,25 @@ public class TimedTextValidator implements ErrorReporter {
             SAXParser p = pf.newSAXParser();
             p.parse(openStream(this.resourceBufferRaw), new DefaultHandler() {
                 public void error(SAXParseException e) {
+                    // ensure parsing is terminated on well-formedness error
                     logError(e);
+                    throw new WellFormednessErrorException(e);
                 }
                 public void fatalError(SAXParseException e) {
+                    // ensure parsing is terminated on well-formedness error
                     logError(e);
+                    throw new WellFormednessErrorException(e);
                 }
                 public void warning(SAXParseException e) {
-                    logWarning(e);
+                    // ensure parsing is terminated on well-formedness warning treated as error
+                    if (logWarning(e))
+                        throw new WellFormednessErrorException(e);
                 }
             }, this.resourceUri.toString());
         } catch (ParserConfigurationException e) {
             logError(e);
+        } catch (WellFormednessErrorException e) {
+            // Already logged error via default handler overrides above.
         } catch (SAXParseException e) {
             // Already logged error via default handler overrides above.
         } catch (SAXException e) {
@@ -638,7 +702,8 @@ public class TimedTextValidator implements ErrorReporter {
                 throw new SchemaValidationErrorException(e);
             }
             public void warning(SAXParseException e) {
-                logWarning(e);
+                if (logWarning(e))
+                    throw new SchemaValidationErrorException(e);
             }
         });
         try {
@@ -676,8 +741,9 @@ public class TimedTextValidator implements ErrorReporter {
                 }
             }
             if (urlSchema == null) {
-                logDebug("Can't find schema resource " + resourceName + ".");
-                throw new SchemaValidationErrorException(new MissingResourceException("Can't find schema resource " + resourceName + ".", getClass().getName(), resourceName));
+                String message = "Can't find schema resource " + resourceName + ".";
+                logDebug(message);
+                throw new SchemaValidationErrorException(new MissingResourceException(message, getClass().getName(), resourceName));
             }
             return getSchema(urlSchema);
         } catch (IOException e) {
@@ -689,8 +755,13 @@ public class TimedTextValidator implements ErrorReporter {
         return getSchema(this.model.getSchemaResourceName());
     }
 
-    private boolean checkSchemaValidity() {
-        logInfo("Checking validity...");
+    private boolean verifyValidity() {
+        this.currentPhase = Phase.Validity;
+        if (!this.lastPhase.isEnabled(Phase.Validity)) {
+            logInfo("Skipping XSD validity verification phase (" + this.currentPhase.ordinal() + ").");
+            return true;
+        } else
+            logInfo("Verifying XSD validity phase (" + this.currentPhase.ordinal() + ")...");
         try {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
@@ -701,12 +772,15 @@ public class TimedTextValidator implements ErrorReporter {
             Validator v = getSchema().newValidator();
             v.setErrorHandler(new ErrorHandler() {
                 public void error(SAXParseException e) {
+                    // don't terminated validation on validation error
                     logError(e);
                 }
                 public void fatalError(SAXParseException e) {
+                    // don't terminated validation on validation error
                     logError(e);
                 }
                 public void warning(SAXParseException e) {
+                    // don't terminated validation on validation warning treated as error
                     logWarning(e);
                 }
             });
@@ -748,7 +822,7 @@ public class TimedTextValidator implements ErrorReporter {
         return sb.toString();
     }
 
-    private boolean checkRootElement(JAXBElement<?> root, Map<Class<?>,String> rootClasses, Map<Object,Locator> locators) {
+    private boolean verifyRootElement(JAXBElement<?> root, Map<Class<?>,String> rootClasses, Map<Object,Locator> locators) {
         Object contentObject = root.getValue();
         for (Class<?> rootClass : rootClasses.keySet()) {
             if (rootClass.isInstance(contentObject))
@@ -759,8 +833,13 @@ public class TimedTextValidator implements ErrorReporter {
         return false;
     }
 
-    private boolean checkSemanticsValidity() {
-        logInfo("Checking semantics validity...");
+    private boolean verifySemantics() {
+        this.currentPhase = Phase.Semantics;
+        if (!this.lastPhase.isEnabled(Phase.Semantics)) {
+            logInfo("Skipping semantics verification phase (" + this.currentPhase.ordinal() + ").");
+            return true;
+        } else
+            logInfo("Verifying semantics phase (" + this.currentPhase.ordinal() + ")...");
         try {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
@@ -786,7 +865,7 @@ public class TimedTextValidator implements ErrorReporter {
                 logError(message("Unexpected root element, can't introspect non-JAXBElement"));
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
-                if (checkRootElement(root, this.model.getRootClasses(), locators))
+                if (verifyRootElement(root, this.model.getRootClasses(), locators))
                     this.model.getSemanticsValidator().validate(root.getValue(), locators, this);
             }
         } catch (UnmarshalException e) {
@@ -797,16 +876,16 @@ public class TimedTextValidator implements ErrorReporter {
         return this.resourceErrors == 0;
     }
 
-    private int validate(String uri) {
-        logInfo("Validating {" + uri + "}.");
+    private int verify(String uri) {
+        logInfo("Verifying {" + uri + "}.");
         do {
-            if (!checkResource(uri))
+            if (!verifyResource(uri))
                 break;
-            if (!checkWellFormedness())
+            if (!verifyWellFormedness())
                 break;
-            if (!checkSchemaValidity())
+            if (!verifyValidity())
                 break;
-            if (!checkSemanticsValidity())
+            if (!verifySemantics())
                 break;
         } while (false);
         int rv = this.resourceErrors > 0 ? 1 : 0;
@@ -817,11 +896,11 @@ public class TimedTextValidator implements ErrorReporter {
         return rv;
     }
 
-    private int validate(List<String> nonOptionArgs) {
+    private int verify(List<String> nonOptionArgs) {
         int numFailure = 0;
         int numSuccess = 0;
         for (String arg : nonOptionArgs) {
-            if (validate(arg) != 0)
+            if (verify(arg) != 0)
                 ++numFailure;
             else
                 ++numSuccess;
@@ -853,7 +932,7 @@ public class TimedTextValidator implements ErrorReporter {
                 showRepository();
             else {
                 showProcessingInfo();
-                rv = validate(nonOptionArgs);
+                rv = verify(nonOptionArgs);
             }
         } catch (ShowUsageException e) {
             System.out.println(banner);
@@ -867,7 +946,7 @@ public class TimedTextValidator implements ErrorReporter {
     }
 
     public static void main(String[] args) {
-        Runtime.getRuntime().exit(new TimedTextValidator().run(args));
+        Runtime.getRuntime().exit(new TimedTextVerifier().run(args));
     }
 
     private static class UsageException extends RuntimeException {
@@ -902,6 +981,13 @@ public class TimedTextValidator implements ErrorReporter {
         static final long serialVersionUID = 0;
         ShowUsageException() {
             super("show usage");
+        }
+    }
+
+    private static class WellFormednessErrorException extends RuntimeException {
+        static final long serialVersionUID = 0;
+        WellFormednessErrorException(Throwable cause) {
+            super(cause);
         }
     }
 
