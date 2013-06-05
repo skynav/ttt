@@ -23,18 +23,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator.ttml.style;
+package com.skynav.ttv.verifier.ttml.style;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.validator.StyleValueValidator;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.NegativeTreatment;
 
-public class FontFamilyValidator implements StyleValueValidator {
+public class LineHeightVerifier implements StyleValueVerifier {
 
-    public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        return true;
+    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        String value = (String) valueObject;
+        if (VerifierUtilities.isNormal(value))
+            return true;
+        else if (VerifierUtilities.isLengths(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error, null))
+            return true;
+        else {
+            VerifierUtilities.badLengths(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error);
+            return false;
+        }
     }
 
 }

@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator.ttml.style;
+package com.skynav.ttv.verifier.ttml.style;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -42,7 +42,7 @@ import com.skynav.ttv.model.value.impl.LengthImpl;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.util.NullErrorReporter;
 
-public class ValidatorUtilities {
+public class VerifierUtilities {
 
     public enum MixedUnitsTreatment {
         Error,

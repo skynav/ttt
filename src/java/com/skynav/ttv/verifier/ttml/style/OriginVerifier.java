@@ -23,26 +23,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator.ttml.style;
+package com.skynav.ttv.verifier.ttml.style;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.validator.StyleValueValidator;
-import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.MixedUnitsTreatment;
-import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.NegativeTreatment;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.NegativeTreatment;
 
-public class ExtentValidator implements StyleValueValidator {
+public class OriginVerifier implements StyleValueVerifier {
 
-    public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (ValidatorUtilities.isAuto(value))
+        if (VerifierUtilities.isAuto(value))
             return true;
-        else if (ValidatorUtilities.isLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Error, MixedUnitsTreatment.Allow, null))
+        else if (VerifierUtilities.isLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Allow, MixedUnitsTreatment.Allow, null))
             return true;
         else {
-            ValidatorUtilities.badLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Error, MixedUnitsTreatment.Allow);
+            VerifierUtilities.badLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Allow, MixedUnitsTreatment.Allow);
             return false;
         }
     }

@@ -23,28 +23,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator.ttml.style;
+package com.skynav.ttv.verifier;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.validator.StyleValueValidator;
-import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.NegativeTreatment;
-import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.ZeroTreatment;
 
-public class ZIndexValidator implements StyleValueValidator {
+public interface StyleValueVerifier {
 
-    public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        String value = (String) valueObject;
-        if (ValidatorUtilities.isAuto(value))
-            return true;
-        else if (ValidatorUtilities.isIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Allow, ZeroTreatment.Allow, null))
-            return true;
-        else {
-            ValidatorUtilities.badIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, ZeroTreatment.Error);
-            return false;
-        }
-    }
+    /**
+     * Verify style property's value.
+     * @param model the model that governs this verifier
+     * @param name style name
+     * @param valueObject style value
+     * @param locator a locator that corresponds to the lexical location of the content object
+     * @param errorReporter handler for error reporting callbacks
+     * @return true if validation succeeds without error
+     */
+    boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter);
 
 }

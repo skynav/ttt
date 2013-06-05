@@ -23,24 +23,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator;
+package com.skynav.ttv.verifier.ttml.style;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.verifier.StyleValueVerifier;
 
-public interface StyleValueValidator {
+public class ColorVerifier implements StyleValueVerifier {
 
-    /**
-     * Validate style property's value.
-     * @param model the model that governs this validator
-     * @param name style name
-     * @param valueObject style value
-     * @param locator a locator that corresponds to the lexical location of the content object
-     * @param errorReporter handler for error reporting callbacks
-     * @return true if validation succeeds without error
-     */
-    boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter);
+    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        String value = (String) valueObject;
+        if (VerifierUtilities.isColor(value, locator, errorReporter, null))
+            return true;
+        else {
+            VerifierUtilities.badColor(value, locator, errorReporter);
+            return false;
+        }
+    }
 
 }

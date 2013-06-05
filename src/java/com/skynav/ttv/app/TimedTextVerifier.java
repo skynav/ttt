@@ -866,7 +866,7 @@ public class TimedTextVerifier implements ErrorReporter {
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
                 if (verifyRootElement(root, this.model.getRootClasses(), locators))
-                    this.model.getSemanticsValidator().validate(root.getValue(), locators, this);
+                    this.model.getSemanticsVerifier().verify(root.getValue(), locators, this);
             }
         } catch (UnmarshalException e) {
             logError(e);

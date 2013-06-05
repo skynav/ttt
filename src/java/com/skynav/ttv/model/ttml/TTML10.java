@@ -28,8 +28,8 @@ package com.skynav.ttv.model.ttml;
 import java.util.Map;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.validator.SemanticsValidator;
-import com.skynav.ttv.validator.StyleValidator;
+import com.skynav.ttv.verifier.SemanticsVerifier;
+import com.skynav.ttv.verifier.StyleVerifier;
 
 public class TTML10 {
     public static final Model MODEL = new TTML10Model();
@@ -55,23 +55,23 @@ public class TTML10 {
         public Map<Class<?>,String> getRootClasses() {
             return rootClasses;
         }
-        private SemanticsValidator semanticsValidator;
-        public SemanticsValidator getSemanticsValidator() {
+        private SemanticsVerifier semanticsVerifier;
+        public SemanticsVerifier getSemanticsVerifier() {
             synchronized (this) {
-                if (semanticsValidator == null) {
-                    semanticsValidator = new com.skynav.ttv.validator.ttml.TTML10SemanticsValidator(this);
+                if (semanticsVerifier == null) {
+                    semanticsVerifier = new com.skynav.ttv.verifier.ttml.TTML10SemanticsVerifier(this);
                 }
             }
-            return semanticsValidator;
+            return semanticsVerifier;
         }
-        private StyleValidator styleValidator;
-        public StyleValidator getStyleValidator() {
+        private StyleVerifier styleVerifier;
+        public StyleVerifier getStyleVerifier() {
             synchronized (this) {
-                if (styleValidator == null) {
-                    styleValidator = new com.skynav.ttv.validator.ttml.TTML10StyleValidator(this);
+                if (styleVerifier == null) {
+                    styleVerifier = new com.skynav.ttv.verifier.ttml.TTML10StyleVerifier(this);
                 }
             }
-            return styleValidator;
+            return styleVerifier;
         }
     }
 }

@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator.ttml;
+package com.skynav.ttv.verifier.ttml;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,53 +36,53 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml10.tt.TimedText;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.validator.StyleValidator;
-import com.skynav.ttv.validator.StyleValueValidator;
-import com.skynav.ttv.validator.ttml.style.ColorValidator;
-import com.skynav.ttv.validator.ttml.style.ExtentValidator;
-import com.skynav.ttv.validator.ttml.style.FontFamilyValidator;
-import com.skynav.ttv.validator.ttml.style.FontSizeValidator;
-import com.skynav.ttv.validator.ttml.style.LineHeightValidator;
-import com.skynav.ttv.validator.ttml.style.OpacityValidator;
-import com.skynav.ttv.validator.ttml.style.OriginValidator;
-import com.skynav.ttv.validator.ttml.style.PaddingValidator;
-import com.skynav.ttv.validator.ttml.style.TextOutlineValidator;
-import com.skynav.ttv.validator.ttml.style.ValidatorUtilities;
-import com.skynav.ttv.validator.ttml.style.ZIndexValidator;
+import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.ttml.style.ColorVerifier;
+import com.skynav.ttv.verifier.ttml.style.ExtentVerifier;
+import com.skynav.ttv.verifier.ttml.style.FontFamilyVerifier;
+import com.skynav.ttv.verifier.ttml.style.FontSizeVerifier;
+import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
+import com.skynav.ttv.verifier.ttml.style.OpacityVerifier;
+import com.skynav.ttv.verifier.ttml.style.OriginVerifier;
+import com.skynav.ttv.verifier.ttml.style.PaddingVerifier;
+import com.skynav.ttv.verifier.ttml.style.TextOutlineVerifier;
+import com.skynav.ttv.verifier.ttml.style.VerifierUtilities;
+import com.skynav.ttv.verifier.ttml.style.ZIndexVerifier;
 
-public class TTML10StyleValidator implements StyleValidator {
+public class TTML10StyleVerifier implements StyleVerifier {
 
     public static final String getStyleNamespaceUri() {
         return "http://www.w3.org/ns/ttml#styling";
     }
 
     private static Object[][] styleAccessorMap = new Object[][] {
-        // property name         accessor method        specialized validator
-        { "backgroundColor",    "getBackgroundColor",   String.class,   ColorValidator.class            },
-        { "color",              "getColor",             String.class,   ColorValidator.class            },
-        { "extent",             "getExtent",            String.class,   ExtentValidator.class           },
-        { "fontFamily",         "getFontFamily",        String.class,   FontFamilyValidator.class       },
-        { "fontSize",           "getFontSize",          String.class,   FontSizeValidator.class         },
-        { "lineHeight",         "getLineHeight",        String.class,   LineHeightValidator.class       },
-        { "opacity",            "getOpacity",           Float.class,    OpacityValidator.class          },
-        { "origin",             "getOrigin",            String.class,   OriginValidator.class           },
-        { "padding",            "getPadding",           String.class,   PaddingValidator.class          },
-        { "textOutline",        "getTextOutline",       String.class,   TextOutlineValidator.class      },
-        { "zIndex",             "getZIndex",            String.class,   ZIndexValidator.class           },
+        // property name         accessor method        specialized verifier
+        { "backgroundColor",    "getBackgroundColor",   String.class,   ColorVerifier.class            },
+        { "color",              "getColor",             String.class,   ColorVerifier.class            },
+        { "extent",             "getExtent",            String.class,   ExtentVerifier.class           },
+        { "fontFamily",         "getFontFamily",        String.class,   FontFamilyVerifier.class       },
+        { "fontSize",           "getFontSize",          String.class,   FontSizeVerifier.class         },
+        { "lineHeight",         "getLineHeight",        String.class,   LineHeightVerifier.class       },
+        { "opacity",            "getOpacity",           Float.class,    OpacityVerifier.class          },
+        { "origin",             "getOrigin",            String.class,   OriginVerifier.class           },
+        { "padding",            "getPadding",           String.class,   PaddingVerifier.class          },
+        { "textOutline",        "getTextOutline",       String.class,   TextOutlineVerifier.class      },
+        { "zIndex",             "getZIndex",            String.class,   ZIndexVerifier.class           },
     };
 
     private Model model;
     private Map<String, StyleAccessor> accessors;
 
-    public TTML10StyleValidator(Model model) {
+    public TTML10StyleVerifier(Model model) {
         populate(model);
     }
 
-    public boolean validate(Object content, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Object content, Locator locator, ErrorReporter errorReporter) {
         boolean failed = false;
         for (String name : accessors.keySet()) {
             StyleAccessor sa = accessors.get(name);
-            if (!sa.validate(model, content, locator, errorReporter))
+            if (!sa.verify(model, content, locator, errorReporter))
                 failed = true;
         }
         return !failed;
@@ -95,8 +95,8 @@ public class TTML10StyleValidator implements StyleValidator {
             String styleName = (String) styleAccessorEntry[0];
             String accessorName = (String) styleAccessorEntry[1];
             Class<?> valueClass = (Class<?>) styleAccessorEntry[2];
-            Class<?> validatorClass = (Class<?>) styleAccessorEntry[3];
-            accessors.put(styleName, new StyleAccessor(styleName, accessorName, valueClass, validatorClass));
+            Class<?> verifierClass = (Class<?>) styleAccessorEntry[3];
+            accessors.put(styleName, new StyleAccessor(styleName, accessorName, valueClass, verifierClass));
         }
         this.model = model;
         this.accessors = accessors;
@@ -107,19 +107,19 @@ public class TTML10StyleValidator implements StyleValidator {
         private String styleName;
         private String accessorName;
         private Class<?> valueClass;
-        private StyleValueValidator validator;
+        private StyleValueVerifier verifier;
 
-        public StyleAccessor(String styleName, String accessorName, Class<?> valueClass, Class<?> validatorClass) {
-            populate(styleName, accessorName, valueClass, validatorClass);
+        public StyleAccessor(String styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass) {
+            populate(styleName, accessorName, valueClass, verifierClass);
         }
 
-        public boolean validate(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
+        public boolean verify(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
             boolean success = false;
             Object value = getStyleValue(content);
             if (value != null) {
                 if (value instanceof String)
-                    success = validate(model, (String) value, locator, errorReporter);
-                else if (!validator.validate(model, styleName, value, locator, errorReporter))
+                    success = verify(model, (String) value, locator, errorReporter);
+                else if (!verifier.verify(model, styleName, value, locator, errorReporter))
                     errorReporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
                 else
                     success = true;
@@ -128,24 +128,24 @@ public class TTML10StyleValidator implements StyleValidator {
             return success;
         }
 
-        private boolean validate(Model model, String value, Locator locator, ErrorReporter errorReporter) {
+        private boolean verify(Model model, String value, Locator locator, ErrorReporter errorReporter) {
             boolean success = false;
             if (value.length() == 0)
                 errorReporter.logError(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
-            else if (ValidatorUtilities.isAllXMLSpace(value))
+            else if (VerifierUtilities.isAllXMLSpace(value))
                 errorReporter.logError(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
             else if (!value.equals(value.trim()))
                 errorReporter.logError(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
-            else if (!validator.validate(model, styleName, value, locator, errorReporter))
+            else if (!verifier.verify(model, styleName, value, locator, errorReporter))
                 errorReporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
             else
                 success = true;
             return success;
         }
 
-        private StyleValueValidator createStyleValueValidator(Class<?> validatorClass) {
+        private StyleValueVerifier createStyleValueVerifier(Class<?> verifierClass) {
             try {
-                return (StyleValueValidator) validatorClass.newInstance();
+                return (StyleValueVerifier) verifierClass.newInstance();
             } catch (InstantiationException e) {
                 throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
@@ -153,11 +153,11 @@ public class TTML10StyleValidator implements StyleValidator {
             }
         }
 
-        private void populate(String styleName, String accessorName, Class<?> valueClass, Class<?> validatorClass) {
+        private void populate(String styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass) {
             this.styleName = styleName;
             this.accessorName = accessorName;
             this.valueClass = valueClass;
-            this.validator = createStyleValueValidator(validatorClass);
+            this.verifier = createStyleValueVerifier(verifierClass);
         }
 
         private Object getStyleValue(Object content) {

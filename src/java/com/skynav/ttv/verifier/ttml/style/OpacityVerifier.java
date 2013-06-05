@@ -23,23 +23,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator;
-
-import java.util.Map;
+package com.skynav.ttv.verifier.ttml.style;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.verifier.StyleValueVerifier;
 
-public interface SemanticsValidator {
+public class OpacityVerifier implements StyleValueVerifier {
 
-    /**
-     * Validate semantics of content object.
-     * @param content a JAXB content object
-     * @param locators a map of JAXB content objects to locators
-     * @param errorReporter handler for error reporting callbacks
-     * @return true if validation succeeds without error
-     */
-    boolean validate(Object root, Map<Object,Locator> locators, ErrorReporter errorReporter);
+    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        Float value = (Float) valueObject;
+        float opacity = value.floatValue();
+        if (value.isNaN()) {
+            errorReporter.logWarning(locator, "Not a Number 'NaN' should not be used with " + name + "; use '0' instead.");
+        } else if (value.isInfinite()) {
+            if (opacity < 0)
+                errorReporter.logWarning(locator, "Negative Infinity '-INF' should not be used with " + name + "; use '0' instead.");
+            else
+                errorReporter.logWarning(locator, "Positive Infinity 'INF' should not be used with " + name + "; use '1' instead.");
+        } else if (opacity < 0) {
+            errorReporter.logWarning(locator, "Negative values should not be used with " + name + "; use '0' instead.");
+        } else if (opacity > 1) {
+            errorReporter.logWarning(locator, "Positive values greater than 1 should not be used with " + name + "; use '1' instead.");
+        }
+        return true;
+    }
 
 }

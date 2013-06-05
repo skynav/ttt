@@ -23,24 +23,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.validator.ttml.style;
+package com.skynav.ttv.verifier.ttml.style;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.validator.StyleValueValidator;
-import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.MixedUnitsTreatment;
-import com.skynav.ttv.validator.ttml.style.ValidatorUtilities.NegativeTreatment;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.NegativeTreatment;
+import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.ZeroTreatment;
 
-public class FontSizeValidator implements StyleValueValidator {
+public class ZIndexVerifier implements StyleValueVerifier {
 
-    public boolean validate(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (ValidatorUtilities.isLengths(value, locator, errorReporter, 1, 2, NegativeTreatment.Error, MixedUnitsTreatment.Error, null))
+        if (VerifierUtilities.isAuto(value))
+            return true;
+        else if (VerifierUtilities.isIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Allow, ZeroTreatment.Allow, null))
             return true;
         else {
-            ValidatorUtilities.badLengths(value, locator, errorReporter, 1, 2, NegativeTreatment.Error, MixedUnitsTreatment.Error);
+            VerifierUtilities.badIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, ZeroTreatment.Error);
             return false;
         }
     }
