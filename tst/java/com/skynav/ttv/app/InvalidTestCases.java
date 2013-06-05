@@ -508,6 +508,11 @@ public class InvalidTestCases {
         performInvalidityTest("ttml10-invalid-bad-z-index-non-integer-token.xml");
     }
 
+    @Test
+    public void testInvalidMetadataNonElementContent() throws Exception {
+        performInvalidityTest("ttml10-invalid-metadata-non-element-content.xml");
+    }
+
     private void performInvalidityTest(String resourceName) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

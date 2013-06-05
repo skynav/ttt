@@ -59,6 +59,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidForeignMetadata() throws Exception {
+        performValidityTest("ttml10-valid-foreign-metadata.xml");
+    }
+
+    @Test
     public void testValidOpacityOutOfRange() throws Exception {
         performValidityTest("ttml10-valid-opacity-out-of-range.xml");
     }
