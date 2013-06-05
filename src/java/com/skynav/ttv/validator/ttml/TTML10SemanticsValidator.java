@@ -30,6 +30,8 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
+import org.w3c.dom.Element;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
@@ -364,7 +366,7 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
 
     private boolean validate(Metadata metadata) {
         boolean failed = false;
-        for (Object content : metadata.getContent()) {
+        for (Object content : metadata.getAny()) {
             if (!isMetadata(content)) {
                 if (!validateMetadata(content))
                     failed = true;
@@ -383,10 +385,13 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
         return !failed;
     }
 
+    private boolean validateForeignMetadata(Element metadata) {
+        boolean failed = false;
+        return !failed;
+    }
+
     private boolean validateMetadata(Object metadata) {
-        if (metadata instanceof String)
-            return true;
-        else if (metadata instanceof JAXBElement<?>)
+        if (metadata instanceof JAXBElement<?>)
             return validateMetadata(((JAXBElement<?>)metadata).getValue());
         else if (metadata instanceof Actor)
             return validate((Actor)metadata);
@@ -402,6 +407,8 @@ public class TTML10SemanticsValidator implements SemanticsValidator {
             return validate((Name)metadata);
         else if (metadata instanceof Title)
             return validate((Title)metadata);
+        else if (metadata instanceof Element)
+            return validateForeignMetadata((Element)metadata);
         else
             throw new IllegalStateException("Unexpected JAXB content object of type '" + metadata.getClass().getName() +  "'.");
     }

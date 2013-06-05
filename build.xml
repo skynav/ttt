@@ -249,6 +249,7 @@
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-styles.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-parameters.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign-metadata.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-opacity-out-of-range.xml"/>
   </java>
 </target>

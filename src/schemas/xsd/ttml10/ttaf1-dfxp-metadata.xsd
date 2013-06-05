@@ -8,10 +8,9 @@
   <xs:attributeGroup name="metadata.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
   </xs:attributeGroup>
-  <xs:complexType name="metadata.eltype" mixed="true">
+  <xs:complexType name="metadata.eltype">
     <xs:sequence>
-      <xs:any namespace="##other" processContents="lax" minOccurs="0"
-        maxOccurs="unbounded"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attributeGroup ref="tt:metadata.attlist"/>
   </xs:complexType>
