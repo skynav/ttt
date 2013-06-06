@@ -54,9 +54,9 @@ In addition, the following similarly typed attributes are similarly verified in 
  * `begin` - *TBD*
  * `dur` - *TBD*
  * `end` - *TBD*
- * `ttp:cellResolution` - *TBD*
- * `ttp:frameRateMultiplier` - *TBD*
- * `ttp:pixelAspectRatio` - *TBD*
+ * `ttp:cellResolution`
+ * `ttp:frameRateMultiplier`
+ * `ttp:pixelAspectRatio`
 
 A number of additional semantic constraints are tested in the fourth phase, which will (in the meausure of time), be summarizeed here.
 
@@ -252,19 +252,13 @@ Total time: 2 seconds
  * Error if xml:base on ttp:extensions is not absolute. (6.1.4 P4)
  * Error if absolutized extension designator doesn't conform to extension-designation defined in E.1. (6.1.5. P4)
  * Verify xs:string typed parameter attribute values on tt element. (6.2)
- * Error if columns or rows in ttp:cellResolution are zero. (6.2.1 P4)
  * Error if ttp:frameRate is not greater than zero. (6.2.4 P7)
- * Error if ttp:frameRateMultiplier numerator or denominator is zero. (6.2.5 P5)
  * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and dur attribute is specified on any element. (6.2.6 P12, 10.2.3 P3)
- * Error if width or height in ttp:pixelAspectRation are zero. (6.2.7 P4)
  * Error if tts:subFrameRate is zero. (6.2.9 P7)
  * Error if tts:tickRate is zero. (6.2.10 P7)
  * Error if style attribute references a style element that is a descendant of region, i.e, is not a descendant of styling. (8.1.2 P4)
  * Error if style attribute IDREF does not reference a style element. ([Issue 220](https://www.w3.org/AudioVideo/TT/tracker/issues/220)).
  * Error if tts:extent on tt element does not specify two pixel unit length values. (8.2.7 P7)
- * Verify xs:string typed tts:fontFamily value on styled elements. (8.2.8)
- * Verify xs:string typed tts:textOutline value on styled elements. (8.2.20)
- * Verify xs:string typed tts:zIndex value on styled elements. (8.2.25)
  * Error if loop in sequence of chained style references. (8.4.1.3 P3)
  * Error if region attribute IDREF does not reference a region element. ([Issue 219](https://www.w3.org/AudioVideo/TT/tracker/issues/219)).
  * Error if no region element specified and region attribute is specified on some element. (9.3.1 P2)

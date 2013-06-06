@@ -64,6 +64,46 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadCellResolutionAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-cell-resolution-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadCellResolutionDelimiter() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-cell-resolution-delimiter.xml");
+    }
+
+    @Test
+    public void testInvalidBadCellResolutionEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-cell-resolution-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadCellResolutionExtraInteger() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-cell-resolution-extra-integer.xml");
+    }
+
+    @Test
+    public void testInvalidBadCellResolutionMissingInteger() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-cell-resolution-missing-integer.xml");
+    }
+
+    @Test
+    public void testInvalidBadCellResolutionNegative() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-cell-resolution-negative.xml");
+    }
+
+    @Test
+    public void testInvalidBadCellResolutionWithUnits() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-cell-resolution-with-units.xml");
+    }
+
+    @Test
+    public void testInvalidBadCellResolutionZero() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-cell-resolution-zero.xml");
+    }
+
+    @Test
     public void testInvalidBadColorAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-color-all-space.xml");
     }
@@ -384,6 +424,46 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadFrameRateMultiplierAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateMultiplierDelimiter() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-delimiter.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateMultiplierEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateMultiplierExtraInteger() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-extra-integer.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateMultiplierMissingInteger() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-missing-integer.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateMultiplierNegative() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-negative.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateMultiplierWithUnits() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-with-units.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateMultiplierZero() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-zero.xml");
+    }
+
+    @Test
     public void testInvalidBadLineHeightAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-line-height-all-space.xml");
     }
@@ -506,6 +586,46 @@ public class InvalidTestCases {
     @Test
     public void testInvalidBadPaddingUnknownUnit() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-padding-unknown-unit.xml");
+    }
+
+    @Test
+    public void testInvalidBadPixelAspectRatioAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadPixelAspectRatioDelimiter() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-delimiter.xml");
+    }
+
+    @Test
+    public void testInvalidBadPixelAspectRatioEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadPixelAspectRatioExtraInteger() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-extra-integer.xml");
+    }
+
+    @Test
+    public void testInvalidBadPixelAspectRatioMissingInteger() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-missing-integer.xml");
+    }
+
+    @Test
+    public void testInvalidBadPixelAspectRatioNegative() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-negative.xml");
+    }
+
+    @Test
+    public void testInvalidBadPixelAspectRatioWithUnits() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-with-units.xml");
+    }
+
+    @Test
+    public void testInvalidBadPixelAspectRatioZero() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-zero.xml");
     }
 
     @Test

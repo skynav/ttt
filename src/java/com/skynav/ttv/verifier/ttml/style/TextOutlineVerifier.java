@@ -30,7 +30,9 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.NegativeTreatment;
+import com.skynav.ttv.verifier.util.Colors;
+import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class TextOutlineVerifier implements StyleValueVerifier {
 
@@ -44,20 +46,20 @@ public class TextOutlineVerifier implements StyleValueVerifier {
         String thickness = null;
         String blur = null;
         if (componentIndex < numComponents) {
-            if (VerifierUtilities.maybeColor(components[componentIndex]))
+            if (Colors.maybeColor(components[componentIndex]))
                 color = components[componentIndex++];
         }
         if (componentIndex < numComponents) {
-            if (VerifierUtilities.maybeLength(components[componentIndex]))
+            if (Lengths.maybeLength(components[componentIndex]))
                 thickness = components[componentIndex++];
         }
         if (componentIndex < numComponents) {
-            if (VerifierUtilities.maybeLength(components[componentIndex]))
+            if (Lengths.maybeLength(components[componentIndex]))
                 blur = components[componentIndex++];
         }
         if (color != null) {
-            if (!VerifierUtilities.isColor(color, locator, errorReporter, null)) {
-                VerifierUtilities.badColor(color, locator, errorReporter);
+            if (!Colors.isColor(color, locator, errorReporter, null)) {
+                Colors.badColor(color, locator, errorReporter);
                 errorReporter.logInfo(locator, "Bad <color> expression in color component '" + color + "'.");
                 failed = true;
             } else if (thickness == null) {
@@ -66,13 +68,13 @@ public class TextOutlineVerifier implements StyleValueVerifier {
             }
         }
         if (thickness != null) {
-            if (!VerifierUtilities.isLength(thickness, locator, errorReporter, NegativeTreatment.Error, null)) {
-                VerifierUtilities.badLength(thickness, locator, errorReporter, NegativeTreatment.Error);
+            if (!Lengths.isLength(thickness, locator, errorReporter, NegativeTreatment.Error, null)) {
+                Lengths.badLength(thickness, locator, errorReporter, NegativeTreatment.Error);
                 errorReporter.logInfo(locator, "Bad <length> expression in thickness component '" + thickness + "'.");
                 failed = true;
             } else if (blur != null) {
-                if (!VerifierUtilities.isLength(blur, locator, errorReporter, NegativeTreatment.Error, null)) {
-                    VerifierUtilities.badLength(blur, locator, errorReporter, NegativeTreatment.Error);
+                if (!Lengths.isLength(blur, locator, errorReporter, NegativeTreatment.Error, null)) {
+                    Lengths.badLength(blur, locator, errorReporter, NegativeTreatment.Error);
                     errorReporter.logInfo(locator, "Bad <length> expression in blur component '" + blur + "'.");
                     failed = true;
                 }

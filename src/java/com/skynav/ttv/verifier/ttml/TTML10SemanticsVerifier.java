@@ -60,6 +60,7 @@ import com.skynav.ttv.model.ttml10.ttm.Description;
 import com.skynav.ttv.model.ttml10.ttm.Name;
 import com.skynav.ttv.model.ttml10.ttm.Title;
 import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 
@@ -68,6 +69,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     private Model model;
     private Map<Object,Locator> locators;
     private ErrorReporter errorReporter;
+    private ParameterVerifier parameterVerifier;
     private StyleVerifier styleVerifier;
 
     public TTML10SemanticsVerifier(Model model) {
@@ -90,6 +92,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
         this.locators = locators;
         this.errorReporter = errorReporter;
         // derived state
+        this.parameterVerifier = model.getParameterVerifier();
         this.styleVerifier = model.getStyleVerifier();
     }
 
@@ -442,8 +445,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verifyParameters(Object content) {
-        boolean failed = false;
-        return !failed;
+        return this.parameterVerifier.verify(content, getLocator(content), this.errorReporter);
     }
 
     private boolean verifyStyles(Object content) {

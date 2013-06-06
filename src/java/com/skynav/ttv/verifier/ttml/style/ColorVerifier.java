@@ -30,15 +30,16 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.util.Colors;
 
 public class ColorVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (VerifierUtilities.isColor(value, locator, errorReporter, null))
+        if (Colors.isColor(value, locator, errorReporter, null))
             return true;
         else {
-            VerifierUtilities.badColor(value, locator, errorReporter);
+            Colors.badColor(value, locator, errorReporter);
             return false;
         }
     }

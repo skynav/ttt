@@ -30,15 +30,16 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.util.Fonts;
 
 public class FontFamilyVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (VerifierUtilities.isFontFamilies(value, locator, errorReporter, null))
+        if (Fonts.isFontFamilies(value, locator, errorReporter, null))
             return true;
         else {
-            VerifierUtilities.badFontFamilies(value, locator, errorReporter);
+            Fonts.badFontFamilies(value, locator, errorReporter);
             return false;
         }
     }

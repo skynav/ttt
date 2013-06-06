@@ -28,6 +28,7 @@ package com.skynav.ttv.model.ttml;
 import java.util.Map;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 
@@ -63,6 +64,15 @@ public class TTML10 {
                 }
             }
             return semanticsVerifier;
+        }
+        private ParameterVerifier parameterVerifier;
+        public ParameterVerifier getParameterVerifier() {
+            synchronized (this) {
+                if (parameterVerifier == null) {
+                    parameterVerifier = new com.skynav.ttv.verifier.ttml.TTML10ParameterVerifier(this);
+                }
+            }
+            return parameterVerifier;
         }
         private StyleVerifier styleVerifier;
         public StyleVerifier getStyleVerifier() {

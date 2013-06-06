@@ -47,8 +47,8 @@ import com.skynav.ttv.verifier.ttml.style.OpacityVerifier;
 import com.skynav.ttv.verifier.ttml.style.OriginVerifier;
 import com.skynav.ttv.verifier.ttml.style.PaddingVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextOutlineVerifier;
-import com.skynav.ttv.verifier.ttml.style.VerifierUtilities;
 import com.skynav.ttv.verifier.ttml.style.ZIndexVerifier;
+import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML10StyleVerifier implements StyleVerifier {
 
@@ -134,7 +134,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             boolean success = false;
             if (value.length() == 0)
                 errorReporter.logError(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
-            else if (VerifierUtilities.isAllXMLSpace(value))
+            else if (Strings.isAllXMLSpace(value))
                 errorReporter.logError(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
                 errorReporter.logError(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");

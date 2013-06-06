@@ -30,19 +30,21 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.NegativeTreatment;
-import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.ZeroTreatment;
+import com.skynav.ttv.verifier.util.Keywords;
+import com.skynav.ttv.verifier.util.Integers;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class ZIndexVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (VerifierUtilities.isAuto(value))
+        if (Keywords.isAuto(value))
             return true;
-        else if (VerifierUtilities.isIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Allow, ZeroTreatment.Allow, null))
+        else if (Integers.isIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Allow, ZeroTreatment.Allow, null))
             return true;
         else {
-            VerifierUtilities.badIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, ZeroTreatment.Error);
+            Integers.badIntegers(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, ZeroTreatment.Error);
             return false;
         }
     }

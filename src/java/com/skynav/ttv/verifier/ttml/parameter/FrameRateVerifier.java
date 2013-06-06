@@ -23,30 +23,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.style;
+package com.skynav.ttv.verifier.ttml.parameter;
+
+import java.math.BigInteger;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.util.Keywords;
-import com.skynav.ttv.verifier.util.Lengths;
-import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
-import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.ParameterValueVerifier;
 
-public class OriginVerifier implements StyleValueVerifier {
+public class FrameRateVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        String value = (String) valueObject;
-        if (Keywords.isAuto(value))
+        int value = ((BigInteger) valueObject).intValue();
+        if (value < 0)
+            throw new IllegalStateException("Unexpected negative value.");
+        else if (value == 0)
+            throw new IllegalStateException("Unexpected zero value.");
+        else
             return true;
-        else if (Lengths.isLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Allow, MixedUnitsTreatment.Allow, null))
-            return true;
-        else {
-            Lengths.badLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Allow, MixedUnitsTreatment.Allow);
-            return false;
-        }
     }
 
 }

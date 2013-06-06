@@ -30,17 +30,18 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.MixedUnitsTreatment;
-import com.skynav.ttv.verifier.ttml.style.VerifierUtilities.NegativeTreatment;
+import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class FontSizeVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
-        if (VerifierUtilities.isLengths(value, locator, errorReporter, 1, 2, NegativeTreatment.Error, MixedUnitsTreatment.Error, null))
+        if (Lengths.isLengths(value, locator, errorReporter, 1, 2, NegativeTreatment.Error, MixedUnitsTreatment.Error, null))
             return true;
         else {
-            VerifierUtilities.badLengths(value, locator, errorReporter, 1, 2, NegativeTreatment.Error, MixedUnitsTreatment.Error);
+            Lengths.badLengths(value, locator, errorReporter, 1, 2, NegativeTreatment.Error, MixedUnitsTreatment.Error);
             return false;
         }
     }

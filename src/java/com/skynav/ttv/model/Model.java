@@ -27,6 +27,7 @@ package com.skynav.ttv.model;
 
 import java.util.Map;
 
+import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 
@@ -74,6 +75,12 @@ public interface Model {
      * @return semantics verifier instance
      */
     SemanticsVerifier getSemanticsVerifier();
+
+    /**
+     * Obtain parameter verifier for model.
+     * @return parameter verifier instance
+     */
+    ParameterVerifier getParameterVerifier();
 
     /**
      * Obtain style verifier for model.
