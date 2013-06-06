@@ -36,8 +36,11 @@ import java.util.regex.Pattern;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.value.Color;
+import com.skynav.ttv.model.value.FontFamily;
+import com.skynav.ttv.model.value.GenericFontFamily;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.impl.ColorImpl;
+import com.skynav.ttv.model.value.impl.FontFamilyImpl;
 import com.skynav.ttv.model.value.impl.LengthImpl;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.util.NullErrorReporter;
@@ -109,6 +112,425 @@ public class VerifierUtilities {
         }
     }
 
+    public static boolean isFontFamily(String value, Locator locator, ErrorReporter errorReporter, FontFamily[] outputFamily) {
+        if (isGenericFontFamily(value, locator, errorReporter, outputFamily))
+            return true;
+        else if (isUnquotedFontFamily(value, locator, errorReporter, outputFamily))
+            return true;
+        else if (isQuotedFontFamily(value, locator, errorReporter, outputFamily))
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isGenericFontFamily(String value, Locator locator, ErrorReporter errorReporter, FontFamily[] outputFamily) {
+        String trimmedValue = value.trim();
+        FontFamily family = FontFamilyImpl.getGenericFamily(trimmedValue);
+        if (family != null) {
+            if (outputFamily != null)
+                outputFamily[0] = family;
+            return true;
+        } else
+            return false;
+    }
+
+    private static boolean isUnquotedFontFamily(String value, Locator locator, ErrorReporter errorReporter, FontFamily[] outputFamily) {
+        String trimmedValue = value.trim();
+        if (trimmedValue.length() == 0)
+            return false;
+        else {
+            List<String> identifiers = new java.util.ArrayList<String>();
+            if (isIdentifiers(trimmedValue, locator, errorReporter, identifiers)) {
+                if (outputFamily != null)
+                    outputFamily[0] = new FontFamilyImpl(FontFamily.Type.Unquoted, joinIdentifiersUnescaping(identifiers));
+                return true;
+            } else
+                return false;
+        }
+    }
+
+    private static boolean isIdentifiers(String value, Locator locator, ErrorReporter errorReporter, List<String> outputIdentifiers) {
+        List<String> identifiers = new java.util.ArrayList<String>();
+        int valueIndex = 0;
+        int valueLength = value.length();
+        while (valueIndex < valueLength) {
+            int identStart;
+            if ((identStart = startOfPossibleIdent(value, valueIndex)) >= 0) {
+                int identEnd = endOfPossibleIdent(value, identStart);
+                String[] identifier = new String[1];
+                if (isIdentifier(value.substring(identStart, identEnd), locator, errorReporter, identifier)) {
+                    identifiers.add(identifier[0]);
+                    valueIndex = identEnd;
+                } else
+                    return false;
+            }
+        }
+        if (outputIdentifiers != null) {
+            outputIdentifiers.clear();
+            outputIdentifiers.addAll(identifiers);
+        }
+        return true;
+    }
+
+    public static void badIdentifiers(String value, Locator locator, ErrorReporter errorReporter) {
+        int valueIndex = 0;
+        int valueLength = value.length();
+        while (valueIndex < valueLength) {
+            int identStart;
+            if ((identStart = startOfPossibleIdent(value, valueIndex)) >= 0) {
+                int identEnd = endOfPossibleIdent(value, identStart);
+                if (!isIdentifier(value.substring(identStart, identEnd), locator, errorReporter, null))
+                    badIdentifier(value.substring(identStart, identEnd), locator, errorReporter);
+                valueIndex = identEnd;
+            }
+        }
+    }
+
+    private static int startOfPossibleIdent(String value, int start) {
+        for (int i = start, n = value.length(); i < n; ++i) {
+            char c = value.charAt(i);
+            if (!isXMLSpace(c))
+                return i;
+        }
+        return -1;
+    }
+
+    private static int endOfPossibleIdent(String value, int start) {
+        for (int i = start, n = value.length(); i < n; ++i) {
+            char c = value.charAt(i);
+            if (c == '\\') {
+                if (i < n - 1) {
+                    ++i;
+                    continue;
+                }
+            }
+            if (isXMLSpace(c))
+                return i;
+        }
+        return value.length();
+    }
+
+    private static boolean isIdentifier(String value, Locator locator, ErrorReporter errorReporter, String[] outputIdentifier) {
+        int valueIndex = 0;
+        int valueLength = value.length();
+
+        do {
+            char c;
+            
+            // optional hyphen before ident-start
+            if (valueIndex == valueLength)
+                break;
+            c = value.charAt(valueIndex);
+            if (c == '-')
+                ++valueIndex;
+
+            // ident-start
+            if (valueIndex == valueLength)
+                return false;
+            c = value.charAt(valueIndex);
+            if (c == '\\') {
+                if (valueIndex + 1 == valueLength)
+                    return false;
+                else
+                    valueIndex += 2;
+            } else if (isIdentStart(c)) {
+                ++valueIndex;
+            } else
+                return false;
+
+            // ident-following*
+            while (valueIndex < valueLength) {
+                c = value.charAt(valueIndex);
+                if (c == '\\') {
+                    if (valueIndex + 1 == valueLength)
+                        return false;
+                    else
+                        valueIndex += 2;
+                } else if (isIdentFollowing(c)) {
+                    ++valueIndex;
+                } else
+                    break;
+            }
+            
+            // don't allow subsequent characters that are not ident-following
+            if (valueIndex < valueLength)
+                return false;
+
+        } while (false);
+        
+        if (isReservedKeyword(value))
+            return false;
+
+        if (outputIdentifier != null)
+            outputIdentifier[0] = value;
+        return true;
+    }
+
+    public static void badIdentifier(String value, Locator locator, ErrorReporter errorReporter) {
+        int valueIndex = 0;
+        int valueLength = value.length();
+
+        do {
+            char c;
+            
+            // optional hyphen before ident-start
+            if (valueIndex == valueLength)
+                break;
+            c = value.charAt(valueIndex);
+            if (c == '-')
+                ++valueIndex;
+
+            // ident-start
+            if (valueIndex == valueLength) {
+                errorReporter.logInfo(locator, "Bad identifier in <familyName> expression, missing ident-start.");
+                break;
+            }
+            c = value.charAt(valueIndex);
+            if (c == '\\') {
+                if (valueIndex + 1 == valueLength) {
+                    errorReporter.logInfo(locator, "Bad identifier in <familyName> expression, incomplete escape in ident-start.");
+                    valueIndex = valueLength;
+                } else
+                    valueIndex += 2;
+            } else if (isIdentStart(c)) {
+                ++valueIndex;
+            } else {
+                errorReporter.logInfo(locator, "Bad identifier in <familyName> expression, unexpected ident-start character '" + c + "'.");
+                valueIndex = valueLength;
+            }
+
+            // ident-following*
+            while (valueIndex < valueLength) {
+                c = value.charAt(valueIndex);
+                if (c == '\\') {
+                    if (valueIndex + 1 == valueLength) {
+                        errorReporter.logInfo(locator, "Bad identifier in <familyName> expression, incomplete escape in ident-following.");
+                        valueIndex = valueLength;
+                    } else
+                        valueIndex += 2;
+                } else if (isIdentFollowing(c)) {
+                    ++valueIndex;
+                } else {
+                    errorReporter.logInfo(locator, "Bad identifier in <familyName> expression, unexpected ident-following character '" + c + "'.");
+                    valueIndex = valueLength;
+                }
+            }
+            
+            // don't allow subsequent characters that are not ident-following
+            if (valueIndex < valueLength)
+                errorReporter.logInfo(locator, "Bad identifier in <familyName> expression, unexpected character '" + c + "' following last ident-following character.");
+
+        } while (false);
+
+        if (isReservedKeyword(value))
+            errorReporter.logInfo(locator, "Bad identifier in <familyName> expression, reserved keyword '" + value + "' used.");
+    }
+
+    private static boolean isReservedKeyword(String value) {
+        if (value.equals("inherit"))
+            return true;
+        else if (value.equals("initial"))
+            return true;
+        else
+            return false;
+    }
+
+    private static String joinIdentifiersUnescaping(List<String> identifiers) {
+        StringBuffer sb = new StringBuffer();
+        for (String identifier : identifiers) {
+            if (sb.length() > 0)
+                sb.append(' ');
+            sb.append(unescape(identifier));
+        }
+        return sb.toString();
+    }
+
+    private static boolean isQuotedFontFamily(String value, Locator locator, ErrorReporter errorReporter, FontFamily[] outputFamily) {
+        String trimmedValue = value.trim();
+        if (trimmedValue.length() == 0)
+            return false;
+        else {
+            String[] string = new String[1];
+            if (isDoubleQuotedString(trimmedValue, locator, errorReporter, string) || isSingleQuotedString(trimmedValue, locator, errorReporter, string)) {
+                String stringContent = unescape(unquote(string[0]));
+                if (GenericFontFamily.isToken(stringContent)) {
+                    errorReporter.logInfo(locator, "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic, family name");
+                }
+                if (outputFamily != null)
+                    outputFamily[0] = new FontFamilyImpl(FontFamily.Type.Quoted, stringContent);
+                return true;
+            } else
+                return false;
+        }
+    }
+
+    private static boolean isDoubleQuotedString(String value, Locator locator, ErrorReporter errorReporter, String[] outputString) {
+        return isQuotedString(value, locator, errorReporter, '\"', outputString);
+    }
+
+    private static boolean isSingleQuotedString(String value, Locator locator, ErrorReporter errorReporter, String[] outputString) {
+        return isQuotedString(value, locator, errorReporter, '\'', outputString);
+    }
+
+    private static boolean isQuotedString(String value, Locator locator, ErrorReporter errorReporter, char quote, String[] outputString) {
+        if (value.length() < 2)
+            return false;
+        else if (value.charAt(0) != quote)
+            return false;
+        else {
+            int valueIndex = 1;
+            int valueLength = value.length();
+            char c = 0;
+            while (valueIndex < valueLength) {
+                c = value.charAt(valueIndex++);
+                if (c == '\\') {
+                    if (valueIndex == valueLength)
+                        return false;
+                    else
+                        ++valueIndex;
+                } else if (c == quote)
+                    break;
+            }
+            if ((c != quote) || (valueIndex < valueLength))
+                return false;
+            else if (value.length() < 3) {
+                return false;
+            } else {
+                if (outputString != null)
+                    outputString[0] = value;
+                return true;
+            }
+        }
+    }
+
+    private static String unescape(String string) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0, n = string.length(); i < n; ++i) {
+            char c = string.charAt(i);
+            if ((c == '\\') && (i < n - 1))
+                c = string.charAt(++i);
+            sb.append(c);
+        }
+        return sb.toString();
+    }
+    
+    private static String unquote(String string) {
+        if (string.length() >= 2) {
+            char c = string.charAt(0);
+            if ((c == '\"') || (c == '\'')) {
+                if (string.charAt(string.length() - 1) == c)
+                    return string.substring(1,string.length() - 1);
+            }
+        }
+        return string;
+    }
+    
+    public static void badFontFamily(String value, Locator locator, ErrorReporter errorReporter) {
+        String trimmedValue = value.trim();
+        if (trimmedValue.length() == 0) {
+            errorReporter.logInfo(locator, "Bad <familyName> of <genericFamilyName> expression, value is empty or only XML space characters.");
+        } else {
+            char c = trimmedValue.charAt(0);
+            if ((c != '\"') && (c != '\''))
+                badUnquotedFontFamily(trimmedValue, locator, errorReporter);
+            else
+                badQuotedFontFamily(trimmedValue, locator, errorReporter);
+        }
+    }
+
+    public static void badUnquotedFontFamily(String value, Locator locator, ErrorReporter errorReporter) {
+        assert value.length() > 0;
+        badIdentifiers(value, locator, errorReporter);
+    }
+
+    public static void badQuotedFontFamily(String value, Locator locator, ErrorReporter errorReporter) {
+        assert value.length() > 0;
+        char quote = value.charAt(0);
+        int valueIndex = 1;
+        int valueLength = value.length();
+        char c = 0;
+        while (valueIndex < valueLength) {
+            c = value.charAt(valueIndex++);
+            if (c == '\\') {
+                if (valueIndex == valueLength) {
+                    errorReporter.logInfo(locator, "Bad quoted string in <familyName> expression, incomplete escape.");
+                    return;
+                } else
+                    ++valueIndex;
+            } else if (c == quote)
+                break;
+        }
+        if (c != quote)
+            errorReporter.logInfo(locator, "Bad quoted string in <familyName> expression, not terminated.");
+        else if (valueIndex < valueLength) {
+            errorReporter.logInfo(locator,
+                "Bad quoted string in <familyName> expression, unrecognized characters following string, got '" + value.substring(valueIndex) + "'.");
+        } else if (valueLength < 3) {
+            errorReporter.logInfo(locator, "Bad quoted string in <familyName> expression, empty string.");
+        }
+    }
+
+    public static boolean isFontFamilies(String value, Locator locator, ErrorReporter errorReporter, List<FontFamily> outputFamilies) {
+        List<FontFamily> families = new java.util.ArrayList<FontFamily>();
+        String [] familyItems = splitFontFamilies(value);
+        for (String item : familyItems) {
+            FontFamily[] family = new FontFamily[1];
+            if (isFontFamily(item, locator, errorReporter, family))
+                families.add(family[0]);
+            else
+                return false;
+        }
+        if (outputFamilies != null) {
+            outputFamilies.clear();
+            outputFamilies.addAll(families);
+        }
+        return true;
+    }
+
+    public static void badFontFamilies(String value, Locator locator, ErrorReporter errorReporter) {
+        String [] familyItems = splitFontFamilies(value);
+        for (String item : familyItems) {
+            if (!isFontFamily(item, locator, NullErrorReporter.Reporter, null))
+                badFontFamily(item, locator, errorReporter);
+        }
+    }
+
+    private static String[] splitFontFamilies(String value) {
+        List<String> items = new java.util.ArrayList<String>();
+        int valueIndex = 0;
+        int valueLength = value.length();
+        int itemStart = valueIndex;
+        while (true) {
+            char c = 0;
+            char quote = 0;
+            while (valueIndex < valueLength) {
+                c = value.charAt(valueIndex++);
+                if (c == '\\') {
+                    if (valueIndex == valueLength)
+                        break;
+                    else
+                        valueIndex++;
+                } else if ((c == '\'') || (c == '\"')) {
+                    if (quote == 0)
+                        quote = c;
+                    else if (c == quote)
+                        quote = 0;
+                } else if ((c == ',') && (quote == 0)) {
+                    break;
+                }
+            }
+            if (valueIndex > itemStart)
+                items.add(value.substring(itemStart, c == ',' ? valueIndex - 1 : valueIndex));
+            itemStart = valueIndex;
+            if (valueIndex >= valueLength) {
+                if (c == ',')
+                    items.add("");
+                break;
+            }
+        }
+        return items.toArray(new String[items.size()]);
+    }
+
     private static Pattern integerPattern = Pattern.compile("([\\+\\-]?)(\\d+)");
     private static boolean isInteger(String value, Locator locator, ErrorReporter errorReporter,
         NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment, Integer[] outputInteger) {
@@ -160,7 +582,7 @@ public class VerifierUtilities {
                     c = value.charAt(valueIndex);
                 }
                 errorReporter.logInfo(locator,
-                    "Bad <integer> expression, XML space padding not permitted before integer");
+                    "Bad <integer> expression, XML space padding not permitted before integer.");
             }
 
             // optional sign before non-negative-integer
@@ -185,7 +607,7 @@ public class VerifierUtilities {
                     c = value.charAt(valueIndex);
                 }
                 errorReporter.logInfo(locator,
-                    "Bad <integer> expression, XML space padding not permitted between sign and non-negative-integer");
+                    "Bad <integer> expression, XML space padding not permitted between sign and non-negative-integer.");
             }
 
             // non-negative-number (integral part only)
@@ -251,7 +673,7 @@ public class VerifierUtilities {
     }
 
     public static boolean isIntegers(String value, Locator locator, ErrorReporter errorReporter, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment, List<Integer> outputIntegers) {
-        List<Integer> integers = new java.util.Vector<Integer>();
+        List<Integer> integers = new java.util.ArrayList<Integer>();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
         for (String component : integerComponents) {
@@ -273,7 +695,7 @@ public class VerifierUtilities {
     }
 
     public static void badIntegers(String value, Locator locator, ErrorReporter errorReporter, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment) {
-        List<Integer> integers = new java.util.Vector<Integer>();
+        List<Integer> integers = new java.util.ArrayList<Integer>();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
         for (String component : integerComponents) {
@@ -386,7 +808,7 @@ public class VerifierUtilities {
                     c = value.charAt(valueIndex);
                 }
                 errorReporter.logInfo(locator,
-                    "Bad <length> expression, XML space padding not permitted before number");
+                    "Bad <length> expression, XML space padding not permitted before number.");
             }
 
             // optional sign before non-negative-number
@@ -411,7 +833,7 @@ public class VerifierUtilities {
                     c = value.charAt(valueIndex);
                 }
                 errorReporter.logInfo(locator,
-                    "Bad <length> expression, XML space padding not permitted between sign and non-negative-number");
+                    "Bad <length> expression, XML space padding not permitted between sign and non-negative-number.");
             }
 
             // non-negative-number (integral part)
@@ -551,7 +973,7 @@ public class VerifierUtilities {
     }
 
     public static boolean isLengths(String value, Locator locator, ErrorReporter errorReporter, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, MixedUnitsTreatment mixedUnitsTreatment, List<Length> outputLengths) {
-        List<Length> lengths = new java.util.Vector<Length>();
+        List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
         for (String component : lengthComponents) {
@@ -584,7 +1006,7 @@ public class VerifierUtilities {
 
     public static void badLengths(String value, Locator locator, ErrorReporter errorReporter, int minComponents, int maxComponents,
         NegativeTreatment negativeTreatment, MixedUnitsTreatment mixedUnitsTreatment) {
-        List<Length> lengths = new java.util.Vector<Length>();
+        List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
         for (String component : lengthComponents) {
@@ -972,6 +1394,14 @@ public class VerifierUtilities {
 
     private static boolean isLetter(char c) {
         return ((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z'));
+    }
+
+    private static boolean isIdentStart(char c) {
+        return isLetter(c) || (c == '_') || ((int) c > 0x9F);
+    }
+
+    private static boolean isIdentFollowing(char c) {
+        return isIdentStart(c) || isDigit(c) || (c == '-');
     }
 
     private static boolean containsDecimalSeparator(String number) {

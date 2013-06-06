@@ -199,6 +199,7 @@
         <style tts:extent="620.3px 96.4c"/>
         <!-- legal fontFamily values (not exhaustive) -->
         <style tts:fontFamily="default"/>
+        <style tts:fontFamily="'default'"/>
         <style tts:fontFamily="monospace"/>
         <style tts:fontFamily="sansSerif"/>
         <style tts:fontFamily="serif"/>
@@ -207,11 +208,20 @@
         <style tts:fontFamily="proportionalSansSerif"/>
         <style tts:fontFamily="proportionalSerif"/>
         <style tts:fontFamily="Courier New"/>
+        <style tts:fontFamily="Courier \, New"/>
+        <style tts:fontFamily=" Courier  New "/>
         <style tts:fontFamily="'Courier New'"/>
+        <style tts:fontFamily='"Courier New"'/>
+        <style tts:fontFamily="B\&amp;W\? Courier New"/>
+        <style tts:fontFamily="B\&amp;&#x20A9;&#x00BF; Courier New"/>
+        <style tts:fontFamily="B\&amp;&#x20A9;&#x00BF; Courier New, sansSerif"/>
         <style tts:fontFamily="default, Courier New"/>
         <style tts:fontFamily="default, 'Courier New'"/>
         <style tts:fontFamily="Courier New, default"/>
         <style tts:fontFamily="'Courier New', default"/>
+        <style tts:fontFamily="'21st Century', default"/>
+        <style tts:fontFamily="'Fun\&apos;ny Fam\&quot;ily', default"/>
+        <style tts:fontFamily='"Fun\&apos;ny Fam\&quot;ily", default'/>
         <!-- legal fontSize values (not exhaustive) -->
         <style tts:fontSize="1c"/>
         <style tts:fontSize="1.1c"/>

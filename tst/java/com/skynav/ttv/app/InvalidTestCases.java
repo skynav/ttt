@@ -264,6 +264,76 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadFontFamilyEmptyItemFinal() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-empty-item-final.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyEmptyItemMedial() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-empty-item-medial.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyQuotedEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-quoted-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyQuotedExtraUnrecognized() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-quoted-extra-unrecognized.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyQuotedIncompleteEscape() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-quoted-incomplete-escape.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyQuotedUnterminated() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-quoted-unterminated.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyUnquotedBadFollowing() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-unquoted-bad-following.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyUnquotedBadInitial() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-unquoted-bad-initial.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyUnquotedDoubleHyphen() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-unquoted-double-hyphen.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyUnquotedIncompleteEscape() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-unquoted-incomplete-escape.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyUnquotedMissingInitial() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-unquoted-missing-initial.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyUnquotedReservedInherit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-unquoted-reserved-inherit.xml");
+    }
+
+    @Test
+    public void testInvalidBadFontFamilyUnquotedReservedInitial() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-font-family-unquoted-reserved-initial.xml");
+    }
+
+    @Test
     public void testInvalidBadFontSizeAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-font-size-all-space.xml");
     }

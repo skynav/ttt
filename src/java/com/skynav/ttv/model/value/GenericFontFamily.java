@@ -23,24 +23,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.style;
+package com.skynav.ttv.model.value;
 
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-
-public class FontFamilyVerifier implements StyleValueVerifier {
-
-    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        String value = (String) valueObject;
-        if (VerifierUtilities.isFontFamilies(value, locator, errorReporter, null))
-            return true;
-        else {
-            VerifierUtilities.badFontFamilies(value, locator, errorReporter);
-            return false;
-        }
+public enum GenericFontFamily {
+    Default("default"),
+    Monospace("monospace"),
+    MonospaceSansSerif("monospaceSansSerif"),
+    MonospaceSerif("monospaceSerif"),
+    ProportionalSansSerif("proportionalSansSerif"),
+    ProportionalSerif("proportionalSerif"),
+    SansSerif("sansSerif"),
+    Serif("serif");
+    private String token;
+    GenericFontFamily(String token) {
+        this.token = token;
     }
-
+    public String token() {
+        return token;
+    }
+    public static boolean isToken(String token) {
+        if (token == null)
+            return false;
+        for (GenericFontFamily v: values()) {
+            if (token.equals(v.token()))
+                return true;
+        }
+        return false;
+    }
+    public static GenericFontFamily valueOfToken(String token) {
+        if (token == null)
+            throw new IllegalArgumentException();
+        for (GenericFontFamily v: values()) {
+            if (token.equals(v.token()))
+                return v;
+        }
+        throw new IllegalArgumentException();
+    }
+    public static GenericFontFamily valueOfTokenIgnoringCase(String token) {
+        return valueOfToken(token.toLowerCase());
+    }
 }

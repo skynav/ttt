@@ -90,8 +90,8 @@ public class TextOutlineVerifier implements StyleValueVerifier {
         while (componentIndex < numComponents) {
             String unparsedComponent = components[componentIndex++];
             errorReporter.logInfo(locator,
-                "Unparsed component '" + unparsedComponent + "'" +
-                ((afterComponent != null) ? (" after <" + afterComponent + "> expression") : "") + ".");
+                "Unparsed expression '" + unparsedComponent + "'" +
+                ((afterComponent != null) ? (" after " + afterComponent + " component") : "") + ".");
             failed = true;
         }
         return !failed;

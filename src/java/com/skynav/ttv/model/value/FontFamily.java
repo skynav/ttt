@@ -23,24 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.style;
+package com.skynav.ttv.model.value;
 
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-
-public class FontFamilyVerifier implements StyleValueVerifier {
-
-    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        String value = (String) valueObject;
-        if (VerifierUtilities.isFontFamilies(value, locator, errorReporter, null))
-            return true;
-        else {
-            VerifierUtilities.badFontFamilies(value, locator, errorReporter);
-            return false;
-        }
-    }
-
+public interface FontFamily {
+    public enum Type {
+        Generic,
+        Unquoted,
+        Quoted;
+    };
+    Type getType();
+    Object getValue();
 }

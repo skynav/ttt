@@ -57,18 +57,18 @@ public class TTML10StyleVerifier implements StyleVerifier {
     }
 
     private static Object[][] styleAccessorMap = new Object[][] {
-        // property name         accessor method        specialized verifier
-        { "backgroundColor",    "getBackgroundColor",   String.class,   ColorVerifier.class            },
-        { "color",              "getColor",             String.class,   ColorVerifier.class            },
-        { "extent",             "getExtent",            String.class,   ExtentVerifier.class           },
-        { "fontFamily",         "getFontFamily",        String.class,   FontFamilyVerifier.class       },
-        { "fontSize",           "getFontSize",          String.class,   FontSizeVerifier.class         },
-        { "lineHeight",         "getLineHeight",        String.class,   LineHeightVerifier.class       },
-        { "opacity",            "getOpacity",           Float.class,    OpacityVerifier.class          },
-        { "origin",             "getOrigin",            String.class,   OriginVerifier.class           },
-        { "padding",            "getPadding",           String.class,   PaddingVerifier.class          },
-        { "textOutline",        "getTextOutline",       String.class,   TextOutlineVerifier.class      },
-        { "zIndex",             "getZIndex",            String.class,   ZIndexVerifier.class           },
+        // property name         accessor method        value type      specialized verifier            padding permitted
+        { "backgroundColor",    "getBackgroundColor",   String.class,   ColorVerifier.class,            Boolean.FALSE },
+        { "color",              "getColor",             String.class,   ColorVerifier.class,            Boolean.FALSE },
+        { "extent",             "getExtent",            String.class,   ExtentVerifier.class,           Boolean.FALSE },
+        { "fontFamily",         "getFontFamily",        String.class,   FontFamilyVerifier.class,       Boolean.TRUE  },
+        { "fontSize",           "getFontSize",          String.class,   FontSizeVerifier.class,         Boolean.FALSE },
+        { "lineHeight",         "getLineHeight",        String.class,   LineHeightVerifier.class,       Boolean.FALSE },
+        { "opacity",            "getOpacity",           Float.class,    OpacityVerifier.class,          Boolean.FALSE },
+        { "origin",             "getOrigin",            String.class,   OriginVerifier.class,           Boolean.FALSE },
+        { "padding",            "getPadding",           String.class,   PaddingVerifier.class,          Boolean.FALSE },
+        { "textOutline",        "getTextOutline",       String.class,   TextOutlineVerifier.class,      Boolean.FALSE },
+        { "zIndex",             "getZIndex",            String.class,   ZIndexVerifier.class,           Boolean.FALSE },
     };
 
     private Model model;
@@ -91,12 +91,13 @@ public class TTML10StyleVerifier implements StyleVerifier {
     private void populate(Model model) {
         Map<String, StyleAccessor> accessors = new java.util.HashMap<String, StyleAccessor>();
         for (Object[] styleAccessorEntry : styleAccessorMap) {
-            assert styleAccessorEntry.length >= 4;
+            assert styleAccessorEntry.length >= 5;
             String styleName = (String) styleAccessorEntry[0];
             String accessorName = (String) styleAccessorEntry[1];
             Class<?> valueClass = (Class<?>) styleAccessorEntry[2];
             Class<?> verifierClass = (Class<?>) styleAccessorEntry[3];
-            accessors.put(styleName, new StyleAccessor(styleName, accessorName, valueClass, verifierClass));
+            boolean paddingPermitted = ((Boolean) styleAccessorEntry[4]).booleanValue();
+            accessors.put(styleName, new StyleAccessor(styleName, accessorName, valueClass, verifierClass, paddingPermitted));
         }
         this.model = model;
         this.accessors = accessors;
@@ -108,9 +109,10 @@ public class TTML10StyleVerifier implements StyleVerifier {
         private String accessorName;
         private Class<?> valueClass;
         private StyleValueVerifier verifier;
+        private boolean paddingPermitted;
 
-        public StyleAccessor(String styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass) {
-            populate(styleName, accessorName, valueClass, verifierClass);
+        public StyleAccessor(String styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
+            populate(styleName, accessorName, valueClass, verifierClass, paddingPermitted);
         }
 
         public boolean verify(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
@@ -134,7 +136,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
                 errorReporter.logError(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
             else if (VerifierUtilities.isAllXMLSpace(value))
                 errorReporter.logError(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
-            else if (!value.equals(value.trim()))
+            else if (!paddingPermitted && !value.equals(value.trim()))
                 errorReporter.logError(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
             else if (!verifier.verify(model, styleName, value, locator, errorReporter))
                 errorReporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
@@ -153,11 +155,12 @@ public class TTML10StyleVerifier implements StyleVerifier {
             }
         }
 
-        private void populate(String styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass) {
+        private void populate(String styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
             this.styleName = styleName;
             this.accessorName = accessorName;
             this.valueClass = valueClass;
             this.verifier = createStyleValueVerifier(verifierClass);
+            this.paddingPermitted = paddingPermitted;
         }
 
         private Object getStyleValue(Object content) {

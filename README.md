@@ -41,7 +41,7 @@ The following `xs:string` schema typed attributes are tested for syntactic corre
  * `tts:color`
  * `tts:backgroundColor`
  * `tts:extent`
- * `tts:fontFamily` - *TBD*
+ * `tts:fontFamily`
  * `tts:fontSize`
  * `tts:lineHeight`
  * `tts:origin`
