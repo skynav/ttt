@@ -63,6 +63,7 @@ import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.TimingVerifier;
 
 public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
@@ -71,6 +72,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     private ErrorReporter errorReporter;
     private ParameterVerifier parameterVerifier;
     private StyleVerifier styleVerifier;
+    private TimingVerifier timingVerifier;
 
     public TTML10SemanticsVerifier(Model model) {
         this.model = model;
@@ -94,6 +96,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
         // derived state
         this.parameterVerifier = model.getParameterVerifier();
         this.styleVerifier = model.getStyleVerifier();
+        this.timingVerifier = model.getTimingVerifier();
     }
 
     private Locator getLocator(Object content) {
@@ -263,8 +266,6 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     private boolean verify(Break br) {
         boolean failed = false;
         if (!verifyStyles(br))
-            failed = true;
-        if (!verifyTiming(br))
             failed = true;
         for (Object m : br.getMetadataClass()) {
             if (!verifyMetadata(m))
@@ -453,8 +454,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verifyTiming(Object content) {
-        boolean failed = false;
-        return !failed;
+        return this.timingVerifier.verify(content, getLocator(content), this.errorReporter);
     }
 
     private boolean unexpectedContent(Object content) throws IllegalStateException {

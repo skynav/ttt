@@ -251,11 +251,7 @@ Total time: 2 seconds
  * Warn if absolutized feature designator is not a known standard designator. ([Issue 221](https://www.w3.org/AudioVideo/TT/tracker/issues/221)).
  * Error if xml:base on ttp:extensions is not absolute. (6.1.4 P4)
  * Error if absolutized extension designator doesn't conform to extension-designation defined in E.1. (6.1.5. P4)
- * Verify xs:string typed parameter attribute values on tt element. (6.2)
- * Error if ttp:frameRate is not greater than zero. (6.2.4 P7)
  * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and dur attribute is specified on any element. (6.2.6 P12, 10.2.3 P3)
- * Error if tts:subFrameRate is zero. (6.2.9 P7)
- * Error if tts:tickRate is zero. (6.2.10 P7)
  * Error if style attribute references a style element that is a descendant of region, i.e, is not a descendant of styling. (8.1.2 P4)
  * Error if style attribute IDREF does not reference a style element. ([Issue 220](https://www.w3.org/AudioVideo/TT/tracker/issues/220)).
  * Error if tts:extent on tt element does not specify two pixel unit length values. (8.2.7 P7)

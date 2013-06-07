@@ -31,6 +31,7 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.TimingVerifier;
 
 public class TTML10 {
     public static final Model MODEL = new TTML10Model();
@@ -82,6 +83,15 @@ public class TTML10 {
                 }
             }
             return styleVerifier;
+        }
+        private TimingVerifier timingVerifier;
+        public TimingVerifier getTimingVerifier() {
+            synchronized (this) {
+                if (timingVerifier == null) {
+                    timingVerifier = new com.skynav.ttv.verifier.ttml.TTML10TimingVerifier(this);
+                }
+            }
+            return timingVerifier;
         }
     }
 }

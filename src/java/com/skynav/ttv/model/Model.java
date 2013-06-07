@@ -30,6 +30,7 @@ import java.util.Map;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.TimingVerifier;
 
 public interface Model {
 
@@ -87,4 +88,10 @@ public interface Model {
      * @return style verifier instance
      */
     StyleVerifier getStyleVerifier();
+
+    /**
+     * Obtain timing verifier for model.
+     * @return timing verifier instance
+     */
+    TimingVerifier getTimingVerifier();
 }
