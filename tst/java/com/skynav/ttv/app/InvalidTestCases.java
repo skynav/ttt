@@ -424,6 +424,26 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadFrameRateAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateNegative() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-negative.xml");
+    }
+
+    @Test
+    public void testInvalidBadFrameRateZero() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-frame-rate-zero.xml");
+    }
+
+    @Test
     public void testInvalidBadFrameRateMultiplierAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-frame-rate-multiplier-all-space.xml");
     }
@@ -629,6 +649,26 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadSubFrameRateAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-sub-frame-rate-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadSubFrameRateEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-sub-frame-rate-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadSubFrameRateNegative() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-sub-frame-rate-negative.xml");
+    }
+
+    @Test
+    public void testInvalidBadSubFrameRateZero() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-sub-frame-rate-zero.xml");
+    }
+
+    @Test
     public void testInvalidBadTextOutlineAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-text-outline-all-space.xml");
     }
@@ -671,6 +711,26 @@ public class InvalidTestCases {
     @Test
     public void testInvalidBadTextOutlineMissingThickness() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-text-outline-missing-thickness.xml");
+    }
+
+    @Test
+    public void testInvalidBadTickRateAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-tick-rate-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadTickRateEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-tick-rate-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadTickRateNegative() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-tick-rate-negative.xml");
+    }
+
+    @Test
+    public void testInvalidBadTickRateZero() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-tick-rate-zero.xml");
     }
 
     @Test

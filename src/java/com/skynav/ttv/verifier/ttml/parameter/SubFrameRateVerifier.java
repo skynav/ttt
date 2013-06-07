@@ -37,6 +37,7 @@ public class SubFrameRateVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         int value = ((BigInteger) valueObject).intValue();
+        // Schema validation phase (2) detects and reports non-positive values.
         if (value < 0)
             throw new IllegalStateException("Unexpected negative value.");
         else if (value == 0)

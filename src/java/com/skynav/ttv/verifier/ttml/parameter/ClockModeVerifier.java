@@ -28,13 +28,18 @@ package com.skynav.ttv.verifier.ttml.parameter;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml10.ttd.ClockMode;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 
 public class ClockModeVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        return true;
+        // Schema validation phase (2) reports invalid values.
+        if (valueObject instanceof ClockMode)
+            return true;
+        else
+            throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());
     }
 
 }
