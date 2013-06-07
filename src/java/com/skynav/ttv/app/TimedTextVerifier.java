@@ -37,12 +37,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
-import java.nio.charset.MalformedInputException;
-import java.nio.charset.UnmappableCharacterException;
+import java.nio.charset.CoderResult;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Enumeration;
 import java.util.List;
@@ -143,6 +140,7 @@ public class TimedTextVerifier implements ErrorReporter {
 
     // per-resource processing state
     private Phase currentPhase;
+    private String resourceUriString;
     private URI resourceUri;
     private ByteBuffer resourceBufferRaw;
     private int resourceErrors;
@@ -205,8 +203,12 @@ public class TimedTextVerifier implements ErrorReporter {
         if ((message != null) && (message.length() > 0)) {
             if (message.charAt(0) == '{')
                 return message;
-            else if (this.resourceUri != null)
-                return "{" + this.resourceUri.toString() + "}: " + message;
+            else if (resourceUri != null)
+                return "{" + resourceUri.toString() + "}: " + message;
+            else if (resourceUriString != null)
+                return "{" + resourceUriString + "}: " + message;
+            else
+                return message;
         }
         return "*** Empty Message ***";
     }
@@ -220,7 +222,7 @@ public class TimedTextVerifier implements ErrorReporter {
     @Override
     public void logError(String message) {
         System.out.println("[E]:" + message);
-        ++this.resourceErrors;
+        ++resourceErrors;
     }
 
     @Override
@@ -246,7 +248,7 @@ public class TimedTextVerifier implements ErrorReporter {
         else if (e instanceof SAXParseException)
             return extractMessage((SAXParseException) e);
         else
-            return "{" + this.resourceUri + "}: " + e.getMessage();
+            return "{" + resourceUri + "}: " + e.getMessage();
     }
 
     @Override
@@ -257,13 +259,13 @@ public class TimedTextVerifier implements ErrorReporter {
 
     @Override
     public boolean logWarning(String message) {
-        if (this.treatWarningAsError) {
+        if (treatWarningAsError) {
             logError(message);
             return true;
-        } else if (!this.disableWarnings) {
-            if (!this.hideWarnings)
+        } else if (!disableWarnings) {
+            if (!hideWarnings)
                 System.out.println("[W]:" + message);
-            ++this.resourceWarnings;
+            ++resourceWarnings;
         }
         return false;
     }
@@ -281,7 +283,7 @@ public class TimedTextVerifier implements ErrorReporter {
 
     @Override
     public void logInfo(String message) {
-        if (this.verbose > 0) {
+        if (verbose > 0) {
             System.out.println("[I]:" + message);
         }
     }
@@ -293,7 +295,7 @@ public class TimedTextVerifier implements ErrorReporter {
 
     @Override
     public void logDebug(String message) {
-        if (this.debug > 0) {
+        if (debug > 0) {
             System.out.println("[D]:" + message);
         }
     }
@@ -304,7 +306,7 @@ public class TimedTextVerifier implements ErrorReporter {
     }
 
     private void logDebug(Exception e) {
-        if (this.debug > 1) {
+        if (debug > 1) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             logDebug(sw.toString());
@@ -316,41 +318,41 @@ public class TimedTextVerifier implements ErrorReporter {
         assert option.length() > 2;
         option = option.substring(2);
         if (option.equals("debug")) {
-            if (this.debug < 1)
-                this.debug = 1;
+            if (debug < 1)
+                debug = 1;
             else
-                this.debug += 1;
+                debug += 1;
         } else if (option.equals("debug-exceptions")) {
-            if (this.debug < 2)
-                this.debug = 2;
+            if (debug < 2)
+                debug = 2;
         } else if (option.equals("disable-warnings")) {
-            this.disableWarnings = true;
+            disableWarnings = true;
         } else if (option.equals("help")) {
             throw new ShowUsageException();
         } else if (option.equals("hide-warnings")) {
-            this.hideWarnings = true;
+            hideWarnings = true;
         } else if (option.equals("model")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
-            this.modelName = args[++index];
+            modelName = args[++index];
         } else if (option.equals("quiet")) {
-            this.quiet = true;
+            quiet = true;
         } else if (option.equals("show-models")) {
-            this.showModels = true;
+            showModels = true;
         } else if (option.equals("show-repository")) {
-            this.showRepository = true;
+            showRepository = true;
         } else if (option.equals("treat-foreign-as")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
-            this.treatForeignAs = args[++index];
+            treatForeignAs = args[++index];
         } else if (option.equals("treat-warning-as-error")) {
-            this.treatWarningAsError = true;
+            treatWarningAsError = true;
         } else if (option.equals("until-phase")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
-            this.untilPhase = args[++index];
+            untilPhase = args[++index];
         } else if (option.equals("verbose")) {
-            this.verbose += 1;
+            verbose += 1;
         } else
             throw new UnknownOptionException("--" + option);
         return index + 1;
@@ -362,13 +364,13 @@ public class TimedTextVerifier implements ErrorReporter {
         option = option.substring(1);
         switch (option.charAt(0)) {
         case 'd':
-            this.debug += 1;
+            debug += 1;
             break;
         case 'q':
-            this.quiet = true;
+            quiet = true;
             break;
         case 'v':
-            this.verbose += 1;
+            verbose += 1;
             break;
         case '?':
             throw new ShowUsageException();
@@ -380,26 +382,26 @@ public class TimedTextVerifier implements ErrorReporter {
 
     private void processDerivedOptions() {
         Model model;
-        if (this.modelName != null) {
-            model = Models.getModel(this.modelName);
+        if (modelName != null) {
+            model = Models.getModel(modelName);
             if (model == null)
-                throw new InvalidOptionUsageException("model", "unknown model: " + this.modelName);
+                throw new InvalidOptionUsageException("model", "unknown model: " + modelName);
         } else
             model = Models.getDefaultModel();
         this.model = model;
-        if (this.treatForeignAs != null) {
+        if (treatForeignAs != null) {
             try {
-                this.foreignTreatment = ForeignTreatment.valueOfIgnoringCase(this.treatForeignAs);
+                foreignTreatment = ForeignTreatment.valueOfIgnoringCase(treatForeignAs);
             } catch (IllegalArgumentException e) {
-                throw new InvalidOptionUsageException("treat-foreign-as", "unknown token: " + this.treatForeignAs);
+                throw new InvalidOptionUsageException("treat-foreign-as", "unknown token: " + treatForeignAs);
             }
         } else
             foreignTreatment = ForeignTreatment.getDefault();
-        if (this.untilPhase != null) {
+        if (untilPhase != null) {
             try {
-                this.lastPhase = Phase.valueOfIgnoringCase(this.untilPhase);
+                lastPhase = Phase.valueOfIgnoringCase(untilPhase);
             } catch (IllegalArgumentException e) {
-                throw new InvalidOptionUsageException("until-phase", "unknown token: " + this.untilPhase);
+                throw new InvalidOptionUsageException("until-phase", "unknown token: " + untilPhase);
             }
         } else
             lastPhase = Phase.getDefault();
@@ -440,17 +442,17 @@ public class TimedTextVerifier implements ErrorReporter {
     }
 
     private void showBanner() {
-        if (!this.quiet)
+        if (!quiet)
             System.out.println(banner);
     }
 
     private void showProcessingInfo() {
-        if (this.verbose >  0) {
-            if (this.treatWarningAsError)
+        if (verbose >  0) {
+            if (treatWarningAsError)
                 logInfo("Warnings are treated as errors.");
-            else if (this.disableWarnings)
+            else if (disableWarnings)
                 logInfo("Warnings are disabled.");
-            else if (this.hideWarnings)
+            else if (hideWarnings)
                 logInfo("Warnings are hidden.");
         }
     }
@@ -466,7 +468,7 @@ public class TimedTextVerifier implements ErrorReporter {
                 sb.append(" (default)");
             }
             sb.append('\n');
-            if (this.verbose > 0) {
+            if (verbose > 0) {
                 Model model = Models.getModel(modelName);
                 String schemaResourceName = model.getSchemaResourceName();
                 if (schemaResourceName != null) {
@@ -562,24 +564,75 @@ public class TimedTextVerifier implements ErrorReporter {
         }
     }
 
-    private CharBuffer decodeResource(ByteBuffer bb, Charset charset, int bomLength) {
-        try {
+    private CharBuffer decodeResource(ByteBuffer rawBuffer, Charset charset, int bomLength) {
+        ByteBuffer bb = rawBuffer;
+        bb.position(bomLength);
+        List<CharBuffer> charBuffers = new java.util.ArrayList<CharBuffer>();
+        do {
             CharsetDecoder cd = charset.newDecoder();
-            cd.onMalformedInput(CodingErrorAction.REPORT);
-            cd.onUnmappableCharacter(CodingErrorAction.REPORT);
-            bb.position(bomLength);
-            CharBuffer cb = cd.decode(bb);
-            bb.rewind();
-            cb.rewind();
-            return cb;
-        } catch (MalformedInputException e) {
-            logError(e);
-        } catch (UnmappableCharacterException e) {
-            logError(e);
-        } catch (CharacterCodingException e) {
-            logError(e);
+            boolean endOfInput = false;
+            CharBuffer cb = null;
+            CoderResult r;
+            while (true) {
+                try {
+                    if (cb == null)
+                        cb = CharBuffer.allocate(65536);
+                    if (bb != null)
+                        r = cd.decode(bb, cb, endOfInput);
+                    else
+                        r = cd.flush(cb);
+                    if (r.isOverflow()) {
+                        cb.flip();
+                        charBuffers.add(cb);
+                        cb = null;
+                    } else if (r.isUnderflow()) {
+                        if (endOfInput) {
+                            if (bb != null)
+                                bb = null;
+                            else {
+                                cb.flip();
+                                charBuffers.add(cb);
+                                cb = null;
+                                break;
+                            }
+                        } else {
+                            endOfInput = true;
+                        }
+                    } else if (r.isMalformed()) {
+                        logError(decoderMessage(r, bb, "Malformed " + charset.name()));
+                        return null;
+                    } else if (r.isUnmappable()) {
+                        logWarning(decoderMessage(r, bb, "Unmappable " + charset.name()));
+                        return null;
+                    } else if (r.isError()) {
+                        logError(decoderMessage(r, bb, "Can't decode " + charset.name()));
+                        return null;
+                    }
+                } catch (Exception e) {
+                    logError(e);
+                    return null;
+                }
+            }
+        } while (false);
+        rawBuffer.rewind();
+        return concatenateBuffers(charBuffers);
+    }
+
+    private String decoderMessage(CoderResult r, ByteBuffer bb, String prefix) {
+        return message(prefix + " at byte offset " + bb.position() + ", " + r.length() + " byte" + ((r.length() > 1) ? "s" : "") + ".");
+    }
+
+    private static CharBuffer concatenateBuffers(List<CharBuffer> buffers) {
+        int length = 0;
+        for (CharBuffer cb : buffers) {
+            length += cb.limit();
         }
-        return null;
+        CharBuffer newBuffer = CharBuffer.allocate(length);
+        for (CharBuffer cb : buffers) {
+            newBuffer.put(cb);
+        }
+        newBuffer.flip();
+        return newBuffer;
     }
 
     private static Charset asciiCharset;
@@ -592,23 +645,31 @@ public class TimedTextVerifier implements ErrorReporter {
         }
     }
 
-    private void setResource(URI uri, Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
-        this.resourceUri = uri;
-        this.resourceBufferRaw = bufferRaw;
-        this.resourceErrors = 0;
-        this.resourceWarnings = 0;
+    private void setResource(String uri) {
+        resourceUriString = uri;
     }
 
-    private boolean verifyResource(String uri) {
-        this.currentPhase = Phase.Resource;
-        if (!this.lastPhase.isEnabled(Phase.Resource)) {
-            logInfo("Skipping resource presence and encoding verification phase (" + this.currentPhase.ordinal() + ").");
+    private void setResource(URI uri) {
+        resourceUri = uri;
+    }
+
+    private void setResource(Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
+        resourceBufferRaw = bufferRaw;
+        resourceErrors = 0;
+        resourceWarnings = 0;
+    }
+
+    private boolean verifyResource() {
+        currentPhase = Phase.Resource;
+        if (!lastPhase.isEnabled(Phase.Resource)) {
+            logInfo("Skipping resource presence and encoding verification phase (" + currentPhase.ordinal() + ").");
             return true;
         } else
-            logInfo("Verifying resource presence and encoding phase (" + this.currentPhase.ordinal() + ")...");
-        URI uriResource = resolve(uri);
-        if (uriResource != null) {
-            ByteBuffer bytesBuffer = readResource(uriResource);
+            logInfo("Verifying resource presence and encoding phase (" + currentPhase.ordinal() + ")...");
+        URI uri = resolve(resourceUriString);
+        if (uri != null) {
+            setResource(uri);
+            ByteBuffer bytesBuffer = readResource(uri);
             if (bytesBuffer != null) {
                 Object[] sniffOutputParameters = new Object[] { Integer.valueOf(0) };
                 Charset charset = Sniffer.sniff(bytesBuffer, asciiCharset, sniffOutputParameters);
@@ -616,15 +677,15 @@ public class TimedTextVerifier implements ErrorReporter {
                     int bomLength = (Integer) sniffOutputParameters[0];
                     CharBuffer charsBuffer = decodeResource(bytesBuffer, charset, bomLength);
                     if (charsBuffer != null) {
-                        setResource(uriResource, charset, charsBuffer, bytesBuffer);
+                        setResource(charset, charsBuffer, bytesBuffer);
                         logInfo("Resource encoding sniffed as " + charset.name() + ".");
                         logInfo("Resource length " + bytesBuffer.limit() + " bytes, decoded as " + charsBuffer.limit() + " Java characters (char).");
                     }
                 } else
-                    logError(message("encoding " + charset.name() + " is not permitted"));
+                    logError(message("Encoding " + charset.name() + " is not permitted"));
             }
         }
-        return this.resourceErrors == 0;
+        return resourceErrors == 0;
     }
 
     private InputStream openStream(ByteBuffer bb) {
@@ -639,18 +700,18 @@ public class TimedTextVerifier implements ErrorReporter {
     }
 
     private boolean verifyWellFormedness() {
-        this.currentPhase = Phase.WellFormedness;
-        if (!this.lastPhase.isEnabled(Phase.WellFormedness)) {
-            logInfo("Skipping XML well-formedness verification phase (" + this.currentPhase.ordinal() + ").");
+        currentPhase = Phase.WellFormedness;
+        if (!lastPhase.isEnabled(Phase.WellFormedness)) {
+            logInfo("Skipping XML well-formedness verification phase (" + currentPhase.ordinal() + ").");
             return true;
         } else
-            logInfo("Verifying XML well-formedness phase (" + this.currentPhase.ordinal() + ")...");
+            logInfo("Verifying XML well-formedness phase (" + currentPhase.ordinal() + ")...");
         try {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setValidating(false);
             pf.setNamespaceAware(true);
             SAXParser p = pf.newSAXParser();
-            p.parse(openStream(this.resourceBufferRaw), new DefaultHandler() {
+            p.parse(openStream(resourceBufferRaw), new DefaultHandler() {
                 public void error(SAXParseException e) {
                     // ensure parsing is terminated on well-formedness error
                     logError(e);
@@ -666,7 +727,7 @@ public class TimedTextVerifier implements ErrorReporter {
                     if (logWarning(e))
                         throw new WellFormednessErrorException(e);
                 }
-            }, this.resourceUri.toString());
+            }, resourceUri.toString());
         } catch (ParserConfigurationException e) {
             logError(e);
         } catch (WellFormednessErrorException e) {
@@ -683,11 +744,11 @@ public class TimedTextVerifier implements ErrorReporter {
 
     private SchemaFactory getSchemaFactory() {
         synchronized (this) {
-            if (this.schemaFactory == null) {
-                this.schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
+            if (schemaFactory == null) {
+                schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             }
         }
-        return this.schemaFactory;
+        return schemaFactory;
     }
 
     private Schema loadSchema(URL url) throws SchemaValidationErrorException {
@@ -717,11 +778,11 @@ public class TimedTextVerifier implements ErrorReporter {
 
     private Schema getSchema(URL url) throws SchemaValidationErrorException {
         synchronized (this) {
-            if (!this.schemas.containsKey(url)) {
-                this.schemas.put(url, loadSchema(url));
+            if (!schemas.containsKey(url)) {
+                schemas.put(url, loadSchema(url));
             }
         }
-        return this.schemas.get(url);
+        return schemas.get(url);
     }
 
     private Schema getSchema(String resourceName) throws SchemaValidationErrorException {
@@ -752,23 +813,23 @@ public class TimedTextVerifier implements ErrorReporter {
     }
 
     private Schema getSchema() throws SchemaValidationErrorException {
-        return getSchema(this.model.getSchemaResourceName());
+        return getSchema(model.getSchemaResourceName());
     }
 
     private boolean verifyValidity() {
-        this.currentPhase = Phase.Validity;
-        if (!this.lastPhase.isEnabled(Phase.Validity)) {
-            logInfo("Skipping XSD validity verification phase (" + this.currentPhase.ordinal() + ").");
+        currentPhase = Phase.Validity;
+        if (!lastPhase.isEnabled(Phase.Validity)) {
+            logInfo("Skipping XSD validity verification phase (" + currentPhase.ordinal() + ").");
             return true;
         } else
-            logInfo("Verifying XSD validity phase (" + this.currentPhase.ordinal() + ")...");
+            logInfo("Verifying XSD validity phase (" + currentPhase.ordinal() + ")...");
         try {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            XMLReader filter = new ForeignVocabularyFilter(reader, this.model.getNamespaceUri(), this.foreignTreatment);
-            SAXSource source = new SAXSource(filter, new InputSource(openStream(this.resourceBufferRaw)));
-            source.setSystemId(this.resourceUri.toString());
+            XMLReader filter = new ForeignVocabularyFilter(reader, model.getNamespaceUri(), foreignTreatment);
+            SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
+            source.setSystemId(resourceUri.toString());
             Validator v = getSchema().newValidator();
             v.setErrorHandler(new ErrorHandler() {
                 public void error(SAXParseException e) {
@@ -834,20 +895,20 @@ public class TimedTextVerifier implements ErrorReporter {
     }
 
     private boolean verifySemantics() {
-        this.currentPhase = Phase.Semantics;
-        if (!this.lastPhase.isEnabled(Phase.Semantics)) {
-            logInfo("Skipping semantics verification phase (" + this.currentPhase.ordinal() + ").");
+        currentPhase = Phase.Semantics;
+        if (!lastPhase.isEnabled(Phase.Semantics)) {
+            logInfo("Skipping semantics verification phase (" + currentPhase.ordinal() + ").");
             return true;
         } else
-            logInfo("Verifying semantics phase (" + this.currentPhase.ordinal() + ")...");
+            logInfo("Verifying semantics phase (" + currentPhase.ordinal() + ")...");
         try {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            final ForeignVocabularyFilter filter = new ForeignVocabularyFilter(reader, this.model.getNamespaceUri(), ForeignTreatment.Allow);
-            SAXSource source = new SAXSource(filter, new InputSource(openStream(this.resourceBufferRaw)));
-            source.setSystemId(this.resourceUri.toString());
-            JAXBContext context = JAXBContext.newInstance(this.model.getJAXBContextPath());
+            final ForeignVocabularyFilter filter = new ForeignVocabularyFilter(reader, model.getNamespaceUri(), ForeignTreatment.Allow);
+            SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
+            source.setSystemId(resourceUri.toString());
+            JAXBContext context = JAXBContext.newInstance(model.getJAXBContextPath());
             Unmarshaller u = context.createUnmarshaller();
             final Map<Object,Locator> locators = new java.util.HashMap<Object,Locator>();
             u.setListener(new Unmarshaller.Listener() {
@@ -865,21 +926,22 @@ public class TimedTextVerifier implements ErrorReporter {
                 logError(message("Unexpected root element, can't introspect non-JAXBElement"));
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
-                if (verifyRootElement(root, this.model.getRootClasses(), locators))
-                    this.model.getSemanticsVerifier().verify(root.getValue(), locators, this);
+                if (verifyRootElement(root, model.getRootClasses(), locators))
+                    model.getSemanticsVerifier().verify(root.getValue(), locators, this);
             }
         } catch (UnmarshalException e) {
             logError(e);
         } catch (Exception e) {
             logError(e);
         }
-        return this.resourceErrors == 0;
+        return resourceErrors == 0;
     }
 
     private int verify(String uri) {
         logInfo("Verifying {" + uri + "}.");
         do {
-            if (!verifyResource(uri))
+            setResource(uri);
+            if (!verifyResource())
                 break;
             if (!verifyWellFormedness())
                 break;
@@ -888,11 +950,11 @@ public class TimedTextVerifier implements ErrorReporter {
             if (!verifySemantics())
                 break;
         } while (false);
-        int rv = this.resourceErrors > 0 ? 1 : 0;
+        int rv = resourceErrors > 0 ? 1 : 0;
         if (rv == 0) {
-            logInfo("Passed" + ((this.resourceWarnings > 0) ? ", with " + Integer.toString(this.resourceWarnings) + " warnings" : "") + ".");
+            logInfo("Passed" + ((resourceWarnings > 0) ? ", with " + Integer.toString(resourceWarnings) + " warnings" : "") + ".");
         } else
-            logInfo("Failed, with " + Integer.toString(this.resourceErrors) + " errors.");
+            logInfo("Failed, with " + Integer.toString(resourceErrors) + " errors.");
         return rv;
     }
 
@@ -905,7 +967,7 @@ public class TimedTextVerifier implements ErrorReporter {
             else
                 ++numSuccess;
         }
-        if (this.verbose > 0) {
+        if (verbose > 0) {
             StringBuffer sb = new StringBuffer();
             if (numSuccess > 0)
                 sb.append("Passed " + Integer.toString(numSuccess));
@@ -926,9 +988,9 @@ public class TimedTextVerifier implements ErrorReporter {
         try {
             List<String> nonOptionArgs = parseArgs(args);
             showBanner();
-            if (this.showModels)
+            if (showModels)
                 showModels();
-            else if (this.showRepository)
+            else if (showRepository)
                 showRepository();
             else {
                 showProcessingInfo();
@@ -1016,13 +1078,13 @@ public class TimedTextVerifier implements ErrorReporter {
         }
 
         public Locator getCurrentLocator() {
-            return new LocatorImpl(this.currentLocator);
+            return new LocatorImpl(currentLocator);
         }
 
         @Override
         public void setDocumentLocator(Locator locator) {
             super.setDocumentLocator(locator);
-            this.currentLocator = locator;
+            currentLocator = locator;
         }
 
         @Override
