@@ -44,13 +44,18 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidAllParameters() throws Exception {
+        performValidityTest("ttml10-valid-all-parameters.xml");
+    }
+
+    @Test
     public void testValidAllStyles() throws Exception {
         performValidityTest("ttml10-valid-all-styles.xml");
     }
 
     @Test
-    public void testValidAllParameters() throws Exception {
-        performValidityTest("ttml10-valid-all-parameters.xml");
+    public void testValidAllTiming() throws Exception {
+        performValidityTest("ttml10-valid-all-timing.xml");
     }
 
     @Test

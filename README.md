@@ -26,7 +26,7 @@ The encodings which `ttv` can successfully resolve include:
 
 If both BOM is present and XML declaration is present and the two encodings differ, then the BOM encoding is used.
 
-The second phrase performs well-formedness testing by attempting to parse the resource as XML but with validation disabled. If the syntax of the resource does not adhere to the XML specification, then this phase fails.
+The second phase performs well-formedness testing by attempting to parse the resource as XML but with validation disabled. If the syntax of the resource does not adhere to the XML specification, then this phase fails.
 
 The third phase performs schema validity testing using an XSD (XML Schema Definition) schema. The schema used during validation is determined by the specified (or default) verification model. Different models may specify different schemas. If a schema validation error occurs, then this phase fails.
 
@@ -36,7 +36,7 @@ The fourth phase performs additional semantic (and some syntactic) testing on th
 
 If desired, the `--until-phase` option may be used to cause verification to stop at a particular phase, thus skipping subsequent phases.
 
-The following `xs:string` schema typed attributes are tested for syntactic correctness during this fourth phase (those not yet verified are noted as *TBD*):
+The following `xs:string` schema typed attributes are tested for syntactic correctness during this fourth phase:
 
  * `tts:color`
  * `tts:backgroundColor`
@@ -51,14 +51,14 @@ The following `xs:string` schema typed attributes are tested for syntactic corre
 
 In addition, the following similarly typed attributes are similarly verified in this phase:
 
- * `begin` - *TBD*
- * `dur` - *TBD*
- * `end` - *TBD*
+ * `begin`
+ * `dur`
+ * `end`
  * `ttp:cellResolution`
  * `ttp:frameRateMultiplier`
  * `ttp:pixelAspectRatio`
 
-A number of additional semantic constraints are tested in the fourth phase, which will (in the meausure of time), be summarizeed here.
+A number of additional semantic constraints are tested in the fourth phase, which will (in the meausure of time), be summarized here.
 
 A verification *model* includes the following information:
 
@@ -258,7 +258,6 @@ Total time: 2 seconds
  * Error if loop in sequence of chained style references. (8.4.1.3 P3)
  * Error if region attribute IDREF does not reference a region element. ([Issue 219](https://www.w3.org/AudioVideo/TT/tracker/issues/219)).
  * Error if no region element specified and region attribute is specified on some element. (9.3.1 P2)
- * Verify begin, dur, end attributes on timed elements. (10)
  * Error if time expression uses `f` metric or frame component when tts:timeBase is clock. (10.3.1 P5)
  * Error if time expression uses sub-frame component when tts:timeBase is clock. (10.3.1 P6)
  * Error if metadata element expresses metadata information both with attributes and child elements. (12.1.1 P2).
@@ -278,3 +277,5 @@ Total time: 2 seconds
  * Notify computed time interval of body based on content timing alone.
  * Notify (or warn) if computed color or computed background color are problematic for color impaired viewers.
  * Notify (or warn) if computed color and computed background color are low contrast.
+ * Notify (or warn) if style property specified on content element that cannot apply to any content element, e.g., extent, opacity, origin.
+ * Notify (or warn) if style property specified on content element that is initial value and is not overriding an inherited value.

@@ -115,8 +115,22 @@ public class Strings {
         return true;
     }
 
+    public static boolean isDigits(String value) {
+        int length = value.length();
+        if (length == 0)
+            return false;
+        for (int i = 0; i < length; ++i) {
+            if (!Characters.isDigit(value.charAt(i)))
+                return false;
+        }
+        return true;
+    }
+
     public static boolean isHexDigits(String value) {
-        for (int i = 0, n = value.length(); i < n; ++i) {
+        int length = value.length();
+        if (length == 0)
+            return false;
+        for (int i = 0; i < length; ++i) {
             if (!Characters.isHexDigit(value.charAt(i)))
                 return false;
         }

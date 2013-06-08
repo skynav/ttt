@@ -64,6 +64,221 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadBeginClockTimeExtraPartEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-extra-part-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeExtraPart() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-extra-part.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesExtraSubPart() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-extra-sub-part.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesMissingDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-missing-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesSubFrameSubPartEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-sub-frame-sub-part-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesSubFrameSubPartNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-sub-frame-sub-part-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesWholeSubPartEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-whole-sub-part-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesWholeSubPartMissingDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-whole-sub-part-missing-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesWholeSubPartNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-whole-sub-part-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeHoursEmptyWithMinutesAndSeconds() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-hours-empty-with-minutes-and-seconds.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeHoursEmptyWithMinutesOnly() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-hours-empty-with-minutes-only.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeHoursMissingDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-hours-missing-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeHoursNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-hours-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeInternalWhitespace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-internal-whitespace.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeMinutesEmptyWithSeconds() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-minutes-empty-with-seconds.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeMinutesEmptyWithoutSeconds() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-minutes-empty-without-seconds.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeMinutesExtraDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-minutes-extra-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeMinutesMissingDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-minutes-missing-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeMinutesNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-minutes-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsExtraDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-extra-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsExtraSubPart() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-extra-sub-part.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsFractionSubPartEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-fraction-sub-part-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsFractionSubPartNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-fraction-sub-part-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsMissingDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-missing-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsMissing() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-missing.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsWholeSubPartEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-whole-sub-part-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsWholeSubPartMissingDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-whole-sub-part-missing-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsWholeSubPartNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-whole-sub-part-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeFractionPartEmptyWithMetric() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-fraction-part-empty-with-metric.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeFractionPartEmptyWithoutMetric() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-fraction-part-empty-without-metric.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeGarbageAfterMetric() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-garbage-after-metric.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeMetricNonLetterWithFraction() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-metric-non-letter-with-fraction.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeMetricNonLetterWithoutFraction() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-metric-non-letter-without-fraction.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeMissingMetricWithFraction() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-missing-metric-with-fraction.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeMissingMetricWithoutFraction() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-missing-metric-without-fraction.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeNonDigit() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeUnknownMetricWrongCase() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-unknown-metric-wrong-case.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeUnknownMetric() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-unknown-metric.xml");
+    }
+
+    @Test
     public void testInvalidBadCellResolutionAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-cell-resolution-all-space.xml");
     }
