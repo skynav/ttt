@@ -48,18 +48,23 @@ import java.util.MissingResourceException;
 import java.util.Stack;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+
+import org.w3c.dom.Node;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ErrorHandler;
@@ -77,6 +82,7 @@ import com.skynav.xml.helpers.Sniffer;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
 import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.util.Locators;
 
 public class TimedTextVerifier implements ErrorReporter {
 
@@ -145,6 +151,7 @@ public class TimedTextVerifier implements ErrorReporter {
     private ByteBuffer resourceBufferRaw;
     private int resourceErrors;
     private int resourceWarnings;
+    private Binder<Node> binder;
 
     private enum ForeignTreatment {
         Error,
@@ -215,8 +222,14 @@ public class TimedTextVerifier implements ErrorReporter {
 
     @Override
     public String message(Locator locator, String message) {
-        return "{" + locator.getSystemId() + "}:" +
-               "[" + locator.getLineNumber() + ":" + locator.getColumnNumber() + "]: " + message;
+        String sysid = locator.getSystemId();
+        if ((sysid == null) || (sysid.length() == 0)) {
+            if (resourceUri != null)
+                sysid = resourceUri.toString();
+            else if (resourceUriString != null)
+                sysid = resourceUriString;
+        }
+        return "{" + sysid + "}:" + "[" + locator.getLineNumber() + ":" + locator.getColumnNumber() + "]: " + message;
     }
 
     @Override
@@ -311,6 +324,33 @@ public class TimedTextVerifier implements ErrorReporter {
             e.printStackTrace(new PrintWriter(sw));
             logDebug(sw.toString());
         }
+    }
+
+    private static final QName qnEmpty = new QName("", "");
+
+    @Override
+    public QName getBindingElementName(Object value) {
+        Node xmlNode = binder.getXMLNode(value);
+        if (xmlNode != null) {
+            Object jaxbBinding = binder.getJAXBNode(xmlNode);
+            if (jaxbBinding instanceof JAXBElement<?>) {
+                JAXBElement<?> jaxbNode = (JAXBElement<?>) jaxbBinding;
+                if (jaxbNode != null)
+                    return jaxbNode.getName();
+            } else
+                return new QName(xmlNode.getNamespaceURI(), xmlNode.getLocalName());
+        }
+        return qnEmpty;
+    }
+
+    @Override
+    public Object getBindingElement(Node node) {
+        return binder.getJAXBNode(node);
+    }
+
+    @Override
+    public Node getXMLNode(Object value) {
+        return binder.getXMLNode(value);
     }
 
     private int parseLongOption(String args[], int index) {
@@ -657,6 +697,7 @@ public class TimedTextVerifier implements ErrorReporter {
         resourceBufferRaw = bufferRaw;
         resourceErrors = 0;
         resourceWarnings = 0;
+        binder = null;
     }
 
     private boolean verifyResource() {
@@ -883,13 +924,13 @@ public class TimedTextVerifier implements ErrorReporter {
         return sb.toString();
     }
 
-    private boolean verifyRootElement(JAXBElement<?> root, Map<Class<?>,String> rootClasses, Map<Object,Locator> locators) {
+    private boolean verifyRootElement(JAXBElement<?> root, Map<Class<?>,String> rootClasses) {
         Object contentObject = root.getValue();
         for (Class<?> rootClass : rootClasses.keySet()) {
             if (rootClass.isInstance(contentObject))
                 return true;
         }
-        logError(message(locators.get(contentObject),
+        logError(message(Locators.getLocator(contentObject),
             "Unexpected root element <" + root.getName() + ">," + " expected one of " + getContentClassNames(rootClasses) + "."));
         return false;
     }
@@ -902,35 +943,45 @@ public class TimedTextVerifier implements ErrorReporter {
         } else
             logInfo("Verifying semantics phase (" + currentPhase.ordinal() + ")...");
         try {
+            // construct source pipeline
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            final ForeignVocabularyFilter filter = new ForeignVocabularyFilter(reader, model.getNamespaceUri(), ForeignTreatment.Allow);
-            SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
+            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, model.getNamespaceUri(), ForeignTreatment.Allow);
+            LocationAnnotatingFilter filter2 = new LocationAnnotatingFilter(filter1);
+            SAXSource source = new SAXSource(filter2, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
+
+            // construct annotated infoset destination
+            DOMResult result = new DOMResult();
+            result.setSystemId(resourceUri.toString());
+
+            // transform into annotated infoset
+            TransformerFactory tf = TransformerFactory.newInstance();
+            tf.newTransformer().transform(source, result);
+
+            // unmarshall annotated infoset
             JAXBContext context = JAXBContext.newInstance(model.getJAXBContextPath());
-            Unmarshaller u = context.createUnmarshaller();
-            final Map<Object,Locator> locators = new java.util.HashMap<Object,Locator>();
-            u.setListener(new Unmarshaller.Listener() {
-                public void beforeUnmarshal(Object target, Object parent) {
-                    if ((target != null) && (parent != null))
-                        locators.put(target, filter.getCurrentLocator());
-                }
-                public void afterUnmarshal(Object target, Object parent) {
-                }
-            });
-            Object unmarshalled = u.unmarshal(source);
+            Binder<Node> binder = context.createBinder();
+            Object unmarshalled = binder.unmarshal(result.getNode());
+
+            // retain reference to binder at instance scope for error reporter utilities
+            this.binder = binder;
+
+            // verify root then remaining semantics
             if (unmarshalled == null)
                 logError(message("Missing root element."));
             else if (!(unmarshalled instanceof JAXBElement))
                 logError(message("Unexpected root element, can't introspect non-JAXBElement"));
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
-                if (verifyRootElement(root, model.getRootClasses(), locators))
-                    model.getSemanticsVerifier().verify(root.getValue(), locators, this);
+                if (verifyRootElement(root, model.getRootClasses()))
+                    model.getSemanticsVerifier(binder).verify(root.getValue(), this);
             }
         } catch (UnmarshalException e) {
             logError(e);
+        } catch (TransformerFactoryConfigurationError e) {
+            logError(new Exception(e));
         } catch (Exception e) {
             logError(e);
         }
@@ -1077,10 +1128,6 @@ public class TimedTextVerifier implements ErrorReporter {
             this.foreignTreatment = foreignTreatment;
         }
 
-        public Locator getCurrentLocator() {
-            return new LocatorImpl(currentLocator);
-        }
-
         @Override
         public void setDocumentLocator(Locator locator) {
             super.setDocumentLocator(locator);
@@ -1165,6 +1212,51 @@ public class TimedTextVerifier implements ErrorReporter {
             else if (foreignTreatment == ForeignTreatment.Info)
                 logInfo(currentLocator, message);
         }
+    }
+
+    private class LocationAnnotatingFilter extends XMLFilterImpl {
+
+        private Locator currentLocator;
+
+        LocationAnnotatingFilter(XMLReader reader) {
+            super(reader);
+        }
+
+        @Override
+        public void setDocumentLocator(Locator locator) {
+            super.setDocumentLocator(locator);
+            currentLocator = locator;
+        }
+
+        @Override
+        public void startElement(String nsUri, String localName, String qualName, Attributes attrs) throws SAXException {
+            super.startElement(nsUri, localName, qualName, addLocationAttribute(attrs));
+        }
+
+        private final QName qnLoc = Locators.getLocatorAttributeQName();
+        private String qnLocQualName = qnLoc.getPrefix() + ":" + qnLoc.getLocalPart();
+        private boolean rootElement = true;
+        private Attributes addLocationAttribute(Attributes attrs) {
+            if (currentLocator != null) {
+                AttributesImpl attrsNew = new AttributesImpl(attrs);
+                StringBuilder sb = new StringBuilder();
+                if (rootElement) {
+                    sb.append('{');
+                    sb.append(currentLocator.getSystemId());
+                    sb.append('}');
+                    rootElement = false;
+                } else
+                    sb.append("{}");
+                sb.append(':');
+                sb.append(Integer.toString(currentLocator.getLineNumber()));
+                sb.append(':');
+                sb.append(Integer.toString(currentLocator.getColumnNumber()));
+                attrsNew.addAttribute(qnLoc.getNamespaceURI(), qnLoc.getLocalPart(), qnLocQualName, "CDATA", sb.toString());
+                return attrsNew;
+            } else
+                return attrs;
+        }
+
     }
 
 }

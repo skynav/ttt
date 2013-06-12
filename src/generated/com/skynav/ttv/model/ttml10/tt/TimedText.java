@@ -94,6 +94,9 @@ public class TimedText {
     @XmlAnyAttribute
     private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
+    public TimedText() {
+    }
+
     /**
      * Gets the value of the head property.
      * 

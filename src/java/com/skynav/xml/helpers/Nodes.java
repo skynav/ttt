@@ -23,27 +23,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.timing;
+package com.skynav.xml.helpers;
+
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.xml.sax.Locator;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.util.Timing;
+public class Nodes {
 
-public class TimeCoordinateVerifier implements TimingValueVerifier {
+    private Nodes() {
+    }
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        String value = (String) valueObject;
-        if (Timing.isCoordinate(value, locator, errorReporter, null))
-            return true;
-        else {
-            Timing.badCoordinate(value, locator, errorReporter);
-            return false;
+    public static boolean hasAncestor(Node node, Set<QName> ancestorNames) {
+        for (QName ancestorName : ancestorNames) {
+            if (hasAncestor(node, ancestorName))
+                return true;
         }
+        return false;
+    }
+
+    public static boolean hasAncestor(Node node, QName ancestorName) {
+        while ((node != null) && (node instanceof Element)) {
+            if (matchesName(node, ancestorName))
+                return true;
+            node = node.getParentNode();
+        }
+        return false;
+    }
+
+    public static boolean matchesName(Node node, QName name) {
+        QName nodeName = new QName(node.getNamespaceURI(), node.getLocalName());
+        return nodeName.equals(name);
     }
 
 }

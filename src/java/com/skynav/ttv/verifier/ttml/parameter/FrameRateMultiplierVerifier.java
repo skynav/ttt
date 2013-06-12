@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier.ttml.parameter;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
@@ -36,7 +38,7 @@ import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class FrameRateMultiplierVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName string, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         String value = (String) valueObject;
         if (Integers.isIntegers(value, locator, errorReporter, 2, 2, NegativeTreatment.Error, ZeroTreatment.Error, null))
             return true;

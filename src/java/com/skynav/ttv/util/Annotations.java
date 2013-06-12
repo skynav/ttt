@@ -23,27 +23,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.timing;
+package com.skynav.ttv.util;
 
-import javax.xml.namespace.QName;
+public class Annotations {
 
-import org.xml.sax.Locator;
+    public static String getNamespace() {
+        return "http://skynav.com/ns/ttv/annotations";
+    }
 
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.util.Timing;
-
-public class TimeCoordinateVerifier implements TimingValueVerifier {
-
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        String value = (String) valueObject;
-        if (Timing.isCoordinate(value, locator, errorReporter, null))
-            return true;
-        else {
-            Timing.badCoordinate(value, locator, errorReporter);
-            return false;
-        }
+    public static String getNamespacePrefix() {
+        return "ttva";
     }
 
 }

@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Map;
 
+import javax.xml.bind.Binder;
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
@@ -58,35 +59,39 @@ import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML10ParameterVerifier implements ParameterVerifier {
 
+    private static final String paramNamespace = "http://www.w3.org/ns/ttml#parameter";
+
     public static final String getParameterNamespaceUri() {
-        return "http://www.w3.org/ns/ttml#parameter";
+        return paramNamespace;
     }
 
     private static Object[][] parameterAccessorMap = new Object[][] {
-        // property name            accessor method             value type          specialized verifier                padding permitted
-        { "cellResolution",         "getCellResolution",        String.class,       CellResolutionVerifier.class,       Boolean.FALSE },
-        { "clockMode",              "getClockMode",             ClockMode.class,    ClockModeVerifier.class,            Boolean.FALSE },
-        { "dropMode",               "getDropMode",              DropMode.class,     DropModeVerifier.class,             Boolean.FALSE },
-        { "frameRate",              "getFrameRate",             BigInteger.class,   FrameRateVerifier.class,            Boolean.TRUE  },
-        { "frameRateMultiplier",    "getFrameRateMultiplier",   String.class,       FrameRateMultiplierVerifier.class,  Boolean.FALSE },
-        { "markerMode",             "getMarkerMode",            MarkerMode.class,   MarkerModeVerifier.class,           Boolean.FALSE },
-        { "pixelAspectRatio",       "getPixelAspectRatio",      String.class,       PixelAspectRatioVerifier.class,     Boolean.FALSE },
-        { "profile",                "getProfile",               String.class,       ProfileVerifier.class,              Boolean.FALSE },
-        { "subFrameRate",           "getSubFrameRate",          BigInteger.class,   SubFrameRateVerifier.class,         Boolean.FALSE },
-        { "tickRate",               "getTickRate",              BigInteger.class,   TickRateVerifier.class,             Boolean.FALSE },
-        { "timeBase",               "getTimeBase",              TimeBase.class,     TimeBaseVerifier.class,             Boolean.FALSE },
+        // attribute name                                  accessor method             value type          specialized verifier                padding permitted
+        { new QName(paramNamespace,"cellResolution"),      "getCellResolution",        String.class,       CellResolutionVerifier.class,       Boolean.FALSE },
+        { new QName(paramNamespace,"clockMode"),           "getClockMode",             ClockMode.class,    ClockModeVerifier.class,            Boolean.FALSE },
+        { new QName(paramNamespace,"dropMode"),            "getDropMode",              DropMode.class,     DropModeVerifier.class,             Boolean.FALSE },
+        { new QName(paramNamespace,"frameRate"),           "getFrameRate",             BigInteger.class,   FrameRateVerifier.class,            Boolean.TRUE  },
+        { new QName(paramNamespace,"frameRateMultiplier"), "getFrameRateMultiplier",   String.class,       FrameRateMultiplierVerifier.class,  Boolean.FALSE },
+        { new QName(paramNamespace,"markerMode"),          "getMarkerMode",            MarkerMode.class,   MarkerModeVerifier.class,           Boolean.FALSE },
+        { new QName(paramNamespace,"pixelAspectRatio"),    "getPixelAspectRatio",      String.class,       PixelAspectRatioVerifier.class,     Boolean.FALSE },
+        { new QName(paramNamespace,"profile"),             "getProfile",               String.class,       ProfileVerifier.class,              Boolean.FALSE },
+        { new QName(paramNamespace,"subFrameRate"),        "getSubFrameRate",          BigInteger.class,   SubFrameRateVerifier.class,         Boolean.FALSE },
+        { new QName(paramNamespace,"tickRate"),            "getTickRate",              BigInteger.class,   TickRateVerifier.class,             Boolean.FALSE },
+        { new QName(paramNamespace,"timeBase"),            "getTimeBase",              TimeBase.class,     TimeBaseVerifier.class,             Boolean.FALSE },
     };
 
     private Model model;
-    private Map<String, ParameterAccessor> accessors;
+    @SuppressWarnings("unused")
+    private Binder<?>  binder;
+    private Map<QName, ParameterAccessor> accessors;
 
-    public TTML10ParameterVerifier(Model model) {
-        populate(model);
+    public TTML10ParameterVerifier(Model model, Binder<?> binder) {
+        populate(model, binder);
     }
 
     public boolean verify(Object content, Locator locator, ErrorReporter errorReporter) {
         boolean failed = false;
-        for (String name : accessors.keySet()) {
+        for (QName name : accessors.keySet()) {
             ParameterAccessor sa = accessors.get(name);
             if (!sa.verify(model, content, locator, errorReporter))
                 failed = true;
@@ -94,11 +99,11 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         return !failed;
     }
 
-    private void populate(Model model) {
-        Map<String, ParameterAccessor> accessors = new java.util.HashMap<String, ParameterAccessor>();
+    private void populate(Model model, Binder<?> binder) {
+        Map<QName, ParameterAccessor> accessors = new java.util.HashMap<QName, ParameterAccessor>();
         for (Object[] parameterAccessorEntry : parameterAccessorMap) {
             assert parameterAccessorEntry.length >= 5;
-            String parameterName = (String) parameterAccessorEntry[0];
+            QName parameterName = (QName) parameterAccessorEntry[0];
             String accessorName = (String) parameterAccessorEntry[1];
             Class<?> valueClass = (Class<?>) parameterAccessorEntry[2];
             Class<?> verifierClass = (Class<?>) parameterAccessorEntry[3];
@@ -106,18 +111,19 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             accessors.put(parameterName, new ParameterAccessor(parameterName, accessorName, valueClass, verifierClass, paddingPermitted));
         }
         this.model = model;
+        this.binder = binder;
         this.accessors = accessors;
     }
 
     private static class ParameterAccessor {
 
-        private String parameterName;
+        private QName parameterName;
         private String accessorName;
         private Class<?> valueClass;
         private ParameterValueVerifier verifier;
         private boolean paddingPermitted;
 
-        public ParameterAccessor(String parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
+        public ParameterAccessor(QName parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
             populate(parameterName, accessorName, valueClass, verifierClass, paddingPermitted);
         }
 
@@ -161,7 +167,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             }
         }
 
-        private void populate(String parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
+        private void populate(QName parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
             this.parameterName = parameterName;
             this.accessorName = accessorName;
             this.valueClass = valueClass;
@@ -191,7 +197,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         }
 
         private String getParameterValueAsString(TimedText content) {
-            return content.getOtherAttributes().get(new QName(getParameterNamespaceUri(), parameterName));
+            return content.getOtherAttributes().get(parameterName);
         }
 
         private Object convertType(Object value, Class<?> targetClass) {

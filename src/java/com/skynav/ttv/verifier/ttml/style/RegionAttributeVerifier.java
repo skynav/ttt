@@ -25,6 +25,30 @@
  
 package com.skynav.ttv.verifier.ttml.style;
 
-public class VerifierUtilities {
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Node;
+
+import org.xml.sax.Locator;
+
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.util.Regions;
+
+public class RegionAttributeVerifier implements StyleValueVerifier {
+
+    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        QName targetName = model.getIdReferenceTargetName(name);
+        Class<?> targetClass = model.getIdReferenceTargetClass(name);
+        Object region = valueObject;
+        Node node = errorReporter.getXMLNode(region);
+        if (Regions.isRegionReference(node, region, locator, errorReporter, targetClass))
+            return true;
+        else {
+            Regions.badRegionReference(node, region, locator, errorReporter, name, targetName, targetClass);
+            return false;
+        }
+    }
 
 }

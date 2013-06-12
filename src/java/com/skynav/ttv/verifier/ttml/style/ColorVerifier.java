@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier.ttml.style;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
@@ -34,7 +36,8 @@ import com.skynav.ttv.verifier.util.Colors;
 
 public class ColorVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+        assert valueObject instanceof String;
         String value = (String) valueObject;
         if (Colors.isColor(value, locator, errorReporter, null))
             return true;

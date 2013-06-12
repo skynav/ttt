@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier.ttml.style;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
@@ -36,8 +38,9 @@ import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class TextOutlineVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         boolean failed = false;
+        assert valueObject instanceof String;
         String value = (String) valueObject;
         String [] components = value.split("[ \t\r\n]+");
         int componentIndex = 0;

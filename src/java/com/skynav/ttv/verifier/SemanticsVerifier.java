@@ -25,10 +25,6 @@
  
 package com.skynav.ttv.verifier;
 
-import java.util.Map;
-
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.util.ErrorReporter;
 
 public interface SemanticsVerifier {
@@ -36,10 +32,9 @@ public interface SemanticsVerifier {
     /**
      * Verify semantics of content object.
      * @param content a JAXB content object
-     * @param locators a map of JAXB content objects to locators
      * @param errorReporter handler for error reporting callbacks
      * @return true if validation succeeds without error
      */
-    boolean verify(Object root, Map<Object,Locator> locators, ErrorReporter errorReporter);
+    boolean verify(Object root, ErrorReporter errorReporter);
 
 }

@@ -864,6 +864,51 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadRegionAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-region-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadRegionEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-region-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadRegionIdrefUnresolvable() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-region-idref-unresolvable.xml");
+    }
+
+    @Test
+    public void testInvalidBadRegionIdrefWrongEltype() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-region-idref-wrong-eltype.xml");
+    }
+
+    @Test
+    public void testInvalidBadStyleAllSpace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-all-space.xml");
+    }
+
+    @Test
+    public void testInvalidBadStyleEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadStyleIdrefNonStyling() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-idref-non-styling.xml");
+    }
+
+    @Test
+    public void testInvalidBadStyleIdrefUnresolvable() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-idref-unresolvable.xml");
+    }
+
+    @Test
+    public void testInvalidBadStyleIdrefWrongEltype() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-idref-wrong-eltype.xml");
+    }
+
+    @Test
     public void testInvalidBadSubFrameRateAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-sub-frame-rate-all-space.xml");
     }

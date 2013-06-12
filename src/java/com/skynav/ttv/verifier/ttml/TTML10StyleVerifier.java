@@ -27,13 +27,22 @@ package com.skynav.ttv.verifier.ttml;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.Binder;
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml10.tt.Body;
+import com.skynav.ttv.model.ttml10.tt.Break;
+import com.skynav.ttv.model.ttml10.tt.Division;
+import com.skynav.ttv.model.ttml10.tt.Paragraph;
+import com.skynav.ttv.model.ttml10.tt.Region;
+import com.skynav.ttv.model.ttml10.tt.Span;
+import com.skynav.ttv.model.ttml10.tt.Style;
 import com.skynav.ttv.model.ttml10.tt.TimedText;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleVerifier;
@@ -46,41 +55,52 @@ import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.OpacityVerifier;
 import com.skynav.ttv.verifier.ttml.style.OriginVerifier;
 import com.skynav.ttv.verifier.ttml.style.PaddingVerifier;
+import com.skynav.ttv.verifier.ttml.style.StyleAttributeVerifier;
+import com.skynav.ttv.verifier.ttml.style.RegionAttributeVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextOutlineVerifier;
 import com.skynav.ttv.verifier.ttml.style.ZIndexVerifier;
+import com.skynav.ttv.verifier.util.IdReferences;
 import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML10StyleVerifier implements StyleVerifier {
 
+    private static final String styleNamespace = "http://www.w3.org/ns/ttml#styling";
+
     public static final String getStyleNamespaceUri() {
-        return "http://www.w3.org/ns/ttml#styling";
+        return styleNamespace;
     }
 
     private static Object[][] styleAccessorMap = new Object[][] {
-        // property name         accessor method        value type      specialized verifier            padding permitted
-        { "backgroundColor",    "getBackgroundColor",   String.class,   ColorVerifier.class,            Boolean.FALSE },
-        { "color",              "getColor",             String.class,   ColorVerifier.class,            Boolean.FALSE },
-        { "extent",             "getExtent",            String.class,   ExtentVerifier.class,           Boolean.FALSE },
-        { "fontFamily",         "getFontFamily",        String.class,   FontFamilyVerifier.class,       Boolean.TRUE  },
-        { "fontSize",           "getFontSize",          String.class,   FontSizeVerifier.class,         Boolean.FALSE },
-        { "lineHeight",         "getLineHeight",        String.class,   LineHeightVerifier.class,       Boolean.FALSE },
-        { "opacity",            "getOpacity",           Float.class,    OpacityVerifier.class,          Boolean.FALSE },
-        { "origin",             "getOrigin",            String.class,   OriginVerifier.class,           Boolean.FALSE },
-        { "padding",            "getPadding",           String.class,   PaddingVerifier.class,          Boolean.FALSE },
-        { "textOutline",        "getTextOutline",       String.class,   TextOutlineVerifier.class,      Boolean.FALSE },
-        { "zIndex",             "getZIndex",            String.class,   ZIndexVerifier.class,           Boolean.FALSE },
+        // attribute name                               accessor method         value type              specialized verifier            padding permitted
+        { new QName(styleNamespace,"backgroundColor"),  "getBackgroundColor",   String.class,           ColorVerifier.class,            Boolean.FALSE },
+        { new QName(styleNamespace,"color"),            "getColor",             String.class,           ColorVerifier.class,            Boolean.FALSE },
+        { new QName(styleNamespace,"extent"),           "getExtent",            String.class,           ExtentVerifier.class,           Boolean.FALSE },
+        { new QName(styleNamespace,"fontFamily"),       "getFontFamily",        String.class,           FontFamilyVerifier.class,       Boolean.TRUE  },
+        { new QName(styleNamespace,"fontSize"),         "getFontSize",          String.class,           FontSizeVerifier.class,         Boolean.FALSE },
+        { new QName(styleNamespace,"lineHeight"),       "getLineHeight",        String.class,           LineHeightVerifier.class,       Boolean.FALSE },
+        { new QName(styleNamespace,"opacity"),          "getOpacity",           Float.class,            OpacityVerifier.class,          Boolean.FALSE },
+        { new QName(styleNamespace,"origin"),           "getOrigin",            String.class,           OriginVerifier.class,           Boolean.FALSE },
+        { new QName(styleNamespace,"padding"),          "getPadding",           String.class,           PaddingVerifier.class,          Boolean.FALSE },
+        // region is not a style property, but it is convenient to handle it here
+        { new QName("","region"),                       "getRegion",            Object.class,           RegionAttributeVerifier.class,  Boolean.FALSE },
+        // style is not a style property (as such), but it is convenient to handle it here
+        { new QName("","style"),                        "getStyleAttribute",    List.class,             StyleAttributeVerifier.class,   Boolean.FALSE },
+        { new QName(styleNamespace,"textOutline"),      "getTextOutline",       String.class,           TextOutlineVerifier.class,      Boolean.FALSE },
+        { new QName(styleNamespace,"zIndex"),           "getZIndex",            String.class,           ZIndexVerifier.class,           Boolean.FALSE },
     };
 
     private Model model;
-    private Map<String, StyleAccessor> accessors;
+    @SuppressWarnings("unused")
+    private Binder<?> binder;
+    private Map<QName, StyleAccessor> accessors;
 
-    public TTML10StyleVerifier(Model model) {
-        populate(model);
+    public TTML10StyleVerifier(Model model, Binder<?> binder) {
+        populate(model, binder);
     }
 
     public boolean verify(Object content, Locator locator, ErrorReporter errorReporter) {
         boolean failed = false;
-        for (String name : accessors.keySet()) {
+        for (QName name : accessors.keySet()) {
             StyleAccessor sa = accessors.get(name);
             if (!sa.verify(model, content, locator, errorReporter))
                 failed = true;
@@ -88,11 +108,11 @@ public class TTML10StyleVerifier implements StyleVerifier {
         return !failed;
     }
 
-    private void populate(Model model) {
-        Map<String, StyleAccessor> accessors = new java.util.HashMap<String, StyleAccessor>();
+    private void populate(Model model, Binder<?> binder) {
+        Map<QName, StyleAccessor> accessors = new java.util.HashMap<QName, StyleAccessor>();
         for (Object[] styleAccessorEntry : styleAccessorMap) {
             assert styleAccessorEntry.length >= 5;
-            String styleName = (String) styleAccessorEntry[0];
+            QName styleName = (QName) styleAccessorEntry[0];
             String accessorName = (String) styleAccessorEntry[1];
             Class<?> valueClass = (Class<?>) styleAccessorEntry[2];
             Class<?> verifierClass = (Class<?>) styleAccessorEntry[3];
@@ -100,20 +120,24 @@ public class TTML10StyleVerifier implements StyleVerifier {
             accessors.put(styleName, new StyleAccessor(styleName, accessorName, valueClass, verifierClass, paddingPermitted));
         }
         this.model = model;
+        this.binder = binder;
         this.accessors = accessors;
     }
 
     private static class StyleAccessor {
 
-        private String styleName;
+        private QName styleName;
         private String accessorName;
         private Class<?> valueClass;
         private StyleValueVerifier verifier;
         private boolean paddingPermitted;
 
-        public StyleAccessor(String styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
+        public StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
             populate(styleName, accessorName, valueClass, verifierClass, paddingPermitted);
         }
+
+        private static final QName styleAttributeName = new QName("", "style");
+        private static final QName regionAttributeName = new QName("", "region");
 
         public boolean verify(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
             boolean success = false;
@@ -121,9 +145,15 @@ public class TTML10StyleVerifier implements StyleVerifier {
             if (value != null) {
                 if (value instanceof String)
                     success = verify(model, (String) value, locator, errorReporter);
-                else if (!verifier.verify(model, styleName, value, locator, errorReporter))
+                else if (!verifier.verify(model, styleName, value, locator, errorReporter)) {
+                    if (styleName.equals(styleAttributeName)) {
+                        value = IdReferences.getIdReferences(value);
+                    } else if (styleName.equals(regionAttributeName)) {
+                        value = IdReferences.getIdReference(value);
+                    } else
+                        value = value.toString();
                     errorReporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
-                else
+                } else
                     success = true;
             } else
                 success = true;
@@ -155,7 +185,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             }
         }
 
-        private void populate(String styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
+        private void populate(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
             this.styleName = styleName;
             this.accessorName = accessorName;
             this.valueClass = valueClass;
@@ -177,6 +207,10 @@ public class TTML10StyleVerifier implements StyleVerifier {
             } catch (NoSuchMethodException e) {
                 if (content instanceof TimedText)
                     return convertType(getStyleValueAsString((TimedText) content), valueClass);
+                else if (styleName.equals(regionAttributeName) && !takesRegionAttribute(content))
+                    return null;
+                else if (styleName.equals(styleAttributeName) && !takesStyleAttribute(content))
+                    return null;
                 else
                     throw new RuntimeException(e);
             } catch (SecurityException e) {
@@ -184,14 +218,52 @@ public class TTML10StyleVerifier implements StyleVerifier {
             }
         }
 
+        private boolean takesRegionAttribute(Object content) {
+            if (content instanceof Region)
+                return false;
+            else if (content instanceof Style)
+                return false;
+            else if (content instanceof Break) {
+                // N.B. This may change in TTML.next; see https://www.w3.org/AudioVideo/TT/tracker/issues/254
+                return false;
+            } else
+                return isContent(content);
+        }
+
+        private boolean takesStyleAttribute(Object content) {
+            if (content instanceof Region)
+                return true;
+            else if (content instanceof Style)
+                return true;
+            else
+                return isContent(content);
+        }
+
+        private boolean isContent(Object content) {
+            if (content instanceof TimedText)
+                return true;
+            else if (content instanceof Body)
+                return true;
+            else if (content instanceof Division)
+                return true;
+            else if (content instanceof Paragraph)
+                return true;
+            else if (content instanceof Span)
+                return true;
+            else if (content instanceof Break)
+                return true;
+            else
+                return false;
+        }
+
         private String getStyleValueAsString(TimedText content) {
-            return content.getOtherAttributes().get(new QName(getStyleNamespaceUri(), styleName));
+            return content.getOtherAttributes().get(styleName);
         }
 
         private Object convertType(Object value, Class<?> targetClass) {
             if (value == null)
                 return null;
-            else if (value.getClass() == targetClass)
+            else if (targetClass.isInstance(value))
                 return value;
             else if (value.getClass() == String.class) {
                 if (targetClass == Float.class) {

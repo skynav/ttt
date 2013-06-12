@@ -26,6 +26,10 @@
 package com.skynav.ttv.model;
 
 import java.util.Map;
+import java.util.Set;
+
+import javax.xml.bind.Binder;
+import javax.xml.namespace.QName;
 
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
@@ -72,26 +76,53 @@ public interface Model {
     Map<Class<?>,String> getRootClasses();
 
     /**
+     * Obtain qualified name of element type which IDREFs in the
+     * specified attribute must reference.
+     * @param attributeName name of referring attribute
+     * @return qualified name or null if no constraint on target
+     * element type
+     */
+    QName getIdReferenceTargetName(QName attributeName);
+
+    /**
+     * Obtain JAXB value class which IDREFs in the specified attribute
+     * must reference.
+     * @param attributeName name of referring attribute
+     * @return JAXB value class or Object.class if no constraint on target
+     * element type
+     */
+    Class<?> getIdReferenceTargetClass(QName attributeName);
+
+    /**
+     * Obtain qualified names of element type of ancestor of element
+     * type which IDREFs in the specified attribute must reference.
+     * @param attributeName name of referring attribute
+     * @return a set of qualified names or null if no constraint on target
+     * ancestor element type
+     */
+    Set<QName> getIdReferenceAncestorNames(QName attributeName);
+
+    /**
      * Obtain semantics verifier for model.
      * @return semantics verifier instance
      */
-    SemanticsVerifier getSemanticsVerifier();
+    SemanticsVerifier getSemanticsVerifier(Binder<?> binder);
 
     /**
      * Obtain parameter verifier for model.
      * @return parameter verifier instance
      */
-    ParameterVerifier getParameterVerifier();
+    ParameterVerifier getParameterVerifier(Binder<?> binder);
 
     /**
      * Obtain style verifier for model.
      * @return style verifier instance
      */
-    StyleVerifier getStyleVerifier();
+    StyleVerifier getStyleVerifier(Binder<?> binder);
 
     /**
      * Obtain timing verifier for model.
      * @return timing verifier instance
      */
-    TimingVerifier getTimingVerifier();
+    TimingVerifier getTimingVerifier(Binder<?> binder);
 }

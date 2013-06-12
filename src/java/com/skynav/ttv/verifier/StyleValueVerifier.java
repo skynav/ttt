@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
@@ -41,6 +43,6 @@ public interface StyleValueVerifier {
      * @param errorReporter handler for error reporting callbacks
      * @return true if validation succeeds without error
      */
-    boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter);
+    boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter);
 
 }

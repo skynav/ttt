@@ -23,27 +23,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.timing;
+package com.skynav.ttv.verifier.ttml.style;
+
+import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
+
+import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.util.Timing;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.util.Styles;
 
-public class TimeCoordinateVerifier implements TimingValueVerifier {
+public class StyleAttributeVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        String value = (String) valueObject;
-        if (Timing.isCoordinate(value, locator, errorReporter, null))
-            return true;
-        else {
-            Timing.badCoordinate(value, locator, errorReporter);
-            return false;
+        boolean failed = false;
+        QName targetName = model.getIdReferenceTargetName(name);
+        Class<?> targetClass = model.getIdReferenceTargetClass(name);
+        Set<QName> ancestorNames = model.getIdReferenceAncestorNames(name);
+        assert valueObject instanceof List<?>;
+        List<?> styles = (List<?>) valueObject;
+        if (styles.size() > 0) {
+            for (Object style : styles) {
+                Node node = errorReporter.getXMLNode(style);
+                if (!Styles.isStyleReference(node, style, locator, errorReporter, targetClass, ancestorNames)) {
+                    Styles.badStyleReference(node, style, locator, errorReporter, name, targetName, targetClass, ancestorNames);
+                    failed = true;
+                }
+            }
         }
+        return !failed;
     }
 
 }

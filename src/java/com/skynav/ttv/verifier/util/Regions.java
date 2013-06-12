@@ -23,26 +23,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.timing;
+package com.skynav.ttv.verifier.util;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Node;
+
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.util.Timing;
 
-public class TimeCoordinateVerifier implements TimingValueVerifier {
+public class Regions {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
-        String value = (String) valueObject;
-        if (Timing.isCoordinate(value, locator, errorReporter, null))
-            return true;
-        else {
-            Timing.badCoordinate(value, locator, errorReporter);
+    public static boolean isRegionReference(Node node, Object value, Locator locator, ErrorReporter errorReporter, Class<?> targetClass) {
+        if (!targetClass.isInstance(value))
             return false;
+        return true;
+    }
+
+    public static void badRegionReference(Node node, Object value, Locator locator, ErrorReporter errorReporter, QName referencingAttribute, QName targetName, Class<?> targetClass) {
+        if (!targetClass.isInstance(value)) {
+            IdReferences.badReference(value, locator, errorReporter, referencingAttribute, targetName);
         }
     }
 

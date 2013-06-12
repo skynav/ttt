@@ -26,8 +26,8 @@
 package com.skynav.ttv.verifier.ttml;
 
 import java.io.Serializable;
-import java.util.Map;
 
+import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBElement;
 
 import org.w3c.dom.Element;
@@ -59,6 +59,7 @@ import com.skynav.ttv.model.ttml10.ttm.Copyright;
 import com.skynav.ttv.model.ttml10.ttm.Description;
 import com.skynav.ttv.model.ttml10.ttm.Name;
 import com.skynav.ttv.model.ttml10.ttm.Title;
+import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
@@ -68,19 +69,20 @@ import com.skynav.ttv.verifier.TimingVerifier;
 public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private Model model;
-    private Map<Object,Locator> locators;
+    private Binder<?> binder;
     private ErrorReporter errorReporter;
     private ParameterVerifier parameterVerifier;
     private StyleVerifier styleVerifier;
     private TimingVerifier timingVerifier;
 
-    public TTML10SemanticsVerifier(Model model) {
+    public TTML10SemanticsVerifier(Model model, Binder<?> binder) {
         this.model = model;
+        this.binder = binder;
     }
 
     @Override
-    public boolean verify(Object root, Map<Object,Locator> locators, ErrorReporter errorReporter) {
-        setState(root, locators, errorReporter);
+    public boolean verify(Object root, ErrorReporter errorReporter) {
+        setState(root, errorReporter);
         if (root instanceof TimedText)
             return verify((TimedText)root);
         else if (root instanceof Profile)
@@ -89,18 +91,17 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             return unexpectedContent(root);
     }
 
-    private void setState(Object root, Map<Object,Locator> locators, ErrorReporter errorReporter) {
+    private void setState(Object root, ErrorReporter errorReporter) {
         // passed state
-        this.locators = locators;
         this.errorReporter = errorReporter;
         // derived state
-        this.parameterVerifier = model.getParameterVerifier();
-        this.styleVerifier = model.getStyleVerifier();
-        this.timingVerifier = model.getTimingVerifier();
+        this.parameterVerifier = model.getParameterVerifier(binder);
+        this.styleVerifier = model.getStyleVerifier(binder);
+        this.timingVerifier = model.getTimingVerifier(binder);
     }
 
     private Locator getLocator(Object content) {
-        return locators.get(content);
+        return Locators.getLocator(content);
     }
 
     private boolean verify(TimedText tt) {

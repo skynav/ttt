@@ -246,11 +246,13 @@
     <arg value="--hide-warnings"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-simple.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-elements.xml"/>
-    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-styles.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-parameters.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-styles.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-timing.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign-metadata.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-opacity-out-of-range.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-origin-negative.xml"/>
   </java>
 </target>
 

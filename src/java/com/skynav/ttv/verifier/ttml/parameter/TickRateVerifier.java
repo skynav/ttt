@@ -27,6 +27,8 @@ package com.skynav.ttv.verifier.ttml.parameter;
 
 import java.math.BigInteger;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
@@ -35,7 +37,7 @@ import com.skynav.ttv.verifier.ParameterValueVerifier;
 
 public class TickRateVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, String name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName string, Object valueObject, Locator locator, ErrorReporter errorReporter) {
         int value = ((BigInteger) valueObject).intValue();
         // Schema validation phase (2) detects and reports non-positive values.
         if (value < 0)

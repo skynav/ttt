@@ -73,6 +73,11 @@ public class ValidTestCases {
         performValidityTest("ttml10-valid-opacity-out-of-range.xml");
     }
 
+    @Test
+    public void testValidOriginNegative() throws Exception {
+        performValidityTest("ttml10-valid-origin-negative.xml");
+    }
+
     private void performValidityTest(String resourceName) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

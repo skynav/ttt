@@ -26,8 +26,16 @@
 package com.skynav.ttv.model.ttml;
 
 import java.util.Map;
+import java.util.Set;
+
+import javax.xml.bind.Binder;
+import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml10.tt.Layout;
+import com.skynav.ttv.model.ttml10.tt.Region;
+import com.skynav.ttv.model.ttml10.tt.Style;
+import com.skynav.ttv.model.ttml10.tt.Styling;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
@@ -57,38 +65,76 @@ public class TTML10 {
         public Map<Class<?>,String> getRootClasses() {
             return rootClasses;
         }
+        private static final QName regionElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createRegion(new Region()).getName();
+        private static final QName styleElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createStyle(new Style()).getName();
+        public QName getIdReferenceTargetName(QName attributeName) {
+            String namespaceUri = attributeName.getNamespaceURI();
+            String localName = attributeName.getLocalPart();
+            if ((namespaceUri == null) || (namespaceUri.length() == 0)) {
+                if (localName.equals("style"))
+                    return styleElementName;
+                else if (localName.equals("region"))
+                    return regionElementName;
+            }
+            return null;
+        }
+        public Class<?> getIdReferenceTargetClass(QName attributeName) {
+            String namespaceUri = attributeName.getNamespaceURI();
+            String localName = attributeName.getLocalPart();
+            if ((namespaceUri == null) || (namespaceUri.length() == 0)) {
+                if (localName.equals("style"))
+                    return Style.class;
+                else if (localName.equals("region"))
+                    return Region.class;
+            }
+            return Object.class;
+        }
+        private static final QName stylingElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createStyling(new Styling()).getName();
+        private static final QName layoutElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createLayout(new Layout()).getName();
+        public Set<QName> getIdReferenceAncestorNames(QName attributeName) {
+            Set<QName> ancestorNames = new java.util.HashSet<QName>();
+            String namespaceUri = attributeName.getNamespaceURI();
+            String localName = attributeName.getLocalPart();
+            if ((namespaceUri == null) || (namespaceUri.length() == 0)) {
+                if (localName.equals("style"))
+                    ancestorNames.add(stylingElementName);
+                else if (localName.equals("region"))
+                    ancestorNames.add(layoutElementName);
+            }
+            return (ancestorNames.size() > 0) ? ancestorNames : null;
+        }
         private SemanticsVerifier semanticsVerifier;
-        public SemanticsVerifier getSemanticsVerifier() {
+        public SemanticsVerifier getSemanticsVerifier(Binder<?> binder) {
             synchronized (this) {
                 if (semanticsVerifier == null) {
-                    semanticsVerifier = new com.skynav.ttv.verifier.ttml.TTML10SemanticsVerifier(this);
+                    semanticsVerifier = new com.skynav.ttv.verifier.ttml.TTML10SemanticsVerifier(this, binder);
                 }
             }
             return semanticsVerifier;
         }
         private ParameterVerifier parameterVerifier;
-        public ParameterVerifier getParameterVerifier() {
+        public ParameterVerifier getParameterVerifier(Binder<?> binder) {
             synchronized (this) {
                 if (parameterVerifier == null) {
-                    parameterVerifier = new com.skynav.ttv.verifier.ttml.TTML10ParameterVerifier(this);
+                    parameterVerifier = new com.skynav.ttv.verifier.ttml.TTML10ParameterVerifier(this, binder);
                 }
             }
             return parameterVerifier;
         }
         private StyleVerifier styleVerifier;
-        public StyleVerifier getStyleVerifier() {
+        public StyleVerifier getStyleVerifier(Binder<?> binder) {
             synchronized (this) {
                 if (styleVerifier == null) {
-                    styleVerifier = new com.skynav.ttv.verifier.ttml.TTML10StyleVerifier(this);
+                    styleVerifier = new com.skynav.ttv.verifier.ttml.TTML10StyleVerifier(this, binder);
                 }
             }
             return styleVerifier;
         }
         private TimingVerifier timingVerifier;
-        public TimingVerifier getTimingVerifier() {
+        public TimingVerifier getTimingVerifier(Binder<?> binder) {
             synchronized (this) {
                 if (timingVerifier == null) {
-                    timingVerifier = new com.skynav.ttv.verifier.ttml.TTML10TimingVerifier(this);
+                    timingVerifier = new com.skynav.ttv.verifier.ttml.TTML10TimingVerifier(this, binder);
                 }
             }
             return timingVerifier;

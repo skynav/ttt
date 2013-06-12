@@ -25,9 +25,14 @@
  
 package com.skynav.ttv.util;
 
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Node;
+
 import org.xml.sax.Locator;
 
 public interface ErrorReporter {
+    // error reporting
     public String message(String message);
     public String message(Locator locator, String message);
     public void logError(String message);
@@ -39,4 +44,8 @@ public interface ErrorReporter {
     public void logInfo(Locator locator, String message);
     public void logDebug(String message);
     public void logDebug(Locator locator, String message);
+    // miscellaneous helpers
+    public QName getBindingElementName(Object value);
+    public Object getBindingElement(Node node);
+    public Node getXMLNode(Object value);
 }
