@@ -36,8 +36,8 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.impl.LengthImpl;
-import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.util.NullErrorReporter;
+import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 
@@ -67,7 +67,8 @@ public class Lengths {
     }
 
     private static Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*.\\d+|\\d+))(\\w+|%)?");
-    public static boolean isLength(String value, Locator locator, ErrorReporter errorReporter, NegativeTreatment negativeTreatment, Length[] outputLength) {
+    public static boolean isLength(String value, Locator locator, VerifierContext context, NegativeTreatment negativeTreatment, Length[] outputLength) {
+        Reporter reporter = context.getReporter();
         Matcher m = lengthPattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() > 0;
@@ -92,10 +93,10 @@ public class Lengths {
                 if (negativeTreatment == NegativeTreatment.Error)
                     return false;
                 else if (negativeTreatment == NegativeTreatment.Warning) {
-                    if (errorReporter.logWarning(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " should not be used."))
+                    if (reporter.logWarning(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " should not be used."))
                         return false;
                 } else if (negativeTreatment == NegativeTreatment.Info)
-                    errorReporter.logInfo(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " used.");
+                    reporter.logInfo(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " used.");
             }
             Length.Unit unitsValue;
             if (m.groupCount() > 1) {
@@ -114,7 +115,8 @@ public class Lengths {
             return false;
     }
 
-    public static void badLength(String value, Locator locator, ErrorReporter errorReporter, NegativeTreatment negativeTreatment) {
+    public static void badLength(String value, Locator locator, VerifierContext context, NegativeTreatment negativeTreatment) {
+        Reporter reporter = context.getReporter();
         boolean negative = false;
         double numberValue = 0;
         Length.Unit units = null;
@@ -136,7 +138,7 @@ public class Lengths {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <length> expression, XML space padding not permitted before number.");
             }
 
@@ -161,7 +163,7 @@ public class Lengths {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <length> expression, XML space padding not permitted between sign and non-negative-number.");
             }
 
@@ -211,7 +213,7 @@ public class Lengths {
             // non-negative-number
             if (integralPart == null) {
                 if (fractionalPart == null) {
-                    errorReporter.logInfo(locator,
+                    reporter.logInfo(locator,
                         "Bad <length> expression, missing non-negative number after optional sign.");
                 } else {
                     numberValue = fractionalPart.doubleValue();
@@ -234,7 +236,7 @@ public class Lengths {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <length> expression, XML space padding not permitted between number and units.");
             }
 
@@ -258,10 +260,10 @@ public class Lengths {
                 } catch (IllegalArgumentException e) {
                     try {
                         units = Length.Unit.valueOfShorthandIgnoringCase(unitsAsString);
-                        errorReporter.logInfo(locator,
+                        reporter.logInfo(locator,
                             "Bad <length> expression, units is not expressed with correct case, got '" + unitsAsString + "', expected " + units.shorthand() + "'.");
                     } catch (IllegalArgumentException ee) {
-                        errorReporter.logInfo(locator,
+                        reporter.logInfo(locator,
                             "Bad <length> expression, unknown units '" + unitsAsString + "'.");
                     }
                 }
@@ -277,7 +279,7 @@ public class Lengths {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <length> expression, XML space padding not permitted after units.");
             }
 
@@ -287,7 +289,7 @@ public class Lengths {
                 while (valueIndex < valueLength) {
                     sb.append(value.charAt(valueIndex++));
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <length> expression, unrecognized characters not permitted after units, got '" + sb + "'.");
             }
 
@@ -296,18 +298,19 @@ public class Lengths {
         if (negative)
             numberValue = -numberValue;
         if ((numberValue < 0) && (negativeTreatment == NegativeTreatment.Error))
-            errorReporter.logInfo(locator, "Bad <length> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
+            reporter.logInfo(locator, "Bad <length> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
         if (units == null)
-            errorReporter.logInfo(locator, "Bad <length> expression, missing or unknown units, expected one of " + Length.Unit.shorthands() + ".");
+            reporter.logInfo(locator, "Bad <length> expression, missing or unknown units, expected one of " + Length.Unit.shorthands() + ".");
     }
 
-    public static boolean isLengths(String value, Locator locator, ErrorReporter errorReporter, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, MixedUnitsTreatment mixedUnitsTreatment, List<Length> outputLengths) {
+    public static boolean isLengths(String value, Locator locator, VerifierContext context, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, MixedUnitsTreatment mixedUnitsTreatment, List<Length> outputLengths) {
+        Reporter reporter = context.getReporter();
         List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
         for (String component : lengthComponents) {
             Length[] length = new Length[1];
-            if (isLength(component, locator, errorReporter, negativeTreatment, length))
+            if (isLength(component, locator, context, negativeTreatment, length))
                 lengths.add(length[0]);
             else
                 return false;
@@ -321,10 +324,10 @@ public class Lengths {
             if (mixedUnitsTreatment == MixedUnitsTreatment.Error)
                 return false;
             else if (mixedUnitsTreatment == MixedUnitsTreatment.Warning) {
-                if (errorReporter.logWarning(locator, "Mixed units " +  Length.Unit.shorthands(units) + " should not be used in <length> expressions."))
+                if (reporter.logWarning(locator, "Mixed units " +  Length.Unit.shorthands(units) + " should not be used in <length> expressions."))
                     return false;
             } else if (mixedUnitsTreatment == MixedUnitsTreatment.Info)
-                errorReporter.logInfo(locator, "Mixed units " + Length.Unit.shorthands(units) + " used in <length> expressions.");
+                reporter.logInfo(locator, "Mixed units " + Length.Unit.shorthands(units) + " used in <length> expressions.");
         }
         if (outputLengths != null) {
             outputLengths.clear();
@@ -333,27 +336,28 @@ public class Lengths {
         return true;
     }
 
-    public static void badLengths(String value, Locator locator, ErrorReporter errorReporter, int minComponents, int maxComponents,
+    public static void badLengths(String value, Locator locator, VerifierContext context, int minComponents, int maxComponents,
         NegativeTreatment negativeTreatment, MixedUnitsTreatment mixedUnitsTreatment) {
+        Reporter reporter = context.getReporter();
         List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
         for (String component : lengthComponents) {
             Length[] length = new Length[1];
-            if (isLength(component, locator, NullErrorReporter.Reporter, negativeTreatment, length))
+            if (isLength(component, locator, context, negativeTreatment, length))
                 lengths.add(length[0]);
             else
-                badLength(component, locator, errorReporter, negativeTreatment);
+                badLength(component, locator, context, negativeTreatment);
         }
         if (numComponents < minComponents) {
-            errorReporter.logInfo(locator,
+            reporter.logInfo(locator,
                 "Missing <length> expression, got " + numComponents + ", but expected at least " + minComponents + " <length> expressions.");
         } else if (numComponents > maxComponents) {
-            errorReporter.logInfo(locator,
+            reporter.logInfo(locator,
                 "Extra <length> expression, got " + numComponents + ", but expected no more than " + maxComponents + " <length> expressions.");
         }
         if (!Units.sameUnits(lengths) && (mixedUnitsTreatment == MixedUnitsTreatment.Error))
-            errorReporter.logInfo(locator, "Mixed units " + Length.Unit.shorthands(Units.units(lengths)) + " not permitted.");
+            reporter.logInfo(locator, "Mixed units " + Length.Unit.shorthands(Units.units(lengths)) + " not permitted.");
     }
 
 }

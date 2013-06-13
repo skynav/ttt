@@ -27,7 +27,6 @@ package com.skynav.ttv.verifier.ttml;
 
 import java.io.Serializable;
 
-import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBElement;
 
 import org.w3c.dom.Element;
@@ -60,29 +59,27 @@ import com.skynav.ttv.model.ttml10.ttm.Description;
 import com.skynav.ttv.model.ttml10.ttm.Name;
 import com.skynav.ttv.model.ttml10.ttm.Title;
 import com.skynav.ttv.util.Locators;
-import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private Model model;
-    private Binder<?> binder;
-    private ErrorReporter errorReporter;
+    private VerifierContext context;
     private ParameterVerifier parameterVerifier;
     private StyleVerifier styleVerifier;
     private TimingVerifier timingVerifier;
 
-    public TTML10SemanticsVerifier(Model model, Binder<?> binder) {
+    public TTML10SemanticsVerifier(Model model) {
         this.model = model;
-        this.binder = binder;
     }
 
     @Override
-    public boolean verify(Object root, ErrorReporter errorReporter) {
-        setState(root, errorReporter);
+    public boolean verify(Object root, VerifierContext context) {
+        setState(root, context);
         if (root instanceof TimedText)
             return verify((TimedText)root);
         else if (root instanceof Profile)
@@ -91,13 +88,13 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             return unexpectedContent(root);
     }
 
-    private void setState(Object root, ErrorReporter errorReporter) {
+    private void setState(Object root, VerifierContext context) {
         // passed state
-        this.errorReporter = errorReporter;
+        this.context = context;
         // derived state
-        this.parameterVerifier = model.getParameterVerifier(binder);
-        this.styleVerifier = model.getStyleVerifier(binder);
-        this.timingVerifier = model.getTimingVerifier(binder);
+        this.parameterVerifier = model.getParameterVerifier();
+        this.styleVerifier = model.getStyleVerifier();
+        this.timingVerifier = model.getTimingVerifier();
     }
 
     private Locator getLocator(Object content) {
@@ -447,15 +444,15 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verifyParameters(Object content) {
-        return this.parameterVerifier.verify(content, getLocator(content), this.errorReporter);
+        return this.parameterVerifier.verify(content, getLocator(content), this.context);
     }
 
     private boolean verifyStyles(Object content) {
-        return this.styleVerifier.verify(content, getLocator(content), this.errorReporter);
+        return this.styleVerifier.verify(content, getLocator(content), this.context);
     }
 
     private boolean verifyTiming(Object content) {
-        return this.timingVerifier.verify(content, getLocator(content), this.errorReporter);
+        return this.timingVerifier.verify(content, getLocator(content), this.context);
     }
 
     private boolean unexpectedContent(Object content) throws IllegalStateException {

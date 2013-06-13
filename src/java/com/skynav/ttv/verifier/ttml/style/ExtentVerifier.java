@@ -30,8 +30,8 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
@@ -39,15 +39,15 @@ import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class ExtentVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
         if (Keywords.isAuto(value))
             return true;
-        else if (Lengths.isLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Error, MixedUnitsTreatment.Allow, null))
+        else if (Lengths.isLengths(value, locator, context, 2, 2, NegativeTreatment.Error, MixedUnitsTreatment.Allow, null))
             return true;
         else {
-            Lengths.badLengths(value, locator, errorReporter, 2, 2, NegativeTreatment.Error, MixedUnitsTreatment.Allow);
+            Lengths.badLengths(value, locator, context, 2, 2, NegativeTreatment.Error, MixedUnitsTreatment.Allow);
             return false;
         }
     }

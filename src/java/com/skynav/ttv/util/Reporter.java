@@ -25,27 +25,19 @@
  
 package com.skynav.ttv.util;
 
-import javax.xml.namespace.QName;
-
-import org.w3c.dom.Node;
-
 import org.xml.sax.Locator;
 
-public class NullErrorReporter implements ErrorReporter {
-    public static final NullErrorReporter Reporter = new NullErrorReporter();
-    public String message(String message) { return message; }
-    public String message(Locator locator, String message) { return message; }
-    public void logError(String message) {}
-    public void logError(Locator locator, String message) {}
-    public void logError(Exception e) {}
-    public boolean logWarning(String message) { return false; }
-    public boolean logWarning(Locator locator, String message) { return false; }
-    public void logInfo(String message) {}
-    public void logInfo(Locator locator, String message) {}
-    public void logDebug(String message) {}
-    public void logDebug(Locator locator, String message) {}
-    private static final QName qnEmpty = new QName("", "");
-    public QName getBindingElementName(Object value) { return qnEmpty; }
-    public Object getBindingElement(Node node) { return null; }
-    public Node getXMLNode(Object value) { return null; }
+public interface Reporter {
+    // error reporting
+    public String message(String message);
+    public String message(Locator locator, String message);
+    public void logError(String message);
+    public void logError(Locator locator, String message);
+    public void logError(Exception e);
+    public boolean logWarning(String message);
+    public boolean logWarning(Locator locator, String message);
+    public void logInfo(String message);
+    public void logInfo(Locator locator, String message);
+    public void logDebug(String message);
+    public void logDebug(Locator locator, String message);
 }

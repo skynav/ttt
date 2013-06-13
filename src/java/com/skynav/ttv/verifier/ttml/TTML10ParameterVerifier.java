@@ -30,7 +30,6 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Map;
 
-import javax.xml.bind.Binder;
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
@@ -41,9 +40,10 @@ import com.skynav.ttv.model.ttml10.ttd.ClockMode;
 import com.skynav.ttv.model.ttml10.ttd.DropMode;
 import com.skynav.ttv.model.ttml10.ttd.MarkerMode;
 import com.skynav.ttv.model.ttml10.ttd.TimeBase;
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.parameter.CellResolutionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DropModeVerifier;
@@ -81,25 +81,23 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
     };
 
     private Model model;
-    @SuppressWarnings("unused")
-    private Binder<?>  binder;
     private Map<QName, ParameterAccessor> accessors;
 
-    public TTML10ParameterVerifier(Model model, Binder<?> binder) {
-        populate(model, binder);
+    public TTML10ParameterVerifier(Model model) {
+        populate(model);
     }
 
-    public boolean verify(Object content, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
             ParameterAccessor sa = accessors.get(name);
-            if (!sa.verify(model, content, locator, errorReporter))
+            if (!sa.verify(model, content, locator, context))
                 failed = true;
         }
         return !failed;
     }
 
-    private void populate(Model model, Binder<?> binder) {
+    private void populate(Model model) {
         Map<QName, ParameterAccessor> accessors = new java.util.HashMap<QName, ParameterAccessor>();
         for (Object[] parameterAccessorEntry : parameterAccessorMap) {
             assert parameterAccessorEntry.length >= 5;
@@ -111,7 +109,6 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             accessors.put(parameterName, new ParameterAccessor(parameterName, accessorName, valueClass, verifierClass, paddingPermitted));
         }
         this.model = model;
-        this.binder = binder;
         this.accessors = accessors;
     }
 
@@ -127,14 +124,14 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             populate(parameterName, accessorName, valueClass, verifierClass, paddingPermitted);
         }
 
-        public boolean verify(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
+        public boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
             boolean success = false;
             Object value = getParameterValue(content);
             if (value != null) {
                 if (value instanceof String)
-                    success = verify(model, (String) value, locator, errorReporter);
-                else if (!verifier.verify(model, parameterName, value, locator, errorReporter))
-                    errorReporter.logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
+                    success = verify(model, (String) value, locator, context);
+                else if (!verifier.verify(model, parameterName, value, locator, context))
+                    context.getReporter().logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
                 else
                     success = true;
             } else
@@ -142,16 +139,17 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             return success;
         }
 
-        private boolean verify(Model model, String value, Locator locator, ErrorReporter errorReporter) {
+        private boolean verify(Model model, String value, Locator locator, VerifierContext context) {
             boolean success = false;
+            Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                errorReporter.logError(locator, "Empty " + parameterName + " not permitted, got '" + value + "'.");
+                reporter.logError(locator, "Empty " + parameterName + " not permitted, got '" + value + "'.");
             else if (Strings.isAllXMLSpace(value))
-                errorReporter.logError(locator, "The value of " + parameterName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logError(locator, "The value of " + parameterName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
-                errorReporter.logError(locator, "XML space padding not permitted on " + parameterName + ", got '" + value + "'.");
-            else if (!verifier.verify(model, parameterName, value, locator, errorReporter))
-                errorReporter.logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
+                reporter.logError(locator, "XML space padding not permitted on " + parameterName + ", got '" + value + "'.");
+            else if (!verifier.verify(model, parameterName, value, locator, context))
+                reporter.logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
             else
                 success = true;
             return success;

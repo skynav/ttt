@@ -30,8 +30,8 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
@@ -39,15 +39,15 @@ import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class LineHeightVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
         if (Keywords.isNormal(value))
             return true;
-        else if (Lengths.isLengths(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error, null))
+        else if (Lengths.isLengths(value, locator, context, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error, null))
             return true;
         else {
-            Lengths.badLengths(value, locator, errorReporter, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error);
+            Lengths.badLengths(value, locator, context, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error);
             return false;
         }
     }

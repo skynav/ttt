@@ -23,29 +23,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.parameter;
-
-import java.math.BigInteger;
-
-import javax.xml.namespace.QName;
+package com.skynav.ttv.util;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.verifier.ParameterValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-
-public class FrameRateVerifier implements ParameterValueVerifier {
-
-    public boolean verify(Model model, QName string, Object valueObject, Locator locator, VerifierContext context) {
-        int value = ((BigInteger) valueObject).intValue();
-        // Schema validation phase (2) detects and reports non-positive values.
-        if (value < 0)
-            throw new IllegalStateException("Unexpected negative value.");
-        else if (value == 0)
-            throw new IllegalStateException("Unexpected zero value.");
-        else
-            return true;
-    }
-
+public class NullReporter implements Reporter {
+    public static final NullReporter Reporter = new NullReporter();
+    public String message(String message) { return message; }
+    public String message(Locator locator, String message) { return message; }
+    public void logError(String message) {}
+    public void logError(Locator locator, String message) {}
+    public void logError(Exception e) {}
+    public boolean logWarning(String message) { return false; }
+    public boolean logWarning(Locator locator, String message) { return false; }
+    public void logInfo(String message) {}
+    public void logInfo(Locator locator, String message) {}
+    public void logDebug(String message) {}
+    public void logDebug(Locator locator, String message) {}
 }

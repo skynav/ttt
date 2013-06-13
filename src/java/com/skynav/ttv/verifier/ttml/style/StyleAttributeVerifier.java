@@ -35,13 +35,13 @@ import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Styles;
 
 public class StyleAttributeVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
         boolean failed = false;
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
@@ -50,9 +50,9 @@ public class StyleAttributeVerifier implements StyleValueVerifier {
         List<?> styles = (List<?>) valueObject;
         if (styles.size() > 0) {
             for (Object style : styles) {
-                Node node = errorReporter.getXMLNode(style);
-                if (!Styles.isStyleReference(node, style, locator, errorReporter, targetClass, ancestorNames)) {
-                    Styles.badStyleReference(node, style, locator, errorReporter, name, targetName, targetClass, ancestorNames);
+                Node node = context.getXMLNode(style);
+                if (!Styles.isStyleReference(node, style, locator, context, targetClass, ancestorNames)) {
+                    Styles.badStyleReference(node, style, locator, context, name, targetName, targetClass, ancestorNames);
                     failed = true;
                 }
             }

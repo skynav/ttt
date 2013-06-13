@@ -30,7 +30,6 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
 
 public interface StyleValueVerifier {
 
@@ -40,9 +39,9 @@ public interface StyleValueVerifier {
      * @param name style name
      * @param valueObject style value
      * @param locator a locator that corresponds to the lexical location of the content object
-     * @param errorReporter handler for error reporting callbacks
+     * @param context verifier context
      * @return true if validation succeeds without error
      */
-    boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter);
+    boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context);
 
 }

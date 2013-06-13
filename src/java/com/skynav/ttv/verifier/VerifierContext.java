@@ -23,29 +23,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.util;
+package com.skynav.ttv.verifier;
 
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Node;
 
-import org.xml.sax.Locator;
+import com.skynav.ttv.util.Reporter;
 
-public interface ErrorReporter {
-    // error reporting
-    public String message(String message);
-    public String message(Locator locator, String message);
-    public void logError(String message);
-    public void logError(Locator locator, String message);
-    public void logError(Exception e);
-    public boolean logWarning(String message);
-    public boolean logWarning(Locator locator, String message);
-    public void logInfo(String message);
-    public void logInfo(Locator locator, String message);
-    public void logDebug(String message);
-    public void logDebug(Locator locator, String message);
-    // miscellaneous helpers
+public interface VerifierContext {
+
+    /**
+     * Obtain reference to reporter.
+     * @return reporter instance
+     */
+    public Reporter getReporter();
+
+    /**
+     * Obtain XML element type name associated with a binding object,
+     * which must either be an (outer) content element, i.e., JAXBElement<?>
+     * instance, or an (inner) content value object.
+     * @param value a binding object as described above
+     * @return qualified name, which, if no name is available, then QName("","")
+     * is returned
+     */
     public QName getBindingElementName(Object value);
+
+    /**
+     * Obtain binding content element or value instance associated
+     * with infoset node. If an (outer) content element, i.e., JAXBElement<?>
+     * is available, it will be returned; otherwise, an (inner) content value
+     * object will be returned. Or if neither is available, null is returned.
+     * @param an infoset node
+     * @return an instance of JAXBElement<?> or a content object instance or null
+     */
     public Object getBindingElement(Node node);
+
+    /**
+     * Obtain infoset node associated with a binding object, which must
+     * be either a JAXBElement<?> instance or a content value object instance.
+     * @param value a binding object as described above
+     * @return an infoset node or null
+     */
     public Node getXMLNode(Object value);
+
 }

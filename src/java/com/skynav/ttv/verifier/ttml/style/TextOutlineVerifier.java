@@ -30,15 +30,17 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Colors;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class TextOutlineVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
+        Reporter reporter = context.getReporter();
         boolean failed = false;
         assert valueObject instanceof String;
         String value = (String) valueObject;
@@ -61,24 +63,24 @@ public class TextOutlineVerifier implements StyleValueVerifier {
                 blur = components[componentIndex++];
         }
         if (color != null) {
-            if (!Colors.isColor(color, locator, errorReporter, null)) {
-                Colors.badColor(color, locator, errorReporter);
-                errorReporter.logInfo(locator, "Bad <color> expression in color component '" + color + "'.");
+            if (!Colors.isColor(color, locator, context, null)) {
+                Colors.badColor(color, locator, context);
+                reporter.logInfo(locator, "Bad <color> expression in color component '" + color + "'.");
                 failed = true;
             } else if (thickness == null) {
-                errorReporter.logInfo(locator, "Missing <length> expression after <color> expression '" + color + "'.");
+                reporter.logInfo(locator, "Missing <length> expression after <color> expression '" + color + "'.");
                 failed = true;
             }
         }
         if (thickness != null) {
-            if (!Lengths.isLength(thickness, locator, errorReporter, NegativeTreatment.Error, null)) {
-                Lengths.badLength(thickness, locator, errorReporter, NegativeTreatment.Error);
-                errorReporter.logInfo(locator, "Bad <length> expression in thickness component '" + thickness + "'.");
+            if (!Lengths.isLength(thickness, locator, context, NegativeTreatment.Error, null)) {
+                Lengths.badLength(thickness, locator, context, NegativeTreatment.Error);
+                reporter.logInfo(locator, "Bad <length> expression in thickness component '" + thickness + "'.");
                 failed = true;
             } else if (blur != null) {
-                if (!Lengths.isLength(blur, locator, errorReporter, NegativeTreatment.Error, null)) {
-                    Lengths.badLength(blur, locator, errorReporter, NegativeTreatment.Error);
-                    errorReporter.logInfo(locator, "Bad <length> expression in blur component '" + blur + "'.");
+                if (!Lengths.isLength(blur, locator, context, NegativeTreatment.Error, null)) {
+                    Lengths.badLength(blur, locator, context, NegativeTreatment.Error);
+                    reporter.logInfo(locator, "Bad <length> expression in blur component '" + blur + "'.");
                     failed = true;
                 }
             }
@@ -94,7 +96,7 @@ public class TextOutlineVerifier implements StyleValueVerifier {
             afterComponent = null;
         while (componentIndex < numComponents) {
             String unparsedComponent = components[componentIndex++];
-            errorReporter.logInfo(locator,
+            reporter.logInfo(locator,
                 "Unparsed expression '" + unparsedComponent + "'" +
                 ((afterComponent != null) ? (" after " + afterComponent + " component") : "") + ".");
             failed = true;

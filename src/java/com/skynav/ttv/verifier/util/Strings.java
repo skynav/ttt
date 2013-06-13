@@ -27,19 +27,19 @@ package com.skynav.ttv.verifier.util;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class Strings {
 
-    public static boolean isDoubleQuotedString(String value, Locator locator, ErrorReporter errorReporter, String[] outputString) {
-        return isQuotedString(value, locator, errorReporter, '\"', outputString);
+    public static boolean isDoubleQuotedString(String value, Locator locator, VerifierContext context, String[] outputString) {
+        return isQuotedString(value, locator, context, '\"', outputString);
     }
 
-    public static boolean isSingleQuotedString(String value, Locator locator, ErrorReporter errorReporter, String[] outputString) {
-        return isQuotedString(value, locator, errorReporter, '\'', outputString);
+    public static boolean isSingleQuotedString(String value, Locator locator, VerifierContext context, String[] outputString) {
+        return isQuotedString(value, locator, context, '\'', outputString);
     }
 
-    private static boolean isQuotedString(String value, Locator locator, ErrorReporter errorReporter, char quote, String[] outputString) {
+    private static boolean isQuotedString(String value, Locator locator, VerifierContext context, char quote, String[] outputString) {
         if (value.length() < 2)
             return false;
         else if (value.charAt(0) != quote)

@@ -28,7 +28,6 @@ package com.skynav.ttv.model;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.Binder;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.verifier.ParameterVerifier;
@@ -106,23 +105,23 @@ public interface Model {
      * Obtain semantics verifier for model.
      * @return semantics verifier instance
      */
-    SemanticsVerifier getSemanticsVerifier(Binder<?> binder);
+    SemanticsVerifier getSemanticsVerifier();
 
     /**
      * Obtain parameter verifier for model.
      * @return parameter verifier instance
      */
-    ParameterVerifier getParameterVerifier(Binder<?> binder);
+    ParameterVerifier getParameterVerifier();
 
     /**
      * Obtain style verifier for model.
      * @return style verifier instance
      */
-    StyleVerifier getStyleVerifier(Binder<?> binder);
+    StyleVerifier getStyleVerifier();
 
     /**
      * Obtain timing verifier for model.
      * @return timing verifier instance
      */
-    TimingVerifier getTimingVerifier(Binder<?> binder);
+    TimingVerifier getTimingVerifier();
 }

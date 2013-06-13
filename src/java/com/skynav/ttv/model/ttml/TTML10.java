@@ -28,7 +28,6 @@ package com.skynav.ttv.model.ttml;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.Binder;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
@@ -104,37 +103,37 @@ public class TTML10 {
             return (ancestorNames.size() > 0) ? ancestorNames : null;
         }
         private SemanticsVerifier semanticsVerifier;
-        public SemanticsVerifier getSemanticsVerifier(Binder<?> binder) {
+        public SemanticsVerifier getSemanticsVerifier() {
             synchronized (this) {
                 if (semanticsVerifier == null) {
-                    semanticsVerifier = new com.skynav.ttv.verifier.ttml.TTML10SemanticsVerifier(this, binder);
+                    semanticsVerifier = new com.skynav.ttv.verifier.ttml.TTML10SemanticsVerifier(this);
                 }
             }
             return semanticsVerifier;
         }
         private ParameterVerifier parameterVerifier;
-        public ParameterVerifier getParameterVerifier(Binder<?> binder) {
+        public ParameterVerifier getParameterVerifier() {
             synchronized (this) {
                 if (parameterVerifier == null) {
-                    parameterVerifier = new com.skynav.ttv.verifier.ttml.TTML10ParameterVerifier(this, binder);
+                    parameterVerifier = new com.skynav.ttv.verifier.ttml.TTML10ParameterVerifier(this);
                 }
             }
             return parameterVerifier;
         }
         private StyleVerifier styleVerifier;
-        public StyleVerifier getStyleVerifier(Binder<?> binder) {
+        public StyleVerifier getStyleVerifier() {
             synchronized (this) {
                 if (styleVerifier == null) {
-                    styleVerifier = new com.skynav.ttv.verifier.ttml.TTML10StyleVerifier(this, binder);
+                    styleVerifier = new com.skynav.ttv.verifier.ttml.TTML10StyleVerifier(this);
                 }
             }
             return styleVerifier;
         }
         private TimingVerifier timingVerifier;
-        public TimingVerifier getTimingVerifier(Binder<?> binder) {
+        public TimingVerifier getTimingVerifier() {
             synchronized (this) {
                 if (timingVerifier == null) {
-                    timingVerifier = new com.skynav.ttv.verifier.ttml.TTML10TimingVerifier(this, binder);
+                    timingVerifier = new com.skynav.ttv.verifier.ttml.TTML10TimingVerifier(this);
                 }
             }
             return timingVerifier;

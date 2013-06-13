@@ -33,12 +33,12 @@ import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.xml.helpers.Nodes;
 
 public class Styles {
 
-    public static boolean isStyleReference(Node node, Object value, Locator locator, ErrorReporter errorReporter, Class<?> targetClass, Set<QName> ancestorNames) {
+    public static boolean isStyleReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass, Set<QName> ancestorNames) {
         if (!targetClass.isInstance(value))
             return false;
         if (!isStylingDescendant(node, value, ancestorNames))
@@ -47,19 +47,22 @@ public class Styles {
         return true;
     }
 
-    public static void badStyleReference(Node node, Object value, Locator locator, ErrorReporter errorReporter, QName referencingAttribute, QName targetName, Class<?> targetClass, Set<QName> ancestorNames) {
+    public static void badStyleReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+        QName targetName, Class<?> targetClass, Set<QName> ancestorNames) {
         if (!targetClass.isInstance(value))
-            IdReferences.badReference(value, locator, errorReporter, referencingAttribute, targetName);
+            IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
         if (!isStylingDescendant(node, value, ancestorNames))
-            badStylingDescendant(node, value, locator, errorReporter, referencingAttribute, targetName, ancestorNames);
+            badStylingDescendant(node, value, locator, context, referencingAttribute, targetName, ancestorNames);
     }
 
     private static boolean isStylingDescendant(Node node, Object value, Set<QName> ancestorNames) {
         return Nodes.hasAncestor(node, ancestorNames);
     }
 
-    private static void badStylingDescendant(Node node, Object value, Locator locator, ErrorReporter errorReporter, QName referencingAttribute, QName targetName, Set<QName> ancestorNames) {
-        errorReporter.logInfo(locator, "Bad IDREF '" + IdReferences.getId(value) + "', must reference " + targetName + " that is a descendant of any of " + ancestorNames + ".");
+    private static void badStylingDescendant(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+        QName targetName, Set<QName> ancestorNames) {
+        context.getReporter().logInfo(locator,
+            "Bad IDREF '" + IdReferences.getId(value) + "', must reference " + targetName + " that is a descendant of any of " + ancestorNames + ".");
     }
 
 }

@@ -32,16 +32,17 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.util.ErrorReporter;
-import com.skynav.ttv.util.NullErrorReporter;
+import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class Integers {
 
     private static Pattern integerPattern = Pattern.compile("([\\+\\-]?)(\\d+)");
-    private static boolean isInteger(String value, Locator locator, ErrorReporter errorReporter,
+    private static boolean isInteger(String value, Locator locator, VerifierContext context,
         NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment, Integer[] outputInteger) {
+        Reporter reporter = context.getReporter();
         Matcher m = integerPattern.matcher(value);
         if (m.matches()) {
             String number = m.group(0);
@@ -57,18 +58,18 @@ public class Integers {
                 if (negativeTreatment == NegativeTreatment.Error)
                     return false;
                 else if (negativeTreatment == NegativeTreatment.Warning) {
-                    if (errorReporter.logWarning(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " should not be used."))
+                    if (reporter.logWarning(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " should not be used."))
                         return false;
                 } else if (negativeTreatment == NegativeTreatment.Info)
-                    errorReporter.logInfo(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " used.");
+                    reporter.logInfo(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " used.");
             } else if (numberValue == 0) {
                 if (zeroTreatment == ZeroTreatment.Error)
                     return false;
                 else if (zeroTreatment == ZeroTreatment.Warning) {
-                    if (errorReporter.logWarning(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " should not be used."))
+                    if (reporter.logWarning(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " should not be used."))
                         return false;
                 } else if (zeroTreatment == ZeroTreatment.Info)
-                    errorReporter.logInfo(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " used.");
+                    reporter.logInfo(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " used.");
             }
             if (outputInteger != null)
                 outputInteger[0] = Integer.valueOf(numberValue);
@@ -77,7 +78,8 @@ public class Integers {
             return false;
     }
 
-    private static void badInteger(String value, Locator locator, ErrorReporter errorReporter, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment) {
+    private static void badInteger(String value, Locator locator, VerifierContext context, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment) {
+        Reporter reporter = context.getReporter();
         boolean negative = false;
         int numberValue = 0;
 
@@ -97,7 +99,7 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <integer> expression, XML space padding not permitted before integer.");
             }
 
@@ -122,7 +124,7 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <integer> expression, XML space padding not permitted between sign and non-negative-integer.");
             }
 
@@ -148,7 +150,7 @@ public class Integers {
 
             // non-negative-number
             if (integralPart == null) {
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <integer> expression, missing non-negative integer after optional sign.");
             } else {
                 numberValue = integralPart.intValue();
@@ -164,7 +166,7 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <integer> expression, XML space padding not permitted after integer.");
             }
 
@@ -174,7 +176,7 @@ public class Integers {
                 while (valueIndex < valueLength) {
                     sb.append(value.charAt(valueIndex++));
                 }
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <integer> expression, unrecognized characters not permitted after integer, got '" + sb + "'.");
             }
 
@@ -183,18 +185,18 @@ public class Integers {
         if (negative)
             numberValue = -numberValue;
         if ((numberValue < 0) && (negativeTreatment == NegativeTreatment.Error))
-            errorReporter.logInfo(locator, "Bad <integer> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
+            reporter.logInfo(locator, "Bad <integer> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
         else if ((numberValue == 0) && (zeroTreatment == ZeroTreatment.Error))
-            errorReporter.logInfo(locator, "Bad <integer> expression, zero value not permitted.");
+            reporter.logInfo(locator, "Bad <integer> expression, zero value not permitted.");
     }
 
-    public static boolean isIntegers(String value, Locator locator, ErrorReporter errorReporter, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment, List<Integer> outputIntegers) {
+    public static boolean isIntegers(String value, Locator locator, VerifierContext context, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment, List<Integer> outputIntegers) {
         List<Integer> integers = new java.util.ArrayList<Integer>();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
         for (String component : integerComponents) {
             Integer[] integer = new Integer[1];
-            if (isInteger(component, locator, errorReporter, negativeTreatment, zeroTreatment, integer))
+            if (isInteger(component, locator, context, negativeTreatment, zeroTreatment, integer))
                 integers.add(integer[0]);
             else
                 return false;
@@ -210,22 +212,23 @@ public class Integers {
         return true;
     }
 
-    public static void badIntegers(String value, Locator locator, ErrorReporter errorReporter, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment) {
+    public static void badIntegers(String value, Locator locator, VerifierContext context, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment) {
+        Reporter reporter = context.getReporter();
         List<Integer> integers = new java.util.ArrayList<Integer>();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
         for (String component : integerComponents) {
             Integer[] integer = new Integer[1];
-            if (isInteger(component, locator, NullErrorReporter.Reporter, negativeTreatment, zeroTreatment, integer))
+            if (isInteger(component, locator, context, negativeTreatment, zeroTreatment, integer))
                 integers.add(integer[0]);
             else
-                badInteger(component, locator, errorReporter, negativeTreatment, zeroTreatment);
+                badInteger(component, locator, context, negativeTreatment, zeroTreatment);
         }
         if (numComponents < minComponents) {
-            errorReporter.logInfo(locator,
+            reporter.logInfo(locator,
                 "Missing <integer> expression, got " + numComponents + ", but expected at least " + minComponents + " <integer> expressions.");
         } else if (numComponents > maxComponents) {
-            errorReporter.logInfo(locator,
+            reporter.logInfo(locator,
                 "Extra <integer> expression, got " + numComponents + ", but expected no more than " + maxComponents + " <integer> expressions.");
         }
     }

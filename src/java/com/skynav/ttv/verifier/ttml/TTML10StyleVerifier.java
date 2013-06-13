@@ -30,7 +30,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.Binder;
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
@@ -44,9 +43,10 @@ import com.skynav.ttv.model.ttml10.tt.Region;
 import com.skynav.ttv.model.ttml10.tt.Span;
 import com.skynav.ttv.model.ttml10.tt.Style;
 import com.skynav.ttv.model.ttml10.tt.TimedText;
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.style.ColorVerifier;
 import com.skynav.ttv.verifier.ttml.style.ExtentVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontFamilyVerifier;
@@ -90,25 +90,23 @@ public class TTML10StyleVerifier implements StyleVerifier {
     };
 
     private Model model;
-    @SuppressWarnings("unused")
-    private Binder<?> binder;
     private Map<QName, StyleAccessor> accessors;
 
-    public TTML10StyleVerifier(Model model, Binder<?> binder) {
-        populate(model, binder);
+    public TTML10StyleVerifier(Model model) {
+        populate(model);
     }
 
-    public boolean verify(Object content, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
             StyleAccessor sa = accessors.get(name);
-            if (!sa.verify(model, content, locator, errorReporter))
+            if (!sa.verify(model, content, locator, context))
                 failed = true;
         }
         return !failed;
     }
 
-    private void populate(Model model, Binder<?> binder) {
+    private void populate(Model model) {
         Map<QName, StyleAccessor> accessors = new java.util.HashMap<QName, StyleAccessor>();
         for (Object[] styleAccessorEntry : styleAccessorMap) {
             assert styleAccessorEntry.length >= 5;
@@ -120,7 +118,6 @@ public class TTML10StyleVerifier implements StyleVerifier {
             accessors.put(styleName, new StyleAccessor(styleName, accessorName, valueClass, verifierClass, paddingPermitted));
         }
         this.model = model;
-        this.binder = binder;
         this.accessors = accessors;
     }
 
@@ -139,20 +136,20 @@ public class TTML10StyleVerifier implements StyleVerifier {
         private static final QName styleAttributeName = new QName("", "style");
         private static final QName regionAttributeName = new QName("", "region");
 
-        public boolean verify(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
+        public boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
             boolean success = false;
             Object value = getStyleValue(content);
             if (value != null) {
                 if (value instanceof String)
-                    success = verify(model, (String) value, locator, errorReporter);
-                else if (!verifier.verify(model, styleName, value, locator, errorReporter)) {
+                    success = verify(model, (String) value, locator, context);
+                else if (!verifier.verify(model, styleName, value, locator, context)) {
                     if (styleName.equals(styleAttributeName)) {
                         value = IdReferences.getIdReferences(value);
                     } else if (styleName.equals(regionAttributeName)) {
                         value = IdReferences.getIdReference(value);
                     } else
                         value = value.toString();
-                    errorReporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
+                    context.getReporter().logError(locator, "Invalid " + styleName + " value '" + value + "'.");
                 } else
                     success = true;
             } else
@@ -160,16 +157,17 @@ public class TTML10StyleVerifier implements StyleVerifier {
             return success;
         }
 
-        private boolean verify(Model model, String value, Locator locator, ErrorReporter errorReporter) {
+        private boolean verify(Model model, String value, Locator locator, VerifierContext context) {
             boolean success = false;
+            Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                errorReporter.logError(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
+                reporter.logError(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
             else if (Strings.isAllXMLSpace(value))
-                errorReporter.logError(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logError(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
-                errorReporter.logError(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
-            else if (!verifier.verify(model, styleName, value, locator, errorReporter))
-                errorReporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
+                reporter.logError(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
+            else if (!verifier.verify(model, styleName, value, locator, context))
+                reporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
             else
                 success = true;
             return success;

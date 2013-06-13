@@ -33,13 +33,13 @@ import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class IdReferences {
 
-    public static void badReference(Object value, Locator locator, ErrorReporter errorReporter, QName referencingAttribute, QName targetExpected) {
-        QName targetActual = errorReporter.getBindingElementName(value);
-        errorReporter.logInfo(locator, "Bad IDREF '" + getId(value) + "', got reference to " + targetActual + ", expected reference to " + targetExpected + ".");
+    public static void badReference(Object value, Locator locator, VerifierContext context, QName referencingAttribute, QName targetExpected) {
+        QName targetActual = context.getBindingElementName(value);
+        context.getReporter().logInfo(locator, "Bad IDREF '" + getId(value) + "', got reference to " + targetActual + ", expected reference to " + targetExpected + ".");
     }
 
     public static String getIdReferences(Object value) {

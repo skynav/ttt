@@ -31,19 +31,19 @@ import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class Regions {
 
-    public static boolean isRegionReference(Node node, Object value, Locator locator, ErrorReporter errorReporter, Class<?> targetClass) {
+    public static boolean isRegionReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass) {
         if (!targetClass.isInstance(value))
             return false;
         return true;
     }
 
-    public static void badRegionReference(Node node, Object value, Locator locator, ErrorReporter errorReporter, QName referencingAttribute, QName targetName, Class<?> targetClass) {
+    public static void badRegionReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute, QName targetName, Class<?> targetClass) {
         if (!targetClass.isInstance(value)) {
-            IdReferences.badReference(value, locator, errorReporter, referencingAttribute, targetName);
+            IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
         }
     }
 

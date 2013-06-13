@@ -25,16 +25,14 @@
  
 package com.skynav.ttv.verifier;
 
-import com.skynav.ttv.util.ErrorReporter;
-
 public interface SemanticsVerifier {
 
     /**
      * Verify semantics of content object.
      * @param content a JAXB content object
-     * @param errorReporter handler for error reporting callbacks
+     * @param context verifier context
      * @return true if validation succeeds without error
      */
-    boolean verify(Object root, ErrorReporter errorReporter);
+    boolean verify(Object root, VerifierContext context);
 
 }

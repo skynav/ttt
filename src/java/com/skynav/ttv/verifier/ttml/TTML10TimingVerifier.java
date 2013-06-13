@@ -29,16 +29,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import javax.xml.bind.Binder;
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml10.tt.TimedText;
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.TimingValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.timing.TimeCoordinateVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimeDurationVerifier;
 import com.skynav.ttv.verifier.util.Strings;
@@ -59,25 +59,23 @@ public class TTML10TimingVerifier implements TimingVerifier {
     };
 
     private Model model;
-    @SuppressWarnings("unused")
-    private Binder<?> binder;
     private Map<QName, TimingAccessor> accessors;
 
-    public TTML10TimingVerifier(Model model, Binder<?> binder) {
-        populate(model, binder);
+    public TTML10TimingVerifier(Model model) {
+        populate(model);
     }
 
-    public boolean verify(Object content, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
             TimingAccessor sa = accessors.get(name);
-            if (!sa.verify(model, content, locator, errorReporter))
+            if (!sa.verify(model, content, locator, context))
                 failed = true;
         }
         return !failed;
     }
 
-    private void populate(Model model, Binder<?> binder) {
+    private void populate(Model model) {
         Map<QName, TimingAccessor> accessors = new java.util.HashMap<QName, TimingAccessor>();
         for (Object[] timingAccessorEntry : timingAccessorMap) {
             assert timingAccessorEntry.length >= 5;
@@ -89,7 +87,6 @@ public class TTML10TimingVerifier implements TimingVerifier {
             accessors.put(timingName, new TimingAccessor(timingName, accessorName, valueClass, verifierClass, paddingPermitted));
         }
         this.model = model;
-        this.binder = binder;
         this.accessors = accessors;
     }
 
@@ -105,14 +102,14 @@ public class TTML10TimingVerifier implements TimingVerifier {
             populate(timingName, accessorName, valueClass, verifierClass, paddingPermitted);
         }
 
-        public boolean verify(Model model, Object content, Locator locator, ErrorReporter errorReporter) {
+        public boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
             boolean success = false;
             Object value = getTimingValue(content);
             if (value != null) {
                 if (value instanceof String)
-                    success = verify(model, (String) value, locator, errorReporter);
-                else if (!verifier.verify(model, timingName, value, locator, errorReporter))
-                    errorReporter.logError(locator, "Invalid " + timingName + " value '" + value + "'.");
+                    success = verify(model, (String) value, locator, context);
+                else if (!verifier.verify(model, timingName, value, locator, context))
+                    context.getReporter().logError(locator, "Invalid " + timingName + " value '" + value + "'.");
                 else
                     success = true;
             } else
@@ -120,16 +117,17 @@ public class TTML10TimingVerifier implements TimingVerifier {
             return success;
         }
 
-        private boolean verify(Model model, String value, Locator locator, ErrorReporter errorReporter) {
+        private boolean verify(Model model, String value, Locator locator, VerifierContext context) {
+            Reporter reporter = context.getReporter();
             boolean success = false;
             if (value.length() == 0)
-                errorReporter.logError(locator, "Empty " + timingName + " not permitted, got '" + value + "'.");
+                reporter.logError(locator, "Empty " + timingName + " not permitted, got '" + value + "'.");
             else if (Strings.isAllXMLSpace(value))
-                errorReporter.logError(locator, "The value of " + timingName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logError(locator, "The value of " + timingName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
-                errorReporter.logError(locator, "XML space padding not permitted on " + timingName + ", got '" + value + "'.");
-            else if (!verifier.verify(model, timingName, value, locator, errorReporter))
-                errorReporter.logError(locator, "Invalid " + timingName + " value '" + value + "'.");
+                reporter.logError(locator, "XML space padding not permitted on " + timingName + ", got '" + value + "'.");
+            else if (!verifier.verify(model, timingName, value, locator, context))
+                reporter.logError(locator, "Invalid " + timingName + " value '" + value + "'.");
             else
                 success = true;
             return success;

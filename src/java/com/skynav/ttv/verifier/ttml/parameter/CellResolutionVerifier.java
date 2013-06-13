@@ -30,20 +30,20 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Integers;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class CellResolutionVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, QName string, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName string, Object valueObject, Locator locator, VerifierContext context) {
         String value = (String) valueObject;
-        if (Integers.isIntegers(value, locator, errorReporter, 2, 2, NegativeTreatment.Error, ZeroTreatment.Error, null))
+        if (Integers.isIntegers(value, locator, context, 2, 2, NegativeTreatment.Error, ZeroTreatment.Error, null))
             return true;
         else {
-            Integers.badIntegers(value, locator, errorReporter, 2, 2, NegativeTreatment.Error, ZeroTreatment.Error);
+            Integers.badIntegers(value, locator, context, 2, 2, NegativeTreatment.Error, ZeroTreatment.Error);
             return false;
         }
     }

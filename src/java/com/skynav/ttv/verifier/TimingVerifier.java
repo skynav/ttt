@@ -27,17 +27,15 @@ package com.skynav.ttv.verifier;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.util.ErrorReporter;
-
 public interface TimingVerifier {
 
     /**
      * Verify timing attributes of content object.
      * @param content a JAXB content object
      * @param locator a locator that corresponds to the lexical location of the content object
-     * @param errorReporter handler for error reporting callbacks
+     * @param context verifier context
      * @return true if validation succeeds without error
      */
-    boolean verify(Object content, Locator locator, ErrorReporter errorReporter);
+    boolean verify(Object content, Locator locator, VerifierContext context);
 
 }

@@ -34,36 +34,37 @@ import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.OffsetTime;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
 import com.skynav.ttv.model.value.impl.OffsetTimeImpl;
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class Timing {
 
-    public static boolean isCoordinate(String value, Locator locator, ErrorReporter errorReporter, Time[] outputTime) {
-        if (isClockTime(value, locator, errorReporter, outputTime))
+    public static boolean isCoordinate(String value, Locator locator, VerifierContext context, Time[] outputTime) {
+        if (isClockTime(value, locator, context, outputTime))
             return true;
-        else if (isOffsetTime(value, locator, errorReporter, outputTime))
+        else if (isOffsetTime(value, locator, context, outputTime))
             return true;
         else
             return false;
     }
 
-    public static void badCoordinate(String value, Locator locator, ErrorReporter errorReporter) {
+    public static void badCoordinate(String value, Locator locator, VerifierContext context) {
         if (value.indexOf(':') >= 0)
-            badClockTime(value, locator, errorReporter);
+            badClockTime(value, locator, context);
         else
-            badOffsetTime(value, locator, errorReporter);
+            badOffsetTime(value, locator, context);
     }
 
-    public static boolean isDuration(String value, Locator locator, ErrorReporter errorReporter, Time[] outputTime) {
-        return isCoordinate(value, locator, errorReporter, outputTime);
+    public static boolean isDuration(String value, Locator locator, VerifierContext context, Time[] outputTime) {
+        return isCoordinate(value, locator, context, outputTime);
     }
 
-    public static void badDuration(String value, Locator locator, ErrorReporter errorReporter) {
-        badCoordinate(value, locator, errorReporter);
+    public static void badDuration(String value, Locator locator, VerifierContext context) {
+        badCoordinate(value, locator, context);
     }
 
     private static Pattern clockTimePattern = Pattern.compile("(\\d{2,3}):(\\d{2}):(\\d{2})(\\.\\d+|:\\d{2,}(?:\\.\\d+)?)?");
-    public static boolean isClockTime(String value, Locator locator, ErrorReporter errorReporter, Time[] outputTime) {
+    public static boolean isClockTime(String value, Locator locator, VerifierContext context, Time[] outputTime) {
         Matcher m = clockTimePattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() >= 3;
@@ -92,57 +93,58 @@ public class Timing {
             return false;
     }
 
-    public static void badClockTime(String value, Locator locator, ErrorReporter errorReporter) {
+    public static void badClockTime(String value, Locator locator, VerifierContext context) {
+        Reporter reporter = context.getReporter();
         assert value.indexOf(':') >= 0;
         String[] parts = value.split("\\:", 5);
         int numParts = parts.length;
         if (numParts > 0) {
             String hh = parts[0];
             if (hh.length() == 0)
-                errorReporter.logInfo(locator, "Bad <timeExpression>, hours part is empty in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, hours part is empty in clock time.");
             else if (!Strings.isDigits(hh))
-                errorReporter.logInfo(locator, "Bad <timeExpression>, hours part '" + hh + "' contains non-digit character in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, hours part '" + hh + "' contains non-digit character in clock time.");
             else if (hh.length() < 2)
-                errorReporter.logInfo(locator, "Bad <timeExpression>, hours part must contain two or more digits in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, hours part must contain two or more digits in clock time.");
         } else {
-            errorReporter.logInfo(locator, "Bad <timeExpression>, empty expression.");
+            reporter.logInfo(locator, "Bad <timeExpression>, empty expression.");
         }
         if (numParts > 1) {
             String mm = parts[1];
             if (mm.length() == 0)
-                errorReporter.logInfo(locator, "Bad <timeExpression>, minutes part is empty in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, minutes part is empty in clock time.");
             else if (!Strings.isDigits(mm))
-                errorReporter.logInfo(locator, "Bad <timeExpression>, minutes part '" + mm + "' contains non-digit character in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, minutes part '" + mm + "' contains non-digit character in clock time.");
             else if (mm.length() < 2)
-                errorReporter.logInfo(locator, "Bad <timeExpression>, minutes part is missing digit(s), must contain two digits in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, minutes part is missing digit(s), must contain two digits in clock time.");
             else if (mm.length() > 2)
-                errorReporter.logInfo(locator, "Bad <timeExpression>, minutes part contains extra digit(s), must contain two digits in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, minutes part contains extra digit(s), must contain two digits in clock time.");
         } else {
-            errorReporter.logInfo(locator, "Bad <timeExpression>, missing minutes and seconds parts in clock time.");
+            reporter.logInfo(locator, "Bad <timeExpression>, missing minutes and seconds parts in clock time.");
         }
         if (numParts > 2) {
             String ss = parts[2];
             if (ss.length() == 0)
-                errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part is empty in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, seconds part is empty in clock time.");
             else if (Strings.containsDecimalSeparator(ss)) {
                 String[] subParts = ss.split("\\.", 3);
                 if (subParts.length > 0) {
                     String w = subParts[0];
                     if (w.length() == 0)
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part whole sub-part is empty in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, seconds part whole sub-part is empty in clock time.");
                     else if (!Strings.isDigits(w))
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part whole sub-part '" + w + "' contains non-digit character in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, seconds part whole sub-part '" + w + "' contains non-digit character in clock time.");
                     else if (w.length() < 2)
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part is missing digit(s), must contain two digits in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, seconds part is missing digit(s), must contain two digits in clock time.");
                     else if (w.length() > 2)
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part contains extra digit(s), must contain two digits in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, seconds part contains extra digit(s), must contain two digits in clock time.");
                 }
                 if (subParts.length > 1) {
                     String f = subParts[1];
                     if (f.length() == 0)
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part fraction sub-part is empty in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, seconds part fraction sub-part is empty in clock time.");
                     else if (!Strings.isDigits(f))
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part fraction sub-part '" + f + "' contains non-digit character in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, seconds part fraction sub-part '" + f + "' contains non-digit character in clock time.");
                 }
                 if (subParts.length > 2) {
                     StringBuffer sb = new StringBuffer();
@@ -150,40 +152,40 @@ public class Timing {
                         sb.append('.');
                         sb.append(subParts[i]);
                     }
-                    errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part contains extra sub-parts '" + sb.toString() + "'.");
+                    reporter.logInfo(locator, "Bad <timeExpression>, seconds part contains extra sub-parts '" + sb.toString() + "'.");
                 }
             } else if (!Strings.isDigits(ss)) {
-                errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part '" + ss +
+                reporter.logInfo(locator, "Bad <timeExpression>, seconds part '" + ss +
                                       "' contains unexpected character (not digit or decimal separator) in clock time.");
             } else if (ss.length() < 2) {
-                errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part is missing digit(s), must contain two digits in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, seconds part is missing digit(s), must contain two digits in clock time.");
             } else if (ss.length() > 2) {
-                errorReporter.logInfo(locator, "Bad <timeExpression>, seconds part contains extra digit(s), must contain two digits in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, seconds part contains extra digit(s), must contain two digits in clock time.");
             }
         } else {
-            errorReporter.logInfo(locator, "Bad <timeExpression>, missing seconds part in clock time.");
+            reporter.logInfo(locator, "Bad <timeExpression>, missing seconds part in clock time.");
         }
         if (numParts > 3) {
             String ff = parts[3];
             if (ff.length() == 0)
-                errorReporter.logInfo(locator, "Bad <timeExpression>, frames part is empty in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, frames part is empty in clock time.");
             else if (Strings.containsDecimalSeparator(ff)) {
                 String[] subParts = ff.split("\\.", 3);
                 if (subParts.length > 0) {
                     String w = subParts[0];
                     if (w.length() == 0)
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, frames part whole sub-part is empty in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, frames part whole sub-part is empty in clock time.");
                     else if (!Strings.isDigits(w))
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, frames part whole sub-part '" + w + "' contains non-digit character in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, frames part whole sub-part '" + w + "' contains non-digit character in clock time.");
                     else if (w.length() < 2)
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, frames part whole sub-part is missing digit(s), must contain two or more digits in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, frames part whole sub-part is missing digit(s), must contain two or more digits in clock time.");
                 }
                 if (subParts.length > 1) {
                     String f = subParts[1];
                     if (f.length() == 0)
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, frames part sub-frames sub-part is empty in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, frames part sub-frames sub-part is empty in clock time.");
                     else if (!Strings.isDigits(f))
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, frames part sub-frames sub-part '" + f + "' contains non-digit character in clock time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, frames part sub-frames sub-part '" + f + "' contains non-digit character in clock time.");
                 }
                 if (subParts.length > 2) {
                     StringBuffer sb = new StringBuffer();
@@ -191,26 +193,26 @@ public class Timing {
                         sb.append('.');
                         sb.append(subParts[i]);
                     }
-                    errorReporter.logInfo(locator, "Bad <timeExpression>, frames part contains extra sub-parts '" + sb.toString() + "'.");
+                    reporter.logInfo(locator, "Bad <timeExpression>, frames part contains extra sub-parts '" + sb.toString() + "'.");
                 }
             } else if (!Strings.isDigits(ff)) {
-                errorReporter.logInfo(locator, "Bad <timeExpression>, frames part '" + ff +
+                reporter.logInfo(locator, "Bad <timeExpression>, frames part '" + ff +
                                       "' contains unexpected character (not digit or decimal separator) in clock time.");
             } else if (ff.length() < 2) {
-                errorReporter.logInfo(locator, "Bad <timeExpression>, frames part is missing digit(s), must contain two or more digits in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, frames part is missing digit(s), must contain two or more digits in clock time.");
             }
         }
         if (numParts > 4) {
             String uu = parts[4];
             if (uu.length() == 0)
-                errorReporter.logInfo(locator, "Bad <timeExpression>, unexpected empty part after seconds or frames part in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, unexpected empty part after seconds or frames part in clock time.");
             else
-                errorReporter.logInfo(locator, "Bad <timeExpression>, unexpected part ':" + uu + "' after seconds or frames part in clock time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, unexpected part ':" + uu + "' after seconds or frames part in clock time.");
         }
     }
 
     private static Pattern offsetTimePattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(h|m|s|ms|f|t)");
-    public static boolean isOffsetTime(String value, Locator locator, ErrorReporter errorReporter, Time[] outputTime) {
+    public static boolean isOffsetTime(String value, Locator locator, VerifierContext context, Time[] outputTime) {
         Matcher m = offsetTimePattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() == 2;
@@ -223,7 +225,8 @@ public class Timing {
             return false;
     }
 
-    public static void badOffsetTime(String value, Locator locator, ErrorReporter errorReporter) {
+    public static void badOffsetTime(String value, Locator locator, VerifierContext context) {
+        Reporter reporter = context.getReporter();
         int valueIndex = 0;
         int valueLength = value.length();
         char c;
@@ -240,7 +243,7 @@ public class Timing {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                errorReporter.logInfo(locator, "Bad <timeExpression>, XML space padding not permitted before offset time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, XML space padding not permitted before offset time.");
             }
 
             // time count (digit+)
@@ -257,11 +260,11 @@ public class Timing {
 
             // optional fraction (decimal separator)
             if (valueIndex == valueLength) {
-                errorReporter.logInfo(locator, "Bad <timeExpression>, missing metric in integral offset time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, missing metric in integral offset time.");
                 break;
             }
             if ((c != '.') && !Characters.isLetter(c)) {
-                errorReporter.logInfo(locator,
+                reporter.logInfo(locator,
                     "Bad <timeExpression>, time count must contain digits followed by optional fraction then metric, got '" + c + "' in offset time.");
                 break;
             }
@@ -269,7 +272,7 @@ public class Timing {
             // optional fraction (digits)
             if (c == '.') {
                 if (++valueIndex == valueLength) {
-                    errorReporter.logInfo(locator, "Bad <timeExpression>, missing fraction part and metric.");
+                    reporter.logInfo(locator, "Bad <timeExpression>, missing fraction part and metric.");
                     break;
                 }
                 c = value.charAt(valueIndex);
@@ -280,14 +283,14 @@ public class Timing {
                         c = value.charAt(valueIndex);
                     }
                 } else {
-                    errorReporter.logInfo(locator, "Bad <timeExpression>, missing fraction part after decimal separator, must contain one or more digits.");
+                    reporter.logInfo(locator, "Bad <timeExpression>, missing fraction part after decimal separator, must contain one or more digits.");
                     break;
                 }
             }
             
             // metric
             if (valueIndex == valueLength) {
-                errorReporter.logInfo(locator, "Bad <timeExpression>, missing metric in non-integral offset time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, missing metric in non-integral offset time.");
                 break;
             }
             StringBuffer sb = new StringBuffer();
@@ -301,7 +304,7 @@ public class Timing {
                 }
             }
             if (sb.length() == 0) {
-                errorReporter.logInfo(locator, "Bad <timeExpression>, unexpected character '" + c + "', expected metric in offset time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, unexpected character '" + c + "', expected metric in offset time.");
                 break;
             } else {
                 String metric = sb.toString();
@@ -310,9 +313,9 @@ public class Timing {
                 } catch (IllegalArgumentException e) {
                     try {
                         OffsetTime.Metric.valueOfShorthand(metric.toLowerCase());
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, metric '" + metric + "' must be lower case in offset time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, metric '" + metric + "' must be lower case in offset time.");
                     } catch (IllegalArgumentException ee) {
-                        errorReporter.logInfo(locator, "Bad <timeExpression>, unknown metric '" + metric + "' in offset time.");
+                        reporter.logInfo(locator, "Bad <timeExpression>, unknown metric '" + metric + "' in offset time.");
                     }
                     break;
                 }
@@ -329,13 +332,13 @@ public class Timing {
                     c = value.charAt(valueIndex);
                 }
                 if (valueIndex == valueLength)
-                    errorReporter.logInfo(locator, "Bad <timeExpression>, XML space padding not permitted after offset time.");
+                    reporter.logInfo(locator, "Bad <timeExpression>, XML space padding not permitted after offset time.");
             }
 
             // unrecognized non-whitespace characters after offset time
             if (valueIndex != valueLength) {
                 String remainder = value.substring(valueIndex);
-                errorReporter.logInfo(locator, "Bad <timeExpression>, unrecognized characters '" + remainder + "' after offset time.");
+                reporter.logInfo(locator, "Bad <timeExpression>, unrecognized characters '" + remainder + "' after offset time.");
             }
 
         } while (false);

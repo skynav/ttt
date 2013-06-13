@@ -31,12 +31,12 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml10.ttd.ClockMode;
-import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class ClockModeVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, QName string, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName string, Object valueObject, Locator locator, VerifierContext context) {
         // Schema validation phase (2) reports invalid values.
         if (valueObject instanceof ClockMode)
             return true;

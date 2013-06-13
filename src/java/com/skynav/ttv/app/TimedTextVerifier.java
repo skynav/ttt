@@ -81,10 +81,11 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import com.skynav.xml.helpers.Sniffer;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
-import com.skynav.ttv.util.ErrorReporter;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Locators;
+import com.skynav.ttv.verifier.VerifierContext;
 
-public class TimedTextVerifier implements ErrorReporter {
+public class TimedTextVerifier implements VerifierContext, Reporter {
 
     private static final Model defaultModel = Models.getDefaultModel();
 
@@ -206,6 +207,38 @@ public class TimedTextVerifier implements ErrorReporter {
     }
 
     @Override
+    public Reporter getReporter() {
+        return (Reporter) this;
+    }
+
+    private static final QName qnEmpty = new QName("", "");
+
+    @Override
+    public QName getBindingElementName(Object value) {
+        Node xmlNode = binder.getXMLNode(value);
+        if (xmlNode != null) {
+            Object jaxbBinding = binder.getJAXBNode(xmlNode);
+            if (jaxbBinding instanceof JAXBElement<?>) {
+                JAXBElement<?> jaxbNode = (JAXBElement<?>) jaxbBinding;
+                if (jaxbNode != null)
+                    return jaxbNode.getName();
+            } else
+                return new QName(xmlNode.getNamespaceURI(), xmlNode.getLocalName());
+        }
+        return qnEmpty;
+    }
+
+    @Override
+    public Object getBindingElement(Node node) {
+        return binder.getJAXBNode(node);
+    }
+
+    @Override
+    public Node getXMLNode(Object value) {
+        return binder.getXMLNode(value);
+    }
+
+    @Override
     public String message(String message) {
         if ((message != null) && (message.length() > 0)) {
             if (message.charAt(0) == '{')
@@ -324,33 +357,6 @@ public class TimedTextVerifier implements ErrorReporter {
             e.printStackTrace(new PrintWriter(sw));
             logDebug(sw.toString());
         }
-    }
-
-    private static final QName qnEmpty = new QName("", "");
-
-    @Override
-    public QName getBindingElementName(Object value) {
-        Node xmlNode = binder.getXMLNode(value);
-        if (xmlNode != null) {
-            Object jaxbBinding = binder.getJAXBNode(xmlNode);
-            if (jaxbBinding instanceof JAXBElement<?>) {
-                JAXBElement<?> jaxbNode = (JAXBElement<?>) jaxbBinding;
-                if (jaxbNode != null)
-                    return jaxbNode.getName();
-            } else
-                return new QName(xmlNode.getNamespaceURI(), xmlNode.getLocalName());
-        }
-        return qnEmpty;
-    }
-
-    @Override
-    public Object getBindingElement(Node node) {
-        return binder.getJAXBNode(node);
-    }
-
-    @Override
-    public Node getXMLNode(Object value) {
-        return binder.getXMLNode(value);
     }
 
     private int parseLongOption(String args[], int index) {
@@ -976,7 +982,7 @@ public class TimedTextVerifier implements ErrorReporter {
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
                 if (verifyRootElement(root, model.getRootClasses()))
-                    model.getSemanticsVerifier(binder).verify(root.getValue(), this);
+                    model.getSemanticsVerifier().verify(root.getValue(), this);
             }
         } catch (UnmarshalException e) {
             logError(e);

@@ -30,19 +30,19 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Fonts;
 
 public class FontFamilyVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
-        if (Fonts.isFontFamilies(value, locator, errorReporter, null))
+        if (Fonts.isFontFamilies(value, locator, context, null))
             return true;
         else {
-            Fonts.badFontFamilies(value, locator, errorReporter);
+            Fonts.badFontFamilies(value, locator, context);
             return false;
         }
     }

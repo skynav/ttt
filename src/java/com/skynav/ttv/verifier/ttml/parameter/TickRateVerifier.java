@@ -32,12 +32,12 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.ErrorReporter;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class TickRateVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, QName string, Object valueObject, Locator locator, ErrorReporter errorReporter) {
+    public boolean verify(Model model, QName string, Object valueObject, Locator locator, VerifierContext context) {
         int value = ((BigInteger) valueObject).intValue();
         // Schema validation phase (2) detects and reports non-positive values.
         if (value < 0)
