@@ -42,12 +42,14 @@ public class LineHeightVerifier implements StyleValueVerifier {
     public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
+        Integer[] minMax = new Integer[] { 1, 1 };
+        Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
         if (Keywords.isNormal(value))
             return true;
-        else if (Lengths.isLengths(value, locator, context, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error, null))
+        else if (Lengths.isLengths(value, locator, context, minMax, treatments, null))
             return true;
         else {
-            Lengths.badLengths(value, locator, context, 1, 1, NegativeTreatment.Error, MixedUnitsTreatment.Error);
+            Lengths.badLengths(value, locator, context, minMax, treatments);
             return false;
         }
     }

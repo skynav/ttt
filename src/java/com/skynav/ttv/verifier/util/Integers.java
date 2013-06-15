@@ -40,8 +40,7 @@ import com.skynav.ttv.verifier.util.ZeroTreatment;
 public class Integers {
 
     private static Pattern integerPattern = Pattern.compile("([\\+\\-]?)(\\d+)");
-    private static boolean isInteger(String value, Locator locator, VerifierContext context,
-        NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment, Integer[] outputInteger) {
+    private static boolean isInteger(String value, Locator locator, VerifierContext context, Object[] treatments, Integer[] outputInteger) {
         Reporter reporter = context.getReporter();
         Matcher m = integerPattern.matcher(value);
         if (m.matches()) {
@@ -55,19 +54,27 @@ public class Integers {
                 return false;
             }
             if (numberValue < 0) {
+                assert treatments.length > 0;
+                NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
                 if (negativeTreatment == NegativeTreatment.Error)
                     return false;
                 else if (negativeTreatment == NegativeTreatment.Warning) {
-                    if (reporter.logWarning(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " should not be used."))
+                    if (reporter.logWarning(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
+                        treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
                         return false;
+                    }
                 } else if (negativeTreatment == NegativeTreatment.Info)
                     reporter.logInfo(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " used.");
             } else if (numberValue == 0) {
+                assert treatments.length > 1;
+                ZeroTreatment zeroTreatment = (ZeroTreatment) treatments[1];
                 if (zeroTreatment == ZeroTreatment.Error)
                     return false;
                 else if (zeroTreatment == ZeroTreatment.Warning) {
-                    if (reporter.logWarning(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " should not be used."))
+                    if (reporter.logWarning(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
+                        treatments[1] = ZeroTreatment.Allow;                            // suppress second warning
                         return false;
+                    }
                 } else if (zeroTreatment == ZeroTreatment.Info)
                     reporter.logInfo(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " used.");
             }
@@ -78,7 +85,7 @@ public class Integers {
             return false;
     }
 
-    private static void badInteger(String value, Locator locator, VerifierContext context, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment) {
+    private static void badInteger(String value, Locator locator, VerifierContext context, Object[] treatments) {
         Reporter reporter = context.getReporter();
         boolean negative = false;
         int numberValue = 0;
@@ -184,26 +191,27 @@ public class Integers {
 
         if (negative)
             numberValue = -numberValue;
-        if ((numberValue < 0) && (negativeTreatment == NegativeTreatment.Error))
+        assert treatments.length > 1;
+        if ((numberValue < 0) && (((NegativeTreatment)treatments[0]) == NegativeTreatment.Error))
             reporter.logInfo(locator, "Bad <integer> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
-        else if ((numberValue == 0) && (zeroTreatment == ZeroTreatment.Error))
+        else if ((numberValue == 0) && (((ZeroTreatment)treatments[1]) == ZeroTreatment.Error))
             reporter.logInfo(locator, "Bad <integer> expression, zero value not permitted.");
     }
 
-    public static boolean isIntegers(String value, Locator locator, VerifierContext context, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment, List<Integer> outputIntegers) {
+    public static boolean isIntegers(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments, List<Integer> outputIntegers) {
         List<Integer> integers = new java.util.ArrayList<Integer>();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
         for (String component : integerComponents) {
             Integer[] integer = new Integer[1];
-            if (isInteger(component, locator, context, negativeTreatment, zeroTreatment, integer))
+            if (isInteger(component, locator, context, treatments, integer))
                 integers.add(integer[0]);
             else
                 return false;
         }
-        if (numComponents < minComponents)
+        if (numComponents < minMax[0])
             return false;
-        else if (numComponents > maxComponents)
+        else if (numComponents > minMax[1])
             return false;
         if (outputIntegers != null) {
             outputIntegers.clear();
@@ -212,24 +220,26 @@ public class Integers {
         return true;
     }
 
-    public static void badIntegers(String value, Locator locator, VerifierContext context, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, ZeroTreatment zeroTreatment) {
+    public static void badIntegers(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments) {
         Reporter reporter = context.getReporter();
         List<Integer> integers = new java.util.ArrayList<Integer>();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
         for (String component : integerComponents) {
             Integer[] integer = new Integer[1];
-            if (isInteger(component, locator, context, negativeTreatment, zeroTreatment, integer))
+            assert treatments.length > 1;
+            Object[] treatmentsInner = new Object[] { treatments[0], treatments[1] };
+            if (isInteger(component, locator, context, treatmentsInner, integer))
                 integers.add(integer[0]);
             else
-                badInteger(component, locator, context, negativeTreatment, zeroTreatment);
+                badInteger(component, locator, context, treatmentsInner);
         }
-        if (numComponents < minComponents) {
+        if (numComponents < minMax[0]) {
             reporter.logInfo(locator,
-                "Missing <integer> expression, got " + numComponents + ", but expected at least " + minComponents + " <integer> expressions.");
-        } else if (numComponents > maxComponents) {
+                "Missing <integer> expression, got " + numComponents + ", but expected at least " + minMax[0] + " <integer> expressions.");
+        } else if (numComponents > minMax[1]) {
             reporter.logInfo(locator,
-                "Extra <integer> expression, got " + numComponents + ", but expected no more than " + maxComponents + " <integer> expressions.");
+                "Extra <integer> expression, got " + numComponents + ", but expected no more than " + minMax[1] + " <integer> expressions.");
         }
     }
 

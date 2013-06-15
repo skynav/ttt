@@ -264,7 +264,7 @@ public class Colors {
 
     private static boolean isRGBHash(String value, Color[] outputColor) {
         int numDigits = value.length() - 1;
-        if ((numDigits != 6) || (numDigits != 8))
+        if ((numDigits != 6) && (numDigits != 8))
             return false;
         else if (!Strings.isHexDigits(value.substring(1)))
             return false;

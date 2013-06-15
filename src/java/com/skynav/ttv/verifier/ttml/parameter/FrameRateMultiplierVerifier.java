@@ -40,10 +40,12 @@ public class FrameRateMultiplierVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, QName string, Object valueObject, Locator locator, VerifierContext context) {
         String value = (String) valueObject;
-        if (Integers.isIntegers(value, locator, context, 2, 2, NegativeTreatment.Error, ZeroTreatment.Error, null))
+        Integer[] minMax = new Integer[] { 2, 2 };
+        Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
+        if (Integers.isIntegers(value, locator, context, minMax, treatments, null))
             return true;
         else {
-            Integers.badIntegers(value, locator, context, 2, 2, NegativeTreatment.Error, ZeroTreatment.Error);
+            Integers.badIntegers(value, locator, context, minMax, treatments);
             return false;
         }
     }

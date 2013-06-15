@@ -42,12 +42,14 @@ public class OriginVerifier implements StyleValueVerifier {
     public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
+        Integer[] minMax = new Integer[] { 2, 2 };
+        Object[] treatments = new Object[] { NegativeTreatment.Warning, MixedUnitsTreatment.Allow };
         if (Keywords.isAuto(value))
             return true;
-        else if (Lengths.isLengths(value, locator, context, 2, 2, NegativeTreatment.Warning, MixedUnitsTreatment.Allow, null))
+        else if (Lengths.isLengths(value, locator, context, minMax, treatments, null))
             return true;
         else {
-            Lengths.badLengths(value, locator, context, 2, 2, NegativeTreatment.Warning, MixedUnitsTreatment.Allow);
+            Lengths.badLengths(value, locator, context, minMax, treatments);
             return false;
         }
     }

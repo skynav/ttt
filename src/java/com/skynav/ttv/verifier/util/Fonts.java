@@ -37,18 +37,18 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class Fonts {
 
-    public static boolean isFontFamily(String value, Locator locator, VerifierContext context, FontFamily[] outputFamily) {
-        if (isGenericFontFamily(value, locator, context, outputFamily))
+    public static boolean isFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
+        if (isGenericFontFamily(value, locator, context, treatments, outputFamily))
             return true;
-        else if (isUnquotedFontFamily(value, locator, context, outputFamily))
+        else if (isUnquotedFontFamily(value, locator, context, treatments, outputFamily))
             return true;
-        else if (isQuotedFontFamily(value, locator, context, outputFamily))
+        else if (isQuotedFontFamily(value, locator, context, treatments, outputFamily))
             return true;
         else
             return false;
     }
 
-    private static boolean isGenericFontFamily(String value, Locator locator, VerifierContext context, FontFamily[] outputFamily) {
+    private static boolean isGenericFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         FontFamily family = FontFamilyImpl.getGenericFamily(trimmedValue);
         if (family != null) {
@@ -59,7 +59,7 @@ public class Fonts {
             return false;
     }
 
-    private static boolean isUnquotedFontFamily(String value, Locator locator, VerifierContext context, FontFamily[] outputFamily) {
+    private static boolean isUnquotedFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0)
             return false;
@@ -74,16 +74,28 @@ public class Fonts {
         }
     }
 
-    private static boolean isQuotedFontFamily(String value, Locator locator, VerifierContext context, FontFamily[] outputFamily) {
+    private static boolean isQuotedFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0)
             return false;
         else {
+            Reporter reporter = context.getReporter();
             String[] string = new String[1];
             if (Strings.isDoubleQuotedString(trimmedValue, locator, context, string) || Strings.isSingleQuotedString(trimmedValue, locator, context, string)) {
                 String stringContent = Strings.unescapeUnquoted(string[0]);
                 if (GenericFontFamily.isToken(stringContent)) {
-                    context.getReporter().logInfo(locator, "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic, family name");
+                    assert treatments.length > 0;
+                    QuotedGenericFontFamilyTreatment quotedGenericTreatment = (QuotedGenericFontFamilyTreatment) treatments[0];
+                    if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Warning) {
+                        if (reporter.logWarning(locator,
+                            "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic, family name.")) {
+                            treatments[0] = QuotedGenericFontFamilyTreatment.Allow;     // suppress second warning
+                            return false;
+                        }
+                    } else if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Info) {
+                        reporter.logInfo(locator,
+                            "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic, family name.");
+                    }
                 }
                 if (outputFamily != null)
                     outputFamily[0] = new FontFamilyImpl(FontFamily.Type.Quoted, stringContent);
@@ -93,25 +105,25 @@ public class Fonts {
         }
     }
 
-    public static void badFontFamily(String value, Locator locator, VerifierContext context) {
+    public static void badFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0) {
             context.getReporter().logInfo(locator, "Bad <familyName> of <genericFamilyName> expression, value is empty or only XML space characters.");
         } else {
             char c = trimmedValue.charAt(0);
             if ((c != '\"') && (c != '\''))
-                badUnquotedFontFamily(trimmedValue, locator, context);
+                badUnquotedFontFamily(trimmedValue, locator, context, treatments);
             else
-                badQuotedFontFamily(trimmedValue, locator, context);
+                badQuotedFontFamily(trimmedValue, locator, context, treatments);
         }
     }
 
-    public static void badUnquotedFontFamily(String value, Locator locator, VerifierContext context) {
+    public static void badUnquotedFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments) {
         assert value.length() > 0;
         Identifiers.badIdentifiers(value, locator, context);
     }
 
-    public static void badQuotedFontFamily(String value, Locator locator, VerifierContext context) {
+    public static void badQuotedFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments) {
         Reporter reporter = context.getReporter();
         assert value.length() > 0;
         char quote = value.charAt(0);
@@ -139,12 +151,12 @@ public class Fonts {
         }
     }
 
-    public static boolean isFontFamilies(String value, Locator locator, VerifierContext context, List<FontFamily> outputFamilies) {
+    public static boolean isFontFamilies(String value, Locator locator, VerifierContext context, Object[] treatments, List<FontFamily> outputFamilies) {
         List<FontFamily> families = new java.util.ArrayList<FontFamily>();
         String [] familyItems = splitFontFamilies(value);
         for (String item : familyItems) {
             FontFamily[] family = new FontFamily[1];
-            if (isFontFamily(item, locator, context, family))
+            if (isFontFamily(item, locator, context, treatments, family))
                 families.add(family[0]);
             else
                 return false;
@@ -156,11 +168,13 @@ public class Fonts {
         return true;
     }
 
-    public static void badFontFamilies(String value, Locator locator, VerifierContext context) {
+    public static void badFontFamilies(String value, Locator locator, VerifierContext context, Object[] treatments) {
         String [] familyItems = splitFontFamilies(value);
         for (String item : familyItems) {
-            if (!isFontFamily(item, locator, context, null))
-                badFontFamily(item, locator, context);
+            assert treatments.length > 0;
+            Object[] treatmentsInner = new Object[] { treatments[0] };
+            if (!isFontFamily(item, locator, context, treatmentsInner, null))
+                badFontFamily(item, locator, context, treatmentsInner);
         }
     }
 

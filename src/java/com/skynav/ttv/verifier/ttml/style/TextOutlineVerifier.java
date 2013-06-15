@@ -73,13 +73,14 @@ public class TextOutlineVerifier implements StyleValueVerifier {
             }
         }
         if (thickness != null) {
-            if (!Lengths.isLength(thickness, locator, context, NegativeTreatment.Error, null)) {
-                Lengths.badLength(thickness, locator, context, NegativeTreatment.Error);
+            Object[] treatments = new Object[] { NegativeTreatment.Error };
+            if (!Lengths.isLength(thickness, locator, context, treatments, null)) {
+                Lengths.badLength(thickness, locator, context, treatments);
                 reporter.logInfo(locator, "Bad <length> expression in thickness component '" + thickness + "'.");
                 failed = true;
             } else if (blur != null) {
-                if (!Lengths.isLength(blur, locator, context, NegativeTreatment.Error, null)) {
-                    Lengths.badLength(blur, locator, context, NegativeTreatment.Error);
+                if (!Lengths.isLength(blur, locator, context, treatments, null)) {
+                    Lengths.badLength(blur, locator, context, treatments);
                     reporter.logInfo(locator, "Bad <length> expression in blur component '" + blur + "'.");
                     failed = true;
                 }

@@ -33,16 +33,18 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Fonts;
+import com.skynav.ttv.verifier.util.QuotedGenericFontFamilyTreatment;
 
 public class FontFamilyVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
-        if (Fonts.isFontFamilies(value, locator, context, null))
+        Object[] treatments = new Object[] { QuotedGenericFontFamilyTreatment.Info };
+        if (Fonts.isFontFamilies(value, locator, context, treatments, null))
             return true;
         else {
-            Fonts.badFontFamilies(value, locator, context);
+            Fonts.badFontFamilies(value, locator, context, treatments);
             return false;
         }
     }

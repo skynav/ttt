@@ -42,12 +42,14 @@ public class ZIndexVerifier implements StyleValueVerifier {
     public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
+        Integer[] minMax = new Integer[] { 1, 1 };
+        Object[] treatments = new Object[] { NegativeTreatment.Allow, ZeroTreatment.Allow };
         if (Keywords.isAuto(value))
             return true;
-        else if (Integers.isIntegers(value, locator, context, 1, 1, NegativeTreatment.Allow, ZeroTreatment.Allow, null))
+        else if (Integers.isIntegers(value, locator, context, minMax, treatments, null))
             return true;
         else {
-            Integers.badIntegers(value, locator, context, 1, 1, NegativeTreatment.Error, ZeroTreatment.Error);
+            Integers.badIntegers(value, locator, context, minMax, treatments);
             return false;
         }
     }

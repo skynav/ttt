@@ -186,7 +186,11 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             if (!verifyMetadata(m))
                 failed = true;
         }
-        for (Set s : region.getAnimationClass()) {
+        for (Set a : region.getAnimationClass()) {
+            if (!verify(a))
+                failed = true;
+        }
+        for (Style s : region.getStyle()) {
             if (!verify(s))
                 failed = true;
         }
@@ -203,8 +207,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             if (!verifyMetadata(m))
                 failed = true;
         }
-        for (Set s : body.getAnimationClass()) {
-            if (!verify(s))
+        for (Set a : body.getAnimationClass()) {
+            if (!verify(a))
                 failed = true;
         }
         for (Division d : body.getDiv()) {
@@ -224,8 +228,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             if (!verifyMetadata(m))
                 failed = true;
         }
-        for (Set s : division.getAnimationClass()) {
-            if (!verify(s))
+        for (Set a : division.getAnimationClass()) {
+            if (!verify(a))
                 failed = true;
         }
         for (Object b : division.getBlockClass()) {
@@ -269,8 +273,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             if (!verifyMetadata(m))
                 failed = true;
         }
-        for (Set s : br.getAnimationClass()) {
-            if (!verify(s))
+        for (Set a : br.getAnimationClass()) {
+            if (!verify(a))
                 failed = true;
         }
         return !failed;

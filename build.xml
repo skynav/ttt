@@ -240,9 +240,8 @@
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="clean-all-test" depends="clean-all,generate-code,build,test"/>
 
-<target name="run-valid-tests" description="Run verifier with valid TTML10 input files">
-  <java jar="${ttv.target}" fork="true">
-    <arg value="-v"/>
+<target name="run-valid" description="Run verifier with valid TTML10 input test files">
+  <java jar="${ttv.target}" fork="true" failonerror="true">
     <arg value="--hide-warnings"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-simple.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-elements.xml"/>
@@ -251,6 +250,7 @@
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-timing.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign-metadata.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-font-family-quoted-generic.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-opacity-out-of-range.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-origin-negative.xml"/>
   </java>

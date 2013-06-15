@@ -59,6 +59,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidFontFamilyQuotedGeneric() throws Exception {
+        performValidityTest("ttml10-valid-font-family-quoted-generic.xml");
+    }
+
+    @Test
     public void testValidForeign() throws Exception {
         performValidityTest("ttml10-valid-foreign.xml");
     }

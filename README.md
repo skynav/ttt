@@ -88,7 +88,7 @@ The full set of (public) `ant` targets can be listed by using `ant -p`, which pr
     build            Build TTV
     clean-build      Clean and build TTV
     clean-test       Clean, build, and test TTV
-    run-valid-tests  Run verifier with valid TTML10 input files
+    run-valid        Run verifier with valid TTML10 input files
     test             Run all TTV test suites
     test-apps        Run TTV application tests
     test-ttml10      Run TTML10 tests
@@ -145,78 +145,7 @@ Junit 4 is used to perform tests on `ttv`. You should have previously installed 
 
 A number of test targets are listed above for invocation from `ant`. The `clean-test` target is useful in order to perform a clean build then run all tests.
 
-In addition, the `run-valid-tests` target will use the command line (not Junit) invocation path in order to run `ttv` on all valid test files included in the Junit testing process.
-
-The following shows the output of running `ant run-valid-tests`:
-
-<pre>
-Buildfile: /Users/glenn/work/ttv/build.xml
-Trying to override old definition of task javac
-
-run-valid-tests:
-     [java] Timed Text Verifier (TTV) [0.0.0dev] Copyright 2013 Skynav, Inc.
-     [java] [I]:Warnings are hidden.
-     [java] [I]:Verifying {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-simple.xml}.
-     [java] [I]:Verifying resource presence and encoding phase (1)...
-     [java] [I]:Resource encoding sniffed as UTF-8.
-     [java] [I]:Resource length 148 bytes, decoded as 148 Java characters (char).
-     [java] [I]:Verifying XML well-formedness phase (2)...
-     [java] [I]:Verifying XSD validity phase (3)...
-     [java] [I]:Verifying semantics phase (4)...
-     [java] [I]:Passed.
-     [java] [I]:Verifying {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-elements.xml}.
-     [java] [I]:Verifying resource presence and encoding phase (1)...
-     [java] [I]:Resource encoding sniffed as US-ASCII.
-     [java] [I]:Resource length 2333 bytes, decoded as 2333 Java characters (char).
-     [java] [I]:Verifying XML well-formedness phase (2)...
-     [java] [I]:Verifying XSD validity phase (3)...
-     [java] [I]:Verifying semantics phase (4)...
-     [java] [I]:Passed.
-     [java] [I]:Verifying {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-styles.xml}.
-     [java] [I]:Verifying resource presence and encoding phase (1)...
-     [java] [I]:Resource encoding sniffed as US-ASCII.
-     [java] [I]:Resource length 18015 bytes, decoded as 18015 Java characters (char).
-     [java] [I]:Verifying XML well-formedness phase (2)...
-     [java] [I]:Verifying XSD validity phase (3)...
-     [java] [I]:Verifying semantics phase (4)...
-     [java] [I]:Passed.
-     [java] [I]:Verifying {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-all-parameters.xml}.
-     [java] [I]:Verifying resource presence and encoding phase (1)...
-     [java] [I]:Resource encoding sniffed as US-ASCII.
-     [java] [I]:Resource length 1138 bytes, decoded as 1138 Java characters (char).
-     [java] [I]:Verifying XML well-formedness phase (2)...
-     [java] [I]:Verifying XSD validity phase (3)...
-     [java] [I]:Verifying semantics phase (4)...
-     [java] [I]:Passed.
-     [java] [I]:Verifying {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-foreign.xml}.
-     [java] [I]:Verifying resource presence and encoding phase (1)...
-     [java] [I]:Resource encoding sniffed as UTF-8.
-     [java] [I]:Resource length 281 bytes, decoded as 281 Java characters (char).
-     [java] [I]:Verifying XML well-formedness phase (2)...
-     [java] [I]:Verifying XSD validity phase (3)...
-     [java] [I]:Verifying semantics phase (4)...
-     [java] [I]:Passed, with 4 warnings.
-     [java] [I]:Verifying {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-foreign-metadata.xml}.
-     [java] [I]:Verifying resource presence and encoding phase (1)...
-     [java] [I]:Resource encoding sniffed as UTF-8.
-     [java] [I]:Resource length 356 bytes, decoded as 356 Java characters (char).
-     [java] [I]:Verifying XML well-formedness phase (2)...
-     [java] [I]:Verifying XSD validity phase (3)...
-     [java] [I]:Verifying semantics phase (4)...
-     [java] [I]:Passed, with 2 warnings.
-     [java] [I]:Verifying {/Users/glenn/work/ttv/tst/resources/com/skynav/ttv/app/ttml10-valid-opacity-out-of-range.xml}.
-     [java] [I]:Verifying resource presence and encoding phase (1)...
-     [java] [I]:Resource encoding sniffed as UTF-8.
-     [java] [I]:Resource length 408 bytes, decoded as 408 Java characters (char).
-     [java] [I]:Verifying XML well-formedness phase (2)...
-     [java] [I]:Verifying XSD validity phase (3)...
-     [java] [I]:Verifying semantics phase (4)...
-     [java] [I]:Passed, with 5 warnings.
-     [java] [I]:Passed 7 resources.
-
-BUILD SUCCESSFUL
-Total time: 2 seconds
-</pre>
+In addition, the `run-valid` target will use the command line (not Junit) invocation path in order to run `ttv` on all valid test files included in the Junit testing process.
 
 ## Notes
 
@@ -247,6 +176,7 @@ Total time: 2 seconds
  * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.1.2 P4)
  * Error if region attribute IDREF does not reference a region element. ([Issue 219](https://www.w3.org/AudioVideo/TT/tracker/issues/219)).
  * Warn if origin attribute uses a negative length value.
+ * Notify if fontFamily is a quoted generic family name.
 
 ## To Do (Essential)
 

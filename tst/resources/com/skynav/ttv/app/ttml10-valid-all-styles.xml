@@ -199,7 +199,6 @@
         <style tts:extent="620.3px 96.4c"/>
         <!-- legal fontFamily values (not exhaustive) -->
         <style tts:fontFamily="default"/>
-        <style tts:fontFamily="'default'"/>
         <style tts:fontFamily="monospace"/>
         <style tts:fontFamily="sansSerif"/>
         <style tts:fontFamily="serif"/>
@@ -227,7 +226,6 @@
         <style tts:fontSize="1.1c"/>
         <style tts:fontSize="40px"/>
         <style tts:fontSize="40px 50px"/>
-        <style tts:fontSize="40px 1c"/>
         <!-- legal fontStyle values -->
         <style tts:fontStyle="normal"/>
         <style tts:fontStyle="italic"/>
@@ -249,9 +247,7 @@
         <style tts:origin="10px 100px"/>
         <style tts:origin="1c 10c"/>
         <style tts:origin="40px 10c"/>
-        <style tts:origin="-40px 10c"/>
-        <style tts:origin="40px -10c"/>
-        <style tts:origin="-40.3px -10.1c"/>
+        <style tts:origin="40.3c 10.1em"/>
         <!-- legal overflow values -->
         <style tts:overflow="visible"/>
         <style tts:overflow="hidden"/>

@@ -67,7 +67,7 @@ public class Lengths {
     }
 
     private static Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*.\\d+|\\d+))(\\w+|%)?");
-    public static boolean isLength(String value, Locator locator, VerifierContext context, NegativeTreatment negativeTreatment, Length[] outputLength) {
+    public static boolean isLength(String value, Locator locator, VerifierContext context, Object[] treatments, Length[] outputLength) {
         Reporter reporter = context.getReporter();
         Matcher m = lengthPattern.matcher(value);
         if (m.matches()) {
@@ -90,11 +90,15 @@ public class Lengths {
                 }
             }
             if (numberValue < 0) {
+                assert treatments.length > 0;
+                NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
                 if (negativeTreatment == NegativeTreatment.Error)
                     return false;
                 else if (negativeTreatment == NegativeTreatment.Warning) {
-                    if (reporter.logWarning(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " should not be used."))
+                    if (reporter.logWarning(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
+                        treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
                         return false;
+                    }
                 } else if (negativeTreatment == NegativeTreatment.Info)
                     reporter.logInfo(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " used.");
             }
@@ -115,7 +119,7 @@ public class Lengths {
             return false;
     }
 
-    public static void badLength(String value, Locator locator, VerifierContext context, NegativeTreatment negativeTreatment) {
+    public static void badLength(String value, Locator locator, VerifierContext context, Object[] treatments) {
         Reporter reporter = context.getReporter();
         boolean negative = false;
         double numberValue = 0;
@@ -297,35 +301,41 @@ public class Lengths {
 
         if (negative)
             numberValue = -numberValue;
+        assert treatments.length > 0;
+        NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
         if ((numberValue < 0) && (negativeTreatment == NegativeTreatment.Error))
             reporter.logInfo(locator, "Bad <length> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
         if (units == null)
             reporter.logInfo(locator, "Bad <length> expression, missing or unknown units, expected one of " + Length.Unit.shorthands() + ".");
     }
 
-    public static boolean isLengths(String value, Locator locator, VerifierContext context, int minComponents, int maxComponents, NegativeTreatment negativeTreatment, MixedUnitsTreatment mixedUnitsTreatment, List<Length> outputLengths) {
+    public static boolean isLengths(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {
         Reporter reporter = context.getReporter();
         List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
         for (String component : lengthComponents) {
             Length[] length = new Length[1];
-            if (isLength(component, locator, context, negativeTreatment, length))
+            if (isLength(component, locator, context, treatments, length))
                 lengths.add(length[0]);
             else
                 return false;
         }
-        if (numComponents < minComponents)
+        if (numComponents < minMax[0])
             return false;
-        else if (numComponents > maxComponents)
+        else if (numComponents > minMax[1])
             return false;
         if (!Units.sameUnits(lengths)) {
+            assert treatments.length > 1;
+            MixedUnitsTreatment mixedUnitsTreatment = (MixedUnitsTreatment) treatments[1];
             Set<Length.Unit> units = Units.units(lengths);
             if (mixedUnitsTreatment == MixedUnitsTreatment.Error)
                 return false;
             else if (mixedUnitsTreatment == MixedUnitsTreatment.Warning) {
-                if (reporter.logWarning(locator, "Mixed units " +  Length.Unit.shorthands(units) + " should not be used in <length> expressions."))
+                if (reporter.logWarning(locator, "Mixed units " +  Length.Unit.shorthands(units) + " should not be used in <length> expressions.")) {
+                    treatments[1] = MixedUnitsTreatment.Allow;                          // suppress second warning
                     return false;
+                }
             } else if (mixedUnitsTreatment == MixedUnitsTreatment.Info)
                 reporter.logInfo(locator, "Mixed units " + Length.Unit.shorthands(units) + " used in <length> expressions.");
         }
@@ -336,26 +346,29 @@ public class Lengths {
         return true;
     }
 
-    public static void badLengths(String value, Locator locator, VerifierContext context, int minComponents, int maxComponents,
-        NegativeTreatment negativeTreatment, MixedUnitsTreatment mixedUnitsTreatment) {
+    public static void badLengths(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments) {
         Reporter reporter = context.getReporter();
         List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
+        assert treatments.length > 1;
         for (String component : lengthComponents) {
+            Object[] treatmentsInner = new Object[] { treatments[0], treatments[1] };
             Length[] length = new Length[1];
-            if (isLength(component, locator, context, negativeTreatment, length))
+            if (isLength(component, locator, context, treatmentsInner, length))
                 lengths.add(length[0]);
             else
-                badLength(component, locator, context, negativeTreatment);
+                badLength(component, locator, context, treatmentsInner);
         }
-        if (numComponents < minComponents) {
+        if (numComponents < minMax[0]) {
             reporter.logInfo(locator,
-                "Missing <length> expression, got " + numComponents + ", but expected at least " + minComponents + " <length> expressions.");
-        } else if (numComponents > maxComponents) {
+                "Missing <length> expression, got " + numComponents + ", but expected at least " + minMax[0] + " <length> expressions.");
+        } else if (numComponents > minMax[1]) {
             reporter.logInfo(locator,
-                "Extra <length> expression, got " + numComponents + ", but expected no more than " + maxComponents + " <length> expressions.");
+                "Extra <length> expression, got " + numComponents + ", but expected no more than " + minMax[1] + " <length> expressions.");
         }
+        assert treatments.length > 1;
+        MixedUnitsTreatment mixedUnitsTreatment = (MixedUnitsTreatment) treatments[1];
         if (!Units.sameUnits(lengths) && (mixedUnitsTreatment == MixedUnitsTreatment.Error))
             reporter.logInfo(locator, "Mixed units " + Length.Unit.shorthands(Units.units(lengths)) + " not permitted.");
     }

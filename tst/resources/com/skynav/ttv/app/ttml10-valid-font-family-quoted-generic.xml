@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:fontFamily - uses quoted generic family name - should produce 1 notification -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <head/>
+  <body>
+    <div tts:fontFamily="'default'"/>
+  </body>
+</tt>
