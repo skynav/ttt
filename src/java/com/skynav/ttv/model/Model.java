@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,6 +63,13 @@ public interface Model {
      * @return JAXB context path
      */
     String getJAXBContextPath();
+
+    /**
+     * Obtain ordered list of ID attribute qualified names. Elements
+     * in document are assigned an ID based on the first match in this list.
+     * @return list of ID attribute names
+     */
+    List<QName> getIdAttributes();
 
     /**
      * Obtain information about the root element content classes

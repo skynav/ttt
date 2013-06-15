@@ -101,6 +101,7 @@
       haltonfailure="${junit.haltonfailure}"
       includeantruntime="true"
       printsummary="${junit.printsummary}">
+      <jvmarg value="-ea"/>
       <sysproperty key="java.awt.headless" value="true"/>
       <formatter type="brief" usefile="false" if="junit.formatter.brief.use"/>
       <formatter type="plain" usefile="true"/>
@@ -242,6 +243,7 @@
 
 <target name="run-valid" description="Run verifier with valid TTML10 input test files">
   <java jar="${ttv.target}" fork="true" failonerror="true">
+    <jvmarg value="-ea"/>
     <arg value="--hide-warnings"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-simple.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-elements.xml"/>

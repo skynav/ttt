@@ -29,6 +29,8 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
@@ -43,7 +45,8 @@ public class Styles {
             return false;
         if (!isStylingDescendant(node, value, ancestorNames))
             return false;
-        // test if loop in reference chain
+        if (hasStylingChainLoop(node))
+            return false;
         return true;
     }
 
@@ -53,16 +56,46 @@ public class Styles {
             IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
         if (!isStylingDescendant(node, value, ancestorNames))
             badStylingDescendant(node, value, locator, context, referencingAttribute, targetName, ancestorNames);
+        if (hasStylingChainLoop(node))
+            badStylingChainLoop(node, value, locator, context);
     }
 
     private static boolean isStylingDescendant(Node node, Object value, Set<QName> ancestorNames) {
         return Nodes.hasAncestor(node, ancestorNames);
     }
 
+    private static boolean hasStylingChainLoop(Node node) {
+        assert node instanceof Element;
+        return hasStylingChainLoop((Element) node, new java.util.HashSet<String>());
+    }
+
+    private static boolean hasStylingChainLoop(Element elt, Set<String> encounteredStyles) {
+        Document document = elt.getOwnerDocument();
+        String style = elt.getAttributeNS(null, "style");
+        if (style.length() != 0) {
+            String[] styleRefs = style.split("\\s+");
+            for (String styleRef : styleRefs) {
+                assert document.getElementById(styleRef) != null;
+                if (encounteredStyles.contains(styleRef))
+                    return true;
+                else
+                    encounteredStyles.add(styleRef);
+                if (hasStylingChainLoop(document.getElementById(styleRef), encounteredStyles))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     private static void badStylingDescendant(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
         QName targetName, Set<QName> ancestorNames) {
         context.getReporter().logInfo(locator,
             "Bad IDREF '" + IdReferences.getId(value) + "', must reference " + targetName + " that is a descendant of any of " + ancestorNames + ".");
+    }
+
+    private static void badStylingChainLoop(Node node, Object value, Locator locator, VerifierContext context) {
+        context.getReporter().logInfo(locator,
+            "Loop in styling chain from IDREF '" + IdReferences.getId(value) + "'.");
     }
 
 }

@@ -174,9 +174,10 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
  * Error if style attribute IDREF does not reference a style element. ([Issue 220](https://www.w3.org/AudioVideo/TT/tracker/issues/220)).
  * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.1.2 P4)
+ * Error if loop in sequence of chained style references. (8.4.1.3 P3)
  * Error if region attribute IDREF does not reference a region element. ([Issue 219](https://www.w3.org/AudioVideo/TT/tracker/issues/219)).
- * Warn if origin attribute uses a negative length value.
- * Notify if fontFamily is a quoted generic family name.
+ * Warn if tts:origin attribute uses a negative length value.
+ * Notify if tts:fontFamily attribute contains a quoted generic family name.
 
 ## To Do (Essential)
 
@@ -190,7 +191,6 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
  * Error if absolutized extension designator doesn't conform to extension-designation defined in E.1. (6.1.5. P4)
  * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and dur attribute is specified on any element. (6.2.6 P12, 10.2.3 P3)
  * Error if tts:extent on tt element does not specify two pixel unit length values. (8.2.7 P7)
- * Error if loop in sequence of chained style references. (8.4.1.3 P3)
  * Error if time expression uses `f` metric or frame component when tts:timeBase is clock. (10.3.1 P5)
  * Error if time expression uses sub-frame component when tts:timeBase is clock. (10.3.1 P6)
  * Error if metadata element expresses metadata information both with attributes and child elements. (12.1.1 P2).
@@ -211,3 +211,4 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
  * Notify (or warn) if computed color and computed background color are low contrast.
  * Notify (or warn) if style property specified on content element that cannot apply to any content element, e.g., extent, opacity, origin.
  * Notify (or warn) if style property specified on content element that is initial value and is not overriding an inherited value.
+ * Notify (or warn) if redundant style IDREF is used twice in a row in style attribute.

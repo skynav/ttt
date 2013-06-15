@@ -78,12 +78,13 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.LocatorImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-import com.skynav.xml.helpers.Sniffer;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.xml.helpers.Documents;
+import com.skynav.xml.helpers.Sniffer;
 
 public class TimedTextVerifier implements VerifierContext, Reporter {
 
@@ -981,6 +982,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 logError(message("Unexpected root element, can't introspect non-JAXBElement"));
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
+                Documents.assignIdAttributes(binder.getXMLNode(root).getOwnerDocument(), model.getIdAttributes());
                 if (verifyRootElement(root, model.getRootClasses()))
                     model.getSemanticsVerifier().verify(root.getValue(), this);
             }

@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.model.ttml;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
+import com.skynav.xml.helpers.XML;
 
 public class TTML10 {
     public static final Model MODEL = new TTML10Model();
@@ -54,6 +56,14 @@ public class TTML10 {
         }
         public String getJAXBContextPath() {
             return "com.skynav.ttv.model.ttml10.tt:com.skynav.ttv.model.ttml10.ttm:com.skynav.ttv.model.ttml10.ttp";
+        }
+        private static final List<QName> idAttributes;
+        static {
+            idAttributes = new java.util.ArrayList<QName>();
+            idAttributes.add(XML.getIdAttribute());
+        }
+        public List<QName> getIdAttributes() {
+            return idAttributes;
         }
         private static final Map<Class<?>,String> rootClasses;
         static {

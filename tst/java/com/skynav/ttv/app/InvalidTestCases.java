@@ -894,6 +894,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadStyleIdrefLoopLength1() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-idref-loop-length-1.xml");
+    }
+
+    @Test
+    public void testInvalidBadStyleIdrefLoopLength2() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-idref-loop-length-2.xml");
+    }
+
+    @Test
+    public void testInvalidBadStyleIdrefLoopLength4() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-idref-loop-length-4.xml");
+    }
+
+    @Test
     public void testInvalidBadStyleIdrefNonStyling() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-style-idref-non-styling.xml");
     }
