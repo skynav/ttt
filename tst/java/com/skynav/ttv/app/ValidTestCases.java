@@ -83,6 +83,16 @@ public class ValidTestCases {
         performValidityTest("ttml10-valid-origin-negative.xml");
     }
 
+    @Test
+    public void testValidStyleIdrefDuplicateWithIntervening() throws Exception {
+        performValidityTest("ttml10-valid-style-idref-duplicate-with-intervening.xml");
+    }
+
+    @Test
+    public void testValidStyleIdrefDuplicateWithoutIntervening() throws Exception {
+        performValidityTest("ttml10-valid-style-idref-duplicate-without-intervening.xml");
+    }
+
     private void performValidityTest(String resourceName) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

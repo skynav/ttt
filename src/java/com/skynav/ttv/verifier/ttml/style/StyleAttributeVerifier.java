@@ -37,6 +37,7 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.IdReferences;
 import com.skynav.ttv.verifier.util.Styles;
 
 public class StyleAttributeVerifier implements StyleValueVerifier {
@@ -49,15 +50,28 @@ public class StyleAttributeVerifier implements StyleValueVerifier {
         assert valueObject instanceof List<?>;
         List<?> styles = (List<?>) valueObject;
         if (styles.size() > 0) {
+            Object styleLast = null;
             for (Object style : styles) {
                 Node node = context.getXMLNode(style);
                 if (!Styles.isStyleReference(node, style, locator, context, targetClass, ancestorNames)) {
                     Styles.badStyleReference(node, style, locator, context, name, targetName, targetClass, ancestorNames);
                     failed = true;
                 }
+                if ((styleLast != null) && referencesSameStyle(style, styleLast)) {
+                    if (context.getReporter().logWarning(locator, "Duplicate IDREF '" + IdReferences.getId(style) + "' should not appear without distinct intervening IDREF.")) {
+                        failed = true;
+                    }
+                }
+                styleLast = style;
             }
         }
         return !failed;
+    }
+
+    private static boolean referencesSameStyle(Object s1, Object s2) {
+        String id1 = IdReferences.getId(s1);
+        String id2 = IdReferences.getId(s2);
+        return id1.equals(id2);
     }
 
 }

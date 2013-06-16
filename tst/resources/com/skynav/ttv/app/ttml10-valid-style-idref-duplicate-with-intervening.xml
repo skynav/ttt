@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - style - idref references - duplicate with intervening distinct style reference -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml">
+  <head>
+    <styling>
+      <style xml:id="s0"/>
+      <style xml:id="s1"/>
+    </styling>
+  </head>
+  <body style="s0 s1 s0"/>
+</tt>

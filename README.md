@@ -172,12 +172,20 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
 ## Additional Semantic Tests Implemented
 
- * Error if style attribute IDREF does not reference a style element. ([Issue 220](https://www.w3.org/AudioVideo/TT/tracker/issues/220)).
- * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.1.2 P4)
- * Error if loop in sequence of chained style references. (8.4.1.3 P3)
- * Error if region attribute IDREF does not reference a region element. ([Issue 219](https://www.w3.org/AudioVideo/TT/tracker/issues/219)).
- * Warn if tts:origin attribute uses a negative length value.
- * Notify if tts:fontFamily attribute contains a quoted generic family name.
+ * Error if style attribute IDREF does not reference a style element. (8.2.1)
+ * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.2.1)
+ * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF. (8.2.1)
+ * Error if tts:extent attribute uses a negative length value. (8.2.7)
+ * Notify if tts:fontFamily attribute uses quoted generic family name. (8.2.8)
+ * Error if tts:fontSize attribute uses a negative length value. (8.2.9)
+ * Error if tts:fontSize attribute uses different units when two length expressions are specified. (8.2.9)
+ * Error if tts:lineHeight attribute uses a negative length value. (8.2.12)
+ * Warn if tts:opacity attribute uses a legal xs:float value outside the range [0,1]. (8.2.13)
+ * Warn if tts:origin attribute uses a negative length value. (8.2.14)
+ * Error if tts:padding attribute uses a negative length value. (8.2.16)
+ * Error if tts:textOutline attribute uses a negative length value for thickness or blur radius. (8.2.20)
+ * Error if loop in sequence of chained style references. (8.4.1.3)
+ * Error if region attribute IDREF does not reference a region element. (9.2.1)
 
 ## To Do (Essential)
 
@@ -192,10 +200,15 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
  * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and dur attribute is specified on any element. (6.2.6 P12, 10.2.3 P3)
  * Error if tts:extent on tt element does not specify two pixel unit length values. (8.2.7 P7)
  * Error if time expression uses `f` metric or frame component when tts:timeBase is clock. (10.3.1 P5)
+ * Error if time expression uses `f` metric or frame component and frame is greater than frame rate minus one. (10.3.1 P5)
  * Error if time expression uses sub-frame component when tts:timeBase is clock. (10.3.1 P6)
+ * Error if time expression uses sub-frame component and sub-frame is greater than sub-frame rate minus one. (10.3.1 P6)
  * Error if metadata element expresses metadata information both with attributes and child elements. (12.1.1 P2).
  * Error if actor element's agent attribute does not reference an agent element. (12.1.7 P3)
- * Error if ttm:agent attribute does not reference an agent element. (12.2.1 P2)
+ * Error if ttm:agent attribute IDREF does not reference an agent element. (12.2.1 P2)
+ * Warn if same IDREF appears more than once in specified ttm:agent attribute. (12.2.1)
+ * Update schema to use constrained definition of role token syntax, and not just NMTOKENS. See ttd:role data type.
+ * Warn if same token appears more than once in specified ttm:role attribute. (12.2.2)
  * Error if other extension namespace takes for that doesn't take a fragment identifier. (E.1 P4)
 
 ## To Do (Optional)
