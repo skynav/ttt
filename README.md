@@ -58,7 +58,26 @@ In addition, the following similarly typed attributes are similarly verified in 
  * `ttp:frameRateMultiplier`
  * `ttp:pixelAspectRatio`
 
-A number of additional semantic constraints are tested in the fourth phase, which will (in the meausure of time), be summarized here.
+## Additional Semantic Tests
+
+A number of additional semantic constraints are tested in the fourth phase:
+
+ * Error if style attribute IDREF does not reference a style element. (8.2.1)
+ * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.2.1)
+ * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF. (8.2.1)
+ * Error if tts:extent attribute uses a negative length value. (8.2.7)
+ * Notify if tts:fontFamily attribute uses quoted generic family name. (8.2.8)
+ * Error if tts:fontSize attribute uses a negative length value. (8.2.9)
+ * Error if tts:fontSize attribute uses different units when two length expressions are specified. (8.2.9)
+ * Error if tts:lineHeight attribute uses a negative length value. (8.2.12)
+ * Warn if tts:opacity attribute uses a legal xs:float value outside the range [0,1]. (8.2.13)
+ * Warn if tts:origin attribute uses a negative length value. (8.2.14)
+ * Error if tts:padding attribute uses a negative length value. (8.2.16)
+ * Error if tts:textOutline attribute uses a negative length value for thickness or blur radius. (8.2.20)
+ * Error if loop in sequence of chained style references. (8.4.1.3)
+ * Error if region attribute IDREF does not reference a region element. (9.2.1)
+
+## Verification Model
 
 A verification *model* includes the following information:
 
@@ -169,23 +188,6 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
  * The primary developer (skynavga) is using Mac OSX 10.8.3 on an MBP 15" Retina.
 
  * Work on the first three testing phases is essentially complete as of May 24, 2013; however, the fourth phase remains work in progress, and, as such, users should not rely upon it until this documentation indicates it is (reasonably) complete.
-
-## Additional Semantic Tests Implemented
-
- * Error if style attribute IDREF does not reference a style element. (8.2.1)
- * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.2.1)
- * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF. (8.2.1)
- * Error if tts:extent attribute uses a negative length value. (8.2.7)
- * Notify if tts:fontFamily attribute uses quoted generic family name. (8.2.8)
- * Error if tts:fontSize attribute uses a negative length value. (8.2.9)
- * Error if tts:fontSize attribute uses different units when two length expressions are specified. (8.2.9)
- * Error if tts:lineHeight attribute uses a negative length value. (8.2.12)
- * Warn if tts:opacity attribute uses a legal xs:float value outside the range [0,1]. (8.2.13)
- * Warn if tts:origin attribute uses a negative length value. (8.2.14)
- * Error if tts:padding attribute uses a negative length value. (8.2.16)
- * Error if tts:textOutline attribute uses a negative length value for thickness or blur radius. (8.2.20)
- * Error if loop in sequence of chained style references. (8.4.1.3)
- * Error if region attribute IDREF does not reference a region element. (9.2.1)
 
 ## To Do (Essential)
 
