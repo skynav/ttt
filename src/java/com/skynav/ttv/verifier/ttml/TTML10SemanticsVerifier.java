@@ -26,8 +26,10 @@
 package com.skynav.ttv.verifier.ttml;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 
@@ -58,12 +60,15 @@ import com.skynav.ttv.model.ttml10.ttm.Copyright;
 import com.skynav.ttv.model.ttml10.ttm.Description;
 import com.skynav.ttv.model.ttml10.ttm.Name;
 import com.skynav.ttv.model.ttml10.ttm.Title;
+import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.Locators;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Lengths;
 
 public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
@@ -449,6 +454,46 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verifyParameters(Object content) {
         return this.parameterVerifier.verify(content, getLocator(content), this.context);
+    }
+
+    private boolean verifyStyles(TimedText tt) {
+        boolean failed = false;
+        if (!verifyStyles((Object) tt))
+            failed = true;
+        if (!verifyRootExtent(tt))
+            failed = true;
+        return !failed;
+    }
+
+    private boolean verifyRootExtent(TimedText tt) {
+        boolean failed = false;
+        Reporter reporter = this.context.getReporter();
+        QName styleName = styleVerifier.getStyleAttributeName("extent");
+        String value = tt.getExtent();
+        if (value != null) {
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            Locator locator = getLocator(tt);
+            if (Lengths.isLengths(value, locator, this.context, null, null, lengths)) {
+                if (lengths.size() == 2) {
+                    Length w = lengths.get(0);
+                    Length.Unit wUnits = w.getUnits();
+                    Length h = lengths.get(1);
+                    Length.Unit hUnits = h.getUnits();
+                    Length.Unit pxUnits = Length.Unit.Pixel;
+                    if (w.getUnits() != pxUnits) {
+                        reporter.logError(locator,
+                            "Bad units on " + styleName + " width on root element, got '" + wUnits.shorthand() + "', expected '" + pxUnits.shorthand() + "'.");
+                        failed = true;
+                    }
+                    if (h.getUnits() != pxUnits) {
+                        reporter.logError(locator,
+                            "Bad units on " + styleName + " height on root element, got '" + hUnits.shorthand() + "', expected '" + pxUnits.shorthand() + "'.");
+                        failed = true;
+                    }
+                }
+            }
+        }
+        return !failed;
     }
 
     private boolean verifyStyles(Object content) {

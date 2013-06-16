@@ -96,6 +96,16 @@ public class TTML10StyleVerifier implements StyleVerifier {
         populate(model);
     }
 
+    public QName getStyleAttributeName(String propertyName) {
+        // assumes that property name is same as local part of qualified attribute name, which
+        // is presently true in TTML10
+        for (QName name : accessors.keySet()) {
+            if (propertyName.equals(name.getLocalPart()))
+                return name;
+        }
+        return null;
+    }
+
     public boolean verify(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {

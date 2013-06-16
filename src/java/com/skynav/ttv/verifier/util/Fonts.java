@@ -83,18 +83,19 @@ public class Fonts {
             String[] string = new String[1];
             if (Strings.isDoubleQuotedString(trimmedValue, locator, context, string) || Strings.isSingleQuotedString(trimmedValue, locator, context, string)) {
                 String stringContent = Strings.unescapeUnquoted(string[0]);
-                if (GenericFontFamily.isToken(stringContent)) {
-                    assert treatments.length > 0;
-                    QuotedGenericFontFamilyTreatment quotedGenericTreatment = (QuotedGenericFontFamilyTreatment) treatments[0];
-                    if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Warning) {
-                        if (reporter.logWarning(locator,
-                            "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic, family name.")) {
-                            treatments[0] = QuotedGenericFontFamilyTreatment.Allow;     // suppress second warning
-                            return false;
+                if (treatments != null) {
+                    if (GenericFontFamily.isToken(stringContent)) {
+                        QuotedGenericFontFamilyTreatment quotedGenericTreatment = (QuotedGenericFontFamilyTreatment) treatments[0];
+                        if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Warning) {
+                            if (reporter.logWarning(locator,
+                                "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic, family name.")) {
+                                treatments[0] = QuotedGenericFontFamilyTreatment.Allow;     // suppress second warning
+                                return false;
+                            }
+                        } else if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Info) {
+                            reporter.logInfo(locator,
+                                "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic, family name.");
                         }
-                    } else if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Info) {
-                        reporter.logInfo(locator,
-                            "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic, family name.");
                     }
                 }
                 if (outputFamily != null)
@@ -171,8 +172,7 @@ public class Fonts {
     public static void badFontFamilies(String value, Locator locator, VerifierContext context, Object[] treatments) {
         String [] familyItems = splitFontFamilies(value);
         for (String item : familyItems) {
-            assert treatments.length > 0;
-            Object[] treatmentsInner = new Object[] { treatments[0] };
+            Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0] } : treatments;
             if (!isFontFamily(item, locator, context, treatmentsInner, null))
                 badFontFamily(item, locator, context, treatmentsInner);
         }

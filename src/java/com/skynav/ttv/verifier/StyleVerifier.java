@@ -25,9 +25,18 @@
  
 package com.skynav.ttv.verifier;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 public interface StyleVerifier {
+
+    /**
+     * Obtain qualified name for style attribute given a unique, unqualified style property name.
+     * @param propertyName non-empty local name for style property
+     * @return a qualified name or null if unknown style property
+     */
+    QName getStyleAttributeName(String propertyName);
 
     /**
      * Verify style properties of content object.

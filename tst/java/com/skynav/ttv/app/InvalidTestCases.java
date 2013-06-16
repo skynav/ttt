@@ -509,6 +509,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadExtentRootHeight() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-root-height.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtentRootWidth() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extent-root-width.xml");
+    }
+
+    @Test
     public void testInvalidBadExtentSemicolonDelimiterSansWhitespace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-extent-semicolon-delimiter-sans-whitespace.xml");
     }

@@ -53,30 +53,31 @@ public class Integers {
             } catch (NumberFormatException e) {
                 return false;
             }
-            if (numberValue < 0) {
-                assert treatments.length > 0;
-                NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
-                if (negativeTreatment == NegativeTreatment.Error)
-                    return false;
-                else if (negativeTreatment == NegativeTreatment.Warning) {
-                    if (reporter.logWarning(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
-                        treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
+            if (treatments != null) {
+                if (numberValue < 0) {
+                    NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
+                    if (negativeTreatment == NegativeTreatment.Error)
                         return false;
-                    }
-                } else if (negativeTreatment == NegativeTreatment.Info)
-                    reporter.logInfo(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " used.");
-            } else if (numberValue == 0) {
-                assert treatments.length > 1;
-                ZeroTreatment zeroTreatment = (ZeroTreatment) treatments[1];
-                if (zeroTreatment == ZeroTreatment.Error)
-                    return false;
-                else if (zeroTreatment == ZeroTreatment.Warning) {
-                    if (reporter.logWarning(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
-                        treatments[1] = ZeroTreatment.Allow;                            // suppress second warning
+                    else if (negativeTreatment == NegativeTreatment.Warning) {
+                        if (reporter.logWarning(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
+                            treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
+                            return false;
+                        }
+                    } else if (negativeTreatment == NegativeTreatment.Info)
+                        reporter.logInfo(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " used.");
+                } else if (numberValue == 0) {
+                    assert treatments.length > 1;
+                    ZeroTreatment zeroTreatment = (ZeroTreatment) treatments[1];
+                    if (zeroTreatment == ZeroTreatment.Error)
                         return false;
-                    }
-                } else if (zeroTreatment == ZeroTreatment.Info)
-                    reporter.logInfo(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " used.");
+                    else if (zeroTreatment == ZeroTreatment.Warning) {
+                        if (reporter.logWarning(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
+                            treatments[1] = ZeroTreatment.Allow;                            // suppress second warning
+                            return false;
+                        }
+                    } else if (zeroTreatment == ZeroTreatment.Info)
+                        reporter.logInfo(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " used.");
+                }
             }
             if (outputInteger != null)
                 outputInteger[0] = Integer.valueOf(numberValue);
@@ -191,11 +192,12 @@ public class Integers {
 
         if (negative)
             numberValue = -numberValue;
-        assert treatments.length > 1;
-        if ((numberValue < 0) && (((NegativeTreatment)treatments[0]) == NegativeTreatment.Error))
-            reporter.logInfo(locator, "Bad <integer> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
-        else if ((numberValue == 0) && (((ZeroTreatment)treatments[1]) == ZeroTreatment.Error))
-            reporter.logInfo(locator, "Bad <integer> expression, zero value not permitted.");
+        if (treatments != null) {
+            if ((numberValue < 0) && (((NegativeTreatment)treatments[0]) == NegativeTreatment.Error))
+                reporter.logInfo(locator, "Bad <integer> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
+            else if ((numberValue == 0) && (((ZeroTreatment)treatments[1]) == ZeroTreatment.Error))
+                reporter.logInfo(locator, "Bad <integer> expression, zero value not permitted.");
+        }
     }
 
     public static boolean isIntegers(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments, List<Integer> outputIntegers) {
@@ -227,19 +229,20 @@ public class Integers {
         int numComponents = integerComponents.length;
         for (String component : integerComponents) {
             Integer[] integer = new Integer[1];
-            assert treatments.length > 1;
-            Object[] treatmentsInner = new Object[] { treatments[0], treatments[1] };
+            Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0], treatments[1] } : treatments;
             if (isInteger(component, locator, context, treatmentsInner, integer))
                 integers.add(integer[0]);
             else
                 badInteger(component, locator, context, treatmentsInner);
         }
-        if (numComponents < minMax[0]) {
-            reporter.logInfo(locator,
-                "Missing <integer> expression, got " + numComponents + ", but expected at least " + minMax[0] + " <integer> expressions.");
-        } else if (numComponents > minMax[1]) {
-            reporter.logInfo(locator,
-                "Extra <integer> expression, got " + numComponents + ", but expected no more than " + minMax[1] + " <integer> expressions.");
+        if (minMax != null) {
+            if (numComponents < minMax[0]) {
+                reporter.logInfo(locator,
+                    "Missing <integer> expression, got " + numComponents + ", but expected at least " + minMax[0] + " <integer> expressions.");
+            } else if (numComponents > minMax[1]) {
+                reporter.logInfo(locator,
+                    "Extra <integer> expression, got " + numComponents + ", but expected no more than " + minMax[1] + " <integer> expressions.");
+            }
         }
     }
 

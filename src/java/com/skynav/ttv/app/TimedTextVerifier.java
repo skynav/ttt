@@ -256,14 +256,32 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     @Override
     public String message(Locator locator, String message) {
-        String sysid = locator.getSystemId();
+        String sysid = (locator != null) ? locator.getSystemId() : null;
         if ((sysid == null) || (sysid.length() == 0)) {
             if (resourceUri != null)
                 sysid = resourceUri.toString();
             else if (resourceUriString != null)
                 sysid = resourceUriString;
         }
-        return "{" + sysid + "}:" + "[" + locator.getLineNumber() + ":" + locator.getColumnNumber() + "]: " + message;
+        StringBuffer sb = new StringBuffer();
+        if (sysid != null) {
+            sb.append('{');
+            sb.append(sysid);
+            sb.append('}');
+        }
+        if (locator != null) {
+            sb.append(':');
+            sb.append('[');
+            sb.append(locator.getLineNumber());
+            sb.append(',');
+            sb.append(locator.getColumnNumber());
+            sb.append(']');
+        }
+        if ((message != null) && (message.length() > 0)) {
+            sb.append(':');
+            sb.append(message);
+        }
+        return sb.toString();
     }
 
     @Override
