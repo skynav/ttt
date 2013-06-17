@@ -35,7 +35,7 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class ProfileVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, QName string, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName string, Object valueObject, Locator locator, VerifierContext context) {
         @SuppressWarnings("unused")
         String value = (String) valueObject;
         return true;

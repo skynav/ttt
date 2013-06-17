@@ -23,29 +23,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.parameter;
-
-import java.math.BigInteger;
+package com.skynav.ttv.verifier.ttml.style;
 
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.verifier.ParameterValueVerifier;
+import com.skynav.ttv.model.ttml10.ttd.Display;
+import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
-public class TickRateVerifier implements ParameterValueVerifier {
+public class DisplayVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, Object content, QName string, Object valueObject, Locator locator, VerifierContext context) {
-        int value = ((BigInteger) valueObject).intValue();
-        // Schema validation phase (3) detects and reports non-positive values.
-        if (value < 0)
-            throw new IllegalStateException("Unexpected negative value.");
-        else if (value == 0)
-            throw new IllegalStateException("Unexpected zero value.");
-        else
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+        // Schema validation phase (3) reports invalid values.
+        if (valueObject instanceof Display)
             return true;
+        else
+            throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());
     }
 
 }

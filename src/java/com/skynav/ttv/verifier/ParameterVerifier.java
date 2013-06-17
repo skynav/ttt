@@ -38,4 +38,12 @@ public interface ParameterVerifier {
      */
     boolean verify(Object content, Locator locator, VerifierContext context);
 
+    /**
+     * Assign default parameter attribute values of content object.
+     * @param content a JAXB content object
+     * @param locator a locator that corresponds to the lexical location of the content object
+     * @param context verifier context
+     */
+    void assignDefaults(Object content, Locator locator, VerifierContext context);
+
 }

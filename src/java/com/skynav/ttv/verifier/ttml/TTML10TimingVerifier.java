@@ -52,10 +52,30 @@ public class TTML10TimingVerifier implements TimingVerifier {
     }
 
     private static Object[][] timingAccessorMap = new Object[][] {
-        // attribute name                       accessor method value type          specialized verifier                padding permitted
-        { new QName(timingNamespace,"begin"),   "getBegin",     String.class,       TimeCoordinateVerifier.class,       Boolean.FALSE },
-        { new QName(timingNamespace,"dur"),     "getDur",       String.class,       TimeDurationVerifier.class,         Boolean.FALSE },
-        { new QName(timingNamespace,"end"),     "getEnd",       String.class,       TimeCoordinateVerifier.class,       Boolean.FALSE },
+        {
+            new QName(timingNamespace,"begin"),                 // attribute name
+            "getBegin",                                         // accessor method name
+            String.class,                                       // accessor method value type
+            TimeCoordinateVerifier.class,                       // specialized verifier
+            Boolean.FALSE,                                      // padding permitted
+            "",                                                 // default value
+        },
+        {
+            new QName(timingNamespace,"dur"),
+            "getDur",
+            String.class,
+            TimeDurationVerifier.class,
+            Boolean.FALSE,
+            "",
+        },
+        {
+            new QName(timingNamespace,"end"),
+            "getEnd",
+            String.class,
+            TimeCoordinateVerifier.class,
+            Boolean.FALSE,
+            "",
+        },
     };
 
     private Model model;
@@ -107,8 +127,8 @@ public class TTML10TimingVerifier implements TimingVerifier {
             Object value = getTimingValue(content);
             if (value != null) {
                 if (value instanceof String)
-                    success = verify(model, (String) value, locator, context);
-                else if (!verifier.verify(model, timingName, value, locator, context))
+                    success = verify(model, content, (String) value, locator, context);
+                else if (!verifier.verify(model, content, timingName, value, locator, context))
                     context.getReporter().logError(locator, "Invalid " + timingName + " value '" + value + "'.");
                 else
                     success = true;
@@ -117,7 +137,7 @@ public class TTML10TimingVerifier implements TimingVerifier {
             return success;
         }
 
-        private boolean verify(Model model, String value, Locator locator, VerifierContext context) {
+        private boolean verify(Model model, Object content, String value, Locator locator, VerifierContext context) {
             Reporter reporter = context.getReporter();
             boolean success = false;
             if (value.length() == 0)
@@ -126,7 +146,7 @@ public class TTML10TimingVerifier implements TimingVerifier {
                 reporter.logError(locator, "The value of " + timingName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
                 reporter.logError(locator, "XML space padding not permitted on " + timingName + ", got '" + value + "'.");
-            else if (!verifier.verify(model, timingName, value, locator, context))
+            else if (!verifier.verify(model, content, timingName, value, locator, context))
                 reporter.logError(locator, "Invalid " + timingName + " value '" + value + "'.");
             else
                 success = true;

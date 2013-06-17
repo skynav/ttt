@@ -38,7 +38,7 @@ import com.skynav.ttv.verifier.util.Regions;
 
 public class RegionAttributeVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
         Object region = valueObject;

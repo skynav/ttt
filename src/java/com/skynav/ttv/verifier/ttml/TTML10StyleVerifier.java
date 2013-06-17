@@ -43,21 +43,48 @@ import com.skynav.ttv.model.ttml10.tt.Region;
 import com.skynav.ttv.model.ttml10.tt.Span;
 import com.skynav.ttv.model.ttml10.tt.Style;
 import com.skynav.ttv.model.ttml10.tt.TimedText;
+import com.skynav.ttv.model.ttml10.ttd.Direction;
+import com.skynav.ttv.model.ttml10.ttd.Display;
+import com.skynav.ttv.model.ttml10.ttd.DisplayAlign;
+import com.skynav.ttv.model.ttml10.ttd.FontStyle;
+import com.skynav.ttv.model.ttml10.ttd.FontWeight;
+import com.skynav.ttv.model.ttml10.ttd.Overflow;
+import com.skynav.ttv.model.ttml10.ttd.ShowBackground;
+import com.skynav.ttv.model.ttml10.ttd.TextAlign;
+import com.skynav.ttv.model.ttml10.ttd.TextDecoration;
+import com.skynav.ttv.model.ttml10.ttd.UnicodeBidi;
+import com.skynav.ttv.model.ttml10.ttd.Visibility;
+import com.skynav.ttv.model.ttml10.ttd.WrapOption;
+import com.skynav.ttv.model.ttml10.ttd.WritingMode;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.style.BackgroundColorVerifier;
 import com.skynav.ttv.verifier.ttml.style.ColorVerifier;
+import com.skynav.ttv.verifier.ttml.style.DirectionVerifier;
+import com.skynav.ttv.verifier.ttml.style.DisplayAlignVerifier;
+import com.skynav.ttv.verifier.ttml.style.DisplayVerifier;
 import com.skynav.ttv.verifier.ttml.style.ExtentVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontFamilyVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontSizeVerifier;
+import com.skynav.ttv.verifier.ttml.style.FontStyleVerifier;
+import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.OpacityVerifier;
 import com.skynav.ttv.verifier.ttml.style.OriginVerifier;
+import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
 import com.skynav.ttv.verifier.ttml.style.PaddingVerifier;
+import com.skynav.ttv.verifier.ttml.style.ShowBackgroundVerifier;
 import com.skynav.ttv.verifier.ttml.style.StyleAttributeVerifier;
 import com.skynav.ttv.verifier.ttml.style.RegionAttributeVerifier;
+import com.skynav.ttv.verifier.ttml.style.TextAlignVerifier;
+import com.skynav.ttv.verifier.ttml.style.TextDecorationVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextOutlineVerifier;
+import com.skynav.ttv.verifier.ttml.style.UnicodeBidiVerifier;
+import com.skynav.ttv.verifier.ttml.style.VisibilityVerifier;
+import com.skynav.ttv.verifier.ttml.style.WrapOptionVerifier;
+import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 import com.skynav.ttv.verifier.ttml.style.ZIndexVerifier;
 import com.skynav.ttv.verifier.util.IdReferences;
 import com.skynav.ttv.verifier.util.Strings;
@@ -71,22 +98,214 @@ public class TTML10StyleVerifier implements StyleVerifier {
     }
 
     private static Object[][] styleAccessorMap = new Object[][] {
-        // attribute name                               accessor method         value type              specialized verifier            padding permitted
-        { new QName(styleNamespace,"backgroundColor"),  "getBackgroundColor",   String.class,           ColorVerifier.class,            Boolean.FALSE },
-        { new QName(styleNamespace,"color"),            "getColor",             String.class,           ColorVerifier.class,            Boolean.FALSE },
-        { new QName(styleNamespace,"extent"),           "getExtent",            String.class,           ExtentVerifier.class,           Boolean.FALSE },
-        { new QName(styleNamespace,"fontFamily"),       "getFontFamily",        String.class,           FontFamilyVerifier.class,       Boolean.TRUE  },
-        { new QName(styleNamespace,"fontSize"),         "getFontSize",          String.class,           FontSizeVerifier.class,         Boolean.FALSE },
-        { new QName(styleNamespace,"lineHeight"),       "getLineHeight",        String.class,           LineHeightVerifier.class,       Boolean.FALSE },
-        { new QName(styleNamespace,"opacity"),          "getOpacity",           Float.class,            OpacityVerifier.class,          Boolean.FALSE },
-        { new QName(styleNamespace,"origin"),           "getOrigin",            String.class,           OriginVerifier.class,           Boolean.FALSE },
-        { new QName(styleNamespace,"padding"),          "getPadding",           String.class,           PaddingVerifier.class,          Boolean.FALSE },
-        // region is not a style property, but it is convenient to handle it here
-        { new QName("","region"),                       "getRegion",            Object.class,           RegionAttributeVerifier.class,  Boolean.FALSE },
-        // style is not a style property (as such), but it is convenient to handle it here
-        { new QName("","style"),                        "getStyleAttribute",    List.class,             StyleAttributeVerifier.class,   Boolean.FALSE },
-        { new QName(styleNamespace,"textOutline"),      "getTextOutline",       String.class,           TextOutlineVerifier.class,      Boolean.FALSE },
-        { new QName(styleNamespace,"zIndex"),           "getZIndex",            String.class,           ZIndexVerifier.class,           Boolean.FALSE },
+        {
+            new QName(styleNamespace,"backgroundColor"),        // attribute name
+            "getBackgroundColor",                               // accessor method
+            String.class,                                       // value type
+            BackgroundColorVerifier.class,                      // specialized verifier
+            Boolean.FALSE,                                      // padding permitted
+            "transparent",                                      // initial (default) value
+        },
+        {
+            new QName(styleNamespace,"color"),
+            "getColor",
+            String.class,
+            ColorVerifier.class,
+            Boolean.FALSE,
+            "white",
+        },
+        {
+            new QName(styleNamespace,"direction"),
+            "getDirection",
+            Direction.class,
+            DirectionVerifier.class,
+            Boolean.FALSE,
+            Direction.LTR,
+        },
+        {
+            new QName(styleNamespace,"display"),
+            "getDisplay",
+            Display.class,
+            DisplayVerifier.class,
+            Boolean.FALSE,
+            Display.AUTO,
+        },
+        {
+            new QName(styleNamespace,"displayAlign"),
+            "getDisplayAlign",
+            DisplayAlign.class,
+            DisplayAlignVerifier.class,
+            Boolean.FALSE,
+            DisplayAlign.BEFORE,
+        },
+        {
+            new QName(styleNamespace,"extent"),
+            "getExtent",
+            String.class,
+            ExtentVerifier.class,
+            Boolean.FALSE,
+            "auto",
+        },
+        {
+            new QName(styleNamespace,"fontFamily"),
+            "getFontFamily",
+            String.class,
+            FontFamilyVerifier.class,
+            Boolean.TRUE,
+            "default",
+        },
+        {
+            new QName(styleNamespace,"fontSize"),
+            "getFontSize",
+            String.class,
+            FontSizeVerifier.class,
+            Boolean.FALSE,
+            "1c",
+        },
+        {
+            new QName(styleNamespace,"fontStyle"),
+            "getFontStyle",
+            FontStyle.class,
+            FontStyleVerifier.class,
+            Boolean.FALSE,
+            FontStyle.NORMAL,
+        },
+        {
+            new QName(styleNamespace,"fontWeight"),
+            "getFontWeight",
+            FontWeight.class,
+            FontWeightVerifier.class,
+            Boolean.FALSE,
+            FontWeight.NORMAL,
+        },
+        {
+            new QName(styleNamespace,"lineHeight"),
+            "getLineHeight",
+            String.class,
+            LineHeightVerifier.class,
+            Boolean.FALSE,
+            "normal",
+        },
+        {
+            new QName(styleNamespace,"opacity"),
+            "getOpacity",
+            Float.class,
+            OpacityVerifier.class,
+            Boolean.FALSE,
+            Float.valueOf(1.0F),
+        },
+        {
+            new QName(styleNamespace,"origin"),
+            "getOrigin",
+            String.class,
+            OriginVerifier.class,
+            Boolean.FALSE,
+            "auto",
+        },
+        {
+            new QName(styleNamespace,"overflow"),
+            "getOverflow",
+            Overflow.class,
+            OverflowVerifier.class,
+            Boolean.FALSE,
+            Overflow.HIDDEN,
+        },
+        {
+            new QName(styleNamespace,"padding"),
+            "getPadding",
+            String.class,
+            PaddingVerifier.class,
+            Boolean.FALSE,
+            "0px",
+        },
+        {
+            new QName("","region"),
+            "getRegion",
+            Object.class,
+            RegionAttributeVerifier.class,
+            Boolean.FALSE,
+            "",
+        },
+        {
+            new QName(styleNamespace,"showBackground"),
+            "getShowBackground",
+            ShowBackground.class,
+            ShowBackgroundVerifier.class,
+            Boolean.FALSE,
+            ShowBackground.ALWAYS,
+        },
+        {
+            new QName("","style"),
+            "getStyleAttribute",
+            List.class,
+            StyleAttributeVerifier.class,
+            Boolean.FALSE,
+            "",
+        },
+        {
+            new QName(styleNamespace,"textAlign"),
+            "getTextAlign",
+            TextAlign.class,
+            TextAlignVerifier.class,
+            Boolean.FALSE,
+            TextAlign.START,
+        },
+        {
+            new QName(styleNamespace,"textDecoration"),
+            "getTextDecoration",
+            TextDecoration.class,
+            TextDecorationVerifier.class,
+            Boolean.FALSE,
+            TextDecoration.NONE,
+        },
+        {
+            new QName(styleNamespace,"textOutline"),
+            "getTextOutline",
+            String.class,
+            TextOutlineVerifier.class,
+            Boolean.FALSE,
+            "none",
+        },
+        {
+            new QName(styleNamespace,"unicodeBidi"),
+            "getUnicodeBidi",
+            UnicodeBidi.class,
+            UnicodeBidiVerifier.class,
+            Boolean.FALSE,
+            UnicodeBidi.NORMAL,
+        },
+        {
+            new QName(styleNamespace,"visibility"),
+            "getVisibility",
+            Visibility.class,
+            VisibilityVerifier.class,
+            Boolean.FALSE,
+            Visibility.VISIBLE,
+        },
+        {
+            new QName(styleNamespace,"wrapOption"),
+            "getWrapOption",
+            WrapOption.class,
+            WrapOptionVerifier.class,
+            Boolean.FALSE,
+            WrapOption.WRAP,
+        },
+        {
+            new QName(styleNamespace,"writingMode"),
+            "getWritingMode",
+            WritingMode.class,
+            WritingModeVerifier.class,
+            Boolean.FALSE,
+            WritingMode.LRTB,
+        },
+        {
+            new QName(styleNamespace,"zIndex"),
+            "getZIndex",
+            String.class,
+            ZIndexVerifier.class,
+            Boolean.FALSE,
+            "auto",
+        },
     };
 
     private Model model;
@@ -151,8 +370,8 @@ public class TTML10StyleVerifier implements StyleVerifier {
             Object value = getStyleValue(content);
             if (value != null) {
                 if (value instanceof String)
-                    success = verify(model, (String) value, locator, context);
-                else if (!verifier.verify(model, styleName, value, locator, context)) {
+                    success = verify(model, content, (String) value, locator, context);
+                else if (!verifier.verify(model, content, styleName, value, locator, context)) {
                     if (styleName.equals(styleAttributeName)) {
                         value = IdReferences.getIdReferences(value);
                     } else if (styleName.equals(regionAttributeName)) {
@@ -167,7 +386,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             return success;
         }
 
-        private boolean verify(Model model, String value, Locator locator, VerifierContext context) {
+        private boolean verify(Model model, Object content, String value, Locator locator, VerifierContext context) {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
@@ -176,7 +395,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
                 reporter.logError(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
                 reporter.logError(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
-            else if (!verifier.verify(model, styleName, value, locator, context))
+            else if (!verifier.verify(model, content, styleName, value, locator, context))
                 reporter.logError(locator, "Invalid " + styleName + " value '" + value + "'.");
             else
                 success = true;

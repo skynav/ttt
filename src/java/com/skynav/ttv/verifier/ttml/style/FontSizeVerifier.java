@@ -38,7 +38,7 @@ import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class FontSizeVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
         Integer[] minMax = new Integer[] { 1, 2 };

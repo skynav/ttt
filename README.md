@@ -66,7 +66,7 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.2.1)
  * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF. (8.2.1)
  * Error if tts:extent attribute uses a negative length value. (8.2.7)
- * Error if tts:extent on root (tt) element does not specify two pixel unit length values. (8.2.7)
+ * Error if tts:extent on root (tt) element does not specify pixel units. (8.2.7)
  * Notify if tts:fontFamily attribute uses quoted generic family name. (8.2.8)
  * Error if tts:fontSize attribute uses a negative length value. (8.2.9)
  * Error if tts:fontSize attribute uses different units when two length expressions are specified. (8.2.9)

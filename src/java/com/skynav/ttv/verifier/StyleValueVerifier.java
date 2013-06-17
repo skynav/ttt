@@ -36,12 +36,13 @@ public interface StyleValueVerifier {
     /**
      * Verify style property's value.
      * @param model the model that governs this verifier
+     * @param content binding content object
      * @param name style name
      * @param valueObject style value
      * @param locator a locator that corresponds to the lexical location of the content object
      * @param context verifier context
      * @return true if validation succeeds without error
      */
-    boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context);
+    boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context);
 
 }

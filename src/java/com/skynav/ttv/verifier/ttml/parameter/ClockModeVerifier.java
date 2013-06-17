@@ -36,8 +36,8 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class ClockModeVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, QName string, Object valueObject, Locator locator, VerifierContext context) {
-        // Schema validation phase (2) reports invalid values.
+    public boolean verify(Model model, Object content, QName string, Object valueObject, Locator locator, VerifierContext context) {
+        // Schema validation phase (3) reports invalid values.
         if (valueObject instanceof ClockMode)
             return true;
         else

@@ -36,7 +36,7 @@ import com.skynav.ttv.verifier.util.Timing;
 
 public class TimeCoordinateVerifier implements TimingValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         String value = (String) valueObject;
         if (Timing.isCoordinate(value, locator, context, null))
             return true;

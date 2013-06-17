@@ -39,7 +39,7 @@ import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class TextOutlineVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         Reporter reporter = context.getReporter();
         boolean failed = false;
         assert valueObject instanceof String;

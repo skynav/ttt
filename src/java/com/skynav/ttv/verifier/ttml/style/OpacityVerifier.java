@@ -36,7 +36,7 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class OpacityVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         Reporter reporter = context.getReporter();
         assert valueObject instanceof Float;
         Float value = (Float) valueObject;

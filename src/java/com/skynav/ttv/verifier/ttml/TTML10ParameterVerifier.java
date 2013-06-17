@@ -66,18 +66,94 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
     }
 
     private static Object[][] parameterAccessorMap = new Object[][] {
-        // attribute name                                  accessor method             value type          specialized verifier                padding permitted
-        { new QName(paramNamespace,"cellResolution"),      "getCellResolution",        String.class,       CellResolutionVerifier.class,       Boolean.FALSE },
-        { new QName(paramNamespace,"clockMode"),           "getClockMode",             ClockMode.class,    ClockModeVerifier.class,            Boolean.FALSE },
-        { new QName(paramNamespace,"dropMode"),            "getDropMode",              DropMode.class,     DropModeVerifier.class,             Boolean.FALSE },
-        { new QName(paramNamespace,"frameRate"),           "getFrameRate",             BigInteger.class,   FrameRateVerifier.class,            Boolean.TRUE  },
-        { new QName(paramNamespace,"frameRateMultiplier"), "getFrameRateMultiplier",   String.class,       FrameRateMultiplierVerifier.class,  Boolean.FALSE },
-        { new QName(paramNamespace,"markerMode"),          "getMarkerMode",            MarkerMode.class,   MarkerModeVerifier.class,           Boolean.FALSE },
-        { new QName(paramNamespace,"pixelAspectRatio"),    "getPixelAspectRatio",      String.class,       PixelAspectRatioVerifier.class,     Boolean.FALSE },
-        { new QName(paramNamespace,"profile"),             "getProfile",               String.class,       ProfileVerifier.class,              Boolean.FALSE },
-        { new QName(paramNamespace,"subFrameRate"),        "getSubFrameRate",          BigInteger.class,   SubFrameRateVerifier.class,         Boolean.FALSE },
-        { new QName(paramNamespace,"tickRate"),            "getTickRate",              BigInteger.class,   TickRateVerifier.class,             Boolean.FALSE },
-        { new QName(paramNamespace,"timeBase"),            "getTimeBase",              TimeBase.class,     TimeBaseVerifier.class,             Boolean.FALSE },
+        {
+          new QName(paramNamespace,"cellResolution"),           // attribute name
+          "getCellResolution",                                  // accessor method
+          String.class,                                         // value type
+          CellResolutionVerifier.class,                         // specialized verifier
+          Boolean.FALSE,                                        // padding permitted
+          "32 15",                                              // default value
+        },
+        {
+          new QName(paramNamespace,"clockMode"),
+          "getClockMode",
+          ClockMode.class,
+          ClockModeVerifier.class,
+          Boolean.FALSE,
+          ClockMode.UTC,
+        },
+        {
+          new QName(paramNamespace,"dropMode"),
+          "getDropMode",
+          DropMode.class,
+          DropModeVerifier.class,
+          Boolean.FALSE,
+          DropMode.NON_DROP,
+        },
+        {
+          new QName(paramNamespace,"frameRate"),
+          "getFrameRate",
+          BigInteger.class,
+          FrameRateVerifier.class,
+          Boolean.TRUE,
+          BigInteger.valueOf(30),
+        },
+        {
+          new QName(paramNamespace,"frameRateMultiplier"),
+          "getFrameRateMultiplier",
+          String.class,
+          FrameRateMultiplierVerifier.class,
+          Boolean.FALSE,
+          "1 1",
+        },
+        {
+          new QName(paramNamespace,"markerMode"),
+          "getMarkerMode",
+          MarkerMode.class,
+          MarkerModeVerifier.class,
+          Boolean.FALSE,
+          MarkerMode.DISCONTINUOUS,
+        },
+        {
+          new QName(paramNamespace,"pixelAspectRatio"),
+          "getPixelAspectRatio",
+          String.class,
+          PixelAspectRatioVerifier.class,
+          Boolean.FALSE,
+          "1 1",
+        },
+        {
+          new QName(paramNamespace,"profile"),
+          "getProfile",
+          String.class,
+          ProfileVerifier.class,
+          Boolean.FALSE,
+          "",
+        },
+        {
+          new QName(paramNamespace,"subFrameRate"),
+          "getSubFrameRate",
+          BigInteger.class,
+          SubFrameRateVerifier.class,
+          Boolean.FALSE,
+          BigInteger.valueOf(1),
+        },
+        {
+          new QName(paramNamespace,"tickRate"),
+          "getTickRate",
+          BigInteger.class,
+          TickRateVerifier.class,
+          Boolean.FALSE,
+          BigInteger.valueOf(1),
+        },
+        {
+          new QName(paramNamespace,"timeBase"),
+          "getTimeBase",
+          TimeBase.class,
+          TimeBaseVerifier.class,
+          Boolean.FALSE,
+          TimeBase.MEDIA,
+        },
     };
 
     private Model model;
@@ -95,6 +171,9 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
                 failed = true;
         }
         return !failed;
+    }
+
+    public void assignDefaults(Object content, Locator locator, VerifierContext context) {
     }
 
     private void populate(Model model) {
@@ -129,8 +208,8 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             Object value = getParameterValue(content);
             if (value != null) {
                 if (value instanceof String)
-                    success = verify(model, (String) value, locator, context);
-                else if (!verifier.verify(model, parameterName, value, locator, context))
+                    success = verify(model, content, (String) value, locator, context);
+                else if (!verifier.verify(model, content, parameterName, value, locator, context))
                     context.getReporter().logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
                 else
                     success = true;
@@ -139,7 +218,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             return success;
         }
 
-        private boolean verify(Model model, String value, Locator locator, VerifierContext context) {
+        private boolean verify(Model model, Object content, String value, Locator locator, VerifierContext context) {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
@@ -148,7 +227,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
                 reporter.logError(locator, "The value of " + parameterName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
                 reporter.logError(locator, "XML space padding not permitted on " + parameterName + ", got '" + value + "'.");
-            else if (!verifier.verify(model, parameterName, value, locator, context))
+            else if (!verifier.verify(model, content, parameterName, value, locator, context))
                 reporter.logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
             else
                 success = true;
