@@ -97,28 +97,30 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private static final String usage =
         "Usage: java -jar ttv.jar [options] URL*\n" +
         "  Short Options:\n" +
-        "    -d                       - see --debug\n" +
-        "    -q                       - see --quiet\n" +
-        "    -v                       - see --verbose\n" +
-        "    -?                       - see --help\n" +
+        "    -d                         - see --debug\n" +
+        "    -q                         - see --quiet\n" +
+        "    -v                         - see --verbose\n" +
+        "    -?                         - see --help\n" +
         "  Long Options:\n" +
-        "    --debug                  - enable debug output (may be specified multiple times to increase debug level)\n" +
-        "    --debug-exceptions       - enable stack traces on exceptions (implies --debug)\n" +
-        "    --disable-warnings       - disable warnings (both hide and don't count warnings)\n" +
-        "    --help                   - show usage help\n" +
-        "    --hide-warnings          - hide warnings (but count them)\n" +
-        "    --model NAME             - specify model name (default: " + defaultModel.getName() + ")\n" +
-        "    --quiet                  - don't show banner\n" +
-        "    --show-models            - show built-in verification models (use with --verbose to show more details)\n" +
-        "    --show-repository        - show source code repository information\n" +
-        "    --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
-        "    --treat-foreign-as TOKEN - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
+        "    --debug                    - enable debug output (may be specified multiple times to increase debug level)\n" +
+        "    --debug-exceptions         - enable stack traces on exceptions (implies --debug)\n" +
+        "    --disable-warnings         - disable warnings (both hide and don't count warnings)\n" +
+        "    --external-extent EXTENT   - specify extent for document processing context\n" +
+        "    --external-frame-rate RATE - specify frame rate for document processing context\n" +
+        "    --help                     - show usage help\n" +
+        "    --hide-warnings            - hide warnings (but count them)\n" +
+        "    --model NAME               - specify model name (default: " + defaultModel.getName() + ")\n" +
+        "    --quiet                    - don't show banner\n" +
+        "    --show-models              - show built-in verification models (use with --verbose to show more details)\n" +
+        "    --show-repository          - show source code repository information\n" +
+        "    --verbose                  - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
+        "    --treat-foreign-as TOKEN   - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
              ForeignTreatment.getDefault().name().toLowerCase() + ")\n" +
-        "    --treat-warning-as-error - treat warning as error (overrides --disable-warnings)\n" +
-        "    --until-phase PHASE      - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
+        "    --treat-warning-as-error   - treat warning as error (overrides --disable-warnings)\n" +
+        "    --until-phase PHASE        - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
              Phase.getDefault().name().toLowerCase() + ")\n" +
         "  Non-Option Arguments:\n" +
-        "    URL                      - an absolute or relative URL; if relative, resolved against current working directory\n";
+        "    URL                        - an absolute or relative URL; if relative, resolved against current working directory\n";
 
     // usage text
     private static final String repositoryInfo =
@@ -127,6 +129,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     // options state
     private int debug;
     private boolean disableWarnings;
+    @SuppressWarnings("unused")
+    private String externalExtent;
+    @SuppressWarnings("unused")
+    private String externalFrameRate;
     private boolean hideWarnings;
     private String modelName;
     private boolean quiet;
@@ -392,6 +398,14 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 debug = 2;
         } else if (option.equals("disable-warnings")) {
             disableWarnings = true;
+        } else if (option.equals("external-extent")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            externalExtent = args[++index];
+        } else if (option.equals("external-frame-rate")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            externalFrameRate = args[++index];
         } else if (option.equals("help")) {
             throw new ShowUsageException();
         } else if (option.equals("hide-warnings")) {

@@ -23,28 +23,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.timing;
+package com.skynav.ttv.verifier;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.VerificationParameters;
-import com.skynav.ttv.verifier.util.Timing;
-
-public class TimeCoordinateVerifier implements TimingValueVerifier {
-
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters) {
-        String value = (String) valueObject;
-        if (Timing.isCoordinate(value, locator, context, null))
-            return true;
-        else {
-            Timing.badCoordinate(value, locator, context);
-            return false;
-        }
-    }
-
-}
+public interface VerificationParameters {}

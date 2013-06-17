@@ -39,8 +39,10 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.TimingValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimeCoordinateVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimeDurationVerifier;
+import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML10TimingVerifier implements TimingVerifier {
@@ -54,32 +56,33 @@ public class TTML10TimingVerifier implements TimingVerifier {
     private static Object[][] timingAccessorMap = new Object[][] {
         {
             new QName(timingNamespace,"begin"),                 // attribute name
-            "getBegin",                                         // accessor method name
+            "Begin",                                            // accessor method name suffix
             String.class,                                       // accessor method value type
             TimeCoordinateVerifier.class,                       // specialized verifier
             Boolean.FALSE,                                      // padding permitted
-            "",                                                 // default value
+            null,                                               // default value
         },
         {
             new QName(timingNamespace,"dur"),
-            "getDur",
+            "Dur",
             String.class,
             TimeDurationVerifier.class,
             Boolean.FALSE,
-            "",
+            null,
         },
         {
             new QName(timingNamespace,"end"),
-            "getEnd",
+            "End",
             String.class,
             TimeCoordinateVerifier.class,
             Boolean.FALSE,
-            "",
+            null,
         },
     };
 
     private Model model;
     private Map<QName, TimingAccessor> accessors;
+    private VerificationParameters verificationParameters;
 
     public TTML10TimingVerifier(Model model) {
         populate(model);
@@ -87,10 +90,14 @@ public class TTML10TimingVerifier implements TimingVerifier {
 
     public boolean verify(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        for (QName name : accessors.keySet()) {
-            TimingAccessor sa = accessors.get(name);
-            if (!sa.verify(model, content, locator, context))
-                failed = true;
+        if (content instanceof TimedText) {
+            verificationParameters = new TimingVerificationParameters((TimedText) content);
+        } else {
+            for (QName name : accessors.keySet()) {
+                TimingAccessor sa = accessors.get(name);
+                if (!sa.verify(model, content, locator, context))
+                    failed = true;
+            }
         }
         return !failed;
     }
@@ -110,10 +117,11 @@ public class TTML10TimingVerifier implements TimingVerifier {
         this.accessors = accessors;
     }
 
-    private static class TimingAccessor {
+    private class TimingAccessor {
 
         private QName timingName;
-        private String accessorName;
+        private String getterName;
+        private String setterName;
         private Class<?> valueClass;
         private TimingValueVerifier verifier;
         private boolean paddingPermitted;
@@ -123,33 +131,33 @@ public class TTML10TimingVerifier implements TimingVerifier {
         }
 
         public boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
-            boolean success = false;
+            boolean success = true;
             Object value = getTimingValue(content);
             if (value != null) {
                 if (value instanceof String)
                     success = verify(model, content, (String) value, locator, context);
-                else if (!verifier.verify(model, content, timingName, value, locator, context))
-                    context.getReporter().logError(locator, "Invalid " + timingName + " value '" + value + "'.");
                 else
-                    success = true;
-            } else
-                success = true;
+                    success = verifier.verify(model, content, timingName, value, locator, context, verificationParameters);
+            }
+            if (!success) {
+                if (value != null) {
+                    context.getReporter().logError(locator, "Invalid " + timingName + " value '" + value + "'.");
+                }
+            }
             return success;
         }
 
         private boolean verify(Model model, Object content, String value, Locator locator, VerifierContext context) {
-            Reporter reporter = context.getReporter();
             boolean success = false;
+            Reporter reporter = context.getReporter();
             if (value.length() == 0)
                 reporter.logError(locator, "Empty " + timingName + " not permitted, got '" + value + "'.");
             else if (Strings.isAllXMLSpace(value))
                 reporter.logError(locator, "The value of " + timingName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
                 reporter.logError(locator, "XML space padding not permitted on " + timingName + ", got '" + value + "'.");
-            else if (!verifier.verify(model, content, timingName, value, locator, context))
-                reporter.logError(locator, "Invalid " + timingName + " value '" + value + "'.");
             else
-                success = true;
+                success = verifier.verify(model, content, timingName, value, locator, context, verificationParameters);
             return success;
         }
 
@@ -165,7 +173,8 @@ public class TTML10TimingVerifier implements TimingVerifier {
 
         private void populate(QName timingName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
             this.timingName = timingName;
-            this.accessorName = accessorName;
+            this.getterName = "get" + accessorName;
+            this.setterName = "set" + accessorName;
             this.valueClass = valueClass;
             this.verifier = createTimingValueVerifier(verifierClass);
             this.paddingPermitted = paddingPermitted;
@@ -174,7 +183,7 @@ public class TTML10TimingVerifier implements TimingVerifier {
         private Object getTimingValue(Object content) {
             try {
                 Class<?> contentClass = content.getClass();
-                Method m = contentClass.getMethod(accessorName, new Class<?>[]{});
+                Method m = contentClass.getMethod(getterName, new Class<?>[]{});
                 return convertType(m.invoke(content, new Object[]{}), valueClass);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);

@@ -66,7 +66,7 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.2.1)
  * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF. (8.2.1)
  * Error if tts:extent attribute uses a negative length value. (8.2.7)
- * Error if tts:extent on root (tt) element does not specify pixel units. (8.2.7)
+ * Error if tts:extent on root (tt) element specifies non-pixel unit for either width or height. (8.2.7)
  * Notify if tts:fontFamily attribute uses quoted generic family name. (8.2.8)
  * Error if tts:fontSize attribute uses a negative length value. (8.2.9)
  * Error if tts:fontSize attribute uses different units when two length expressions are specified. (8.2.9)
@@ -77,6 +77,7 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if tts:textOutline attribute uses a negative length value for thickness or blur radius. (8.2.20)
  * Error if loop in sequence of chained style references. (8.4.1.3)
  * Error if region attribute IDREF does not reference a region element. (9.2.1)
+ * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and an otherwise well-formed dur attribute is specified. (10.2.3)
 
 ## Verification Model
 
@@ -200,7 +201,6 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
  * Warn if absolutized feature designator is not a known standard designator. ([Issue 221](https://www.w3.org/AudioVideo/TT/tracker/issues/221)).
  * Error if xml:base on ttp:extensions is not absolute. (6.1.4 P4)
  * Error if absolutized extension designator doesn't conform to extension-designation defined in E.1. (6.1.5. P4)
- * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and dur attribute is specified on any element. (6.2.6 P12, 10.2.3 P3)
  * Error if time expression uses `f` metric or frame component when tts:timeBase is clock. (10.3.1 P5)
  * Error if time expression uses `f` metric or frame component and frame is greater than frame rate minus one. (10.3.1 P5)
  * Error if time expression uses sub-frame component when tts:timeBase is clock. (10.3.1 P6)

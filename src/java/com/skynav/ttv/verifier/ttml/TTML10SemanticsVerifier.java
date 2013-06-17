@@ -107,6 +107,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!verifyStyles(tt))
             failed = true;
+        if (!verifyTiming(tt))
+            failed = true;
         Head head = tt.getHead();
         if (head != null) {
             if (!verify(head))
@@ -448,12 +450,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verifyParameters(TimedText tt) {
-        boolean failed = false;
-        if (this.parameterVerifier.verify(tt, getLocator(tt), this.context))
-            this.parameterVerifier.assignDefaults(tt, getLocator(tt), this.context);
-        else
-            failed = true;
-        return !failed;
+        return this.parameterVerifier.verify(tt, getLocator(tt), this.context);
     }
 
     private boolean verifyStyles(TimedText tt) {

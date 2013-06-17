@@ -41,8 +41,9 @@ public interface TimingValueVerifier {
      * @param valueObject timing value
      * @param locator a locator that corresponds to the lexical location of the content object
      * @param context verifier context
+     * @param parameters verification parameters
      * @return true if validation succeeds without error
      */
-    boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context);
+    boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters);
 
 }

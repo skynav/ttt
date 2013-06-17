@@ -25,9 +25,18 @@
  
 package com.skynav.ttv.verifier;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 public interface ParameterVerifier {
+
+    /**
+     * Obtain qualified name for parameter attribute given a unique, unqualified parameter name.
+     * @param propertyName non-empty local name for parameter
+     * @return a qualified name or null if parameter
+     */
+    QName getParameterAttributeName(String parameterName);
 
     /**
      * Verify parameter attributes of content object.
@@ -37,13 +46,5 @@ public interface ParameterVerifier {
      * @return true if validation succeeds without error
      */
     boolean verify(Object content, Locator locator, VerifierContext context);
-
-    /**
-     * Assign default parameter attribute values of content object.
-     * @param content a JAXB content object
-     * @param locator a locator that corresponds to the lexical location of the content object
-     * @param context verifier context
-     */
-    void assignDefaults(Object content, Locator locator, VerifierContext context);
 
 }

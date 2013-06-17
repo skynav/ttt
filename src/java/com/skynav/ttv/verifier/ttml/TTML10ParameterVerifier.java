@@ -40,6 +40,7 @@ import com.skynav.ttv.model.ttml10.ttd.ClockMode;
 import com.skynav.ttv.model.ttml10.ttd.DropMode;
 import com.skynav.ttv.model.ttml10.ttd.MarkerMode;
 import com.skynav.ttv.model.ttml10.ttd.TimeBase;
+import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
@@ -68,7 +69,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
     private static Object[][] parameterAccessorMap = new Object[][] {
         {
           new QName(paramNamespace,"cellResolution"),           // attribute name
-          "getCellResolution",                                  // accessor method
+          "CellResolution",                                  // accessor method name suffix
           String.class,                                         // value type
           CellResolutionVerifier.class,                         // specialized verifier
           Boolean.FALSE,                                        // padding permitted
@@ -76,7 +77,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"clockMode"),
-          "getClockMode",
+          "ClockMode",
           ClockMode.class,
           ClockModeVerifier.class,
           Boolean.FALSE,
@@ -84,7 +85,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"dropMode"),
-          "getDropMode",
+          "DropMode",
           DropMode.class,
           DropModeVerifier.class,
           Boolean.FALSE,
@@ -92,7 +93,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"frameRate"),
-          "getFrameRate",
+          "FrameRate",
           BigInteger.class,
           FrameRateVerifier.class,
           Boolean.TRUE,
@@ -100,7 +101,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"frameRateMultiplier"),
-          "getFrameRateMultiplier",
+          "FrameRateMultiplier",
           String.class,
           FrameRateMultiplierVerifier.class,
           Boolean.FALSE,
@@ -108,7 +109,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"markerMode"),
-          "getMarkerMode",
+          "MarkerMode",
           MarkerMode.class,
           MarkerModeVerifier.class,
           Boolean.FALSE,
@@ -116,7 +117,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"pixelAspectRatio"),
-          "getPixelAspectRatio",
+          "PixelAspectRatio",
           String.class,
           PixelAspectRatioVerifier.class,
           Boolean.FALSE,
@@ -124,15 +125,15 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"profile"),
-          "getProfile",
+          "Profile",
           String.class,
           ProfileVerifier.class,
           Boolean.FALSE,
-          "",
+          null,
         },
         {
           new QName(paramNamespace,"subFrameRate"),
-          "getSubFrameRate",
+          "SubFrameRate",
           BigInteger.class,
           SubFrameRateVerifier.class,
           Boolean.FALSE,
@@ -140,7 +141,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"tickRate"),
-          "getTickRate",
+          "TickRate",
           BigInteger.class,
           TickRateVerifier.class,
           Boolean.FALSE,
@@ -148,7 +149,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         },
         {
           new QName(paramNamespace,"timeBase"),
-          "getTimeBase",
+          "TimeBase",
           TimeBase.class,
           TimeBaseVerifier.class,
           Boolean.FALSE,
@@ -163,6 +164,16 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         populate(model);
     }
 
+    public QName getParameterAttributeName(String parameterName) {
+        // assumes that parameter name is same as local part of qualified attribute name, which
+        // is presently true in TTML10
+        for (QName name : accessors.keySet()) {
+            if (parameterName.equals(name.getLocalPart()))
+                return name;
+        }
+        return null;
+    }
+
     public boolean verify(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
@@ -173,48 +184,48 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         return !failed;
     }
 
-    public void assignDefaults(Object content, Locator locator, VerifierContext context) {
-    }
-
     private void populate(Model model) {
         Map<QName, ParameterAccessor> accessors = new java.util.HashMap<QName, ParameterAccessor>();
         for (Object[] parameterAccessorEntry : parameterAccessorMap) {
-            assert parameterAccessorEntry.length >= 5;
+            assert parameterAccessorEntry.length >= 6;
             QName parameterName = (QName) parameterAccessorEntry[0];
             String accessorName = (String) parameterAccessorEntry[1];
             Class<?> valueClass = (Class<?>) parameterAccessorEntry[2];
             Class<?> verifierClass = (Class<?>) parameterAccessorEntry[3];
             boolean paddingPermitted = ((Boolean) parameterAccessorEntry[4]).booleanValue();
-            accessors.put(parameterName, new ParameterAccessor(parameterName, accessorName, valueClass, verifierClass, paddingPermitted));
+            Object defaultValue = parameterAccessorEntry[5];
+            accessors.put(parameterName, new ParameterAccessor(parameterName, accessorName, valueClass, verifierClass, paddingPermitted, defaultValue));
         }
         this.model = model;
         this.accessors = accessors;
     }
 
-    private static class ParameterAccessor {
+    private class ParameterAccessor {
 
         private QName parameterName;
-        private String accessorName;
+        private String getterName;
+        private String setterName;
         private Class<?> valueClass;
         private ParameterValueVerifier verifier;
         private boolean paddingPermitted;
+        private Object defaultValue;
 
-        public ParameterAccessor(QName parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
-            populate(parameterName, accessorName, valueClass, verifierClass, paddingPermitted);
+        public ParameterAccessor(QName parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted, Object defaultValue) {
+            populate(parameterName, accessorName, valueClass, verifierClass, paddingPermitted, defaultValue);
         }
 
         public boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
-            boolean success = false;
+            boolean success = true;
             Object value = getParameterValue(content);
             if (value != null) {
                 if (value instanceof String)
                     success = verify(model, content, (String) value, locator, context);
-                else if (!verifier.verify(model, content, parameterName, value, locator, context))
-                    context.getReporter().logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
                 else
-                    success = true;
+                    success = verifier.verify(model, content, parameterName, value, locator, context);
             } else
-                success = true;
+                setParameterDefaultValue(content);
+            if (!success)
+                context.getReporter().logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
             return success;
         }
 
@@ -227,10 +238,8 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
                 reporter.logError(locator, "The value of " + parameterName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
                 reporter.logError(locator, "XML space padding not permitted on " + parameterName + ", got '" + value + "'.");
-            else if (!verifier.verify(model, content, parameterName, value, locator, context))
-                reporter.logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
             else
-                success = true;
+                success = verifier.verify(model, content, parameterName, value, locator, context);
             return success;
         }
 
@@ -244,18 +253,20 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             }
         }
 
-        private void populate(QName parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
+        private void populate(QName parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted, Object defaultValue) {
             this.parameterName = parameterName;
-            this.accessorName = accessorName;
+            this.getterName = "get" + accessorName;
+            this.setterName = "set" + accessorName;
             this.valueClass = valueClass;
             this.verifier = createParameterValueVerifier(verifierClass);
             this.paddingPermitted = paddingPermitted;
+            this.defaultValue = defaultValue;
         }
 
         private Object getParameterValue(Object content) {
             try {
                 Class<?> contentClass = content.getClass();
-                Method m = contentClass.getMethod(accessorName, new Class<?>[]{});
+                Method m = contentClass.getMethod(getterName, new Class<?>[]{});
                 return convertType(m.invoke(content, new Object[]{}), valueClass);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -273,8 +284,40 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             }
         }
 
+        private void setParameterDefaultValue(Object content) {
+            if (content instanceof TimedText) {
+                if (defaultValue != null)
+                    setParameterValue(content, defaultValue);
+            }
+        }
+
+        private void setParameterValue(Object content, Object value) {
+            try {
+                Class<?> contentClass = content.getClass();
+                Method m = contentClass.getMethod(setterName, new Class<?>[]{ valueClass });
+                m.invoke(content, new Object[]{ value });
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                if (content instanceof TimedText)
+                    setParameterValueAsString((TimedText) content, value);
+                else
+                    throw new RuntimeException(e);
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         private String getParameterValueAsString(TimedText content) {
             return content.getOtherAttributes().get(parameterName);
+        }
+
+        private void setParameterValueAsString(TimedText content, Object value) {
+            content.getOtherAttributes().put(parameterName, (String) convertType(value, String.class));
         }
 
         private Object convertType(Object value, Class<?> targetClass) {
@@ -294,6 +337,11 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             } else if (value.getClass() == BigInteger.class) {
                 if (targetClass == String.class)
                     return ((BigInteger) value).toString();
+                else
+                    return null;
+            } else if (value instanceof Enum<?>) {
+                if (targetClass == String.class)
+                    return Enums.getValue((Enum<?>) value);
                 else
                     return null;
             } else

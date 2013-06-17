@@ -469,6 +469,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadDurDisallowedSmpteDiscontinuous() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-dur-disallowed-smpte-discontinuous.xml");
+    }
+
+    @Test
     public void testInvalidBadExtentAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-extent-all-space.xml");
     }

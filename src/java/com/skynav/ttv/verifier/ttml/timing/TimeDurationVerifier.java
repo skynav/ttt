@@ -32,15 +32,22 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.TimingValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.util.Timing;
 
 public class TimeDurationVerifier implements TimingValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters) {
         String value = (String) valueObject;
-        if (Timing.isDuration(value, locator, context, null))
-            return true;
-        else {
+        if (Timing.isDuration(value, locator, context, null)) {
+            assert parameters instanceof TimingVerificationParameters; 
+            TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
+            if (!timingParameters.allowsDuration()) {
+                timingParameters.badDuration(name, value, locator, context);
+                return false;
+            } else
+                return true;
+        } else {
             Timing.badDuration(value, locator, context);
             return false;
         }
