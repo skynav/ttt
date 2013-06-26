@@ -26,7 +26,6 @@
 package com.skynav.ttv.verifier.ttml.timing;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
 
 import javax.xml.namespace.QName;
@@ -34,21 +33,30 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.ttml10.tt.TimedText;
-import com.skynav.ttv.model.ttml10.ttd.MarkerMode;
-import com.skynav.ttv.model.ttml10.ttd.TimeBase;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class TimingVerificationParameters implements VerificationParameters {
 
+    public enum TimeBase {
+        MEDIA,
+        SMPTE,
+        CLOCK
+    };
+
+    private TimeBase timeBase;
     private boolean allowDuration;
-    private BigInteger frameRate;
-    private BigDecimal frameRateMultiplier;
-    private BigInteger subFrameRate;
-    private BigDecimal effectiveFrameRate;
+    private int frameRate;
+    private double frameRateMultiplier;
+    private int subFrameRate;
+    private double effectiveFrameRate;
 
     public TimingVerificationParameters(TimedText tt) {
         populate(tt);
+    }
+
+    public TimeBase getTimeBase() {
+        return timeBase;
     }
 
     public boolean allowsDuration() {
@@ -59,12 +67,30 @@ public class TimingVerificationParameters implements VerificationParameters {
         context.getReporter().logInfo(locator, "Duration not allowed when using 'smpte' time base with 'discontinuous' marker mode.");
     }
 
+    public int getFrameRate() {
+        return frameRate;
+    }
+
+    public double getFrameRateMultiplier() {
+        return frameRateMultiplier;
+    }
+
+    public double getEffectiveFrameRate() {
+        return effectiveFrameRate;
+    }
+
+    public int getSubFrameRate() {
+        return subFrameRate;
+    }
+
     private void populate(TimedText tt) {
-        this.allowDuration = (tt.getTimeBase() != TimeBase.SMPTE) || (tt.getMarkerMode() != MarkerMode.DISCONTINUOUS);
-        this.frameRate = tt.getFrameRate();
-        this.frameRateMultiplier = parseFrameRateMultiplier(tt.getFrameRateMultiplier());
-        this.subFrameRate = tt.getSubFrameRate();
-        this.effectiveFrameRate = new BigDecimal(frameRate).multiply(frameRateMultiplier);
+        this.timeBase = TimeBase.valueOf(tt.getTimeBase().name());
+        this.allowDuration = (timeBase != TimeBase.SMPTE) || !tt.getMarkerMode().name().equals("DISCONTINUOUS");
+        this.frameRate = tt.getFrameRate().intValue();
+        this.subFrameRate = tt.getSubFrameRate().intValue();
+        BigDecimal multiplier = parseFrameRateMultiplier(tt.getFrameRateMultiplier());
+        this.frameRateMultiplier = multiplier.doubleValue();
+        this.effectiveFrameRate = new BigDecimal(tt.getFrameRate()).multiply(multiplier).doubleValue();
     }
 
     private BigDecimal parseFrameRateMultiplier(String value) {

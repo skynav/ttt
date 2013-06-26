@@ -121,6 +121,7 @@ public class TTML10TimingVerifier implements TimingVerifier {
 
         private QName timingName;
         private String getterName;
+        @SuppressWarnings("unused")
         private String setterName;
         private Class<?> valueClass;
         private TimingValueVerifier verifier;

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - begin - clock time - frames - exceeds frame raate -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:frameRate="10">
+  <head/>
+  <body begin="00:00:00:10"/>
+</tt>

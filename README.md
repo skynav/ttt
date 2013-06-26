@@ -78,6 +78,11 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if loop in sequence of chained style references. (8.4.1.3)
  * Error if region attribute IDREF does not reference a region element. (9.2.1)
  * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and an otherwise well-formed dur attribute is specified. (10.2.3)
+ * Error if time expression expressed as clock-time and minutes are greater than 59 (10.3.1)
+ * Error if time expression expressed as clock-time and seconds (including fractional part) are greater than 60 (10.3.1)
+ * Error if time expression expressed as clock-time and frames are not less than frame rate. (10.3.1)
+ * Error if time expression expressed as clock-time and sub-frames are not less than sub-frame rate. (10.3.1)
+ * Error if time expression uses frame component or `f` metric when tts:timeBase is clock. (10.3.1)
 
 ## Verification Model
 
@@ -201,17 +206,12 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
  * Warn if absolutized feature designator is not a known standard designator. ([Issue 221](https://www.w3.org/AudioVideo/TT/tracker/issues/221)).
  * Error if xml:base on ttp:extensions is not absolute. (6.1.4 P4)
  * Error if absolutized extension designator doesn't conform to extension-designation defined in E.1. (6.1.5. P4)
- * Error if time expression uses `f` metric or frame component when tts:timeBase is clock. (10.3.1 P5)
- * Error if time expression uses `f` metric or frame component and frame is greater than frame rate minus one. (10.3.1 P5)
- * Error if time expression uses sub-frame component when tts:timeBase is clock. (10.3.1 P6)
- * Error if time expression uses sub-frame component and sub-frame is greater than sub-frame rate minus one. (10.3.1 P6)
- * Error if metadata element expresses metadata information both with attributes and child elements. (12.1.1 P2).
  * Error if actor element's agent attribute does not reference an agent element. (12.1.7 P3)
  * Error if ttm:agent attribute IDREF does not reference an agent element. (12.2.1 P2)
  * Warn if same IDREF appears more than once in specified ttm:agent attribute. (12.2.1)
  * Update schema to use constrained definition of role token syntax, and not just NMTOKENS. See ttd:role data type.
  * Warn if same token appears more than once in specified ttm:role attribute. (12.2.2)
- * Error if other extension namespace takes for that doesn't take a fragment identifier. (E.1 P4)
+ * Error if other extension namespace uses form that doesn't take a fragment identifier. (E.1 P4)
 
 ## To Do (Optional)
 

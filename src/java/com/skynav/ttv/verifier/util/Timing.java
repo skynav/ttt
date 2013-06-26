@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.OffsetTime;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
@@ -39,32 +40,32 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class Timing {
 
-    public static boolean isCoordinate(String value, Locator locator, VerifierContext context, Time[] outputTime) {
-        if (isClockTime(value, locator, context, outputTime))
+    public static boolean isCoordinate(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate, Time[] outputTime) {
+        if (isClockTime(value, locator, context, timeBase, frameRate, subFrameRate, outputTime))
             return true;
-        else if (isOffsetTime(value, locator, context, outputTime))
+        else if (isOffsetTime(value, locator, context, timeBase, outputTime))
             return true;
         else
             return false;
     }
 
-    public static void badCoordinate(String value, Locator locator, VerifierContext context) {
+    public static void badCoordinate(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate) {
         if (value.indexOf(':') >= 0)
-            badClockTime(value, locator, context);
+            badClockTime(value, locator, context, timeBase, frameRate, subFrameRate);
         else
-            badOffsetTime(value, locator, context);
+            badOffsetTime(value, locator, context, timeBase);
     }
 
-    public static boolean isDuration(String value, Locator locator, VerifierContext context, Time[] outputTime) {
-        return isCoordinate(value, locator, context, outputTime);
+    public static boolean isDuration(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate, Time[] outputTime) {
+        return isCoordinate(value, locator, context, timeBase, frameRate, subFrameRate, outputTime);
     }
 
-    public static void badDuration(String value, Locator locator, VerifierContext context) {
-        badCoordinate(value, locator, context);
+    public static void badDuration(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate) {
+        badCoordinate(value, locator, context, timeBase, frameRate, subFrameRate);
     }
 
     private static Pattern clockTimePattern = Pattern.compile("(\\d{2,3}):(\\d{2}):(\\d{2})(\\.\\d+|:\\d{2,}(?:\\.\\d+)?)?");
-    public static boolean isClockTime(String value, Locator locator, VerifierContext context, Time[] outputTime) {
+    public static boolean isClockTime(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate, Time[] outputTime) {
         Matcher m = clockTimePattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() >= 3;
@@ -77,7 +78,7 @@ public class Timing {
                 String remainder = m.group(4);
                 if (remainder != null) {
                     if (remainder.indexOf(':') == 0) {
-                        String[] parts = remainder.split("\\.", 3);
+                        String[] parts = remainder.substring(1).split("\\.", 3);
                         if (parts.length > 0)
                             frames = parts[0];
                         if (parts.length > 1)
@@ -86,14 +87,25 @@ public class Timing {
                         seconds += remainder;
                 }
             }
+            if (timeBase.equals("CLOCK") && ((frames != null) || (subFrames != null)))
+                return false;
+            ClockTime t = new ClockTimeImpl(hours, minutes, seconds, frames, subFrames);
+            if (t.getMinutes() > 59)
+                return false;
+            if (t.getSeconds() > 60.0)
+                return false;
+            if (t.getFrames() >= frameRate)
+                return false;
+            if (t.getSubFrames() >= subFrameRate)
+                return false;
             if (outputTime != null)
-                outputTime[0] = new ClockTimeImpl(hours, minutes, seconds, frames, subFrames);
+                outputTime[0] = t;
             return true;
         } else
             return false;
     }
 
-    public static void badClockTime(String value, Locator locator, VerifierContext context) {
+    public static void badClockTime(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate) {
         Reporter reporter = context.getReporter();
         assert value.indexOf(':') >= 0;
         String[] parts = value.split("\\:", 5);
@@ -119,6 +131,8 @@ public class Timing {
                 reporter.logInfo(locator, "Bad <timeExpression>, minutes part is missing digit(s), must contain two digits in clock time.");
             else if (mm.length() > 2)
                 reporter.logInfo(locator, "Bad <timeExpression>, minutes part contains extra digit(s), must contain two digits in clock time.");
+            else if (Integer.parseInt(mm) >= 60)
+                reporter.logInfo(locator, "Bad <timeExpression>, minutes '" + mm + "' must be less than 60.");
         } else {
             reporter.logInfo(locator, "Bad <timeExpression>, missing minutes and seconds parts in clock time.");
         }
@@ -146,7 +160,15 @@ public class Timing {
                     else if (!Strings.isDigits(f))
                         reporter.logInfo(locator, "Bad <timeExpression>, seconds part fraction sub-part '" + f + "' contains non-digit character in clock time.");
                 }
-                if (subParts.length > 2) {
+                if (subParts.length == 2) {
+                    String w = subParts[0];
+                    String f = subParts[1];
+                    if (Strings.isDigits(w) && Strings.isDigits(f)) {
+                        if (Double.parseDouble(ss) > 60.0) {
+                            reporter.logInfo(locator, "Bad <timeExpression>, seconds '" + ss + "' must be less than 60.0.");
+                        }
+                    }
+                } else if (subParts.length > 2) {
                     StringBuffer sb = new StringBuffer();
                     for (int i = 2, n = subParts.length; i < n; ++i) {
                         sb.append('.');
@@ -161,12 +183,16 @@ public class Timing {
                 reporter.logInfo(locator, "Bad <timeExpression>, seconds part is missing digit(s), must contain two digits in clock time.");
             } else if (ss.length() > 2) {
                 reporter.logInfo(locator, "Bad <timeExpression>, seconds part contains extra digit(s), must contain two digits in clock time.");
+            } else if (Integer.parseInt(ss) > 60) {
+                reporter.logInfo(locator, "Bad <timeExpression>, seconds '" + ss + "' must be less than 60.0.");
             }
         } else {
             reporter.logInfo(locator, "Bad <timeExpression>, missing seconds part in clock time.");
         }
         if (numParts > 3) {
             String ff = parts[3];
+            int frames = 0;
+            int subFrames = 0;
             if (ff.length() == 0)
                 reporter.logInfo(locator, "Bad <timeExpression>, frames part is empty in clock time.");
             else if (Strings.containsDecimalSeparator(ff)) {
@@ -187,7 +213,14 @@ public class Timing {
                     else if (!Strings.isDigits(f))
                         reporter.logInfo(locator, "Bad <timeExpression>, frames part sub-frames sub-part '" + f + "' contains non-digit character in clock time.");
                 }
-                if (subParts.length > 2) {
+                if (subParts.length == 2) {
+                    String w = subParts[0];
+                    String f = subParts[1];
+                    if (Strings.isDigits(w) && Strings.isDigits(f)) {
+                        frames = Integer.parseInt(w);
+                        subFrames = Integer.parseInt(f);
+                    }
+                } else if (subParts.length > 2) {
                     StringBuffer sb = new StringBuffer();
                     for (int i = 2, n = subParts.length; i < n; ++i) {
                         sb.append('.');
@@ -200,6 +233,19 @@ public class Timing {
                                       "' contains unexpected character (not digit or decimal separator) in clock time.");
             } else if (ff.length() < 2) {
                 reporter.logInfo(locator, "Bad <timeExpression>, frames part is missing digit(s), must contain two or more digits in clock time.");
+            } else {
+                frames = Integer.parseInt(ff);
+            }
+            if (ff.length() > 0) {
+                if (timeBase.equals("CLOCK")) {
+                    reporter.logInfo(locator, "Bad <timeExpression>, frames part not permitted when using 'clock' time base.");
+                }
+                if (frames >= frameRate) {
+                    reporter.logInfo(locator, "Bad <timeExpression>, frames '" + frames + "' must be less than frame rate " + frameRate + ".");
+                }
+                if (subFrames >= subFrameRate) {
+                    reporter.logInfo(locator, "Bad <timeExpression>, sub-frames '" + subFrames + "' must be less than sub-frame rate " + subFrameRate + ".");
+                }
             }
         }
         if (numParts > 4) {
@@ -212,20 +258,23 @@ public class Timing {
     }
 
     private static Pattern offsetTimePattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(h|m|s|ms|f|t)");
-    public static boolean isOffsetTime(String value, Locator locator, VerifierContext context, Time[] outputTime) {
+    public static boolean isOffsetTime(String value, Locator locator, VerifierContext context, String timeBase, Time[] outputTime) {
         Matcher m = offsetTimePattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() == 2;
             String offset = m.group(1);
             String units = m.group(2);
+            OffsetTime t = new OffsetTimeImpl(offset, units);
+            if (timeBase.equals("CLOCK") && (t.getMetric() == OffsetTime.Metric.Frames))
+                return false;
             if (outputTime != null)
-                outputTime[0] = new OffsetTimeImpl(offset,  units);
+                outputTime[0] = t;
             return true;
         } else
             return false;
     }
 
-    public static void badOffsetTime(String value, Locator locator, VerifierContext context) {
+    public static void badOffsetTime(String value, Locator locator, VerifierContext context, String timeBase) {
         Reporter reporter = context.getReporter();
         int valueIndex = 0;
         int valueLength = value.length();
@@ -309,7 +358,10 @@ public class Timing {
             } else {
                 String metric = sb.toString();
                 try {
-                    OffsetTime.Metric.valueOfShorthand(metric);
+                    OffsetTime.Metric m = OffsetTime.Metric.valueOfShorthand(metric);
+                    if (timeBase.equals("CLOCK") && (m == OffsetTime.Metric.Frames)) {
+                        reporter.logInfo(locator, "Bad <timeExpression>, frames metric not permitted when using 'clock' time base.");
+                    }
                 } catch (IllegalArgumentException e) {
                     try {
                         OffsetTime.Metric.valueOfShorthand(metric.toLowerCase());

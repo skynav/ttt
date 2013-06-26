@@ -39,16 +39,19 @@ public class TimeDurationVerifier implements TimingValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters) {
         String value = (String) valueObject;
-        if (Timing.isDuration(value, locator, context, null)) {
-            assert parameters instanceof TimingVerificationParameters; 
-            TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
+        assert parameters instanceof TimingVerificationParameters; 
+        TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
+        String timeBase = timingParameters.getTimeBase().name();
+        int frameRate = timingParameters.getFrameRate();
+        int subFrameRate = timingParameters.getSubFrameRate();
+        if (Timing.isDuration(value, locator, context, timeBase, frameRate, subFrameRate, null)) {
             if (!timingParameters.allowsDuration()) {
                 timingParameters.badDuration(name, value, locator, context);
                 return false;
             } else
                 return true;
         } else {
-            Timing.badDuration(value, locator, context);
+            Timing.badDuration(value, locator, context, timeBase, frameRate, subFrameRate);
             return false;
         }
     }

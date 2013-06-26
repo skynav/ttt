@@ -35,10 +35,10 @@ public class OffsetTimeImpl implements OffsetTime {
         this.metric = metric;
     }
     public OffsetTimeImpl(double offset, String metric) {
-        this(offset, OffsetTime.Metric.valueOf(metric));
+        this(offset, OffsetTime.Metric.valueOfShorthand(metric));
     }
     public OffsetTimeImpl(String offset, String metric) {
-        this(Double.parseDouble(offset), OffsetTime.Metric.valueOf(metric));
+        this(Double.parseDouble(offset), metric);
     }
     public Type getType() {
         return Type.Offset;

@@ -79,8 +79,18 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadBeginClockTimeFramesExceedsFrameRate() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-exceeds-frame-rate.xml");
+    }
+
+    @Test
     public void testInvalidBadBeginClockTimeFramesExtraSubPart() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-extra-sub-part.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesInClockMode() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-in-clock-mode.xml");
     }
 
     @Test
@@ -91,6 +101,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidBadBeginClockTimeFramesNonDigit() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-non-digit.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeFramesSubFrameExceedsSubFrameRate() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-frames-sub-frame-exceeds-sub-frame-rate.xml");
     }
 
     @Test
@@ -154,6 +169,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadBeginClockTimeMinutesExceeds59() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-minutes-exceeds-59.xml");
+    }
+
+    @Test
     public void testInvalidBadBeginClockTimeMinutesExtraDigit() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-begin-clock-time-minutes-extra-digit.xml");
     }
@@ -171,6 +191,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidBadBeginClockTimeSecondsEmpty() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsExceeds60() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-exceeds-60.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginClockTimeSecondsExceeds60WithFraction() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-clock-time-seconds-exceeds-60-with-fraction.xml");
     }
 
     @Test
@@ -236,6 +266,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidBadBeginOffsetTimeFractionPartEmptyWithoutMetric() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-begin-offset-time-fraction-part-empty-without-metric.xml");
+    }
+
+    @Test
+    public void testInvalidBadBeginOffsetTimeFramesInClockMode() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-begin-offset-time-frames-in-clock-mode.xml");
     }
 
     @Test

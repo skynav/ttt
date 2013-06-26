@@ -4,6 +4,13 @@
   <head/>
   <body timeContainer="seq">
     <div timeContainer="par">
+      <p begin="00:00:00"/>
+      <p begin="00:00:00.00000"/>
+      <p begin="00:00:59"/>
+      <p begin="00:00:59.99999"/>
+      <p begin="00:00:60"/>
+      <p begin="00:00:60.00000"/>
+      <p begin="00:59:00"/>
       <p begin="01:02:03"/>
       <p begin="10:02:03"/>
       <p begin="24:02:03"/>
