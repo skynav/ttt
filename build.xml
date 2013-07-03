@@ -244,17 +244,27 @@
 <target name="run-valid" description="Run verifier with valid TTML10 input test files">
   <java jar="${ttv.target}" fork="true" failonerror="true">
     <jvmarg value="-ea"/>
+    <arg value="-v"/>
     <arg value="--hide-warnings"/>
+    <arg value="--warn-on"/>
+    <arg value="all"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-simple.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-elements.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-parameters.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-profiles.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-styles.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-timing.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-extensions-base-other-namespace.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-extension-non-standard.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-font-family-quoted-generic.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-foreign-metadata.xml"/>
-    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-font-family-quoted-generic.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-opacity-out-of-range.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-origin-negative.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-profile-attribute-ignored.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-profile-attribute-non-standard.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-profile-missing.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-profile-non-standard.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-style-idref-duplicate-with-intervening.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-style-idref-duplicate-without-intervening.xml"/>
   </java>

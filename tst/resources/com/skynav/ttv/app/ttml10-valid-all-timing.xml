@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- valid - simple content with timing -->
-<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:frameRate="9999" ttp:subFrameRate="9999">
+<tt xml:lang=""
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:frameRate="9999"
+    ttp:subFrameRate="9999"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full">
   <head/>
   <body timeContainer="seq">
     <div timeContainer="par">

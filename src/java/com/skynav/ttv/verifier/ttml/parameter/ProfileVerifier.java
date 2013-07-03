@@ -25,6 +25,9 @@
  
 package com.skynav.ttv.verifier.ttml.parameter;
 
+import java.net.URI;
+import java.util.Set;
+
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
@@ -32,13 +35,20 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Profiles;
 
 public class ProfileVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, Object content, QName string, Object valueObject, Locator locator, VerifierContext context) {
-        @SuppressWarnings("unused")
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         String value = (String) valueObject;
-        return true;
+        URI profileNamespaceUri = model.getProfileNamespaceUri();
+        Set<URI> standardProfiles = model.getStandardProfileURIs();
+        if (Profiles.isProfileDesignator(value, locator, context, profileNamespaceUri, standardProfiles)) {
+            return true;
+        } else {
+            Profiles.badProfileDesignator(value, locator, context, profileNamespaceUri, standardProfiles);
+            return false;
+        }
     }
 
 }

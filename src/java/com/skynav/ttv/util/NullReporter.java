@@ -34,6 +34,7 @@ public class NullReporter implements Reporter {
     public void logError(String message) {}
     public void logError(Locator locator, String message) {}
     public void logError(Exception e) {}
+    public boolean isWarningEnabled(String token) { return false; }
     public boolean logWarning(String message) { return false; }
     public boolean logWarning(Locator locator, String message) { return false; }
     public void logInfo(String message) {}

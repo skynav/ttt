@@ -30,6 +30,7 @@ import java.io.Serializable;
 import javax.xml.bind.JAXBElement;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
@@ -60,6 +61,7 @@ import com.skynav.ttv.model.ttml10.ttm.Name;
 import com.skynav.ttv.model.ttml10.ttm.Title;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.verifier.ParameterVerifier;
+import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
@@ -70,11 +72,22 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     private Model model;
     private VerifierContext context;
     private ParameterVerifier parameterVerifier;
+    private ProfileVerifier profileVerifier;
     private StyleVerifier styleVerifier;
     private TimingVerifier timingVerifier;
 
     public TTML10SemanticsVerifier(Model model) {
         this.model = model;
+    }
+
+    @Override
+    public Object findBindingElement(Object root, Node node) {
+        if (root instanceof TimedText)
+            return findBindingElement((TimedText)root, node);
+        else if (root instanceof Profile)
+            return findBindingElement((Profile)root, node);
+        else
+            return null;
     }
 
     @Override
@@ -93,6 +106,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
         this.context = context;
         // derived state
         this.parameterVerifier = model.getParameterVerifier();
+        this.profileVerifier = model.getProfileVerifier();
         this.styleVerifier = model.getStyleVerifier();
         this.timingVerifier = model.getTimingVerifier();
     }
@@ -111,7 +125,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         Head head = tt.getHead();
         if (head != null) {
-            if (!verify(head))
+            if (!verify(head, tt))
                 failed = true;
         }
         Body body = tt.getBody();
@@ -122,14 +136,10 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Head head) {
+    private boolean verify(Head head, TimedText tt) {
         boolean failed = false;
         for (Object m : head.getMetadataClass()) {
             if (!verifyMetadata(m))
-                failed = true;
-        }
-        for (Profile p : head.getParametersClass()) {
-            if (!verify(p))
                 failed = true;
         }
         Styling styling  = head.getStyling();
@@ -297,6 +307,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Profile profile) {
         boolean failed = false;
+        if (!verifyParameters(profile))
+            failed = true;
         for (Object m : profile.getMetadataClass()) {
             if (!verifyMetadata(m))
                 failed = true;
@@ -309,11 +321,15 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             if (!verify(extensions))
                 failed = true;
         }
+        if (!verifyProfileItem(profile))
+            failed = true;
         return !failed;
     }
 
     private boolean verify(Features features) {
         boolean failed = false;
+        if (!verifyParameters(features))
+            failed = true;
         for (Object m : features.getMetadataClass()) {
             if (!verifyMetadata(m))
                 failed = true;
@@ -326,12 +342,13 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verify(Feature feature) {
-        boolean failed = false;
-        return !failed;
+        return verifyProfileItem(feature);
     }
 
     private boolean verify(Extensions extensions) {
         boolean failed = false;
+        if (!verifyParameters(extensions))
+            failed = true;
         for (Object m : extensions.getMetadataClass()) {
             if (!verifyMetadata(m))
                 failed = true;
@@ -344,8 +361,11 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verify(Extension extension) {
-        boolean failed = false;
-        return !failed;
+        return verifyProfileItem(extension);
+    }
+
+    private boolean verifyProfileItem(Object content) {
+        return this.profileVerifier.verify(content, getLocator(content), this.context);
     }
 
     private boolean verify(Actor actor) {
@@ -450,7 +470,30 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verifyParameters(TimedText tt) {
-        return this.parameterVerifier.verify(tt, getLocator(tt), this.context);
+        boolean failed = false;
+        if (!this.parameterVerifier.verify(tt, getLocator(tt), this.context))
+            failed = true;
+        Head head = tt.getHead();
+        if (head != null) {
+            if (!verifyParameters(head))
+                failed = true;
+        }
+        if (!failed)
+            failed = !this.profileVerifier.verify(tt, getLocator(tt), this.context);
+        return !failed;
+    }
+
+    private boolean verifyParameters(Head head) {
+        boolean failed = false;
+        for (Profile p : head.getParametersClass()) {
+            if (!verify(p))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    private boolean verifyParameters(Object content) {
+        return this.parameterVerifier.verify(content, getLocator(content), this.context);
     }
 
     private boolean verifyStyles(TimedText tt) {
@@ -466,6 +509,413 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verifyTiming(Object content) {
         return this.timingVerifier.verify(content, getLocator(content), this.context);
+    }
+
+    private Object findBindingElement(TimedText root, Node node) {
+        if (context.getXMLNode(root) == node)
+            return root;
+        else {
+            Head head = root.getHead();
+            if (head != null) {
+                Object content = findBindingElement(head, node);
+                if (content != null)
+                    return content;
+            }
+            Body body = root.getBody();
+            if (body != null) {
+                Object content = findBindingElement(body, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Head head, Node node) {
+        if (context.getXMLNode(head) == node)
+            return head;
+        else {
+            for (Object m : head.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            Styling styling = head.getStyling();
+            if (styling != null) {
+                Object content = findBindingElement(styling, node);
+                if (content != null)
+                    return content;
+            }
+            Layout layout = head.getLayout();
+            if (layout != null) {
+                Object content = findBindingElement(layout, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Styling styling, Node node) {
+        if (context.getXMLNode(styling) == node)
+            return styling;
+        else {
+            for (Object m : styling.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Style s : styling.getStyle()) {
+                Object content = findBindingElement(s, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Style style, Node node) {
+        if (context.getXMLNode(style) == node)
+            return style;
+        else
+            return null;
+    }
+
+    private Object findBindingElement(Layout layout, Node node) {
+        if (context.getXMLNode(layout) == node)
+            return layout;
+        else {
+            for (Object m : layout.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Region r : layout.getRegion()) {
+                Object content = findBindingElement(r, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Region region, Node node) {
+        if (context.getXMLNode(region) == node)
+            return region;
+        else {
+            for (Object m : region.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Set s : region.getAnimationClass()) {
+                Object content = findBindingElement(s, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Body body, Node node) {
+        if (context.getXMLNode(body) == node)
+            return body;
+        else {
+            for (Object m : body.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Set s : body.getAnimationClass()) {
+                Object content = findBindingElement(s, node);
+                if (content != null)
+                    return content;
+            }
+            for (Division d : body.getDiv()) {
+                Object content = findBindingElement(d, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Division division, Node node) {
+        if (context.getXMLNode(division) == node)
+            return division;
+        else {
+            for (Object m : division.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Set s : division.getAnimationClass()) {
+                Object content = findBindingElement(s, node);
+                if (content != null)
+                    return content;
+            }
+            for (Object b : division.getBlockClass()) {
+                Object content = findBlockBindingElement(b, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Paragraph paragraph, Node node) {
+        if (context.getXMLNode(paragraph) == node)
+            return paragraph;
+        else {
+            for (Serializable s : paragraph.getContent()) {
+                Object content = findContentBindingElement(s, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Span span, Node node) {
+        if (context.getXMLNode(span) == node)
+            return span;
+        else {
+            for (Serializable s : span.getContent()) {
+                Object content = findContentBindingElement(s, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Break br, Node node) {
+        if (context.getXMLNode(br) == node)
+            return br;
+        else {
+            for (Object m : br.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Set s : br.getAnimationClass()) {
+                Object content = findBindingElement(s, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Actor actor, Node node) {
+        if (context.getXMLNode(actor) == node)
+            return actor;
+        else
+            return null;
+    }
+
+    private Object findBindingElement(Agent agent, Node node) {
+        if (context.getXMLNode(agent) == node)
+            return agent;
+        else {
+            for (Name name : agent.getName()) {
+                Object content = findBindingElement(name, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Copyright copyright, Node node) {
+        if (context.getXMLNode(copyright) == node)
+            return copyright;
+        else
+            return null;
+    }
+
+    private Object findBindingElement(Description description, Node node) {
+        if (context.getXMLNode(description) == node)
+            return description;
+        else
+            return null;
+    }
+
+    private Object findBindingElement(Metadata metadata, Node node) {
+        if (context.getXMLNode(metadata) == node)
+            return metadata;
+        else {
+            for (Object m : metadata.getAny()) {
+                if (!isMetadata(m)) {
+                    Object content = findMetadataBindingElement(m, node);
+                    if (content != null)
+                        return content;
+                }
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Name name, Node node) {
+        if (context.getXMLNode(name) == node)
+            return name;
+        else
+            return null;
+    }
+
+    private Object findBindingElement(Title title, Node node) {
+        if (context.getXMLNode(title) == node)
+            return title;
+        else
+            return null;
+    }
+
+    private Object findMetadataBindingElement(Object metadata, Node node) {
+        if (metadata instanceof JAXBElement<?>)
+            return findMetadataBindingElement(((JAXBElement<?>)metadata).getValue(), node);
+        else if (context.getXMLNode(metadata) == node)
+            return metadata;
+        else if (metadata instanceof Actor)
+            return findBindingElement((Actor)metadata, node);
+        else if (metadata instanceof Agent)
+            return findBindingElement((Agent)metadata, node);
+        else if (metadata instanceof Copyright)
+            return findBindingElement((Copyright)metadata, node);
+        else if (metadata instanceof Description)
+            return findBindingElement((Description)metadata, node);
+        else if (metadata instanceof Metadata)
+            return findBindingElement((Metadata)metadata, node);
+        else if (metadata instanceof Name)
+            return findBindingElement((Name)metadata, node);
+        else if (metadata instanceof Title)
+            return findBindingElement((Title)metadata, node);
+        else if (metadata instanceof Element)
+            return findForeignMetadataBindingElement((Element)metadata, node);
+        else
+            return null;
+    }
+
+    private Object findForeignMetadataBindingElement(Element metadata, Node node) {
+        if (context.getXMLNode(metadata) == node)
+            return metadata;
+        else
+            return null;
+    }
+
+    private Object findBlockBindingElement(Object block, Node node) {
+        if (context.getXMLNode(block) == node)
+            return block;
+        else if (block instanceof Division)
+            return findBindingElement((Division) block, node);
+        else if (block instanceof Paragraph)
+            return findBindingElement((Paragraph) block, node);
+        else
+            return null;
+    }
+
+    private Object findContentBindingElement(Serializable content, Node node) {
+        if (content instanceof JAXBElement<?>) {
+            Object element = ((JAXBElement<?>)content).getValue();
+            if (context.getXMLNode(element) == node)
+                return element;
+            else if (isMetadata(element))
+                return findMetadataBindingElement(element, node);
+            else if (element instanceof Set)
+                return findBindingElement((Set) element, node);
+            else if (element instanceof Span)
+                return findBindingElement((Span) element, node);
+            else if (element instanceof Break)
+                return findBindingElement((Break) element, node);
+            else
+                return null;
+        } else
+            return null;
+    }
+
+    private Object findBindingElement(Set set, Node node) {
+        if (context.getXMLNode(set) == node)
+            return set;
+        else {
+            for (Object m : set.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Profile profile, Node node) {
+        if (context.getXMLNode(profile) == node)
+            return profile;
+        else {
+            for (Object m : profile.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Features features : profile.getFeatures()) {
+                Object content = findBindingElement(features, node);
+                if (content != null)
+                    return content;
+            }
+            for (Extensions extensions : profile.getExtensions()) {
+                Object content = findBindingElement(extensions, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Features features, Node node) {
+        if (context.getXMLNode(features) == node)
+            return features;
+        else {
+            for (Object m : features.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Feature feature : features.getFeature()) {
+                Object content = findBindingElement(feature, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Feature feature, Node node) {
+        if (context.getXMLNode(feature) == node)
+            return feature;
+        else
+            return null;
+    }
+
+    private Object findBindingElement(Extensions extensions, Node node) {
+        if (context.getXMLNode(extensions) == node)
+            return extensions;
+        else {
+            for (Object m : extensions.getMetadataClass()) {
+                Object content = findMetadataBindingElement(m, node);
+                if (content != null)
+                    return content;
+            }
+            for (Extension extension : extensions.getExtension()) {
+                Object content = findBindingElement(extension, node);
+                if (content != null)
+                    return content;
+            }
+            return null;
+        }
+    }
+
+    private Object findBindingElement(Extension extension, Node node) {
+        if (context.getXMLNode(extension) == node)
+            return extension;
+        else
+            return null;
     }
 
     private boolean unexpectedContent(Object content) throws IllegalStateException {

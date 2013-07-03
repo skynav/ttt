@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.model;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.verifier.ParameterVerifier;
+import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
@@ -52,10 +54,55 @@ public interface Model {
     String getSchemaResourceName();
 
     /**
-     * Obtain primary schema (target) namespace URI string. 
-     * @return namespace URI string
+     * Obtain primary schema (target) namespace URI. 
+     * @return namespace URI
      */
-    String getNamespaceUri();
+    URI getNamespaceUri();
+
+    /**
+     * Obtain profile namespace URI. 
+     * @return profile namespace URI
+     */
+    URI getProfileNamespaceUri();
+
+    /**
+     * Obtain feature namespace URI. 
+     * @return feature namespace URI
+     */
+    URI getFeatureNamespaceUri();
+
+    /**
+     * Obtain extension namespace URI. 
+     * @return extension namespace URI
+     */
+    URI getExtensionNamespaceUri();
+
+    /**
+     * Obtain set of standard profiles.
+     * @return standard profiles
+     */
+    Set<URI> getStandardProfileURIs();
+
+    /**
+     * Obtain specifiction of a standard profile.
+     * @param uri specifying profile designator
+     * @return standard profile specification
+     */
+    Profile.Specification getStandardProfileSpecification(URI uri);
+
+    /**
+     * Determine if feature designation is a standard designation.
+     * @param uri specifying feature designation
+     * @return true if uri is a standard feature designation
+     */
+    boolean isStandardFeatureDesignation(URI uri);
+
+    /**
+     * Determine if extension designation is a standard designation.
+     * @param uri specifying extension designation
+     * @return true if uri is a standard extension designation
+     */
+    boolean isStandardExtensionDesignation(URI uri);
 
     /**
      * Obtain JAXB context path that applies to model, which should
@@ -120,6 +167,12 @@ public interface Model {
      * @return parameter verifier instance
      */
     ParameterVerifier getParameterVerifier();
+
+    /**
+     * Obtain profile verifier for model.
+     * @return profile verifier instance
+     */
+    ProfileVerifier getProfileVerifier();
 
     /**
      * Obtain style verifier for model.

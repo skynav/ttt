@@ -51,15 +51,29 @@ public class StyleAttributeVerifier implements StyleValueVerifier {
         List<?> styles = (List<?>) valueObject;
         if (styles.size() > 0) {
             Object styleLast = null;
+            Set<String> styleIdentifiers = new java.util.HashSet<String>();
             for (Object style : styles) {
                 Node node = context.getXMLNode(style);
                 if (!Styles.isStyleReference(node, style, locator, context, targetClass, ancestorNames)) {
                     Styles.badStyleReference(node, style, locator, context, name, targetName, targetClass, ancestorNames);
                     failed = true;
                 }
+                String id = IdReferences.getId(style);
+                if (styleIdentifiers.contains(id)) {
+                    if (context.getReporter().isWarningEnabled("duplicate-idref-in-style")) {
+                        if (context.getReporter().logWarning(locator,
+                            "Duplicate IDREF '" + IdReferences.getId(style) + "' should not appear in " + name + ".")) {
+                            failed = true;
+                        }
+                    }
+                } else
+                    styleIdentifiers.add(id);
                 if ((styleLast != null) && referencesSameStyle(style, styleLast)) {
-                    if (context.getReporter().logWarning(locator, "Duplicate IDREF '" + IdReferences.getId(style) + "' should not appear without distinct intervening IDREF.")) {
-                        failed = true;
+                    if (context.getReporter().isWarningEnabled("duplicate-idref-in-style-no-intervening")) {
+                        if (context.getReporter().logWarning(locator,
+                            "Duplicate IDREF '" + IdReferences.getId(style) + "' should not appear in " + name + " without distinct intervening IDREF.")) {
+                            failed = true;
+                        }
                     }
                 }
                 styleLast = style;

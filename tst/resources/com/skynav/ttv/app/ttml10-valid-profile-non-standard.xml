@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - profile element - use attribute - non-standard profile - should produce 1 warning with warn-on all -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <ttp:profile use="http://example.com/ns/ttml/profile/my-profile"/>
+  </head>
+</tt>

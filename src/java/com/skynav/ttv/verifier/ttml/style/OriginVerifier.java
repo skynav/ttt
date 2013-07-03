@@ -43,7 +43,8 @@ public class OriginVerifier implements StyleValueVerifier {
         assert valueObject instanceof String;
         String value = (String) valueObject;
         Integer[] minMax = new Integer[] { 2, 2 };
-        Object[] treatments = new Object[] { NegativeTreatment.Warning, MixedUnitsTreatment.Allow };
+        NegativeTreatment negativeTreatment = context.getReporter().isWarningEnabled("negative-origin") ? NegativeTreatment.Warning : NegativeTreatment.Allow;
+        Object[] treatments = new Object[] { negativeTreatment, MixedUnitsTreatment.Allow };
         if (Keywords.isAuto(value))
             return true;
         else if (Lengths.isLengths(value, locator, context, minMax, treatments, null))

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad feature - value - unknown namespace -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml">
+  <head>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter">
+      <features>
+        <feature>http://example.com/ns/ttml/feature/#foo</feature>
+      </features>
+    </profile>
+  </head>
+</tt>

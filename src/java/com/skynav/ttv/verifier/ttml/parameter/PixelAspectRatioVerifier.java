@@ -38,7 +38,7 @@ import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class PixelAspectRatioVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, Object content, QName string, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         String value = (String) valueObject;
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };

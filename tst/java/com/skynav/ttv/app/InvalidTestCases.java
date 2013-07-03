@@ -509,6 +509,36 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadExtensionEmptyDesignationToken() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extension-empty-designation-token.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtensionMissingDesignation() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extension-missing-designation.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtensionUnknownDesignationToken() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extension-unknown-designation-token.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtensionsBaseEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extensions-base-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtensionsBaseNonAbsolute() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extensions-base-non-absolute.xml");
+    }
+
+    @Test
+    public void testInvalidBadExtensionsBaseSyntax() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-extensions-base-syntax.xml");
+    }
+
+    @Test
     public void testInvalidBadExtentAllSpace() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-extent-all-space.xml");
     }
@@ -566,6 +596,46 @@ public class InvalidTestCases {
     @Test
     public void testInvalidBadExtentUnknownUnit() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-extent-unknown-unit.xml");
+    }
+
+    @Test
+    public void testInvalidBadFeatureEmptyDesignationToken() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-feature-empty-designation-token.xml");
+    }
+
+    @Test
+    public void testInvalidBadFeatureMissingDesignation() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-feature-missing-designation.xml");
+    }
+
+    @Test
+    public void testInvalidBadFeatureUnknownDesignationToken() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-feature-unknown-designation-token.xml");
+    }
+
+    @Test
+    public void testInvalidBadFeatureUnknownNamespace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-feature-unknown-namespace.xml");
+    }
+
+    @Test
+    public void testInvalidBadFeaturesBaseEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-features-base-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadFeaturesBaseNonAbsolute() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-features-base-non-absolute.xml");
+    }
+
+    @Test
+    public void testInvalidBadFeaturesBaseUnknownNamespace() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-features-base-unknown-namespace.xml");
+    }
+
+    @Test
+    public void testInvalidBadFeaturesBaseSyntax() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-features-base-syntax.xml");
     }
 
     @Test
@@ -911,6 +981,46 @@ public class InvalidTestCases {
     @Test
     public void testInvalidBadPixelAspectRatioZero() throws Exception {
         performInvalidityTest("ttml10-invalid-bad-pixel-aspect-ratio-zero.xml");
+    }
+
+    @Test
+    public void testInvalidBadProfileAttributeEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-profile-attribute-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadProfileAttributeSyntax() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-profile-attribute-syntax.xml");
+    }
+
+    @Test
+    public void testInvalidBadProfileAttributeUnknownAbsoluteDesignator() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-profile-attribute-unknown-absolute-designator.xml");
+    }
+
+    @Test
+    public void testInvalidBadProfileAttributeUnknownRelativeDesignator() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-profile-attribute-unknown-relative-designator.xml");
+    }
+
+    @Test
+    public void testInvalidBadProfileUseAttributeEmpty() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-profile-use-attribute-empty.xml");
+    }
+
+    @Test
+    public void testInvalidBadProfileUseAttributeSyntax() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-profile-use-attribute-syntax.xml");
+    }
+
+    @Test
+    public void testInvalidBadProfileUseAttributeUnknownAbsoluteDesignator() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-profile-use-attribute-unknown-absolute-designator.xml");
+    }
+
+    @Test
+    public void testInvalidBadProfileUseAttributeUnknownRelativeDesignator() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-profile-use-attribute-unknown-relative-designator.xml");
     }
 
     @Test

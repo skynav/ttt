@@ -40,7 +40,9 @@ public class FontFamilyVerifier implements StyleValueVerifier {
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
-        Object[] treatments = new Object[] { QuotedGenericFontFamilyTreatment.Info };
+        QuotedGenericFontFamilyTreatment quotedGenericTreatment =
+            context.getReporter().isWarningEnabled("quoted-generic-font-family") ? QuotedGenericFontFamilyTreatment.Warning : QuotedGenericFontFamilyTreatment.Allow;
+        Object[] treatments = new Object[] { quotedGenericTreatment };
         if (Fonts.isFontFamilies(value, locator, context, treatments, null))
             return true;
         else {

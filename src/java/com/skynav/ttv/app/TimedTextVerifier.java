@@ -45,6 +45,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 import java.util.Stack;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
@@ -94,6 +95,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private static final String banner = "Timed Text Verifier (TTV) [" + Version.CURRENT + "] Copyright 2013 Skynav, Inc.";
 
     // usage text
+    private static final String repositoryInfo =
+        "Source Repository: https://github.com/skynav/ttv";
+
+    // usage text
     private static final String usage =
         "Usage: java -jar ttv.jar [options] URL*\n" +
         "  Short Options:\n" +
@@ -110,25 +115,50 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         "    --help                     - show usage help\n" +
         "    --hide-warnings            - hide warnings (but count them)\n" +
         "    --model NAME               - specify model name (default: " + defaultModel.getName() + ")\n" +
+        "    --no-warn-on TOKEN         - disable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
         "    --quiet                    - don't show banner\n" +
         "    --show-models              - show built-in verification models (use with --verbose to show more details)\n" +
         "    --show-repository          - show source code repository information\n" +
+        "    --show-warning-tokens      - show warning tokens (use with --verbose to show more details)\n" +
         "    --verbose                  - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
         "    --treat-foreign-as TOKEN   - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
              ForeignTreatment.getDefault().name().toLowerCase() + ")\n" +
         "    --treat-warning-as-error   - treat warning as error (overrides --disable-warnings)\n" +
         "    --until-phase PHASE        - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
              Phase.getDefault().name().toLowerCase() + ")\n" +
+        "    --warn-on TOKEN            - enable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
         "  Non-Option Arguments:\n" +
-        "    URL                        - an absolute or relative URL; if relative, resolved against current working directory\n";
+        "    URL                        - an absolute or relative URL; if relative, resolved against current working directory\n" +
+        "";
 
-    // usage text
-    private static final String repositoryInfo =
-        "Source Repository: https://github.com/skynav/ttv";
+    // default warnings
+    private static final Map<String,Boolean> defaultWarnings;
+    private static final Object[][] defaultWarningSpecifications = new Object[][] {
+        { "all",                                        Boolean.FALSE,  "all warnings" },
+        { "duplicate-idref-in-style",                   Boolean.FALSE,  "duplicate IDREF in style attribute"},
+        { "duplicate-idref-in-style-no-intervening",    Boolean.TRUE,   "duplicate IDREF in style attribute without intervening IDREF"  },
+        { "foreign",                                    Boolean.FALSE,  "attribute or element in non-TTML (foreign) namespace"},
+        { "ignored-profile-attribute",                  Boolean.TRUE,   "'profile' attribute ignored when 'profile' element is present"},
+        { "missing-profile",                            Boolean.FALSE,  "neither 'profile' attribute nor 'profile' element is present"},
+        { "negative-origin",                            Boolean.FALSE,  "either coordinate in tts:origin is negative"},
+        { "out-of-range-opacity",                       Boolean.TRUE,   "opacity is out of range [0,1]"},
+        { "quoted-generic-font-family",                 Boolean.FALSE,  "generic font family appears in quoted form, negating generic name function" },
+        { "references-non-standard-extension",          Boolean.FALSE,  "ttp:extension element references non-standard extension"},
+        { "references-non-standard-profile",            Boolean.FALSE,  "ttp:profile element references non-standard profile from 'use' attribute"},
+        { "references-other-extension-namespace",       Boolean.FALSE,  "ttp:extensions element references other extension namespace"},
+    };
+    static {
+        defaultWarnings = new java.util.HashMap<String,Boolean>();
+        for (Object[] spec : defaultWarningSpecifications) {
+            defaultWarnings.put((String) spec[0], (Boolean) spec[1]);
+        }
+    }
 
     // options state
     private int debug;
     private boolean disableWarnings;
+    private Set<String> disabledWarnings = new java.util.HashSet<String>();
+    private Set<String> enabledWarnings = new java.util.HashSet<String>();
     @SuppressWarnings("unused")
     private String externalExtent;
     @SuppressWarnings("unused")
@@ -138,6 +168,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private boolean quiet;
     private boolean showModels;
     private boolean showRepository;
+    private boolean showWarningTokens;
     private String treatForeignAs;
     private String untilPhase;
     private boolean treatWarningAsError;
@@ -160,6 +191,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private int resourceErrors;
     private int resourceWarnings;
     private Binder<Node> binder;
+    private Object rootBinding;
 
     private enum ForeignTreatment {
         Error,
@@ -218,6 +250,11 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         return (Reporter) this;
     }
 
+    @Override
+    public Model getModel() {
+        return this.model;
+    }
+
     private static final QName qnEmpty = new QName("", "");
 
     @Override
@@ -233,6 +270,23 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 return new QName(xmlNode.getNamespaceURI(), xmlNode.getLocalName());
         }
         return qnEmpty;
+    }
+
+    @Override
+    public Object getBindingElementParent(Object value) {
+        Node node = getXMLNode(value);
+        if (node == null)
+            return null;
+        else {
+            Node parentNode = node.getParentNode();
+            Object parent = getBindingElement(parentNode);
+            if (parent != null)
+                return parent;
+            else if (rootBinding != null)
+                return model.getSemanticsVerifier().findBindingElement(rootBinding, parentNode);
+            else
+                return null;
+        }
     }
 
     @Override
@@ -329,6 +383,16 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     }
 
     @Override
+    public boolean isWarningEnabled(String token) {
+        boolean enabled = defaultWarnings.get(token);
+        if (enabledWarnings.contains(token) || enabledWarnings.contains("all"))
+            enabled = true;
+        if (disabledWarnings.contains(token) || disabledWarnings.contains("all"))
+            enabled = false;
+        return enabled;
+    }
+
+    @Override
     public boolean logWarning(String message) {
         if (treatWarningAsError) {
             logError(message);
@@ -414,12 +478,21 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             modelName = args[++index];
+        } else if (option.equals("no-warn-on")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            String token = args[++index];
+            if (!defaultWarnings.containsKey(token))
+                throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
+            disabledWarnings.add(token);
         } else if (option.equals("quiet")) {
             quiet = true;
         } else if (option.equals("show-models")) {
             showModels = true;
         } else if (option.equals("show-repository")) {
             showRepository = true;
+        } else if (option.equals("show-warning-tokens")) {
+            showWarningTokens = true;
         } else if (option.equals("treat-foreign-as")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -432,6 +505,13 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             untilPhase = args[++index];
         } else if (option.equals("verbose")) {
             verbose += 1;
+        } else if (option.equals("warn-on")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            String token = args[++index];
+            if (!defaultWarnings.containsKey(token))
+                throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
+            enabledWarnings.add(token);
         } else
             throw new UnknownOptionException("--" + option);
         return index + 1;
@@ -562,6 +642,39 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     private void showRepository() {
         System.out.println(repositoryInfo);
+    }
+
+    private void showWarningTokens() {
+        int maxTokenLength = 0;
+        for (Object[] spec : defaultWarningSpecifications) {
+            String token = (String) spec[0];
+            int tokenLength = token.length();
+            maxTokenLength = Math.max(maxTokenLength, tokenLength + ((tokenLength % 2) + 1) * 2);
+        }
+        StringBuffer sb = new StringBuffer();
+        sb.append("Warning Tokens:\n");
+        for (Object[] spec : defaultWarningSpecifications) {
+            String token = (String) spec[0];
+            Boolean defaultValue = (Boolean) spec[1];
+            String help = (String) spec[2];
+            sb.append("    ");
+            sb.append(token);
+            if (verbose > 0) {
+                if ((help != null) && (help.length() > 0)) {
+                    int pad = maxTokenLength - token.length();
+                    for (int i = 0; i < pad; ++i)
+                        sb.append(' ');
+                    sb.append(help);
+                    if (!token.equals("all")) {
+                        sb.append(" (default: ");
+                        sb.append(defaultValue ? "enabled" : "disabled");
+                        sb.append(')');
+                    }
+                }
+            }
+            sb.append("\n");
+        }
+        System.out.println(sb.toString());
     }
 
     private URI getCWDAsURI() {
@@ -907,7 +1020,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            XMLReader filter = new ForeignVocabularyFilter(reader, model.getNamespaceUri(), foreignTreatment);
+            XMLReader filter = new ForeignVocabularyFilter(reader, model.getNamespaceUri().toString(), foreignTreatment);
             SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
             Validator v = getSchema().newValidator();
@@ -930,6 +1043,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             logError(e);
         } catch (SchemaValidationErrorException e) {
             logError(e);
+        } catch (ForeignVocabularyException e) {
+            // Already logged error via foreign vocabulary filter
         } catch (SAXParseException e) {
             // Already logged error via default handler overrides above.
         } catch (SAXException e) {
@@ -986,7 +1101,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, model.getNamespaceUri(), ForeignTreatment.Allow);
+            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, model.getNamespaceUri().toString(), ForeignTreatment.Allow);
             LocationAnnotatingFilter filter2 = new LocationAnnotatingFilter(filter1);
             SAXSource source = new SAXSource(filter2, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
@@ -1015,8 +1130,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
                 Documents.assignIdAttributes(binder.getXMLNode(root).getOwnerDocument(), model.getIdAttributes());
-                if (verifyRootElement(root, model.getRootClasses()))
-                    model.getSemanticsVerifier().verify(root.getValue(), this);
+                if (verifyRootElement(root, model.getRootClasses())) {
+                    this.rootBinding = root.getValue();
+                    model.getSemanticsVerifier().verify(this.rootBinding, this);
+                }
             }
         } catch (UnmarshalException e) {
             logError(e);
@@ -1083,6 +1200,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 showModels();
             else if (showRepository)
                 showRepository();
+            else if (showWarningTokens)
+                showWarningTokens();
             else {
                 showProcessingInfo();
                 rv = verify(nonOptionArgs);
@@ -1151,6 +1270,13 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         }
     }
 
+    private static class ForeignVocabularyException extends RuntimeException {
+        static final long serialVersionUID = 0;
+        ForeignVocabularyException(QName name) {
+            super(name.toString());
+        }
+    }
+
     private class ForeignVocabularyFilter extends XMLFilterImpl {
 
         private static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
@@ -1180,11 +1306,14 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 super.startElement(nsUri, localName, qualName, attrs);
             else if (!inForeign && isNonForeignNamespace(nsUri))
                 super.startElement(nsUri, localName, qualName, removeForeign(attrs));
+            else if (foreignTreatment == ForeignTreatment.Error)
+                throw new ForeignVocabularyException(new QName(nsUri, localName));
             else {
                 QName qn = new QName(nsUri, localName);
                 nameStack.push(qn);
                 inForeign = true;
-                logPruning("Pruning element in foreign namespace: <" + qn + ">.");
+                if (logPruning("Pruning element in foreign namespace: <" + qn + ">."))
+                    throw new ForeignVocabularyException(new QName(nsUri, localName));
             }
         }
 
@@ -1219,8 +1348,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                     String nsUri = attrs.getURI(i);
                     if (isNonForeignNamespace(nsUri))
                         attrsNew.addAttribute(attrs.getURI(i), attrs.getLocalName(i), attrs.getQName(i), attrs.getType(i), attrs.getValue(i));
-                    else
-                        logPruning("Pruning attribute in foreign namespace: <" + new QName(attrs.getURI(i), attrs.getLocalName(i)) + ">.");
+                    else if (logPruning("Pruning attribute in foreign namespace: <" + new QName(attrs.getURI(i), attrs.getLocalName(i)) + ">."))
+                        throw new ForeignVocabularyException(new QName(nsUri, attrs.getLocalName(i)));
                 }
                 return attrsNew;
             } else
@@ -1244,13 +1373,18 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             return !isNonForeignNamespace(nsUri);
         }
 
-        private void logPruning(String message) {
-            if (foreignTreatment == ForeignTreatment.Error)
+        private boolean logPruning(String message) {
+            if (foreignTreatment == ForeignTreatment.Error) {
                 logError(currentLocator, message);
-            else if (foreignTreatment == ForeignTreatment.Warning)
-                logWarning(currentLocator, message);
-            else if (foreignTreatment == ForeignTreatment.Info)
+                return true;
+            } if (foreignTreatment == ForeignTreatment.Warning) {
+                if (isWarningEnabled("foreign")) {
+                    if (logWarning(currentLocator, message))
+                        return true;
+                }
+            } else if (foreignTreatment == ForeignTreatment.Info)
                 logInfo(currentLocator, message);
+            return false;
         }
     }
 

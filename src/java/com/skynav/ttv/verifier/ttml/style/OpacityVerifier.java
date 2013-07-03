@@ -41,17 +41,19 @@ public class OpacityVerifier implements StyleValueVerifier {
         assert valueObject instanceof Float;
         Float value = (Float) valueObject;
         float opacity = value.floatValue();
-        if (value.isNaN()) {
-            reporter.logWarning(locator, "Not a Number 'NaN' should not be used with " + name + "; use '0' instead.");
-        } else if (value.isInfinite()) {
-            if (opacity < 0)
-                reporter.logWarning(locator, "Negative Infinity '-INF' should not be used with " + name + "; use '0' instead.");
-            else
-                reporter.logWarning(locator, "Positive Infinity 'INF' should not be used with " + name + "; use '1' instead.");
-        } else if (opacity < 0) {
-            reporter.logWarning(locator, "Negative values should not be used with " + name + "; use '0' instead.");
-        } else if (opacity > 1) {
-            reporter.logWarning(locator, "Positive values greater than 1 should not be used with " + name + "; use '1' instead.");
+        if (reporter.isWarningEnabled("out-of-range-opacity")) {
+            if (value.isNaN()) {
+                reporter.logWarning(locator, "Not a Number 'NaN' should not be used with " + name + "; use '0' instead.");
+            } else if (value.isInfinite()) {
+                if (opacity < 0)
+                    reporter.logWarning(locator, "Negative Infinity '-INF' should not be used with " + name + "; use '0' instead.");
+                else
+                    reporter.logWarning(locator, "Positive Infinity 'INF' should not be used with " + name + "; use '1' instead.");
+            } else if (opacity < 0) {
+                reporter.logWarning(locator, "Negative values should not be used with " + name + "; use '0' instead.");
+            } else if (opacity > 1) {
+                reporter.logWarning(locator, "Positive values greater than 1 should not be used with " + name + "; use '1' instead.");
+            }
         }
         return true;
     }

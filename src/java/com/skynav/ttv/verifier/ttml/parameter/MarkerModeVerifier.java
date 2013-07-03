@@ -36,7 +36,7 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class MarkerModeVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, Object content, QName string, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         // Schema validation phase (3) reports invalid values.
         if (valueObject instanceof MarkerMode)
             return true;

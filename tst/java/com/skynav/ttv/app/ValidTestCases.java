@@ -49,6 +49,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidAllProfiles() throws Exception {
+        performValidityTest("ttml10-valid-all-profiles.xml");
+    }
+
+    @Test
     public void testValidAllStyles() throws Exception {
         performValidityTest("ttml10-valid-all-styles.xml");
     }
@@ -56,6 +61,16 @@ public class ValidTestCases {
     @Test
     public void testValidAllTiming() throws Exception {
         performValidityTest("ttml10-valid-all-timing.xml");
+    }
+
+    @Test
+    public void testValidExtensionsBaseOtherNamespace() throws Exception {
+        performValidityTest("ttml10-valid-extensions-base-other-namespace.xml");
+    }
+
+    @Test
+    public void testValidExtensionNonStandard() throws Exception {
+        performValidityTest("ttml10-valid-extension-non-standard.xml");
     }
 
     @Test
@@ -84,6 +99,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidProfileAttributeIgnored() throws Exception {
+        performValidityTest("ttml10-valid-profile-attribute-ignored.xml");
+    }
+
+    @Test
+    public void testValidProfileAttributeNonStandard() throws Exception {
+        performValidityTest("ttml10-valid-profile-attribute-non-standard.xml");
+    }
+
+    @Test
+    public void testValidProfileMissing() throws Exception {
+        performValidityTest("ttml10-valid-profile-missing.xml");
+    }
+
+    @Test
+    public void testValidProfileNonStandard() throws Exception {
+        performValidityTest("ttml10-valid-profile-non-standard.xml");
+    }
+
+    @Test
     public void testValidStyleIdrefDuplicateWithIntervening() throws Exception {
         performValidityTest("ttml10-valid-style-idref-duplicate-with-intervening.xml");
     }
@@ -97,7 +132,7 @@ public class ValidTestCases {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
-        String[] args = { "-q", "-v", url.toString() };
+        String[] args = { "-q", "-v", "--warn-on", "all", url.toString() };
         int rv = new TimedTextVerifier().run(args);
         if (rv == 1)
             fail("Unexpected validation failure.");

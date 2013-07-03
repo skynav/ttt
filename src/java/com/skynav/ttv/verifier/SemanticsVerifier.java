@@ -25,7 +25,18 @@
  
 package com.skynav.ttv.verifier;
 
+import org.w3c.dom.Node;
+
 public interface SemanticsVerifier {
+
+    /**
+     * Find binding content element associated with infoset
+     * node, starting at root binding content element.
+     * @param root root binding content element
+     * @param node infoset node for which search is being made
+     * @return the binding object associated with node or null if not found
+     */
+    Object findBindingElement(Object root, Node node);
 
     /**
      * Verify semantics of content object.

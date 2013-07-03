@@ -1,4 +1,4 @@
-<!-- valid - all defined ttml element types -->
+<!-- valid - all defined ttml element types - should produce 3 warnings with warn-on all -->
 <tt
   xml:lang="en"
   xmlns="http://www.w3.org/ns/ttml"
@@ -23,9 +23,9 @@
         <metadata/>
         <ttp:feature xml:id="f1" value="required">#fontStyle-italic</ttp:feature>
       </ttp:features>
-      <ttp:extensions xml:id="e1set" xml:base="http://www.w3.org/ns/ttml/extension/">
+      <ttp:extensions xml:id="e1set" xml:base="http://example.com/ns/ttml/extension/">
         <metadata/>
-        <ttp:extension xml:id="e1" value="required">#smpte-tt-image</ttp:extension>
+        <ttp:extension xml:id="e1" value="required">#image</ttp:extension>
       </ttp:extensions>
     </ttp:profile>
     <styling>

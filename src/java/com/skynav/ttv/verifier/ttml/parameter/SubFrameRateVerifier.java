@@ -37,7 +37,7 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class SubFrameRateVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, Object content, QName string, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         int value = ((BigInteger) valueObject).intValue();
         // Schema validation phase (3) detects and reports non-positive values.
         if (value < 0)

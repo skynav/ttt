@@ -1,5 +1,10 @@
 <!-- valid - all defined ttml style properties and enumerable values -->
-<tt tts:extent="640px 480px" xml:lang="en" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
+    tts:extent="640px 480px">
   <head>
     <layout>
       <region xml:id="r1">

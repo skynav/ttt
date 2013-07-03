@@ -36,8 +36,13 @@ public class XML {
         return "http://www.w3.org/XML/1998/namespace";
     }
 
+    private static final QName xmlBaseName = new QName(getNamespaceUri(), "base");
+    public static QName getBaseAttributeName() {
+        return xmlBaseName;
+    }
+
     private static final QName xmlIdName = new QName(getNamespaceUri(), "id");
-    public static QName getIdAttribute() {
+    public static QName getIdAttributeName() {
         return xmlIdName;
     }
 

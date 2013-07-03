@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.model.ttml;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,11 +34,13 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.ttml10.tt.Layout;
 import com.skynav.ttv.model.ttml10.tt.Region;
 import com.skynav.ttv.model.ttml10.tt.Style;
 import com.skynav.ttv.model.ttml10.tt.Styling;
 import com.skynav.ttv.verifier.ParameterVerifier;
+import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
@@ -51,8 +55,74 @@ public class TTML10 {
         public String getSchemaResourceName() {
             return "xsd/ttml10/ttaf1-dfxp.xsd";
         }
-        public String getNamespaceUri() {
-            return "http://www.w3.org/ns/ttml";
+        private static final URI namespaceUri;
+        private static final URI profileNamespaceUri;
+        private static final URI featureNamespaceUri;
+        private static final URI extensionNamespaceUri;
+        static {
+            try {
+                namespaceUri = new URI("http://www.w3.org/ns/ttml");
+                profileNamespaceUri = new URI("http://www.w3.org/ns/ttml/profile/");
+                featureNamespaceUri = new URI("http://www.w3.org/ns/ttml/feature/");
+                extensionNamespaceUri = new URI("http://www.w3.org/ns/ttml/extension/");
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        public URI getNamespaceUri() {
+            return namespaceUri;
+        }
+        public URI getProfileNamespaceUri() {
+            return profileNamespaceUri;
+        }
+        public URI getFeatureNamespaceUri() {
+            return featureNamespaceUri;
+        }
+        public URI getExtensionNamespaceUri() {
+            return extensionNamespaceUri;
+        }
+        private static final Map<URI,Class<?>> standardProfileSpecificationClasses;
+        static {
+            standardProfileSpecificationClasses = new java.util.HashMap<URI,Class<?>>();
+            standardProfileSpecificationClasses.put(profileNamespaceUri.resolve("dfxp-transformation"), TTML10TransformationProfileSpecification.class);
+            standardProfileSpecificationClasses.put(profileNamespaceUri.resolve("dfxp-presentation"), TTML10PresentationProfileSpecification.class);
+            standardProfileSpecificationClasses.put(profileNamespaceUri.resolve("dfxp-full"), TTML10FullProfileSpecification.class);
+            standardProfileSpecificationClasses.put(profileNamespaceUri.resolve("sdp-us"), TTML10SDPUSProfileSpecification.class);
+        }
+        public Set<URI> getStandardProfileURIs() {
+            return standardProfileSpecificationClasses.keySet();
+        }
+        private static final Map<URI,Profile.Specification> standardProfileSpecifications = new java.util.HashMap<URI,Profile.Specification>();
+        private static final Class<?>[] profileSpecificationConstructorParameterTypes = new Class<?>[] { URI.class, URI.class, URI.class };
+        public Profile.Specification getStandardProfileSpecification(URI uri) {
+            if (standardProfileSpecifications.containsKey(uri))
+                return standardProfileSpecifications.get(uri);
+            else if (!standardProfileSpecificationClasses.containsKey(uri))
+                return null;
+            else {
+                Profile.Specification ps = createProfileSpecification(standardProfileSpecificationClasses.get(uri), uri);
+                standardProfileSpecifications.put(uri, ps);
+                return ps;
+            }
+        }
+        private Profile.Specification createProfileSpecification(Class<?> psc, URI uri) {
+            try {
+                Object[] parameters = new Object[] { uri, getFeatureNamespaceUri(), getExtensionNamespaceUri() };
+                return (Profile.Specification) psc.getDeclaredConstructor(profileSpecificationConstructorParameterTypes).newInstance(parameters);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Profile.StandardDesignations standardDesignations;
+        public boolean isStandardFeatureDesignation(URI uri) {
+            if (standardDesignations == null)
+                standardDesignations = TTML10StandardDesignations.getInstance(getFeatureNamespaceUri(), getExtensionNamespaceUri());
+            return standardDesignations.isStandardFeatureDesignation(uri);
+        }
+        public boolean isStandardExtensionDesignation(URI uri) {
+            if (standardDesignations == null)
+                standardDesignations = TTML10StandardDesignations.getInstance(getFeatureNamespaceUri(), getExtensionNamespaceUri());
+            return standardDesignations.isStandardExtensionDesignation(uri);
         }
         public String getJAXBContextPath() {
             return "com.skynav.ttv.model.ttml10.tt:com.skynav.ttv.model.ttml10.ttm:com.skynav.ttv.model.ttml10.ttp";
@@ -60,7 +130,7 @@ public class TTML10 {
         private static final List<QName> idAttributes;
         static {
             idAttributes = new java.util.ArrayList<QName>();
-            idAttributes.add(XML.getIdAttribute());
+            idAttributes.add(XML.getIdAttributeName());
         }
         public List<QName> getIdAttributes() {
             return idAttributes;
@@ -129,6 +199,15 @@ public class TTML10 {
                 }
             }
             return parameterVerifier;
+        }
+        private ProfileVerifier profileVerifier;
+        public ProfileVerifier getProfileVerifier() {
+            synchronized (this) {
+                if (profileVerifier == null) {
+                    profileVerifier = new com.skynav.ttv.verifier.ttml.TTML10ProfileVerifier(this);
+                }
+            }
+            return profileVerifier;
         }
         private StyleVerifier styleVerifier;
         public StyleVerifier getStyleVerifier() {

@@ -34,6 +34,7 @@ public interface Reporter {
     public void logError(String message);
     public void logError(Locator locator, String message);
     public void logError(Exception e);
+    public boolean isWarningEnabled(String token);
     public boolean logWarning(String message);
     public boolean logWarning(Locator locator, String message);
     public void logInfo(String message);

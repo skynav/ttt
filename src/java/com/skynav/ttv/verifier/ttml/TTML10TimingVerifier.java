@@ -152,11 +152,11 @@ public class TTML10TimingVerifier implements TimingVerifier {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                reporter.logError(locator, "Empty " + timingName + " not permitted, got '" + value + "'.");
+                reporter.logInfo(locator, "Empty " + timingName + " not permitted, got '" + value + "'.");
             else if (Strings.isAllXMLSpace(value))
-                reporter.logError(locator, "The value of " + timingName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logInfo(locator, "The value of " + timingName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logError(locator, "XML space padding not permitted on " + timingName + ", got '" + value + "'.");
+                reporter.logInfo(locator, "XML space padding not permitted on " + timingName + ", got '" + value + "'.");
             else
                 success = verifier.verify(model, content, timingName, value, locator, context, verificationParameters);
             return success;

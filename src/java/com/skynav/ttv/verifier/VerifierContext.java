@@ -29,6 +29,7 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Node;
 
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.Reporter;
 
 public interface VerifierContext {
@@ -40,6 +41,12 @@ public interface VerifierContext {
     public Reporter getReporter();
 
     /**
+     * Obtain reference to model.
+     * @return model instance
+     */
+    public Model getModel();
+
+    /**
      * Obtain XML element type name associated with a binding object,
      * which must either be an (outer) content element, i.e., JAXBElement<?>
      * instance, or an (inner) content value object.
@@ -48,6 +55,14 @@ public interface VerifierContext {
      * is returned
      */
     public QName getBindingElementName(Object value);
+
+    /**
+     * Obtain binding object associated with XML infoset parent of XML element
+     * associated with specified binding object.
+     * @param value a binding object associated with an XML infoset node
+     * @return parent binding object or null if none
+     */
+    public Object getBindingElementParent(Object value);
 
     /**
      * Obtain binding content element or value instance associated

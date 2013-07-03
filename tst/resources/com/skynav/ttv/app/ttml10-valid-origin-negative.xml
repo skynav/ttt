@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- valid - tts:origin - negative - should produce 4 warnings -->
-<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+<!-- valid - tts:origin - negative - should produce 4 warnings with warn-on all -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full">
   <head/>
   <body>
     <div tts:origin="-1px 2px"/>

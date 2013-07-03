@@ -40,11 +40,15 @@ import com.skynav.ttv.model.ttml10.ttd.ClockMode;
 import com.skynav.ttv.model.ttml10.ttd.DropMode;
 import com.skynav.ttv.model.ttml10.ttd.MarkerMode;
 import com.skynav.ttv.model.ttml10.ttd.TimeBase;
+import com.skynav.ttv.model.ttml10.ttp.Extensions;
+import com.skynav.ttv.model.ttml10.ttp.Features;
+import com.skynav.ttv.model.ttml10.ttp.Profile;
 import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.parameter.BaseVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.CellResolutionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DropModeVerifier;
@@ -57,6 +61,7 @@ import com.skynav.ttv.verifier.ttml.parameter.SubFrameRateVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.TickRateVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
 import com.skynav.ttv.verifier.util.Strings;
+import com.skynav.xml.helpers.XML;
 
 public class TTML10ParameterVerifier implements ParameterVerifier {
 
@@ -68,92 +73,110 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
 
     private static Object[][] parameterAccessorMap = new Object[][] {
         {
-          new QName(paramNamespace,"cellResolution"),           // attribute name
-          "CellResolution",                                  // accessor method name suffix
-          String.class,                                         // value type
-          CellResolutionVerifier.class,                         // specialized verifier
-          Boolean.FALSE,                                        // padding permitted
-          "32 15",                                              // default value
+            new QName(paramNamespace,"cellResolution"),         // attribute name
+            "CellResolution",                                   // accessor method name suffix
+            String.class,                                       // value type
+            CellResolutionVerifier.class,                       // specialized verifier
+            Boolean.FALSE,                                      // padding permitted
+            "32 15",                                            // default value
         },
         {
-          new QName(paramNamespace,"clockMode"),
-          "ClockMode",
-          ClockMode.class,
-          ClockModeVerifier.class,
-          Boolean.FALSE,
-          ClockMode.UTC,
+            new QName(paramNamespace,"clockMode"),
+            "ClockMode",
+            ClockMode.class,
+            ClockModeVerifier.class,
+            Boolean.FALSE,
+            ClockMode.UTC,
         },
         {
-          new QName(paramNamespace,"dropMode"),
-          "DropMode",
-          DropMode.class,
-          DropModeVerifier.class,
-          Boolean.FALSE,
-          DropMode.NON_DROP,
+            new QName(paramNamespace,"dropMode"),
+            "DropMode",
+            DropMode.class,
+            DropModeVerifier.class,
+            Boolean.FALSE,
+            DropMode.NON_DROP,
         },
         {
-          new QName(paramNamespace,"frameRate"),
-          "FrameRate",
-          BigInteger.class,
-          FrameRateVerifier.class,
-          Boolean.TRUE,
-          BigInteger.valueOf(30),
+            new QName(paramNamespace,"frameRate"),
+            "FrameRate",
+            BigInteger.class,
+            FrameRateVerifier.class,
+            Boolean.TRUE,
+            BigInteger.valueOf(30),
         },
         {
-          new QName(paramNamespace,"frameRateMultiplier"),
-          "FrameRateMultiplier",
-          String.class,
-          FrameRateMultiplierVerifier.class,
-          Boolean.FALSE,
-          "1 1",
+            new QName(paramNamespace,"frameRateMultiplier"),
+            "FrameRateMultiplier",
+            String.class,
+            FrameRateMultiplierVerifier.class,
+            Boolean.FALSE,
+            "1 1",
         },
         {
-          new QName(paramNamespace,"markerMode"),
-          "MarkerMode",
-          MarkerMode.class,
-          MarkerModeVerifier.class,
-          Boolean.FALSE,
-          MarkerMode.DISCONTINUOUS,
+            new QName(paramNamespace,"markerMode"),
+            "MarkerMode",
+            MarkerMode.class,
+            MarkerModeVerifier.class,
+            Boolean.FALSE,
+            MarkerMode.DISCONTINUOUS,
         },
         {
-          new QName(paramNamespace,"pixelAspectRatio"),
-          "PixelAspectRatio",
-          String.class,
-          PixelAspectRatioVerifier.class,
-          Boolean.FALSE,
-          "1 1",
+            new QName(paramNamespace,"pixelAspectRatio"),
+            "PixelAspectRatio",
+            String.class,
+            PixelAspectRatioVerifier.class,
+            Boolean.FALSE,
+            "1 1",
         },
         {
-          new QName(paramNamespace,"profile"),
-          "Profile",
-          String.class,
-          ProfileVerifier.class,
-          Boolean.FALSE,
-          null,
+            new QName(paramNamespace,"profile"),
+            "Profile",
+            String.class,
+            ProfileVerifier.class,
+            Boolean.FALSE,
+            null,
         },
         {
-          new QName(paramNamespace,"subFrameRate"),
-          "SubFrameRate",
-          BigInteger.class,
-          SubFrameRateVerifier.class,
-          Boolean.FALSE,
-          BigInteger.valueOf(1),
+            new QName(paramNamespace,"subFrameRate"),
+            "SubFrameRate",
+            BigInteger.class,
+            SubFrameRateVerifier.class,
+            Boolean.FALSE,
+            BigInteger.valueOf(1),
         },
         {
-          new QName(paramNamespace,"tickRate"),
-          "TickRate",
-          BigInteger.class,
-          TickRateVerifier.class,
-          Boolean.FALSE,
-          BigInteger.valueOf(1),
+            new QName(paramNamespace,"tickRate"),
+            "TickRate",
+            BigInteger.class,
+            TickRateVerifier.class,
+            Boolean.FALSE,
+            BigInteger.valueOf(1),
         },
         {
-          new QName(paramNamespace,"timeBase"),
-          "TimeBase",
-          TimeBase.class,
-          TimeBaseVerifier.class,
-          Boolean.FALSE,
-          TimeBase.MEDIA,
+            new QName(paramNamespace,"timeBase"),
+            "TimeBase",
+            TimeBase.class,
+            TimeBaseVerifier.class,
+            Boolean.FALSE,
+            TimeBase.MEDIA,
+        },
+        // 'use' attribute applies only to ttp:profile element
+        {
+            new QName("","use"),
+            "Use",
+            String.class,
+            ProfileVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
+        // 'xml:base' attribute applies only to ttp:features and ttp:extensions elements
+        {
+            XML.getBaseAttributeName(),
+            "Base",
+            String.class,
+            BaseVerifier.class,
+            Boolean.FALSE,
+            null,
         },
     };
 
@@ -233,11 +256,11 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                reporter.logError(locator, "Empty " + parameterName + " not permitted, got '" + value + "'.");
+                reporter.logInfo(locator, "Empty " + parameterName + " not permitted, got '" + value + "'.");
             else if (Strings.isAllXMLSpace(value))
-                reporter.logError(locator, "The value of " + parameterName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logInfo(locator, "The value of " + parameterName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logError(locator, "XML space padding not permitted on " + parameterName + ", got '" + value + "'.");
+                reporter.logInfo(locator, "XML space padding not permitted on " + parameterName + ", got '" + value + "'.");
             else
                 success = verifier.verify(model, content, parameterName, value, locator, context);
             return success;
@@ -277,6 +300,12 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             } catch (NoSuchMethodException e) {
                 if (content instanceof TimedText)
                     return convertType(getParameterValueAsString((TimedText) content), valueClass);
+                else if (content instanceof Profile)
+                    return null;
+                else if (content instanceof Features)
+                    return null;
+                else if (content instanceof Extensions)
+                    return null;
                 else
                     throw new RuntimeException(e);
             } catch (SecurityException e) {
@@ -288,6 +317,15 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             if (content instanceof TimedText) {
                 if (defaultValue != null)
                     setParameterValue(content, defaultValue);
+            } else if ((content instanceof Features) || (content instanceof Extensions)) {
+                if (parameterName.equals(XML.getBaseAttributeName())) {
+                    if (content instanceof Features)
+                        defaultValue = model.getFeatureNamespaceUri().toString();
+                    else if (content instanceof Extensions)
+                        defaultValue = model.getExtensionNamespaceUri().toString();
+                    if (defaultValue != null)
+                        setParameterValue(content, defaultValue);
+                }
             }
         }
 

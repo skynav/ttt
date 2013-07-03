@@ -396,11 +396,11 @@ public class TTML10StyleVerifier implements StyleVerifier {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                reporter.logError(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
+                reporter.logInfo(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
             else if (Strings.isAllXMLSpace(value))
-                reporter.logError(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logInfo(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
             else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logError(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
+                reporter.logInfo(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
             else
                 success = verifier.verify(model, content, styleName, value, locator, context);
             return success;

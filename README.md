@@ -62,17 +62,30 @@ In addition, the following similarly typed attributes are similarly verified in 
 
 A number of additional semantic constraints are tested in the fourth phase:
 
+ * Warn if neither ttp:profile attribute nor ttp:profile element are present and `missing-profile` warning is enabled. (3.3)
+ * Warn if ttp:profile attribute is ignored due to presence of ttp:profile element and `ignored-profile-attribute` warning is not disabled. (5.2)
+ * Warn if 'use' attribute on ttp:profile element specifies a non-standard profile designation and `references-non-standard-profile` warning is enabled. (6.1.1)
+ * Error if xml:base on ttp:features is not absolute. (6.1.2)
+ * Error if xml:base on ttp:features is specified and is not the TT Feature Namespace. (6.1.2)
+ * Error if absolutized feature designation doesn't conform to feature-designation defined in D.1. (6.1.3)
+ * Error if absolutized feature designation is not a known standard designation. (6.1.3)
+ * Error if xml:base on ttp:extensions is not absolute. (6.1.4)
+ * Warn if xml:base on ttp:extensions is specified, is not TT Extension Namespace, and `references-other-extension-namespace` warning is enabled. (6.1.4)
+ * Error if absolutized extension designation doesn't conform to extension-designation defined in E.1. (6.1.5)
+ * Error if absolutized extension designation is in TT Extension Namespace but is not a known standard designation. (6.1.5)
+ * Warn if absolutized extension designation is in Other Extension Namespace and `references-non-standard-extension` warning is enabled. (6.1.5)
+ * Warn if ttp:profile attribute specifies a non-standard profile designation and `references-non-standard-profile` warning is enabled. (6.2.8)
  * Error if style attribute IDREF does not reference a style element. (8.2.1)
  * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.2.1)
- * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF. (8.2.1)
+ * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF and `duplicate-idref-in-style-no-intervening` warning is not disabled. (8.2.1)
  * Error if tts:extent attribute uses a negative length value. (8.2.7)
  * Error if tts:extent on root (tt) element specifies non-pixel unit for either width or height. (8.2.7)
- * Notify if tts:fontFamily attribute uses quoted generic family name. (8.2.8)
+ * Warn if tts:fontFamily attribute uses quoted generic family name and `quoted-generic-font-family` warning is enabled. (8.2.8)
  * Error if tts:fontSize attribute uses a negative length value. (8.2.9)
  * Error if tts:fontSize attribute uses different units when two length expressions are specified. (8.2.9)
  * Error if tts:lineHeight attribute uses a negative length value. (8.2.12)
- * Warn if tts:opacity attribute uses a legal xs:float value outside the range [0,1]. (8.2.13)
- * Warn if tts:origin attribute uses a negative length value. (8.2.14)
+ * Warn if tts:opacity attribute uses a legal xs:float value outside the range [0,1] and `out-of-range-opacity` warning is not disabled. (8.2.13)
+ * Warn if tts:origin attribute uses a negative length value and `negative-origin` warning is enabled. (8.2.14)
  * Error if tts:padding attribute uses a negative length value. (8.2.16)
  * Error if tts:textOutline attribute uses a negative length value for thickness or blur radius. (8.2.20)
  * Error if loop in sequence of chained style references. (8.4.1.3)
@@ -198,14 +211,8 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
 ## To Do (Essential)
 
- * Warn if neither ttp:profile attribute nor ttp:profile element are present. (3.3 P3)
- * Warn if both ttp:profile attribute and ttp:profile element are present. (5.2 P7)
- * Error if xml:base on ttp:features is not absolute. (6.1.2 P4)
- * Error if xml:base on ttp:features isn't equal to standard feature namespace "http://www.w3.org/ns/ttml/feature/". (6.1.2 P4)
- * Error if absolutized feature designator doesn't conform to feature-designation defined in D.1. (6.1.3. P4)
- * Warn if absolutized feature designator is not a known standard designator. ([Issue 221](https://www.w3.org/AudioVideo/TT/tracker/issues/221)).
- * Error if xml:base on ttp:extensions is not absolute. (6.1.4 P4)
- * Error if absolutized extension designator doesn't conform to extension-designation defined in E.1. (6.1.5. P4)
+ * Warn if ttm:agent element does not contain a ttm:name child. (12.1.5 P3)
+ * Warn if ttm:agent element does not contain a ttm:agent child when type='character'. (12.1.5 P6)
  * Error if actor element's agent attribute does not reference an agent element. (12.1.7 P3)
  * Error if ttm:agent attribute IDREF does not reference an agent element. (12.2.1 P2)
  * Warn if same IDREF appears more than once in specified ttm:agent attribute. (12.2.1)
@@ -215,15 +222,17 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
 ## To Do (Optional)
 
- * Notify if use attribute on ttp:profile references a non-standard profile.
  * Notify if ttp:role uses an "x-" extension role.
  * Notify on unreferenced style element.
  * Notify on unreferenced region element.
  * Notify on unreferenced ttm:agent element.
  * Notify on presence of both end and dur such that dur (simple duration) is not same as end minus begin (preliminary active duration).
  * Notify computed time interval of body based on content timing alone.
- * Notify (or warn) if computed color or computed background color are problematic for color impaired viewers.
- * Notify (or warn) if computed color and computed background color are low contrast.
- * Notify (or warn) if style property specified on content element that cannot apply to any content element, e.g., extent, opacity, origin.
- * Notify (or warn) if style property specified on content element that is initial value and is not overriding an inherited value.
- * Notify (or warn) if redundant style IDREF is used twice in a row in style attribute.
+ * Notify if end time is less than or equal to begin time (for continuous time bases).
+ * Notify if computed color or computed background color are problematic for color impaired viewers.
+ * Notify if computed color and computed background color are low contrast.
+ * Notify if style property specified on content element that cannot apply to any content element, e.g., extent, opacity, origin.
+ * Notify if style property specified on content element that is initial value and is not overriding an inherited value.
+ * Notify if redundant style IDREF is used twice in a row in style attribute.
+ * Notify if agent element is not significant, i.e., specified somewhere other than in head or metadata element in head.
+ * Notify if agent element is significant, but not referenced by a ttm:agent attribute.
