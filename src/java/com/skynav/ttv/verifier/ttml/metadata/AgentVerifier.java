@@ -23,19 +23,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier;
+package com.skynav.ttv.verifier.ttml.metadata;
+
+import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
-public interface ProfileVerifier {
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.verifier.MetadataValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 
-    /**
-     * Verify profile related items.
-     * @param content a JAXB content object
-     * @param locator a locator that corresponds to the lexical location of the content object
-     * @param context verifier context
-     * @return true if validation succeeds without error
-     */
-    boolean verify(Object content, Locator locator, VerifierContext context);
+public class AgentVerifier implements MetadataValueVerifier {
+
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+        return true;
+    }
 
 }

@@ -60,6 +60,7 @@ import com.skynav.ttv.model.ttml10.ttm.Description;
 import com.skynav.ttv.model.ttml10.ttm.Name;
 import com.skynav.ttv.model.ttml10.ttm.Title;
 import com.skynav.ttv.util.Locators;
+import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
@@ -71,6 +72,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private Model model;
     private VerifierContext context;
+    private MetadataVerifier metadataVerifier;
     private ParameterVerifier parameterVerifier;
     private ProfileVerifier profileVerifier;
     private StyleVerifier styleVerifier;
@@ -105,6 +107,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
         // passed state
         this.context = context;
         // derived state
+        this.metadataVerifier = model.getMetadataVerifier();
         this.parameterVerifier = model.getParameterVerifier();
         this.profileVerifier = model.getProfileVerifier();
         this.styleVerifier = model.getStyleVerifier();
@@ -117,6 +120,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(TimedText tt) {
         boolean failed = false;
+        if (!verifyMetadataItems(tt))
+            failed = true;
         if (!verifyParameters(tt))
             failed = true;
         if (!verifyStyles(tt))
@@ -138,8 +143,10 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Head head, TimedText tt) {
         boolean failed = false;
+        if (!verifyMetadataItems(head))
+            failed = true;
         for (Object m : head.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         Styling styling  = head.getStyling();
@@ -157,8 +164,10 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Styling styling) {
         boolean failed = false;
+        if (!verifyMetadataItems(styling))
+            failed = true;
         for (Object m : styling.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Style s : styling.getStyle()) {
@@ -170,6 +179,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Style style) {
         boolean failed = false;
+        if (!verifyMetadataItems(style))
+            failed = true;
         if (!verifyStyles(style))
             failed = true;
         return !failed;
@@ -177,8 +188,10 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Layout layout) {
         boolean failed = false;
+        if (!verifyMetadataItems(layout))
+            failed = true;
         for (Object m : layout.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Region r : layout.getRegion()) {
@@ -190,12 +203,14 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Region region) {
         boolean failed = false;
+        if (!verifyMetadataItems(region))
+            failed = true;
         if (!verifyStyles(region))
             failed = true;
         if (!verifyTiming(region))
             failed = true;
         for (Object m : region.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Set a : region.getAnimationClass()) {
@@ -211,12 +226,14 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Body body) {
         boolean failed = false;
+        if (!verifyMetadataItems(body))
+            failed = true;
         if (!verifyStyles(body))
             failed = true;
         if (!verifyTiming(body))
             failed = true;
         for (Object m : body.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Set a : body.getAnimationClass()) {
@@ -232,12 +249,14 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Division division) {
         boolean failed = false;
+        if (!verifyMetadataItems(division))
+            failed = true;
         if (!verifyStyles(division))
             failed = true;
         if (!verifyTiming(division))
             failed = true;
         for (Object m : division.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Set a : division.getAnimationClass()) {
@@ -253,6 +272,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Paragraph paragraph) {
         boolean failed = false;
+        if (!verifyMetadataItems(paragraph))
+            failed = true;
         if (!verifyStyles(paragraph))
             failed = true;
         if (!verifyTiming(paragraph))
@@ -266,6 +287,8 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Span span) {
         boolean failed = false;
+        if (!verifyMetadataItems(span))
+            failed = true;
         if (!verifyStyles(span))
             failed = true;
         if (!verifyTiming(span))
@@ -279,10 +302,12 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Break br) {
         boolean failed = false;
+        if (!verifyMetadataItems(br))
+            failed = true;
         if (!verifyStyles(br))
             failed = true;
         for (Object m : br.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Set a : br.getAnimationClass()) {
@@ -294,12 +319,14 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Set set) {
         boolean failed = false;
+        if (!verifyMetadataItems(set))
+            failed = true;
         if (!verifyStyles(set))
             failed = true;
         if (!verifyTiming(set))
             failed = true;
         for (Object m : set.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         return !failed;
@@ -307,10 +334,12 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Profile profile) {
         boolean failed = false;
+        if (!verifyMetadataItems(profile))
+            failed = true;
         if (!verifyParameters(profile))
             failed = true;
         for (Object m : profile.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Features features : profile.getFeatures()) {
@@ -328,10 +357,12 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Features features) {
         boolean failed = false;
+        if (!verifyMetadataItems(features))
+            failed = true;
         if (!verifyParameters(features))
             failed = true;
         for (Object m : features.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Feature feature : features.getFeature()) {
@@ -342,15 +373,22 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verify(Feature feature) {
-        return verifyProfileItem(feature);
+        boolean failed = false;
+        if (!verifyMetadataItems(feature))
+            failed = true;
+        if (!verifyProfileItem(feature))
+            failed = true;
+        return !failed;
     }
 
     private boolean verify(Extensions extensions) {
         boolean failed = false;
+        if (!verifyMetadataItems(extensions))
+            failed = true;
         if (!verifyParameters(extensions))
             failed = true;
         for (Object m : extensions.getMetadataClass()) {
-            if (!verifyMetadata(m))
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         for (Extension extension : extensions.getExtension()) {
@@ -361,7 +399,12 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
     }
 
     private boolean verify(Extension extension) {
-        return verifyProfileItem(extension);
+        boolean failed = false;
+        if (!verifyMetadataItems(extension))
+            failed = true;
+        if (!verifyProfileItem(extension))
+            failed = true;
+        return !failed;
     }
 
     private boolean verifyProfileItem(Object content) {
@@ -370,13 +413,22 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Actor actor) {
         boolean failed = false;
+        if (!verifyMetadataItems(actor))
+            failed = true;
         return !failed;
     }
 
     private boolean verify(Agent agent) {
         boolean failed = false;
+        if (!verifyMetadataItems(agent))
+            failed = true;
         for (Name name : agent.getName()) {
             if (!verify(name))
+                failed = true;
+        }
+        Actor actor = agent.getActor();
+        if (actor != null ) {
+            if (!verify(actor))
                 failed = true;
         }
         return !failed;
@@ -384,19 +436,25 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Copyright copyright) {
         boolean failed = false;
+        if (!verifyMetadataItems(copyright))
+            failed = true;
         return !failed;
     }
 
     private boolean verify(Description description) {
         boolean failed = false;
+        if (!verifyMetadataItems(description))
+            failed = true;
         return !failed;
     }
 
     private boolean verify(Metadata metadata) {
         boolean failed = false;
+        if (!verifyMetadataItems(metadata))
+            failed = true;
         for (Object content : metadata.getAny()) {
             if (!isMetadata(content)) {
-                if (!verifyMetadata(content))
+                if (!verifyMetadataItem(content))
                     failed = true;
             }
         }
@@ -405,11 +463,15 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
 
     private boolean verify(Name name) {
         boolean failed = false;
+        if (!verifyMetadataItems(name))
+            failed = true;
         return !failed;
     }
 
     private boolean verify(Title title) {
         boolean failed = false;
+        if (!verifyMetadataItems(title))
+            failed = true;
         return !failed;
     }
 
@@ -418,9 +480,9 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verifyMetadata(Object metadata) {
+    private boolean verifyMetadataItem(Object metadata) {
         if (metadata instanceof JAXBElement<?>)
-            return verifyMetadata(((JAXBElement<?>)metadata).getValue());
+            return verifyMetadataItem(((JAXBElement<?>)metadata).getValue());
         else if (metadata instanceof Actor)
             return verify((Actor)metadata);
         else if (metadata instanceof Agent)
@@ -454,7 +516,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
         if (content instanceof JAXBElement<?>) {
             Object element = ((JAXBElement<?>)content).getValue();
             if (isMetadata(element))
-                return verifyMetadata(element);
+                return verifyMetadataItem(element);
             else if (element instanceof Set)
                 return verify((Set) element);
             else if (element instanceof Span)
@@ -467,6 +529,10 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             return true;
         } else
             return unexpectedContent(content);
+    }
+
+    private boolean verifyMetadataItems(Object content) {
+        return this.metadataVerifier.verify(content, getLocator(content), this.context);
     }
 
     private boolean verifyParameters(TimedText tt) {

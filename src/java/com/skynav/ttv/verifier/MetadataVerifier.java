@@ -27,10 +27,10 @@ package com.skynav.ttv.verifier;
 
 import org.xml.sax.Locator;
 
-public interface ProfileVerifier {
+public interface MetadataVerifier {
 
     /**
-     * Verify profile related items.
+     * Verify metadata related items.
      * @param content a JAXB content object
      * @param locator a locator that corresponds to the lexical location of the content object
      * @param context verifier context

@@ -199,10 +199,26 @@
     <xs:restriction base="xs:anyURI"/>
   </xs:simpleType>
   <xs:simpleType name="role">
+    <xs:restriction>
+      <xs:simpleType>
+        <xs:list itemType="ttd:roleItem"/>
+      </xs:simpleType>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="roleItem">
     <xs:annotation>
       <xs:documentation>metadataRoleBaseType | "x-"string</xs:documentation>
     </xs:annotation>
-    <xs:restriction base="xs:NMTOKENS"/>
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="ttd:metadataRoleBaseType"/>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:pattern value="x-\c+"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
   </xs:simpleType>
   <xs:simpleType name="showBackground">
     <xs:restriction base="xs:token">

@@ -93,12 +93,17 @@ public class TimingVerificationParameters implements VerificationParameters {
         this.effectiveFrameRate = new BigDecimal(tt.getFrameRate()).multiply(multiplier).doubleValue();
     }
 
+    private static final BigDecimal zero = new BigDecimal(0D);
+    private static final BigDecimal one = new BigDecimal(1D);
     private BigDecimal parseFrameRateMultiplier(String value) {
         String[] components = value.split("\\s+");
         if (components.length == 2) {
             BigDecimal n = new BigDecimal(components[0]);
             BigDecimal d = new BigDecimal(components[1]);
-            return n.divide(d, RoundingMode.DOWN);
+            if (!d.equals(zero))
+                return n.divide(d, RoundingMode.DOWN);
+            else
+                return one;
         } else
             return new BigDecimal(1);
     }

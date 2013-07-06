@@ -32,6 +32,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
@@ -185,4 +186,10 @@ public interface Model {
      * @return timing verifier instance
      */
     TimingVerifier getTimingVerifier();
+
+    /**
+     * Obtain metadata verifier for model.
+     * @return metadata verifier instance
+     */
+    MetadataVerifier getMetadataVerifier();
 }

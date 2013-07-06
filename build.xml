@@ -250,6 +250,7 @@
     <arg value="all"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-simple.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-elements.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-metadata.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-parameters.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-profiles.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-styles.xml"/>

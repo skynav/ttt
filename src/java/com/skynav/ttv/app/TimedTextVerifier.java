@@ -65,6 +65,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import org.xml.sax.Attributes;
@@ -81,6 +82,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
+import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -88,6 +90,17 @@ import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Sniffer;
 
 public class TimedTextVerifier implements VerifierContext, Reporter {
+
+    public static final int RV_PASS                             = 0;
+    public static final int RV_FAIL                             = 1;
+    public static final int RV_USAGE                            = 2;
+
+    public static final int RV_FLAG_ERROR_UNEXPECTED            = 0x000001;
+    public static final int RV_FLAG_ERROR_EXPECTED_MATCH        = 0x000002;
+    public static final int RV_FLAG_ERROR_EXPECTED_MISMATCH     = 0x000004;
+    public static final int RV_FLAG_WARNING_UNEXPECTED          = 0x000010;
+    public static final int RV_FLAG_WARNING_EXPECTED_MATCH      = 0x000020;
+    public static final int RV_FLAG_WARNING_EXPECTED_MISMATCH   = 0x000040;
 
     private static final Model defaultModel = Models.getDefaultModel();
 
@@ -110,6 +123,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         "    --debug                    - enable debug output (may be specified multiple times to increase debug level)\n" +
         "    --debug-exceptions         - enable stack traces on exceptions (implies --debug)\n" +
         "    --disable-warnings         - disable warnings (both hide and don't count warnings)\n" +
+        "    --expect-errors COUNT      - expect count errors or -1 meaning unspecified expectation (default: -1)\n" +
+        "    --expect-warnings COUNT    - expect count warnings or -1 meaning unspecified expectation (default: -1)\n" +
         "    --external-extent EXTENT   - specify extent for document processing context\n" +
         "    --external-frame-rate RATE - specify frame rate for document processing context\n" +
         "    --help                     - show usage help\n" +
@@ -159,6 +174,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private boolean disableWarnings;
     private Set<String> disabledWarnings = new java.util.HashSet<String>();
     private Set<String> enabledWarnings = new java.util.HashSet<String>();
+    private String expectedErrors;
+    private String expectedWarnings;
     @SuppressWarnings("unused")
     private String externalExtent;
     @SuppressWarnings("unused")
@@ -182,13 +199,16 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     // global processing state
     private SchemaFactory schemaFactory;
     private Map<URL,Schema> schemas = new java.util.HashMap<URL,Schema>();
+    private Map<String,Integer> results = new java.util.HashMap<String,Integer>();
 
     // per-resource processing state
     private Phase currentPhase;
     private String resourceUriString;
     private URI resourceUri;
     private ByteBuffer resourceBufferRaw;
+    private int resourceExpectedErrors = -1;
     private int resourceErrors;
+    private int resourceExpectedWarnings = -1;
     private int resourceWarnings;
     private Binder<Node> binder;
     private Object rootBinding;
@@ -462,6 +482,14 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 debug = 2;
         } else if (option.equals("disable-warnings")) {
             disableWarnings = true;
+        } else if (option.equals("expect-errors")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            expectedErrors = args[++index];
+        } else if (option.equals("expect-warnings")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            expectedWarnings = args[++index];
         } else if (option.equals("external-extent")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -847,6 +875,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     private void setResource(Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
         resourceBufferRaw = bufferRaw;
+        if (expectedErrors != null)
+            resourceExpectedErrors = parseAnnotationAsInteger(expectedErrors, -1);
+        if (expectedWarnings != null)
+            resourceExpectedWarnings = parseAnnotationAsInteger(expectedWarnings, -1);
         resourceErrors = 0;
         resourceWarnings = 0;
         binder = null;
@@ -1089,6 +1121,45 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         return false;
     }
 
+    private void processAnnotations(Object root) {
+        NamedNodeMap attributes = getXMLNode(root).getAttributes();
+        String annotationsNamespace = Annotations.getNamespace();
+        if (attributes != null) {
+            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+                Node attr = attributes.item(i);
+                if (attr.getNamespaceURI().equals(annotationsNamespace)) {
+                    String localName = attr.getLocalName();
+                    String value = attr.getNodeValue();
+                    if (localName.equals("expectedErrors"))
+                        resourceExpectedErrors = parseAnnotationAsInteger(value, -1);
+                    else if (localName.equals("expectedWarnings"))
+                        resourceExpectedWarnings = parseAnnotationAsInteger(value, -1);
+                    else if (localName.equals("warnOn")) {
+                        String[] tokens = value.split("\\s+");
+                        for (String token : tokens) {
+                            if (defaultWarnings.containsKey(token))
+                                enabledWarnings.add(token);
+                        }
+                    } else if (localName.equals("noWarnOn")) {
+                        String[] tokens = value.split("\\s+");
+                        for (String token : tokens) {
+                            if (defaultWarnings.containsKey(token))
+                                disabledWarnings.add(token);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private int parseAnnotationAsInteger(String annotation, int defaultValue) {
+        try {
+            return Integer.parseInt(annotation);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
     private boolean verifySemantics() {
         currentPhase = Phase.Semantics;
         if (!lastPhase.isEnabled(Phase.Semantics)) {
@@ -1132,6 +1203,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 Documents.assignIdAttributes(binder.getXMLNode(root).getOwnerDocument(), model.getIdAttributes());
                 if (verifyRootElement(root, model.getRootClasses())) {
                     this.rootBinding = root.getValue();
+                    processAnnotations(this.rootBinding);
                     model.getSemanticsVerifier().verify(this.rootBinding, this);
                 }
             }
@@ -1158,31 +1230,131 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             if (!verifySemantics())
                 break;
         } while (false);
-        int rv = resourceErrors > 0 ? 1 : 0;
-        if (rv == 0) {
-            logInfo("Passed" + ((resourceWarnings > 0) ? ", with " + Integer.toString(resourceWarnings) + " warnings" : "") + ".");
-        } else
-            logInfo("Failed, with " + Integer.toString(resourceErrors) + " errors.");
+        int rv = rvValue();
+        logInfo((rvPassed(rv) ? "Passed" : "Failed") + resultDetails() + ".");
+        results.put(uri, rv);
         return rv;
+    }
+
+    private int rvValue() {
+        int code = RV_PASS;
+        int flags = 0;
+        if (resourceErrors > 0) {
+            if (resourceExpectedErrors < 0) {
+                code = RV_FAIL;
+                flags |= RV_FLAG_ERROR_UNEXPECTED;
+            } else if (resourceErrors != resourceExpectedErrors) {
+                code = RV_FAIL;
+                flags |= RV_FLAG_ERROR_EXPECTED_MISMATCH;
+            } else {
+                code = RV_PASS;
+                flags |= RV_FLAG_ERROR_EXPECTED_MATCH;
+            }
+        }
+        if (resourceWarnings > 0) {
+            if (resourceExpectedWarnings < 0) {
+                flags |= RV_FLAG_WARNING_UNEXPECTED;
+            } else if (resourceWarnings != resourceExpectedWarnings) {
+                flags |= RV_FLAG_WARNING_EXPECTED_MISMATCH;
+            } else
+                flags |= RV_FLAG_WARNING_EXPECTED_MATCH;
+        }
+        return ((flags & 0x7FFFFF) << 8) | (code & 0xFF);
+    }
+
+    private boolean rvPassed(int rv) {
+        return rvCode(rv) == RV_PASS;
+    }
+
+    private int rvCode(int rv) {
+        return (rv & 0xFF);
+    }
+
+    private int rvFlags(int rv) {
+        return ((rv >> 8) & 0x7FFFFF);
+    }
+
+    private String resultDetails() {
+        StringBuffer details = new StringBuffer();
+        if (resourceErrors > 0) {
+            details.append(", with");
+            if (resourceExpectedErrors < 0) {
+                details.append(' ');
+                details.append(resourceErrors);
+                details.append(' ');
+                details.append(plural("error", resourceErrors));
+            } else if (resourceErrors == resourceExpectedErrors) {
+                details.append(' ');
+                details.append(resourceErrors);
+                details.append(" expected ");
+                details.append(plural("error", resourceErrors));
+            } else {
+                details.append(' ');
+                details.append(resourceErrors);
+                details.append(' ');
+                details.append(plural("error", resourceErrors));
+                details.append(" but expected ");
+                details.append(resourceExpectedErrors);
+                details.append(' ');
+                details.append(plural("error", resourceExpectedErrors));
+            }
+        }
+        if (resourceWarnings > 0) {
+            details.append(details.length() > 0 ? ", and with" : ", with");
+            if (resourceExpectedWarnings < 0) {
+                details.append(' ');
+                details.append(resourceWarnings);
+                details.append(' ');
+                details.append(plural("warning", resourceWarnings));
+            } else if (resourceWarnings == resourceExpectedWarnings) {
+                details.append(' ');
+                details.append(resourceWarnings);
+                details.append(" expected ");
+                details.append(plural("warning", resourceWarnings));
+            } else {
+                details.append(' ');
+                details.append(resourceWarnings);
+                details.append(' ');
+                details.append(plural("warning", resourceWarnings));
+                details.append(" but expected ");
+                details.append(resourceExpectedWarnings);
+                details.append(' ');
+                details.append(plural("warning", resourceExpectedWarnings));
+            }
+        }
+        return details.toString();
+    }
+
+    private String plural(String noun, int count) {
+        if (count < 2)
+            return noun;
+        else
+            return noun + "s";
     }
 
     private int verify(List<String> nonOptionArgs) {
         int numFailure = 0;
         int numSuccess = 0;
-        for (String arg : nonOptionArgs) {
-            if (verify(arg) != 0)
-                ++numFailure;
-            else
+        for (String uri : nonOptionArgs) {
+            switch (rvCode(verify(uri))) {
+            case RV_PASS:
                 ++numSuccess;
+                break;
+            case RV_FAIL:
+                ++numFailure;
+                break;
+            default:
+                break;
+            }
         }
         if (verbose > 0) {
             StringBuffer sb = new StringBuffer();
             if (numSuccess > 0)
-                sb.append("Passed " + Integer.toString(numSuccess));
+                sb.append("Passed " + numSuccess);
             if (numFailure > 0) {
                 if (numSuccess > 0)
                     sb.append(", ");
-                sb.append("Failed " + Integer.toString(numFailure));
+                sb.append("Failed " + numFailure);
             }
             if (sb.length() > 0)
                 sb.append(" resources.");
@@ -1203,18 +1375,42 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             else if (showWarningTokens)
                 showWarningTokens();
             else {
+                if (nonOptionArgs.size() > 1) {
+                    if (expectedErrors != null)
+                        throw new InvalidOptionUsageException("expect-errors", "must not specify more than one URL with this option");
+                    if (expectedWarnings != null)
+                        throw new InvalidOptionUsageException("expect-warnings", "must not specify more than one URL with this option");
+                }
                 showProcessingInfo();
                 rv = verify(nonOptionArgs);
             }
         } catch (ShowUsageException e) {
             System.out.println(banner);
             System.out.println(usage);
-            rv = 2;
+            rv = RV_USAGE;
         } catch (UsageException e) {
             System.out.println("Usage: " + e.getMessage());
-            rv = 2;
+            rv = RV_USAGE;
         }
         return rv;
+    }
+
+    public Map<String,Integer> getResults() {
+        return results;
+    }
+
+    public int getResultCode(String uri) {
+        if (results.containsKey(uri))
+            return rvCode(results.get(uri));
+        else
+            return -1;
+    }
+
+    public int getResultFlags(String uri) {
+        if (results.containsKey(uri))
+            return rvFlags(results.get(uri));
+        else
+            return -1;
     }
 
     public static void main(String[] args) {
@@ -1339,14 +1535,14 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             boolean hasForeign = false;
             for (int i = 0, n = attrs.getLength(); i < n && !hasForeign; ++i) {
                 String nsUri = attrs.getURI(i);
-                if (isForeignNamespace(nsUri))
+                if (isForeignNamespace(nsUri) && !isAnnotationNamespace(nsUri))
                     hasForeign = true;
             }
             if (hasForeign) {
                 AttributesImpl attrsNew = new AttributesImpl();
                 for (int i = 0, n = attrs.getLength(); i < n; ++i) {
                     String nsUri = attrs.getURI(i);
-                    if (isNonForeignNamespace(nsUri))
+                    if (isNonForeignNamespace(nsUri) || isAnnotationNamespace(nsUri))
                         attrsNew.addAttribute(attrs.getURI(i), attrs.getLocalName(i), attrs.getQName(i), attrs.getType(i), attrs.getValue(i));
                     else if (logPruning("Pruning attribute in foreign namespace: <" + new QName(attrs.getURI(i), attrs.getLocalName(i)) + ">."))
                         throw new ForeignVocabularyException(new QName(nsUri, attrs.getLocalName(i)));
@@ -1371,6 +1567,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
         private boolean isForeignNamespace(String nsUri) {
             return !isNonForeignNamespace(nsUri);
+        }
+
+        private boolean isAnnotationNamespace(String nsUri) {
+            return nsUri.indexOf(Annotations.getNamespace()) == 0;
         }
 
         private boolean logPruning(String message) {

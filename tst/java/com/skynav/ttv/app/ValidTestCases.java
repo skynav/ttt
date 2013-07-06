@@ -26,6 +26,7 @@
 package com.skynav.ttv.app;
 
 import java.net.URL;
+import java.util.List;
 
 import org.junit.Test;
 import static org.junit.Assert.fail;
@@ -35,109 +36,151 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
     @Test
     public void testValidSimple() throws Exception {
-        performValidityTest("ttml10-valid-simple.xml");
+        performValidityTest("ttml10-valid-simple.xml", 0, 0);
     }
 
     @Test
     public void testValidAllElements() throws Exception {
-        performValidityTest("ttml10-valid-all-elements.xml");
+        performValidityTest("ttml10-valid-all-elements.xml", 0, 3);
+    }
+
+    @Test
+    public void testValidAllMetadata() throws Exception {
+        performValidityTest("ttml10-valid-all-metadata.xml", 0, 0);
     }
 
     @Test
     public void testValidAllParameters() throws Exception {
-        performValidityTest("ttml10-valid-all-parameters.xml");
+        performValidityTest("ttml10-valid-all-parameters.xml", 0, 0);
     }
 
     @Test
     public void testValidAllProfiles() throws Exception {
-        performValidityTest("ttml10-valid-all-profiles.xml");
+        performValidityTest("ttml10-valid-all-profiles.xml", 0, 3);
     }
 
     @Test
     public void testValidAllStyles() throws Exception {
-        performValidityTest("ttml10-valid-all-styles.xml");
+        performValidityTest("ttml10-valid-all-styles.xml", 0, 0);
     }
 
     @Test
     public void testValidAllTiming() throws Exception {
-        performValidityTest("ttml10-valid-all-timing.xml");
-    }
-
-    @Test
-    public void testValidExtensionsBaseOtherNamespace() throws Exception {
-        performValidityTest("ttml10-valid-extensions-base-other-namespace.xml");
+        performValidityTest("ttml10-valid-all-timing.xml", 0, 0);
     }
 
     @Test
     public void testValidExtensionNonStandard() throws Exception {
-        performValidityTest("ttml10-valid-extension-non-standard.xml");
+        performValidityTest("ttml10-valid-extension-non-standard.xml", 0, 2);
+    }
+
+    @Test
+    public void testValidExtensionsBaseOtherNamespace() throws Exception {
+        performValidityTest("ttml10-valid-extensions-base-other-namespace.xml", 0, 1);
     }
 
     @Test
     public void testValidFontFamilyQuotedGeneric() throws Exception {
-        performValidityTest("ttml10-valid-font-family-quoted-generic.xml");
-    }
-
-    @Test
-    public void testValidForeign() throws Exception {
-        performValidityTest("ttml10-valid-foreign.xml");
+        performValidityTest("ttml10-valid-font-family-quoted-generic.xml", 0, 1);
     }
 
     @Test
     public void testValidForeignMetadata() throws Exception {
-        performValidityTest("ttml10-valid-foreign-metadata.xml");
+        performValidityTest("ttml10-valid-foreign-metadata.xml", 0, 2);
+    }
+
+    @Test
+    public void testValidForeign() throws Exception {
+        performValidityTest("ttml10-valid-foreign.xml", 0, 4);
     }
 
     @Test
     public void testValidOpacityOutOfRange() throws Exception {
-        performValidityTest("ttml10-valid-opacity-out-of-range.xml");
+        performValidityTest("ttml10-valid-opacity-out-of-range.xml", 0, 5);
     }
 
     @Test
     public void testValidOriginNegative() throws Exception {
-        performValidityTest("ttml10-valid-origin-negative.xml");
+        performValidityTest("ttml10-valid-origin-negative.xml", 0, 4);
     }
 
     @Test
     public void testValidProfileAttributeIgnored() throws Exception {
-        performValidityTest("ttml10-valid-profile-attribute-ignored.xml");
+        performValidityTest("ttml10-valid-profile-attribute-ignored.xml", 0, 1);
     }
 
     @Test
     public void testValidProfileAttributeNonStandard() throws Exception {
-        performValidityTest("ttml10-valid-profile-attribute-non-standard.xml");
+        performValidityTest("ttml10-valid-profile-attribute-non-standard.xml", 0, 1);
     }
 
     @Test
     public void testValidProfileMissing() throws Exception {
-        performValidityTest("ttml10-valid-profile-missing.xml");
+        performValidityTest("ttml10-valid-profile-missing.xml", 0, 1);
     }
 
     @Test
     public void testValidProfileNonStandard() throws Exception {
-        performValidityTest("ttml10-valid-profile-non-standard.xml");
+        performValidityTest("ttml10-valid-profile-non-standard.xml", 0, 1);
     }
 
     @Test
     public void testValidStyleIdrefDuplicateWithIntervening() throws Exception {
-        performValidityTest("ttml10-valid-style-idref-duplicate-with-intervening.xml");
+        performValidityTest("ttml10-valid-style-idref-duplicate-with-intervening.xml", 0, 1);
     }
 
     @Test
     public void testValidStyleIdrefDuplicateWithoutIntervening() throws Exception {
-        performValidityTest("ttml10-valid-style-idref-duplicate-without-intervening.xml");
+        performValidityTest("ttml10-valid-style-idref-duplicate-without-intervening.xml", 0, 2);
     }
 
-    private void performValidityTest(String resourceName) {
+    private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
-        String[] args = { "-q", "-v", "--warn-on", "all", url.toString() };
-        int rv = new TimedTextVerifier().run(args);
-        if (rv == 1)
-            fail("Unexpected validation failure.");
-        else if (rv != 0)
-            fail("Unexpected validation failure code: expected 0, got " + rv + ".");
+        String urlString = url.toString();
+        List<String> args = new java.util.ArrayList<String>();
+        args.add("-q");
+        args.add("-v");
+        args.add("--warn-on");
+        args.add("all");
+        if (expectedErrors >= 0) {
+            args.add("--expect-errors");
+            args.add(Integer.toString(expectedErrors));
+        }
+        if (expectedWarnings >= 0) {
+            args.add("--expect-warnings");
+            args.add(Integer.toString(expectedWarnings));
+        }
+        args.add(urlString);
+        TimedTextVerifier ttv = new TimedTextVerifier();
+        int rv = ttv.run(args.toArray(new String[args.size()]));
+        int resultCode = ttv.getResultCode(urlString);
+        int resultFlags = ttv.getResultFlags(urlString);
+        if (resultCode == TimedTextVerifier.RV_PASS) {
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MATCH) != 0) {
+                fail("Unexpected success with expected error(s) match.");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0) {
+                fail("Unexpected success with unexpected warning(s).");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_EXPECTED_MISMATCH) != 0) {
+                fail("Unexpected success with expected warning(s) mismatch.");
+            }
+        } else if (resultCode == TimedTextVerifier.RV_FAIL) {
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_UNEXPECTED) != 0) {
+                fail("Unexpected failure with unexpected error(s).");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MISMATCH) != 0) {
+                fail("Unexpected failure with expected error(s) mismatch.");
+            }
+        } else
+            fail("Unexpected result code " + resultCode + ".");
     }
+
+    private void performValidityTest(String resourceName) {
+        performValidityTest(resourceName, -1, -1);
+    }
+
 }
 

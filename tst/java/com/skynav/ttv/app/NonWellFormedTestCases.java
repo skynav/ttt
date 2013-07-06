@@ -26,6 +26,7 @@
 package com.skynav.ttv.app;
 
 import java.net.URL;
+import java.util.List;
 
 import org.junit.Test;
 import static org.junit.Assert.fail;
@@ -35,24 +36,59 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class NonWellFormedTestCases {
     @Test
     public void testNonWellFormedXMLDeclaration() throws Exception {
-        performNonWellFormedTest("ttml10-non-well-formed-xml-declaration.xml");
+        performNonWellFormedTest("ttml10-non-well-formed-xml-declaration.xml", 1, 0);
     }
 
     @Test
     public void testNonWellFormedStartTag() throws Exception {
-        performNonWellFormedTest("ttml10-non-well-formed-start-tag.xml");
+        performNonWellFormedTest("ttml10-non-well-formed-start-tag.xml", 1, 0);
     }
 
-    private void performNonWellFormedTest(String resourceName) {
+    private void performNonWellFormedTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
-        String[] args = { "-q", url.toString() };
-        int rv = new TimedTextVerifier().run(args);
-        if (rv == 0)
-            fail("Unexpected success.");
-        else if (rv != 1)
-            fail("Unexpected failure code: expected 1, got " + rv + ".");
+        String urlString = url.toString();
+        List<String> args = new java.util.ArrayList<String>();
+        args.add("-q");
+        args.add("-v");
+        if (expectedErrors >= 0) {
+            args.add("--expect-errors");
+            args.add(Integer.toString(expectedErrors));
+        }
+        if (expectedWarnings >= 0) {
+            args.add("--expect-warnings");
+            args.add(Integer.toString(expectedWarnings));
+        }
+        args.add(urlString);
+        TimedTextVerifier ttv = new TimedTextVerifier();
+        int rv = ttv.run(args.toArray(new String[args.size()]));
+        int resultCode = ttv.getResultCode(urlString);
+        int resultFlags = ttv.getResultFlags(urlString);
+        if (resultCode == TimedTextVerifier.RV_PASS) {
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MATCH) == 0) {
+                fail("Unexpected success without expected error(s) match.");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0) {
+                fail("Unexpected success with unexpected warning(s).");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_EXPECTED_MISMATCH) != 0) {
+                fail("Unexpected success with expected warning(s) mismatch.");
+            }
+        } else if (resultCode == TimedTextVerifier.RV_FAIL) {
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_UNEXPECTED) != 0) {
+                fail("Unexpected failure with unexpected error(s).");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MISMATCH) != 0) {
+                fail("Unexpected failure with expected error(s) mismatch.");
+            }
+        } else
+            fail("Unexpected result code " + resultCode + ".");
     }
+
+    private void performNonWellFormedTest(String resourceName) {
+        performNonWellFormedTest(resourceName, -1, -1);
+    }
+
 }
 

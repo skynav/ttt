@@ -96,6 +96,7 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if time expression expressed as clock-time and frames are not less than frame rate. (10.3.1)
  * Error if time expression expressed as clock-time and sub-frames are not less than sub-frame rate. (10.3.1)
  * Error if time expression uses frame component or `f` metric when tts:timeBase is clock. (10.3.1)
+ * Error if TT Metadata Namespace attribute specified on element where it is not explicitly permitted.
 
 ## Verification Model
 
@@ -152,26 +153,33 @@ At present, this will output the following:
 Timed Text Verifier (TTV) [0.0.0dev] Copyright 2013 Skynav, Inc.
 Usage: java -jar ttv.jar [options] URL*
   Short Options:
-    -d                       - see --debug
-    -q                       - see --quiet
-    -v                       - see --verbose
-    -?                       - see --help
+    -d                         - see --debug
+    -q                         - see --quiet
+    -v                         - see --verbose
+    -?                         - see --help
   Long Options:
-    --debug                  - enable debug output (may be specified multiple times to increase debug level)
-    --debug-exceptions       - enable stack traces on exceptions (implies --debug)
-    --disable-warnings       - disable warnings (both hide and don't count warnings)
-    --help                   - show usage help
-    --hide-warnings          - hide warnings (but count them)
-    --model NAME             - specify model name (default: ttml10)
-    --quiet                  - don't show banner
-    --show-models            - show built-in verification models (use with --verbose to show more details)
-    --show-repository        - show source code repository information
-    --verbose                - enable verbose output (may be specified multiple times to increase verbosity level)
-    --treat-foreign-as TOKEN - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: warning)
-    --treat-warning-as-error - treat warning as error (overrides --disable-warnings)
-    --until-phase PHASE      - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: all)
+    --debug                    - enable debug output (may be specified multiple times to increase debug level)
+    --debug-exceptions         - enable stack traces on exceptions (implies --debug)
+    --disable-warnings         - disable warnings (both hide and don't count warnings)
+    --expect-errors COUNT      - expect count errors or -1 meaning unspecified expectation (default: -1)
+    --expect-warnings COUNT    - expect count warnings or -1 meaning unspecified expectation (default: -1)
+    --external-extent EXTENT   - specify extent for document processing context
+    --external-frame-rate RATE - specify frame rate for document processing context
+    --help                     - show usage help
+    --hide-warnings            - hide warnings (but count them)
+    --model NAME               - specify model name (default: ttml10)
+    --no-warn-on TOKEN         - disable warning specified by warning TOKEN, where multiple instances of this option may be specified
+    --quiet                    - don't show banner
+    --show-models              - show built-in verification models (use with --verbose to show more details)
+    --show-repository          - show source code repository information
+    --show-warning-tokens      - show warning tokens (use with --verbose to show more details)
+    --verbose                  - enable verbose output (may be specified multiple times to increase verbosity level)
+    --treat-foreign-as TOKEN   - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: warning)
+    --treat-warning-as-error   - treat warning as error (overrides --disable-warnings)
+    --until-phase PHASE        - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: all)
+    --warn-on TOKEN            - enable warning specified by warning TOKEN, where multiple instances of this option may be specified
   Non-Option Arguments:
-    URL                      - an absolute or relative URL; if relative, resolved against current working directory
+    URL                        - an absolute or relative URL; if relative, resolved against current working directory
 </pre>
 
 As a convenience, if a URL argument takes a relative form, then `ttv` attempts to resolve it against the current working directory.
@@ -211,14 +219,14 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
 ## To Do (Essential)
 
+ * Error if TT Parameter Namespace attribute specified on element where it is not explicitly permitted.
+ * Error if TT Style Namespace attribute specified on element where it is not explicitly permitted.
  * Warn if ttm:agent element does not contain a ttm:name child. (12.1.5 P3)
  * Warn if ttm:agent element does not contain a ttm:agent child when type='character'. (12.1.5 P6)
  * Error if actor element's agent attribute does not reference an agent element. (12.1.7 P3)
  * Error if ttm:agent attribute IDREF does not reference an agent element. (12.2.1 P2)
  * Warn if same IDREF appears more than once in specified ttm:agent attribute. (12.2.1)
- * Update schema to use constrained definition of role token syntax, and not just NMTOKENS. See ttd:role data type.
  * Warn if same token appears more than once in specified ttm:role attribute. (12.2.2)
- * Error if other extension namespace uses form that doesn't take a fragment identifier. (E.1 P4)
 
 ## To Do (Optional)
 

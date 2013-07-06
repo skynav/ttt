@@ -13,27 +13,27 @@
   <xs:attributeGroup name="profile.attlist">
     <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
     <xs:attribute name="use" type="ttd:profile"/>
-    <xs:anyAttribute namespace="##other"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="features.attlist">
     <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
     <xs:attribute ref="xml:base"/>
-    <xs:anyAttribute namespace="##other"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="feature.attlist">
     <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
     <xs:attribute name="value" type="ttd:featureValue"/>
-    <xs:anyAttribute namespace="##other"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="extensions.attlist">
     <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
     <xs:attribute ref="xml:base"/>
-    <xs:anyAttribute namespace="##other"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="extension.attlist">
     <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
     <xs:attribute name="value" type="ttd:extensionValue"/>
-    <xs:anyAttribute namespace="##other"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
   </xs:attributeGroup>
   <xs:complexType name="profile.eltype">
     <xs:sequence>

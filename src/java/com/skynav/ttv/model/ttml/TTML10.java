@@ -39,6 +39,7 @@ import com.skynav.ttv.model.ttml10.tt.Layout;
 import com.skynav.ttv.model.ttml10.tt.Region;
 import com.skynav.ttv.model.ttml10.tt.Style;
 import com.skynav.ttv.model.ttml10.tt.Styling;
+import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
@@ -226,6 +227,15 @@ public class TTML10 {
                 }
             }
             return timingVerifier;
+        }
+        private MetadataVerifier metadataVerifier;
+        public MetadataVerifier getMetadataVerifier() {
+            synchronized (this) {
+                if (metadataVerifier == null) {
+                    metadataVerifier = new com.skynav.ttv.verifier.ttml.TTML10MetadataVerifier(this);
+                }
+            }
+            return metadataVerifier;
         }
     }
 }
