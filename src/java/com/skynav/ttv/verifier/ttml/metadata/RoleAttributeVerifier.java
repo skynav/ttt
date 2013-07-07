@@ -25,19 +25,48 @@
  
 package com.skynav.ttv.verifier.ttml.metadata;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml10.ttd.Role;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
-public class RoleVerifier implements MetadataValueVerifier {
+public class RoleAttributeVerifier implements MetadataValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        return true;
+        boolean failed = false;
+        assert valueObject instanceof List<?>;
+        List<?> roles = (List<?>) valueObject;
+        Reporter reporter = context.getReporter();
+        if (roles.size() > 0) {
+            Set<String> tokens = new java.util.HashSet<String>();
+            for (Object role : roles) {
+                assert role instanceof String;
+                String token = (String) role;
+                if (token.indexOf("x-") == 0) {
+                    if (reporter.isWarningEnabled("references-extension-role")) {
+                        if (reporter.logWarning(locator, "Extension role token '" + token + "' in '" + name + "'.")) {
+                            failed = true;
+                        }
+                    }
+                }
+                if (tokens.contains(token)) {
+                    if (reporter.isWarningEnabled("duplicate-role")) {
+                        if (reporter.logWarning(locator, "Duplicate role token '" + token + "' in '" + name + "'.")) {
+                            failed = true;
+                        }
+                    }
+                } else
+                    tokens.add(token);
+            }
+        }
+        return !failed;
     }
 
 }

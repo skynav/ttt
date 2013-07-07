@@ -39,7 +39,7 @@ public class IdReferences {
 
     public static void badReference(Object value, Locator locator, VerifierContext context, QName referencingAttribute, QName targetExpected) {
         QName targetActual = context.getBindingElementName(value);
-        context.getReporter().logInfo(locator, "Bad IDREF '" + getId(value) + "', got reference to " + targetActual + ", expected reference to " + targetExpected + ".");
+        context.getReporter().logInfo(locator, "Bad IDREF '" + getId(value) + "', got reference to '" + targetActual + "', expected reference to '" + targetExpected + "'.");
     }
 
     public static String getIdReferences(Object value) {

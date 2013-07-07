@@ -27,11 +27,14 @@ package com.skynav.ttv.verifier.ttml;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
+
+import org.w3c.dom.Node;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml10.tt.Body;
@@ -40,6 +43,7 @@ import com.skynav.ttv.model.ttml10.tt.Division;
 import com.skynav.ttv.model.ttml10.tt.Paragraph;
 import com.skynav.ttv.model.ttml10.tt.Span;
 import com.skynav.ttv.model.ttml10.tt.Metadata;
+import com.skynav.ttv.model.ttml10.ttd.AgentType;
 import com.skynav.ttv.model.ttml10.ttm.Actor;
 import com.skynav.ttv.model.ttml10.ttm.Agent;
 import com.skynav.ttv.model.ttml10.ttm.Name;
@@ -48,8 +52,10 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.ttml.metadata.AgentVerifier;
-import com.skynav.ttv.verifier.ttml.metadata.RoleVerifier;
+import com.skynav.ttv.verifier.ttml.metadata.AgentAttributeVerifier;
+import com.skynav.ttv.verifier.ttml.metadata.RoleAttributeVerifier;
+import com.skynav.ttv.verifier.util.Agents;
+import com.skynav.ttv.verifier.util.IdReferences;
 import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML10MetadataVerifier implements MetadataVerifier {
@@ -60,20 +66,22 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
         return metadataNamespace;
     }
 
+    private static QName agentAttributeName = new QName(metadataNamespace,"agent");
+    private static QName roleAttributeName = new QName(metadataNamespace,"role");
     private static Object[][] metadataAccessorMap = new Object[][] {
         {
-            new QName(metadataNamespace,"agent"),               // attribute name
+            agentAttributeName,                                 // attribute name
             "Agent",                                            // accessor method name suffix
-            String.class,                                       // value type
-            AgentVerifier.class,                                // specialized verifier
+            List.class,                                         // value type
+            AgentAttributeVerifier.class,                       // specialized verifier
             Boolean.FALSE,                                      // padding permitted
             null,                                               // default value
         },
         {
-            new QName(metadataNamespace,"role"),
+            roleAttributeName,
             "Role",
-            String.class,
-            RoleVerifier.class,
+            List.class,
+            RoleAttributeVerifier.class,
             Boolean.FALSE,
             null,
         },
@@ -117,12 +125,40 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
         return !failedAttributeItem && !failedElementItem;
     }
 
+    private final QName actorAgentAttributeName = new QName("", "agent");
     public boolean verify(Actor content, Locator locator, VerifierContext context) {
-        return true;
+        QName name = actorAgentAttributeName;
+        QName targetName = model.getIdReferenceTargetName(name);
+        Class<?> targetClass = model.getIdReferenceTargetClass(name);
+        Object agent = content.getAgent();
+        Node node = context.getXMLNode(agent);
+        if (Agents.isAgentReference(node, agent, locator, context, targetClass))
+            return true;
+        else {
+            Agents.badAgentReference(node, agent, locator, context, name, targetName, targetClass);
+            return false;
+        }
     }
 
+    private final QName actorElementName = new QName(metadataNamespace, "actor");
+    private final QName agentElementName = new QName(metadataNamespace, "agent");
+    private final QName nameElementName = new QName(metadataNamespace, "name");
     public boolean verify(Agent content, Locator locator, VerifierContext context) {
-        return true;
+        boolean failed = false;
+        Reporter reporter = context.getReporter();
+        if (content.getName().isEmpty()) {
+            if (reporter.isWarningEnabled("missing-agent-name")) {
+                if (reporter.logWarning(locator, "An '" + agentElementName + "' element should have at least one '" + nameElementName + "' child, but none is present."))
+                    failed = true;
+            }
+        }
+        if ((content.getType() == AgentType.CHARACTER) && (content.getActor() == null)) {
+            if (reporter.isWarningEnabled("missing-agent-actor")) {
+                if (reporter.logWarning(locator, "An '" + agentElementName + "' element of type 'character' should have an '" + actorElementName + "' child, but none is present."))
+                    failed = true;
+            }
+        }
+        return !failed;
     }
 
     public boolean verify(Metadata content, Locator locator, VerifierContext context) {
@@ -178,8 +214,13 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
                     success = verifier.verify(model, content, metadataName, value, locator, context);
             } else
                 setMetadataDefaultValue(content);
-            if (!success)
+            if (!success) {
+                if (metadataName.equals(agentAttributeName)) {
+                    value = IdReferences.getIdReferences(value);
+                } else
+                    value = value.toString();
                 context.getReporter().logError(locator, "Invalid " + metadataName + " value '" + value + "'.");
+            }
             return success;
         }
 
@@ -282,9 +323,18 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
         private Object convertType(Object value, Class<?> targetClass) {
             if (value == null)
                 return null;
-            else if (value.getClass() == targetClass)
+            else if (targetClass.isInstance(value))
                 return value;
-            else if (value instanceof Enum<?>) {
+            else if (value instanceof String) {
+                if (targetClass == List.class) {
+                    String[] tokens = ((String)value).split("\\s+");
+                    List<String> listOfTokens = new java.util.ArrayList<String>(tokens.length);
+                    for (String token : tokens)
+                        listOfTokens.add(token);
+                    return listOfTokens;
+                } else
+                    return null;
+            } else if (value instanceof Enum<?>) {
                 if (targetClass == String.class)
                     return Enums.getValue((Enum<?>) value);
                 else

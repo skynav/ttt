@@ -209,7 +209,7 @@ public class TTML10TimingVerifier implements TimingVerifier {
         private Object convertType(Object value, Class<?> targetClass) {
             if (value == null)
                 return null;
-            else if (value.getClass() == targetClass)
+            else if (targetClass.isInstance(value))
                 return value;
             else
                 return null;

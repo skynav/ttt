@@ -1196,12 +1196,27 @@ public class InvalidTestCases {
 
     @Test
     public void testInvalidMetadataDisallowedAttributes() throws Exception {
-        performInvalidityTest("ttml10-invalid-metadata-disallowed-attributes.xml", 18, 2);
+        performInvalidityTest("ttml10-invalid-metadata-disallowed-attributes.xml", 18, 0);
     }
 
     @Test
     public void testInvalidMetadataNonElementContent() throws Exception {
         performInvalidityTest("ttml10-invalid-metadata-non-element-content.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadAgentActorIdrefWrongEltype() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-agent-actor-idref-wrong-eltype.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadAgentActorIdrefMultiple() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-agent-actor-idref-multiple.xml", 2, 0);
+    }
+
+    @Test
+    public void testInvalidBadAgentIdrefWrongEltype() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-agent-idref-wrong-eltype.xml", 1, 0);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
@@ -1222,7 +1237,7 @@ public class InvalidTestCases {
         }
         args.add(urlString);
         TimedTextVerifier ttv = new TimedTextVerifier();
-        int rv = ttv.run(args.toArray(new String[args.size()]));
+        ttv.run(args.toArray(new String[args.size()]));
         int resultCode = ttv.getResultCode(urlString);
         int resultFlags = ttv.getResultFlags(urlString);
         if (resultCode == TimedTextVerifier.RV_PASS) {
@@ -1244,10 +1259,6 @@ public class InvalidTestCases {
             }
         } else
             fail("Unexpected result code " + resultCode + ".");
-    }
-
-    private void performInvalidityTest(String resourceName) {
-        performInvalidityTest(resourceName, -1, -1);
     }
 
 }

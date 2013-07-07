@@ -62,7 +62,7 @@ public class NonWellFormedTestCases {
         }
         args.add(urlString);
         TimedTextVerifier ttv = new TimedTextVerifier();
-        int rv = ttv.run(args.toArray(new String[args.size()]));
+        ttv.run(args.toArray(new String[args.size()]));
         int resultCode = ttv.getResultCode(urlString);
         int resultFlags = ttv.getResultFlags(urlString);
         if (resultCode == TimedTextVerifier.RV_PASS) {
@@ -84,10 +84,6 @@ public class NonWellFormedTestCases {
             }
         } else
             fail("Unexpected result code " + resultCode + ".");
-    }
-
-    private void performNonWellFormedTest(String resourceName) {
-        performNonWellFormedTest(resourceName, -1, -1);
     }
 
 }

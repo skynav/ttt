@@ -361,7 +361,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         private Object convertType(Object value, Class<?> targetClass) {
             if (value == null)
                 return null;
-            else if (value.getClass() == targetClass)
+            else if (targetClass.isInstance(value))
                 return value;
             else if (value.getClass() == String.class) {
                 if (targetClass == Float.class) {

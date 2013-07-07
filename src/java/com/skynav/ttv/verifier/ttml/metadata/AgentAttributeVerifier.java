@@ -25,18 +25,50 @@
  
 package com.skynav.ttv.verifier.ttml.metadata;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.xml.namespace.QName;
+
+import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Agents;
+import com.skynav.ttv.verifier.util.IdReferences;
 
-public class AgentVerifier implements MetadataValueVerifier {
+public class AgentAttributeVerifier implements MetadataValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        return true;
+        boolean failed = false;
+        QName targetName = model.getIdReferenceTargetName(name);
+        Class<?> targetClass = model.getIdReferenceTargetClass(name);
+        assert valueObject instanceof List<?>;
+        List<?> agents = (List<?>) valueObject;
+        if (agents.size() > 0) {
+            Set<String> agentIdentifiers = new java.util.HashSet<String>();
+            for (Object agent : agents) {
+                Node node = context.getXMLNode(agent);
+                if (!Agents.isAgentReference(node, agent, locator, context, targetClass)) {
+                    Agents.badAgentReference(node, agent, locator, context, name, targetName, targetClass);
+                    failed = true;
+                }
+                String id = IdReferences.getId(agent);
+                if (agentIdentifiers.contains(id)) {
+                    if (context.getReporter().isWarningEnabled("duplicate-idref-in-agent")) {
+                        if (context.getReporter().logWarning(locator,
+                            "Duplicate IDREF '" + IdReferences.getId(agent) + "' in '" + name + "'.")) {
+                            failed = true;
+                        }
+                    }
+                } else
+                    agentIdentifiers.add(id);
+            }
+        }
+        return !failed;
     }
 
 }

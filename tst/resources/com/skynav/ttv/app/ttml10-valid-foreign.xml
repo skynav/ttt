@@ -2,7 +2,8 @@
 <!-- valid - with foreign elements and attributes (will be pruned) -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:x="http://example.com/ns/x" x:foobar="baz"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
-    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full">
+    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="4">
   <x:foo/>
   <head/>
   <x:bar>

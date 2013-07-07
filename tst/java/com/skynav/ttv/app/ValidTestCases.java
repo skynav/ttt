@@ -46,7 +46,7 @@ public class ValidTestCases {
 
     @Test
     public void testValidAllMetadata() throws Exception {
-        performValidityTest("ttml10-valid-all-metadata.xml", 0, 0);
+        performValidityTest("ttml10-valid-all-metadata.xml", 0, 1);
     }
 
     @Test
@@ -67,6 +67,21 @@ public class ValidTestCases {
     @Test
     public void testValidAllTiming() throws Exception {
         performValidityTest("ttml10-valid-all-timing.xml", 0, 0);
+    }
+
+    @Test
+    public void testValidAgentIdrefDuplicate() throws Exception {
+        performValidityTest("ttml10-valid-agent-idref-duplicate.xml", 0, 1);
+    }
+
+    @Test
+    public void testValidAgentMissingActor() throws Exception {
+        performValidityTest("ttml10-valid-agent-missing-actor.xml", 0, 1);
+    }
+
+    @Test
+    public void testValidAgentMissingName() throws Exception {
+        performValidityTest("ttml10-valid-agent-missing-name.xml", 0, 1);
     }
 
     @Test
@@ -125,6 +140,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidRoleDuplicate() throws Exception {
+        performValidityTest("ttml10-valid-role-duplicate.xml", 0, 1);
+    }
+
+    @Test
+    public void testValidRoleExtension() throws Exception {
+        performValidityTest("ttml10-valid-role-extension.xml", 0, 1);
+    }
+
+    @Test
     public void testValidStyleIdrefDuplicateWithIntervening() throws Exception {
         performValidityTest("ttml10-valid-style-idref-duplicate-with-intervening.xml", 0, 1);
     }
@@ -154,7 +179,7 @@ public class ValidTestCases {
         }
         args.add(urlString);
         TimedTextVerifier ttv = new TimedTextVerifier();
-        int rv = ttv.run(args.toArray(new String[args.size()]));
+        ttv.run(args.toArray(new String[args.size()]));
         int resultCode = ttv.getResultCode(urlString);
         int resultFlags = ttv.getResultFlags(urlString);
         if (resultCode == TimedTextVerifier.RV_PASS) {
@@ -176,10 +201,6 @@ public class ValidTestCases {
             }
         } else
             fail("Unexpected result code " + resultCode + ".");
-    }
-
-    private void performValidityTest(String resourceName) {
-        performValidityTest(resourceName, -1, -1);
     }
 
 }

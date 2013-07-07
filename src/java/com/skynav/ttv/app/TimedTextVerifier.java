@@ -150,17 +150,22 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private static final Map<String,Boolean> defaultWarnings;
     private static final Object[][] defaultWarningSpecifications = new Object[][] {
         { "all",                                        Boolean.FALSE,  "all warnings" },
-        { "duplicate-idref-in-style",                   Boolean.FALSE,  "duplicate IDREF in style attribute"},
-        { "duplicate-idref-in-style-no-intervening",    Boolean.TRUE,   "duplicate IDREF in style attribute without intervening IDREF"  },
+        { "duplicate-idref-in-agent",                   Boolean.FALSE,  "duplicate IDREF in 'ttm:agent' attribute"},
+        { "duplicate-idref-in-style",                   Boolean.FALSE,  "duplicate IDREF in 'style' attribute"},
+        { "duplicate-idref-in-style-no-intervening",    Boolean.TRUE,   "duplicate IDREF in 'style' attribute without intervening IDREF"  },
+        { "duplicate-role",                             Boolean.TRUE,   "duplicate role token in 'ttm:role' attribute"},
         { "foreign",                                    Boolean.FALSE,  "attribute or element in non-TTML (foreign) namespace"},
-        { "ignored-profile-attribute",                  Boolean.TRUE,   "'profile' attribute ignored when 'profile' element is present"},
-        { "missing-profile",                            Boolean.FALSE,  "neither 'profile' attribute nor 'profile' element is present"},
-        { "negative-origin",                            Boolean.FALSE,  "either coordinate in tts:origin is negative"},
-        { "out-of-range-opacity",                       Boolean.TRUE,   "opacity is out of range [0,1]"},
+        { "ignored-profile-attribute",                  Boolean.TRUE,   "'ttp:profile' attribute ignored when 'ttp:profile' element is present"},
+        { "missing-agent-actor",                        Boolean.TRUE,   "no 'ttm:agent' child present in 'ttm:agent' element of type 'character'"},
+        { "missing-agent-name",                         Boolean.TRUE,   "no 'ttm:name' child present in 'ttm:agent' element"},
+        { "missing-profile",                            Boolean.FALSE,  "neither 'ttp:profile' attribute nor 'ttp:profile' element is present"},
+        { "negative-origin",                            Boolean.FALSE,  "either coordinate in 'tts:origin' is negative"},
+        { "out-of-range-opacity",                       Boolean.TRUE,   "'tts:opacity' is out of range [0,1]"},
         { "quoted-generic-font-family",                 Boolean.FALSE,  "generic font family appears in quoted form, negating generic name function" },
-        { "references-non-standard-extension",          Boolean.FALSE,  "ttp:extension element references non-standard extension"},
-        { "references-non-standard-profile",            Boolean.FALSE,  "ttp:profile element references non-standard profile from 'use' attribute"},
-        { "references-other-extension-namespace",       Boolean.FALSE,  "ttp:extensions element references other extension namespace"},
+        { "references-extension-role",                  Boolean.FALSE,  "'ttp:role' attribute specifies extension role"},
+        { "references-non-standard-extension",          Boolean.FALSE,  "'ttp:extension' element references non-standard extension"},
+        { "references-non-standard-profile",            Boolean.FALSE,  "'ttp:profile' element references non-standard profile from 'use' attribute"},
+        { "references-other-extension-namespace",       Boolean.FALSE,  "'ttp:extensions' element references other extension namespace"},
     };
     static {
         defaultWarnings = new java.util.HashMap<String,Boolean>();
@@ -414,15 +419,12 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     @Override
     public boolean logWarning(String message) {
-        if (treatWarningAsError) {
-            logError(message);
-            return true;
-        } else if (!disableWarnings) {
+        if (!disableWarnings) {
             if (!hideWarnings)
                 System.out.println("[W]:" + message);
             ++resourceWarnings;
         }
-        return false;
+        return treatWarningAsError;
     }
 
     @Override
@@ -1326,7 +1328,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     }
 
     private String plural(String noun, int count) {
-        if (count < 2)
+        if (count == 1)
             return noun;
         else
             return noun + "s";

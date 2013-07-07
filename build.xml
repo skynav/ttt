@@ -255,6 +255,9 @@
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-profiles.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-styles.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-all-timing.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-agent-idref-duplicate.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-agent-missing-actor.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-agent-missing-name.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-extensions-base-other-namespace.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-extension-non-standard.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-font-family-quoted-generic.xml"/>
@@ -266,6 +269,8 @@
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-profile-attribute-non-standard.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-profile-missing.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-profile-non-standard.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-role-duplicate.xml"/>
+    <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-role-extension.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-style-idref-duplicate-with-intervening.xml"/>
     <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml10-valid-style-idref-duplicate-without-intervening.xml"/>
   </java>

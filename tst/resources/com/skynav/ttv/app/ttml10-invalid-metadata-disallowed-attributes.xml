@@ -1,4 +1,4 @@
-<!-- invalid - disallowed metadata attribute - all contexts - should produce 18 errors and 2 warnings with warn-on all -->
+<!-- invalid - disallowed metadata attribute - all contexts - should produce 18 errors -->
 <tt
   xml:lang="en"
   xmlns="http://www.w3.org/ns/ttml"

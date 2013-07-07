@@ -4,7 +4,8 @@
   xmlns="http://www.w3.org/ns/ttml"
   xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
   xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
-  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  xmlns:tts="http://www.w3.org/ns/ttml#styling"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="3">
   <head>
     <metadata xml:id="m1"/>
     <ttm:title xml:id="title">A Title</ttm:title>

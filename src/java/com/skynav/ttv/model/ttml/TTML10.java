@@ -39,6 +39,7 @@ import com.skynav.ttv.model.ttml10.tt.Layout;
 import com.skynav.ttv.model.ttml10.tt.Region;
 import com.skynav.ttv.model.ttml10.tt.Style;
 import com.skynav.ttv.model.ttml10.tt.Styling;
+import com.skynav.ttv.model.ttml10.ttm.Agent;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
@@ -145,16 +146,23 @@ public class TTML10 {
         public Map<Class<?>,String> getRootClasses() {
             return rootClasses;
         }
+        private static final QName agentElementName = new com.skynav.ttv.model.ttml10.ttm.ObjectFactory().createAgent(new Agent()).getName();
         private static final QName regionElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createRegion(new Region()).getName();
         private static final QName styleElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createStyle(new Style()).getName();
+        private static final String metadataNamespaceUri = com.skynav.ttv.verifier.ttml.TTML10MetadataVerifier.getMetadataNamespaceUri();
         public QName getIdReferenceTargetName(QName attributeName) {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
             if ((namespaceUri == null) || (namespaceUri.length() == 0)) {
-                if (localName.equals("style"))
-                    return styleElementName;
+                if (localName.equals("agent"))
+                    return agentElementName;
                 else if (localName.equals("region"))
                     return regionElementName;
+                else if (localName.equals("style"))
+                    return styleElementName;
+            } else if (namespaceUri.equals(metadataNamespaceUri)) {
+                if (localName.equals("agent"))
+                    return agentElementName;
             }
             return null;
         }
@@ -162,10 +170,15 @@ public class TTML10 {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
             if ((namespaceUri == null) || (namespaceUri.length() == 0)) {
-                if (localName.equals("style"))
-                    return Style.class;
+                if (localName.equals("agent"))
+                    return Agent.class;
                 else if (localName.equals("region"))
                     return Region.class;
+                else if (localName.equals("style"))
+                    return Style.class;
+            } else if (namespaceUri.equals(metadataNamespaceUri)) {
+                if (localName.equals("agent"))
+                    return Agent.class;
             }
             return Object.class;
         }

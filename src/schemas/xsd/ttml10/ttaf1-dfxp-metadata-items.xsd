@@ -10,7 +10,7 @@
   <xs:include schemaLocation="ttaf1-dfxp-metadata-attribs.xsd"/>
   <xs:attributeGroup name="actor.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
-    <xs:attribute name="agent" type="xs:IDREF"/>
+    <xs:attribute name="agent" type="xs:IDREF" use="required"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="agent.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>

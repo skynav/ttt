@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - agent element of type 'character' - missing actor child - should produce 1 warning with warn-on all -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-full"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="1">
+  <head>
+    <ttm:agent xml:id="a1" type="character">
+      <ttm:name type="alias">Nobody</ttm:name>
+    </ttm:agent>
+  </head>
+  <body/>
+</tt>

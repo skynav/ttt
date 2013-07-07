@@ -4,7 +4,8 @@
     xmlns:tts="http://www.w3.org/ns/ttml#styling"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
     ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
-    tts:extent="640px 480px">
+    tts:extent="640px 480px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0">
   <head>
     <layout>
       <region xml:id="r1">

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad local agent attribute on actor element - multiple idref references - should fail pass 3 (schema) -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head xml:id="h1">
+    <ttm:agent xml:id="a1" type="person">
+      <ttm:name type="full">Doctor Jekyll</ttm:name>
+    </ttm:agent>
+    <ttm:agent xml:id="a2" type="person">
+      <ttm:name type="full">Mister Hyde</ttm:name>
+    </ttm:agent>
+    <ttm:agent xml:id="a3" type="group">
+      <ttm:name type="full">Jekyll and Hyde</ttm:name>
+      <ttm:actor agent="a1 a2"/>
+    </ttm:agent>
+  </head>
+  <body/>
+</tt>

@@ -96,6 +96,13 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if time expression expressed as clock-time and frames are not less than frame rate. (10.3.1)
  * Error if time expression expressed as clock-time and sub-frames are not less than sub-frame rate. (10.3.1)
  * Error if time expression uses frame component or `f` metric when tts:timeBase is clock. (10.3.1)
+ * Warn if ttm:agent element does not contain a ttm:name child and `missing-agent-name` warning is not disabled. (12.1.5)
+ * Warn if ttm:agent element does not contain a ttm:actor child when type='character' and `missing-agent-actor` warning is not disabled. (12.1.5)
+ * Error if actor element's agent attribute does not reference an agent element. (12.1.7)
+ * Error if ttm:agent attribute IDREF does not reference an agent element. (12.2.1)
+ * Warn if same IDREF appears more than once in specified ttm:agent attribute and `duplicate-idref-in-agent` is enabled. (12.2.1)
+ * Warn if same token appears more than once in specified ttm:role attribute and `duplicate-role` warning is not disabled. (12.2.2)
+ * Warn if ttm:role attribute references "x-" extension role and `references-extension-role` warning is enabled. (12.2.2)
  * Error if TT Metadata Namespace attribute specified on element where it is not explicitly permitted.
 
 ## Verification Model
@@ -221,26 +228,20 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
  * Error if TT Parameter Namespace attribute specified on element where it is not explicitly permitted.
  * Error if TT Style Namespace attribute specified on element where it is not explicitly permitted.
- * Warn if ttm:agent element does not contain a ttm:name child. (12.1.5 P3)
- * Warn if ttm:agent element does not contain a ttm:agent child when type='character'. (12.1.5 P6)
- * Error if actor element's agent attribute does not reference an agent element. (12.1.7 P3)
- * Error if ttm:agent attribute IDREF does not reference an agent element. (12.2.1 P2)
- * Warn if same IDREF appears more than once in specified ttm:agent attribute. (12.2.1)
- * Warn if same token appears more than once in specified ttm:role attribute. (12.2.2)
 
-## To Do (Optional)
+## Open Feature Requests
 
- * Notify if ttp:role uses an "x-" extension role.
- * Notify on unreferenced style element.
- * Notify on unreferenced region element.
- * Notify on unreferenced ttm:agent element.
- * Notify on presence of both end and dur such that dur (simple duration) is not same as end minus begin (preliminary active duration).
+ * Optionally warn if ttp:role uses an "x-" extension role.
+ * Optionally warn on unreferenced style element.
+ * Optionally warn on unreferenced region element.
+ * Optionally warn on unreferenced ttm:agent element.
+ * Optionally warn on presence of both end and dur such that dur (simple duration) is not same as end minus begin (preliminary active duration).
+ * Optionally warn if end time is less than or equal to begin time (for continuous time bases).
+ * Optionally warn if computed color or computed background color are problematic for color impaired viewers.
+ * Optionally warn if computed color and computed background color are low contrast.
+ * Optionally warn if style property specified on content element that cannot apply to any content element, e.g., extent, opacity, origin.
+ * Optionally warn if style property specified on content element that is initial value and is not overriding an inherited value.
+ * Optionally warn if redundant style IDREF is used twice in a row in style attribute.
+ * Optionally warn if agent element is not significant, i.e., specified somewhere other than in head or metadata element in head.
+ * Optionally warn if agent element is significant, but not referenced by a ttm:agent attribute.
  * Notify computed time interval of body based on content timing alone.
- * Notify if end time is less than or equal to begin time (for continuous time bases).
- * Notify if computed color or computed background color are problematic for color impaired viewers.
- * Notify if computed color and computed background color are low contrast.
- * Notify if style property specified on content element that cannot apply to any content element, e.g., extent, opacity, origin.
- * Notify if style property specified on content element that is initial value and is not overriding an inherited value.
- * Notify if redundant style IDREF is used twice in a row in style attribute.
- * Notify if agent element is not significant, i.e., specified somewhere other than in head or metadata element in head.
- * Notify if agent element is significant, but not referenced by a ttm:agent attribute.
