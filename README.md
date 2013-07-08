@@ -97,14 +97,19 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if time expression expressed as clock-time and frames are not less than frame rate. (10.3.1)
  * Error if time expression expressed as clock-time and sub-frames are not less than sub-frame rate. (10.3.1)
  * Error if time expression uses frame component or `f` metric when tts:timeBase is clock. (10.3.1)
+ * Error if set element specifies zero or more than one style attribute. (11.1.1)
  * Warn if ttm:agent element does not contain a ttm:name child and `missing-agent-name` warning is not disabled. (12.1.5)
  * Warn if ttm:agent element does not contain a ttm:actor child when type='character' and `missing-agent-actor` warning is not disabled. (12.1.5)
  * Error if ttm:actor element's agent attribute does not reference a ttm:agent element. (12.1.7)
+ * Error if ttm:actor element's agent attribute does not reference a significant ttm:agent element. (12.1.7)
  * Error if ttm:agent attribute IDREF does not reference a ttm:agent element. (12.2.1)
+ * Error if ttm:agent attribute IDREF does not reference a significant ttm:agent element. (12.2.1)
  * Warn if same IDREF appears more than once in specified ttm:agent attribute and `duplicate-idref-in-agent` is enabled. (12.2.1)
  * Warn if same token appears more than once in specified ttm:role attribute and `duplicate-role` warning is not disabled. (12.2.2)
  * Warn if ttm:role attribute references "x-" extension role and `references-extension-role` warning is enabled. (12.2.2)
  * Error if TT Metadata Namespace attribute specified on element where it is not explicitly permitted.
+ * Error if TT Parameter Namespace attribute specified on element where it is not explicitly permitted.
+ * Error if TT Style Namespace attribute specified on element where it is not explicitly permitted.
 
 ## Verification Model
 
@@ -221,32 +226,8 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
  * An (Helios) Eclipse workspace and `ttv` project are available under the `.eclipse` directory.
 
- * The primary developer (skynavga) is using Mac OSX 10.8.3 on an MBP 15" Retina.
+ * See the `dst` directory for archived source and binary releases.
 
- * Work on the first three testing phases is essentially complete as of May 24, 2013; however, the fourth phase remains work in progress, and, as such, users should not rely upon it until this documentation indicates it is (reasonably) complete.
+## Issues
 
-## To Do (Essential)
-
- * Error if ttm:agent attribute IDREF does not reference a significant ttm:agent element. (12.2.1)
- * Error if ttm:actor element's agent attribute does not reference a significant ttm:agent element. (12.1.7)
- * Error if TT Parameter Namespace attribute specified on element where it is not explicitly permitted.
- * Error if TT Style Namespace attribute specified on element where it is not explicitly permitted.
-
-## Open Feature Requests
-
- * Optionally warn on empty styling element.
- * Optionally warn on unreferenced style element.
- * Optionally warn on empty layout element.
- * Optionally warn on unreferenced region element.
- * Optionally warn on unreferenced ttm:agent element.
- * Optionally warn on presence of both end and dur such that dur (simple duration) is not same as end minus begin (preliminary active duration).
- * Optionally warn if end time is less than or equal to begin time (for continuous time bases).
- * Optionally warn if computed color or computed background color are problematic for color impaired viewers.
- * Optionally warn if computed color and computed background color are low contrast.
- * Optionally warn if style property specified on content element that cannot apply to any content element, e.g., extent, opacity, origin.
- * Optionally warn if style property specified on content element that is initial value and is not overriding an inherited value.
- * Optionally warn if ttm:agent element is not significant.
- * Optionally warn if ttm:copyright element is not significant.
- * Optionally warn if ttm:desc element is not significant.
- * Optionally warn if ttm:title element is not significant.
- * Notify computed time interval of body based on content timing alone.
+See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current known bugs, feature requests (enhancements), etc.

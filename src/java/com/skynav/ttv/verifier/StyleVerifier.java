@@ -27,9 +27,7 @@ package com.skynav.ttv.verifier;
 
 import javax.xml.namespace.QName;
 
-import org.xml.sax.Locator;
-
-public interface StyleVerifier {
+public interface StyleVerifier extends ItemVerifier {
 
     /**
      * Obtain qualified name for style attribute given a unique, unqualified style property name.
@@ -37,14 +35,5 @@ public interface StyleVerifier {
      * @return a qualified name or null if unknown style property
      */
     QName getStyleAttributeName(String propertyName);
-
-    /**
-     * Verify style properties of content object.
-     * @param content a JAXB content object
-     * @param locator a locator that corresponds to the lexical location of the content object
-     * @param context verifier context
-     * @return true if validation succeeds without error
-     */
-    boolean verify(Object content, Locator locator, VerifierContext context);
 
 }

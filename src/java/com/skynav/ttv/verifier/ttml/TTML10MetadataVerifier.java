@@ -34,14 +34,15 @@ import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml10.tt.Body;
-import com.skynav.ttv.model.ttml10.tt.Break;
 import com.skynav.ttv.model.ttml10.tt.Division;
 import com.skynav.ttv.model.ttml10.tt.Paragraph;
 import com.skynav.ttv.model.ttml10.tt.Span;
+import com.skynav.ttv.model.ttml10.tt.Break;
 import com.skynav.ttv.model.ttml10.tt.Metadata;
 import com.skynav.ttv.model.ttml10.ttd.AgentType;
 import com.skynav.ttv.model.ttml10.ttm.Actor;
@@ -104,25 +105,74 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
         return null;
     }
 
-    public boolean verify(Object content, Locator locator, VerifierContext context) {
-        boolean failedAttributeItem = false;
+    public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        if (type == ItemType.Attributes)
+            return verifyAttributeItems(content, locator, context);
+        else if (type == ItemType.Element)
+            return verifyElementItem(content, locator, context);
+        else if (type == ItemType.Other)
+            return verifyOtherAttributes(content, locator, context);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    private boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
         for (QName name : accessors.keySet()) {
             MetadataAccessor sa = accessors.get(name);
             if (!sa.verify(model, content, locator, context))
-                failedAttributeItem = true;
+                failed = true;
         }
-        boolean failedElementItem = false;
+        return !failed;
+    }
+
+    private boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
         if (content instanceof Actor)
-            failedElementItem = !verify((Actor) content, locator, context);
+            failed = !verify((Actor) content, locator, context);
         else if (content instanceof Agent)
-            failedElementItem = !verify((Agent) content, locator, context);
+            failed = !verify((Agent) content, locator, context);
         else if (content instanceof Metadata)
-            failedElementItem = !verify((Metadata) content, locator, context);
+            failed = !verify((Metadata) content, locator, context);
         else if (content instanceof Name)
-            failedElementItem = !verify((Name) content, locator, context);
-        if (failedElementItem)
+            failed = !verify((Name) content, locator, context);
+        if (failed)
             context.getReporter().logError(locator, "Invalid '" + context.getBindingElementName(content) + "' metadata item.");
-        return !failedAttributeItem && !failedElementItem;
+        return !failed;
+    }
+
+    private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (!permitsMetadataAttribute(content)) {
+            NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
+            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+                Node attribute = attributes.item(i);
+                String nsUri = attribute.getNamespaceURI();
+                if ((nsUri != null) && nsUri.equals(metadataNamespace)) {
+                    context.getReporter().logError(locator, "TT Metadata attribute '" + new QName(nsUri, attribute.getLocalName()) + "' not permitted on '" +
+                        context.getBindingElementName(content) + "'.");
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    private boolean permitsMetadataAttribute(Object content) {
+        if (content instanceof Body)
+            return true;
+        else if (content instanceof Division)
+            return true;
+        else if (content instanceof Paragraph)
+            return true;
+        else if (content instanceof Span)
+            return true;
+        else if (content instanceof Break)
+            return true;
+        else if (content instanceof Metadata)
+            return true;
+        else
+            return false;
     }
 
     private final QName actorAgentAttributeName = new QName("", "agent");
@@ -205,11 +255,7 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
             boolean success = true;
             Object value = getMetadataValue(content);
             if (value != null) {
-                if (!permitsMetadataAttribute(content)) {
-                    context.getReporter().logInfo(locator, "TT Metadata attribute '" + metadataName + "' not permitted on '" +
-                        context.getBindingElementName(content) + "'.");
-                    success = false;
-                } else if (value instanceof String)
+                if (value instanceof String)
                     success = verify(model, content, (String) value, locator, context);
                 else
                     success = verifier.verify(model, content, metadataName, value, locator, context);
@@ -223,23 +269,6 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
                 context.getReporter().logError(locator, "Invalid " + metadataName + " value '" + value + "'.");
             }
             return success;
-        }
-
-        private boolean permitsMetadataAttribute(Object content) {
-            if (content instanceof Body)
-                return true;
-            else if (content instanceof Division)
-                return true;
-            else if (content instanceof Paragraph)
-                return true;
-            else if (content instanceof Span)
-                return true;
-            else if (content instanceof Break)
-                return true;
-            else if (content instanceof Metadata)
-                return true;
-            else
-                return false;
         }
 
         private boolean verify(Model model, Object content, String value, Locator locator, VerifierContext context) {
@@ -288,7 +317,7 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (NoSuchMethodException e) {
-                return convertType(getMetadataValueAsString(content), valueClass);
+                return null;
             } catch (SecurityException e) {
                 throw new RuntimeException(e);
             }
@@ -297,28 +326,6 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
         private void setMetadataDefaultValue(Object content) {
             if (defaultValue != null)
                 throw new UnsupportedOperationException();
-        }
-
-        private String getMetadataValueAsString(Object content) {
-            try {
-                Class<?> contentClass = content.getClass();
-                Method m = contentClass.getMethod("getOtherAttributes", new Class<?>[]{});
-                Object otherAttributes = m.invoke(content, new Object[]{});
-                if ((otherAttributes != null) && (otherAttributes instanceof Map<?,?>)) {
-                    return (String) (((Map<?,?>)otherAttributes).get(metadataName));
-                }
-                return null;
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                return null;
-            } catch (SecurityException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         private Object convertType(Object value, Class<?> targetClass) {

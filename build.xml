@@ -38,17 +38,21 @@
 <property name="test.resources.source.dir" value="${test.dir}/resources"/>
 <property name="test.classes.dir" value="${build.dir}/test-classes"/>
 <property name="test.resources.dir" value="${build.dir}/test-resources"/>
+<property name="release.dir" value="${basedir}/dst"/>
 
 <property name="ttv.jar" value="ttv.jar"/>
+<property name="ttv.source.jar" value="ttv-source.jar"/>
 <property name="ttv.main.class" value="com/skynav/ttv/app/TimedTextVerifier"/>
 <property name="ttv.target" value="${artifacts.dir}/${ttv.jar}"/>
+<property name="ttv.source.target" value="${artifacts.dir}/${ttv.source.jar}"/>
 <property name="ttv.title" value="Timed Text Verifier"/>
-<property name="ttv.version.major" value="0"/>
+<property name="ttv.version.major" value="1"/>
 <property name="ttv.version.minor" value="0"/>
 <property name="ttv.version.micro" value="0"/>
-<property name="ttv.version.suffix" value="dev"/>
+<property name="ttv.version.suffix" value="a1"/>
 <property name="ttv.version" value="${ttv.version.major}.${ttv.version.minor}.${ttv.version.micro}${ttv.version.suffix}"/>
 <property name="ttv.vendor" value="Skynav, Inc."/>
+<property name="ttv.release.target" value="${release.dir}/ttv-bin-${ttv.version}.jar"/>
 
 <property name="javac.debug" value="true"/>
 <property name="javac.deprecation" value="true"/>
@@ -164,6 +168,7 @@
   <tstamp>
     <format property="ts" pattern="yyyyMMdd-HHmmss-z"/>
   </tstamp>
+  <property name="build.id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}, Java ${java.runtime.version}, Target Java ${javac.target}])"/>
   <jar jarfile="${ttv.target}">
     <fileset dir="${classes.dir}"/>
     <fileset dir="${schemas.dir}"/>
@@ -171,8 +176,22 @@
       <attribute name="Implementation-Title" value="${ttv.title}"/>
       <attribute name="Implementation-Version" value="${ttv.version}"/>
       <attribute name="Implementation-Vendor" value="${ttv.vendor}"/>
-      <attribute name="Build-Id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}, Java ${java.runtime.version}, Target Java ${javac.target}])"/>
+      <attribute name="Build-Id" value="${build.id}"/>
       <attribute name="Main-Class" value="${ttv.main.class}"/>
+    </manifest>
+  </jar>
+  <jar jarfile="${ttv.source.target}">
+    <fileset dir="${basedir}">
+      <include name="build.xml"/>
+      <include name="README.md"/>
+      <include name="src/**/*.*"/>
+      <include name="tst/**/*.*"/>
+    </fileset>
+    <manifest>
+      <attribute name="Implementation-Title" value="${ttv.title} Source"/>
+      <attribute name="Implementation-Version" value="${ttv.version}"/>
+      <attribute name="Implementation-Vendor" value="${ttv.vendor}"/>
+      <attribute name="Build-Id" value="${build.id}"/>
     </manifest>
   </jar>
 </target>
@@ -198,6 +217,48 @@
 <target name="test-apps" description="Run TTV application tests" depends="test-verifier"/>
 
 <target name="test" description="Run all TTV test suites" depends="compile-tests, test-xml, test-ttml10, test-apps"/>
+
+<target name="release-dist">
+  <copy file="${ttv.target}" tofile="${release.dir}/ttv-bin-${ttv.version}.jar"/>
+  <copy file="${ttv.source.target}" tofile="${release.dir}/ttv-src-${ttv.version}.jar"/>
+</target>
+
+<target name="release-sign">
+  <input message="Passphrase for your default private key (attention: passphrase will be echoed in clear text on the display!)" addproperty="pwd"/>
+  <antcall target="sha">
+    <param name="sign.archive" value="${release.dir}/ttv-bin-${ttv.version}.jar"/>
+  </antcall>
+  <antcall target="sign-file">
+    <param name="sign.archive" value="${release.dir}/ttv-bin-${ttv.version}.jar"/>
+    <param name="pwd" value="${pwd}"/>
+  </antcall>
+  <antcall target="sha">
+    <param name="sign.archive" value="${release.dir}/ttv-src-${ttv.version}.jar"/>
+  </antcall>
+  <antcall target="sign-file">
+    <param name="sign.archive" value="${release.dir}/ttv-src-${ttv.version}.jar"/>
+    <param name="pwd" value="${pwd}"/>
+  </antcall>
+</target>
+
+<target name="release" depends="clean-test, release-dist, release-sign"/>
+
+<target name="sha">
+  <property name="sha.exec" value="shasum"/>
+  <property name="sha.options" value=""/>
+  <exec executable="${sha.exec}" output="${sign.archive}.sha">
+    <arg line="${sha.options} ${sign.archive}"/>
+  </exec>
+</target>
+
+<target name="sign-file">
+  <property name="gpg.exec" value="gpg"/>
+  <property name="gpg.options" value="--armor --detach-sign --force-v3-sigs --batch --verbose --passphrase-fd 0"/>
+  <delete file="${sign.archive}.asc"/>
+  <exec executable="${gpg.exec}" inputstring="${pwd}">
+    <arg line="${gpg.options} ${sign.archive}"/>
+  </exec>
+</target>
 
 <target name="clean-classes">
   <delete includeemptydirs="true" quiet="true">

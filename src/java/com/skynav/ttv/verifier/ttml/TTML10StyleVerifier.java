@@ -32,6 +32,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
@@ -40,6 +43,7 @@ import com.skynav.ttv.model.ttml10.tt.Break;
 import com.skynav.ttv.model.ttml10.tt.Division;
 import com.skynav.ttv.model.ttml10.tt.Paragraph;
 import com.skynav.ttv.model.ttml10.tt.Region;
+import com.skynav.ttv.model.ttml10.tt.Set;
 import com.skynav.ttv.model.ttml10.tt.Span;
 import com.skynav.ttv.model.ttml10.tt.Style;
 import com.skynav.ttv.model.ttml10.tt.TimedText;
@@ -98,6 +102,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
         return styleNamespace;
     }
 
+    private static QName extentAttributeName = new QName(styleNamespace,"extent");
     private static Object[][] styleAccessorMap = new Object[][] {
         {
             new QName(styleNamespace,"backgroundColor"),        // attribute name
@@ -140,7 +145,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             DisplayAlign.BEFORE,
         },
         {
-            new QName(styleNamespace,"extent"),
+            extentAttributeName,
             "Extent",
             String.class,
             ExtentVerifier.class,
@@ -326,12 +331,90 @@ public class TTML10StyleVerifier implements StyleVerifier {
         return null;
     }
 
-    public boolean verify(Object content, Locator locator, VerifierContext context) {
+    public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        if (type == ItemType.Attributes)
+            return verifyAttributeItems(content, locator, context);
+        else if (type == ItemType.Element)
+            return verifyElementItem(content, locator, context);
+        else if (type == ItemType.Other)
+            return verifyOtherAttributes(content, locator, context);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    private boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
             StyleAccessor sa = accessors.get(name);
             if (!sa.verify(model, content, locator, context))
                 failed = true;
+        }
+        return !failed;
+    }
+
+    private boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (content instanceof Set)
+            failed = !verify((Set) content, locator, context);
+        if (failed)
+            context.getReporter().logError(locator, "Invalid '" + context.getBindingElementName(content) + "' styled item.");
+        return !failed;
+    }
+
+    private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (!permitsStyleAttribute(content)) {
+            NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
+            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+                Node attribute = attributes.item(i);
+                String nsUri = attribute.getNamespaceURI();
+                QName name = new QName(nsUri != null ? nsUri : "", attribute.getLocalName());
+                if ((content instanceof TimedText) && name.equals(extentAttributeName))
+                    continue;
+                if (name.getNamespaceURI().equals(styleNamespace)) {
+                    context.getReporter().logError(locator, "TT Style attribute '" + name + "' not permitted on '" +
+                        context.getBindingElementName(content) + "'.");
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    private boolean permitsStyleAttribute(Object content) {
+        if (content instanceof Body)
+            return true;
+        else if (content instanceof Division)
+            return true;
+        else if (content instanceof Paragraph)
+            return true;
+        else if (content instanceof Span)
+            return true;
+        else if (content instanceof Break)
+            return true;
+        else if (content instanceof Style)
+            return true;
+        else if (content instanceof Region)
+            return true;
+        else if (content instanceof Set)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean verify(Set content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        int numStyleAttributes = 0;
+        NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
+        for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+            Node attribute = attributes.item(i);
+            String nsUri = attribute.getNamespaceURI();
+            if ((nsUri != null) && nsUri.equals(styleNamespace))
+                ++numStyleAttributes;
+        }
+        if (numStyleAttributes > 1) {
+            context.getReporter().logInfo(locator, "Style attribute count exceeds maximum, got " + numStyleAttributes + ", expected no more than 1.");
+            failed = true;
         }
         return !failed;
     }
@@ -368,7 +451,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             populate(styleName, accessorName, valueClass, verifierClass, paddingPermitted, defaultValue);
         }
 
-        public boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
+        private boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
             boolean success = true;
             Object value = getStyleValue(content);
             if (value != null) {
@@ -438,21 +521,14 @@ public class TTML10StyleVerifier implements StyleVerifier {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (NoSuchMethodException e) {
-                if (content instanceof TimedText)
-                    return convertType(getStyleValueAsString((TimedText) content), valueClass);
-                else if (styleName.equals(regionAttributeName) && !takesRegionAttribute(content))
-                    return null;
-                else if (styleName.equals(styleAttributeName) && !takesStyleAttribute(content))
-                    return null;
-                else
-                    throw new RuntimeException(e);
+                return null;
             } catch (SecurityException e) {
                 throw new RuntimeException(e);
             }
         }
 
         private void setStyleDefaultValue(Object content) {
-            if (content instanceof TimedText) {
+            if (content instanceof Region) {
                 if (defaultValue != null)
                     setStyleValue(content, defaultValue);
             }
@@ -470,59 +546,10 @@ public class TTML10StyleVerifier implements StyleVerifier {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (NoSuchMethodException e) {
-                if (content instanceof TimedText)
-                    setStyleValueAsString((TimedText) content, value);
-                else
-                    throw new RuntimeException(e);
+                throw new RuntimeException(e);
             } catch (SecurityException e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        private boolean takesRegionAttribute(Object content) {
-            if (content instanceof Region)
-                return false;
-            else if (content instanceof Style)
-                return false;
-            else if (content instanceof Break) {
-                // N.B. This may change in TTML.next; see https://www.w3.org/AudioVideo/TT/tracker/issues/254
-                return false;
-            } else
-                return isContent(content);
-        }
-
-        private boolean takesStyleAttribute(Object content) {
-            if (content instanceof Region)
-                return true;
-            else if (content instanceof Style)
-                return true;
-            else
-                return isContent(content);
-        }
-
-        private boolean isContent(Object content) {
-            if (content instanceof TimedText)
-                return true;
-            else if (content instanceof Body)
-                return true;
-            else if (content instanceof Division)
-                return true;
-            else if (content instanceof Paragraph)
-                return true;
-            else if (content instanceof Span)
-                return true;
-            else if (content instanceof Break)
-                return true;
-            else
-                return false;
-        }
-
-        private String getStyleValueAsString(TimedText content) {
-            return content.getOtherAttributes().get(styleName);
-        }
-
-        private void setStyleValueAsString(TimedText content, Object value) {
-            content.getOtherAttributes().put(styleName, (String) convertType(value, String.class));
         }
 
         private Object convertType(Object value, Class<?> targetClass) {

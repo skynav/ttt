@@ -60,8 +60,28 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidBadIdReferenceUnresolvable() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-id-reference-unresolvable.xml", 1, 0);
+    public void testInvalidBadActorAgentIdrefMultiple() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-multiple.xml", 2, 0);
+    }
+
+    @Test
+    public void testInvalidBadActorAgentIdrefNonSignificant() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-non-significant.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadActorAgentIdrefWrongEltype() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-wrong-eltype.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadAgentIdrefNonSignificant() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-agent-idref-non-significant.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadAgentIdrefWrongEltype() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-agent-idref-wrong-eltype.xml", 1, 0);
     }
 
     @Test
@@ -1205,28 +1225,18 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidBadActorAgentIdrefMultiple() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-multiple.xml", 2, 0);
+    public void testInvalidParameterDisallowedAttributes() throws Exception {
+        performInvalidityTest("ttml10-invalid-parameter-disallowed-attributes.xml", 18, 0);
     }
 
     @Test
-    public void testInvalidBadActorAgentIdrefNonSignificant() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-non-significant.xml", 1, 0);
+    public void testInvalidSetMaximumStyleCountExceeded() throws Exception {
+        performInvalidityTest("ttml10-invalid-set-maximum-style-count-exceeded.xml", 2, 0);
     }
 
     @Test
-    public void testInvalidBadActorAgentIdrefWrongEltype() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-wrong-eltype.xml", 1, 0);
-    }
-
-    @Test
-    public void testInvalidBadAgentIdrefNonSignificant() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-agent-idref-non-significant.xml", 1, 0);
-    }
-
-    @Test
-    public void testInvalidBadAgentIdrefWrongEltype() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-agent-idref-wrong-eltype.xml", 1, 0);
+    public void testInvalidStyleDisallowedAttributes() throws Exception {
+        performInvalidityTest("ttml10-invalid-style-disallowed-attributes.xml", 15, 0);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

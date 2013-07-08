@@ -25,17 +25,4 @@
  
 package com.skynav.ttv.verifier;
 
-import org.xml.sax.Locator;
-
-public interface ProfileVerifier {
-
-    /**
-     * Verify profile related items.
-     * @param content a JAXB content object
-     * @param locator a locator that corresponds to the lexical location of the content object
-     * @param context verifier context
-     * @return true if validation succeeds without error
-     */
-    boolean verify(Object content, Locator locator, VerifierContext context);
-
-}
+public interface ProfileVerifier extends ItemVerifier {}

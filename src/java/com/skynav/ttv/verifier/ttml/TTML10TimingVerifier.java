@@ -88,7 +88,14 @@ public class TTML10TimingVerifier implements TimingVerifier {
         populate(model);
     }
 
-    public boolean verify(Object content, Locator locator, VerifierContext context) {
+    public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        if (type == ItemType.Attributes)
+            return verifyAttributeItems(content, locator, context);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    private boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof TimedText) {
             verificationParameters = new TimingVerificationParameters((TimedText) content);

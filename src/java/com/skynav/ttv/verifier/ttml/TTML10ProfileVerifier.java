@@ -52,7 +52,14 @@ public class TTML10ProfileVerifier implements ProfileVerifier {
         populate(model);
     }
 
-    public boolean verify(Object content, Locator locator, VerifierContext context) {
+    public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        if (type == ItemType.Element)
+            return verifyElementItem(content, locator, context);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    private boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof TimedText)
             failed = !verify((TimedText) content, locator, context);

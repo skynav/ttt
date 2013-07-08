@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- invalid - bad id reference - unresolvable -->
-<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml">
-  <head/>
-  <body region="id1"/>
-</tt>

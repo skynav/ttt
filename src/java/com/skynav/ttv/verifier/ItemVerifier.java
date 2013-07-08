@@ -25,15 +25,24 @@
  
 package com.skynav.ttv.verifier;
 
-import javax.xml.namespace.QName;
+import org.xml.sax.Locator;
 
-public interface ParameterVerifier extends ItemVerifier {
+public interface ItemVerifier {
+
+    public enum ItemType {
+        Attributes,
+        Element,
+        Other;
+    }
 
     /**
-     * Obtain qualified name for parameter attribute given a unique, unqualified parameter name.
-     * @param propertyName non-empty local name for parameter
-     * @return a qualified name or null if parameter
+     * Verify item(s).
+     * @param content a JAXB content object
+     * @param locator a locator that corresponds to the lexical location of the content object
+     * @param context verifier context
+     * @param type of item(s) to verify
+     * @return true if validation succeeds without error
      */
-    QName getParameterAttributeName(String parameterName);
+    boolean verify(Object content, Locator locator, VerifierContext context, ItemType type);
 
 }

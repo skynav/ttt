@@ -32,6 +32,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
@@ -42,7 +45,6 @@ import com.skynav.ttv.model.ttml10.ttd.MarkerMode;
 import com.skynav.ttv.model.ttml10.ttd.TimeBase;
 import com.skynav.ttv.model.ttml10.ttp.Extensions;
 import com.skynav.ttv.model.ttml10.ttp.Features;
-import com.skynav.ttv.model.ttml10.ttp.Profile;
 import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
@@ -65,15 +67,15 @@ import com.skynav.xml.helpers.XML;
 
 public class TTML10ParameterVerifier implements ParameterVerifier {
 
-    private static final String paramNamespace = "http://www.w3.org/ns/ttml#parameter";
+    private static final String parameterNamespace = "http://www.w3.org/ns/ttml#parameter";
 
     public static final String getParameterNamespaceUri() {
-        return paramNamespace;
+        return parameterNamespace;
     }
 
     private static Object[][] parameterAccessorMap = new Object[][] {
         {
-            new QName(paramNamespace,"cellResolution"),         // attribute name
+            new QName(parameterNamespace,"cellResolution"),     // attribute name
             "CellResolution",                                   // accessor method name suffix
             String.class,                                       // value type
             CellResolutionVerifier.class,                       // specialized verifier
@@ -81,7 +83,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             "32 15",                                            // default value
         },
         {
-            new QName(paramNamespace,"clockMode"),
+            new QName(parameterNamespace,"clockMode"),
             "ClockMode",
             ClockMode.class,
             ClockModeVerifier.class,
@@ -89,7 +91,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             ClockMode.UTC,
         },
         {
-            new QName(paramNamespace,"dropMode"),
+            new QName(parameterNamespace,"dropMode"),
             "DropMode",
             DropMode.class,
             DropModeVerifier.class,
@@ -97,7 +99,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             DropMode.NON_DROP,
         },
         {
-            new QName(paramNamespace,"frameRate"),
+            new QName(parameterNamespace,"frameRate"),
             "FrameRate",
             BigInteger.class,
             FrameRateVerifier.class,
@@ -105,7 +107,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(30),
         },
         {
-            new QName(paramNamespace,"frameRateMultiplier"),
+            new QName(parameterNamespace,"frameRateMultiplier"),
             "FrameRateMultiplier",
             String.class,
             FrameRateMultiplierVerifier.class,
@@ -113,7 +115,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             "1 1",
         },
         {
-            new QName(paramNamespace,"markerMode"),
+            new QName(parameterNamespace,"markerMode"),
             "MarkerMode",
             MarkerMode.class,
             MarkerModeVerifier.class,
@@ -121,7 +123,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             MarkerMode.DISCONTINUOUS,
         },
         {
-            new QName(paramNamespace,"pixelAspectRatio"),
+            new QName(parameterNamespace,"pixelAspectRatio"),
             "PixelAspectRatio",
             String.class,
             PixelAspectRatioVerifier.class,
@@ -129,7 +131,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             "1 1",
         },
         {
-            new QName(paramNamespace,"profile"),
+            new QName(parameterNamespace,"profile"),
             "Profile",
             String.class,
             ProfileVerifier.class,
@@ -137,7 +139,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             null,
         },
         {
-            new QName(paramNamespace,"subFrameRate"),
+            new QName(parameterNamespace,"subFrameRate"),
             "SubFrameRate",
             BigInteger.class,
             SubFrameRateVerifier.class,
@@ -145,7 +147,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(1),
         },
         {
-            new QName(paramNamespace,"tickRate"),
+            new QName(parameterNamespace,"tickRate"),
             "TickRate",
             BigInteger.class,
             TickRateVerifier.class,
@@ -153,7 +155,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(1),
         },
         {
-            new QName(paramNamespace,"timeBase"),
+            new QName(parameterNamespace,"timeBase"),
             "TimeBase",
             TimeBase.class,
             TimeBaseVerifier.class,
@@ -197,7 +199,16 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
         return null;
     }
 
-    public boolean verify(Object content, Locator locator, VerifierContext context) {
+    public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        if (type == ItemType.Attributes)
+            return verifyAttributeItems(content, locator, context);
+        else if (type == ItemType.Other)
+            return verifyOtherAttributes(content, locator, context);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    private boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
             ParameterAccessor sa = accessors.get(name);
@@ -205,6 +216,30 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
                 failed = true;
         }
         return !failed;
+    }
+
+    private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (!permitsParameterAttribute(content)) {
+            NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
+            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+                Node attribute = attributes.item(i);
+                String nsUri = attribute.getNamespaceURI();
+                if ((nsUri != null) && nsUri.equals(parameterNamespace)) {
+                    context.getReporter().logError(locator, "TT Parameter attribute '" + new QName(nsUri, attribute.getLocalName()) + "' not permitted on '" +
+                        context.getBindingElementName(content) + "'.");
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    private boolean permitsParameterAttribute(Object content) {
+        if (content instanceof TimedText)
+            return true;
+        else
+            return false;
     }
 
     private void populate(Model model) {
@@ -298,22 +333,14 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (NoSuchMethodException e) {
-                if (content instanceof TimedText)
-                    return convertType(getParameterValueAsString((TimedText) content), valueClass);
-                else if (content instanceof Profile)
-                    return null;
-                else if (content instanceof Features)
-                    return null;
-                else if (content instanceof Extensions)
-                    return null;
-                else
-                    throw new RuntimeException(e);
+                return null;
             } catch (SecurityException e) {
                 throw new RuntimeException(e);
             }
         }
 
         private void setParameterDefaultValue(Object content) {
+            Object defaultValue = this.defaultValue;
             if (content instanceof TimedText) {
                 if (defaultValue != null)
                     setParameterValue(content, defaultValue);
@@ -341,21 +368,10 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (NoSuchMethodException e) {
-                if (content instanceof TimedText)
-                    setParameterValueAsString((TimedText) content, value);
-                else
-                    throw new RuntimeException(e);
+                throw new RuntimeException(e);
             } catch (SecurityException e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        private String getParameterValueAsString(TimedText content) {
-            return content.getOtherAttributes().get(parameterName);
-        }
-
-        private void setParameterValueAsString(TimedText content, Object value) {
-            content.getOtherAttributes().put(parameterName, (String) convertType(value, String.class));
         }
 
         private Object convertType(Object value, Class<?> targetClass) {
