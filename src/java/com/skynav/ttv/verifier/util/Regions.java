@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier.util;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Node;
@@ -32,19 +34,37 @@ import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.xml.helpers.Nodes;
 
 public class Regions {
 
-    public static boolean isRegionReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass) {
+    public static boolean isRegionReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
+            return false;
+        if (!isSignificantRegion(node, value, ancestors))
             return false;
         return true;
     }
 
-    public static void badRegionReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute, QName targetName, Class<?> targetClass) {
-        if (!targetClass.isInstance(value)) {
+    public static void badRegionReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+        QName targetName, Class<?> targetClass, List<List<QName>> ancestors) {
+        if (!targetClass.isInstance(value))
             IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
-        }
+        else if (!isSignificantRegion(node, value, ancestors))
+            badRegionSignificance(node, value, locator, context, referencingAttribute, targetName, ancestors);
+    }
+
+    private static boolean isSignificantRegion(Node node, Object value, List<List<QName>> ancestors) {
+        // N.B. that TTML1.0 schema doesn't allow region element anywhere except as a child of layout.
+        assert Nodes.hasAncestors(node, ancestors);
+        return Nodes.hasAncestors(node, ancestors);
+    }
+
+    private static void badRegionSignificance(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+        // N.B. that this is not possible to test with TTML1.0 since no "insignificant" region can be validly specified.
+        QName targetName, List<List<QName>> ancestors) {
+        context.getReporter().logInfo(locator,
+            "Bad IDREF '" + IdReferences.getId(value) + "', must reference significant '" + targetName + "' which ancestors are one of " + ancestors + ".");
     }
 
 }

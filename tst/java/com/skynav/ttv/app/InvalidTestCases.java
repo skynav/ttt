@@ -1070,8 +1070,8 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidBadStyleIdrefNonStyling() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-style-idref-non-styling.xml", 1, 0);
+    public void testInvalidBadStyleIdrefNonSignificant() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-style-idref-non-significant.xml", 1, 0);
     }
 
     @Test
@@ -1205,13 +1205,23 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidBadAgentActorIdrefWrongEltype() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-agent-actor-idref-wrong-eltype.xml", 1, 0);
+    public void testInvalidBadActorAgentIdrefMultiple() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-multiple.xml", 2, 0);
     }
 
     @Test
-    public void testInvalidBadAgentActorIdrefMultiple() throws Exception {
-        performInvalidityTest("ttml10-invalid-bad-agent-actor-idref-multiple.xml", 2, 0);
+    public void testInvalidBadActorAgentIdrefNonSignificant() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-non-significant.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadActorAgentIdrefWrongEltype() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-actor-agent-idref-wrong-eltype.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadAgentIdrefNonSignificant() throws Exception {
+        performInvalidityTest("ttml10-invalid-bad-agent-idref-non-significant.xml", 1, 0);
     }
 
     @Test

@@ -46,7 +46,7 @@ public class StyleAttributeVerifier implements StyleValueVerifier {
         boolean failed = false;
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
-        Set<QName> ancestorNames = model.getIdReferenceAncestorNames(name);
+        List<List<QName>> ancestors = model.getIdReferencePermissibleAncestors(name);
         assert valueObject instanceof List<?>;
         List<?> styles = (List<?>) valueObject;
         if (styles.size() > 0) {
@@ -54,8 +54,8 @@ public class StyleAttributeVerifier implements StyleValueVerifier {
             Set<String> styleIdentifiers = new java.util.HashSet<String>();
             for (Object style : styles) {
                 Node node = context.getXMLNode(style);
-                if (!Styles.isStyleReference(node, style, locator, context, targetClass, ancestorNames)) {
-                    Styles.badStyleReference(node, style, locator, context, name, targetName, targetClass, ancestorNames);
+                if (!Styles.isStyleReference(node, style, locator, context, targetClass, ancestors)) {
+                    Styles.badStyleReference(node, style, locator, context, name, targetName, targetClass, ancestors);
                     failed = true;
                 }
                 String id = IdReferences.getId(style);

@@ -25,6 +25,7 @@
  
 package com.skynav.xml.helpers;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -37,6 +38,51 @@ public class Nodes {
     private Nodes() {
     }
 
+    /**
+     * Determine if node has any one of a specified list of immediate ancestor names
+     * ordered from most immediate to least immediate.
+     * @param node
+     * @param ancestors list of lists of immediate ancestor names
+     * @return true if ancestors of node match any list of immediate ancestor names
+     */
+    public static boolean hasAncestors(Node node, List<List<QName>> ancestors) {
+        for (List<QName> ancestorNames : ancestors) {
+            if (hasImmediateAncestors(node, ancestorNames))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determine if node has immediate ancestors in a list of ancestor names
+     * ordered from most immediate to least immediate.
+     * @param node
+     * @param ancestorNames list of ancestor names in most to least immediate order
+     * @return true if ancestors of node match specified list of ancestor names
+     */
+    public static boolean hasImmediateAncestors(Node node, List<QName> ancestorNames) {
+        for (QName name : ancestorNames) {
+            if (node == null)
+                return false;
+            else {
+                Node parentNode = node.getParentNode();
+                if (parentNode == null)
+                    return false;
+                else if (!matchesName(parentNode, name))
+                    return false;
+                else
+                    node = parentNode;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Determine if node has an any ancestor in set of ancestor names.
+     * @param node
+     * @param ancestorNames set of possible ancestors
+     * @return true if any ancestor node matches one of the specified set of ancestor names
+     */
     public static boolean hasAncestor(Node node, Set<QName> ancestorNames) {
         for (QName ancestorName : ancestorNames) {
             if (hasAncestor(node, ancestorName))
@@ -45,6 +91,12 @@ public class Nodes {
         return false;
     }
 
+    /**
+     * Determine if node has an ancestor of specified name.
+     * @param node
+     * @param ancestorName ancestor name
+     * @return true if any ancestor node matches the specified name
+     */
     public static boolean hasAncestor(Node node, QName ancestorName) {
         while ((node != null) && (node instanceof Element)) {
             if (matchesName(node, ancestorName))
@@ -54,6 +106,11 @@ public class Nodes {
         return false;
     }
 
+    /**
+     * Determine of node's qualified name matches specified name.
+     * @param name
+     * @return true if node's qualified name matches specified name.
+     */
     public static boolean matchesName(Node node, QName name) {
         QName nodeName = new QName(node.getNamespaceURI(), node.getLocalName());
         return nodeName.equals(name);

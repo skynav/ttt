@@ -46,14 +46,15 @@ public class AgentAttributeVerifier implements MetadataValueVerifier {
         boolean failed = false;
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
+        List<List<QName>> ancestors = model.getIdReferencePermissibleAncestors(name);
         assert valueObject instanceof List<?>;
         List<?> agents = (List<?>) valueObject;
         if (agents.size() > 0) {
             Set<String> agentIdentifiers = new java.util.HashSet<String>();
             for (Object agent : agents) {
                 Node node = context.getXMLNode(agent);
-                if (!Agents.isAgentReference(node, agent, locator, context, targetClass)) {
-                    Agents.badAgentReference(node, agent, locator, context, name, targetName, targetClass);
+                if (!Agents.isAgentReference(node, agent, locator, context, targetClass, ancestors)) {
+                    Agents.badAgentReference(node, agent, locator, context, name, targetName, targetClass, ancestors);
                     failed = true;
                 }
                 String id = IdReferences.getId(agent);

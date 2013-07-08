@@ -35,7 +35,9 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Profile;
+import com.skynav.ttv.model.ttml10.tt.Head;
 import com.skynav.ttv.model.ttml10.tt.Layout;
+import com.skynav.ttv.model.ttml10.tt.Metadata;
 import com.skynav.ttv.model.ttml10.tt.Region;
 import com.skynav.ttv.model.ttml10.tt.Style;
 import com.skynav.ttv.model.ttml10.tt.Styling;
@@ -153,7 +155,7 @@ public class TTML10 {
         public QName getIdReferenceTargetName(QName attributeName) {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
-            if ((namespaceUri == null) || (namespaceUri.length() == 0)) {
+            if (isEmptyNamespace(namespaceUri)) {
                 if (localName.equals("agent"))
                     return agentElementName;
                 else if (localName.equals("region"))
@@ -169,7 +171,7 @@ public class TTML10 {
         public Class<?> getIdReferenceTargetClass(QName attributeName) {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
-            if ((namespaceUri == null) || (namespaceUri.length() == 0)) {
+            if (isEmptyNamespace(namespaceUri)) {
                 if (localName.equals("agent"))
                     return Agent.class;
                 else if (localName.equals("region"))
@@ -182,19 +184,37 @@ public class TTML10 {
             }
             return Object.class;
         }
+        private static final QName headElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createHead(new Head()).getName();
+        private static final QName metadataElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createMetadata(new Metadata()).getName();
         private static final QName stylingElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createStyling(new Styling()).getName();
         private static final QName layoutElementName = new com.skynav.ttv.model.ttml10.tt.ObjectFactory().createLayout(new Layout()).getName();
-        public Set<QName> getIdReferenceAncestorNames(QName attributeName) {
-            Set<QName> ancestorNames = new java.util.HashSet<QName>();
+        public List<List<QName>> getIdReferencePermissibleAncestors(QName attributeName) {
+            List<List<QName>> permissibleAncestors = new java.util.ArrayList<List<QName>>();
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
-            if ((namespaceUri == null) || (namespaceUri.length() == 0)) {
-                if (localName.equals("style"))
-                    ancestorNames.add(stylingElementName);
-                else if (localName.equals("region"))
-                    ancestorNames.add(layoutElementName);
+            if (localName.equals("style") && isEmptyNamespace(namespaceUri)) {
+                List<QName> ancestors = new java.util.ArrayList<QName>();
+                ancestors.add(stylingElementName);
+                ancestors.add(headElementName);
+                permissibleAncestors.add(ancestors);
+            } else if (localName.equals("region") && isEmptyNamespace(namespaceUri)) {
+                List<QName> ancestors = new java.util.ArrayList<QName>();
+                ancestors.add(layoutElementName);
+                ancestors.add(headElementName);
+                permissibleAncestors.add(ancestors);
+            } else if (localName.equals("agent") && (isEmptyNamespace(namespaceUri) || namespaceUri.equals(metadataNamespaceUri))) {
+                List<QName> ancestors1 = new java.util.ArrayList<QName>();
+                ancestors1.add(metadataElementName);
+                ancestors1.add(headElementName);
+                permissibleAncestors.add(ancestors1);
+                List<QName> ancestors2 = new java.util.ArrayList<QName>();
+                ancestors2.add(headElementName);
+                permissibleAncestors.add(ancestors2);
             }
-            return (ancestorNames.size() > 0) ? ancestorNames : null;
+            return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
+        }
+        private boolean isEmptyNamespace(String namespaceUri) {
+            return (namespaceUri == null) || (namespaceUri.length() == 0);
         }
         private SemanticsVerifier semanticsVerifier;
         public SemanticsVerifier getSemanticsVerifier() {

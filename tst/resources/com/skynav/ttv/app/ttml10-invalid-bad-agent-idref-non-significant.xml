@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad global agent attribute - idref references non-significant ttm:agent -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head/>
+  <body ttm:agent="a1">
+    <metadata>
+      <ttm:agent xml:id="a1" type="other">
+        <ttm:name type="full">Other</ttm:name>
+      </ttm:agent>
+    </metadata>
+  </body>
+</tt>

@@ -149,13 +149,16 @@ public interface Model {
     Class<?> getIdReferenceTargetClass(QName attributeName);
 
     /**
-     * Obtain qualified names of element type of ancestor of element
-     * type which IDREFs in the specified attribute must reference.
+     * Obtain list of lists of qualified names of permissible ancestors
+     * of element type which IDREFs in the specified attribute must reference,
+     * where the order of lists contained in the outer list is not significant, and the
+     * order of qualified names contained in inner lists is from most immediate ancestor
+     * to least immediate ancestor, where least immediate ancestor need not be the root.
      * @param attributeName name of referring attribute
-     * @return a set of qualified names or null if no constraint on target
+     * @return a list of lists of qualified names or null if no constraint on target
      * ancestor element type
      */
-    Set<QName> getIdReferenceAncestorNames(QName attributeName);
+    List<List<QName>> getIdReferencePermissibleAncestors(QName attributeName);
 
     /**
      * Obtain semantics verifier for model.

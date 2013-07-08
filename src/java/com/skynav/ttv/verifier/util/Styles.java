@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.verifier.util;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -40,36 +41,38 @@ import com.skynav.xml.helpers.Nodes;
 
 public class Styles {
 
-    public static boolean isStyleReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass, Set<QName> ancestorNames) {
+    public static boolean isStyleReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
             return false;
-        if (!isStylingDescendant(node, value, ancestorNames))
+        if (!isSignificantStyle(node, value, ancestors))
             return false;
-        if (hasStylingChainLoop(node))
+        if (hasStyleChainLoop(node))
             return false;
         return true;
     }
 
     public static void badStyleReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
-        QName targetName, Class<?> targetClass, Set<QName> ancestorNames) {
+        QName targetName, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
             IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
-        if (!isStylingDescendant(node, value, ancestorNames))
-            badStylingDescendant(node, value, locator, context, referencingAttribute, targetName, ancestorNames);
-        if (hasStylingChainLoop(node))
-            badStylingChainLoop(node, value, locator, context);
+        else {
+            if (!isSignificantStyle(node, value, ancestors))
+                badStyleSignificance(node, value, locator, context, referencingAttribute, targetName, ancestors);
+            if (hasStyleChainLoop(node))
+                badStyleChainLoop(node, value, locator, context);
+        }
     }
 
-    private static boolean isStylingDescendant(Node node, Object value, Set<QName> ancestorNames) {
-        return Nodes.hasAncestor(node, ancestorNames);
+    private static boolean isSignificantStyle(Node node, Object value, List<List<QName>> ancestors) {
+        return Nodes.hasAncestors(node, ancestors);
     }
 
-    private static boolean hasStylingChainLoop(Node node) {
+    private static boolean hasStyleChainLoop(Node node) {
         assert node instanceof Element;
-        return hasStylingChainLoop((Element) node, new java.util.HashSet<String>());
+        return hasStyleChainLoop((Element) node, new java.util.HashSet<String>());
     }
 
-    private static boolean hasStylingChainLoop(Element elt, Set<String> encounteredStyles) {
+    private static boolean hasStyleChainLoop(Element elt, Set<String> encounteredStyles) {
         Document document = elt.getOwnerDocument();
         String style = elt.getAttributeNS(null, "style");
         if (style.length() != 0) {
@@ -80,22 +83,22 @@ public class Styles {
                     return true;
                 else
                     encounteredStyles.add(styleRef);
-                if (hasStylingChainLoop(document.getElementById(styleRef), encounteredStyles))
+                if (hasStyleChainLoop(document.getElementById(styleRef), encounteredStyles))
                     return true;
             }
         }
         return false;
     }
 
-    private static void badStylingDescendant(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
-        QName targetName, Set<QName> ancestorNames) {
+    private static void badStyleSignificance(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+        QName targetName, List<List<QName>> ancestors) {
         context.getReporter().logInfo(locator,
-            "Bad IDREF '" + IdReferences.getId(value) + "', must reference " + targetName + " that is a descendant of any of " + ancestorNames + ".");
+            "Bad IDREF '" + IdReferences.getId(value) + "', must reference significant '" + targetName + "' which ancestors are one of " + ancestors + ".");
     }
 
-    private static void badStylingChainLoop(Node node, Object value, Locator locator, VerifierContext context) {
+    private static void badStyleChainLoop(Node node, Object value, Locator locator, VerifierContext context) {
         context.getReporter().logInfo(locator,
-            "Loop in styling chain from IDREF '" + IdReferences.getId(value) + "'.");
+            "Loop in style chain from IDREF '" + IdReferences.getId(value) + "'.");
     }
 
 }

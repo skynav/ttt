@@ -78,6 +78,7 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if style attribute IDREF does not reference a style element. (8.2.1)
  * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.2.1)
  * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF and `duplicate-idref-in-style-no-intervening` warning is not disabled. (8.2.1)
+ * Warn if same IDREF appears more than once in specified tts:style attribute and `duplicate-idref-in-style` warning is enabled. (8.2.1)
  * Error if tts:extent attribute uses a negative length value. (8.2.7)
  * Error if tts:extent on root (tt) element specifies non-pixel unit for either width or height. (8.2.7)
  * Warn if tts:fontFamily attribute uses quoted generic family name and `quoted-generic-font-family` warning is enabled. (8.2.8)
@@ -98,8 +99,8 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if time expression uses frame component or `f` metric when tts:timeBase is clock. (10.3.1)
  * Warn if ttm:agent element does not contain a ttm:name child and `missing-agent-name` warning is not disabled. (12.1.5)
  * Warn if ttm:agent element does not contain a ttm:actor child when type='character' and `missing-agent-actor` warning is not disabled. (12.1.5)
- * Error if actor element's agent attribute does not reference an agent element. (12.1.7)
- * Error if ttm:agent attribute IDREF does not reference an agent element. (12.2.1)
+ * Error if ttm:actor element's agent attribute does not reference a ttm:agent element. (12.1.7)
+ * Error if ttm:agent attribute IDREF does not reference a ttm:agent element. (12.2.1)
  * Warn if same IDREF appears more than once in specified ttm:agent attribute and `duplicate-idref-in-agent` is enabled. (12.2.1)
  * Warn if same token appears more than once in specified ttm:role attribute and `duplicate-role` warning is not disabled. (12.2.2)
  * Warn if ttm:role attribute references "x-" extension role and `references-extension-role` warning is enabled. (12.2.2)
@@ -226,13 +227,16 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
 ## To Do (Essential)
 
+ * Error if ttm:agent attribute IDREF does not reference a significant ttm:agent element. (12.2.1)
+ * Error if ttm:actor element's agent attribute does not reference a significant ttm:agent element. (12.1.7)
  * Error if TT Parameter Namespace attribute specified on element where it is not explicitly permitted.
  * Error if TT Style Namespace attribute specified on element where it is not explicitly permitted.
 
 ## Open Feature Requests
 
- * Optionally warn if ttp:role uses an "x-" extension role.
+ * Optionally warn on empty styling element.
  * Optionally warn on unreferenced style element.
+ * Optionally warn on empty layout element.
  * Optionally warn on unreferenced region element.
  * Optionally warn on unreferenced ttm:agent element.
  * Optionally warn on presence of both end and dur such that dur (simple duration) is not same as end minus begin (preliminary active duration).
@@ -241,7 +245,8 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
  * Optionally warn if computed color and computed background color are low contrast.
  * Optionally warn if style property specified on content element that cannot apply to any content element, e.g., extent, opacity, origin.
  * Optionally warn if style property specified on content element that is initial value and is not overriding an inherited value.
- * Optionally warn if redundant style IDREF is used twice in a row in style attribute.
- * Optionally warn if agent element is not significant, i.e., specified somewhere other than in head or metadata element in head.
- * Optionally warn if agent element is significant, but not referenced by a ttm:agent attribute.
+ * Optionally warn if ttm:agent element is not significant.
+ * Optionally warn if ttm:copyright element is not significant.
+ * Optionally warn if ttm:desc element is not significant.
+ * Optionally warn if ttm:title element is not significant.
  * Notify computed time interval of body based on content timing alone.

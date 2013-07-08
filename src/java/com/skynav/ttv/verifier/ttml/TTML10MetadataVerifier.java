@@ -130,12 +130,13 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
         QName name = actorAgentAttributeName;
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
+        List<List<QName>> ancestors = model.getIdReferencePermissibleAncestors(name);
         Object agent = content.getAgent();
         Node node = context.getXMLNode(agent);
-        if (Agents.isAgentReference(node, agent, locator, context, targetClass))
+        if (Agents.isAgentReference(node, agent, locator, context, targetClass, ancestors))
             return true;
         else {
-            Agents.badAgentReference(node, agent, locator, context, name, targetName, targetClass);
+            Agents.badAgentReference(node, agent, locator, context, name, targetName, targetClass, ancestors);
             return false;
         }
     }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- invalid - bad local agent attribute on actor element - idref references non-agent eltype -->
+<!-- invalid - bad actor - agent attribute - idref references non-agent eltype -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
   <head xml:id="h1">
     <ttm:agent xml:id="bond" type="character">

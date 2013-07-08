@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier.util;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Node;
@@ -32,19 +34,34 @@ import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.xml.helpers.Nodes;
 
 public class Agents {
 
-    public static boolean isAgentReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass) {
+    public static boolean isAgentReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
+            return false;
+        if (!isSignificantAgent(node, value, ancestors))
             return false;
         return true;
     }
 
-    public static void badAgentReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute, QName targetName, Class<?> targetClass) {
-        if (!targetClass.isInstance(value)) {
+    public static void badAgentReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+        QName targetName, Class<?> targetClass, List<List<QName>> ancestors) {
+        if (!targetClass.isInstance(value))
             IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
-        }
+        else if (!isSignificantAgent(node, value, ancestors))
+            badAgentSignificance(node, value, locator, context, referencingAttribute, targetName, ancestors);
+    }
+
+    private static boolean isSignificantAgent(Node node, Object value, List<List<QName>> ancestors) {
+        return Nodes.hasAncestors(node, ancestors);
+    }
+
+    private static void badAgentSignificance(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+        QName targetName, List<List<QName>> ancestors) {
+        context.getReporter().logInfo(locator,
+            "Bad IDREF '" + IdReferences.getId(value) + "', must reference significant '" + targetName + "' which ancestors are one of " + ancestors + ".");
     }
 
 }

@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier.ttml.style;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Node;
@@ -41,12 +43,13 @@ public class RegionAttributeVerifier implements StyleValueVerifier {
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
+        List<List<QName>> ancestors = model.getIdReferencePermissibleAncestors(name);
         Object region = valueObject;
         Node node = context.getXMLNode(region);
-        if (Regions.isRegionReference(node, region, locator, context, targetClass))
+        if (Regions.isRegionReference(node, region, locator, context, targetClass, ancestors))
             return true;
         else {
-            Regions.badRegionReference(node, region, locator, context, name, targetName, targetClass);
+            Regions.badRegionReference(node, region, locator, context, name, targetName, targetClass, ancestors);
             return false;
         }
     }
