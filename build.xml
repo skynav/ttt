@@ -49,7 +49,7 @@
 <property name="ttv.version.major" value="1"/>
 <property name="ttv.version.minor" value="0"/>
 <property name="ttv.version.micro" value="0"/>
-<property name="ttv.version.suffix" value="a1"/>
+<property name="ttv.version.suffix" value="dev"/>
 <property name="ttv.version" value="${ttv.version.major}.${ttv.version.minor}.${ttv.version.micro}${ttv.version.suffix}"/>
 <property name="ttv.vendor" value="Skynav, Inc."/>
 <property name="ttv.release.target" value="${release.dir}/ttv-bin-${ttv.version}.jar"/>
