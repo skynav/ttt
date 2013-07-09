@@ -6,7 +6,7 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="2">
   <head>
     <metadata>
-      <x:foo/>
+      <x:foo>some text</x:foo>
     </metadata>
   </head>
   <body>
