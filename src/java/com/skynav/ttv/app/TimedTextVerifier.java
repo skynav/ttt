@@ -1516,6 +1516,12 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         }
 
         @Override
+        public void characters(char[] chars, int start, int length) throws SAXException {
+            if (!inForeign)
+                super.characters(chars, start, length);
+        }
+
+        @Override
         public void endElement(String nsUri, String localName, String qualName) throws SAXException {
             if (!inForeign) {
                 super.endElement(nsUri, localName, qualName);

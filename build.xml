@@ -48,7 +48,7 @@
 <property name="ttv.title" value="Timed Text Verifier"/>
 <property name="ttv.version.major" value="1"/>
 <property name="ttv.version.minor" value="0"/>
-<property name="ttv.version.micro" value="0"/>
+<property name="ttv.version.micro" value="X"/>
 <property name="ttv.version.suffix" value="dev"/>
 <property name="ttv.version" value="${ttv.version.major}.${ttv.version.minor}.${ttv.version.micro}${ttv.version.suffix}"/>
 <property name="ttv.vendor" value="Skynav, Inc."/>

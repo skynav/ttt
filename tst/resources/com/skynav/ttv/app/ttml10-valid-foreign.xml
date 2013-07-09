@@ -4,7 +4,7 @@
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
     ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="4">
-  <x:foo/>
+  <x:foo>some text</x:foo>
   <head/>
   <x:bar>
     <x:baz/>
