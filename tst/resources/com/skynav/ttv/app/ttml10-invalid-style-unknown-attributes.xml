@@ -1,0 +1,9 @@
+<!-- invalid - unknown style attributes in TT Style namespace - should produce 3 errors -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:foo="bar">
+  <head>
+    <styling>
+      <style tts:fontsize="10px"/>
+    </styling>
+  </head>
+  <body tts:fontweight="bold"/>
+</tt>
