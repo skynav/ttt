@@ -220,13 +220,18 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
 
     private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        if (!permitsParameterAttribute(content)) {
-            NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
-            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
-                Node attribute = attributes.item(i);
-                String nsUri = attribute.getNamespaceURI();
-                if ((nsUri != null) && nsUri.equals(parameterNamespace)) {
-                    context.getReporter().logError(locator, "TT Parameter attribute '" + new QName(nsUri, attribute.getLocalName()) + "' not permitted on '" +
+        NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
+        for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+            Node attribute = attributes.item(i);
+            String nsUri = attribute.getNamespaceURI();
+            QName name = new QName(nsUri != null ? nsUri : "", attribute.getLocalName());
+            if (name.getNamespaceURI().equals(parameterNamespace)) {
+                if (!isParameterAttribute(name)) {
+                    context.getReporter().logError(locator, "Unknown attribute in TT Parameter namespace '" + name + "' not permitted on '" +
+                        context.getBindingElementName(content) + "'.");
+                    failed = true;
+                } else if (!permitsParameterAttribute(content)) {
+                    context.getReporter().logError(locator, "TT Parameter attribute '" + name + "' not permitted on '" +
                         context.getBindingElementName(content) + "'.");
                     failed = true;
                 }
@@ -240,6 +245,10 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             return true;
         else
             return false;
+    }
+
+    private boolean isParameterAttribute(QName name) {
+        return name.getNamespaceURI().equals(parameterNamespace) && accessors.containsKey(name);
     }
 
     private void populate(Model model) {

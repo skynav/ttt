@@ -107,8 +107,11 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Warn if same IDREF appears more than once in specified ttm:agent attribute and `duplicate-idref-in-agent` is enabled. (12.2.1)
  * Warn if same token appears more than once in specified ttm:role attribute and `duplicate-role` warning is not disabled. (12.2.2)
  * Warn if ttm:role attribute references "x-" extension role and `references-extension-role` warning is enabled. (12.2.2)
+ * Error if unknown attribute in TT Metadata Namespace specified on any element.
  * Error if TT Metadata Namespace attribute specified on element where it is not explicitly permitted.
+ * Error if unknown attribute in TT Parameter Namespace specified on any element.
  * Error if TT Parameter Namespace attribute specified on element where it is not explicitly permitted.
+ * Error if unknown attribute in TT StyleMetadata Namespace specified on any element.
  * Error if TT Style Namespace attribute specified on element where it is not explicitly permitted.
 
 ## Verification Model

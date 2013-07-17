@@ -363,15 +363,19 @@ public class TTML10StyleVerifier implements StyleVerifier {
 
     private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        if (!permitsStyleAttribute(content)) {
-            NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
-            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
-                Node attribute = attributes.item(i);
-                String nsUri = attribute.getNamespaceURI();
-                QName name = new QName(nsUri != null ? nsUri : "", attribute.getLocalName());
+        NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
+        for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+            Node attribute = attributes.item(i);
+            String nsUri = attribute.getNamespaceURI();
+            QName name = new QName(nsUri != null ? nsUri : "", attribute.getLocalName());
+            if (name.getNamespaceURI().equals(styleNamespace)) {
                 if ((content instanceof TimedText) && name.equals(extentAttributeName))
                     continue;
-                if (name.getNamespaceURI().equals(styleNamespace)) {
+                else if (!isStyleAttribute(name)) {
+                    context.getReporter().logError(locator, "Unknown attribute in TT Style namespace '" + name + "' not permitted on '" +
+                        context.getBindingElementName(content) + "'.");
+                    failed = true;
+                } else if (!permitsStyleAttribute(content)) {
                     context.getReporter().logError(locator, "TT Style attribute '" + name + "' not permitted on '" +
                         context.getBindingElementName(content) + "'.");
                     failed = true;
@@ -400,6 +404,10 @@ public class TTML10StyleVerifier implements StyleVerifier {
             return true;
         else
             return false;
+    }
+
+    private boolean isStyleAttribute(QName name) {
+        return name.getNamespaceURI().equals(styleNamespace) && accessors.containsKey(name);
     }
 
     public boolean verify(Set content, Locator locator, VerifierContext context) {

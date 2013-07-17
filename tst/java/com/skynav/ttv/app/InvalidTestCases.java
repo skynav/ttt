@@ -1220,6 +1220,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidMetadataUnknownAttributes() throws Exception {
+        performInvalidityTest("ttml10-invalid-metadata-unknown-attributes.xml", 2, 0);
+    }
+
+    @Test
     public void testInvalidMetadataNonElementContent() throws Exception {
         performInvalidityTest("ttml10-invalid-metadata-non-element-content.xml", 1, 0);
     }
@@ -1230,6 +1235,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidParameterUnknownAttributes() throws Exception {
+        performInvalidityTest("ttml10-invalid-parameter-unknown-attributes.xml", 2, 0);
+    }
+
+    @Test
     public void testInvalidSetMaximumStyleCountExceeded() throws Exception {
         performInvalidityTest("ttml10-invalid-set-maximum-style-count-exceeded.xml", 2, 0);
     }
@@ -1237,6 +1247,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidStyleDisallowedAttributes() throws Exception {
         performInvalidityTest("ttml10-invalid-style-disallowed-attributes.xml", 15, 0);
+    }
+
+    @Test
+    public void testInvalidStyleUnknownAttributes() throws Exception {
+        performInvalidityTest("ttml10-invalid-style-unknown-attributes.xml", 3, 0);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

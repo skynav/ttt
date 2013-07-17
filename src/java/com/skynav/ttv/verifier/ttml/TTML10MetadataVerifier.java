@@ -143,13 +143,18 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
 
     private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        if (!permitsMetadataAttribute(content)) {
-            NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
-            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
-                Node attribute = attributes.item(i);
-                String nsUri = attribute.getNamespaceURI();
-                if ((nsUri != null) && nsUri.equals(metadataNamespace)) {
-                    context.getReporter().logError(locator, "TT Metadata attribute '" + new QName(nsUri, attribute.getLocalName()) + "' not permitted on '" +
+        NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
+        for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+            Node attribute = attributes.item(i);
+            String nsUri = attribute.getNamespaceURI();
+            QName name = new QName(nsUri != null ? nsUri : "", attribute.getLocalName());
+            if (name.getNamespaceURI().equals(metadataNamespace)) {
+                if (!isMetadataAttribute(name)) {
+                    context.getReporter().logError(locator, "Unknown attribute in TT Metadata namespace '" + name + "' not permitted on '" +
+                        context.getBindingElementName(content) + "'.");
+                    failed = true;
+                } else if (!permitsMetadataAttribute(content)) {
+                    context.getReporter().logError(locator, "TT Metadata attribute '" + name + "' not permitted on '" +
                         context.getBindingElementName(content) + "'.");
                     failed = true;
                 }
@@ -173,6 +178,10 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
             return true;
         else
             return false;
+    }
+
+    private boolean isMetadataAttribute(QName name) {
+        return name.getNamespaceURI().equals(metadataNamespace) && accessors.containsKey(name);
     }
 
     private final QName actorAgentAttributeName = new QName("", "agent");
