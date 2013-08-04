@@ -26,5 +26,5 @@
 package com.skynav.ttv.app;
 
 public class Version {
-    public static final String CURRENT = "1.0.Xdev";
+    public static final String CURRENT = "1.0.0a2";
 }
