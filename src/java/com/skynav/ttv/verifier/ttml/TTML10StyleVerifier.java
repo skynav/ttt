@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -365,9 +366,17 @@ public class TTML10StyleVerifier implements StyleVerifier {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {
-            Node attribute = attributes.item(i);
+            Node item = attributes.item(i);
+            if (!(item instanceof Attr))
+                continue;
+            Attr attribute = (Attr) item;
             String nsUri = attribute.getNamespaceURI();
-            QName name = new QName(nsUri != null ? nsUri : "", attribute.getLocalName());
+            String localName = attribute.getLocalName();
+            if (localName == null)
+                localName = attribute.getName();
+            if (localName.indexOf("xmlns:") == 0)
+                continue;
+            QName name = new QName(nsUri != null ? nsUri : "", localName);
             if (name.getNamespaceURI().equals(styleNamespace)) {
                 if ((content instanceof TimedText) && name.equals(extentAttributeName))
                     continue;

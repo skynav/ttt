@@ -622,7 +622,7 @@ public class TTML10SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!styleVerifier.verify(content, getLocator(content), this.context, ItemType.Other))
             failed = true;
-        return failed;
+        return !failed;
     }
 
     private Object findBindingElement(TimedText root, Node node) {

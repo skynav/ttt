@@ -709,10 +709,9 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     private URI getCWDAsURI() {
         try {
-            return new URI("file://" + new File(".").getCanonicalPath().replace(File.separatorChar, '/') + File.separatorChar);
-        } catch (IOException e) {
-            return null;
-        } catch (URISyntaxException e) {
+            return new URI("file://" + new File(".").getCanonicalPath().replace(File.separatorChar, '/') + "/");
+        } catch (Exception e) {
+            logDebug(new RuntimeException("Can't determine CWD as URI.", e));
             return null;
         }
     }
@@ -995,7 +994,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             }
         });
         try {
-            logDebug("Loading (and validting) schema at " + url + "...");
+            logDebug("Loading (and validating) schema at " + url + "...");
             return sf.newSchema(url);
         } catch (SAXException e) {
             logError(e);
@@ -1241,24 +1240,27 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private int rvValue() {
         int code = RV_PASS;
         int flags = 0;
-        if (resourceErrors > 0) {
-            if (resourceExpectedErrors < 0) {
+        if (resourceExpectedErrors < 0) {
+            if (resourceErrors > 0) {
                 code = RV_FAIL;
                 flags |= RV_FLAG_ERROR_UNEXPECTED;
-            } else if (resourceErrors != resourceExpectedErrors) {
-                code = RV_FAIL;
-                flags |= RV_FLAG_ERROR_EXPECTED_MISMATCH;
-            } else {
-                code = RV_PASS;
-                flags |= RV_FLAG_ERROR_EXPECTED_MATCH;
             }
+        } else if (resourceErrors != resourceExpectedErrors) {
+            code = RV_FAIL;
+            flags |= RV_FLAG_ERROR_EXPECTED_MISMATCH;
+        } else {
+            code = RV_PASS;
+            if (resourceErrors > 0)
+                flags |= RV_FLAG_ERROR_EXPECTED_MATCH;
         }
-        if (resourceWarnings > 0) {
-            if (resourceExpectedWarnings < 0) {
+        if (resourceExpectedWarnings < 0) {
+            if (resourceWarnings > 0)
                 flags |= RV_FLAG_WARNING_UNEXPECTED;
-            } else if (resourceWarnings != resourceExpectedWarnings) {
-                flags |= RV_FLAG_WARNING_EXPECTED_MISMATCH;
-            } else
+        } else if (resourceWarnings != resourceExpectedWarnings) {
+            code = RV_FAIL;
+            flags |= RV_FLAG_WARNING_EXPECTED_MISMATCH;
+        } else {
+            if (resourceWarnings > 0)
                 flags |= RV_FLAG_WARNING_EXPECTED_MATCH;
         }
         return ((flags & 0x7FFFFF) << 8) | (code & 0xFF);
@@ -1278,51 +1280,53 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     private String resultDetails() {
         StringBuffer details = new StringBuffer();
-        if (resourceErrors > 0) {
-            details.append(", with");
-            if (resourceExpectedErrors < 0) {
-                details.append(' ');
+        if (resourceExpectedErrors < 0) {
+            if (resourceErrors > 0) {
+                details.append(", with " );
                 details.append(resourceErrors);
                 details.append(' ');
                 details.append(plural("error", resourceErrors));
-            } else if (resourceErrors == resourceExpectedErrors) {
-                details.append(' ');
+            }
+        } else if (resourceErrors == resourceExpectedErrors) {
+            if (resourceErrors > 0) {
+                details.append(", with ");
                 details.append(resourceErrors);
                 details.append(" expected ");
                 details.append(plural("error", resourceErrors));
-            } else {
-                details.append(' ');
-                details.append(resourceErrors);
-                details.append(' ');
-                details.append(plural("error", resourceErrors));
-                details.append(" but expected ");
-                details.append(resourceExpectedErrors);
-                details.append(' ');
-                details.append(plural("error", resourceExpectedErrors));
             }
+        } else {
+            details.append(", with ");
+            details.append(resourceErrors);
+            details.append(' ');
+            details.append(plural("error", resourceErrors));
+            details.append(" but expected ");
+            details.append(resourceExpectedErrors);
+            details.append(' ');
+            details.append(plural("error", resourceExpectedErrors));
         }
-        if (resourceWarnings > 0) {
-            details.append(details.length() > 0 ? ", and with" : ", with");
-            if (resourceExpectedWarnings < 0) {
-                details.append(' ');
+        if (resourceExpectedWarnings < 0) {
+            if (resourceWarnings > 0) {
+                details.append(details.length() > 0 ? ", and with " : ", with ");
                 details.append(resourceWarnings);
                 details.append(' ');
                 details.append(plural("warning", resourceWarnings));
-            } else if (resourceWarnings == resourceExpectedWarnings) {
-                details.append(' ');
+            }
+        } else if (resourceWarnings == resourceExpectedWarnings) {
+            if (resourceWarnings > 0) {
+                details.append(details.length() > 0 ? ", and with " : ", with ");
                 details.append(resourceWarnings);
                 details.append(" expected ");
                 details.append(plural("warning", resourceWarnings));
-            } else {
-                details.append(' ');
-                details.append(resourceWarnings);
-                details.append(' ');
-                details.append(plural("warning", resourceWarnings));
-                details.append(" but expected ");
-                details.append(resourceExpectedWarnings);
-                details.append(' ');
-                details.append(plural("warning", resourceExpectedWarnings));
             }
+        } else {
+            details.append(details.length() > 0 ? ", and with " : ", with ");
+            details.append(resourceWarnings);
+            details.append(' ');
+            details.append(plural("warning", resourceWarnings));
+            details.append(" but expected ");
+            details.append(resourceExpectedWarnings);
+            details.append(' ');
+            details.append(plural("warning", resourceExpectedWarnings));
         }
         return details.toString();
     }
