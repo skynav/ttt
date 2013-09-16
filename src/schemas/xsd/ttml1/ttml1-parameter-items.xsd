@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#parameter"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+    schemaLocation="xml.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
+    schemaLocation="ttml1-datatypes.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml"
+    schemaLocation="ttml1-core-attribs.xsd"/>
+  <xs:include schemaLocation="ttml1-parameter-attribs.xsd"/>
+  <xs:attributeGroup name="profile.attlist">
+    <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
+    <xs:attribute name="use" type="ttd:profile"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="features.attlist">
+    <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
+    <xs:attribute ref="xml:base"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="feature.attlist">
+    <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
+    <xs:attribute name="value" type="ttd:featureValue"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="extensions.attlist">
+    <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
+    <xs:attribute ref="xml:base"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="extension.attlist">
+    <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
+    <xs:attribute name="value" type="ttd:extensionValue"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:complexType name="profile.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ttp:features" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ttp:extensions" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="ttp:profile.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="features.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ttp:feature" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="ttp:features.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="feature.eltype">
+    <xs:simpleContent>
+      <xs:extension base="ttd:featureDesignator">
+        <xs:attributeGroup ref="ttp:feature.attlist"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="extensions.eltype">
+    <xs:sequence>
+      <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ttp:extension" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="ttp:extensions.attlist"/>
+  </xs:complexType>
+  <xs:complexType name="extension.eltype">
+    <xs:simpleContent>
+      <xs:extension base="ttd:extensionDesignator">
+        <xs:attributeGroup ref="ttp:extension.attlist"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:element name="profile" type="ttp:profile.eltype"/>
+  <xs:element name="features" type="ttp:features.eltype"/>
+  <xs:element name="feature" type="ttp:feature.eltype"/>
+  <xs:element name="extensions" type="ttp:extensions.eltype"/>
+  <xs:element name="extension" type="ttp:extension.eltype"/>
+  <xs:group name="ParameterItems.class">
+    <xs:choice>
+      <xs:element ref="ttp:profile"/>
+    </xs:choice>
+  </xs:group>
+</xs:schema>

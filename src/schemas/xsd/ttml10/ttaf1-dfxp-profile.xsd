@@ -1,5 +1,0 @@
-<xs:schema targetNamespace="http://www.w3.org/ns/ttml#parameter" xml:lang="en"
-  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:include schemaLocation="ttaf1-dfxp-parameter-items.xsd"/>
-</xs:schema>

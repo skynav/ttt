@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<!--
+ * Copyright 2013 Skynav, Inc. All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SKYNAV, INC. AND ITS CONTRIBUTORS “AS IS” AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL SKYNAV, INC. OR ITS CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<jxb:bindings version="2.1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-animation.xsd">
+    <jxb:bindings node="//xs:complexType[@name='set.eltype']">
+      <jxb:class name="Set"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.ttml1.tt"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-content.xsd">
+    <jxb:bindings node="//xs:complexType[@name='body.eltype']">
+      <jxb:class name="Body"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='br.eltype']">
+      <jxb:class name="Break"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='div.eltype']">
+      <jxb:class name="Division"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='p.eltype']">
+      <jxb:class name="Paragraph"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='span.eltype']">
+      <jxb:class name="Span"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-datatypes.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.ttml1.ttd"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='metadataAgentType']">
+      <jxb:typesafeEnumClass name="AgentType"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='metadataNameType']">
+      <jxb:typesafeEnumClass name="NameType"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='metadataRoleBaseType']">
+      <jxb:typesafeEnumClass name="Role"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-document.xsd">
+    <jxb:bindings node="//xs:complexType[@name='tt.eltype']">
+      <jxb:class name="TimedText"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-head.xsd">
+    <jxb:bindings node="//xs:complexType[@name='head.eltype']">
+      <jxb:class name="Head"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-layout.xsd">
+    <jxb:bindings node="//xs:complexType[@name='layout.eltype']">
+      <jxb:class name="Layout"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='region.eltype']">
+      <jxb:class name="Region"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-metadata.xsd">
+    <jxb:bindings node="//xs:complexType[@name='metadata.eltype']">
+      <jxb:class name="Metadata"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-metadata-items.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.ttml1.ttm"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='actor.eltype']">
+      <jxb:class name="Actor"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='agent.eltype']">
+      <jxb:class name="Agent"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='copyright.eltype']">
+      <jxb:class name="Copyright"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='desc.eltype']">
+      <jxb:class name="Description"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='name.eltype']">
+      <jxb:class name="Name"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='title.eltype']">
+      <jxb:class name="Title"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-parameter-items.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.ttml1.ttp"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:attributeGroup[@name='extension.attlist']">
+      <jxb:bindings node="./xs:attribute[@name='value']">
+        <jxb:property name="extensionValue"/>
+      </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:attributeGroup[@name='feature.attlist']">
+      <jxb:bindings node="./xs:attribute[@name='value']">
+        <jxb:property name="featureValue"/>
+      </jxb:bindings>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='profile.eltype']">
+      <jxb:class name="Profile"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='extension.eltype']">
+      <jxb:class name="Extension"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='extensions.eltype']">
+      <jxb:class name="Extensions"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='feature.eltype']">
+      <jxb:class name="Feature"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='features.eltype']">
+      <jxb:class name="Features"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-styling.xsd">
+    <jxb:bindings node="//xs:attributeGroup[@name='StyleBinding.attrib.class']/xs:attribute[@name='style']">
+      <jxb:property name="styleAttribute"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='styling.eltype']">
+      <jxb:class name="Styling"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='style.eltype']">
+      <jxb:class name="Style"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/ttml1-styling-attribs.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.ttml1.tts"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml1/xml.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.ttml1.xml"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+  </jxb:bindings>
+
+</jxb:bindings>

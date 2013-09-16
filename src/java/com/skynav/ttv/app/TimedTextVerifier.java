@@ -68,7 +68,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import org.xml.sax.Attributes;
@@ -138,6 +137,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         "    --hide-warnings            - hide warnings (but count them)\n" +
         "    --model NAME               - specify model name (default: " + defaultModel.getName() + ")\n" +
         "    --no-warn-on TOKEN         - disable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
+        "    --no-verbose               - disable verbose output (resets verbosity level to 0)\n" +
         "    --quiet                    - don't show banner\n" +
         "    --show-models              - show built-in verification models (use with --verbose to show more details)\n" +
         "    --show-repository          - show source code repository information\n" +
@@ -171,7 +171,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         { "quoted-generic-font-family",                 Boolean.FALSE,  "generic font family appears in quoted form, negating generic name function" },
         { "references-extension-role",                  Boolean.FALSE,  "'ttp:role' attribute specifies extension role"},
         { "references-non-standard-extension",          Boolean.FALSE,  "'ttp:extension' element references non-standard extension"},
-        { "references-non-standard-profile",            Boolean.FALSE,  "'ttp:profile' element references non-standard profile from 'use' attribute"},
+        { "references-non-standard-profile",            Boolean.FALSE,  "'ttp:profile' attribute or element references non-standard profile"},
         { "references-other-extension-namespace",       Boolean.FALSE,  "'ttp:extensions' element references other extension namespace"},
         { "xsi-schema-location",                        Boolean.FALSE,  "'xsi:schemaLocation' attribute used"},
         { "xsi-no-namespace-schema-location",           Boolean.TRUE,   "'xsi:noNamespaceSchemaLocation' attribute used"},
@@ -220,6 +220,9 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     // per-resource processing state
     private Phase currentPhase;
+    private Set<String> resourceDisabledWarnings;
+    private Set<String> resourceEnabledWarnings;
+    private Model resourceModel;
     private String resourceUriString;
     private URI resourceUri;
     private ByteBuffer resourceBufferRaw;
@@ -297,7 +300,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     @Override
     public Model getModel() {
-        return this.model;
+        if (this.resourceModel != null)
+            return this.resourceModel;
+        else
+            return this.model;
     }
 
     private static final QName qnEmpty = new QName("", "");
@@ -328,7 +334,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             if (parent != null)
                 return parent;
             else if (rootBinding != null)
-                return model.getSemanticsVerifier().findBindingElement(rootBinding, parentNode);
+                return resourceModel.getSemanticsVerifier().findBindingElement(rootBinding, parentNode);
             else
                 return null;
         }
@@ -427,12 +433,26 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         logDebug(e);
     }
 
+    private Set<String> getEnabledWarnings() {
+        if (this.resourceEnabledWarnings != null)
+            return this.resourceEnabledWarnings;
+        else
+            return this.enabledWarnings;
+    }
+
+    private Set<String> getDisabledWarnings() {
+        if (this.resourceDisabledWarnings != null)
+            return this.resourceDisabledWarnings;
+        else
+            return this.disabledWarnings;
+    }
+
     @Override
     public boolean isWarningEnabled(String token) {
         boolean enabled = defaultWarnings.get(token);
-        if (enabledWarnings.contains(token) || enabledWarnings.contains("all"))
+        if (getEnabledWarnings().contains(token) || getEnabledWarnings().contains("all"))
             enabled = true;
-        if (disabledWarnings.contains(token) || disabledWarnings.contains("all"))
+        if (getDisabledWarnings().contains(token) || getDisabledWarnings().contains("all"))
             enabled = false;
         return enabled;
     }
@@ -541,6 +561,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             if (!defaultWarnings.containsKey(token))
                 throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
             disabledWarnings.add(token);
+        } else if (option.equals("no-verbose")) {
+            verbose = 0;
         } else if (option.equals("quiet")) {
             quiet = true;
         } else if (option.equals("show-models")) {
@@ -891,23 +913,35 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         }
     }
 
-    private void setResource(String uri) {
+    private void resetResourceState() {
+        resourceDisabledWarnings = new java.util.HashSet<String>(disabledWarnings);
+        resourceEnabledWarnings = new java.util.HashSet<String>(enabledWarnings);
+        resourceModel = model;
+        resourceUriString = null;
+        resourceUri = null;
+        resourceBufferRaw = null;
+        resourceExpectedErrors = -1;
+        resourceErrors = 0;
+        resourceExpectedWarnings = -1;
+        resourceWarnings = 0;
+        binder = null;
+        rootBinding = null;
+    }
+
+    private void setResourceURI(String uri) {
         resourceUriString = uri;
     }
 
-    private void setResource(URI uri) {
+    private void setResourceURI(URI uri) {
         resourceUri = uri;
     }
 
-    private void setResource(Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
+    private void setResourceBuffer(Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
         resourceBufferRaw = bufferRaw;
         if (expectedErrors != null)
             resourceExpectedErrors = parseAnnotationAsInteger(expectedErrors, -1);
         if (expectedWarnings != null)
             resourceExpectedWarnings = parseAnnotationAsInteger(expectedWarnings, -1);
-        resourceErrors = 0;
-        resourceWarnings = 0;
-        binder = null;
     }
 
     private boolean verifyResource() {
@@ -919,7 +953,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             logInfo("Verifying resource presence and encoding phase (" + currentPhase.ordinal() + ")...");
         URI uri = resolve(resourceUriString);
         if (uri != null) {
-            setResource(uri);
+            setResourceURI(uri);
             ByteBuffer bytesBuffer = readResource(uri);
             if (bytesBuffer != null) {
                 Object[] sniffOutputParameters = new Object[] { Integer.valueOf(0) };
@@ -928,7 +962,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                     int bomLength = (Integer) sniffOutputParameters[0];
                     CharBuffer charsBuffer = decodeResource(bytesBuffer, charset, bomLength);
                     if (charsBuffer != null) {
-                        setResource(charset, charsBuffer, bytesBuffer);
+                        setResourceBuffer(charset, charsBuffer, bytesBuffer);
                         logInfo("Resource encoding sniffed as " + charset.name() + ".");
                         logInfo("Resource length " + bytesBuffer.limit() + " bytes, decoded as " + charsBuffer.limit() + " Java characters (char).");
                     }
@@ -950,6 +984,45 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         }
     }
 
+    private void processAnnotations(Attributes attributes) {
+        if (attributes != null) {
+            String annotationsNamespace = Annotations.getNamespace();
+            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+                if (attributes.getURI(i).equals(annotationsNamespace)) {
+                    String localName = attributes.getLocalName(i);
+                    String value = attributes.getValue(i);
+                    if (localName.equals("expectedErrors")) {
+                        resourceExpectedErrors = parseAnnotationAsInteger(value, -1);
+                    } else if (localName.equals("expectedWarnings")) {
+                        resourceExpectedWarnings = parseAnnotationAsInteger(value, -1);
+                    } else if (localName.equals("model")) {
+                        Model model = Models.getModel(value);
+                        if (model != null)
+                            resourceModel = model;
+                        else
+                            throw new InvalidAnnotationException(localName, "unknown model '" + value + "'");
+                    } else if (localName.equals("warnOn")) {
+                        String[] tokens = value.split("\\s+");
+                        for (String token : tokens) {
+                            if (defaultWarnings.containsKey(token))
+                                getEnabledWarnings().add(token);
+                        }
+                    } else if (localName.equals("noWarnOn")) {
+                        String[] tokens = value.split("\\s+");
+                        for (String token : tokens) {
+                            if (defaultWarnings.containsKey(token))
+                                getDisabledWarnings().add(token);
+                        }
+                    } else if (localName.equals("loc")) {
+                        // no processing required here
+                    } else {
+                        throw new InvalidAnnotationException(localName, "unknown annotation");
+                    }
+                }
+            }
+        }
+    }
+
     private boolean verifyWellFormedness() {
         currentPhase = Phase.WellFormedness;
         if (!lastPhase.isEnabled(Phase.WellFormedness)) {
@@ -963,6 +1036,13 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             pf.setNamespaceAware(true);
             SAXParser p = pf.newSAXParser();
             p.parse(openStream(resourceBufferRaw), new DefaultHandler() {
+                private boolean expectRootElement = true;
+                public void startElement(String nsUri, String localName, String qualName, Attributes attrs) throws SAXException {
+                    if (expectRootElement) {
+                        processAnnotations(attrs);
+                        expectRootElement = false;
+                    }
+                }
                 public void error(SAXParseException e) {
                     // ensure parsing is terminated on well-formedness error
                     logError(e);
@@ -986,6 +1066,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         } catch (SAXParseException e) {
             // Already logged error via default handler overrides above.
         } catch (SAXException e) {
+            logError(e);
+        } catch (InvalidAnnotationException e) {
             logError(e);
         } catch (IOException e) {
             logError(e);
@@ -1080,7 +1162,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     private Schema getSchema() throws SchemaValidationErrorException {
         List<URL> schemaComponents = new java.util.ArrayList<URL>();
-        for (String name : model.getSchemaResourceNames())
+        for (String name : resourceModel.getSchemaResourceNames())
             schemaComponents.add(getSchemaResource(name));
         for (String schemaResourceLocation : extensionSchemas.values()) {
             URI uri = resolve(schemaResourceLocation);
@@ -1101,12 +1183,12 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             logInfo("Skipping XSD validity verification phase (" + currentPhase.ordinal() + ").");
             return true;
         } else
-            logInfo("Verifying XSD validity phase (" + currentPhase.ordinal() + ")...");
+            logInfo("Verifying XSD validity phase (" + currentPhase.ordinal() + ") using '" + resourceModel.getName() + "' model...");
         try {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            XMLReader filter = new ForeignVocabularyFilter(reader, model.getNamespaceURIs(), extensionSchemas.keySet(), foreignTreatment);
+            XMLReader filter = new ForeignVocabularyFilter(reader, resourceModel.getNamespaceURIs(), extensionSchemas.keySet(), foreignTreatment);
             SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
             Validator v = getSchema().newValidator();
@@ -1347,37 +1429,6 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         return false;
     }
 
-    private void processAnnotations(Object root) {
-        NamedNodeMap attributes = getXMLNode(root).getAttributes();
-        String annotationsNamespace = Annotations.getNamespace();
-        if (attributes != null) {
-            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
-                Node attr = attributes.item(i);
-                if (attr.getNamespaceURI().equals(annotationsNamespace)) {
-                    String localName = attr.getLocalName();
-                    String value = attr.getNodeValue();
-                    if (localName.equals("expectedErrors"))
-                        resourceExpectedErrors = parseAnnotationAsInteger(value, -1);
-                    else if (localName.equals("expectedWarnings"))
-                        resourceExpectedWarnings = parseAnnotationAsInteger(value, -1);
-                    else if (localName.equals("warnOn")) {
-                        String[] tokens = value.split("\\s+");
-                        for (String token : tokens) {
-                            if (defaultWarnings.containsKey(token))
-                                enabledWarnings.add(token);
-                        }
-                    } else if (localName.equals("noWarnOn")) {
-                        String[] tokens = value.split("\\s+");
-                        for (String token : tokens) {
-                            if (defaultWarnings.containsKey(token))
-                                disabledWarnings.add(token);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private int parseAnnotationAsInteger(String annotation, int defaultValue) {
         try {
             return Integer.parseInt(annotation);
@@ -1392,13 +1443,13 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             logInfo("Skipping semantics verification phase (" + currentPhase.ordinal() + ").");
             return true;
         } else
-            logInfo("Verifying semantics phase (" + currentPhase.ordinal() + ")...");
+            logInfo("Verifying semantics phase (" + currentPhase.ordinal() + ") using '" + resourceModel.getName() + "' model...");
         try {
             // construct source pipeline
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, model.getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
+            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, resourceModel.getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
             LocationAnnotatingFilter filter2 = new LocationAnnotatingFilter(filter1);
             SAXSource source = new SAXSource(filter2, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
@@ -1412,7 +1463,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             tf.newTransformer().transform(source, result);
 
             // unmarshall annotated infoset
-            JAXBContext context = JAXBContext.newInstance(model.getJAXBContextPath());
+            JAXBContext context = JAXBContext.newInstance(resourceModel.getJAXBContextPath());
             Binder<Node> binder = context.createBinder();
             Object unmarshalled = binder.unmarshal(result.getNode());
 
@@ -1426,11 +1477,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 logError(message("Unexpected root element, can't introspect non-JAXBElement"));
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
-                Documents.assignIdAttributes(binder.getXMLNode(root).getOwnerDocument(), model.getIdAttributes());
-                if (verifyRootElement(root, model.getRootClasses())) {
+                Documents.assignIdAttributes(binder.getXMLNode(root).getOwnerDocument(), resourceModel.getIdAttributes());
+                if (verifyRootElement(root, resourceModel.getRootClasses())) {
                     this.rootBinding = root.getValue();
-                    processAnnotations(this.rootBinding);
-                    model.getSemanticsVerifier().verify(this.rootBinding, this);
+                    resourceModel.getSemanticsVerifier().verify(this.rootBinding, this);
                 }
             }
         } catch (UnmarshalException e) {
@@ -1446,7 +1496,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private int verify(String uri) {
         logInfo("Verifying {" + uri + "}.");
         do {
-            setResource(uri);
+            resetResourceState();
+            setResourceURI(uri);
             if (!verifyResource())
                 break;
             if (!verifyWellFormedness())
@@ -1691,6 +1742,13 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         }
     }
 
+    private static class InvalidAnnotationException extends RuntimeException {
+        static final long serialVersionUID = 0;
+        InvalidAnnotationException(String name, String details) {
+            super("invalid annotation: " + name + ": " + details);
+        }
+    }
+
     private static class WellFormednessErrorException extends RuntimeException {
         static final long serialVersionUID = 0;
         WellFormednessErrorException(Throwable cause) {
@@ -1857,7 +1915,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         }
 
         private void checkXSISchemaLocations(QName qn, String locations) {
-            String[] pairs = locations.split("\\s+");
+            String[] pairs = locations.trim().split("\\s+");
             if ((pairs.length & 1) != 0) {
                 logError(new XSISchemaLocationException("unpaired schema location in {" + qn + "}: {" + locations + "}."));
             } else {
@@ -1867,7 +1925,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                         String message = "Platform validator doesn't support non-pool schemas, try specifying location {";
                         message += schemaNamespace;
                         message += "} with '--external-schema' option.";
-                        logError(currentLocator, message);
+                        if (isWarningEnabled("xsi-schema-location")) {
+                            if (logWarning(currentLocator, message))
+                                logError(currentLocator, message);
+                        }
                     }
                 }
             }

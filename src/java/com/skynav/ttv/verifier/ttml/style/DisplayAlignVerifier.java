@@ -30,7 +30,7 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml10.ttd.DisplayAlign;
+import com.skynav.ttv.model.ttml1.ttd.DisplayAlign;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 

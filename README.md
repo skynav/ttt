@@ -72,7 +72,7 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if xml:base on ttp:extensions is not absolute. (6.1.4)
  * Warn if xml:base on ttp:extensions is specified, is not TT Extension Namespace, and `references-other-extension-namespace` warning is enabled. (6.1.4)
  * Error if absolutized extension designation doesn't conform to extension-designation defined in E.1. (6.1.5)
- * Error if absolutized extension designation is in TT Extension Namespace but is not a known standard designation. (6.1.5)
+ * Error if absolutized extension designation is not a known standard designation. (6.1.5)
  * Warn if absolutized extension designation is in Other Extension Namespace and `references-non-standard-extension` warning is enabled. (6.1.5)
  * Warn if ttp:profile attribute specifies a non-standard profile designation and `references-non-standard-profile` warning is enabled. (6.2.8)
  * Error if style attribute IDREF does not reference a style element. (8.2.1)
@@ -113,6 +113,15 @@ A number of additional semantic constraints are tested in the fourth phase:
  * Error if TT Parameter Namespace attribute specified on element where it is not explicitly permitted.
  * Error if unknown attribute in TT StyleMetadata Namespace specified on any element.
  * Error if TT Style Namespace attribute specified on element where it is not explicitly permitted.
+
+If one of the **smpte** verification models applies, a number of additional semantic constraints are tested in the fourth phase:
+
+ * Error if smpte:backgroundImageHorizontal attribute specifies value that is not `left|center|right` or doesn't conform to the TTML \<length\> syntax.
+ * Error if smpte:backgroundImageHorizontal attribute uses a negative length value.
+ * Error if smpte:backgroundImageVertical attribute specifies value that is not `top|center|bottom` or doesn't conform to the TTML \<length\> syntax.
+ * Error if smpte:backgroundImageVertical attribute uses a negative length value.
+ * Error if unknown element in some SMPTE-TT Namespace is specified.
+ * Error if unknown attribute in some SMPTE-TT Namespace is specified on any element.
 
 ## Verification Model
 
@@ -234,3 +243,15 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 ## Issues
 
 See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current known bugs, feature requests (enhancements), etc.
+
+## To Do (*No Issue Filed*)
+
+ * Verify that content of smpte:data and smpte:image conforms to Base64 encoding.
+ * Verify that smpte:image is a child of tt:metadata.
+ * Verify that URI valued smpte:backgroundImage attribute is either a fragment identifier or a URI without a fragment identifier.
+ * Verify that URI valued smpte:backgroundImage attribute that is a fragment identifier references a smpte:image element in same document.
+ * Verify that smpte:information is a child of a tt:metadata child of tt:head.
+ * Verify that no more than one smpte:information element is present in document.
+ * Verify that @datatype attribute of smpte:data is not specified or has a `x-` prefix.
+ * Verify that m608:* attributes are used only on smpte:information element.
+

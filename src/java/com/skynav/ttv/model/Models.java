@@ -28,19 +28,23 @@ package com.skynav.ttv.model;
 import java.util.Map;
 import java.util.Set;
 
-import com.skynav.ttv.model.ttml.TTML10;
+import com.skynav.ttv.model.ttml.TTML1;
+import com.skynav.ttv.model.smpte.ST20522010;
+import com.skynav.ttv.model.smpte.ST20522013;
 
 public class Models {
 
     public static Model getDefaultModel() {
-        return TTML10.MODEL;
+        return TTML1.MODEL;
     }
 
     private static Map<String,Model> modelMap;
 
     static {
-        modelMap = new java.util.HashMap<String,Model>();
-        modelMap.put(TTML10.MODEL.getName(), TTML10.MODEL);
+        modelMap = new java.util.TreeMap<String,Model>();
+        modelMap.put(TTML1.MODEL.getName(), TTML1.MODEL);
+        modelMap.put(ST20522010.MODEL.getName(), ST20522010.MODEL);
+        modelMap.put(ST20522013.MODEL.getName(), ST20522013.MODEL);
     }
 
     public static Set<String> getModelNames() {

@@ -36,12 +36,12 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class NonWellFormedTestCases {
     @Test
     public void testNonWellFormedXMLDeclaration() throws Exception {
-        performNonWellFormedTest("ttml10-non-well-formed-xml-declaration.xml", 1, 0);
+        performNonWellFormedTest("ttml1-non-well-formed-xml-declaration.xml", 1, 0);
     }
 
     @Test
     public void testNonWellFormedStartTag() throws Exception {
-        performNonWellFormedTest("ttml10-non-well-formed-start-tag.xml", 1, 0);
+        performNonWellFormedTest("ttml1-non-well-formed-start-tag.xml", 1, 0);
     }
 
     private void performNonWellFormedTest(String resourceName, int expectedErrors, int expectedWarnings) {

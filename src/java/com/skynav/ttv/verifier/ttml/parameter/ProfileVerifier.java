@@ -41,12 +41,12 @@ public class ProfileVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         String value = (String) valueObject;
-        URI profileNamespaceUri = model.getProfileNamespaceUri();
-        Set<URI> standardProfiles = model.getStandardProfileURIs();
-        if (Profiles.isProfileDesignator(value, locator, context, profileNamespaceUri, standardProfiles)) {
+        URI ttProfileNamespaceUri = model.getTTProfileNamespaceUri();
+        Set<URI> designators = model.getProfileDesignators();
+        if (Profiles.isProfileDesignator(value, locator, context, ttProfileNamespaceUri, designators)) {
             return true;
         } else {
-            Profiles.badProfileDesignator(value, locator, context, profileNamespaceUri, standardProfiles);
+            Profiles.badProfileDesignator(value, locator, context, ttProfileNamespaceUri, designators);
             return false;
         }
     }

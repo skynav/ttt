@@ -26,5 +26,17 @@
 package com.skynav.ttv.app;
 
 public class Version {
-    public static final String CURRENT = "1.0.0a2";
+    public static final String CURRENT = "1.0.0dev";
+
+    public static String getVersion() {
+        return CURRENT;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getVersion());
+    }
 }
+
+
+
+

@@ -28,6 +28,8 @@ package com.skynav.ttv.model;
 import java.net.URI;
 import java.util.Map;
 
+import com.skynav.ttv.util.URIs;
+
 public class Profile {
 
     public enum Usage {
@@ -80,9 +82,8 @@ public class Profile {
      * @return feature usage
      */
     public Usage getFeature(URI uri) {
-        Map<URI,Usage> features = specification.getFeatures();
-        if (features.containsKey(uri))
-            return features.get(uri);
+        if (specification.hasFeature(uri))
+            return specification.getFeature(uri);
         else if (baseline != null)
             return baseline.getFeature(uri);
         else
@@ -94,9 +95,8 @@ public class Profile {
      * @return extension usage
      */
     public Usage getExtension(URI uri) {
-        Map<URI,Usage> extensions = specification.getExtensions();
-        if (extensions.containsKey(uri))
-            return extensions.get(uri);
+        if (specification.hasExtension(uri))
+            return specification.getExtension(uri);
         else if (baseline != null)
             return baseline.getExtension(uri);
         else
@@ -122,10 +122,10 @@ public class Profile {
         private Map<URI,Usage> features;
         private Map<URI,Usage> extensions;
 
-        protected Specification(URI uri, URI baselineUri, Map<URI,Usage> features, Map<URI,Usage> extensions) {
+        protected Specification(URI uri, String baseline, Map<URI,Usage> features, Map<URI,Usage> extensions) {
             assert uri != null;
             this.uri = uri;
-            this.baselineUri = baselineUri;
+            this.baselineUri = URIs.makeURISafely(baseline);
             this.features = (features != null) ? features : new java.util.HashMap<URI,Usage>();
             this.extensions = (extensions != null) ? extensions : new java.util.HashMap<URI,Usage>();
         }
@@ -170,20 +170,79 @@ public class Profile {
         }
 
         /**
-         * Obtain feature usage map.
-         * @return feature usage map
+         * Determine if feature is defined.
+         * @return true if feature defined
          */
-        public Map<URI,Usage> getFeatures() {
-            return features;
+        public boolean hasFeature(URI uri) {
+            return features.containsKey(uri);
         }
 
         /**
-         * Obtain extension usage.
-         * @return extension usage map
+         * Obtain feature usage if defined, otherwise Usage.NONE.
+         * @return feature usage if defined, otherwise Usage.NONE
          */
-        public Map<URI,Usage> getExtensions() {
-            return extensions;
+        public Usage getFeature(URI uri) {
+            Usage usage = features.get(uri);
+            if (usage == null)
+                usage = Usage.NONE;
+            return usage;
         }
+
+        /**
+         * Determine if extension is defined.
+         * @return true if extension defined
+         */
+        public boolean hasExtension(URI uri) {
+            return extensions.containsKey(uri);
+        }
+
+        /**
+         * Obtain extension usage if defined, otherwise Usage.NONE.
+         * @return extension usage if defined, otherwise Usage.NONE
+         */
+        public Usage getExtension(URI uri) {
+            Usage usage = extensions.get(uri);
+            if (usage == null)
+                usage = Usage.NONE;
+            return usage;
+        }
+
+        protected static Map<URI,Usage> featuresMap(String featureNamespace, Object[][] featureMapEntries) {
+            if ((featureNamespace == null) || (featureNamespace.length() == 0) || (featureMapEntries == null))
+                return null;
+            else {
+                URI featureNamespaceUri = URIs.makeURISafely(featureNamespace);
+                if (featureNamespaceUri != null) {
+                    Map<URI,Usage> map = new java.util.HashMap<URI,Usage>(featureMapEntries.length);
+                    for (Object[] entry : featureMapEntries) {
+                        String designator = (String) entry[0];
+                        Usage usage = (Usage) entry[1];
+                        map.put(featureNamespaceUri.resolve(designator), usage);
+                    }
+                    return map;
+                } else
+                    return null;
+            }
+        }
+
+        protected static Map<URI,Usage> extensionsMap(String extensionNamespace, Object[][] extensionMapEntries) {
+            if ((extensionNamespace == null) || (extensionNamespace.length() == 0) || (extensionMapEntries == null))
+                return null;
+            else {
+                URI extensionNamespaceUri = URIs.makeURISafely(extensionNamespace);
+                if (extensionNamespaceUri != null) {
+                    Map<URI,Usage> map = new java.util.HashMap<URI,Usage>(extensionMapEntries.length);
+                    for (Object[] entry : extensionMapEntries) {
+                        String designator = (String) entry[0];
+                        Usage usage = (Usage) entry[1];
+                        map.put(extensionNamespaceUri.resolve(designator), usage);
+                    }
+                    return map;
+                } else
+                    return null;
+            }
+        }
+
     }
 
 }

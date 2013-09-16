@@ -36,127 +36,142 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
     @Test
     public void testValidSimple() throws Exception {
-        performValidityTest("ttml10-valid-simple.xml", 0, 0);
+        performValidityTest("ttml1-valid-simple.xml", 0, 0);
     }
 
     @Test
     public void testValidAllElements() throws Exception {
-        performValidityTest("ttml10-valid-all-elements.xml", 0, 3);
+        performValidityTest("ttml1-valid-all-elements.xml", 0, 3);
     }
 
     @Test
     public void testValidAllMetadata() throws Exception {
-        performValidityTest("ttml10-valid-all-metadata.xml", 0, 1);
+        performValidityTest("ttml1-valid-all-metadata.xml", 0, 1);
     }
 
     @Test
     public void testValidAllParameters() throws Exception {
-        performValidityTest("ttml10-valid-all-parameters.xml", 0, 0);
+        performValidityTest("ttml1-valid-all-parameters.xml", 0, 0);
     }
 
     @Test
     public void testValidAllProfiles() throws Exception {
-        performValidityTest("ttml10-valid-all-profiles.xml", 0, 3);
+        performValidityTest("ttml1-valid-all-profiles.xml", 0, 3);
     }
 
     @Test
     public void testValidAllStyles() throws Exception {
-        performValidityTest("ttml10-valid-all-styles.xml", 0, 0);
+        performValidityTest("ttml1-valid-all-styles.xml", 0, 0);
     }
 
     @Test
     public void testValidAllTiming() throws Exception {
-        performValidityTest("ttml10-valid-all-timing.xml", 0, 0);
+        performValidityTest("ttml1-valid-all-timing.xml", 0, 0);
     }
 
     @Test
     public void testValidAgentIdrefDuplicate() throws Exception {
-        performValidityTest("ttml10-valid-agent-idref-duplicate.xml", 0, 1);
+        performValidityTest("ttml1-valid-agent-idref-duplicate.xml", 0, 1);
     }
 
     @Test
     public void testValidAgentMissingActor() throws Exception {
-        performValidityTest("ttml10-valid-agent-missing-actor.xml", 0, 1);
+        performValidityTest("ttml1-valid-agent-missing-actor.xml", 0, 1);
     }
 
     @Test
     public void testValidAgentMissingName() throws Exception {
-        performValidityTest("ttml10-valid-agent-missing-name.xml", 0, 1);
+        performValidityTest("ttml1-valid-agent-missing-name.xml", 0, 1);
     }
 
     @Test
     public void testValidExtensionNonStandard() throws Exception {
-        performValidityTest("ttml10-valid-extension-non-standard.xml", 0, 2);
+        performValidityTest("ttml1-valid-extension-non-standard.xml", 0, 2);
     }
 
     @Test
     public void testValidExtensionsBaseOtherNamespace() throws Exception {
-        performValidityTest("ttml10-valid-extensions-base-other-namespace.xml", 0, 1);
+        performValidityTest("ttml1-valid-extensions-base-other-namespace.xml", 0, 1);
     }
 
     @Test
     public void testValidFontFamilyQuotedGeneric() throws Exception {
-        performValidityTest("ttml10-valid-font-family-quoted-generic.xml", 0, 1);
+        performValidityTest("ttml1-valid-font-family-quoted-generic.xml", 0, 1);
     }
 
     @Test
     public void testValidForeignMetadata() throws Exception {
-        performValidityTest("ttml10-valid-foreign-metadata.xml", 0, 2);
+        performValidityTest("ttml1-valid-foreign-metadata.xml", 0, 2);
     }
 
     @Test
     public void testValidForeign() throws Exception {
-        performValidityTest("ttml10-valid-foreign.xml", 0, 4);
+        performValidityTest("ttml1-valid-foreign.xml", 0, 4);
     }
 
     @Test
     public void testValidOpacityOutOfRange() throws Exception {
-        performValidityTest("ttml10-valid-opacity-out-of-range.xml", 0, 5);
+        performValidityTest("ttml1-valid-opacity-out-of-range.xml", 0, 5);
     }
 
     @Test
     public void testValidOriginNegative() throws Exception {
-        performValidityTest("ttml10-valid-origin-negative.xml", 0, 4);
+        performValidityTest("ttml1-valid-origin-negative.xml", 0, 4);
     }
 
     @Test
     public void testValidProfileAttributeIgnored() throws Exception {
-        performValidityTest("ttml10-valid-profile-attribute-ignored.xml", 0, 1);
+        performValidityTest("ttml1-valid-profile-attribute-ignored.xml", 0, 1);
     }
 
     @Test
     public void testValidProfileAttributeNonStandard() throws Exception {
-        performValidityTest("ttml10-valid-profile-attribute-non-standard.xml", 0, 1);
+        performValidityTest("ttml1-valid-profile-attribute-non-standard.xml", 0, 1);
     }
 
     @Test
     public void testValidProfileMissing() throws Exception {
-        performValidityTest("ttml10-valid-profile-missing.xml", 0, 1);
+        performValidityTest("ttml1-valid-profile-missing.xml", 0, 1);
     }
 
     @Test
     public void testValidProfileNonStandard() throws Exception {
-        performValidityTest("ttml10-valid-profile-non-standard.xml", 0, 1);
+        performValidityTest("ttml1-valid-profile-non-standard.xml", 0, 1);
     }
 
     @Test
     public void testValidRoleDuplicate() throws Exception {
-        performValidityTest("ttml10-valid-role-duplicate.xml", 0, 1);
+        performValidityTest("ttml1-valid-role-duplicate.xml", 0, 1);
     }
 
     @Test
     public void testValidRoleExtension() throws Exception {
-        performValidityTest("ttml10-valid-role-extension.xml", 0, 1);
+        performValidityTest("ttml1-valid-role-extension.xml", 0, 1);
     }
 
     @Test
     public void testValidStyleIdrefDuplicateWithIntervening() throws Exception {
-        performValidityTest("ttml10-valid-style-idref-duplicate-with-intervening.xml", 0, 1);
+        performValidityTest("ttml1-valid-style-idref-duplicate-with-intervening.xml", 0, 1);
     }
 
     @Test
     public void testValidStyleIdrefDuplicateWithoutIntervening() throws Exception {
-        performValidityTest("ttml10-valid-style-idref-duplicate-without-intervening.xml", 0, 2);
+        performValidityTest("ttml1-valid-style-idref-duplicate-without-intervening.xml", 0, 2);
+    }
+
+    @Test
+    public void testValidST20522010() throws Exception {
+        performValidityTest("smpte-valid-2010.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidST20522013With608Extensions() throws Exception {
+        performValidityTest("smpte-valid-2013-608.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidST20522013With708Extensions() throws Exception {
+        performValidityTest("smpte-valid-2013-708.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

@@ -33,8 +33,8 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml10.ttp.Extensions;
-import com.skynav.ttv.model.ttml10.ttp.Features;
+import com.skynav.ttv.model.ttml1.ttp.Extensions;
+import com.skynav.ttv.model.ttml1.ttp.Features;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;

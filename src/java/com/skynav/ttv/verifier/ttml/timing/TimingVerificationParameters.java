@@ -32,7 +32,7 @@ import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.model.ttml10.tt.TimedText;
+import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
 

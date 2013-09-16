@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier;
 
+import org.xml.sax.Locator;
+
 import org.w3c.dom.Node;
 
 public interface SemanticsVerifier {
@@ -45,5 +47,9 @@ public interface SemanticsVerifier {
      * @return true if validation succeeds without error
      */
     boolean verify(Object root, VerifierContext context);
+
+    boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context);
+
+    boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context);
 
 }

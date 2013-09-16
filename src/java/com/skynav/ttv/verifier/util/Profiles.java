@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -42,7 +43,7 @@ public class Profiles {
             String uriString = featureUri.toString();
             String uriFragment = featureUri.getFragment();
             String featureNamespace = (uriFragment != null) ? uriString.substring(0, uriString.indexOf("#" + uriFragment)) : uriString;
-            String ttFeatureNamespace = context.getModel().getFeatureNamespaceUri().toString();
+            String ttFeatureNamespace = context.getModel().getTTFeatureNamespaceUri().toString();
             if (!featureNamespace.equals(ttFeatureNamespace))
                 return false;
             else if (uriFragment == null)
@@ -66,7 +67,7 @@ public class Profiles {
             String uriString = featureUri.toString();
             String uriFragment = featureUri.getFragment();
             String featureNamespace = (uriFragment != null) ? uriString.substring(0, uriString.indexOf("#" + uriFragment)) : uriString;
-            String ttFeatureNamespace = context.getModel().getFeatureNamespaceUri().toString();
+            String ttFeatureNamespace = context.getModel().getTTFeatureNamespaceUri().toString();
             if (!featureNamespace.equals(ttFeatureNamespace))
                 message = "Unknown namespace in feature designation '" + featureUri + "', expect TT Feature Namespace '" + ttFeatureNamespace + "'.";
             else if (uriFragment == null)
@@ -89,24 +90,27 @@ public class Profiles {
             String uriString = extensionUri.toString();
             String uriFragment = extensionUri.getFragment();
             String extensionNamespace = (uriFragment != null) ? uriString.substring(0, uriString.indexOf("#" + uriFragment)) : uriString;
-            String ttExtensionNamespace = context.getModel().getExtensionNamespaceUri().toString();
-            if (!extensionNamespace.equals(ttExtensionNamespace)) {
-                if (context.getReporter().isWarningEnabled("references-other-extension-namespace")) {
-                    if (reporter.logWarning(locator, "Other namespace in extension designation '" + extensionUri + "'."))
-                        return false;
-                }
-            }
+            String ttExtensionNamespace = context.getModel().getTTExtensionNamespaceUri().toString();
+            String modelExtensionNamespace = context.getModel().getExtensionNamespaceUri().toString();
             if (uriFragment == null)
                 return false;
             else if (uriFragment.length() == 0)
                 return false;
-            else if (extensionNamespace.equals(ttExtensionNamespace) && !context.getModel().isStandardExtensionDesignation(extensionUri))
-                return false;
-            else if (context.getReporter().isWarningEnabled("references-non-standard-extension")) {
-                if (reporter.logWarning(locator, "Non-standard extension designation '" + extensionUri + "' in an Other Extension Namespace."))
-                    return false;
+            else if (extensionNamespace.equals(ttExtensionNamespace))
+                return context.getModel().isStandardExtensionDesignation(extensionUri);
+            else if (extensionNamespace.equals(modelExtensionNamespace))
+                return context.getModel().isStandardExtensionDesignation(extensionUri);
+            else {
+                if (context.getReporter().isWarningEnabled("references-other-extension-namespace")) {
+                    if (reporter.logWarning(locator, "Other namespace in extension designation '" + extensionUri + "'."))
+                        return false;
+                }
+                if (context.getReporter().isWarningEnabled("references-non-standard-extension")) {
+                    if (reporter.logWarning(locator, "Non-standard extension designation '" + extensionUri + "' in an Other Extension Namespace."))
+                        return false;
+                }
+                return true;
             }
-            return true;
         } catch (URISyntaxException e) {
             // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.
             return false;
@@ -120,13 +124,23 @@ public class Profiles {
             String uriString = extensionUri.toString();
             String uriFragment = extensionUri.getFragment();
             String extensionNamespace = (uriFragment != null) ? uriString.substring(0, uriString.indexOf("#" + uriFragment)) : uriString;
-            String ttExtensionNamespace = context.getModel().getExtensionNamespaceUri().toString();
-            if (uriFragment == null)
+            Model model = context.getModel();
+            String ttExtensionNamespace = model.getTTExtensionNamespaceUri().toString();
+            String modelExtensionNamespace = model.getExtensionNamespaceUri().toString();
+            String modelName = model.getName();
+            if (uriFragment == null) {
                 message = "Missing designation in extension designation '" + extensionUri + "'.";
-            else if (uriFragment.length() == 0)
+            } else if (uriFragment.length() == 0) {
                 message = "Empty designation token in extension designation '" + extensionUri + "'.";
-            else if (extensionNamespace.equals(ttExtensionNamespace) && !context.getModel().isStandardExtensionDesignation(extensionUri))
-                message = "Unknown designation token in extension designation '" + extensionUri + "' in TT Extension Namespace.";
+            } else if (extensionNamespace.equals(ttExtensionNamespace)) {
+                if (!model.isStandardExtensionDesignation(extensionUri)) {
+                    message = "Unknown designation token in extension designation '" + extensionUri + "' in TT Extension Namespace.";
+                }
+            } else if (extensionNamespace.equals(modelExtensionNamespace)) {
+                if (!model.isStandardExtensionDesignation(extensionUri)) {
+                    message = "Unknown designation token in extension designation '" + extensionUri + "' in Model (" + modelName + ") Extension Namespace.";
+                }
+            }
         } catch (URISyntaxException e) {
             // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.
         }
@@ -134,14 +148,14 @@ public class Profiles {
             context.getReporter().logInfo(locator, message);
     }
 
-    public static boolean isProfileDesignator(String value, Locator locator, VerifierContext context, URI profileNamespaceUri, Set<URI> standardProfiles) {
+    public static boolean isProfileDesignator(String value, Locator locator, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
         try {
             URI uri = new URI(value);
             if (!uri.isAbsolute())
-                uri = profileNamespaceUri.resolve(uri);
-            if (standardProfiles.contains(uri))
+                uri = ttmlProfileNamespaceUri.resolve(uri);
+            if (designators.contains(uri))
                 return true;
-            else if (uri.toString().indexOf(profileNamespaceUri.toString()) == 0) {
+            else if (uri.toString().indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
                 // error - unknown designator in TTML profile namespace
                 return false;
             } else {
@@ -158,15 +172,18 @@ public class Profiles {
         }
     }
 
-    public static void badProfileDesignator(String value, Locator locator, VerifierContext context, URI profileNamespaceUri, Set<URI> standardProfiles) {
+    public static void badProfileDesignator(String value, Locator locator, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
         Reporter reporter = context.getReporter();
         try {
             URI uri = new URI(value);
             if (!uri.isAbsolute())
-                uri = profileNamespaceUri.resolve(uri);
-            if (uri.toString().indexOf(profileNamespaceUri.toString()) == 0) {
-                if (!standardProfiles.contains(uri))
+                uri = ttmlProfileNamespaceUri.resolve(uri);
+            if (!designators.contains(uri)) {
+                if (uri.toString().indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
                     reporter.logInfo(locator, "Bad profile designator, unrecognized designator '" + value + "' in TT Profile Namespace.");
+                } else {
+                    reporter.logInfo(locator, "Bad profile designator, unrecognized designator '" + value + "' in Other Profile Namespace.");
+                }
             }
         } catch (URISyntaxException e) {
             // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.

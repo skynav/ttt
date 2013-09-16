@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#datatype"
+        xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:ttd="http://www.w3.org/ns/ttml#datatype">
+  <xs:simpleType name="alpha">
+    <xs:restriction base="xs:float"/>
+  </xs:simpleType>
+  <xs:simpleType name="agent">
+    <xs:restriction base="xs:IDREFS"/>
+  </xs:simpleType>
+  <xs:simpleType name="cellResolution">
+    <xs:annotation>
+      <xs:documentation>positiveInteger positiveInteger</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="clockMode">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="local"/>
+      <xs:enumeration value="gps"/>
+      <xs:enumeration value="utc"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="color">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="direction">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="ltr"/>
+      <xs:enumeration value="rtl"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="display">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="auto"/>
+      <xs:enumeration value="none"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="displayAlign">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="before"/>
+      <xs:enumeration value="center"/>
+      <xs:enumeration value="after"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="dropMode">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="dropNTSC"/>
+      <xs:enumeration value="dropPAL"/>
+      <xs:enumeration value="nonDrop"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="extensionDesignator">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  <xs:simpleType name="extensionValue">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="optional"/>
+      <xs:enumeration value="required"/>
+      <xs:enumeration value="use"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="extent">
+    <xs:annotation>
+      <xs:documentation>auto | length length</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="featureDesignator">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  <xs:simpleType name="featureValue">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="optional"/>
+      <xs:enumeration value="required"/>
+      <xs:enumeration value="use"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="fontFamily">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="fontSize">
+    <xs:annotation>
+      <xs:documentation>length | length length</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="fontStyle">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="italic"/>
+      <xs:enumeration value="oblique"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="fontWeight">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="bold"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="frameRate">
+    <xs:restriction base="xs:positiveInteger"/>
+  </xs:simpleType>
+  <xs:simpleType name="frameRateMultiplier">
+    <xs:annotation>
+      <xs:documentation>positiveInteger positiveInteger</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="lineHeight">
+    <xs:annotation>
+      <xs:documentation>normal | length</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="markerMode">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="continuous"/>
+      <xs:enumeration value="discontinuous"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="metadataAgentType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="person"/>
+      <xs:enumeration value="character"/>
+      <xs:enumeration value="group"/>
+      <xs:enumeration value="organization"/>
+      <xs:enumeration value="other"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="metadataNameType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="full"/>
+      <xs:enumeration value="family"/>
+      <xs:enumeration value="given"/>
+      <xs:enumeration value="alias"/>
+      <xs:enumeration value="other"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="metadataRoleBaseType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="action"/>
+      <xs:enumeration value="caption"/>
+      <xs:enumeration value="description"/>
+      <xs:enumeration value="dialog"/>
+      <xs:enumeration value="expletive"/>
+      <xs:enumeration value="kinesic"/>
+      <xs:enumeration value="lyrics"/>
+      <xs:enumeration value="music"/>
+      <xs:enumeration value="narration"/>
+      <xs:enumeration value="quality"/>
+      <xs:enumeration value="sound"/>
+      <xs:enumeration value="source"/>
+      <xs:enumeration value="suppressed"/>
+      <xs:enumeration value="reproduction"/>
+      <xs:enumeration value="thought"/>
+      <xs:enumeration value="title"/>
+      <xs:enumeration value="transcription"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="opacity">
+    <xs:annotation>
+      <xs:documentation>alpha</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="ttd:alpha"/>
+  </xs:simpleType>
+  <xs:simpleType name="origin">
+    <xs:annotation>
+      <xs:documentation>auto | length length</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="overflow">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="visible"/>
+      <xs:enumeration value="hidden"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="padding">
+    <xs:annotation>
+      <xs:documentation>length length | length length length | length length length length</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="pixelAspectRatio">
+    <xs:annotation>
+      <xs:documentation>positiveInteger:positiveInteger</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="profile">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  <xs:simpleType name="role">
+    <xs:restriction>
+      <xs:simpleType>
+        <xs:list itemType="ttd:roleItem"/>
+      </xs:simpleType>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="roleItem">
+    <xs:annotation>
+      <xs:documentation>metadataRoleBaseType | "x-"string</xs:documentation>
+    </xs:annotation>
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="ttd:metadataRoleBaseType"/>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:pattern value="x-\c+"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="showBackground">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="always"/>
+      <xs:enumeration value="whenActive"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="subFrameRate">
+    <xs:restriction base="xs:positiveInteger"/>
+  </xs:simpleType>
+  <xs:simpleType name="textAlign">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="center"/>
+      <xs:enumeration value="right"/>
+      <xs:enumeration value="start"/>
+      <xs:enumeration value="end"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="textDecoration">
+    <xs:annotation>
+      <xs:documentation>none | [ [ underline | noUnderline ] || [ lineThrough | noLineThrough ] || [ overline | noOverline ] ]</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="underline"/>
+      <xs:enumeration value="noUnderline"/>
+      <xs:enumeration value="lineThrough"/>
+      <xs:enumeration value="noLineThrough"/>
+      <xs:enumeration value="overline"/>
+      <xs:enumeration value="noOverline"/>
+      <xs:enumeration value="noUnderline noLineThrough"/>
+      <xs:enumeration value="noLineThrough noUnderline"/>
+      <xs:enumeration value="noUnderline lineThrough"/>
+      <xs:enumeration value="lineThrough noUnderline"/>
+      <xs:enumeration value="underline noLineThrough"/>
+      <xs:enumeration value="noLineThrough underline"/>
+      <xs:enumeration value="underline lineThrough"/>
+      <xs:enumeration value="lineThrough underline"/>
+      <xs:enumeration value="noUnderline noOverline"/>
+      <xs:enumeration value="noOverline noUnderline"/>
+      <xs:enumeration value="noUnderline overline"/>
+      <xs:enumeration value="overline noUnderline"/>
+      <xs:enumeration value="underline noOverline"/>
+      <xs:enumeration value="noOverline underline"/>
+      <xs:enumeration value="underline overline"/>
+      <xs:enumeration value="overline underline"/>
+      <xs:enumeration value="noUnderline noLineThrough noOverline"/>
+      <xs:enumeration value="noUnderline noOverline noLineThrough"/>
+      <xs:enumeration value="noLineThrough noUnderline noOverline"/>
+      <xs:enumeration value="noLineThrough noOverline noUnderline"/>
+      <xs:enumeration value="noOverline noUnderline noLineThrough"/>
+      <xs:enumeration value="noOverline noLineThrough noUnderline"/>
+      <xs:enumeration value="noUnderline noLineThrough overline"/>
+      <xs:enumeration value="noUnderline overline noLineThrough"/>
+      <xs:enumeration value="noLineThrough noUnderline overline"/>
+      <xs:enumeration value="noLineThrough overline noUnderline"/>
+      <xs:enumeration value="overline noUnderline noLineThrough"/>
+      <xs:enumeration value="overline noLineThrough noUnderline"/>
+      <xs:enumeration value="noUnderline lineThrough noOverline"/>
+      <xs:enumeration value="noUnderline noOverline lineThrough"/>
+      <xs:enumeration value="lineThrough noUnderline noOverline"/>
+      <xs:enumeration value="lineThrough noOverline noUnderline"/>
+      <xs:enumeration value="noOverline noUnderline lineThrough"/>
+      <xs:enumeration value="noOverline lineThrough noUnderline"/>
+      <xs:enumeration value="noUnderline lineThrough overline"/>
+      <xs:enumeration value="noUnderline overline lineThrough"/>
+      <xs:enumeration value="lineThrough noUnderline overline"/>
+      <xs:enumeration value="lineThrough overline noUnderline"/>
+      <xs:enumeration value="overline noUnderline lineThrough"/>
+      <xs:enumeration value="overline lineThrough noUnderline"/>
+      <xs:enumeration value="underline noLineThrough noOverline"/>
+      <xs:enumeration value="underline noOverline noLineThrough"/>
+      <xs:enumeration value="noLineThrough underline noOverline"/>
+      <xs:enumeration value="noLineThrough noOverline underline"/>
+      <xs:enumeration value="noOverline underline noLineThrough"/>
+      <xs:enumeration value="noOverline noLineThrough underline"/>
+      <xs:enumeration value="underline noLineThrough overline"/>
+      <xs:enumeration value="underline overline noLineThrough"/>
+      <xs:enumeration value="noLineThrough underline overline"/>
+      <xs:enumeration value="noLineThrough overline underline"/>
+      <xs:enumeration value="overline underline noLineThrough"/>
+      <xs:enumeration value="overline noLineThrough underline"/>
+      <xs:enumeration value="underline lineThrough noOverline"/>
+      <xs:enumeration value="underline noOverline lineThrough"/>
+      <xs:enumeration value="lineThrough underline noOverline"/>
+      <xs:enumeration value="lineThrough noOverline underline"/>
+      <xs:enumeration value="noOverline underline lineThrough"/>
+      <xs:enumeration value="noOverline lineThrough underline"/>
+      <xs:enumeration value="underline lineThrough overline"/>
+      <xs:enumeration value="underline overline lineThrough"/>
+      <xs:enumeration value="lineThrough underline overline"/>
+      <xs:enumeration value="lineThrough overline underline"/>
+      <xs:enumeration value="overline underline lineThrough"/>
+      <xs:enumeration value="overline lineThrough underline"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="textOutline">
+    <xs:annotation>
+      <xs:documentation>none | length | length length | color length | color length length</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="tickRate">
+    <xs:restriction base="xs:positiveInteger"/>
+  </xs:simpleType>
+  <xs:simpleType name="timeBase">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="media"/>
+      <xs:enumeration value="smpte"/>
+      <xs:enumeration value="clock"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="timeContainer">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="par"/>
+      <xs:enumeration value="seq"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="timeCoordinate">
+    <xs:annotation>
+      <xs:documentation>timeExpression</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="timeDuration">
+    <xs:annotation>
+      <xs:documentation>timeExpression</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="unicodeBidi">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="embed"/>
+      <xs:enumeration value="bidiOverride"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="visibility">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="hidden"/>
+      <xs:enumeration value="visible"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="wrapOption">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="wrap"/>
+      <xs:enumeration value="noWrap"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="writingMode">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="lrtb"/>
+      <xs:enumeration value="rltb"/>
+      <xs:enumeration value="tbrl"/>
+      <xs:enumeration value="tblr"/>
+      <xs:enumeration value="lr"/>
+      <xs:enumeration value="rl"/>
+      <xs:enumeration value="tb"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="zIndex">
+    <xs:annotation>
+      <xs:documentation>auto | integer</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+</xs:schema>
+
+

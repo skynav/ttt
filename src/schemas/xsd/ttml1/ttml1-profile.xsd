@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#parameter" xml:lang="en"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="ttml1-parameter-items.xsd"/>
+</xs:schema>

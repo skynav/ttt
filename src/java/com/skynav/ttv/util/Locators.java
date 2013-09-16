@@ -35,6 +35,11 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.LocatorImpl;
 
@@ -74,6 +79,8 @@ public class Locators {
         Map<QName,String> attrs = getOtherAttributes(content);
         if ((attrs != null) && attrs.containsKey(getLocatorAttributeQName()))
             return attrs.get(getLocatorAttributeQName());
+        else if (content instanceof Element)
+            return getLocatorAttribute((Element) content);
         else
             return null;
     }
@@ -96,4 +103,25 @@ public class Locators {
             throw new RuntimeException(e);
         }
     }
+
+    private static String getLocatorAttribute(Element element) {
+        NamedNodeMap attributes = element.getAttributes();
+        for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+            Node item = attributes.item(i);
+            if (!(item instanceof Attr))
+                continue;
+            Attr attribute = (Attr) item;
+            String nsUri = attribute.getNamespaceURI();
+            String localName = attribute.getLocalName();
+            if (localName == null)
+                localName = attribute.getName();
+            if (localName.indexOf("xmlns") == 0)
+                continue;
+            QName name = new QName(nsUri != null ? nsUri : "", localName);
+            if (name.equals(getLocatorAttributeQName()))
+                return attribute.getValue();
+        }
+        return null;
+    }
+    
 }

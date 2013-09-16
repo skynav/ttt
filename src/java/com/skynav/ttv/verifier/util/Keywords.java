@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier.util;
 
+import java.util.regex.Pattern;
+
 public class Keywords {
 
     public static boolean isAuto(String value) {
@@ -33,6 +35,11 @@ public class Keywords {
 
     public static boolean isNormal(String value) {
         return value.equals("normal");
+    }
+
+    private static final Pattern tokenPattern = Pattern.compile("\\p{Alpha}+");
+    public static boolean isKeyword(String value) {
+        return tokenPattern.matcher(value).matches();
     }
 
 }
