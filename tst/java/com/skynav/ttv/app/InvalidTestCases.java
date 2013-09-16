@@ -36,7 +36,7 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
     @Test
     public void testInvalidRootHtml() throws Exception {
-        performInvalidityTest("ttml10-invalid-root-html.xml", 1, 0);
+        performInvalidityTest("ttml10-invalid-root-html.xml", 1, 1);
     }
 
     @Test
@@ -1297,4 +1297,3 @@ public class InvalidTestCases {
     }
 
 }
-

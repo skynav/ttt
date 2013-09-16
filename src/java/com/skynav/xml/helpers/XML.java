@@ -29,11 +29,18 @@ import javax.xml.namespace.QName;
 
 public class XML {
 
+    public  static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
+    public  static final String xsiNamespace = "http://www.w3.org/2001/XMLSchema-instance";
+
     private XML() {
     }
 
     public static String getNamespaceUri() {
-        return "http://www.w3.org/XML/1998/namespace";
+        return xmlNamespace;
+    }
+
+    public static boolean isXMLNamespace(String nsUri) {
+        return (nsUri != null) && nsUri.equals(getNamespaceUri());
     }
 
     private static final QName xmlBaseName = new QName(getNamespaceUri(), "base");
@@ -44,6 +51,19 @@ public class XML {
     private static final QName xmlIdName = new QName(getNamespaceUri(), "id");
     public static QName getIdAttributeName() {
         return xmlIdName;
+    }
+
+    public static String getXSINamespaceUri() {
+        return xsiNamespace;
+    }
+
+    public static boolean isXSINamespace(String nsUri) {
+        return (nsUri != null) && nsUri.equals(getXSINamespaceUri());
+    }
+
+    private static final QName xsiSchemaLocationName = new QName(getXSINamespaceUri(), "schemaLocation");
+    public static QName getSchemaLocationAttributeName() {
+        return xsiSchemaLocationName;
     }
 
 }

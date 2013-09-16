@@ -68,15 +68,15 @@ import com.skynav.xml.helpers.XML;
 
 public class TTML10ParameterVerifier implements ParameterVerifier {
 
-    private static final String parameterNamespace = "http://www.w3.org/ns/ttml#parameter";
+    public static final String NAMESPACE = "http://www.w3.org/ns/ttml#parameter";
 
     public static final String getParameterNamespaceUri() {
-        return parameterNamespace;
+        return NAMESPACE;
     }
 
     private static Object[][] parameterAccessorMap = new Object[][] {
         {
-            new QName(parameterNamespace,"cellResolution"),     // attribute name
+            new QName(NAMESPACE,"cellResolution"),     // attribute name
             "CellResolution",                                   // accessor method name suffix
             String.class,                                       // value type
             CellResolutionVerifier.class,                       // specialized verifier
@@ -84,7 +84,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             "32 15",                                            // default value
         },
         {
-            new QName(parameterNamespace,"clockMode"),
+            new QName(NAMESPACE,"clockMode"),
             "ClockMode",
             ClockMode.class,
             ClockModeVerifier.class,
@@ -92,7 +92,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             ClockMode.UTC,
         },
         {
-            new QName(parameterNamespace,"dropMode"),
+            new QName(NAMESPACE,"dropMode"),
             "DropMode",
             DropMode.class,
             DropModeVerifier.class,
@@ -100,7 +100,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             DropMode.NON_DROP,
         },
         {
-            new QName(parameterNamespace,"frameRate"),
+            new QName(NAMESPACE,"frameRate"),
             "FrameRate",
             BigInteger.class,
             FrameRateVerifier.class,
@@ -108,7 +108,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(30),
         },
         {
-            new QName(parameterNamespace,"frameRateMultiplier"),
+            new QName(NAMESPACE,"frameRateMultiplier"),
             "FrameRateMultiplier",
             String.class,
             FrameRateMultiplierVerifier.class,
@@ -116,7 +116,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             "1 1",
         },
         {
-            new QName(parameterNamespace,"markerMode"),
+            new QName(NAMESPACE,"markerMode"),
             "MarkerMode",
             MarkerMode.class,
             MarkerModeVerifier.class,
@@ -124,7 +124,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             MarkerMode.DISCONTINUOUS,
         },
         {
-            new QName(parameterNamespace,"pixelAspectRatio"),
+            new QName(NAMESPACE,"pixelAspectRatio"),
             "PixelAspectRatio",
             String.class,
             PixelAspectRatioVerifier.class,
@@ -132,7 +132,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             "1 1",
         },
         {
-            new QName(parameterNamespace,"profile"),
+            new QName(NAMESPACE,"profile"),
             "Profile",
             String.class,
             ProfileVerifier.class,
@@ -140,7 +140,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             null,
         },
         {
-            new QName(parameterNamespace,"subFrameRate"),
+            new QName(NAMESPACE,"subFrameRate"),
             "SubFrameRate",
             BigInteger.class,
             SubFrameRateVerifier.class,
@@ -148,7 +148,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(1),
         },
         {
-            new QName(parameterNamespace,"tickRate"),
+            new QName(NAMESPACE,"tickRate"),
             "TickRate",
             BigInteger.class,
             TickRateVerifier.class,
@@ -156,7 +156,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(1),
         },
         {
-            new QName(parameterNamespace,"timeBase"),
+            new QName(NAMESPACE,"timeBase"),
             "TimeBase",
             TimeBase.class,
             TimeBaseVerifier.class,
@@ -234,7 +234,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
             if (localName.indexOf("xmlns:") == 0)
                 continue;
             QName name = new QName(nsUri != null ? nsUri : "", localName);
-            if (name.getNamespaceURI().equals(parameterNamespace)) {
+            if (name.getNamespaceURI().equals(NAMESPACE)) {
                 if (!isParameterAttribute(name)) {
                     context.getReporter().logError(locator, "Unknown attribute in TT Parameter namespace '" + name + "' not permitted on '" +
                         context.getBindingElementName(content) + "'.");
@@ -257,7 +257,7 @@ public class TTML10ParameterVerifier implements ParameterVerifier {
     }
 
     private boolean isParameterAttribute(QName name) {
-        return name.getNamespaceURI().equals(parameterNamespace) && accessors.containsKey(name);
+        return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
     private void populate(Model model) {

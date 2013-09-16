@@ -62,14 +62,14 @@ import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML10MetadataVerifier implements MetadataVerifier {
 
-    private static final String metadataNamespace = "http://www.w3.org/ns/ttml#metadata";
+    public static final String NAMESPACE = "http://www.w3.org/ns/ttml#metadata";
 
     public static final String getMetadataNamespaceUri() {
-        return metadataNamespace;
+        return NAMESPACE;
     }
 
-    private static QName agentAttributeName = new QName(metadataNamespace,"agent");
-    private static QName roleAttributeName = new QName(metadataNamespace,"role");
+    private static QName agentAttributeName = new QName(NAMESPACE,"agent");
+    private static QName roleAttributeName = new QName(NAMESPACE,"role");
     private static Object[][] metadataAccessorMap = new Object[][] {
         {
             agentAttributeName,                                 // attribute name
@@ -156,8 +156,8 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
                 localName = attribute.getName();
             if (localName.indexOf("xmlns:") == 0)
                 continue;
-            QName name = new QName(nsUri != null ? nsUri : "", localName);
-            if (name.getNamespaceURI().equals(metadataNamespace)) {
+            QName name = new QName(nsUri != null ? nsUri : "", attribute.getLocalName());
+            if (name.getNamespaceURI().equals(NAMESPACE)) {
                 if (!isMetadataAttribute(name)) {
                     context.getReporter().logError(locator, "Unknown attribute in TT Metadata namespace '" + name + "' not permitted on '" +
                         context.getBindingElementName(content) + "'.");
@@ -190,7 +190,7 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
     }
 
     private boolean isMetadataAttribute(QName name) {
-        return name.getNamespaceURI().equals(metadataNamespace) && accessors.containsKey(name);
+        return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
     private final QName actorAgentAttributeName = new QName("", "agent");
@@ -209,9 +209,9 @@ public class TTML10MetadataVerifier implements MetadataVerifier {
         }
     }
 
-    private final QName actorElementName = new QName(metadataNamespace, "actor");
-    private final QName agentElementName = new QName(metadataNamespace, "agent");
-    private final QName nameElementName = new QName(metadataNamespace, "name");
+    private final QName actorElementName = new QName(NAMESPACE, "actor");
+    private final QName agentElementName = new QName(NAMESPACE, "agent");
+    private final QName nameElementName = new QName(NAMESPACE, "name");
     public boolean verify(Agent content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();

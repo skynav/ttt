@@ -48,24 +48,37 @@ import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
+import com.skynav.ttv.verifier.ttml.TTML10MetadataVerifier;
+import com.skynav.ttv.verifier.ttml.TTML10ParameterVerifier;
+import com.skynav.ttv.verifier.ttml.TTML10ProfileVerifier;
+import com.skynav.ttv.verifier.ttml.TTML10SemanticsVerifier;
+import com.skynav.ttv.verifier.ttml.TTML10StyleVerifier;
+import com.skynav.ttv.verifier.ttml.TTML10TimingVerifier;
 import com.skynav.xml.helpers.XML;
+
 
 public class TTML10 {
     public static final Model MODEL = new TTML10Model();
     private static class TTML10Model implements Model {
+        public static final String NAMESPACE = "http://www.w3.org/ns/ttml";
         public String getName() {
             return "ttml10";
         }
-        public String getSchemaResourceName() {
-            return "xsd/ttml10/ttaf1-dfxp.xsd";
+        public String[] getSchemaResourceNames() {
+            return new String[] { "xsd/ttml10/ttaf1-dfxp.xsd" };
         }
-        private static final URI namespaceUri;
+        private static final URI[] namespaceURIs;
         private static final URI profileNamespaceUri;
         private static final URI featureNamespaceUri;
         private static final URI extensionNamespaceUri;
         static {
             try {
-                namespaceUri = new URI("http://www.w3.org/ns/ttml");
+                namespaceURIs = new URI[] {
+                    new URI(NAMESPACE),
+                    new URI(TTML10ParameterVerifier.NAMESPACE),
+                    new URI(TTML10StyleVerifier.NAMESPACE),
+                    new URI(TTML10MetadataVerifier.NAMESPACE)
+                };
                 profileNamespaceUri = new URI("http://www.w3.org/ns/ttml/profile/");
                 featureNamespaceUri = new URI("http://www.w3.org/ns/ttml/feature/");
                 extensionNamespaceUri = new URI("http://www.w3.org/ns/ttml/extension/");
@@ -73,8 +86,8 @@ public class TTML10 {
                 throw new RuntimeException(e);
             }
         }
-        public URI getNamespaceUri() {
-            return namespaceUri;
+        public URI[] getNamespaceURIs() {
+            return namespaceURIs;
         }
         public URI getProfileNamespaceUri() {
             return profileNamespaceUri;
@@ -220,7 +233,7 @@ public class TTML10 {
         public SemanticsVerifier getSemanticsVerifier() {
             synchronized (this) {
                 if (semanticsVerifier == null) {
-                    semanticsVerifier = new com.skynav.ttv.verifier.ttml.TTML10SemanticsVerifier(this);
+                    semanticsVerifier = new TTML10SemanticsVerifier(this);
                 }
             }
             return semanticsVerifier;
@@ -229,7 +242,7 @@ public class TTML10 {
         public ParameterVerifier getParameterVerifier() {
             synchronized (this) {
                 if (parameterVerifier == null) {
-                    parameterVerifier = new com.skynav.ttv.verifier.ttml.TTML10ParameterVerifier(this);
+                    parameterVerifier = new TTML10ParameterVerifier(this);
                 }
             }
             return parameterVerifier;
@@ -238,7 +251,7 @@ public class TTML10 {
         public ProfileVerifier getProfileVerifier() {
             synchronized (this) {
                 if (profileVerifier == null) {
-                    profileVerifier = new com.skynav.ttv.verifier.ttml.TTML10ProfileVerifier(this);
+                    profileVerifier = new TTML10ProfileVerifier(this);
                 }
             }
             return profileVerifier;
@@ -247,7 +260,7 @@ public class TTML10 {
         public StyleVerifier getStyleVerifier() {
             synchronized (this) {
                 if (styleVerifier == null) {
-                    styleVerifier = new com.skynav.ttv.verifier.ttml.TTML10StyleVerifier(this);
+                    styleVerifier = new TTML10StyleVerifier(this);
                 }
             }
             return styleVerifier;
@@ -256,7 +269,7 @@ public class TTML10 {
         public TimingVerifier getTimingVerifier() {
             synchronized (this) {
                 if (timingVerifier == null) {
-                    timingVerifier = new com.skynav.ttv.verifier.ttml.TTML10TimingVerifier(this);
+                    timingVerifier = new TTML10TimingVerifier(this);
                 }
             }
             return timingVerifier;
@@ -265,7 +278,7 @@ public class TTML10 {
         public MetadataVerifier getMetadataVerifier() {
             synchronized (this) {
                 if (metadataVerifier == null) {
-                    metadataVerifier = new com.skynav.ttv.verifier.ttml.TTML10MetadataVerifier(this);
+                    metadataVerifier = new TTML10MetadataVerifier(this);
                 }
             }
             return metadataVerifier;

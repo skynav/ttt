@@ -41,6 +41,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +58,12 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
+import javax.xml.transform.Source;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -73,6 +76,8 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
@@ -88,6 +93,7 @@ import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Sniffer;
+import com.skynav.xml.helpers.XML;
 
 public class TimedTextVerifier implements VerifierContext, Reporter {
 
@@ -125,6 +131,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         "    --disable-warnings         - disable warnings (both hide and don't count warnings)\n" +
         "    --expect-errors COUNT      - expect count errors or -1 meaning unspecified expectation (default: -1)\n" +
         "    --expect-warnings COUNT    - expect count warnings or -1 meaning unspecified expectation (default: -1)\n" +
+        "    --extension-schema NS URL  - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)\n" +
         "    --external-extent EXTENT   - specify extent for document processing context\n" +
         "    --external-frame-rate RATE - specify frame rate for document processing context\n" +
         "    --help                     - show usage help\n" +
@@ -166,6 +173,9 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         { "references-non-standard-extension",          Boolean.FALSE,  "'ttp:extension' element references non-standard extension"},
         { "references-non-standard-profile",            Boolean.FALSE,  "'ttp:profile' element references non-standard profile from 'use' attribute"},
         { "references-other-extension-namespace",       Boolean.FALSE,  "'ttp:extensions' element references other extension namespace"},
+        { "xsi-schema-location",                        Boolean.FALSE,  "'xsi:schemaLocation' attribute used"},
+        { "xsi-no-namespace-schema-location",           Boolean.TRUE,   "'xsi:noNamespaceSchemaLocation' attribute used"},
+        { "xsi-other-attribute",                        Boolean.FALSE,  "'xsi:nil' or 'xsi:type' attribute used"},
     };
     static {
         defaultWarnings = new java.util.HashMap<String,Boolean>();
@@ -185,6 +195,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private String externalExtent;
     @SuppressWarnings("unused")
     private String externalFrameRate;
+    private Map<String,String> extensionSchemas = new java.util.HashMap<String,String>();
     private boolean hideWarnings;
     private String modelName;
     private boolean quiet;
@@ -203,7 +214,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     // global processing state
     private SchemaFactory schemaFactory;
-    private Map<URL,Schema> schemas = new java.util.HashMap<URL,Schema>();
+    private boolean nonPoolGrammarSupported;
+    private Map<List<URL>,Schema> schemas = new java.util.HashMap<List<URL>,Schema>();
     private Map<String,Integer> results = new java.util.HashMap<String,Integer>();
 
     // per-resource processing state
@@ -219,10 +231,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private Object rootBinding;
 
     private enum ForeignTreatment {
-        Error,
-        Warning,
-        Info,
-        Allow;
+        Error,          // error, don't apply foreign validation
+        Warning,        // warning, but apply foreign validation
+        Info,           // info only, but apply foreign validation
+        Allow;          // no logging, but apply foreign validation
 
         public static ForeignTreatment valueOfIgnoringCase(String value) {
             if (value == null)
@@ -268,6 +280,14 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     }
 
     public TimedTextVerifier() {
+    }
+
+    private boolean isDebuggingEnabled(int level) {
+        return debug >= level;
+    }
+
+    private boolean isDebuggingEnabled() {
+        return isDebuggingEnabled(1);
     }
 
     @Override
@@ -452,7 +472,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     @Override
     public void logDebug(String message) {
-        if (debug > 0) {
+        if (isDebuggingEnabled()) {
             System.out.println("[D]:" + message);
         }
     }
@@ -463,7 +483,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     }
 
     private void logDebug(Exception e) {
-        if (debug > 1) {
+        if (isDebuggingEnabled(2)) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             logDebug(sw.toString());
@@ -492,6 +512,12 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             expectedWarnings = args[++index];
+        } else if (option.equals("extension-schema")) {
+            if (index + 2 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            String namespaceURI = args[++index];
+            String schemaResourceURL = args[++index];
+            extensionSchemas.put(namespaceURI, schemaResourceURL);
         } else if (option.equals("external-extent")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -586,6 +612,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             }
         } else
             foreignTreatment = ForeignTreatment.getDefault();
+        if ((foreignTreatment == ForeignTreatment.Warning) && !disabledWarnings.contains("foreign"))
+            enabledWarnings.add("foreign");
         if (untilPhase != null) {
             try {
                 lastPhase = Phase.valueOfIgnoringCase(untilPhase);
@@ -659,11 +687,13 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             sb.append('\n');
             if (verbose > 0) {
                 Model model = Models.getModel(modelName);
-                String schemaResourceName = model.getSchemaResourceName();
-                if (schemaResourceName != null) {
-                    sb.append("    XSD: ");
-                    sb.append(schemaResourceName);
-                    sb.append('\n');
+                String[] schemaResourceNames = model.getSchemaResourceNames();
+                if (schemaResourceNames != null) {
+                    for (String schemaResourceName : schemaResourceNames) {
+                        sb.append("    XSD: ");
+                        sb.append(schemaResourceName);
+                        sb.append('\n');
+                    }
                 }
             }
         }
@@ -708,12 +738,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     }
 
     private URI getCWDAsURI() {
-        try {
-            return new URI("file://" + new File(".").getCanonicalPath().replace(File.separatorChar, '/') + "/");
-        } catch (Exception e) {
-            logDebug(new RuntimeException("Can't determine CWD as URI.", e));
-            return null;
-        }
+        return new File(".").toURI();
     }
 
     private URI resolve(String uriString) {
@@ -977,7 +1002,15 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         return schemaFactory;
     }
 
-    private Schema loadSchema(URL url) throws SchemaValidationErrorException {
+    private Source[] getSources(URL[] components) {
+        List<Source> sources = new java.util.ArrayList<Source>(components.length);
+        for ( URL url : components ) {
+            sources.add(new StreamSource(url.toExternalForm()));
+        }
+        return sources.toArray(new Source[sources.size()]);
+    }
+
+    private Schema loadSchema(List<URL> components) throws SchemaValidationErrorException {
         SchemaFactory sf = getSchemaFactory();
         sf.setErrorHandler(new ErrorHandler() {
             public void error(SAXParseException e) {
@@ -994,24 +1027,31 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             }
         });
         try {
-            logDebug("Loading (and validating) schema at " + url + "...");
-            return sf.newSchema(url);
+            // attempt to enable non-pool grammars, i.e., use of xsi:schemaLocation pool extensions
+            sf.setFeature("http://apache.org/xml/features/internal/validation/schema/use-grammar-pool-only", false);
+            nonPoolGrammarSupported = true;
+        } catch (SAXNotRecognizedException e) {
+        } catch (SAXNotSupportedException e) {
+        }
+        try {
+            logDebug("Loading (and validating) schema components at {" + components + "}...");
+            return sf.newSchema(getSources(components.toArray(new URL[components.size()])));
         } catch (SAXException e) {
             logError(e);
             throw new SchemaValidationErrorException(e);
         }
     }
 
-    private Schema getSchema(URL url) throws SchemaValidationErrorException {
+    private Schema getSchema(List<URL> components) throws SchemaValidationErrorException {
         synchronized (this) {
-            if (!schemas.containsKey(url)) {
-                schemas.put(url, loadSchema(url));
+            if (!schemas.containsKey(components)) {
+                schemas.put(components, loadSchema(components));
             }
         }
-        return schemas.get(url);
+        return schemas.get(components);
     }
 
-    private Schema getSchema(String resourceName) throws SchemaValidationErrorException {
+    private URL getSchemaResource(String resourceName) throws SchemaValidationErrorException {
         logDebug("Searching for built-in schema at " + resourceName + "...");
         try {
             URL urlSchema = null;
@@ -1032,14 +1072,27 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 logDebug(message);
                 throw new SchemaValidationErrorException(new MissingResourceException(message, getClass().getName(), resourceName));
             }
-            return getSchema(urlSchema);
+            return urlSchema;
         } catch (IOException e) {
             throw new SchemaValidationErrorException(e);
         }
     }
 
     private Schema getSchema() throws SchemaValidationErrorException {
-        return getSchema(model.getSchemaResourceName());
+        List<URL> schemaComponents = new java.util.ArrayList<URL>();
+        for (String name : model.getSchemaResourceNames())
+            schemaComponents.add(getSchemaResource(name));
+        for (String schemaResourceLocation : extensionSchemas.values()) {
+            URI uri = resolve(schemaResourceLocation);
+            if (uri != null) {
+                try {
+                    schemaComponents.add(uri.toURL());
+                } catch (IOException e) {
+                    logError(e);
+                }
+            }
+        }
+        return getSchema(schemaComponents);
     }
 
     private boolean verifyValidity() {
@@ -1053,10 +1106,12 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            XMLReader filter = new ForeignVocabularyFilter(reader, model.getNamespaceUri().toString(), foreignTreatment);
+            XMLReader filter = new ForeignVocabularyFilter(reader, model.getNamespaceURIs(), extensionSchemas.keySet(), foreignTreatment);
             SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
             Validator v = getSchema().newValidator();
+            if (isDebuggingEnabled())
+                dumpValidatorInfo(v);
             v.setErrorHandler(new ErrorHandler() {
                 public void error(SAXParseException e) {
                     // don't terminated validation on validation error
@@ -1086,6 +1141,176 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             logError(e);
         }
         return resourceErrors == 0;
+    }
+
+    private static final String saxPropertyPrefix = "http://xml.org/sax/properties/";
+    private static final String[] saxPropertyNames = {
+        "declaration-handler",
+        "document-xml-version",
+        "dom-node",
+        "lexical-handler",
+        "xml-string",
+    };
+
+    private static final String saxFeaturePrefix = "http://xml.org/sax/features/";
+    private static final String[] saxFeatureNames = {
+        "allow-dtd-events-after-endDTD",
+        "external-general-entities",
+        "external-parameter-entities",
+        "is-standalone",
+        "lexical-handler/parameter-entities",
+        "namespace-prefixes",
+        "namespaces",
+        "resolve-dtd-uris",
+        "string-interning",
+        "unicode-normalization-checking",
+        "use-attributes2",
+        "use-entity-resolver2",
+        "use-locator2",
+        "validation",
+        "xml-1.1",
+        "xmlns-uris",
+    };
+
+    private static final String jaxpPropertyPrefix = "http://java.sun.com/xml/jaxp/properties/";
+    private static final String[] jaxpPropertyNames = {
+        "schemaLanguage",
+        "schemaSource",
+        "elementAttributeLimit",
+    };
+
+    private static final String jaxpFeaturePrefix = "http://java.sun.com/xml/jaxp/features/";
+    private static final String[] jaxpFeatureNames = {
+    };
+
+    private static final String xercesPropertyPrefix = "http://apache.org/xml/properties/";
+    private static final String[] xercesPropertyNames = {
+        "dom/current-element-node",
+        "dom/document-class-name",
+        "input-buffer-size",
+        "internal/datatype-validator-factory",
+        "internal/document-scanner",
+        "internal/dtd-processor",
+        "internal/dtd-scanner",
+        "internal/entity-manager",
+        "internal/entity-resolver",
+        "internal/error-handler",
+        "internal/error-reporter",
+        "internal/grammar-pool",
+        "internal/namespace-binder",
+        "internal/namespace-context",
+        "internal/symbol-table",
+        "internal/validation-manager",
+        "internal/validator",
+        "internal/validator/dtd",
+        "internal/validator/schema",
+        "internal/xinclude-handler",
+        "internal/xpointer-handler",
+        "schema/external-noNamespaceSchemaLocation",
+        "schema/external-schemaLocation",
+        "security-manager",
+    };
+
+    private static final String xercesFeaturePrefix = "http://apache.org/xml/features/";
+    private static final String[] xercesFeatureNames = {
+        "allow-java-encodings",
+        "continue-after-fatal-error",
+        "disallow-doctype-decl",
+        "dom/create-entity-ref-nodes",
+        "dom/defer-node-expansion",
+        "dom/include-ignorable-whitespace",
+        "generate-synthetic-annotations",
+        "honour-all-schemaLocations",
+        "internal/parser-settings",
+        "internal/validation/schema/use-grammar-pool-only",
+        "nonvalidating/load-dtd-grammar",
+        "nonvalidating/load-external-dtd",
+        "scanner/notify-builtin-refs",
+        "scanner/notify-char-refs",
+        "standard-uri-conformant",
+        "validate-annotations",
+        "validation/change-ignorable-characters-into-ignorable-whitespaces",
+        "validation/default-attribute-values",
+        "validation/dynamic",
+        "validation/schema",
+        "validation/schema-full-checking",
+        "validation/schema/augment-psvi",
+        "validation/schema/element-default",
+        "validation/schema/ignore-schema-location-hints",
+        "validation/schema/normalized-value",
+        "validation/validate-content-models",
+        "validation/validate-datatypes",
+        "validation/warn-on-duplicate-attdef",
+        "validation/warn-on-undeclared-elemdef",
+        "warn-on-duplicate-entitydef",
+        "xinclude",
+        "xinclude-aware",
+        "xinclude/fixup-base-uris",
+        "xinclude/fixup-language",
+    };
+
+    private void dumpValidatorInfo(Validator v) {
+        logDebug("Validator class: " + v.getClass().getName());
+        for (String pn : saxPropertyNames) {
+            try {
+                String ppn = saxPropertyPrefix + pn;
+                Object pv = v.getProperty(ppn);
+                if (pv != null)
+                    logDebug("SAX property: {" + ppn + "}: " + pv.toString());
+            } catch (SAXNotRecognizedException e) {
+            } catch (SAXNotSupportedException e) {
+            }
+        }
+        for (String fn : saxFeatureNames) {
+            try {
+                String pfn = saxFeaturePrefix + fn;
+                Object pv = v.getFeature(pfn);
+                if (pv != null)
+                    logDebug("SAX feature: {" + pfn + "}: " + pv.toString());
+            } catch (SAXNotRecognizedException e) {
+            } catch (SAXNotSupportedException e) {
+            }
+        }
+        for (String pn : jaxpPropertyNames) {
+            try {
+                String ppn = jaxpPropertyPrefix + pn;
+                Object pv = v.getProperty(ppn);
+                if (pv != null)
+                    logDebug("JAXP property: {" + ppn + "}: " + pv.toString());
+            } catch (SAXNotRecognizedException e) {
+            } catch (SAXNotSupportedException e) {
+            }
+        }
+        for (String fn : jaxpFeatureNames) {
+            try {
+                String pfn = jaxpFeaturePrefix + fn;
+                Object fv = v.getFeature(pfn);
+                if (fv != null)
+                    logDebug("JAXP feature: {" + pfn + "}: " + fv.toString());
+            } catch (SAXNotRecognizedException e) {
+            } catch (SAXNotSupportedException e) {
+            }
+        }
+        for (String pn : xercesPropertyNames) {
+            try {
+                String ppn = xercesPropertyPrefix + pn;
+                Object pv = v.getProperty(ppn);
+                if (pv != null)
+                    logDebug("XERCES property: {" + ppn + "}: " + pv.toString());
+            } catch (SAXNotRecognizedException e) {
+            } catch (SAXNotSupportedException e) {
+            }
+        }
+        for (String fn : xercesFeatureNames) {
+            try {
+                String pfn = xercesFeaturePrefix + fn;
+                Object fv = v.getFeature(pfn);
+                if (fv != null)
+                    logDebug("XERCES feature: {" + pfn + "}: " + fv.toString());
+            } catch (SAXNotRecognizedException e) {
+            } catch (SAXNotSupportedException e) {
+            }
+        }
     }
 
     private QName getXmlElementDecl(Class<?> jaxbClass, String creatorMethod) {
@@ -1173,7 +1398,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, model.getNamespaceUri().toString(), ForeignTreatment.Allow);
+            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, model.getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
             LocationAnnotatingFilter filter2 = new LocationAnnotatingFilter(filter1);
             SAXSource source = new SAXSource(filter2, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
@@ -1423,6 +1648,14 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         Runtime.getRuntime().exit(new TimedTextVerifier().run(args));
     }
 
+    private static String[] externalRepresentations(URI[] uris) {
+        List<String> uriStrings = new java.util.ArrayList<String>(uris.length);
+        for (URI uri : uris) {
+            uriStrings.add(uri.toString());
+        }
+        return uriStrings.toArray(new String[uriStrings.size()]);
+    }
+
     private static class UsageException extends RuntimeException {
         static final long serialVersionUID = 0;
         UsageException(String message) {
@@ -1477,23 +1710,47 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         ForeignVocabularyException(QName name) {
             super(name.toString());
         }
+        ForeignVocabularyException(QName name, String message) {
+            super("'" + name.toString() + "': " + message);
+        }
+    }
+
+    private static class XSIVocabularyException extends ForeignVocabularyException {
+        static final long serialVersionUID = 0;
+        XSIVocabularyException(QName name) {
+            super(name);
+        }
+        XSIVocabularyException(QName name, String message) {
+            super(name, message);
+        }
+    }
+
+    private static class XSISchemaLocationException extends XSIVocabularyException {
+        static final long serialVersionUID = 0;
+        XSISchemaLocationException(String message) {
+            super(XML.getSchemaLocationAttributeName(), message);
+        }
     }
 
     private class ForeignVocabularyFilter extends XMLFilterImpl {
 
-        private static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
-
-        private String namespace;
+        private Set<String> standardNamespaces;
+        private Set<String> extensionNamespaces;
         private ForeignTreatment foreignTreatment;
 
         private Stack<QName> nameStack = new Stack<QName>();
         private boolean inForeign;
         private Locator currentLocator;
 
-        ForeignVocabularyFilter(XMLReader reader, String namespace, ForeignTreatment foreignTreatment) {
+        ForeignVocabularyFilter(XMLReader reader, String[] standardNamespaces, Set<String> extensionNamespaces, ForeignTreatment foreignTreatment) {
             super(reader);
-            this.namespace = namespace;
+            this.standardNamespaces = new java.util.HashSet<String>(Arrays.asList(standardNamespaces));
+            this.extensionNamespaces = new java.util.HashSet<String>(extensionNamespaces);
             this.foreignTreatment = foreignTreatment;
+        }
+
+        ForeignVocabularyFilter(XMLReader reader, URI[] namespaceURIs, Set<String> extensionNamespaces, ForeignTreatment foreignTreatment) {
+            this(reader, externalRepresentations(namespaceURIs), extensionNamespaces, foreignTreatment);
         }
 
         @Override
@@ -1507,15 +1764,12 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             if (foreignTreatment == ForeignTreatment.Allow)
                 super.startElement(nsUri, localName, qualName, attrs);
             else if (!inForeign && isNonForeignNamespace(nsUri))
-                super.startElement(nsUri, localName, qualName, removeForeign(attrs));
-            else if (foreignTreatment == ForeignTreatment.Error)
-                throw new ForeignVocabularyException(new QName(nsUri, localName));
+                super.startElement(nsUri, localName, qualName, filterAttributes(attrs));
             else {
                 QName qn = new QName(nsUri, localName);
                 nameStack.push(qn);
                 inForeign = true;
-                if (logPruning("Pruning element in foreign namespace: <" + qn + ">."))
-                    throw new ForeignVocabularyException(new QName(nsUri, localName));
+                logPruning("Pruning element in foreign namespace {" + qn + "}.");
             }
         }
 
@@ -1543,25 +1797,80 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             }
         }
 
-        private Attributes removeForeign(Attributes attrs) {
+        private Attributes filterAttributes(Attributes attrs) {
             boolean hasForeign = false;
-            for (int i = 0, n = attrs.getLength(); i < n && !hasForeign; ++i) {
+            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
                 String nsUri = attrs.getURI(i);
-                if (isForeignNamespace(nsUri) && !isAnnotationNamespace(nsUri))
+                if (isNonForeignNamespace(nsUri)) {
+                    if (XML.isXSINamespace(nsUri))
+                        checkXSIAttribute(attrs, i);
+                    continue;
+                } else
                     hasForeign = true;
             }
-            if (hasForeign) {
+            if (hasForeign && (foreignTreatment != ForeignTreatment.Allow)) {
                 AttributesImpl attrsNew = new AttributesImpl();
                 for (int i = 0, n = attrs.getLength(); i < n; ++i) {
                     String nsUri = attrs.getURI(i);
-                    if (isNonForeignNamespace(nsUri) || isAnnotationNamespace(nsUri))
-                        attrsNew.addAttribute(attrs.getURI(i), attrs.getLocalName(i), attrs.getQName(i), attrs.getType(i), attrs.getValue(i));
-                    else if (logPruning("Pruning attribute in foreign namespace: <" + new QName(attrs.getURI(i), attrs.getLocalName(i)) + ">."))
-                        throw new ForeignVocabularyException(new QName(nsUri, attrs.getLocalName(i)));
+                    if (isNonForeignNamespace(nsUri))
+                        attrsNew = copyAttribute(attrsNew, attrs, i);
+                    else
+                        logPruning("Pruning attribute in foreign namespace {" + new QName(attrs.getURI(i), attrs.getLocalName(i)) + "}.");
                 }
                 return attrsNew;
             } else
                 return attrs;
+        }
+        
+        private AttributesImpl copyAttribute(AttributesImpl attrsNew, Attributes attrsOld, int i) {
+            attrsNew.addAttribute(attrsOld.getURI(i), attrsOld.getLocalName(i), attrsOld.getQName(i), attrsOld.getType(i), attrsOld.getValue(i));
+            return attrsNew;
+        }
+        
+        private void checkXSIAttribute(Attributes attrs, int index) {
+            QName qn = new QName(attrs.getURI(index), attrs.getLocalName(index));
+            String ln = qn.getLocalPart();
+            if (ln.equals("schemaLocation")) {
+                String locations = attrs.getValue(index);
+                if (isWarningEnabled("xsi-schema-location")) {
+                    String message = "An {" + qn + "} attribute was used, with value {" + locations + "}.";
+                    if (logWarning(currentLocator, message))
+                        logError(currentLocator, message);
+                }
+                checkXSISchemaLocations(qn, locations);
+            } else if (ln.equals("noNamespaceSchemaLocation")) {
+                if (isWarningEnabled("xsi-no-namespace-schema-location")) {
+                    String message = "An {" + qn + "} attribute was used, but foreign vocabulary in no namespace is not supported.";
+                    if (logWarning(currentLocator, message))
+                        logError(currentLocator, message);
+                }
+            } else if (ln.equals("type") || ln.equals("nil")) {
+                if (isWarningEnabled("xsi-other-attribute")) {
+                    String message = "An {" + qn + "} attribute was used, but may not be supported by platform supplied validator.";
+                    if (logWarning(currentLocator, message))
+                        logError(currentLocator, message);
+                }
+            } else {
+                String message = "Unknown attribute {" + qn + "} in XSI namespace.";
+                logError(currentLocator, message);
+            }
+        }
+
+        private void checkXSISchemaLocations(QName qn, String locations) {
+            String[] pairs = locations.split("\\s+");
+            if ((pairs.length & 1) != 0) {
+                logError(new XSISchemaLocationException("unpaired schema location in {" + qn + "}: {" + locations + "}."));
+            } else {
+                for (int i = 0, n = pairs.length / 2; i < n; ++i) {
+                    String schemaNamespace = pairs[2*i+0];
+                    if (!nonPoolGrammarSupported && !extensionSchemas.containsKey(schemaNamespace)) {
+                        String message = "Platform validator doesn't support non-pool schemas, try specifying location {";
+                        message += schemaNamespace;
+                        message += "} with '--external-schema' option.";
+                        logError(currentLocator, message);
+                    }
+                }
+            }
         }
 
         private boolean isNonForeignNamespace(String nsUri) {
@@ -1569,34 +1878,45 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
                 return true;
             else if (nsUri.length() == 0)
                 return true;
-            else if (nsUri.indexOf(namespace) == 0)
+            else if (XML.isXMLNamespace(nsUri))
                 return true;
-            else if (nsUri.indexOf(xmlNamespace) == 0)
+            else if (XML.isXSINamespace(nsUri))
+                return true;
+            else if (isStandardNamespace(nsUri))
+                return true;
+            else if (isExtensionNamespace(nsUri))
+                return true;
+            else if (isAnnotationNamespace(nsUri))
                 return true;
             else
                 return false;
         }
 
-        private boolean isForeignNamespace(String nsUri) {
-            return !isNonForeignNamespace(nsUri);
+        private boolean isStandardNamespace(String nsUri) {
+            return standardNamespaces.contains(nsUri);
+        }
+
+        private boolean isExtensionNamespace(String nsUri) {
+            return extensionNamespaces.contains(nsUri);
         }
 
         private boolean isAnnotationNamespace(String nsUri) {
-            return nsUri.indexOf(Annotations.getNamespace()) == 0;
+            if (nsUri.equals(Annotations.getNamespace()))
+                return true;
+            else
+                return false;
         }
 
-        private boolean logPruning(String message) {
+        private void logPruning(String message) {
             if (foreignTreatment == ForeignTreatment.Error) {
                 logError(currentLocator, message);
-                return true;
             } if (foreignTreatment == ForeignTreatment.Warning) {
                 if (isWarningEnabled("foreign")) {
                     if (logWarning(currentLocator, message))
-                        return true;
+                        logError(currentLocator, message);
                 }
             } else if (foreignTreatment == ForeignTreatment.Info)
                 logInfo(currentLocator, message);
-            return false;
         }
     }
 

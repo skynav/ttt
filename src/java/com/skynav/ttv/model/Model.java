@@ -48,17 +48,17 @@ public interface Model {
     String getName();
 
     /**
-     * Obtain schema resource name (path), which should be
+     * Obtain schema resource names (paths), each of which should be
      * an acceptable argument to pass to ClassLoader.getResource().
-     * @return schema resource name (path)
+     * @return schema resource names (paths)
      */
-    String getSchemaResourceName();
+    String[] getSchemaResourceNames();
 
     /**
-     * Obtain primary schema (target) namespace URI. 
-     * @return namespace URI
+     * Obtain schema (target) namespace URIs.
+     * @return namespace URIs
      */
-    URI getNamespaceUri();
+    URI[] getNamespaceURIs();
 
     /**
      * Obtain profile namespace URI. 

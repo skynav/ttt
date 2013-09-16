@@ -97,16 +97,16 @@ import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML10StyleVerifier implements StyleVerifier {
 
-    private static final String styleNamespace = "http://www.w3.org/ns/ttml#styling";
+    public static final String NAMESPACE = "http://www.w3.org/ns/ttml#styling";
 
     public static final String getStyleNamespaceUri() {
-        return styleNamespace;
+        return NAMESPACE;
     }
 
-    private static QName extentAttributeName = new QName(styleNamespace,"extent");
+    private static QName extentAttributeName = new QName(NAMESPACE,"extent");
     private static Object[][] styleAccessorMap = new Object[][] {
         {
-            new QName(styleNamespace,"backgroundColor"),        // attribute name
+            new QName(NAMESPACE,"backgroundColor"),        // attribute name
             "BackgroundColor",                               // accessor method name suffix
             String.class,                                       // value type
             BackgroundColorVerifier.class,                      // specialized verifier
@@ -114,7 +114,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             "transparent",                                      // initial (default) value
         },
         {
-            new QName(styleNamespace,"color"),
+            new QName(NAMESPACE,"color"),
             "Color",
             String.class,
             ColorVerifier.class,
@@ -122,7 +122,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             "white",
         },
         {
-            new QName(styleNamespace,"direction"),
+            new QName(NAMESPACE,"direction"),
             "Direction",
             Direction.class,
             DirectionVerifier.class,
@@ -130,7 +130,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             Direction.LTR,
         },
         {
-            new QName(styleNamespace,"display"),
+            new QName(NAMESPACE,"display"),
             "Display",
             Display.class,
             DisplayVerifier.class,
@@ -138,7 +138,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             Display.AUTO,
         },
         {
-            new QName(styleNamespace,"displayAlign"),
+            new QName(NAMESPACE,"displayAlign"),
             "DisplayAlign",
             DisplayAlign.class,
             DisplayAlignVerifier.class,
@@ -154,7 +154,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             "auto",
         },
         {
-            new QName(styleNamespace,"fontFamily"),
+            new QName(NAMESPACE,"fontFamily"),
             "FontFamily",
             String.class,
             FontFamilyVerifier.class,
@@ -162,7 +162,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             "default",
         },
         {
-            new QName(styleNamespace,"fontSize"),
+            new QName(NAMESPACE,"fontSize"),
             "FontSize",
             String.class,
             FontSizeVerifier.class,
@@ -170,7 +170,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             "1c",
         },
         {
-            new QName(styleNamespace,"fontStyle"),
+            new QName(NAMESPACE,"fontStyle"),
             "FontStyle",
             FontStyle.class,
             FontStyleVerifier.class,
@@ -178,7 +178,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             FontStyle.NORMAL,
         },
         {
-            new QName(styleNamespace,"fontWeight"),
+            new QName(NAMESPACE,"fontWeight"),
             "FontWeight",
             FontWeight.class,
             FontWeightVerifier.class,
@@ -186,7 +186,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             FontWeight.NORMAL,
         },
         {
-            new QName(styleNamespace,"lineHeight"),
+            new QName(NAMESPACE,"lineHeight"),
             "LineHeight",
             String.class,
             LineHeightVerifier.class,
@@ -194,7 +194,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             "normal",
         },
         {
-            new QName(styleNamespace,"opacity"),
+            new QName(NAMESPACE,"opacity"),
             "Opacity",
             Float.class,
             OpacityVerifier.class,
@@ -202,7 +202,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             Float.valueOf(1.0F),
         },
         {
-            new QName(styleNamespace,"origin"),
+            new QName(NAMESPACE,"origin"),
             "Origin",
             String.class,
             OriginVerifier.class,
@@ -210,7 +210,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             "auto",
         },
         {
-            new QName(styleNamespace,"overflow"),
+            new QName(NAMESPACE,"overflow"),
             "Overflow",
             Overflow.class,
             OverflowVerifier.class,
@@ -218,7 +218,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             Overflow.HIDDEN,
         },
         {
-            new QName(styleNamespace,"padding"),
+            new QName(NAMESPACE,"padding"),
             "Padding",
             String.class,
             PaddingVerifier.class,
@@ -234,7 +234,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             null,
         },
         {
-            new QName(styleNamespace,"showBackground"),
+            new QName(NAMESPACE,"showBackground"),
             "ShowBackground",
             ShowBackground.class,
             ShowBackgroundVerifier.class,
@@ -250,7 +250,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             null,
         },
         {
-            new QName(styleNamespace,"textAlign"),
+            new QName(NAMESPACE,"textAlign"),
             "TextAlign",
             TextAlign.class,
             TextAlignVerifier.class,
@@ -258,7 +258,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             TextAlign.START,
         },
         {
-            new QName(styleNamespace,"textDecoration"),
+            new QName(NAMESPACE,"textDecoration"),
             "TextDecoration",
             TextDecoration.class,
             TextDecorationVerifier.class,
@@ -266,7 +266,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             TextDecoration.NONE,
         },
         {
-            new QName(styleNamespace,"textOutline"),
+            new QName(NAMESPACE,"textOutline"),
             "TextOutline",
             String.class,
             TextOutlineVerifier.class,
@@ -274,7 +274,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             "none",
         },
         {
-            new QName(styleNamespace,"unicodeBidi"),
+            new QName(NAMESPACE,"unicodeBidi"),
             "UnicodeBidi",
             UnicodeBidi.class,
             UnicodeBidiVerifier.class,
@@ -282,7 +282,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             UnicodeBidi.NORMAL,
         },
         {
-            new QName(styleNamespace,"visibility"),
+            new QName(NAMESPACE,"visibility"),
             "Visibility",
             Visibility.class,
             VisibilityVerifier.class,
@@ -290,7 +290,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             Visibility.VISIBLE,
         },
         {
-            new QName(styleNamespace,"wrapOption"),
+            new QName(NAMESPACE,"wrapOption"),
             "WrapOption",
             WrapOption.class,
             WrapOptionVerifier.class,
@@ -298,7 +298,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             WrapOption.WRAP,
         },
         {
-            new QName(styleNamespace,"writingMode"),
+            new QName(NAMESPACE,"writingMode"),
             "WritingMode",
             WritingMode.class,
             WritingModeVerifier.class,
@@ -306,7 +306,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             WritingMode.LRTB,
         },
         {
-            new QName(styleNamespace,"zIndex"),
+            new QName(NAMESPACE,"zIndex"),
             "ZIndex",
             String.class,
             ZIndexVerifier.class,
@@ -377,7 +377,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
             if (localName.indexOf("xmlns:") == 0)
                 continue;
             QName name = new QName(nsUri != null ? nsUri : "", localName);
-            if (name.getNamespaceURI().equals(styleNamespace)) {
+            if (name.getNamespaceURI().equals(NAMESPACE)) {
                 if ((content instanceof TimedText) && name.equals(extentAttributeName))
                     continue;
                 else if (!isStyleAttribute(name)) {
@@ -416,7 +416,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
     }
 
     private boolean isStyleAttribute(QName name) {
-        return name.getNamespaceURI().equals(styleNamespace) && accessors.containsKey(name);
+        return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
     public boolean verify(Set content, Locator locator, VerifierContext context) {
@@ -426,7 +426,7 @@ public class TTML10StyleVerifier implements StyleVerifier {
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {
             Node attribute = attributes.item(i);
             String nsUri = attribute.getNamespaceURI();
-            if ((nsUri != null) && nsUri.equals(styleNamespace))
+            if ((nsUri != null) && nsUri.equals(NAMESPACE))
                 ++numStyleAttributes;
         }
         if (numStyleAttributes > 1) {
