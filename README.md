@@ -2,7 +2,7 @@
 
 Timed Text Markup Language (TTML) Verification Tools
 
-The `ttv` tool is used to verify the contents of a [TTML](http://www.w3.org/TR/ttaf1-dfxp/) document represented using XML as a concrete encoding, and where this document is verified against a specific verification *model*.
+The `ttv` tool is used to verify the contents of a [TTML](http://www.w3.org/TR/ttml1/) document represented using XML as a concrete encoding, and where this document is verified against a specific verification *model*.
 
 Verification is performed in four phases in the following order:
 
@@ -148,19 +148,22 @@ Using the `clean-build` target will first clean (delete) previously built classe
 
 The full set of (public) `ant` targets can be listed by using `ant -p`, which presently outputs the following:
 
-    Main targets:
+<pre>
+Main targets:
 
-    build            Build TTV
-    clean-build      Clean and build TTV
-    clean-test       Clean, build, and test TTV
-    run-valid        Run verifier with valid TTML10 input files
-    test             Run all TTV test suites
-    test-apps        Run TTV application tests
-    test-ttml10      Run TTML10 tests
-    test-verifier    Run TTV verification test suite
-    test-xml         Run XML tests
+build              Build TTV
+clean-build        Clean and build TTV
+clean-test         Clean, build, and test TTV
+run-valid          Run verifier with valid input test files
+run-valid-verbose  Run verifier with valid input test files, with verbose output.
+test               Run all TTV test suites
+test-apps          Run TTV application tests
+test-ttml1         Run TTML1 tests
+test-verifier      Run TTV verification test suite
+test-xml           Run XML tests
 
-    Default target: clean-test
+Default target: clean-test
+</pre>
 
 ## Running
 
@@ -175,7 +178,7 @@ Usage information can be obtained by using:
 At present, this will output the following:
 
 <pre>
-Timed Text Verifier (TTV) [0.0.0dev] Copyright 2013 Skynav, Inc.
+Timed Text Verifier (TTV) [1.0.0dev] Copyright 2013 Skynav, Inc.
 Usage: java -jar ttv.jar [options] URL*
   Short Options:
     -d                         - see --debug
@@ -188,12 +191,14 @@ Usage: java -jar ttv.jar [options] URL*
     --disable-warnings         - disable warnings (both hide and don't count warnings)
     --expect-errors COUNT      - expect count errors or -1 meaning unspecified expectation (default: -1)
     --expect-warnings COUNT    - expect count warnings or -1 meaning unspecified expectation (default: -1)
+    --extension-schema NS URL  - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)
     --external-extent EXTENT   - specify extent for document processing context
     --external-frame-rate RATE - specify frame rate for document processing context
     --help                     - show usage help
     --hide-warnings            - hide warnings (but count them)
-    --model NAME               - specify model name (default: ttml10)
+    --model NAME               - specify model name (default: ttml1)
     --no-warn-on TOKEN         - disable warning specified by warning TOKEN, where multiple instances of this option may be specified
+    --no-verbose               - disable verbose output (resets verbosity level to 0)
     --quiet                    - don't show banner
     --show-models              - show built-in verification models (use with --verbose to show more details)
     --show-repository          - show source code repository information
@@ -209,7 +214,24 @@ Usage: java -jar ttv.jar [options] URL*
 
 As a convenience, if a URL argument takes a relative form, then `ttv` attempts to resolve it against the current working directory.
 
-Run `ttv` with the `--show-models` option to determine which verification models are supported, and which is the default model.
+Run `ttv` with the `--show-models` option to determine which verification models are supported, and which is the default model. If the `-v` option is added, this will additionally show the built-in schemas used by each model, as demonstrated by the following console log:
+
+<pre>
+# java -jar bld/artifacts/ttv.jar -v --show-models
+Timed Text Verifier (TTV) [1.0.0dev] Copyright 2013 Skynav, Inc.
+Verification Models:
+  st2052-2010
+    XSD: xsd/ttml1/ttml1.xsd
+    XSD: xsd/smpte/2010/smpte-tt-ttv.xsd
+    XSD: xsd/smpte/2010/smpte-tt-608-ttv.xsd
+  st2052-2013
+    XSD: xsd/ttml1/ttml1.xsd
+    XSD: xsd/smpte/2013/24TB-DP-ST2052-1a-smpte-tt-20130526.xsd
+    XSD: xsd/smpte/2013/24TB-DP-RP2052-10b-smpte-tt-608-20130624.xsd
+    XSD: xsd/smpte/2013/24TB-DP-RP2052-11b-smpte-tt-708-20130617.xsd
+  ttml1 (default)
+    XSD: xsd/ttml1/ttml1.xsd
+</pre>
 
 ## Testing
 
@@ -225,9 +247,9 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
 <pre>
     $ java -version
-    java version "1.6.0_45"
-    Java(TM) SE Runtime Environment (build 1.6.0_45-b06-451-11M4406)
-    Java HotSpot(TM) 64-Bit Server VM (build 20.45-b01-451, mixed mode)
+    java version "1.6.0_51"
+    Java(TM) SE Runtime Environment (build 1.6.0_51-b11-457-11M4509)
+    Java HotSpot(TM) 64-Bit Server VM (build 20.51-b01-457, mixed mode)
 
     $ ant -version
     Apache Ant(TM) version 1.8.2 compiled on June 20 2012
@@ -242,9 +264,10 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
 ## Issues
 
-See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current known bugs, feature requests (enhancements), etc.
+See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current known bugs, feature requests (enhancements), etc. The following
+*To Do* list contains a short list of unregistered issues slated for near term attention.
 
-## To Do (*No Issue Filed*)
+## To Do
 
  * Verify that content of smpte:data and smpte:image conforms to Base64 encoding.
  * Verify that smpte:image is a child of tt:metadata.
@@ -254,4 +277,5 @@ See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current kn
  * Verify that no more than one smpte:information element is present in document.
  * Verify that @datatype attribute of smpte:data is not specified or has a `x-` prefix.
  * Verify that m608:* attributes are used only on smpte:information element.
+ * Verify that m708:* attributes are used only on smpte:information element.
 
