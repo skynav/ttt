@@ -253,6 +253,33 @@ A number of test targets are listed above for invocation from `ant`. The `clean-
 
 In addition, the `run-valid` target will use the command line (not Junit) invocation path in order to run `ttv` on all valid test files included in the Junit testing process.
 
+## Annotations
+
+In order to ease the use of `ttv`, a number of *annotation* attributes are supported to provide verification configuration parameters within a document that would otherwise have to be expressed on the command line, where the namespace of these attributes is `http://skynav.com/ns/ttv/annotations`, and a prefix of `ttva` is used out of convenience (though this can change in an actual document instance). The following annotations are defined, and, if specified, must appear on the `tt:tt` (root) element of a document:
+
+ * expectedErrors
+ * expectedWarnings
+ * model
+ * warnOn
+ * warnOff
+
+The values of the `ttva:expectedErrors` and `ttva:expectedWarnings` annotations express a non-negative integer, indicating the expected number of errors and warnings to be encountered. When running `ttv` on a resource containing these annotations, a *PASS* result will be reported if the expected and actual numbers of errors and warnings match, and *FAIL* if not matched.
+
+The values of the `ttva:warnOn` and `ttva:warnOff` annotations express a whitespace separated listed of warning *TOKEN*s to enable or disable, as if they had been specified on the command line.
+
+The value of the `ttva:model` annotation expresses a model name to be used to verify the document.
+
+An example of a document fragment that uses annotations follows (taken from the `ttv` test suite):
+
+<pre>
+&lt;tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.smpte-ra.org/schemas/2052-1/2010/profiles/smpte-tt-full"
+    xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="st2052-2010"&gt;
+...
+&lt;/tt&gt;
+</pre>
+
 ## Notes
 
  * At present, `ttv` is being developed using the following versions of tools:
