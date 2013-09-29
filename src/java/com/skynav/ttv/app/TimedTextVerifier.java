@@ -141,6 +141,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         "    --quiet                    - don't show banner\n" +
         "    --show-models              - show built-in verification models (use with --verbose to show more details)\n" +
         "    --show-repository          - show source code repository information\n" +
+        "    --show-validator           - show platform validator information\n" +
         "    --show-warning-tokens      - show warning tokens (use with --verbose to show more details)\n" +
         "    --verbose                  - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
         "    --treat-foreign-as TOKEN   - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
@@ -170,6 +171,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         { "out-of-range-opacity",                       Boolean.TRUE,   "'tts:opacity' is out of range [0,1]"},
         { "quoted-generic-font-family",                 Boolean.FALSE,  "generic font family appears in quoted form, negating generic name function" },
         { "references-extension-role",                  Boolean.FALSE,  "'ttp:role' attribute specifies extension role"},
+        { "references-external-image",                  Boolean.FALSE,  "'smpte:backgroundImage' referernces external image"},
         { "references-non-standard-extension",          Boolean.FALSE,  "'ttp:extension' element references non-standard extension"},
         { "references-non-standard-profile",            Boolean.FALSE,  "'ttp:profile' attribute or element references non-standard profile"},
         { "references-other-extension-namespace",       Boolean.FALSE,  "'ttp:extensions' element references other extension namespace"},
@@ -201,6 +203,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private boolean quiet;
     private boolean showModels;
     private boolean showRepository;
+    private boolean showValidator;
     private boolean showWarningTokens;
     private String treatForeignAs;
     private String untilPhase;
@@ -588,6 +591,8 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             showModels = true;
         } else if (option.equals("show-repository")) {
             showRepository = true;
+        } else if (option.equals("show-validator")) {
+            showValidator = true;
         } else if (option.equals("show-warning-tokens")) {
             showWarningTokens = true;
         } else if (option.equals("treat-foreign-as")) {
@@ -743,6 +748,10 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     private void showRepository() {
         System.out.println(repositoryInfo);
+    }
+
+    private void showValidator() {
+        System.out.println(getValidatorInfo());
     }
 
     private void showWarningTokens() {
@@ -1182,7 +1191,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
 
     private Schema getSchema() throws SchemaValidationErrorException {
         List<URL> schemaComponents = new java.util.ArrayList<URL>();
-        for (String name : resourceModel.getSchemaResourceNames())
+        for (String name : getModel().getSchemaResourceNames())
             schemaComponents.add(getSchemaResource(name));
         for (String schemaResourceLocation : extensionSchemas.values()) {
             URI uri = resolve(schemaResourceLocation);
@@ -1212,8 +1221,6 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
             Validator v = getSchema().newValidator();
-            if (isDebuggingEnabled())
-                dumpValidatorInfo(v);
             v.setErrorHandler(new ErrorHandler() {
                 public void error(SAXParseException e) {
                     // don't terminated validation on validation error
@@ -1351,68 +1358,78 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         "xinclude/fixup-language",
     };
 
-    private void dumpValidatorInfo(Validator v) {
-        logDebug("Validator class: " + v.getClass().getName());
-        for (String pn : saxPropertyNames) {
-            try {
-                String ppn = saxPropertyPrefix + pn;
-                Object pv = v.getProperty(ppn);
-                if (pv != null)
-                    logDebug("SAX property: {" + ppn + "}: " + pv.toString());
-            } catch (SAXNotRecognizedException e) {
-            } catch (SAXNotSupportedException e) {
+    private String getValidatorInfo() {
+        StringBuffer sb = new StringBuffer();
+        Validator v = null;
+        try {
+            v = getSchema().newValidator();
+        } catch (Exception e) {
+            sb.append("Unable to obtain validator information!\n");
+        }
+        if (v != null) {
+            sb.append("Validator class: " + v.getClass().getName() + "\n");
+            for (String pn : saxPropertyNames) {
+                try {
+                    String ppn = saxPropertyPrefix + pn;
+                    Object pv = v.getProperty(ppn);
+                    if (pv != null)
+                        sb.append("SAX property: {" + ppn + "}: " + pv.toString() + "\n");
+                } catch (SAXNotRecognizedException e) {
+                } catch (SAXNotSupportedException e) {
+                }
+            }
+            for (String fn : saxFeatureNames) {
+                try {
+                    String pfn = saxFeaturePrefix + fn;
+                    Object pv = v.getFeature(pfn);
+                    if (pv != null)
+                        sb.append("SAX feature: {" + pfn + "}: " + pv.toString() + "\n");
+                } catch (SAXNotRecognizedException e) {
+                } catch (SAXNotSupportedException e) {
+                }
+            }
+            for (String pn : jaxpPropertyNames) {
+                try {
+                    String ppn = jaxpPropertyPrefix + pn;
+                    Object pv = v.getProperty(ppn);
+                    if (pv != null)
+                        sb.append("JAXP property: {" + ppn + "}: " + pv.toString() + "\n");
+                } catch (SAXNotRecognizedException e) {
+                } catch (SAXNotSupportedException e) {
+                }
+            }
+            for (String fn : jaxpFeatureNames) {
+                try {
+                    String pfn = jaxpFeaturePrefix + fn;
+                    Object fv = v.getFeature(pfn);
+                    if (fv != null)
+                        sb.append("JAXP feature: {" + pfn + "}: " + fv.toString() + "\n");
+                } catch (SAXNotRecognizedException e) {
+                } catch (SAXNotSupportedException e) {
+                }
+            }
+            for (String pn : xercesPropertyNames) {
+                try {
+                    String ppn = xercesPropertyPrefix + pn;
+                    Object pv = v.getProperty(ppn);
+                    if (pv != null)
+                        sb.append("XERCES property: {" + ppn + "}: " + pv.toString() + "\n");
+                } catch (SAXNotRecognizedException e) {
+                } catch (SAXNotSupportedException e) {
+                }
+            }
+            for (String fn : xercesFeatureNames) {
+                try {
+                    String pfn = xercesFeaturePrefix + fn;
+                    Object fv = v.getFeature(pfn);
+                    if (fv != null)
+                        sb.append("XERCES feature: {" + pfn + "}: " + fv.toString() + "\n");
+                } catch (SAXNotRecognizedException e) {
+                } catch (SAXNotSupportedException e) {
+                }
             }
         }
-        for (String fn : saxFeatureNames) {
-            try {
-                String pfn = saxFeaturePrefix + fn;
-                Object pv = v.getFeature(pfn);
-                if (pv != null)
-                    logDebug("SAX feature: {" + pfn + "}: " + pv.toString());
-            } catch (SAXNotRecognizedException e) {
-            } catch (SAXNotSupportedException e) {
-            }
-        }
-        for (String pn : jaxpPropertyNames) {
-            try {
-                String ppn = jaxpPropertyPrefix + pn;
-                Object pv = v.getProperty(ppn);
-                if (pv != null)
-                    logDebug("JAXP property: {" + ppn + "}: " + pv.toString());
-            } catch (SAXNotRecognizedException e) {
-            } catch (SAXNotSupportedException e) {
-            }
-        }
-        for (String fn : jaxpFeatureNames) {
-            try {
-                String pfn = jaxpFeaturePrefix + fn;
-                Object fv = v.getFeature(pfn);
-                if (fv != null)
-                    logDebug("JAXP feature: {" + pfn + "}: " + fv.toString());
-            } catch (SAXNotRecognizedException e) {
-            } catch (SAXNotSupportedException e) {
-            }
-        }
-        for (String pn : xercesPropertyNames) {
-            try {
-                String ppn = xercesPropertyPrefix + pn;
-                Object pv = v.getProperty(ppn);
-                if (pv != null)
-                    logDebug("XERCES property: {" + ppn + "}: " + pv.toString());
-            } catch (SAXNotRecognizedException e) {
-            } catch (SAXNotSupportedException e) {
-            }
-        }
-        for (String fn : xercesFeatureNames) {
-            try {
-                String pfn = xercesFeaturePrefix + fn;
-                Object fv = v.getFeature(pfn);
-                if (fv != null)
-                    logDebug("XERCES feature: {" + pfn + "}: " + fv.toString());
-            } catch (SAXNotRecognizedException e) {
-            } catch (SAXNotSupportedException e) {
-            }
-        }
+        return sb.toString();
     }
 
     private QName getXmlElementDecl(Class<?> jaxbClass, String creatorMethod) {
@@ -1672,20 +1689,23 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             showBanner();
             if (showModels)
                 showModels();
-            else if (showRepository)
+            if (showRepository)
                 showRepository();
-            else if (showWarningTokens)
+            if (showValidator)
+                showValidator();
+            if (showWarningTokens)
                 showWarningTokens();
-            else {
-                if (nonOptionArgs.size() > 1) {
-                    if (expectedErrors != null)
-                        throw new InvalidOptionUsageException("expect-errors", "must not specify more than one URL with this option");
-                    if (expectedWarnings != null)
-                        throw new InvalidOptionUsageException("expect-warnings", "must not specify more than one URL with this option");
-                }
+            if (nonOptionArgs.size() > 1) {
+                if (expectedErrors != null)
+                    throw new InvalidOptionUsageException("expect-errors", "must not specify more than one URL with this option");
+                if (expectedWarnings != null)
+                    throw new InvalidOptionUsageException("expect-warnings", "must not specify more than one URL with this option");
+            }
+            if (nonOptionArgs.size() > 0) {
                 showProcessingInfo();
                 rv = verify(nonOptionArgs);
-            }
+            } else
+                rv = RV_PASS;
         } catch (ShowUsageException e) {
             System.out.println(banner);
             System.out.println(usage);

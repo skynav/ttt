@@ -38,12 +38,46 @@ public class URIs {
         }
     }
 
-    public static String getNamespace() {
-        return "http://skynav.com/ns/ttv/annotations";
+    public static boolean hasFragment(String uriString) {
+        URI uri = makeURISafely(uriString);
+        if (uri != null)
+            return uri.getFragment() != null;
+        else
+            return false;
     }
 
-    public static String getNamespacePrefix() {
-        return "ttva";
+    public static boolean isLocalFragment(String uriString) {
+        URI uri = makeURISafely(uriString);
+        if (uri != null) {
+            String s = uri.getScheme();
+            if ((s != null) && (s.length() > 0))
+                return false;
+            String ssp = uri.getSchemeSpecificPart();
+            if ((ssp != null) && (ssp.length() > 0))
+                return false;
+            return uri.getFragment() != null;
+        } else
+            return false;
+    }
+
+    public static boolean isNonLocalFragment(String uriString) {
+        URI uri = makeURISafely(uriString);
+        if (uri != null) {
+            String s = uri.getScheme();
+            String ssp = uri.getSchemeSpecificPart();
+            if (((s == null) || (s.length() ==0)) && ((ssp == null) || (ssp.length() ==0)))
+                return false;
+            return uri.getFragment() != null;
+        } else
+            return false;
+    }
+
+    public static String getFragment(String uriString) {
+        URI uri = makeURISafely(uriString);
+        if (uri != null)
+            return uri.getFragment();
+        else
+            return null;
     }
 
 }

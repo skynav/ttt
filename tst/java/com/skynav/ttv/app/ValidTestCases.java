@@ -170,6 +170,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidST20522010BackgroundImageExternal() throws Exception {
+        performValidityTest("st2052-2010-valid-background-image-external.xml", -1, -1);
+    }
+
+    @Test
     public void testValidST20522013With608Extensions() throws Exception {
         performValidityTest("st2052-2013-valid-with-608.xml", -1, -1);
     }
@@ -177,6 +182,11 @@ public class ValidTestCases {
     @Test
     public void testValidST20522013With708Extensions() throws Exception {
         performValidityTest("st2052-2013-valid-with-708.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidST20522013AllStyles() throws Exception {
+        performValidityTest("st2052-2013-valid-all-styles.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

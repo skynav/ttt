@@ -25,10 +25,70 @@
  
 package com.skynav.ttv.verifier.smpte;
 
+import javax.xml.namespace.QName;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.smpte.ST20522013;
+import com.skynav.ttv.model.smpte.tt.rel2013.Image;
+import com.skynav.ttv.model.smpte.tt.rel2013.Information;
+import com.skynav.ttv.model.smpte.tt.rel2013.Data;
+
+import static com.skynav.ttv.model.smpte.ST20522013.Constants.*;
 
 public class ST20522013SemanticsVerifier extends ST20522010SemanticsVerifier {
+
     public ST20522013SemanticsVerifier(Model model) {
         super(model);
     }
+
+    public boolean inSMPTEPrimaryNamespace(QName name) {
+        return ST20522013.inSMPTEPrimaryNamespace(name);
+    }
+
+    public boolean inSMPTESecondaryNamespace(QName name) {
+        return ST20522013.inSMPTESecondaryNamespace(name);
+    }
+
+    private static final QName imageElementName = new QName(NAMESPACE_2013, ELT_IMAGE);
+    protected QName getImageElementName() {
+        return imageElementName;
+    }
+
+    protected boolean isDataElement(Object content) {
+        return content instanceof Data;
+    }
+
+    protected String getDataDatatype(Object data) {
+        assert isDataElement(data);
+        return ((Data) data).getDatatype();
+    }
+
+    protected boolean isStandardDataType(String dataType) {
+        if (dataType.equals(DATA_TYPE_608))
+            return true;
+        else if (dataType.equals(DATA_TYPE_708))
+            return true;
+        else
+            return false;
+    }
+
+    protected String getDataValue(Object data) {
+        assert isDataElement(data);
+        return ((Data) data).getValue();
+    }
+
+    protected boolean isImageElement(Object content) {
+        return content instanceof Image;
+    }
+
+    protected String getImageValue(Object image) {
+        assert isImageElement(image);
+        return ((Image) image).getValue();
+    }
+
+    protected boolean isInformationElement(Object content) {
+        return content instanceof Information;
+    }
+
 }
+

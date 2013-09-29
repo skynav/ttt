@@ -27,6 +27,7 @@ Copyright 2013 Skynav, Inc. Original modifications to SMPTE published schemas fo
 	    </xs:simpleType>
 	  </xs:attribute>
 	  <xs:attribute name="datatype" type="xs:string" use="required"/>
+          <xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:extension>
       </xs:simpleContent>
     </xs:complexType>
@@ -50,6 +51,7 @@ Copyright 2013 Skynav, Inc. Original modifications to SMPTE published schemas fo
 	      </xs:restriction>
 	    </xs:simpleType>
 	  </xs:attribute>
+          <xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:extension>
       </xs:simpleContent>
     </xs:complexType>

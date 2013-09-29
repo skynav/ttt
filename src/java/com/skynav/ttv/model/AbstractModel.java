@@ -53,11 +53,11 @@ public abstract class AbstractModel implements Model {
     }
 
     public List<List<QName>> getIdReferencePermissibleAncestors(QName attributeName) {
-        return new java.util.ArrayList<List<QName>>();
+        return null;
     }
 
     public List<List<QName>> getElementPermissibleAncestors(QName attributeName) {
-        return new java.util.ArrayList<List<QName>>();
+        return null;
     }
 
 }

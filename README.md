@@ -116,13 +116,15 @@ A number of additional semantic constraints are tested in the fourth phase:
 
 If one of the **smpte** verification models applies, a number of additional semantic constraints are tested in the fourth phase:
 
+ * Error if smpte:backgroundImage specifies a local fragment that does not reference a smpte:image element.
+ * Warn if smpte:backgroundImage references a non-local image and `references-external-image` warning is enabled.
  * Error if smpte:backgroundImageHorizontal attribute specifies value that is not `left|center|right` or doesn't conform to the TTML \<length\> syntax.
  * Error if smpte:backgroundImageHorizontal attribute uses a negative length value.
  * Error if smpte:backgroundImageVertical attribute specifies value that is not `top|center|bottom` or doesn't conform to the TTML \<length\> syntax.
  * Error if smpte:backgroundImageVertical attribute uses a negative length value.
  * Error if smpte:data element's immediate ancestor is not tt:metadata.
  * Error if smpte:data element's content does not conform to Base64 encoding, ignoring XML whitespace.
- * Error if smpte:data element's datatype attribute is empty, all whitespace, padded with whitespace, or does not start with 'x-' prefix.
+ * Error if smpte:data element's datatype attribute is not a standard datatype or private ('x-' prefixed) datatype.
  * Error if smpte:image element's immediate ancestor is not tt:metadata.
  * Error if smpte:image element's content does not conform to Base64 encoding, ignoring XML whitespace.
  * Error if smpte:information element's immediate ancestors are not tt:metadata and tt:head.
@@ -130,6 +132,7 @@ If one of the **smpte** verification models applies, a number of additional sema
  * Error if unknown element in some SMPTE-TT Namespace is specified.
  * Error if unknown attribute in some SMPTE-TT Namespace is specified on any element.
  * Error if SMPTE-TT Namespace attribute specified on element where it is not explicitly permitted.
+ * Error if SMPTE attribute is empty, all whitespace, or whitespace padded (unless explicitly permitted).
 
 ## Verification Model
 
@@ -210,6 +213,7 @@ Usage: java -jar ttv.jar [options] URL*
     --quiet                    - don't show banner
     --show-models              - show built-in verification models (use with --verbose to show more details)
     --show-repository          - show source code repository information
+    --show-validator           - show platform validator information
     --show-warning-tokens      - show warning tokens (use with --verbose to show more details)
     --verbose                  - enable verbose output (may be specified multiple times to increase verbosity level)
     --treat-foreign-as TOKEN   - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: warning)
@@ -272,10 +276,5 @@ In addition, the `run-valid` target will use the command line (not Junit) invoca
 
 ## Issues
 
-See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current known bugs, feature requests (enhancements), etc. The following
-*To Do* list contains a short list of unregistered issues slated for near term attention.
+See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current known bugs, feature requests (enhancements), etc.
 
-## To Do
-
- * Verify that URI valued smpte:backgroundImage attribute is either a fragment identifier or a URI without a fragment identifier.
- * Verify that URI valued smpte:backgroundImage attribute that is a fragment identifier references a smpte:image element in same document.

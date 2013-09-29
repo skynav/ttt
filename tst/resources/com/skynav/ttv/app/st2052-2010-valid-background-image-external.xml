@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - background image reference to external image - should produce 2 warning with warn-on all -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.smpte-ra.org/schemas/2052-1/2010/profiles/smpte-tt-full"
+    xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="2" ttva:model="st2052-2010">
+  <head/>
+  <body>
+    <div smpte:backgroundImage="http://external.com/foo.png"/>
+    <div smpte:backgroundImage="http://external.com/images#foo"/>
+  </body>
+</tt>

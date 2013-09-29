@@ -57,6 +57,8 @@ public class ST20522010 {
         public static final String PROFILE_2010_FULL = "smpte-tt-full";
         public static final String PROFILE_2010_FULL_ABSOLUTE = NAMESPACE_2010_PROFILE + PROFILE_2010_FULL;
 
+        public static final String DATA_TYPE_608 = NAMESPACE_2010_CEA608;
+
         public static final String ELT_DATA = "data";
         public static final String ELT_IMAGE = "image";
         public static final String ELT_INFORMATION = "information";
@@ -78,13 +80,13 @@ public class ST20522010 {
     public static final Model MODEL = new ST20522010Model();
 
     public static boolean inSMPTEPrimaryNamespace(QName name) {
-        String ln = name.getNamespaceURI();
-        return ln.equals(Constants.NAMESPACE_2010);
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(Constants.NAMESPACE_2010);
     }
 
     public static boolean inSMPTESecondaryNamespace(QName name) {
-        String ln = name.getNamespaceURI();
-        return ln.equals(Constants.NAMESPACE_2010_CEA608);
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(Constants.NAMESPACE_2010_CEA608);
     }
 
     public static boolean inSMPTENamespace(QName name) {
@@ -188,7 +190,7 @@ public class ST20522010 {
             return false;
         }
         private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createInformation(new Information()).getName();
-        private boolean isSMPTEInformationElement(QName name) {
+        public boolean isSMPTEInformationElement(QName name) {
             return name.equals(informationElementName);
         }
         public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
@@ -257,18 +259,20 @@ public class ST20522010 {
             return sb.toString();
         }
         public List<List<QName>> getElementPermissibleAncestors(QName elementName) {
-            List<List<QName>> permissibleAncestors = new java.util.ArrayList<List<QName>>();
-            String namespaceUri = elementName.getNamespaceURI();
-            String localName = elementName.getLocalPart();
-            if ((localName.equals(Constants.ELT_DATA) || localName.equals(Constants.ELT_IMAGE)) && inSMPTEPrimaryNamespace(elementName)) {
-                List<QName> ancestors = new java.util.ArrayList<QName>();
-                ancestors.add(metadataElementName);
-                permissibleAncestors.add(ancestors);
-            } else if (localName.equals(Constants.ELT_INFORMATION) && inSMPTEPrimaryNamespace(elementName)) {
-                List<QName> ancestors = new java.util.ArrayList<QName>();
-                ancestors.add(metadataElementName);
-                ancestors.add(headElementName);
-                permissibleAncestors.add(ancestors);
+            List<List<QName>> permissibleAncestors = super.getElementPermissibleAncestors(elementName);
+            if (permissibleAncestors == null) {
+                permissibleAncestors = new java.util.ArrayList<List<QName>>();
+                String localName = elementName.getLocalPart();
+                if ((localName.equals(Constants.ELT_DATA) || localName.equals(Constants.ELT_IMAGE)) && inSMPTEPrimaryNamespace(elementName)) {
+                    List<QName> ancestors = new java.util.ArrayList<QName>();
+                    ancestors.add(metadataElementName);
+                    permissibleAncestors.add(ancestors);
+                } else if (localName.equals(Constants.ELT_INFORMATION) && inSMPTEPrimaryNamespace(elementName)) {
+                    List<QName> ancestors = new java.util.ArrayList<QName>();
+                    ancestors.add(metadataElementName);
+                    ancestors.add(headElementName);
+                    permissibleAncestors.add(ancestors);
+                }
             }
             return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
         }

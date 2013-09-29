@@ -60,6 +60,9 @@ public class ST20522013 {
         public static final String PROFILE_2013_FULL = "smpte-tt-full";
         public static final String PROFILE_2013_FULL_ABSOLUTE = NAMESPACE_2013_PROFILE + PROFILE_2010_FULL;
 
+        public static final String DATA_TYPE_608 = NAMESPACE_2013_CEA608;
+        public static final String DATA_TYPE_708 = NAMESPACE_2013_CEA708;
+
         public static final String ELT_SERVICE = "service";
 
         public static final String ATTR_ASPECT_RATIO = "aspectRatio";
@@ -73,13 +76,13 @@ public class ST20522013 {
     public static final Model MODEL = new ST20522013Model();
 
     public static boolean inSMPTEPrimaryNamespace(QName name) {
-        String ln = name.getNamespaceURI();
-        return ln.equals(Constants.NAMESPACE_2013);
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(Constants.NAMESPACE_2013);
     }
 
     public static boolean inSMPTESecondaryNamespace(QName name) {
-        String ln = name.getNamespaceURI();
-        return ln.equals(Constants.NAMESPACE_2013_CEA608) || ln.equals(Constants.NAMESPACE_2013_CEA708);
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(Constants.NAMESPACE_2013_CEA608) || nsUri.equals(Constants.NAMESPACE_2013_CEA708);
     }
 
     public static boolean inSMPTENamespace(QName name) {
@@ -194,11 +197,11 @@ public class ST20522013 {
             return false;
         }
         private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2013.ObjectFactory().createInformation(new Information()).getName();
-        private boolean isSMPTEInformationElement(QName name) {
+        public boolean isSMPTEInformationElement(QName name) {
             return name.equals(informationElementName);
         }
         private static final QName serviceElementName = new com.skynav.ttv.model.smpte.tt.rel2013.m708.ObjectFactory().createService(new Service()).getName();
-        private boolean isSMPTEServiceElement(QName name) {
+        public boolean isSMPTEServiceElement(QName name) {
             return name.equals(serviceElementName);
         }
         public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
@@ -254,9 +257,15 @@ public class ST20522013 {
             if (super.isElement(name))
                 return true;
             else {
-                String nsUri = name.getNamespaceURI();
                 String ln = name.getLocalPart();
-                if (nsUri.equals(Constants.NAMESPACE_2013_CEA708)) {
+                if (inSMPTEPrimaryNamespace(name)) {
+                    if (ln.equals(Constants.ELT_DATA))
+                        return true;
+                    else if (ln.equals(Constants.ELT_IMAGE))
+                        return true;
+                    else if (ln.equals(Constants.ELT_INFORMATION))
+                        return true;
+                } else if (name.getNamespaceURI().equals(Constants.NAMESPACE_2013_CEA708)) {
                     if (ln.equals(Constants.ELT_SERVICE))
                         return true;
                 }
@@ -274,6 +283,29 @@ public class ST20522013 {
                 sb.append(path);
             }
             return sb.toString();
+        }
+        public List<List<QName>> getElementPermissibleAncestors(QName elementName) {
+            List<List<QName>> permissibleAncestors = super.getElementPermissibleAncestors(elementName);
+            if (permissibleAncestors == null) {
+                permissibleAncestors = new java.util.ArrayList<List<QName>>();
+                String localName = elementName.getLocalPart();
+                if ((localName.equals(Constants.ELT_DATA) || localName.equals(Constants.ELT_IMAGE)) && inSMPTEPrimaryNamespace(elementName)) {
+                    List<QName> ancestors = new java.util.ArrayList<QName>();
+                    ancestors.add(metadataElementName);
+                    permissibleAncestors.add(ancestors);
+                } else if (localName.equals(Constants.ELT_INFORMATION) && inSMPTEPrimaryNamespace(elementName)) {
+                    List<QName> ancestors = new java.util.ArrayList<QName>();
+                    ancestors.add(metadataElementName);
+                    ancestors.add(headElementName);
+                    permissibleAncestors.add(ancestors);
+                } else if (localName.equals(Constants.ELT_SERVICE) && elementName.getNamespaceURI().equals(Constants.NAMESPACE_2013_CEA708)) {
+                    List<QName> ancestors = new java.util.ArrayList<QName>();
+                    ancestors.add(informationElementName);
+                    ancestors.add(metadataElementName);
+                    permissibleAncestors.add(ancestors);
+                }
+            }
+            return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
         }
         private SemanticsVerifier semanticsVerifier;
         public SemanticsVerifier getSemanticsVerifier() {

@@ -363,8 +363,11 @@
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-style-idref-duplicate-with-intervening.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-style-idref-duplicate-without-intervening.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid.xml"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid-all-styles.xml"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid-background-image-external.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-608.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-708.xml"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-all-styles.xml"/>
     </java>
   </sequential>
 </macrodef>

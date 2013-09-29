@@ -1290,6 +1290,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidST20522010BadBackgroundImageIdrefWrongEltype() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-background-image-idref-wrong-eltype.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidST20522010UnknownAttributes() throws Exception {
         performInvalidityTest("st2052-2010-invalid-unknown-attributes.xml", -1, -1);
     }

@@ -18,7 +18,7 @@
     <ttm:copyright>Copyright 2004-2012 CEA, SMPTE</ttm:copyright>
     <metadata>
       <ttm:agent type="person"/>
-      <smpte:information mode="Preserved" origin="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea708" m708:service="1"/> 
+      <smpte:information mode="Preserved" origin="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea708" m708:number="1"/> 
     </metadata>    
     <styling>
       <style xml:id='basic' tts:color='white' tts:backgroundColor="black" tts:fontFamily='monospace' tts:fontSize='100%' tts:fontWeight='bold' />
