@@ -25,23 +25,18 @@
 -->
 <jxb:bindings version="2.1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/ST2052-1-smpte-tt-2010.xsd">
-    <jxb:bindings node="/xs:schema">
-      <jxb:schemaBindings>
-        <jxb:package name="com.skynav.ttv.model.smpte.tt.rel2010"/>
-      </jxb:schemaBindings>
-    </jxb:bindings>
-  </jxb:bindings>
-
-  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/24TB-DP-ST2052-1a-smpte-tt-20130526.xsd">
+  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/2013/smpte-tt.xsd">
     <jxb:bindings node="/xs:schema">
       <jxb:schemaBindings>
         <jxb:package name="com.skynav.ttv.model.smpte.tt.rel2013"/>
       </jxb:schemaBindings>
     </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='information.eltype']">
+      <jxb:class name="Information"/>
+    </jxb:bindings>
   </jxb:bindings>
 
-  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/24TB-DP-RP2052-10b-smpte-tt-608-20130624.xsd">
+  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/2013/smpte-tt-608.xsd">
     <jxb:bindings node="/xs:schema">
       <jxb:schemaBindings>
         <jxb:package name="com.skynav.ttv.model.smpte.tt.rel2013.m608"/>
@@ -49,19 +44,14 @@
     </jxb:bindings>
   </jxb:bindings>
 
-  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/24TB-DP-RP2052-11b-smpte-tt-708-20130617.xsd">
+  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/2013/smpte-tt-708.xsd">
     <jxb:bindings node="/xs:schema">
       <jxb:schemaBindings>
         <jxb:package name="com.skynav.ttv.model.smpte.tt.rel2013.m708"/>
       </jxb:schemaBindings>
     </jxb:bindings>
-  </jxb:bindings>
-
-  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/xml.xsd">
-    <jxb:bindings node="/xs:schema">
-      <jxb:schemaBindings>
-        <jxb:package name="com.skynav.ttv.model.smpte.xml"/>
-      </jxb:schemaBindings>
+    <jxb:bindings node="//xs:complexType[@name='service.eltype']">
+      <jxb:class name="Service"/>
     </jxb:bindings>
   </jxb:bindings>
 

@@ -215,11 +215,11 @@ public class Lengths {
                 }
             }
 
-            // non-negative-number
+            // number
             if (integralPart == null) {
                 if (fractionalPart == null) {
                     reporter.logInfo(locator,
-                        "Bad <length> expression, missing non-negative number after optional sign.");
+                        "Bad <length> expression, missing number after optional sign.");
                 } else {
                     numberValue = fractionalPart.doubleValue();
                 }
@@ -249,9 +249,10 @@ public class Lengths {
             if (valueIndex == valueLength)
                 break;
             c = value.charAt(valueIndex);
-            if (c == '%')
+            if (c == '%') {
                 units = Length.Unit.Percentage;
-            else if (Characters.isLetter(c)) {
+                ++valueIndex;
+            } else if (Characters.isLetter(c)) {
                 StringBuffer sb = new StringBuffer();
                 while (Characters.isLetter(c)) {
                     sb.append(c);

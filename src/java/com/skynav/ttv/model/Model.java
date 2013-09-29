@@ -88,10 +88,11 @@ public interface Model {
 
     /**
      * Determine if a global attribute is permitted on element.
-     * @param name of attribute
+     * @param attributeName name of attribute
+     * @param elementName name of attribute
      * @return true if bound
      */
-    boolean isGlobalAttributePermitted(QName name, Object content);
+    boolean isGlobalAttributePermitted(QName attributeName, QName elementName);
 
     /**
      * Determine if a name is bound to a element type.
@@ -223,6 +224,18 @@ public interface Model {
      * ancestor element type
      */
     List<List<QName>> getIdReferencePermissibleAncestors(QName attributeName);
+
+    /**
+     * Obtain list of lists of qualified names of permissible ancestors
+     * of specific element type, where the order of lists contained in the outer list
+     * is not significant, and the order of qualified names contained in inner lists
+     * is from most immediate ancestor to least immediate ancestor, where least immediate
+     * ancestor need not be the root.
+     * @param attributeName name of referring attribute
+     * @return a list of lists of qualified names or null if no constraint on target
+     * ancestor element type
+     */
+    List<List<QName>> getElementPermissibleAncestors(QName elementName);
 
     /**
      * Obtain semantics verifier for model.

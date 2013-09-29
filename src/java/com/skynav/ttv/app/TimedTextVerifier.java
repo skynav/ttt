@@ -224,6 +224,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     private Set<String> resourceEnabledWarnings;
     private Model resourceModel;
     private String resourceUriString;
+    private Map<String,Object> resourceState;
     private URI resourceUri;
     private ByteBuffer resourceBufferRaw;
     private int resourceExpectedErrors = -1;
@@ -351,6 +352,20 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
     }
 
     @Override
+    public void setResourceState(String key, Object value) {
+        if (resourceState != null)
+            resourceState.put(key, value);
+    }
+
+    @Override
+    public Object getResourceState(String key) {
+        if (resourceState != null)
+            return resourceState.get(key);
+        else
+            return null;
+    }
+
+    @Override
     public String message(String message) {
         if ((message != null) && (message.length() > 0)) {
             if (message.charAt(0) == '{')
@@ -423,8 +438,12 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
             return extractMessage(e.getCause());
         else if (e instanceof SAXParseException)
             return extractMessage((SAXParseException) e);
-        else
-            return "{" + resourceUri + "}: " + e.getMessage();
+        else {
+            String message = e.getMessage();
+            if ((message == null) || (message.length() == 0))
+                message = e.toString();
+            return message(message + ((debug < 2) ? "; retry with --debug-exceptions option for additional information." : "."));
+        }
     }
 
     @Override
@@ -917,6 +936,7 @@ public class TimedTextVerifier implements VerifierContext, Reporter {
         resourceDisabledWarnings = new java.util.HashSet<String>(disabledWarnings);
         resourceEnabledWarnings = new java.util.HashSet<String>(enabledWarnings);
         resourceModel = model;
+        resourceState = new java.util.HashMap<String,Object>();
         resourceUriString = null;
         resourceUri = null;
         resourceBufferRaw = null;

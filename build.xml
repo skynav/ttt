@@ -133,21 +133,33 @@
 </target>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
-<target name="create-xsd-bindings-smpte">
+<target name="create-xsd-bindings-smpte-2010">
   <exec executable="xjc" dir="${build.dir}">
     <arg value="-b"/>
-    <arg value="${bindings.dir}/xsd/smpte-bindings.xjb"/>
+    <arg value="${bindings.dir}/xsd/smpte-bindings-2010.xjb"/>
     <arg value="-d"/>
     <arg value="${generated.dir}"/>
-    <arg value="${schemas.dir}/xsd/smpte/ST2052-1-smpte-tt-2010.xsd"/>
-    <arg value="${schemas.dir}/xsd/smpte/24TB-DP-ST2052-1a-smpte-tt-20130526.xsd"/>
-    <arg value="${schemas.dir}/xsd/smpte/24TB-DP-RP2052-10b-smpte-tt-608-20130624.xsd"/>
-    <arg value="${schemas.dir}/xsd/smpte/24TB-DP-RP2052-11b-smpte-tt-708-20130617.xsd"/>
+    <arg value="${schemas.dir}/xsd/smpte/2010/smpte-tt.xsd"/>
+    <arg value="${schemas.dir}/xsd/smpte/2010/smpte-tt-608.xsd"/>
   </exec>
 </target>
 
+<target name="create-xsd-bindings-smpte-2013">
+  <exec executable="xjc" dir="${build.dir}">
+    <arg value="-b"/>
+    <arg value="${bindings.dir}/xsd/smpte-bindings-2013.xjb"/>
+    <arg value="-d"/>
+    <arg value="${generated.dir}"/>
+    <arg value="${schemas.dir}/xsd/smpte/2013/smpte-tt.xsd"/>
+    <arg value="${schemas.dir}/xsd/smpte/2013/smpte-tt-608.xsd"/>
+    <arg value="${schemas.dir}/xsd/smpte/2013/smpte-tt-708.xsd"/>
+  </exec>
+</target>
+
+<target name="create-xsd-bindings-smpte" depends="create-xsd-bindings-smpte-2010,create-xsd-bindings-smpte-2013"/>
+
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
-<target name="create-xsd-bindings" depends="create-xsd-bindings-ttml1"/>
+<target name="create-xsd-bindings" depends="create-xsd-bindings-ttml1, create-xsd-bindings-smpte"/>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="generate-code" depends="create-xsd-bindings"/>
@@ -350,9 +362,9 @@
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-role-extension.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-style-idref-duplicate-with-intervening.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-style-idref-duplicate-without-intervening.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/smpte-valid-2010.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/smpte-valid-2013-608.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/smpte-valid-2013-708.xml"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid.xml"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-608.xml"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-708.xml"/>
     </java>
   </sequential>
 </macrodef>

@@ -120,8 +120,16 @@ If one of the **smpte** verification models applies, a number of additional sema
  * Error if smpte:backgroundImageHorizontal attribute uses a negative length value.
  * Error if smpte:backgroundImageVertical attribute specifies value that is not `top|center|bottom` or doesn't conform to the TTML \<length\> syntax.
  * Error if smpte:backgroundImageVertical attribute uses a negative length value.
+ * Error if smpte:data element's immediate ancestor is not tt:metadata.
+ * Error if smpte:data element's content does not conform to Base64 encoding, ignoring XML whitespace.
+ * Error if smpte:data element's datatype attribute is empty, all whitespace, padded with whitespace, or does not start with 'x-' prefix.
+ * Error if smpte:image element's immediate ancestor is not tt:metadata.
+ * Error if smpte:image element's content does not conform to Base64 encoding, ignoring XML whitespace.
+ * Error if smpte:information element's immediate ancestors are not tt:metadata and tt:head.
+ * Error if smpte:information element appears more than once in document.
  * Error if unknown element in some SMPTE-TT Namespace is specified.
  * Error if unknown attribute in some SMPTE-TT Namespace is specified on any element.
+ * Error if SMPTE-TT Namespace attribute specified on element where it is not explicitly permitted.
 
 ## Verification Model
 
@@ -217,18 +225,18 @@ As a convenience, if a URL argument takes a relative form, then `ttv` attempts t
 Run `ttv` with the `--show-models` option to determine which verification models are supported, and which is the default model. If the `-v` option is added, this will additionally show the built-in schemas used by each model, as demonstrated by the following console log:
 
 <pre>
-# java -jar bld/artifacts/ttv.jar -v --show-models
+$ java -jar bld/artifacts/ttv.jar -v --show-models
 Timed Text Verifier (TTV) [1.0.0dev] Copyright 2013 Skynav, Inc.
 Verification Models:
   st2052-2010
     XSD: xsd/ttml1/ttml1.xsd
-    XSD: xsd/smpte/2010/smpte-tt-ttv.xsd
-    XSD: xsd/smpte/2010/smpte-tt-608-ttv.xsd
+    XSD: xsd/smpte/2010/smpte-tt.xsd
+    XSD: xsd/smpte/2010/smpte-tt-608.xsd
   st2052-2013
     XSD: xsd/ttml1/ttml1.xsd
-    XSD: xsd/smpte/2013/24TB-DP-ST2052-1a-smpte-tt-20130526.xsd
-    XSD: xsd/smpte/2013/24TB-DP-RP2052-10b-smpte-tt-608-20130624.xsd
-    XSD: xsd/smpte/2013/24TB-DP-RP2052-11b-smpte-tt-708-20130617.xsd
+    XSD: xsd/smpte/2013/smpte-tt.xsd
+    XSD: xsd/smpte/2013/smpte-tt-608.xsd
+    XSD: xsd/smpte/2013/smpte-tt-708.xsd
   ttml1 (default)
     XSD: xsd/ttml1/ttml1.xsd
 </pre>
@@ -269,13 +277,5 @@ See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current kn
 
 ## To Do
 
- * Verify that content of smpte:data and smpte:image conforms to Base64 encoding.
- * Verify that smpte:image is a child of tt:metadata.
  * Verify that URI valued smpte:backgroundImage attribute is either a fragment identifier or a URI without a fragment identifier.
  * Verify that URI valued smpte:backgroundImage attribute that is a fragment identifier references a smpte:image element in same document.
- * Verify that smpte:information is a child of a tt:metadata child of tt:head.
- * Verify that no more than one smpte:information element is present in document.
- * Verify that @datatype attribute of smpte:data is not specified or has a `x-` prefix.
- * Verify that m608:* attributes are used only on smpte:information element.
- * Verify that m708:* attributes are used only on smpte:information element.
-

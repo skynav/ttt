@@ -161,17 +161,22 @@ public class ValidTestCases {
 
     @Test
     public void testValidST20522010() throws Exception {
-        performValidityTest("smpte-valid-2010.xml", -1, -1);
+        performValidityTest("st2052-2010-valid.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidST20522010AllStyles() throws Exception {
+        performValidityTest("st2052-2010-valid-all-styles.xml", -1, -1);
     }
 
     @Test
     public void testValidST20522013With608Extensions() throws Exception {
-        performValidityTest("smpte-valid-2013-608.xml", -1, -1);
+        performValidityTest("st2052-2013-valid-with-608.xml", -1, -1);
     }
 
     @Test
     public void testValidST20522013With708Extensions() throws Exception {
-        performValidityTest("smpte-valid-2013-708.xml", -1, -1);
+        performValidityTest("st2052-2013-valid-with-708.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

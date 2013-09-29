@@ -1254,6 +1254,101 @@ public class InvalidTestCases {
         performInvalidityTest("ttml1-invalid-style-unknown-attributes.xml", 3, 0);
     }
 
+    @Test
+    public void testInvalidST20522010BadBackgroundImageHorizontalAllSpace() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-background-image-horizontal-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadBackgroundImageHorizontalEmpty() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-background-image-horizontal-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadBackgroundImageHorizontalInherit() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-background-image-horizontal-inherit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadBackgroundImageHorizontalNegativePercentage() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-background-image-horizontal-negative-percentage.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadBackgroundImageHorizontalNegative() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-background-image-horizontal-negative.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadBackgroundImageHorizontalPadded() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-background-image-horizontal-padded.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadBackgroundImageHorizontalAllUnsupportedUnit() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-background-image-horizontal-unsupported-unit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010UnknownAttributes() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-unknown-attributes.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010UnknownElements() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-unknown-elements.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadDataDatatype() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-data-datatype.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadDataBase64() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-data-base64.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadImageBase64() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-image-base64.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadInformationAncestry() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-information-ancestry.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadInformationDuplicate() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-information-duplicate.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadSMPTEGlobalAttributeDisallowed() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-smpte-global-attribute-disallowed.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522010BadM608GlobalAttributeDisallowed() throws Exception {
+        performInvalidityTest("st2052-2010-invalid-bad-m608-global-attribute-disallowed.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522013BadSMPTEGlobalAttributeDisallowed() throws Exception {
+        performInvalidityTest("st2052-2013-invalid-bad-smpte-global-attribute-disallowed.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522013BadM608GlobalAttributeDisallowed() throws Exception {
+        performInvalidityTest("st2052-2013-invalid-bad-m608-global-attribute-disallowed.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidST20522013BadM708GlobalAttributeDisallowed() throws Exception {
+        performInvalidityTest("st2052-2013-invalid-bad-m708-global-attribute-disallowed.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

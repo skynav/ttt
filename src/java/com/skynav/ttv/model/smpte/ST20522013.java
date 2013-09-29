@@ -35,6 +35,8 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Profile;
+import com.skynav.ttv.model.smpte.tt.rel2013.Information;
+import com.skynav.ttv.model.smpte.tt.rel2013.m708.Service;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522013SemanticsVerifier;
 
@@ -47,13 +49,13 @@ public class ST20522013 {
         public static final String NAMESPACE_2013 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt";
         public static final String NAMESPACE_2013_PROFILE = "http://www.smpte-ra.org/schemas/2052-1/2013/profiles/";
         public static final String NAMESPACE_2013_EXTENSION = "http://www.smpte-ra.org/23b/smpte-tt/extension/";
-        public static final String XSD_2013 = "xsd/smpte/2013/24TB-DP-ST2052-1a-smpte-tt-20130526.xsd";
+        public static final String XSD_2013 = "xsd/smpte/2013/smpte-tt.xsd";
 
         public static final String NAMESPACE_2013_CEA608 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608";
-        public static final String XSD_2013_CEA608 = "xsd/smpte/2013/24TB-DP-RP2052-10b-smpte-tt-608-20130624.xsd";
+        public static final String XSD_2013_CEA608 = "xsd/smpte/2013/smpte-tt-608.xsd";
 
         public static final String NAMESPACE_2013_CEA708 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea708";
-        public static final String XSD_2013_CEA708 = "xsd/smpte/2013/24TB-DP-RP2052-11b-smpte-tt-708-20130617.xsd";
+        public static final String XSD_2013_CEA708 = "xsd/smpte/2013/smpte-tt-708.xsd";
 
         public static final String PROFILE_2013_FULL = "smpte-tt-full";
         public static final String PROFILE_2013_FULL_ABSOLUTE = NAMESPACE_2013_PROFILE + PROFILE_2010_FULL;
@@ -152,38 +154,101 @@ public class ST20522013 {
             if (super.isGlobalAttribute(name))
                 return true;
             else {
-                String nsUri = name.getNamespaceURI();
                 String ln = name.getLocalPart();
-                if (nsUri.equals(Constants.NAMESPACE_2013_CEA608)) {
-                    if (ln.equals(Constants.ATTR_CHANNEL))
+                if (inSMPTEPrimaryNamespace(name)) {
+                    if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE))
                         return true;
-                    else if (ln.equals(Constants.ATTR_FIELD_START))
+                    else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_HORIZONTAL))
                         return true;
-                    else if (ln.equals(Constants.ATTR_PROGRAM_NAME))
+                    else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_VERTICAL))
                         return true;
-                    else if (ln.equals(Constants.ATTR_PROGRAM_TYPE))
-                        return true;
-                    else if (ln.equals(Constants.ATTR_CONTENT_ADVISORY))
-                        return true;
-                    else if (ln.equals(Constants.ATTR_CAPTION_SERVICE))
-                        return true;
-                    else if (ln.equals(Constants.ATTR_COPY_AND_REDISTRIBUTION_CONTROL))
-                        return true;
-                } else if (nsUri.equals(Constants.NAMESPACE_2013_CEA708)) {
-                    if (ln.equals(Constants.ATTR_NUMBER))
-                        return true;
-                    else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
-                        return true;
-                    else if (ln.equals(Constants.ATTR_EASY_READER))
-                        return true;
-                    else if (ln.equals(Constants.ATTR_FCC_MINIMUM))
-                        return true;
+                } else if (inSMPTESecondaryNamespace(name)) {
+                    String nsUri = name.getNamespaceURI();
+                    if (nsUri.equals(Constants.NAMESPACE_2013_CEA608)) {
+                        if (ln.equals(Constants.ATTR_CHANNEL))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_FIELD_START))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_PROGRAM_NAME))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_PROGRAM_TYPE))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_CONTENT_ADVISORY))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_CAPTION_SERVICE))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_COPY_AND_REDISTRIBUTION_CONTROL))
+                            return true;
+                    } else if (nsUri.equals(Constants.NAMESPACE_2013_CEA708)) {
+                        if (ln.equals(Constants.ATTR_NUMBER))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_EASY_READER))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_FCC_MINIMUM))
+                            return true;
+                    }
                 }
             }
             return false;
         }
-        public boolean isGlobalAttributePermitted(QName name, Object content) {
-            return true;
+        private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2013.ObjectFactory().createInformation(new Information()).getName();
+        private boolean isSMPTEInformationElement(QName name) {
+            return name.equals(informationElementName);
+        }
+        private static final QName serviceElementName = new com.skynav.ttv.model.smpte.tt.rel2013.m708.ObjectFactory().createService(new Service()).getName();
+        private boolean isSMPTEServiceElement(QName name) {
+            return name.equals(serviceElementName);
+        }
+        public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
+            if (super.isGlobalAttributePermitted(attributeName, elementName))
+                return true;
+            else {
+                String ln = attributeName.getLocalPart();
+                if (inSMPTEPrimaryNamespace(attributeName)) {
+                    if (isTTDivElement(elementName)) {
+                        if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_HORIZONTAL))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_VERTICAL))
+                            return true;
+                    }
+                } else if (inSMPTESecondaryNamespace(attributeName)) {
+                    String nsUri = attributeName.getNamespaceURI();
+                    if (nsUri.equals(Constants.NAMESPACE_2013_CEA608)) {
+                        if (isSMPTEInformationElement(elementName)) {
+                            if (ln.equals(Constants.ATTR_CHANNEL))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_FIELD_START))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_PROGRAM_NAME))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_PROGRAM_TYPE))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_CONTENT_ADVISORY))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_CAPTION_SERVICE))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_COPY_AND_REDISTRIBUTION_CONTROL))
+                                return true;
+                        }
+                    } else if (nsUri.equals(Constants.NAMESPACE_2013_CEA708)) {
+                        if (isSMPTEInformationElement(elementName) || isSMPTEServiceElement(elementName) ) {
+                            if (ln.equals(Constants.ATTR_NUMBER))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_EASY_READER))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_FCC_MINIMUM))
+                                return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
         public boolean isElement(QName name) {
             if (super.isElement(name))

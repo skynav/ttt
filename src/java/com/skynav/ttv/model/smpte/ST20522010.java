@@ -35,6 +35,7 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Profile;
+import com.skynav.ttv.model.smpte.tt.rel2010.Information;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
@@ -48,10 +49,10 @@ public class ST20522010 {
         public static final String NAMESPACE_2010 = "http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt";
         public static final String NAMESPACE_2010_PROFILE = "http://www.smpte-ra.org/schemas/2052-1/2010/profiles/";
         public static final String NAMESPACE_2010_EXTENSION = "http://www.smpte-ra.org/23b/smpte-tt/extension/";
-        public static final String XSD_2010 = "xsd/smpte/2010/smpte-tt-ttv.xsd";
+        public static final String XSD_2010 = "xsd/smpte/2010/smpte-tt.xsd";
 
         public static final String NAMESPACE_2010_CEA608 = "http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt#cea608";
-        public static final String XSD_2010_CEA608 = "xsd/smpte/2010/smpte-tt-608-ttv.xsd";
+        public static final String XSD_2010_CEA608 = "xsd/smpte/2010/smpte-tt-608.xsd";
 
         public static final String PROFILE_2010_FULL = "smpte-tt-full";
         public static final String PROFILE_2010_FULL_ABSOLUTE = NAMESPACE_2010_PROFILE + PROFILE_2010_FULL;
@@ -186,8 +187,47 @@ public class ST20522010 {
             }
             return false;
         }
-        public boolean isGlobalAttributePermitted(QName name, Object content) {
-            return true;
+        private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createInformation(new Information()).getName();
+        private boolean isSMPTEInformationElement(QName name) {
+            return name.equals(informationElementName);
+        }
+        public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
+            if (super.isGlobalAttributePermitted(attributeName, elementName))
+                return true;
+            else {
+                String ln = attributeName.getLocalPart();
+                if (inSMPTEPrimaryNamespace(attributeName)) {
+                    if (isTTDivElement(elementName)) {
+                        if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_HORIZONTAL))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_VERTICAL))
+                            return true;
+                    }
+                } else if (inSMPTESecondaryNamespace(attributeName)) {
+                    String nsUri = attributeName.getNamespaceURI();
+                    if (nsUri.equals(Constants.NAMESPACE_2010_CEA608)) {
+                        if (isSMPTEInformationElement(elementName)) {
+                            if (ln.equals(Constants.ATTR_CHANNEL))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_FIELD_START))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_PROGRAM_NAME))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_PROGRAM_TYPE))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_CONTENT_ADVISORY))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_CAPTION_SERVICE))
+                                return true;
+                            else if (ln.equals(Constants.ATTR_COPY_AND_REDISTRIBUTION_CONTROL))
+                                return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
         public boolean isElement(QName name) {
             if (super.isElement(name))
@@ -216,6 +256,23 @@ public class ST20522010 {
             }
             return sb.toString();
         }
+        public List<List<QName>> getElementPermissibleAncestors(QName elementName) {
+            List<List<QName>> permissibleAncestors = new java.util.ArrayList<List<QName>>();
+            String namespaceUri = elementName.getNamespaceURI();
+            String localName = elementName.getLocalPart();
+            if ((localName.equals(Constants.ELT_DATA) || localName.equals(Constants.ELT_IMAGE)) && inSMPTEPrimaryNamespace(elementName)) {
+                List<QName> ancestors = new java.util.ArrayList<QName>();
+                ancestors.add(metadataElementName);
+                permissibleAncestors.add(ancestors);
+            } else if (localName.equals(Constants.ELT_INFORMATION) && inSMPTEPrimaryNamespace(elementName)) {
+                List<QName> ancestors = new java.util.ArrayList<QName>();
+                ancestors.add(metadataElementName);
+                ancestors.add(headElementName);
+                permissibleAncestors.add(ancestors);
+            }
+            return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
+        }
+
         private SemanticsVerifier semanticsVerifier;
         public SemanticsVerifier getSemanticsVerifier() {
             synchronized (this) {

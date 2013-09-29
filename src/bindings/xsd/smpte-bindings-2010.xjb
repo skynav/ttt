@@ -1,4 +1,5 @@
-/*
+<?xml version="1.0"?>
+<!--
  * Copyright 2013 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -21,49 +22,26 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
- 
-package com.skynav.ttv.verifier.util;
+-->
+<jxb:bindings version="2.1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-public class Characters {
+  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/2010/smpte-tt.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.smpte.tt.rel2010"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='information.eltype']">
+      <jxb:class name="Information"/>
+    </jxb:bindings>
+  </jxb:bindings>
 
-    public static boolean isXMLSpace(char c) {
-        return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
-    }
+  <jxb:bindings schemaLocation="../../schemas/xsd/smpte/2010/smpte-tt-608.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.smpte.tt.rel2010.m608"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+  </jxb:bindings>
 
-    public static boolean isHexDigit(char c) {
-        return ((c >= '0') && (c <= '9')) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f'));
-    }
-
-    public static boolean isDigit(char c) {
-        return ((c >= '0') && (c <= '9'));
-    }
-
-    public static boolean isLetter(char c) {
-        return ((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z'));
-    }
-
-
-    public static String charToNCRef(int c) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0, nDigits = (c > 0xFFFF) ? 6 : 4; i < nDigits; i++, c >>= 4) {
-            int d = c & 0xF;
-            char hd;
-            if (d < 10) {
-                hd = (char) ((int) '0' + d);
-            } else {
-                hd = (char) ((int) 'A' + (d - 10));
-            }
-            sb.append(hd);
-        }
-        return "&#x" + sb.reverse() + ";";
-    }
-
-    public static String maybeEscapeAsNCRef(int c) {
-        if ((c >= 32) && (c < 127))
-            return Character.toString((char)c);
-        else
-            return charToNCRef(c);
-    }
-
-}
+</jxb:bindings>

@@ -82,4 +82,18 @@ public interface VerifierContext {
      */
     public Node getXMLNode(Object value);
 
+    /**
+     * Establish or update a per-resource context state variable.
+     * @param key name of state variable
+     * @param value to set into state variable
+     */
+    public void setResourceState(String key, Object value);
+
+    /**
+     * Obtain value of per-resource context state variable.
+     * @param key name of state variable
+     * @return value of state variable or null if unknown key
+     */
+    public Object getResourceState(String key);
+
 }

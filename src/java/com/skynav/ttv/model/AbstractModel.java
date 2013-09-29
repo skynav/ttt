@@ -26,6 +26,7 @@
 package com.skynav.ttv.model;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -43,12 +44,20 @@ public abstract class AbstractModel implements Model {
         return false;
     }
 
-    public boolean isGlobalAttributePermitted(QName name, Object content) {
+    public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
         return false;
     }
 
     public boolean isElement(QName name) {
         return false;
+    }
+
+    public List<List<QName>> getIdReferencePermissibleAncestors(QName attributeName) {
+        return new java.util.ArrayList<List<QName>>();
+    }
+
+    public List<List<QName>> getElementPermissibleAncestors(QName attributeName) {
+        return new java.util.ArrayList<List<QName>>();
     }
 
 }

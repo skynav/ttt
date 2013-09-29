@@ -125,6 +125,10 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         this.timingVerifier = model.getTimingVerifier();
     }
 
+    public VerifierContext getContext() {
+        return context;
+    }
+
     private Locator getLocator(Object content) {
         return Locators.getLocator(content);
     }
@@ -489,8 +493,10 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             if (isMetadataItem(content)) {
                 if (!verifyMetadata(content))
                     failed = true;
-            } else if (!verifyNonTTOtherElement(content, getLocator(content), this.context)) {
-                failed = true;
+            } else {
+                if (content instanceof JAXBElement<?>)
+                    content = ((JAXBElement<?>)content).getValue();
+                failed = !verifyNonTTOtherElement(content, getLocator(content), this.context);
             }
         }
         if (!verifyMetadataItem(metadata))
@@ -1046,7 +1052,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             return null;
     }
 
-    private boolean unexpectedContent(Object content) throws IllegalStateException {
+    protected boolean unexpectedContent(Object content) throws IllegalStateException {
         throw new IllegalStateException("Unexpected JAXB content object of type '" + content.getClass().getName() +  "'.");
     }
 
