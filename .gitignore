@@ -3,6 +3,7 @@ bld
 
 # ignore eclipse
 .eclipse/.metadata
+.eclipse/RemoteSystemsTempFiles
 .eclipse/ttv/bin
 
 # ignore common detritus
@@ -10,3 +11,4 @@ bld
 *~
 *.orig
 *.bak
+tmp
