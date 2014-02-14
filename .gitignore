@@ -4,6 +4,7 @@ bld
 # ignore eclipse
 .eclipse/.metadata
 .eclipse/RemoteSystemsTempFiles
+.eclipse/Servers
 .eclipse/ttv/bin
 
 # ignore common detritus
