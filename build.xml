@@ -25,6 +25,10 @@
 -->
 <project name="ttv" basedir="." default="clean-test">
 
+<property environment="env"/>
+<property file="build.properties"/>
+<property file="${user.home}/build.properties"/>
+
 <property name="build.dir" value="${basedir}/bld"/>
 <property name="ext.dir" value="${basedir}/ext"/>
 <property name="release.dir" value="${basedir}/dst"/>
@@ -56,6 +60,31 @@
 <property name="ttv.version" value="${ttv.version.major}.${ttv.version.minor}.${ttv.version.micro}${ttv.version.suffix}"/>
 <property name="ttv.vendor" value="Skynav, Inc."/>
 <property name="ttv.release.target" value="${release.dir}/ttv-bin-${ttv.version}.jar"/>
+
+<property name="catalina.dir" value="${env.CATALINA_HOME}"/>
+<property name="catalina.bin.dir" value="${catalina.dir}/bin"/>
+<property name="catalina.lib.dir" value="${catalina.dir}/lib"/>
+<property name="servlet.build.dir" value="${build.dir}/servlet"/>
+<property name="servlet.classes.dir" value="${servlet.build.dir}/WEB-INF/classes"/>
+<property name="servlet.source.dir" value="${source.dir}/servlet"/>
+<property name="servlet.java.source.dir" value="${servlet.source.dir}/java"/>
+<property name="servlet.web.source.dir" value="${servlet.source.dir}/web"/>
+<property name="servlet.jar" value="ttvservlet.jar"/>
+<property name="servlet.source.jar" value="ttvservlet-source.jar"/>
+<property name="servlet.target" value="${artifacts.dir}/${servlet.jar}"/>
+<property name="servlet.source.target" value="${artifacts.dir}/${servlet.source.jar}"/>
+<property name="servlet.deploy.dir" value="${build.dir}/deploy"/>
+<property name="servlet.context.name" value="ttv"/>
+<property name="servlet.war" value="${servlet.context.name}.war"/>
+<property name="servlet.deploy.target" value="${servlet.deploy.dir}/${servlet.war}"/>
+<property name="servlet.title" value="TTV Servlet"/>
+<property name="servlet.version.major" value="1"/>
+<property name="servlet.version.minor" value="0"/>
+<property name="servlet.version.micro" value="0"/>
+<property name="servlet.version.suffix" value="dev"/>
+<property name="servlet.version" value="${servlet.version.major}.${servlet.version.minor}.${servlet.version.micro}${servlet.version.suffix}"/>
+<property name="servlet.vendor" value="Skynav, Inc."/>
+<property name="servlet.release.target" value="${release.dir}/ttvservlet-bin-${servlet.version}.jar"/>
 
 <property name="javac.debug" value="true"/>
 <property name="javac.deprecation" value="true"/>
@@ -132,6 +161,23 @@
   </sequential>
 </macrodef>
 
+<path id="servlet.libs.classpath">
+  <fileset dir="${catalina.lib.dir}">
+    <include name="*.jar"/>
+  </fileset>
+  <pathelement location="${ttv.target}"/>
+</path>
+<path id="catalina.tasks.classpath">
+  <fileset dir="${catalina.lib.dir}">
+    <include name="catalina-ant.jar"/>
+    <include name="tomcat-coyote.jar"/>
+    <include name="tomcat-util.jar"/>
+  </fileset>
+  <fileset dir="${catalina.bin.dir}">
+    <include name="tomcat-juli.jar"/>
+  </fileset>
+</path>
+
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="create-xsd-bindings-ttml1">
   <exec executable="xjc" dir="${build.dir}">
@@ -175,7 +221,7 @@
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="generate-code" depends="create-xsd-bindings"/>
 
-<target name="compile">
+<target name="compile-ttv">
   <mkdir dir="${classes.dir}"/>
   <javac destdir="${classes.dir}">
     <src path="${java.source.dir}"/>
@@ -183,7 +229,7 @@
   </javac>
 </target>
 
-<target name="compile-tests" depends="compile">
+<target name="compile-ttv-tests" depends="compile-ttv">
   <mkdir dir="${test.classes.dir}"/>
   <javac destdir="${test.classes.dir}">
     <src path="${test.java.source.dir}"/>
@@ -198,11 +244,25 @@
   </copy>
 </target>
 
-<target name="ensure-artifacts-directory">
+<target name="compile-servlet" depends="build-ttv-artifacts">
+  <mkdir dir="${servlet.build.dir}"/>
+  <copy todir="${servlet.build.dir}">
+    <fileset dir="${servlet.web.source.dir}"/>
+  </copy>  
+  <mkdir dir="${servlet.classes.dir}"/>
+  <javac destdir="${servlet.classes.dir}">
+    <src path="${servlet.java.source.dir}"/>
+    <classpath>
+      <path refid="servlet.libs.classpath"/>
+    </classpath>
+  </javac>
+</target>
+
+<target name="ensure-ttv-artifacts-directory">
   <mkdir dir="${artifacts.dir}"/>
 </target>
 
-<target name="build-jars" depends="compile">
+<target name="build-ttv-jars" depends="compile-ttv">
   <tstamp>
     <format property="ts" pattern="yyyyMMdd-HHmmss-z"/>
   </tstamp>
@@ -234,9 +294,36 @@
   </jar>
 </target>
 
-<target name="build-artifacts" depends="ensure-artifacts-directory, build-jars"/>
+<target name="build-ttv-artifacts" depends="ensure-ttv-artifacts-directory, build-ttv-jars"/>
 
-<target name="build" description="Build TTV" depends="build-artifacts"/>
+<target name="build-ttv" description="Build TTV" depends="build-ttv-artifacts"/>
+
+<target name="build-servlet-jars" depends="compile-servlet">
+  <jar jarfile="${servlet.target}">
+    <fileset dir="${servlet.build.dir}"/>
+    <manifest>
+      <attribute name="Implementation-Title" value="${servlet.title}"/>
+      <attribute name="Implementation-Version" value="${servlet.version}"/>
+      <attribute name="Implementation-Vendor" value="${servlet.vendor}"/>
+      <attribute name="Build-Id" value="${build.id}"/>
+    </manifest>
+  </jar>
+  <jar jarfile="${servlet.source.target}">
+    <fileset dir="${servlet.source.dir}"/>
+    <manifest>
+      <attribute name="Implementation-Title" value="${servlet.title}"/>
+      <attribute name="Implementation-Version" value="${servlet.version}"/>
+      <attribute name="Implementation-Vendor" value="${servlet.vendor}"/>
+      <attribute name="Build-Id" value="${build.id}"/>
+    </manifest>
+  </jar>
+</target>
+
+<target name="build-servlet-artifacts" depends="build-servlet-jars"/>
+
+<target name="build-servlet" description="Build TTV Servlet" depends="build-servlet-artifacts"/>
+
+<target name="build" description="Build All" depends="build-ttv"/>
 
 <target name="test-xml" description="Run XML tests">
   <junit-run testsuite="com.skynav.xml.helpers.HelpersTestSuite" outfile="TEST-xml-helpers"/>
@@ -254,7 +341,9 @@
 
 <target name="test-apps" description="Run TTV application tests" depends="test-verifier"/>
 
-<target name="test" description="Run all TTV test suites" depends="compile-tests, test-xml, test-ttml1, test-apps"/>
+<target name="test-ttv" description="Run all TTV test suites" depends="compile-ttv-tests, test-xml, test-ttml1, test-apps"/>
+
+<target name="test" description="Run all test suites" depends="test-ttv"/>
 
 <target name="release-dist">
   <copy file="${ttv.target}" tofile="${release.dir}/ttv-bin-${ttv.version}.jar"/>
@@ -298,6 +387,14 @@
   </exec>
 </target>
 
+<taskdef name="catalina-deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="catalina.tasks.classpath"/>
+
+<target name="deploy-servlet" depends="build-servlet">
+  <mkdir dir="${servlet.deploy.dir}"/>
+  <copy file="${servlet.target}" tofile="${servlet.deploy.target}"/>
+  <catalina-deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/ttv" localWar="file:${servlet.deploy.target}"/>
+</target>
+
 <target name="clean-classes">
   <delete includeemptydirs="true" quiet="true">
     <fileset dir="${classes.dir}"/>
@@ -323,19 +420,30 @@
   </delete>
 </target>
 
-<target name="clean" depends="clean-classes, clean-resources, clean-artifacts, clean-test-output"/>
+<target name="clean-ttv" depends="clean-classes, clean-resources, clean-artifacts, clean-test-output"/>
 
-<target name="clean-generated">
+<target name="clean-servlet">
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${servlet.build.dir}"/>
+  </delete>
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${servlet.deploy.dir}"/>
+  </delete>
+</target>
+
+<target name="clean" depends="clean-ttv,clean-servlet"/>
+
+<target name="clean-ttv-generated">
   <delete includeemptydirs="true">
     <fileset dir="${generated.dir}" includes="**/*"/>
   </delete>
 </target>
 
-<target name="clean-all" depends="clean, clean-generated"/>
+<target name="clean-all" depends="clean-ttv, clean-ttv-generated"/>
 
-<target name="clean-build" description="Clean and build TTV" depends="clean,build"/>
+<target name="clean-build" description="Clean and build TTV" depends="clean-ttv,build-ttv"/>
 
-<target name="clean-test" description="Clean, build, and test TTV" depends="clean,build,test"/>
+<target name="clean-test" description="Clean, build, and test TTV" depends="clean-ttv,build-ttv,test-ttv"/>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="clean-all-test" depends="clean-all,generate-code,build,test"/>
@@ -384,11 +492,11 @@
   </sequential>
 </macrodef>
 
-<target name="run-valid" description="Run verifier with valid input test files" depends="build">
+<target name="run-valid" description="Run verifier with valid input test files" depends="build-ttv">
   <run-valid verbose="--no-verbose"/>
 </target>
 
-<target name="run-valid-verbose" description="Run verifier with valid input test files, with verbose output." depends="build">
+<target name="run-valid-verbose" description="Run verifier with valid input test files, with verbose output." depends="build-ttv">
   <run-valid verbose="--verbose"/>
 </target>
 

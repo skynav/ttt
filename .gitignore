@@ -1,13 +1,14 @@
-# ignore build
+# build related
 bld
+build.properties
 
-# ignore eclipse
+# eclipse related
 .eclipse/.metadata
 .eclipse/RemoteSystemsTempFiles
 .eclipse/Servers
 .eclipse/ttv/bin
 
-# ignore common detritus
+# other
 .DS_Store
 *~
 *.orig
