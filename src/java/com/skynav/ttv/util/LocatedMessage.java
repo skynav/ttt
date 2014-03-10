@@ -23,40 +23,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.model;
+package com.skynav.ttv.util;
 
-import java.util.Map;
-import java.util.Set;
+import org.xml.sax.Locator;
 
-import com.skynav.ttv.model.ttml.TTML1;
-import com.skynav.ttv.model.smpte.ST20522010;
-import com.skynav.ttv.model.smpte.ST20522013;
-
-public class Models {
-
-    public static Model getDefaultModel() {
-        return TTML1.MODEL;
+public class LocatedMessage extends Message {
+    private String uri;
+    private int line = -1;
+    private int column = -1;
+    public LocatedMessage(Locator locator, String key, String format, Object... arguments) {
+        this(locator.getSystemId(), locator.getLineNumber(), locator.getColumnNumber(), key, format, arguments);
     }
-
-    public static String getDefaultModelName() {
-        return getDefaultModel().getName();
+    public LocatedMessage(String uri, int line, int column, String key, String format, Object... arguments) {
+        super(key, format, arguments);
+        this.uri = uri;
+        this.line = line;
+        this.column = column;
     }
-
-    private static Map<String,Model> modelMap;
-
-    static {
-        modelMap = new java.util.TreeMap<String,Model>();
-        modelMap.put(TTML1.MODEL.getName(), TTML1.MODEL);
-        modelMap.put(ST20522010.MODEL.getName(), ST20522010.MODEL);
-        modelMap.put(ST20522013.MODEL.getName(), ST20522013.MODEL);
-    }
-
-    public static Set<String> getModelNames() {
-        return modelMap.keySet();
-    }
-
-    public static Model getModel(String name) {
-        return modelMap.get(name);
-    }
-
 }

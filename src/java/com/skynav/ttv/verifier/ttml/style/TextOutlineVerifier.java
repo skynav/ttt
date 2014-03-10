@@ -65,10 +65,10 @@ public class TextOutlineVerifier implements StyleValueVerifier {
         if (color != null) {
             if (!Colors.isColor(color, locator, context, null)) {
                 Colors.badColor(color, locator, context);
-                reporter.logInfo(locator, "Bad <color> expression in color component '" + color + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <color> expression in color component ''{0}''.", color));
                 failed = true;
             } else if (thickness == null) {
-                reporter.logInfo(locator, "Missing <length> expression after <color> expression '" + color + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Missing <length> expression after <color> expression ''{0}''.", color));
                 failed = true;
             }
         }
@@ -76,12 +76,12 @@ public class TextOutlineVerifier implements StyleValueVerifier {
             Object[] treatments = new Object[] { NegativeTreatment.Error };
             if (!Lengths.isLength(thickness, locator, context, treatments, null)) {
                 Lengths.badLength(thickness, locator, context, treatments);
-                reporter.logInfo(locator, "Bad <length> expression in thickness component '" + thickness + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <length> expression in thickness component ''{0}''.", thickness));
                 failed = true;
             } else if (blur != null) {
                 if (!Lengths.isLength(blur, locator, context, treatments, null)) {
                     Lengths.badLength(blur, locator, context, treatments);
-                    reporter.logInfo(locator, "Bad <length> expression in blur component '" + blur + "'.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <length> expression in blur component ''{0}''.", blur));
                     failed = true;
                 }
             }
@@ -97,9 +97,10 @@ public class TextOutlineVerifier implements StyleValueVerifier {
             afterComponent = null;
         while (componentIndex < numComponents) {
             String unparsedComponent = components[componentIndex++];
-            reporter.logInfo(locator,
-                "Unparsed expression '" + unparsedComponent + "'" +
-                ((afterComponent != null) ? (" after " + afterComponent + " component") : "") + ".");
+            if (afterComponent != null)
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Unparsed expression ''{0}'' after {1} component.", unparsedComponent, afterComponent));
+            else
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Unparsed expression ''{0}''.", unparsedComponent));
             failed = true;
         }
         return !failed;

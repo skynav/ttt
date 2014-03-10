@@ -43,27 +43,27 @@ public class BaseVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         boolean failed = false;
-        Reporter reporter = context.getReporter();
         String base = (String) valueObject;
         try {
             URI baseUri = new URI(base);
+            Reporter reporter = context.getReporter();
             if (content instanceof Features) {
                 URI featureNamespaceUri = model.getFeatureNamespaceUri();
                 if (!baseUri.isAbsolute()) {
-                    reporter.logInfo(locator, "Non-absolute feature namespace '" + baseUri + "'.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Non-absolute feature namespace ''{0}''.", baseUri));
                     failed = true;
                 } else if (!baseUri.equals(featureNamespaceUri)) {
-                    reporter.logInfo(locator, "Unknown feature namespace '" + base + "', expected '" + featureNamespaceUri + "'.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Unknown feature namespace ''{0}'', expected ''{1}''.", base, featureNamespaceUri));
                     failed = true;
                 }
             } else if (content instanceof Extensions) {
                 URI extensionNamespaceUri = model.getExtensionNamespaceUri();
                 if (!baseUri.equals(extensionNamespaceUri)) {
                     if (!baseUri.isAbsolute()) {
-                        reporter.logInfo(locator, "Non-absolute extension namespace '" + baseUri + "'.");
+                        reporter.logInfo(reporter.message(locator, "*KEY*", "Non-absolute extension namespace ''{0}''.", baseUri));
                         failed = true;
                     } else if (reporter.isWarningEnabled("references-other-extension-namespace")) {
-                        if (reporter.logWarning(locator, "Other extension namespace '" + baseUri + "'."))
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*", "Other extension namespace ''{0}''.", baseUri)))
                             failed = true;
                     }
                 }

@@ -35,6 +35,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.IdReferences;
@@ -59,19 +60,20 @@ public class StyleAttributeVerifier implements StyleValueVerifier {
                     failed = true;
                 }
                 String id = IdReferences.getId(style);
+                Reporter reporter = context.getReporter();
                 if (styleIdentifiers.contains(id)) {
-                    if (context.getReporter().isWarningEnabled("duplicate-idref-in-style")) {
-                        if (context.getReporter().logWarning(locator,
-                            "Duplicate IDREF '" + IdReferences.getId(style) + "' should not appear in " + name + ".")) {
+                    if (reporter.isWarningEnabled("duplicate-idref-in-style")) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*",
+                            "Duplicate IDREF ''{0}'' should not appear in {1}.", IdReferences.getId(style), name))) {
                             failed = true;
                         }
                     }
                 } else
                     styleIdentifiers.add(id);
                 if ((styleLast != null) && referencesSameStyle(style, styleLast)) {
-                    if (context.getReporter().isWarningEnabled("duplicate-idref-in-style-no-intervening")) {
-                        if (context.getReporter().logWarning(locator,
-                            "Duplicate IDREF '" + IdReferences.getId(style) + "' should not appear in " + name + " without distinct intervening IDREF.")) {
+                    if (reporter.isWarningEnabled("duplicate-idref-in-style-no-intervening")) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*",
+                            "Duplicate IDREF ''{0}'' should not appear in {1} without distinct intervening IDREF.", IdReferences.getId(style), name))) {
                             failed = true;
                         }
                     }

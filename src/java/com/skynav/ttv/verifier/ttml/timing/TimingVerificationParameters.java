@@ -33,6 +33,7 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.ttml1.tt.TimedText;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -64,7 +65,8 @@ public class TimingVerificationParameters implements VerificationParameters {
     }
 
     public void badDuration(QName name, String value, Locator locator, VerifierContext context) {
-        context.getReporter().logInfo(locator, "Duration not allowed when using 'smpte' time base with 'discontinuous' marker mode.");
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message(locator, "*KEY*", "Duration not allowed when using ''smpte'' time base with ''discontinuous'' marker mode."));
     }
 
     public int getFrameRate() {

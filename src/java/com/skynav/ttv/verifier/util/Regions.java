@@ -33,6 +33,7 @@ import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.xml.helpers.Nodes;
 
@@ -61,10 +62,12 @@ public class Regions {
     }
 
     private static void badRegionSignificance(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
-        // N.B. that this is not possible to test with TTML1.0 since no "insignificant" region can be validly specified.
         QName targetName, List<List<QName>> ancestors) {
-        context.getReporter().logInfo(locator,
-            "Bad IDREF '" + IdReferences.getId(value) + "', must reference significant '" + targetName + "' which ancestors are one of " + ancestors + ".");
+        // N.B. that this is not possible to test with TTML1.0 since no "insignificant" region can be validly specified.
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message(locator, "*KEY*",
+            "Bad IDREF ''{0}'', must reference significant ''{1}'' which ancestors are one of {2}.",
+            IdReferences.getId(value), targetName, ancestors));
     }
 
 }

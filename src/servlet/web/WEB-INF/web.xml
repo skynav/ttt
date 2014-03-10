@@ -8,6 +8,20 @@
   <servlet>
     <servlet-name>checker</servlet-name>
     <servlet-class>com.skynav.ttv.servlet.CheckerServlet</servlet-class>
+    <multipart-config>
+      <max-request-size>4194304</max-request-size>
+      <max-file-size-threshold>65536</max-file-size-threshold>
+      <max-file-size>1048576</max-file-size>
+    </multipart-config>
+  </servlet>
+  <servlet>
+    <servlet-name>dumper</servlet-name>
+    <servlet-class>com.skynav.ttv.servlet.DumperServlet</servlet-class>
+    <multipart-config>
+      <max-request-size>4194304</max-request-size>
+      <max-file-size-threshold>65536</max-file-size-threshold>
+      <max-file-size>1048576</max-file-size>
+    </multipart-config>
   </servlet>
   <servlet-mapping>
     <servlet-name>verifier</servlet-name>

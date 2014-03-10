@@ -491,8 +491,6 @@ ul#menu li {
 	margin-right: 0.8em;
 }
 
-
-
 /* @end */
 
 /* @group Footer */
@@ -709,6 +707,20 @@ div.intro {
 
 div.intro p { margin-bottom: .5em;}
 
+ul#models {
+  list-style-type: disc;
+}
+
+ul#models li {
+  margin-left: 3em;
+  font-size: 0.9em;
+  line-height: 1.2em;
+}
+
+ul#models a {
+  text-decoration: none;
+}
+
 #news dt {
     font-weight: bold;
      margin-top: 1.5em;
@@ -719,7 +731,6 @@ div.intro p { margin-bottom: .5em;}
        margin-left: 2.5em;
        margin-right: 1.5em;
    }
-
 
 /* warning on the home page for test instances */
 #test_warning {
@@ -742,5 +753,17 @@ div.intro p { margin-bottom: .5em;}
 }
 
 /* donation and sponsorship program */
+
+#w3c-include { display: table; width: 85%; box-sizing: border-box; padding: 0; }
+
+.w3c-include { display: table-row; padding-bottom: 1em; }
+
+.w3c-include > p { display: table-cell; vertical-align: middle; text-align: center; padding-bottom: 1em; }
+
+.w3c-include > p:first-of-type { padding-right: 2em; width: 20%; padding-left: 0em; }
+
+.w3c-include > p:last-of-type { padding-right: 1em;}
+
+.w3c-include-sponsor-img { margin-left: 0em; }
 
 /* @end */

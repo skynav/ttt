@@ -25,20 +25,52 @@
  
 package com.skynav.ttv.util;
 
+import java.io.PrintWriter;
+import java.net.URI;
+
 import org.xml.sax.Locator;
 
 public interface Reporter {
-    // error reporting
-    public String message(String message);
-    public String message(Locator locator, String message);
-    public void logError(String message);
-    public void logError(Locator locator, String message);
+    public enum ReportType {
+        Error,
+        Warning,
+        Info,
+        Debug;
+    };
+    public void resetResourceState();
+    public void setResourceURI(String uri);
+    public void setResourceURI(URI uri);
+    public void hideLocation();
+    public boolean isHidingLocation();
+    public int getResourceErrors();
+    public int getResourceWarnings();
+    public void setOutput(PrintWriter output);
+    public PrintWriter getOutput();
+    public void flush();
+    public void setVerbosityLevel(int level);
+    public void incrementVerbosityLevel();
+    public int getVerbosityLevel();
+    public void setDebugLevel(int level);
+    public void incrementDebugLevel();
+    public int getDebugLevel();
+    public Message message(String key, String format, Object... arguments);
+    public Message message(Locator locator, String key, String format, Object... arguments);
+    public void logError(Message message);
+    public void logError(Locator locator, Message message);
     public void logError(Exception e);
+    public boolean hasDefaultWarning(String token);
+    public void setTreatWarningAsError(boolean treatWarningAsError);
     public boolean isWarningEnabled(String token);
-    public boolean logWarning(String message);
-    public boolean logWarning(Locator locator, String message);
-    public void logInfo(String message);
-    public void logInfo(Locator locator, String message);
-    public void logDebug(String message);
-    public void logDebug(Locator locator, String message);
+    public void enableWarning(String token);
+    public void disableWarning(String token);
+    public void disableWarnings();
+    public void hideWarnings();
+    public boolean logWarning(Message message);
+    public boolean logWarning(Locator locator, Message message);
+    public boolean logWarning(Exception e);
+    public void logInfo(Message message);
+    public void logInfo(Locator locator, Message message);
+    public void logDebug(Message message);
+    public void logDebug(Locator locator, Message message);
+    public void showProcessingInfo();
 }

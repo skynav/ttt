@@ -50,6 +50,7 @@ import com.skynav.ttv.model.ttml1.ttm.Actor;
 import com.skynav.ttv.model.ttml1.ttm.Agent;
 import com.skynav.ttv.model.ttml1.ttm.Name;
 import com.skynav.ttv.util.Enums;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
@@ -139,8 +140,10 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
             failed = !verify((Metadata) content, locator, context);
         else if (content instanceof Name)
             failed = !verify((Name) content, locator, context);
-        if (failed)
-            context.getReporter().logError(locator, "Invalid '" + context.getBindingElementName(content) + "' metadata item.");
+        if (failed) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0}  metadata item.", context.getBindingElementName(content)));
+        }
         return !failed;
     }
 
@@ -160,13 +163,14 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
                 continue;
             QName name = new QName(nsUri != null ? nsUri : "", localName);
             if (name.getNamespaceURI().equals(NAMESPACE)) {
+                Reporter reporter = context.getReporter();
                 if (!isMetadataAttribute(name)) {
-                    context.getReporter().logError(locator, "Unknown attribute in TT Metadata namespace '" + name + "' not permitted on '" +
-                        context.getBindingElementName(content) + "'.");
+                    reporter.logError(reporter.message(locator, "*KEY*", "Unknown attribute in TT Metadata namespace ''{0}'' not permitted on ''{1}''.",
+                        name, context.getBindingElementName(content)));
                     failed = true;
                 } else if (!permitsMetadataAttribute(content)) {
-                    context.getReporter().logError(locator, "TT Metadata attribute '" + name + "' not permitted on '" +
-                        context.getBindingElementName(content) + "'.");
+                    reporter.logError(reporter.message(locator, "*KEY*", "TT Metadata attribute ''{0}'' not permitted on ''{1}''.",
+                        name, context.getBindingElementName(content)));
                     failed = true;
                 }
             }
@@ -219,13 +223,19 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         Reporter reporter = context.getReporter();
         if (content.getName().isEmpty()) {
             if (reporter.isWarningEnabled("missing-agent-name")) {
-                if (reporter.logWarning(locator, "An '" + agentElementName + "' element should have at least one '" + nameElementName + "' child, but none is present."))
+                Message message = reporter.message(locator, "*KEY*",
+                    "An ''{0}'' element should have at least one ''{1}'' child, but none is present.",
+                    agentElementName, nameElementName);
+                if (reporter.logWarning(message))
                     failed = true;
             }
         }
         if ((content.getType() == AgentType.CHARACTER) && (content.getActor() == null)) {
             if (reporter.isWarningEnabled("missing-agent-actor")) {
-                if (reporter.logWarning(locator, "An '" + agentElementName + "' element of type 'character' should have an '" + actorElementName + "' child, but none is present."))
+                Message message = reporter.message(locator, "*KEY*",
+                    "An ''{0}'' element of type 'character' should have an ''{1}'' child, but none is present.",
+                    agentElementName, actorElementName);
+                if (reporter.logWarning(message))
                     failed = true;
             }
         }
@@ -286,7 +296,8 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
                     value = IdReferences.getIdReferences(value);
                 } else
                     value = value.toString();
-                context.getReporter().logError(locator, "Invalid " + metadataName + " value '" + value + "'.");
+                Reporter reporter = context.getReporter();
+                reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", metadataName, value));
             }
             return success;
         }
@@ -295,11 +306,11 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                reporter.logInfo(locator, "Empty " + metadataName + " not permitted, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", metadataName, value));
             else if (Strings.isAllXMLSpace(value))
-                reporter.logInfo(locator, "The value of " + metadataName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", metadataName, value));
             else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logInfo(locator, "XML space padding not permitted on " + metadataName + ", got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", metadataName, value));
             else
                 success = verifier.verify(model, content, metadataName, value, locator, context);
             return success;

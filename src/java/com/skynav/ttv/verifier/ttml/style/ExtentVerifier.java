@@ -79,13 +79,15 @@ public class ExtentVerifier implements StyleValueVerifier {
                     Length.Unit hUnits = h.getUnits();
                     Length.Unit pxUnits = Length.Unit.Pixel;
                     if (w.getUnits() != pxUnits) {
-                        reporter.logInfo(locator,
-                            "Bad units on " + styleName + " width on root element, got '" + wUnits.shorthand() + "', expected '" + pxUnits.shorthand() + "'.");
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Bad units on {0} width on root element, got ''{1}'', expected ''{2}''.",
+                            styleName, wUnits.shorthand(), pxUnits.shorthand()));
                         failed = true;
                     }
                     if (h.getUnits() != pxUnits) {
-                        reporter.logInfo(locator,
-                            "Bad units on " + styleName + " height on root element, got '" + hUnits.shorthand() + "', expected '" + pxUnits.shorthand() + "'.");
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Bad units on {0} height on root element, got ''{1}'', expected ''{2}''.",
+                            styleName, hUnits.shorthand(), pxUnits.shorthand()));
                         failed = true;
                     }
                 }

@@ -35,6 +35,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Agents;
@@ -59,11 +60,10 @@ public class AgentAttributeVerifier implements MetadataValueVerifier {
                 }
                 String id = IdReferences.getId(agent);
                 if (agentIdentifiers.contains(id)) {
-                    if (context.getReporter().isWarningEnabled("duplicate-idref-in-agent")) {
-                        if (context.getReporter().logWarning(locator,
-                            "Duplicate IDREF '" + IdReferences.getId(agent) + "' in '" + name + "'.")) {
+                    Reporter reporter = context.getReporter();
+                    if (reporter.isWarningEnabled("duplicate-idref-in-agent")) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*", "Duplicate IDREF ''{0}'' in ''{1}''.", IdReferences.getId(agent), name)))
                             failed = true;
-                        }
                     }
                 } else
                     agentIdentifiers.add(id);

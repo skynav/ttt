@@ -38,6 +38,7 @@ import com.skynav.ttv.model.ttml1.ttp.Feature;
 import com.skynav.ttv.model.ttml1.ttp.Features;
 import com.skynav.ttv.model.ttml1.ttp.Extension;
 import com.skynav.ttv.model.ttml1.ttp.Extensions;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -69,8 +70,10 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
             failed = !verify((Feature) content, locator, context);
         else if (content instanceof Extension)
             failed = !verify((Extension) content, locator, context);
-        if (failed)
-            context.getReporter().logError(locator, "Invalid '" + context.getBindingElementName(content) + "' profile related parameter item.");
+        if (failed) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid ''{0}'' profile related parameter item.", context.getBindingElementName(content)));
+        }
         return !failed;
     }
 
@@ -83,13 +86,17 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
         List<Profile> profileElements = (content.getHead() != null) ? content.getHead().getParametersClass() : null;
         if ((profileElements != null) && (profileElements.size() > 0) && (profileAttribute != null)) {
             if (reporter.isWarningEnabled("ignored-profile-attribute")) {
-                if (reporter.logWarning(locator, "When " + profileElementName + " element is present, the " + profileAttributeName + " attribute is ignored."))
+                Message message = reporter.message(locator, "*KEY*",
+                    "When {0} element is present, the {1} attribute is ignored.", profileElementName, profileAttributeName);
+                if (reporter.logWarning(message))
                     failed = true;
             }
         }
         if (((profileElements == null) || (profileElements.size() == 0)) && ((profileAttribute == null) || (profileAttribute.length() == 0))) {
             if (reporter.isWarningEnabled("missing-profile")) {
-                if (reporter.logWarning(locator, "No profile specified, expected either " + profileAttributeName + " attribute or " + profileElementName + " element."))
+                Message message = reporter.message(locator, "*KEY*",
+                    "No profile specified, expected either {1} attribute or {0} element.", profileElementName, profileAttributeName);
+                if (reporter.logWarning(message))
                     failed = true;
             }
         }

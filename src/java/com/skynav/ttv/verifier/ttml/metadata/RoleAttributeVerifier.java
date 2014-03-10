@@ -51,16 +51,14 @@ public class RoleAttributeVerifier implements MetadataValueVerifier {
                 String token = (String) role;
                 if (token.indexOf("x-") == 0) {
                     if (reporter.isWarningEnabled("references-extension-role")) {
-                        if (reporter.logWarning(locator, "Extension role token '" + token + "' in '" + name + "'.")) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*", "Extension role token ''{0}'' in ''{1}''.", token, name)))
                             failed = true;
-                        }
                     }
                 }
                 if (tokens.contains(token)) {
                     if (reporter.isWarningEnabled("duplicate-role")) {
-                        if (reporter.logWarning(locator, "Duplicate role token '" + token + "' in '" + name + "'.")) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*", "Duplicate role token ''{0}'' in ''{1}''.", token, name)))
                             failed = true;
-                        }
                     }
                 } else
                     tokens.add(token);

@@ -23,40 +23,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.model;
+package com.skynav.ttv.util;
 
-import java.util.Map;
-import java.util.Set;
+import java.text.MessageFormat;
 
-import com.skynav.ttv.model.ttml.TTML1;
-import com.skynav.ttv.model.smpte.ST20522010;
-import com.skynav.ttv.model.smpte.ST20522013;
-
-public class Models {
-
-    public static Model getDefaultModel() {
-        return TTML1.MODEL;
+public class Message {
+    private String key;
+    private String format;
+    private Object[] arguments;
+    public Message(String key, String format, Object... arguments) {
+        this.key = key;
+        this.format = format;
+        this.arguments = arguments.clone();
     }
-
-    public static String getDefaultModelName() {
-        return getDefaultModel().getName();
+    @Override
+    public String toString() {
+        try {
+            return MessageFormat.format(this.format, this.arguments);
+        } catch (IllegalArgumentException e) {
+            return "Format Exception: pattern(" + this.format + ").";
+        }
     }
-
-    private static Map<String,Model> modelMap;
-
-    static {
-        modelMap = new java.util.TreeMap<String,Model>();
-        modelMap.put(TTML1.MODEL.getName(), TTML1.MODEL);
-        modelMap.put(ST20522010.MODEL.getName(), ST20522010.MODEL);
-        modelMap.put(ST20522013.MODEL.getName(), ST20522013.MODEL);
+    public String getKey() {
+        return key;
     }
-
-    public static Set<String> getModelNames() {
-        return modelMap.keySet();
+    public String getFormat() {
+        return format;
     }
-
-    public static Model getModel(String name) {
-        return modelMap.get(name);
+    public Object[] getArguments() {
+        return arguments;
     }
-
 }

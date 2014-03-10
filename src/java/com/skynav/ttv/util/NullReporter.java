@@ -25,20 +25,48 @@
  
 package com.skynav.ttv.util;
 
+import java.io.PrintWriter;
+import java.net.URI;
+
 import org.xml.sax.Locator;
 
 public class NullReporter implements Reporter {
     public static final NullReporter Reporter = new NullReporter();
-    public String message(String message) { return message; }
-    public String message(Locator locator, String message) { return message; }
-    public void logError(String message) {}
-    public void logError(Locator locator, String message) {}
+    private static PrintWriter out = new PrintWriter(System.out);
+    public void resetResourceState() {}
+    public void setResourceURI(String uri) {}
+    public void setResourceURI(URI uri) {}
+    public void hideLocation() {}
+    public boolean isHidingLocation() { return true; }
+    public int getResourceErrors() { return 0; }
+    public int getResourceWarnings() { return 0; }
+    public void setOutput(PrintWriter out) { this.out = out; }
+    public PrintWriter getOutput() { return out; }
+    public void flush() { if (out != null) out.flush(); }
+    public void setVerbosityLevel(int level) {}
+    public void incrementVerbosityLevel() {}
+    public int getVerbosityLevel() { return 0; }
+    public void setDebugLevel(int level) {}
+    public void incrementDebugLevel() {}
+    public int getDebugLevel() { return 0; }
+    public Message message(String key, String format, Object... arguments) { return new Message(key, format, arguments); }
+    public Message message(Locator locator, String key, String format, Object... arguments) { return new LocatedMessage(locator, key, format, arguments); }
+    public void logError(Message message) {}
+    public void logError(Locator locator, Message message) {}
     public void logError(Exception e) {}
+    public boolean hasDefaultWarning(String token) { return false; }
+    public void setTreatWarningAsError(boolean treatWarningAsError) {}
     public boolean isWarningEnabled(String token) { return false; }
-    public boolean logWarning(String message) { return false; }
-    public boolean logWarning(Locator locator, String message) { return false; }
-    public void logInfo(String message) {}
-    public void logInfo(Locator locator, String message) {}
-    public void logDebug(String message) {}
-    public void logDebug(Locator locator, String message) {}
+    public void enableWarning(String token) {}
+    public void disableWarning(String token) {}
+    public void disableWarnings() {}
+    public void hideWarnings() {}
+    public boolean logWarning(Message message) { return false; }
+    public boolean logWarning(Locator locator, Message message) { return false; }
+    public boolean logWarning(Exception e) { return false; }
+    public void logInfo(Message message) {}
+    public void logInfo(Locator locator, Message message) {}
+    public void logDebug(Message message) {}
+    public void logDebug(Locator locator, Message message) {}
+    public void showProcessingInfo() {}
 }

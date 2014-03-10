@@ -47,6 +47,7 @@ import com.skynav.ttv.model.ttml1.ttd.TimeBase;
 import com.skynav.ttv.model.ttml1.ttp.Extensions;
 import com.skynav.ttv.model.ttml1.ttp.Features;
 import com.skynav.ttv.util.Enums;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
@@ -237,13 +238,14 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
                 continue;
             QName name = new QName(nsUri != null ? nsUri : "", localName);
             if (name.getNamespaceURI().equals(NAMESPACE)) {
+                Reporter reporter = context.getReporter();
                 if (!isParameterAttribute(name)) {
-                    context.getReporter().logError(locator, "Unknown attribute in TT Parameter namespace '" + name + "' not permitted on '" +
-                        context.getBindingElementName(content) + "'.");
+                    reporter.logError(reporter.message(locator, "*KEY*", "Unknown attribute in TT Parameter namespace ''{0}'' not permitted on ''{1}''.",
+                        name, context.getBindingElementName(content)));
                     failed = true;
                 } else if (!permitsParameterAttribute(content)) {
-                    context.getReporter().logError(locator, "TT Parameter attribute '" + name + "' not permitted on '" +
-                        context.getBindingElementName(content) + "'.");
+                    reporter.logError(reporter.message(locator, "*KEY*", "TT Parameter attribute ''{0}'' not permitted on ''{1}''.",
+                        name, context.getBindingElementName(content)));
                     failed = true;
                 }
             }
@@ -302,8 +304,10 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
                     success = verifier.verify(model, content, parameterName, value, locator, context);
             } else
                 setParameterDefaultValue(content);
-            if (!success)
-                context.getReporter().logError(locator, "Invalid " + parameterName + " value '" + value + "'.");
+            if (!success) {
+                Reporter reporter = context.getReporter();
+                reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", parameterName, value));
+            }
             return success;
         }
 
@@ -311,11 +315,11 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                reporter.logInfo(locator, "Empty " + parameterName + " not permitted, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", parameterName, value));
             else if (Strings.isAllXMLSpace(value))
-                reporter.logInfo(locator, "The value of " + parameterName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", parameterName, value));
             else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logInfo(locator, "XML space padding not permitted on " + parameterName + ", got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", parameterName, value));
             else
                 success = verifier.verify(model, content, parameterName, value, locator, context);
             return success;

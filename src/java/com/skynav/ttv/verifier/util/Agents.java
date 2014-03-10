@@ -33,6 +33,7 @@ import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.xml.helpers.Nodes;
 
@@ -60,8 +61,10 @@ public class Agents {
 
     private static void badAgentSignificance(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
         QName targetName, List<List<QName>> ancestors) {
-        context.getReporter().logInfo(locator,
-            "Bad IDREF '" + IdReferences.getId(value) + "', must reference significant '" + targetName + "' which ancestors are one of " + ancestors + ".");
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message(locator, "*KEY*",
+            "Bad IDREF ''{0}'', must reference significant ''{1}'' which ancestors are one of {2}.",
+            IdReferences.getId(value), targetName, ancestors));
     }
 
 }
