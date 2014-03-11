@@ -200,14 +200,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public Message message(String key, String format, Object... arguments) {
-        String uriString;
-        if (resourceUri != null)
-            uriString = resourceUri.toString();
-        else if (resourceUriString != null)
-            uriString = resourceUriString;
-        else
-            uriString = null;
-        return new LocatedMessage(uriString, -1, -1, key, format, arguments);
+        return new Message(key, format, arguments);
     }
 
     private Message message(Locator locator, String message) {

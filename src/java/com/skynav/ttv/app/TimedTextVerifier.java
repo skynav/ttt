@@ -1540,14 +1540,8 @@ public class TimedTextVerifier implements VerifierContext {
                     message = null;
                 }
             }
-            if (message != null) {
-                boolean isHidingLocation = reporter.isHidingLocation();
-                if (!isHidingLocation)
-                    reporter.hideLocation();
+            if (message != null)
                 reporter.logInfo(message);
-                if (!isHidingLocation)
-                    reporter.showLocation();
-            }
         }
         return numFailure > 0 ? 1 : 0;
     }
