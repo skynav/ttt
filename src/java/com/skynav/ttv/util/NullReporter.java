@@ -36,8 +36,12 @@ public class NullReporter implements Reporter {
     public void resetResourceState() {}
     public void setResourceURI(String uri) {}
     public void setResourceURI(URI uri) {}
+    public void hidePath() {}
+    public void showPath() {}
+    public boolean isHidingPath() { return false; }
     public void hideLocation() {}
-    public boolean isHidingLocation() { return true; }
+    public void showLocation() {}
+    public boolean isHidingLocation() { return false; }
     public int getResourceErrors() { return 0; }
     public int getResourceWarnings() { return 0; }
     public void setOutput(PrintWriter out) { this.out = out; }

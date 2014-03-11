@@ -48,6 +48,7 @@ public class DefaultReporter implements Reporter {
     private Set<String> disabledWarnings;
     private Set<String> enabledWarnings;
     private boolean hideLocation;
+    private boolean hidePath;
     private boolean hideWarnings;
     private boolean hideResourceLocation;
     private boolean treatWarningAsError;
@@ -78,6 +79,8 @@ public class DefaultReporter implements Reporter {
         this.defaultWarnings = defaultWarnings;
         this.disabledWarnings = new java.util.HashSet<String>();
         this.enabledWarnings = new java.util.HashSet<String>();
+        this.hideLocation = false;
+        this.hidePath = true;
         this.output = output;
     }
 
@@ -96,8 +99,24 @@ public class DefaultReporter implements Reporter {
         resourceUri = uri;
     }
 
+    public void hidePath() {
+        this.hidePath = true;
+    }
+
+    public void showPath() {
+        this.hidePath = false;
+    }
+
+    public boolean isHidingPath() {
+        return this.hidePath;
+    }
+
     public void hideLocation() {
         this.hideLocation = true;
+    }
+
+    public void showLocation() {
+        this.hideLocation = false;
     }
 
     public boolean isHidingLocation() {
@@ -144,7 +163,7 @@ public class DefaultReporter implements Reporter {
     }
 
     protected void out(ReportType type, Message message) {
-        out(type, message.toString());
+        out(type, message.toText(isHidingLocation(), isHidingPath()));
     }
 
     public void flush() {
@@ -196,7 +215,17 @@ public class DefaultReporter implements Reporter {
     }
 
     public Message message(Locator locator, String key, String format, Object... arguments) {
-        return new LocatedMessage(locator.getSystemId(), locator.getLineNumber(), locator.getColumnNumber(), key, format, arguments);
+        String sysid = locator.getSystemId();
+        String uriString;
+        if ((sysid != null) && (sysid.length() > 0))
+            uriString = sysid;
+        else if (resourceUri != null)
+            uriString = resourceUri.toString();
+        else if (resourceUriString != null)
+            uriString = resourceUriString;
+        else
+            uriString = null;
+        return new LocatedMessage(uriString, locator.getLineNumber(), locator.getColumnNumber(), key, format, arguments);
     }
 
     private void logError(String message) {
@@ -214,7 +243,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public void logError(Locator locator, Message message) {
-        logError(message(locator, message.toString()));
+        logError(message(locator, message.toText(isHidingLocation(), isHidingPath())));
     }
 
     private Locator extractLocator(SAXParseException e) {
@@ -343,7 +372,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public boolean logWarning(Message message) {
-        return logWarning(message.toString());
+        return logWarning(message.toText(isHidingLocation(), isHidingPath()));
     }
 
     private boolean logWarning(Locator locator, String message) {
@@ -351,7 +380,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public boolean logWarning(Locator locator, Message message) {
-        return logWarning(locator, message.toString());
+        return logWarning(locator, message.toText(isHidingLocation(), isHidingPath()));
     }
 
     public boolean logWarning(Exception e) {
@@ -367,7 +396,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public void logInfo(Message message) {
-        logInfo(message.toString());
+        logInfo(message.toText(isHidingLocation(), isHidingPath()));
     }
 
     private void logInfo(Locator locator, String message) {
@@ -375,7 +404,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public void logInfo(Locator locator, Message message) {
-        logInfo(locator, message.toString());
+        logInfo(locator, message.toText(isHidingLocation(), isHidingPath()));
     }
 
     private void logDebug(String message) {
@@ -385,7 +414,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public void logDebug(Message message) {
-        logDebug(message.toString());
+        logDebug(message.toText(isHidingLocation(), isHidingPath()));
     }
 
     private void logDebug(Locator locator, String message) {
@@ -393,7 +422,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public void logDebug(Locator locator, Message message) {
-        logDebug(locator, message.toString());
+        logDebug(locator, message.toText(isHidingLocation(), isHidingPath()));
     }
 
     private boolean isDebuggingEnabled(int level) {

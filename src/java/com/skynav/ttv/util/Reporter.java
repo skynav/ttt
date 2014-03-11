@@ -40,7 +40,11 @@ public interface Reporter {
     public void resetResourceState();
     public void setResourceURI(String uri);
     public void setResourceURI(URI uri);
+    public void hidePath();
+    public void showPath();
+    public boolean isHidingPath();
     public void hideLocation();
+    public void showLocation();
     public boolean isHidingLocation();
     public int getResourceErrors();
     public int getResourceWarnings();

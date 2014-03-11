@@ -139,6 +139,7 @@ public class TimedTextVerifier implements VerifierContext {
         "    --external-frame-rate RATE - specify frame rate for document processing context\n" +
         "    --help                     - show usage help\n" +
         "    --hide-resource-location   - hide resource location\n" +
+        "    --hide-resource-path       - hide resource path\n" +
         "    --hide-warnings            - hide warnings (but count them)\n" +
         "    --model NAME               - specify model name (default: " + defaultModel.getName() + ")\n" +
         "    --no-warn-on TOKEN         - disable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
@@ -147,6 +148,8 @@ public class TimedTextVerifier implements VerifierContext {
         "    --servlet                  - configure defaults for servlet operation\n" +
         "    --show-models              - show built-in verification models (use with --verbose to show more details)\n" +
         "    --show-repository          - show source code repository information\n" +
+        "    --show-resource-location   - show resource location\n" +
+        "    --show-resource-path       - show resource path\n" +
         "    --show-validator           - show platform validator information\n" +
         "    --show-warning-tokens      - show warning tokens (use with --verbose to show more details)\n" +
         "    --verbose                  - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
@@ -184,8 +187,6 @@ public class TimedTextVerifier implements VerifierContext {
         { "xsi-no-namespace-schema-location",           Boolean.TRUE,   "'xsi:noNamespaceSchemaLocation' attribute used"},
         { "xsi-other-attribute",                        Boolean.FALSE,  "'xsi:nil' or 'xsi:type' attribute used"},
     };
-    static {
-    }
 
     // options state
     private String expectedErrors;
@@ -404,6 +405,8 @@ public class TimedTextVerifier implements VerifierContext {
             throw new ShowUsageException();
         } else if (option.equals("hide-resource-location")) {
             reporter.hideLocation();
+        } else if (option.equals("hide-resource-path")) {
+            reporter.hidePath();
         } else if (option.equals("hide-warnings")) {
             reporter.hideWarnings();
         } else if (option.equals("model")) {
@@ -427,6 +430,10 @@ public class TimedTextVerifier implements VerifierContext {
             showModels = true;
         } else if (option.equals("show-repository")) {
             showRepository = true;
+        } else if (option.equals("show-resource-location")) {
+            reporter.showLocation();
+        } else if (option.equals("show-resource-path")) {
+            reporter.showPath();
         } else if (option.equals("show-validator")) {
             showValidator = true;
         } else if (option.equals("show-warning-tokens")) {
@@ -1533,8 +1540,14 @@ public class TimedTextVerifier implements VerifierContext {
                     message = null;
                 }
             }
-            if (message != null)
+            if (message != null) {
+                boolean isHidingLocation = reporter.isHidingLocation();
+                if (!isHidingLocation)
+                    reporter.hideLocation();
                 reporter.logInfo(message);
+                if (!isHidingLocation)
+                    reporter.showLocation();
+            }
         }
         return numFailure > 0 ? 1 : 0;
     }

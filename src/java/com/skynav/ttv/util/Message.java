@@ -36,14 +36,6 @@ public class Message {
         this.format = format;
         this.arguments = arguments.clone();
     }
-    @Override
-    public String toString() {
-        try {
-            return MessageFormat.format(this.format, this.arguments);
-        } catch (IllegalArgumentException e) {
-            return "Format Exception: pattern(" + this.format + ").";
-        }
-    }
     public String getKey() {
         return key;
     }
@@ -52,5 +44,15 @@ public class Message {
     }
     public Object[] getArguments() {
         return arguments;
+    }
+    public String toText() {
+        try {
+            return MessageFormat.format(this.format, this.arguments);
+        } catch (IllegalArgumentException e) {
+            return "Format Exception: pattern(" + this.format + ").";
+        }
+    }
+    public String toText(boolean hideLocation, boolean elidePath) {
+        return toText();
     }
 }

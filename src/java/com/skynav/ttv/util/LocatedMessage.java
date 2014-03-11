@@ -40,4 +40,43 @@ public class LocatedMessage extends Message {
         this.line = line;
         this.column = column;
     }
+    @Override
+    public String toText(boolean hideLocation, boolean hidePath) {
+        String text = super.toText();
+        if (uri != null) {
+            StringBuffer sb = new StringBuffer();
+            if (!hideLocation) {
+                sb.append('{');
+                String uriString = uri.toString();
+                if (hidePath)
+                    uriString = hidePath(uriString);
+                sb.append(uriString);
+                sb.append('}');
+            }
+            if (line >= 0) {
+                if (sb.length() > 0)
+                    sb.append(':');
+                sb.append('[');
+                sb.append(line);
+                if (column >= 0) {
+                    sb.append(',');
+                    sb.append(column);
+                }
+                sb.append(']');
+            }
+            if (sb.length() > 0)
+                sb.append(':');
+            sb.append(text);
+            text = sb.toString();
+        }
+        return text;
+    }
+    private String hidePath(String uriString) {
+        if (uriString != null) {
+            int index = uriString.lastIndexOf("/");
+            if (index >= 0)
+                uriString = uriString.substring(index + 1);
+        }
+        return uriString;
+    }
 }
