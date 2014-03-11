@@ -71,6 +71,42 @@ public class LocatedMessage extends Message {
         }
         return text;
     }
+    public String toXML(boolean hideLocation, boolean hidePath) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<message>\n");
+        sb.append(locationToXML(hideLocation, hidePath));
+        sb.append("<text>");
+        sb.append(escapeText(super.toText()));
+        sb.append("</text>\n");
+        sb.append("</message>\n");
+        return sb.toString();
+    }
+    protected String locationToXML(boolean hideLocation, boolean hidePath) {
+        StringBuffer sb = new StringBuffer();
+        if (uri != null) {
+            sb.append("<location>\n");
+            if (!hideLocation) {
+                sb.append("<url>");
+                String uriString = uri.toString();
+                if (hidePath)
+                    uriString = hidePath(uriString);
+                sb.append(escapeText(uriString));
+                sb.append("</url>\n");
+            }
+            if (line >= 0) {
+                sb.append("<line>");
+                sb.append(line);
+                sb.append("</line>\n");
+                if (column >= 0) {
+                    sb.append("<column>");
+                    sb.append(column);
+                    sb.append("</column>\n");
+                }
+            }
+            sb.append("</location>\n");
+        }
+        return sb.toString();
+    }
     private String hidePath(String uriString) {
         if (uriString != null) {
             int index = uriString.lastIndexOf("/");

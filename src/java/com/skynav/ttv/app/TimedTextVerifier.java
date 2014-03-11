@@ -85,10 +85,10 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
 import com.skynav.ttv.util.Annotations;
-import com.skynav.ttv.util.DefaultReporter;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.Reporters;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Sniffer;
@@ -138,18 +138,20 @@ public class TimedTextVerifier implements VerifierContext {
         "    --external-extent EXTENT   - specify extent for document processing context\n" +
         "    --external-frame-rate RATE - specify frame rate for document processing context\n" +
         "    --help                     - show usage help\n" +
-        "    --hide-resource-location   - hide resource location\n" +
-        "    --hide-resource-path       - hide resource path\n" +
+        "    --hide-resource-location   - hide resource location (default: show)\n" +
+        "    --hide-resource-path       - hide resource path (default: hide)\n" +
         "    --hide-warnings            - hide warnings (but count them)\n" +
         "    --model NAME               - specify model name (default: " + defaultModel.getName() + ")\n" +
         "    --no-warn-on TOKEN         - disable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
         "    --no-verbose               - disable verbose output (resets verbosity level to 0)\n" +
         "    --quiet                    - don't show banner\n" +
+        "    --reporter REPORTER        - specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
+             Reporters.getDefaultReporterName()+ ")\n" +
         "    --servlet                  - configure defaults for servlet operation\n" +
         "    --show-models              - show built-in verification models (use with --verbose to show more details)\n" +
         "    --show-repository          - show source code repository information\n" +
-        "    --show-resource-location   - show resource location\n" +
-        "    --show-resource-path       - show resource path\n" +
+        "    --show-resource-location   - show resource location (default: show)\n" +
+        "    --show-resource-path       - show resource path (default: hide)\n" +
         "    --show-validator           - show platform validator information\n" +
         "    --show-warning-tokens      - show warning tokens (use with --verbose to show more details)\n" +
         "    --verbose                  - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
@@ -209,11 +211,12 @@ public class TimedTextVerifier implements VerifierContext {
     private Model model;
     private ForeignTreatment foreignTreatment;
     private Phase lastPhase;
-    private boolean usingServletDefaults;
 
     // global processing state
+    private PrintWriter showOutput;
+    @SuppressWarnings("unused")
+    private boolean showOutputDefaulted;
     private Reporter reporter;
-    private PrintWriter reporterOutput;
     private SchemaFactory schemaFactory;
     private boolean nonPoolGrammarSupported;
     private Map<List<URL>,Schema> schemas = new java.util.HashMap<List<URL>,Schema>();
@@ -281,13 +284,39 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     public TimedTextVerifier() {
-        this(null);
+        this(null, null);
     }
 
-    public TimedTextVerifier(Reporter reporter) {
+    public TimedTextVerifier(Reporter reporter, PrintWriter showOutput) {
         if (reporter == null)
-            reporter = new DefaultReporter(defaultWarningSpecifications);
-        this.reporter = reporter;
+            reporter = Reporters.getDefaultReporter();
+        setReporter(reporter);
+        setShowOutput(showOutput);
+    }
+
+    public void setReporter(Reporter reporter) {
+        setReporter(reporter, false);
+    }
+
+    public void setReporter(Reporter reporter, boolean closeOldReporter) {
+        if (this.reporter != null)
+            this.reporter.flush();
+        if (closeOldReporter) {
+            try {
+                if (this.reporter != null) {
+                    this.reporter.close();
+                    this.reporter = null;
+                }
+            } catch (Throwable e) {
+                this.reporter = null;
+            }
+        }
+        try {
+            reporter.open(defaultWarningSpecifications, null);
+            this.reporter = reporter;
+        } catch (Throwable e) {
+            this.reporter = null;
+        }
     }
 
     @Override
@@ -362,6 +391,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private int parseLongOption(String args[], int index) {
+        Reporter reporter = getReporter();
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
@@ -424,6 +454,9 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.setVerbosityLevel(0);
         } else if (option.equals("quiet")) {
             quiet = true;
+        } else if (option.equals("reporter")) {
+            assert index + 1 < args.length;
+            ++index;
         } else if (option.equals("servlet")) {
             configureServletDefaults();
         } else if (option.equals("show-models")) {
@@ -463,11 +496,11 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void configureServletDefaults() {
-        usingServletDefaults = true;
-        reporter.hideLocation();
+        getReporter().hideLocation();
     }
 
     private int parseShortOption(String args[], int index) {
+        Reporter reporter = getReporter();
         String option = args[index];
         assert option.length() == 2;
         option = option.substring(1);
@@ -490,6 +523,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void processDerivedOptions() {
+        Reporter reporter = getReporter();
         Model model;
         if (modelName != null) {
             model = Models.getModel(modelName);
@@ -524,6 +558,24 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private List<String> parseArgs(String[] args) {
+        // process --reporter argument(s) if present before any other argument
+        for (int i = 0; i < args.length; ++i) {
+            String arg = args[i];
+            if (arg.indexOf("--") == 0) {
+                String option = arg.substring(2);
+                if (option.equals("reporter")) {
+                    if (i + 1 >= args.length)
+                        throw new MissingOptionArgumentException("--" + option);
+                    String reporterName = args[i + 1];
+                    Reporter reporter = Reporters.getReporter(reporterName);
+                    if (reporter == null)
+                        throw new InvalidOptionUsageException("reporter", "unknown reporter: " + reporterName);
+                    setReporter(reporter);
+                    ++i;
+                }
+            }
+        }
+        // normal argument parsing
         List<String> nonOptionArgs = new java.util.ArrayList<String>();
         int nonOptionIndex = -1;
         for (int i = 0; i < args.length;) {
@@ -552,8 +604,16 @@ public class TimedTextVerifier implements VerifierContext {
         return processOptionsAndArgs(nonOptionArgs);
     }
 
+    public void setShowOutput(PrintWriter showOutput) {
+        this.showOutput = showOutput;
+    }
+
     private PrintWriter getShowOutput() {
-        return reporter.getOutput();
+        if (showOutput == null) {
+            showOutput = new PrintWriter(System.err);
+            showOutputDefaulted = true;
+        }
+        return showOutput;
     }
 
     private void showBanner() {
@@ -562,10 +622,19 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void showProcessingInfo() {
-        reporter.showProcessingInfo();
+        Reporter reporter = getReporter();
+        if (reporter.getVerbosityLevel() >  0) {
+            if (reporter.isTreatingWarningAsError())
+                reporter.logInfo(reporter.message("*KEY*", "Warnings are treated as errors."));
+            else if (reporter.areWarningsDisabled())
+                reporter.logInfo(reporter.message("*KEY*", "Warnings are disabled."));
+            else if (reporter.areWarningsHidden())
+                reporter.logInfo(reporter.message("*KEY*", "Warnings are hidden."));
+        }
     }
 
     private void showModels() {
+        Reporter reporter = getReporter();
         String defaultModelName = Models.getDefaultModel().getName();
         StringBuffer sb = new StringBuffer();
         sb.append("Verification Models:\n");
@@ -600,6 +669,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void showWarningTokens() {
+        Reporter reporter = getReporter();
         int maxTokenLength = 0;
         for (Object[] spec : defaultWarningSpecifications) {
             String token = (String) spec[0];
@@ -637,6 +707,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private URI resolve(String uriString) {
+        Reporter reporter = getReporter();
         try {
             URI uri = new URI(uriString);
             if (!uri.isAbsolute()) {
@@ -658,6 +729,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private ByteBuffer readResource(URI uri) {
+        Reporter reporter = getReporter();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         InputStream is = null;
         try {
@@ -706,6 +778,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private CharBuffer decodeResource(ByteBuffer rawBuffer, Charset charset, int bomLength) {
+        Reporter reporter = getReporter();
         ByteBuffer bb = rawBuffer;
         bb.position(bomLength);
         List<CharBuffer> charBuffers = new java.util.ArrayList<CharBuffer>();
@@ -801,17 +874,17 @@ public class TimedTextVerifier implements VerifierContext {
         resourceExpectedWarnings = -1;
         binder = null;
         rootBinding = null;
-        reporter.resetResourceState();
+        getReporter().resetResourceState();
     }
 
     private void setResourceURI(String uri) {
         resourceUriString = uri;
-        reporter.setResourceURI(uri);
+        getReporter().setResourceURI(uri);
     }
 
     private void setResourceURI(URI uri) {
         resourceUri = uri;
-        reporter.setResourceURI(uri);
+        getReporter().setResourceURI(uri);
     }
 
     private void setResourceBuffer(Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
@@ -823,6 +896,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private boolean verifyResource() {
+        Reporter reporter = getReporter();
         currentPhase = Phase.Resource;
         if (!lastPhase.isEnabled(Phase.Resource)) {
             reporter.logInfo(reporter.message("*KEY*", "Skipping resource presence and encoding verification phase {0}.", currentPhase.ordinal()));
@@ -866,6 +940,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void processAnnotations(Attributes attributes) {
+        Reporter reporter = getReporter();
         if (attributes != null) {
             String annotationsNamespace = Annotations.getNamespace();
             for (int i = 0, n = attributes.getLength(); i < n; ++i) {
@@ -905,6 +980,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private boolean verifyWellFormedness() {
+        Reporter reporter = getReporter();
         currentPhase = Phase.WellFormedness;
         if (!lastPhase.isEnabled(Phase.WellFormedness)) {
             reporter.logInfo(reporter.message("*KEY*", "Skipping XML well-formedness verification phase ({0}).", currentPhase.ordinal()));
@@ -926,17 +1002,17 @@ public class TimedTextVerifier implements VerifierContext {
                 }
                 public void error(SAXParseException e) {
                     // ensure parsing is terminated on well-formedness error
-                    reporter.logError(e);
+                    getReporter().logError(e);
                     throw new WellFormednessErrorException(e);
                 }
                 public void fatalError(SAXParseException e) {
                     // ensure parsing is terminated on well-formedness error
-                    reporter.logError(e);
+                    getReporter().logError(e);
                     throw new WellFormednessErrorException(e);
                 }
                 public void warning(SAXParseException e) {
                     // ensure parsing is terminated on well-formedness warning treated as error
-                    if (reporter.logWarning(e))
+                    if (getReporter().logWarning(e))
                         throw new WellFormednessErrorException(e);
                 }
             }, resourceUri.toString());
@@ -974,18 +1050,19 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private Schema loadSchema(List<URL> components) throws SchemaValidationErrorException {
+        Reporter reporter = getReporter();
         SchemaFactory sf = getSchemaFactory();
         sf.setErrorHandler(new ErrorHandler() {
             public void error(SAXParseException e) {
-                reporter.logError(e);
+                getReporter().logError(e);
                 throw new SchemaValidationErrorException(e);
             }
             public void fatalError(SAXParseException e) {
-                reporter.logError(e);
+                getReporter().logError(e);
                 throw new SchemaValidationErrorException(e);
             }
             public void warning(SAXParseException e) {
-                if (reporter.logWarning(e))
+                if (getReporter().logWarning(e))
                     throw new SchemaValidationErrorException(e);
             }
         });
@@ -1015,6 +1092,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private URL getSchemaResource(String resourceName) throws SchemaValidationErrorException {
+        Reporter reporter = getReporter();
         reporter.logDebug(reporter.message("*KEY*", "Searching for built-in schema at {0}...", resourceName));
         try {
             URL urlSchema = null;
@@ -1042,6 +1120,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private Schema getSchema() throws SchemaValidationErrorException {
+        Reporter reporter = getReporter();
         List<URL> schemaComponents = new java.util.ArrayList<URL>();
         for (String name : getModel().getSchemaResourceNames())
             schemaComponents.add(getSchemaResource(name));
@@ -1059,6 +1138,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private boolean verifyValidity() {
+        Reporter reporter = getReporter();
         currentPhase = Phase.Validity;
         if (!lastPhase.isEnabled(Phase.Validity)) {
             reporter.logInfo(reporter.message("*KEY*", "Skipping XSD validity verification phase ({0}).", currentPhase.ordinal()));
@@ -1076,15 +1156,15 @@ public class TimedTextVerifier implements VerifierContext {
             v.setErrorHandler(new ErrorHandler() {
                 public void error(SAXParseException e) {
                     // don't terminated validation on validation error
-                    reporter.logError(e);
+                    getReporter().logError(e);
                 }
                 public void fatalError(SAXParseException e) {
                     // don't terminated validation on validation error
-                    reporter.logError(e);
+                    getReporter().logError(e);
                 }
                 public void warning(SAXParseException e) {
                     // don't terminated validation on validation warning treated as error
-                    reporter.logWarning(e);
+                    getReporter().logWarning(e);
                 }
             });
             v.validate(source);
@@ -1092,7 +1172,7 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.logError(e);
         } catch (SchemaValidationErrorException e) {
             reporter.logError(e);
-        } catch (ForeignVocabularyException e) {
+        // } catch (ForeignVocabularyException e) {
             // Already logged error via foreign vocabulary filter
         } catch (SAXParseException e) {
             // Already logged error via default handler overrides above.
@@ -1308,6 +1388,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private boolean verifyRootElement(JAXBElement<?> root, Map<Class<?>,String> rootClasses) {
+        Reporter reporter = getReporter();
         Object contentObject = root.getValue();
         for (Class<?> rootClass : rootClasses.keySet()) {
             if (rootClass.isInstance(contentObject))
@@ -1327,6 +1408,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private boolean verifySemantics() {
+        Reporter reporter = getReporter();
         currentPhase = Phase.Semantics;
         if (!lastPhase.isEnabled(Phase.Semantics)) {
             reporter.logInfo(reporter.message("*KEY*", "Skipping semantics verification phase ({0}).", currentPhase.ordinal()));
@@ -1383,6 +1465,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private int verify(String uri) {
+        Reporter reporter = getReporter();
         if (!reporter.isHidingLocation())
             reporter.logInfo(reporter.message("*KEY*", "Verifying '{'{0}'}'.", uri));
         do {
@@ -1398,13 +1481,14 @@ public class TimedTextVerifier implements VerifierContext {
                 break;
         } while (false);
         int rv = rvValue();
-        reporter.logInfo(reporter.message("*KEY*", "{0}.", rvPassed(rv) ? "Passed" : "Failed"));
+        reporter.logInfo(reporter.message("*KEY*", "{0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
         reporter.flush();
         results.put(uri, rv);
         return rv;
     }
 
     private int rvValue() {
+        Reporter reporter = getReporter();
         int code = RV_PASS;
         int flags = 0;
         if (resourceExpectedErrors < 0) {
@@ -1446,6 +1530,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private String resultDetails() {
+        Reporter reporter = getReporter();
         int resourceErrors = reporter.getResourceErrors();
         int resourceWarnings = reporter.getResourceWarnings();
         StringBuffer details = new StringBuffer();
@@ -1508,6 +1593,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private int verify(List<String> nonOptionArgs) {
+        Reporter reporter = getReporter();
         int numFailure = 0;
         int numSuccess = 0;
         for (String uri : nonOptionArgs) {
@@ -1565,6 +1651,7 @@ public class TimedTextVerifier implements VerifierContext {
                 if (expectedWarnings != null)
                     throw new InvalidOptionUsageException("expect-warnings", "must not specify more than one URL with this option");
             }
+            getShowOutput().flush();
             if (nonOptionArgs.size() > 0) {
                 showProcessingInfo();
                 rv = verify(nonOptionArgs);
@@ -1578,7 +1665,8 @@ public class TimedTextVerifier implements VerifierContext {
             getShowOutput().println("Usage: " + e.getMessage());
             rv = RV_USAGE;
         }
-        reporter.flush();
+        setReporter(null, true);
+        getShowOutput().flush();
         return rv;
     }
 
@@ -1676,6 +1764,7 @@ public class TimedTextVerifier implements VerifierContext {
         }
     }
 
+    /* not used
     private static class ForeignVocabularyException extends RuntimeException {
         static final long serialVersionUID = 0;
         ForeignVocabularyException(QName name) {
@@ -1685,7 +1774,9 @@ public class TimedTextVerifier implements VerifierContext {
             super("'" + name.toString() + "': " + message);
         }
     }
+    */
 
+    /* not used
     private static class XSIVocabularyException extends ForeignVocabularyException {
         static final long serialVersionUID = 0;
         XSIVocabularyException(QName name) {
@@ -1695,13 +1786,16 @@ public class TimedTextVerifier implements VerifierContext {
             super(name, message);
         }
     }
+    */
 
+    /* not used
     private static class XSISchemaLocationException extends XSIVocabularyException {
         static final long serialVersionUID = 0;
         XSISchemaLocationException(String message) {
             super(XML.getSchemaLocationAttributeName(), message);
         }
     }
+    */
 
     private class ForeignVocabularyFilter extends XMLFilterImpl {
 
@@ -1732,6 +1826,7 @@ public class TimedTextVerifier implements VerifierContext {
 
         @Override
         public void startElement(String nsUri, String localName, String qualName, Attributes attrs) throws SAXException {
+            Reporter reporter = getReporter();
             if (foreignTreatment == ForeignTreatment.Allow)
                 super.startElement(nsUri, localName, qualName, attrs);
             else if (!inForeign && isNonForeignNamespace(nsUri))
@@ -1769,6 +1864,7 @@ public class TimedTextVerifier implements VerifierContext {
         }
 
         private Attributes filterAttributes(Attributes attrs) {
+            Reporter reporter = getReporter();
             boolean hasForeign = false;
             for (int i = 0, n = attrs.getLength(); i < n; ++i) {
                 String nsUri = attrs.getURI(i);
@@ -1801,6 +1897,7 @@ public class TimedTextVerifier implements VerifierContext {
         }
         
         private void checkXSIAttribute(Attributes attrs, int index) {
+            Reporter reporter = getReporter();
             QName qn = new QName(attrs.getURI(index), attrs.getLocalName(index));
             String ln = qn.getLocalPart();
             if (ln.equals("schemaLocation")) {
@@ -1831,6 +1928,7 @@ public class TimedTextVerifier implements VerifierContext {
         }
 
         private void checkXSISchemaLocations(QName qn, String locations) {
+            Reporter reporter = getReporter();
             String[] pairs = locations.trim().split("\\s+");
             if ((pairs.length & 1) != 0) {
                 reporter.logError(reporter.message(currentLocator, "*KEY*", "Unpaired schema location in '{'{0}'}': '{'{1}'}'.", qn, locations));
@@ -1884,6 +1982,7 @@ public class TimedTextVerifier implements VerifierContext {
         }
 
         private void logPruning(Message message) {
+            Reporter reporter = getReporter();
             if (foreignTreatment == ForeignTreatment.Error) {
                 reporter.logError(message);
             } if (foreignTreatment == ForeignTreatment.Warning) {

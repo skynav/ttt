@@ -46,13 +46,48 @@ public class Message {
         return arguments;
     }
     public String toText() {
-        try {
-            return MessageFormat.format(this.format, this.arguments);
-        } catch (IllegalArgumentException e) {
-            return "Format Exception: pattern(" + this.format + ").";
-        }
+        return MessageFormat.format(this.format, this.arguments);
     }
-    public String toText(boolean hideLocation, boolean elidePath) {
+    public String toText(boolean hideLocation, boolean hidePath) {
         return toText();
+    }
+    public String toXML() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<message>\n");
+        sb.append("<text>");
+        sb.append(escapeText(toText()));
+        sb.append("</text>\n");
+        sb.append("</message>\n");
+        return sb.toString();
+    }
+    public String toXML(boolean hideLocation, boolean hidePath) {
+        return toXML();
+    }
+    public String escapeText(String text) {
+        boolean doEscape = false;
+        for (int i = 0, n = text.length(); !doEscape && (i < n); ++i) {
+            char c = text.charAt(i);
+            if (c == '&')
+                doEscape = true;
+            else if (c == '<')
+                doEscape = true;
+            else if (c == '>')
+                doEscape = true;
+        }
+        if (!doEscape)
+            return text;
+        StringBuffer sb = new StringBuffer(text.length());
+        for (int i = 0, n = text.length(); i < n; ++i) {
+            char c = text.charAt(i);
+            if (c == '&')
+                sb.append("&amp;");
+            else if (c == '<')
+                sb.append("&gt;");
+            else if (c == '>')
+                sb.append("&gt;");
+            else
+                sb.append(c);
+        }
+        return sb.toString();
     }
 }

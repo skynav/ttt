@@ -62,7 +62,6 @@ import com.skynav.ttv.model.ttml1.ttd.Visibility;
 import com.skynav.ttv.model.ttml1.ttd.WrapOption;
 import com.skynav.ttv.model.ttml1.ttd.WritingMode;
 import com.skynav.ttv.util.Enums;
-import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.StyleValueVerifier;

@@ -25,14 +25,18 @@
  
 package com.skynav.ttv.util;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 
 import org.xml.sax.Locator;
 
 public class NullReporter implements Reporter {
-    public static final NullReporter Reporter = new NullReporter();
-    private static PrintWriter out = new PrintWriter(System.out);
+    public static final Reporter REPORTER = new NullReporter();
+    private PrintWriter out = new PrintWriter(System.out);
+    public String getName() { return "null"; }
+    public void open(Object... arguments) throws IOException {}
+    public void close() throws IOException {}
     public void resetResourceState() {}
     public void setResourceURI(String uri) {}
     public void setResourceURI(URI uri) {}
@@ -56,21 +60,19 @@ public class NullReporter implements Reporter {
     public Message message(String key, String format, Object... arguments) { return new Message(key, format, arguments); }
     public Message message(Locator locator, String key, String format, Object... arguments) { return new LocatedMessage(locator, key, format, arguments); }
     public void logError(Message message) {}
-    public void logError(Locator locator, Message message) {}
     public void logError(Exception e) {}
     public boolean hasDefaultWarning(String token) { return false; }
     public void setTreatWarningAsError(boolean treatWarningAsError) {}
+    public boolean isTreatingWarningAsError() { return false; }
     public boolean isWarningEnabled(String token) { return false; }
     public void enableWarning(String token) {}
     public void disableWarning(String token) {}
     public void disableWarnings() {}
+    public boolean areWarningsDisabled() { return false; }
     public void hideWarnings() {}
+    public boolean  areWarningsHidden() { return false; }
     public boolean logWarning(Message message) { return false; }
-    public boolean logWarning(Locator locator, Message message) { return false; }
     public boolean logWarning(Exception e) { return false; }
     public void logInfo(Message message) {}
-    public void logInfo(Locator locator, Message message) {}
     public void logDebug(Message message) {}
-    public void logDebug(Locator locator, Message message) {}
-    public void showProcessingInfo() {}
 }

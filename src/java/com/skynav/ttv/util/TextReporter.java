@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.util;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
@@ -37,11 +38,14 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.LocatorImpl;
 
-public class DefaultReporter implements Reporter {
+public class TextReporter implements Reporter {
+
+    public static final Reporter REPORTER = new TextReporter();
 
     /* general state */
     private Map<String,Boolean> defaultWarnings;
     private PrintWriter output;
+    private boolean outputDefaulted;
     /* options state */
     private int debug;
     private boolean disableWarnings;
@@ -50,7 +54,6 @@ public class DefaultReporter implements Reporter {
     private boolean hideLocation;
     private boolean hidePath;
     private boolean hideWarnings;
-    private boolean hideResourceLocation;
     private boolean treatWarningAsError;
     private int verbose;
     /* per-resource state */
@@ -61,15 +64,24 @@ public class DefaultReporter implements Reporter {
     private String resourceUriString;
     private int resourceWarnings;
 
-    public DefaultReporter() {
-        this(null, null);
+    public TextReporter() {
     }
 
-    public DefaultReporter(Object[][] defaultWarningSpecifications) {
-        this(defaultWarningSpecifications, null);
+    public String getName() {
+        return "text";
     }
 
-    public DefaultReporter(Object[][] defaultWarningSpecifications, PrintWriter output) {
+    public void open(Object... arguments) throws IOException {
+        Object[][] defaultWarningSpecifications;
+        if ((arguments.length > 0) && (arguments[0] instanceof Object[][]))
+            defaultWarningSpecifications = (Object[][]) arguments[0];
+        else
+            defaultWarningSpecifications = null;
+        PrintWriter output;
+        if ((arguments.length > 1) & (arguments[1] instanceof PrintWriter))
+            output = (PrintWriter) arguments[0];
+        else
+            output = null;
         Map<String,Boolean> defaultWarnings = new java.util.HashMap<String,Boolean>();
         if (defaultWarningSpecifications != null) {
             for (Object[] spec : defaultWarningSpecifications) {
@@ -81,7 +93,13 @@ public class DefaultReporter implements Reporter {
         this.enabledWarnings = new java.util.HashSet<String>();
         this.hideLocation = false;
         this.hidePath = true;
-        this.output = output;
+        setOutput(output);
+    }
+
+    public void close() throws IOException {
+        PrintWriter output = getOutput();
+        if ((output != null) && !outputDefaulted)
+            output.close();
     }
 
     public void resetResourceState() {
@@ -136,30 +154,37 @@ public class DefaultReporter implements Reporter {
     }
 
     public PrintWriter getOutput() {
-        if (output == null)
+        if (output == null) {
             output = new PrintWriter(System.out);
+            outputDefaulted = true;
+        }
         return output;
     }
 
-    protected void out(ReportType type, String message) {
-        char typeChar;
-        if (type == ReportType.Error)
-            typeChar = 'E';
-        else if (type == ReportType.Warning)
-            typeChar = 'W';
-        else if (type == ReportType.Info)
-            typeChar = 'I';
-        else if (type == ReportType.Debug)
-            typeChar = 'D';
+    protected void out(String message) {
+        getOutput().print(message);
+    }
+
+    protected void out(ReportType reportType, String message) {
+        char type;
+        if (reportType == ReportType.Error)
+            type = 'E';
+        else if (reportType == ReportType.Warning)
+            type = 'W';
+        else if (reportType == ReportType.Info)
+            type = 'I';
+        else if (reportType == ReportType.Debug)
+            type = 'D';
         else
-            typeChar = '?';
+            type = '?';
         StringBuffer sb = new StringBuffer();
         sb.append('[');
-        sb.append(typeChar);
+        sb.append(type);
         sb.append(']');
         sb.append(':');
         sb.append(message);
-        getOutput().println(sb.toString());
+        sb.append('\n');
+        out(sb.toString());
     }
 
     protected void out(ReportType type, Message message) {
@@ -167,6 +192,7 @@ public class DefaultReporter implements Reporter {
     }
 
     public void flush() {
+        PrintWriter output = getOutput();
         if (output != null)
             output.flush();
     }
@@ -221,22 +247,9 @@ public class DefaultReporter implements Reporter {
         return new LocatedMessage(uriString, locator.getLineNumber(), locator.getColumnNumber(), key, format, arguments);
     }
 
-    private void logError(String message) {
-        out(ReportType.Error, message);
-        ++resourceErrors;
-    }
-
     public void logError(Message message) {
         out(ReportType.Error, message);
         ++resourceErrors;
-    }
-
-    private void logError(Locator locator, String message) {
-        logError(message(locator, message));
-    }
-
-    public void logError(Locator locator, Message message) {
-        logError(message(locator, message.toText(isHidingLocation(), isHidingPath())));
     }
 
     private Locator extractLocator(SAXParseException e) {
@@ -330,6 +343,10 @@ public class DefaultReporter implements Reporter {
         this.treatWarningAsError = treatWarningAsError;
     }
 
+    public boolean isTreatingWarningAsError() {
+        return this.treatWarningAsError;
+    }
+
     public boolean isWarningEnabled(String token) {
         boolean enabled = defaultWarnings.get(token);
         if (getEnabledWarnings().contains(token) || getEnabledWarnings().contains("all"))
@@ -351,11 +368,19 @@ public class DefaultReporter implements Reporter {
         this.disableWarnings = true;
     }
 
+    public boolean areWarningsDisabled() {
+        return this.disableWarnings;
+    }
+
     public void hideWarnings() {
         this.hideWarnings = true;
     }
 
-    private boolean logWarning(String message) {
+    public boolean areWarningsHidden() {
+        return this.hideWarnings;
+    }
+
+    public boolean logWarning(Message message) {
         if (!disableWarnings) {
             if (!hideWarnings)
                 out(ReportType.Warning, message);
@@ -364,58 +389,22 @@ public class DefaultReporter implements Reporter {
         return treatWarningAsError;
     }
 
-    public boolean logWarning(Message message) {
-        return logWarning(message.toText(isHidingLocation(), isHidingPath()));
-    }
-
-    private boolean logWarning(Locator locator, String message) {
-        return logWarning(message(locator, message));
-    }
-
-    public boolean logWarning(Locator locator, Message message) {
-        return logWarning(locator, message.toText(isHidingLocation(), isHidingPath()));
-    }
-
     public boolean logWarning(Exception e) {
         boolean treatedAsError = logWarning(extractMessage(e));
         logDebug(e);
         return treatedAsError;
     }
 
-    private void logInfo(String message) {
+    public void logInfo(Message message) {
         if (verbose > 0) {
             out(ReportType.Info, message);
         }
     }
 
-    public void logInfo(Message message) {
-        logInfo(message.toText(isHidingLocation(), isHidingPath()));
-    }
-
-    private void logInfo(Locator locator, String message) {
-        logInfo(message(locator, message));
-    }
-
-    public void logInfo(Locator locator, Message message) {
-        logInfo(locator, message.toText(isHidingLocation(), isHidingPath()));
-    }
-
-    private void logDebug(String message) {
+    public void logDebug(Message message) {
         if (isDebuggingEnabled()) {
             out(ReportType.Debug, message);
         }
-    }
-
-    public void logDebug(Message message) {
-        logDebug(message.toText(isHidingLocation(), isHidingPath()));
-    }
-
-    private void logDebug(Locator locator, String message) {
-        logDebug(message(locator, message));
-    }
-
-    public void logDebug(Locator locator, Message message) {
-        logDebug(locator, message.toText(isHidingLocation(), isHidingPath()));
     }
 
     private boolean isDebuggingEnabled(int level) {
@@ -430,18 +419,7 @@ public class DefaultReporter implements Reporter {
         if (isDebuggingEnabled(2)) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-            logDebug(sw.toString());
-        }
-    }
-
-    public void showProcessingInfo() {
-        if (verbose >  0) {
-            if (treatWarningAsError)
-                logInfo("Warnings are treated as errors.");
-            else if (disableWarnings)
-                logInfo("Warnings are disabled.");
-            else if (hideWarnings)
-                logInfo("Warnings are hidden.");
+            logDebug(message(sw.toString()));
         }
     }
 }

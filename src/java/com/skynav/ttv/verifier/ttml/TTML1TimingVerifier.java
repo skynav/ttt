@@ -35,7 +35,6 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
-import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.TimingValueVerifier;
