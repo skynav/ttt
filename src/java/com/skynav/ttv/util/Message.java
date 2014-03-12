@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2014 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,8 @@
 package com.skynav.ttv.util;
 
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Message {
     private String key;
@@ -54,16 +56,60 @@ public class Message {
     public String toXML() {
         StringBuffer sb = new StringBuffer();
         sb.append("<message>\n");
-        sb.append("<text>");
-        sb.append(escapeText(toText()));
-        sb.append("</text>\n");
+        sb.append(toXMLKey());
+        sb.append(toXMLText());
         sb.append("</message>\n");
         return sb.toString();
     }
     public String toXML(boolean hideLocation, boolean hidePath) {
         return toXML();
     }
-    public String escapeText(String text) {
+    private static final String placeholderKey = "*KEY*";
+    private static final String placeholderNoKey = "*NOKEY*";
+    public String toXMLKey() {
+        StringBuffer sb = new StringBuffer();
+        String key = this.key;
+        if ((key != null) && (key.length() > 0)) {
+            if (!key.equals(placeholderKey) && !key.equals(placeholderNoKey)) {
+                sb.append("<key>");
+                sb.append(escapeText(key));
+                sb.append("</key>\n");
+            }
+        }
+        return sb.toString();
+    }
+    public String toXMLText() {
+        StringBuffer sb = new StringBuffer();
+        String text = toText();
+        if ((text != null) && (text.length() > 0)) {
+            StringBuffer sbText = new StringBuffer(text);
+            String reference = extractReference(sbText, true);
+            sb.append("<text>");
+            sb.append(escapeText(sbText.toString()));
+            sb.append("</text>\n");
+            if ((reference != null) && (reference.length() > 0)) {
+                sb.append("<reference>");
+                sb.append(escapeText(reference));
+                sb.append("</reference>\n");
+            }
+        }
+        return sb.toString();
+    }
+    private static final Pattern xsdPattern = Pattern.compile("(XSD\\([^\\)]*\\)): .*");
+    private String extractReference(StringBuffer sb, boolean remove) {
+        Matcher m = xsdPattern.matcher(sb.toString());
+        if (m.matches()) {
+            String reference = m.group(1);
+            if ((reference != null) && (reference.length() > 0)) {
+                if (remove)
+                    sb.delete(m.start(1),m.end(1) + 2);
+                return reference;
+            } else
+                return null;
+        } else
+            return null;
+    }
+    protected String escapeText(String text) {
         boolean doEscape = false;
         for (int i = 0, n = text.length(); !doEscape && (i < n); ++i) {
             char c = text.charAt(i);

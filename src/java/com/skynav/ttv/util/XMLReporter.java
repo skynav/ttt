@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2014 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,12 @@ public class XMLReporter extends TextReporter {
 
     public void open(Object... arguments) throws IOException {
         super.open(arguments);
-        out("<?xml version \"1.0\" encoding=\"utf-8\"?>\n");
+        String reporterOutputEncoding;
+        if ((arguments.length > 1) && (arguments[2] instanceof String))
+            reporterOutputEncoding = (String) arguments[2];
+        else
+            reporterOutputEncoding = DEFAULT_ENCODING;
+        out("<?xml version \"1.0\" encoding=\"" + reporterOutputEncoding.toLowerCase() + "\"?>\n");
         out("<report xmlns=\"" + getNamespace() + "\">\n");
     }
 

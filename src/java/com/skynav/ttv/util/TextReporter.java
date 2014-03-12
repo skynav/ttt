@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-14 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,8 @@ import org.xml.sax.helpers.LocatorImpl;
 
 public class TextReporter implements Reporter {
 
+    public static final String DEFAULT_ENCODING = "UTF-8";
+
     public static final Reporter REPORTER = new TextReporter();
 
     /* general state */
@@ -79,7 +81,7 @@ public class TextReporter implements Reporter {
             defaultWarningSpecifications = null;
         PrintWriter output;
         if ((arguments.length > 1) & (arguments[1] instanceof PrintWriter))
-            output = (PrintWriter) arguments[0];
+            output = (PrintWriter) arguments[1];
         else
             output = null;
         Map<String,Boolean> defaultWarnings = new java.util.HashMap<String,Boolean>();
@@ -92,7 +94,7 @@ public class TextReporter implements Reporter {
         this.disabledWarnings = new java.util.HashSet<String>();
         this.enabledWarnings = new java.util.HashSet<String>();
         this.hideLocation = false;
-        this.hidePath = true;
+        this.hidePath = false;
         setOutput(output);
     }
 

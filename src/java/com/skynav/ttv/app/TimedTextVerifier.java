@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-14 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,11 +25,14 @@
  
 package com.skynav.ttv.app;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,6 +42,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
+import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -85,6 +89,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
 import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
@@ -107,7 +112,9 @@ public class TimedTextVerifier implements VerifierContext {
     public static final int RV_FLAG_WARNING_EXPECTED_MATCH      = 0x000020;
     public static final int RV_FLAG_WARNING_EXPECTED_MISMATCH   = 0x000040;
 
+    // miscelaneous defaults
     private static final Model defaultModel = Models.getDefaultModel();
+    private static final String defaultReporterFileEncoding = Reporters.getDefaultEncoding();
 
     // banner text
     private static final String title = "Timed Text Verifier (TTV) [" + Version.CURRENT + "]";
@@ -124,45 +131,48 @@ public class TimedTextVerifier implements VerifierContext {
     private static final String usage =
         "Usage: java -jar ttv.jar [options] URL*\n" +
         "  Short Options:\n" +
-        "    -d                         - see --debug\n" +
-        "    -q                         - see --quiet\n" +
-        "    -v                         - see --verbose\n" +
-        "    -?                         - see --help\n" +
+        "    -d                                 - see --debug\n" +
+        "    -q                                 - see --quiet\n" +
+        "    -v                                 - see --verbose\n" +
+        "    -?                                 - see --help\n" +
         "  Long Options:\n" +
-        "    --debug                    - enable debug output (may be specified multiple times to increase debug level)\n" +
-        "    --debug-exceptions         - enable stack traces on exceptions (implies --debug)\n" +
-        "    --disable-warnings         - disable warnings (both hide and don't count warnings)\n" +
-        "    --expect-errors COUNT      - expect count errors or -1 meaning unspecified expectation (default: -1)\n" +
-        "    --expect-warnings COUNT    - expect count warnings or -1 meaning unspecified expectation (default: -1)\n" +
-        "    --extension-schema NS URL  - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)\n" +
-        "    --external-extent EXTENT   - specify extent for document processing context\n" +
-        "    --external-frame-rate RATE - specify frame rate for document processing context\n" +
-        "    --help                     - show usage help\n" +
-        "    --hide-resource-location   - hide resource location (default: show)\n" +
-        "    --hide-resource-path       - hide resource path (default: hide)\n" +
-        "    --hide-warnings            - hide warnings (but count them)\n" +
-        "    --model NAME               - specify model name (default: " + defaultModel.getName() + ")\n" +
-        "    --no-warn-on TOKEN         - disable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
-        "    --no-verbose               - disable verbose output (resets verbosity level to 0)\n" +
-        "    --quiet                    - don't show banner\n" +
-        "    --reporter REPORTER        - specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
+        "    --debug                            - enable debug output (may be specified multiple times to increase debug level)\n" +
+        "    --debug-exceptions                 - enable stack traces on exceptions (implies --debug)\n" +
+        "    --disable-warnings                 - disable warnings (both hide and don't count warnings)\n" +
+        "    --expect-errors COUNT              - expect count errors or -1 meaning unspecified expectation (default: -1)\n" +
+        "    --expect-warnings COUNT            - expect count warnings or -1 meaning unspecified expectation (default: -1)\n" +
+        "    --extension-schema NS URL          - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)\n" +
+        "    --external-extent EXTENT           - specify extent for document processing context\n" +
+        "    --external-frame-rate RATE         - specify frame rate for document processing context\n" +
+        "    --help                             - show usage help\n" +
+        "    --hide-resource-location           - hide resource location (default: show)\n" +
+        "    --hide-resource-path               - hide resource path (default: show)\n" +
+        "    --hide-warnings                    - hide warnings (but count them)\n" +
+        "    --model NAME                       - specify model name (default: " + defaultModel.getName() + ")\n" +
+        "    --no-warn-on TOKEN                 - disable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
+        "    --no-verbose                       - disable verbose output (resets verbosity level to 0)\n" +
+        "    --quiet                            - don't show banner\n" +
+        "    --reporter REPORTER                - specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
              Reporters.getDefaultReporterName()+ ")\n" +
-        "    --servlet                  - configure defaults for servlet operation\n" +
-        "    --show-models              - show built-in verification models (use with --verbose to show more details)\n" +
-        "    --show-repository          - show source code repository information\n" +
-        "    --show-resource-location   - show resource location (default: show)\n" +
-        "    --show-resource-path       - show resource path (default: hide)\n" +
-        "    --show-validator           - show platform validator information\n" +
-        "    --show-warning-tokens      - show warning tokens (use with --verbose to show more details)\n" +
-        "    --verbose                  - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
-        "    --treat-foreign-as TOKEN   - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
+        "    --reporter-file FILE               - specify path to file to which reporter output is to be written\n" +
+        "    --reporter-file-encoding ENCODING  - specify character encoding of reporter output (default: utf-8)\n" +
+        "    --reporter-file-append             - if reporter file already exists, then append output to it\n" +
+        "    --servlet                          - configure defaults for servlet operation\n" +
+        "    --show-models                      - show built-in verification models (use with --verbose to show more details)\n" +
+        "    --show-repository                  - show source code repository information\n" +
+        "    --show-resource-location           - show resource location (default: show)\n" +
+        "    --show-resource-path               - show resource path (default: show)\n" +
+        "    --show-validator                   - show platform validator information\n" +
+        "    --show-warning-tokens              - show warning tokens (use with --verbose to show more details)\n" +
+        "    --verbose                          - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
+        "    --treat-foreign-as TOKEN           - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
              ForeignTreatment.getDefault().name().toLowerCase() + ")\n" +
-        "    --treat-warning-as-error   - treat warning as error (overrides --disable-warnings)\n" +
-        "    --until-phase PHASE        - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
+        "    --treat-warning-as-error           - treat warning as error (overrides --disable-warnings)\n" +
+        "    --until-phase PHASE                - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
              Phase.getDefault().name().toLowerCase() + ")\n" +
-        "    --warn-on TOKEN            - enable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
+        "    --warn-on TOKEN                    - enable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
         "  Non-Option Arguments:\n" +
-        "    URL                        - an absolute or relative URL; if relative, resolved against current working directory\n" +
+        "    URL                                - an absolute or relative URL; if relative, resolved against current working directory\n" +
         "";
 
     // default warnings
@@ -284,38 +294,88 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     public TimedTextVerifier() {
-        this(null, null);
+        this(null, null, null, null);
     }
 
-    public TimedTextVerifier(Reporter reporter, PrintWriter showOutput) {
+    public TimedTextVerifier(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, PrintWriter showOutput) {
         if (reporter == null)
             reporter = Reporters.getDefaultReporter();
-        setReporter(reporter);
+        setReporter(reporter, reporterOutput, reporterOutputEncoding);
         setShowOutput(showOutput);
     }
 
-    public void setReporter(Reporter reporter) {
-        setReporter(reporter, false);
+    private void resetReporter() {
+        setReporter(Reporters.getDefaultReporter(), null, null, true);
     }
 
-    public void setReporter(Reporter reporter, boolean closeOldReporter) {
+    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding) {
+        setReporter(reporter, reporterOutput, reporterOutputEncoding, false);
+    }
+
+    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean closeOldReporter) {
+        if (reporter == this.reporter)
+            return;
         if (this.reporter != null)
             this.reporter.flush();
         if (closeOldReporter) {
             try {
-                if (this.reporter != null) {
+                if (this.reporter != null)
                     this.reporter.close();
-                    this.reporter = null;
-                }
-            } catch (Throwable e) {
+            } catch (IOException e) {
+            } finally {
                 this.reporter = null;
             }
         }
         try {
-            reporter.open(defaultWarningSpecifications, null);
+            reporter.open(defaultWarningSpecifications, reporterOutput, reporterOutputEncoding);
             this.reporter = reporter;
         } catch (Throwable e) {
             this.reporter = null;
+        }
+    }
+
+    private void setReporter(String reporterName, String reporterFileName, String reporterFileEncoding, boolean reporterFileAppend) {
+        assert reporterName != null;
+        Reporter reporter = Reporters.getReporter(reporterName);
+        if (reporter == null)
+            throw new InvalidOptionUsageException("reporter", "unknown reporter: " + reporterName);
+        if (reporterFileName != null) {
+            if (reporterFileEncoding == null)
+                reporterFileEncoding = defaultReporterFileEncoding;
+            try {
+                Charset.forName(reporterFileEncoding);
+            } catch (IllegalCharsetNameException e) {
+                throw new InvalidOptionUsageException("reporter-file-encoding", "illegal encoding name: " + reporterFileEncoding);
+            } catch (UnsupportedCharsetException e) {
+                throw new InvalidOptionUsageException("reporter-file-encoding", "unsupported encoding: " + reporterFileEncoding);
+            }
+        }
+
+        File reporterFile = null;
+        boolean createdReporterFile = false;
+        PrintWriter reporterOutput = null;
+        if (reporterFileName != null) {
+            reporterFile = new File(reporterFileName);
+            FileOutputStream os = null;
+            try {
+                createdReporterFile = reporterFile.createNewFile();
+                os = new FileOutputStream(reporterFile,  reporterFileAppend);
+                reporterOutput = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, reporterFileEncoding)));
+            } catch (Throwable e) {
+                if (reporterOutput == null) {
+                    IOUtil.closeSafely(os);
+                    if (createdReporterFile)
+                        IOUtil.deleteSafely(reporterFile);
+                }
+            }
+        }
+        setReporter(reporter, reporterOutput, reporterFileEncoding);
+        if (reporterOutput != null) {
+            if (getReporter().getOutput() != reporterOutput) {
+                reporterOutput.close();
+                if (createdReporterFile)
+                    IOUtil.deleteSafely(reporterFile);
+            }
         }
     }
 
@@ -454,9 +514,6 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.setVerbosityLevel(0);
         } else if (option.equals("quiet")) {
             quiet = true;
-        } else if (option.equals("reporter")) {
-            assert index + 1 < args.length;
-            ++index;
         } else if (option.equals("servlet")) {
             configureServletDefaults();
         } else if (option.equals("show-models")) {
@@ -557,8 +614,17 @@ public class TimedTextVerifier implements VerifierContext {
         return nonOptionArgs;
     }
 
-    private List<String> parseArgs(String[] args) {
-        // process --reporter argument(s) if present before any other argument
+    private String[] preProcessOptions(String[] args) {
+        args = processReporterOptions(args);
+        return args;
+    }
+
+    private String[] processReporterOptions(String[] args) {
+        String reporterName = null;
+        String reporterFileName = null;
+        String reporterFileEncoding = null;
+        boolean reporterFileAppend = false;
+        List<String> skippedArgs = new java.util.ArrayList<String>();
         for (int i = 0; i < args.length; ++i) {
             String arg = args[i];
             if (arg.indexOf("--") == 0) {
@@ -566,16 +632,32 @@ public class TimedTextVerifier implements VerifierContext {
                 if (option.equals("reporter")) {
                     if (i + 1 >= args.length)
                         throw new MissingOptionArgumentException("--" + option);
-                    String reporterName = args[i + 1];
-                    Reporter reporter = Reporters.getReporter(reporterName);
-                    if (reporter == null)
-                        throw new InvalidOptionUsageException("reporter", "unknown reporter: " + reporterName);
-                    setReporter(reporter);
+                    reporterName = args[i + 1];
                     ++i;
+                } else if (option.equals("reporter-file")) {
+                    if (i + 1 >= args.length)
+                        throw new MissingOptionArgumentException("--" + option);
+                    reporterFileName = args[i + 1];
+                    ++i;
+                } else if (option.equals("reporter-file-encoding")) {
+                    if (i + 1 >= args.length)
+                        throw new MissingOptionArgumentException("--" + option);
+                    reporterFileEncoding = args[i + 1];
+                    ++i;
+                } else if (option.equals("reporter-file-append")) {
+                    reporterFileAppend = true;
+                } else {
+                    skippedArgs.add(arg);
                 }
-            }
+            } else
+                skippedArgs.add(arg);
         }
-        // normal argument parsing
+        if (reporterName != null)
+            setReporter(reporterName, reporterFileName, reporterFileEncoding, reporterFileAppend);
+        return skippedArgs.toArray(new String[skippedArgs.size()]);
+    }
+
+    private List<String> parseArgs(String[] args) {
         List<String> nonOptionArgs = new java.util.ArrayList<String>();
         int nonOptionIndex = -1;
         for (int i = 0; i < args.length;) {
@@ -1635,7 +1717,7 @@ public class TimedTextVerifier implements VerifierContext {
     public int run(String[] args) {
         int rv = 0;
         try {
-            List<String> nonOptionArgs = parseArgs(args);
+            List<String> nonOptionArgs = parseArgs(preProcessOptions(args));
             showBanner();
             if (showModels)
                 showModels();
@@ -1665,7 +1747,7 @@ public class TimedTextVerifier implements VerifierContext {
             getShowOutput().println("Usage: " + e.getMessage());
             rv = RV_USAGE;
         }
-        setReporter(null, true);
+        resetReporter();
         getShowOutput().flush();
         return rv;
     }

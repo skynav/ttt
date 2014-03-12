@@ -25,52 +25,34 @@
  
 package com.skynav.ttv.util;
 
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import com.skynav.ttv.util.NullReporter;
-import com.skynav.ttv.util.TextReporter;
-import com.skynav.ttv.util.XMLReporter;
+public class IOUtil {
 
-public class Reporters {
-
-    public static String getDefaultEncoding() {
-        return TextReporter.DEFAULT_ENCODING;
-    }
-
-    public static Reporter getDefaultReporter() {
-        return TextReporter.REPORTER;
-    }
-
-    public static String getDefaultReporterName() {
-        return getDefaultReporter().getName();
-    }
-
-    private static Map<String,Reporter> reporterMap;
-
-    static {
-        reporterMap = new java.util.TreeMap<String,Reporter>();
-        reporterMap.put(NullReporter.REPORTER.getName(), NullReporter.REPORTER);
-        reporterMap.put(TextReporter.REPORTER.getName(), TextReporter.REPORTER);
-        reporterMap.put(XMLReporter.REPORTER.getName(), XMLReporter.REPORTER);
-    }
-
-    public static Set<String> getReporterNames() {
-        return reporterMap.keySet();
-    }
-
-    public static String getReporterNamesJoined() {
-        StringBuffer sb = new StringBuffer();
-        for (String name : getReporterNames()) {
-            if (sb.length() > 0)
-                sb.append('|');
-            sb.append(name);
+    public static void closeSafely(InputStream is) {
+        try {
+            if (is != null)
+                is.close();
+        } catch (Throwable e) {
         }
-        return sb.toString();
     }
 
-    public static Reporter getReporter(String name) {
-        return reporterMap.get(name);
+    public static void closeSafely(OutputStream os) {
+        try {
+            if (os != null)
+                os.close();
+        } catch (Throwable e) {
+        }
+    }
+
+    public static void deleteSafely(File file) {
+        try {
+            if (file != null)
+                file.delete();
+        } catch (Throwable e) {
+        }
     }
 
 }
