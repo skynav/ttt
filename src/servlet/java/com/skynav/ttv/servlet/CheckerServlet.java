@@ -3,16 +3,13 @@ package com.skynav.ttv.servlet;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +19,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -29,6 +32,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 
 import com.skynav.ttv.app.TimedTextVerifier;
+import com.skynav.ttv.app.TimedTextVerifier.Results;
 
 public class CheckerServlet extends HttpServlet {
 
@@ -38,7 +42,9 @@ public class CheckerServlet extends HttpServlet {
     private static final String UPLOAD_FILE_PREFIX = "ttv";
     private static final String UPLOAD_FILE_SUFFIX = ".dat";
     private static final int UPLOAD_BUFFER_SIZE = 1<<16;
-    private static final String OUTPUT_STREAM_ENCODING = "UTF-8";
+    private static final String REPORT_DIRECTORY_NAME = "reports";
+    private static final String REPORT_FILE_PREFIX = "rpt";
+    private static final String REPORT_FILE_SUFFIX = ".xml";
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doCheck(new RequestState(request, response));
@@ -69,6 +75,9 @@ public class CheckerServlet extends HttpServlet {
                 state.addField(name, value);
             }
         }
+        String[] uris = (String[]) parameters.get("uri");
+        if ((uris != null) && (uris.length > 0))
+            processFileItem(state, new UriItemStream(uris[0]));
     }
 
     private void processNonQueryRequest(RequestState state) throws ServletException, IOException {
@@ -79,13 +88,16 @@ public class CheckerServlet extends HttpServlet {
                 FileItemStream item = iter.next();
                 if (item.isFormField()) {
                     String name = item.getFieldName();
-                    InputStream is = null;
-                    try {
-                        is = item.openStream();
-                        state.addField(item.getFieldName(), Streams.asString(is));
-                    } finally {
-                        StreamUtil.closeSafely(is);
-                    }
+                    if (!name.equals("fragment")) {
+                        InputStream is = null;
+                        try {
+                            is = item.openStream();
+                            state.addField(name, Streams.asString(is));
+                        } finally {
+                            StreamUtil.closeSafely(is);
+                        }
+                    } else
+                        processFileItem(state, new FragmentItemStream(item));
                 } else {
                     processFileItem(state, item);
                 }
@@ -119,6 +131,9 @@ public class CheckerServlet extends HttpServlet {
                     }
                     state.uploadFile = uploadFile;
                     state.uploadFileLength = fileLength;
+                    state.uploadFileNameOriginal = item.getName();
+                    if (state.uploadFileNameOriginal == null)
+                        state.uploadFileNameOriginal = "unspecified";
                 } finally {
                     StreamUtil.closeSafely(bos);
                     StreamUtil.closeSafely(bis);
@@ -143,7 +158,37 @@ public class CheckerServlet extends HttpServlet {
         return uploadDir;
     }
 
-    private void processCheck(RequestState state) {
+    private String createReporterFile(RequestState state) throws IOException {
+        String reportFilePath = null;
+        File reportDir = ensureReportDirectory();
+        if (reportDir != null) {
+            File reportFile = null;
+            String prefix = REPORT_FILE_PREFIX;
+            String suffix = REPORT_FILE_SUFFIX;
+            reportFile = File.createTempFile(prefix, suffix, reportDir);
+            if (reportFile != null) {
+                reportFilePath = reportFile.getAbsolutePath();
+                state.reportFile = reportFile;
+            }
+        }
+        return reportFilePath;
+    }
+
+    private File ensureReportDirectory() {
+        File tempDir = (File) getServletContext().getAttribute("javax.servlet.context.tempdir");
+        File reportDir = new File(tempDir, REPORT_DIRECTORY_NAME);
+        if (!reportDir.exists()) {
+            synchronized (this) {
+                if (!reportDir.exists()) {
+                    if (!reportDir.mkdir())
+                        reportDir = tempDir;
+                }
+            }
+        }
+        return reportDir;
+    }
+
+    private void processCheck(RequestState state) throws IOException {
         File upload = state.uploadFile;
         if ((upload != null) && upload.exists()) {
             TimedTextVerifier ttv = new TimedTextVerifier();
@@ -152,72 +197,89 @@ public class CheckerServlet extends HttpServlet {
                 args.add("-q");
             if (state.getBooleanField("verbose"))
                 args.add("-v");
+            if (state.getBooleanField("treatWarningAsError"))
+                args.add("--treat-warning-as-error");
             args.add("--servlet");
+            args.add("--reporter");
+            args.add("xml");
+            args.add("--reporter-file");
+            args.add(createReporterFile(state));
             String urlString = upload.toURI().toString();
             args.add(urlString);
-            ttv.getReporter().setOutput(state.getOutput());
+            StringBuffer sb = new StringBuffer();
+            for (String arg: args) {
+                if (sb.length() > 0)
+                    sb.append(' ');
+                sb.append(arg);
+            }
+            System.out.println("TTV: " + sb.toString());
             ttv.run(args.toArray(new String[args.size()]));
-            state.resultCode = ttv.getResultCode(urlString);
-            state.resultFlags = ttv.getResultFlags(urlString);
-            state.checkComplete = true;
+            state.results = ttv.getResults(urlString);
         }
     }
 
     private void processResponse(RequestState state) throws ServletException, IOException {
-        state.response.setContentType("text/plain");
-        state.response.setCharacterEncoding(OUTPUT_STREAM_ENCODING);
-        PrintWriter out = state.response.getWriter();
-        StringBuffer sb = new StringBuffer();
-        for (String name : state.fields.keySet()) {
-            for (String value : state.fields.get(name)) {
-                sb.setLength(0);
-                sb.append(name);
-                sb.append(':');
-                sb.append(value);
-                out.println(sb.toString());
-            }
-        }
-        if (state.uploadFile != null) {
-            out.println("upload_uri: " + state.uploadFile.toURI());
-            out.println("upload_length: " + state.uploadFileLength);
-        }
-        if (state.checkComplete) {
-            int resultCode = state.resultCode;
-            int resultFlags = state.resultFlags;
-            if (resultCode == TimedTextVerifier.RV_PASS) {
-                if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MATCH) != 0)
-                    fail(state, "unexpected success with expected error(s) match.");
-                else if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0)
-                    fail(state, "unexpected success with unexpected warning(s).");
-                else if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_EXPECTED_MISMATCH) != 0)
-                    fail(state, "unexpected success with expected warning(s) mismatch.");
-                else
-                    pass(state, "passed as expected");
-            } else if (resultCode == TimedTextVerifier.RV_FAIL) {
-                if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_UNEXPECTED) != 0)
-                    fail(state, "unexpected failure with unexpected error(s).");
-                else if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MISMATCH) != 0)
-                    fail(state, "unexpected failure with expected error(s) mismatch.");
-                else
-                    pass(state, "failed as expected");
+        HttpServletRequest request = state.request;
+        HttpServletResponse response = state.response;
+        if (state.results != null) {
+            processReportWarnings(state);
+            processReportErrors(state);
+            request.setAttribute("Results", state.results);
+            request.setAttribute("UploadFileNameOriginal", state.uploadFileNameOriginal);
+            request.getRequestDispatcher("/results.jsp").forward(request, response);
+        } else
+            processResponseNoResults(state);
+    }
+
+    private void processReportErrors(RequestState state) throws ServletException, IOException {
+        HttpServletRequest request = state.request;
+        try {
+            String errors;
+            if (state.results.errors > 0) {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer t = tf.newTransformer(new StreamSource(getServletContext().getRealPath("/templates/errors.xsl")));
+                StringWriter sw = new StringWriter();
+                t.transform(new StreamSource(state.reportFile.getAbsolutePath()), new StreamResult(sw));
+                errors = sw.toString();
             } else
-                fail(state, "unexpected result code " + resultCode + ".");
-        }
-        if (state.outputStreamBuffer.size() > 0) {
-            out.println("output_byte_length: " + state.outputStreamBuffer.size());
-            out.println("output:");
-            out.print(state.outputStreamBuffer.toString(OUTPUT_STREAM_ENCODING));
+                errors = null;
+            request.setAttribute("Errors", errors);
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
         }
     }
 
-    private void pass(RequestState state, String message) throws IOException {
-        PrintWriter out = state.response.getWriter();
-        out.println("response: pass: " + message);
+    private void processReportWarnings(RequestState state) throws ServletException, IOException {
+        HttpServletRequest request = state.request;
+        try {
+            String warnings;
+            if (state.results.warnings > 0) {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer t = tf.newTransformer(new StreamSource(getServletContext().getRealPath("/templates/warnings.xsl")));
+                StringWriter sw = new StringWriter();
+                t.transform(new StreamSource(state.reportFile.getAbsolutePath()), new StreamResult(sw));
+                warnings = sw.toString();
+            } else
+                warnings = null;
+            request.setAttribute("Warnings", warnings);
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        }
     }
 
-    private void fail(RequestState state, String message) throws IOException {
-        PrintWriter out = state.response.getWriter();
-        out.println("response: fail: " + message);
+    private void processResponseNoResults(RequestState state) throws ServletException, IOException {
+        HttpServletResponse response = state.response;
+        response.setContentType("text/html");
+        response.setCharacterEncoding("utf-8");
+        PrintWriter out = response.getWriter();
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>No Response</title>");
+        out.println("</head>");
+        out.println("<body>");
+        out.println("<p>No Response</p>");
+        out.println("</body>");
+        out.println("</html>");
     }
 
     class RequestState {
@@ -225,42 +287,30 @@ public class CheckerServlet extends HttpServlet {
         // request, response, and result output state
         HttpServletRequest request;
         HttpServletResponse response;
-        // buffered output stream state
-        ByteArrayOutputStream outputStreamBuffer;
-        PrintWriter output;
         // fields state
         Map<String,List<String>> fields = new java.util.TreeMap<String,List<String>>();
         // upload state
         File uploadFile;
         int uploadFileLength;
+        String uploadFileNameOriginal;
+        // report state
+        File reportFile;
         // ttv state
-        int resultCode;
-        int resultFlags;
-        boolean checkComplete;
+        Results results;
 
         RequestState(HttpServletRequest request, HttpServletResponse response) {
             this.request = request;
             this.response = response;
-            this.outputStreamBuffer = new ByteArrayOutputStream();
-            this.output = createOutput(this.outputStreamBuffer);
-        }
-
-        PrintWriter getOutput() {
-            return output;
         }
 
         void reset() {
+            if (reportFile != null) {
+                FileUtil.deleteSafely(reportFile);
+                reportFile = null;
+            }
             if (uploadFile != null) {
                 FileUtil.deleteSafely(uploadFile);
                 uploadFile = null;
-            }
-            if (output != null) {
-                output.close();
-                output = null;
-            }
-            if (outputStreamBuffer != null) {
-                StreamUtil.closeSafely(outputStreamBuffer);
-                outputStreamBuffer = null;
             }
         }
 
@@ -279,14 +329,6 @@ public class CheckerServlet extends HttpServlet {
                     return false;
                 else
                     return values.get(0).equals("1");
-            }
-        }
-
-        private PrintWriter createOutput(OutputStream outputStream) {
-            try {
-                return new PrintWriter(new BufferedWriter(new OutputStreamWriter(outputStream, OUTPUT_STREAM_ENCODING)));
-            } catch (UnsupportedEncodingException e) {
-                return null;
             }
         }
 

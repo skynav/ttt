@@ -49,7 +49,7 @@ public class XMLReporter extends TextReporter {
             reporterOutputEncoding = (String) arguments[2];
         else
             reporterOutputEncoding = DEFAULT_ENCODING;
-        out("<?xml version \"1.0\" encoding=\"" + reporterOutputEncoding.toLowerCase() + "\"?>\n");
+        out("<?xml version=\"1.0\" encoding=\"" + reporterOutputEncoding.toLowerCase() + "\"?>\n");
         out("<report xmlns=\"" + getNamespace() + "\">\n");
     }
 

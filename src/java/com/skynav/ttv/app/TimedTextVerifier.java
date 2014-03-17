@@ -230,7 +230,7 @@ public class TimedTextVerifier implements VerifierContext {
     private SchemaFactory schemaFactory;
     private boolean nonPoolGrammarSupported;
     private Map<List<URL>,Schema> schemas = new java.util.HashMap<List<URL>,Schema>();
-    private Map<String,Integer> results = new java.util.HashMap<String,Integer>();
+    private Map<String,Results> results = new java.util.HashMap<String,Results>();
 
     // per-resource processing state
     private Phase currentPhase;
@@ -238,6 +238,7 @@ public class TimedTextVerifier implements VerifierContext {
     private String resourceUriString;
     private Map<String,Object> resourceState;
     private URI resourceUri;
+    private Charset resourceCharset;
     private ByteBuffer resourceBufferRaw;
     private int resourceExpectedErrors = -1;
     private int resourceExpectedWarnings = -1;
@@ -951,6 +952,7 @@ public class TimedTextVerifier implements VerifierContext {
         resourceState = new java.util.HashMap<String,Object>();
         resourceUriString = null;
         resourceUri = null;
+        resourceCharset = null;
         resourceBufferRaw = null;
         resourceExpectedErrors = -1;
         resourceExpectedWarnings = -1;
@@ -970,6 +972,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void setResourceBuffer(Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
+        resourceCharset = charset;
         resourceBufferRaw = bufferRaw;
         if (expectedErrors != null)
             resourceExpectedErrors = parseAnnotationAsInteger(expectedErrors, -1);
@@ -1565,7 +1568,9 @@ public class TimedTextVerifier implements VerifierContext {
         int rv = rvValue();
         reporter.logInfo(reporter.message("*KEY*", "{0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
         reporter.flush();
-        results.put(uri, rv);
+        Results results = new Results(uri, rv,
+            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), resourceModel, resourceCharset);
+        this.results.put(uri, results);
         return rv;
     }
 
@@ -1599,15 +1604,15 @@ public class TimedTextVerifier implements VerifierContext {
         return ((flags & 0x7FFFFF) << 8) | (code & 0xFF);
     }
 
-    private boolean rvPassed(int rv) {
+    public static boolean rvPassed(int rv) {
         return rvCode(rv) == RV_PASS;
     }
 
-    private int rvCode(int rv) {
+    public static int rvCode(int rv) {
         return (rv & 0xFF);
     }
 
-    private int rvFlags(int rv) {
+    public static int rvFlags(int rv) {
         return ((rv >> 8) & 0x7FFFFF);
     }
 
@@ -1752,20 +1757,24 @@ public class TimedTextVerifier implements VerifierContext {
         return rv;
     }
 
-    public Map<String,Integer> getResults() {
+    public Map<String,Results> getResults() {
         return results;
+    }
+
+    public Results getResults(String uri) {
+        return results.get(uri);
     }
 
     public int getResultCode(String uri) {
         if (results.containsKey(uri))
-            return rvCode(results.get(uri));
+            return results.get(uri).code;
         else
             return -1;
     }
 
     public int getResultFlags(String uri) {
         if (results.containsKey(uri))
-            return rvFlags(results.get(uri));
+            return results.get(uri).flags;
         else
             return -1;
     }
@@ -2120,6 +2129,37 @@ public class TimedTextVerifier implements VerifierContext {
                 return attrs;
         }
 
+    }
+
+    public static class Results {
+        public String uriString;
+        public boolean passed;
+        public int code;
+        public int flags;
+        public int errorsExpected;
+        public int errors;
+        public int warningsExpected;
+        public int warnings;
+        public String modelName;
+        public String encodingName;
+        Results(String uriString, int rv, int errorsExpected, int errors, int warningsExpected, int warnings, Model model, Charset encoding) {
+            this.uriString = uriString;
+            this.passed = rvPassed(rv);
+            this.code = rvCode(rv);
+            this.flags = rvFlags(rv);
+            this.errorsExpected = errorsExpected;
+            this.errors = errors;
+            this.warningsExpected = warningsExpected;
+            this.warnings = warnings;
+            if (model != null)
+                this.modelName = model.getName();
+            else
+                this.modelName = "unknown";
+            if (encoding != null)
+                this.encodingName = encoding.name();
+            else
+                this.encodingName = "unknown";
+       }
     }
 
 }

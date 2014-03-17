@@ -17,22 +17,9 @@
             if (name.equals(defaultModelName))
                 sb.append(" selected=\"selected\"");
             sb.append('>');                                              
-            sb.append(name.toUpperCase());
+            sb.append(name.toLowerCase());
             sb.append("</option>");
             out.println(sb.toString());
-        }
-    }
-    static void putTempDir(JspWriter out, ServletContext context) throws java.io.IOException {
-        File tempDir = (File) context.getAttribute("javax.servlet.context.tempdir");
-        if (tempDir != null) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("Absolute path: ");
-            sb.append(tempDir.getAbsolutePath());
-            sb.append(".<br />\n");
-            sb.append("URI: ");
-            sb.append(tempDir.toURI());
-            sb.append(".<br />\n");
-            out.print(sb.toString());
         }
     }
     static void putVersionInfo(JspWriter out) throws java.io.IOException {
@@ -47,23 +34,18 @@
     }
 %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>The W3C TTML Validation Service</title>
     <link rev="made" href="mailto:www-validator@w3.org" />
     <link rel="shortcut icon" href="http://www.w3.org/2008/site/images/favicon.ico" type="image/x-icon" />
     <link rev="start" href="./verify" title="Home Page" />
-    <style type="text/css" media="all">
-      @import "./style/base";
-    </style>
-    <script type="text/javascript" src="scripts/combined"></script>
+    <link rel="stylesheet" href="./style/base.css" type="text/css" />
+    <script type="text/javascript" src="./scripts/combined.js"></script>
     <meta name="keywords" content="TTML, Timed Text Markup Language, Validation, W3C TTML Validation Service, TTV, ST2052" />
     <meta name="description" content="W3C's easy-to-use TTML validation service." />
   </head>
-
   <body>
-
     <div id="banner">
       <h1 id="title">
         <a href="http://www.w3.org/"><img alt="W3C" width="110" height="61" id="logo" src="./images/w3c.png" /></a>
@@ -71,7 +53,6 @@
       </h1>
       <p id="tagline">Check the syntax and semantics of Timed Text Markup Language (TTML) documents.</p>
     </div>
-
     <div id="frontforms">
       <ul id="tabset_tabs">
 	<li><a href="#validate-by-uri"><span>Validate by</span> URI</a></li>
@@ -99,9 +80,9 @@
                     <td>
                       <select id="uri-encoding" name="encoding">
                         <option value="(detect automatically)" selected="selected">(detect automatically)</option>
-                        <option value="utf-8">UTF-8</option>
-                        <option value="utf-16">UTF-16</option>
-                        <option value="utf-32">UTF-32</option>
+                        <option value="utf-8">utf-8</option>
+                        <option value="utf-16">utf-16</option>
+                        <option value="utf-32">utf-32</option>
                       </select>
                     </td>
                   </tr>
@@ -118,6 +99,7 @@
                     </td>
                   </tr>
                   <tr>
+                    <td><input id="treatWarningAsError" name="treatWarningAsError" type="checkbox" value="1" /><label title="Treat Warning as Error" for="treatWarningAsError">Treat Warning as Error</label></td>
                     <td><input id="uri-verbose" name="verbose" type="checkbox" value="1" /><label title="Verbose Output" for="uri-verbose">Verbose Output</label></td>
                   </tr>
                 </table>
@@ -162,6 +144,7 @@
                     </td>
                   </tr>
                   <tr>
+                    <td><input id="treatWarningAsError" name="treatWarningAsError" type="checkbox" value="1" /><label title="Treat Warning as Error" for="treatWarningAsError">Treat Warning as Error</label></td>
                     <td><input id="upload-verbose" name="verbose" type="checkbox" value="1" /><label title="Verbose Output" for="upload-verbose">Verbose Output</label></td>
                   </tr>
                 </table>
@@ -194,6 +177,7 @@
                   </tr>
                   <tr>
                     <td>
+                    <td><input id="treatWarningAsError" name="treatWarningAsError" type="checkbox" value="1" /><label title="Treat Warning as Error" for="treatWarningAsError">Treat Warning as Error</label></td>
                       <input id="direct-verbose" name="verbose" type="checkbox" value="1" /><label title="Verbose Output" for="direct-verbose">Verbose Output</label>
                     </td>
                   </tr>
@@ -208,7 +192,6 @@
         </fieldset>
       </div><!-- fields -->
     </div> <!-- frontforms -->
-
     <div class="intro">
       <p>
         This validator checks the syntactic and semantic validity of a Timed Text Markup Language (TTML) document according to one of the following
@@ -220,7 +203,6 @@
         <li><a href="https://www.smpte.org/sites/default/files/ST2052-1-2013.pdf">SMPTE ST2052 2013</a></li>
       </ul>
     </div>
-
     <div id="w3c-include" lang="en" dir="ltr">
       <div class="w3c-include" id="w3c-include-validator-donation">
         <p>
@@ -234,7 +216,6 @@
         </p>
       </div>
     </div>
-
     <div id="footer">
       <p id="activity_logos">
         <a href="http://www.w3.org/Status" title="W3C's Open Source, bringing you free Web quality tools and more"><img src="http://www.w3.org/Icons/WWW/w3c_home_nb" alt="W3C" width="72" height="47" /><img src="./images/opensource-55x48.png" alt="Open-Source" title="We are building certified Open Source/Free Software. - see www.opensource.org" width="55" height="48" /></a>
@@ -246,16 +227,15 @@
       </p>
       <p id="version_info">
 <%
-      putTempDir(out, getServletContext());
       putVersionInfo(out);
 %>
       </p>
       <p class="copyright">
-	<a rel="Copyright" href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> &copy; 1994-2012
+	<a rel="Copyright" href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> &copy; 1994-2014
 	<a href="http://www.w3.org/"><acronym title="World Wide Web Consortium">W3C</acronym></a>&reg;
 	(<a href="http://www.csail.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>,
 	<a href="http://www.ercim.eu/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>,
-	<a href="http://www.keio.ac.jp/">Keio</a>),
+	<a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>),
 	All Rights Reserved.
 	W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>,
 	<a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a>,
