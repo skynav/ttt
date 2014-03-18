@@ -50,6 +50,8 @@ public class LocatedMessage extends Message {
     private void populateLines(String[] resourceLines, int row, int lineContextCount) {
         assert row > 0;
         int lineNumber = row - 1;
+        if (lineNumber >= resourceLines.length)
+            lineNumber = resourceLines.length - 1;
         int lineBeforeCount = (lineContextCount - 1) / 2;
         int lineAfterCount = (lineContextCount - 1) / 2;
         if (lineBeforeCount < 1)
@@ -59,7 +61,7 @@ public class LocatedMessage extends Message {
         int lineBeforeCountAvailable = lineNumber;
         if (lineBeforeCountAvailable < lineBeforeCount)
             lineBeforeCount = lineBeforeCountAvailable;
-        int lineAfterCountAvailable = resourceLines.length - lineNumber;
+        int lineAfterCountAvailable = resourceLines.length - (lineNumber + 1);
         if (lineAfterCountAvailable < lineAfterCount)
             lineAfterCount = lineAfterCountAvailable;
         int lineCount = lineBeforeCount + 1 + lineAfterCount;
@@ -102,13 +104,14 @@ public class LocatedMessage extends Message {
         }
         return text;
     }
-    public String toXML(boolean hideLocation, boolean hidePath) {
+    public String toXML(boolean hideLocation, boolean hidePath, boolean showSource) {
         StringBuffer sb = new StringBuffer();
         sb.append("<message>\n");
         sb.append(toXMLLocation(hideLocation, hidePath));
         sb.append(toXMLKey());
         sb.append(toXMLText());
-        sb.append(toXMLSource());
+        if (showSource)
+            sb.append(toXMLSource());
         sb.append("</message>\n");
         return sb.toString();
     }
@@ -154,7 +157,7 @@ public class LocatedMessage extends Message {
                         j = lineLength - 1;
                     String s1, s2, s3;
                     if (j > 0)
-                        s1 = line.substring(0, j - 1);
+                        s1 = line.substring(0, j);
                     else
                         s1 = null;
                     if (j < line.length())

@@ -61,7 +61,7 @@ public class Message {
         sb.append("</message>\n");
         return sb.toString();
     }
-    public String toXML(boolean hideLocation, boolean hidePath) {
+    public String toXML(boolean hideLocation, boolean hidePath, boolean showSource) {
         return toXML();
     }
     private static final String placeholderKey = "*KEY*";

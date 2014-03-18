@@ -61,7 +61,7 @@
             headingText = "Errors found!";
         } else {
             headingClass = "valid";
-            headingText = "This document was succcessfully checked as " + results.modelName.toUpperCase() + "!";
+            headingText = "This document was successfully checked as " + results.modelName.toUpperCase() + "!";
         }
         StringBuffer sb = new StringBuffer();
         sb.append("<h2 id=\"results\" class=\""/*"*/);
@@ -129,11 +129,12 @@
             int warnings = results.warnings;
             countsClass = "valid";
             StringBuffer sbText = new StringBuffer();
-            sbText.append("Passed, with ");
+            sbText.append("Passed, <strong class=\"has_warnings\">with ");
             sbText.append(warnings);
             sbText.append(" warning");
             if (warnings > 1)
                 sbText.append('s');
+            sbText.append("</strong>");
             countsText = sbText.toString();
         } else {
             countsClass = "valid";
@@ -142,9 +143,9 @@
         sb.append("<tr>\n");
         sb.append("<th>Result :</th>\n");
         sb.append("<td colspan=\"2\" class=\""/*"*/);
-        sb.append(XML.escapeMarkup(countsClass));
+        sb.append(countsClass);
         sb.append("\">"/*"*/);
-        sb.append(XML.escapeMarkup(countsText));
+        sb.append(countsText);
         sb.append('.');
         sb.append("</td>\n");
         sb.append("</tr>\n");

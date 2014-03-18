@@ -225,6 +225,7 @@ public class CheckerServlet extends HttpServlet {
             args.add("xml");
             args.add("--reporter-file");
             args.add(createReporterFile(state));
+            args.add("--reporter-include-source");
             String urlString = upload.toURI().toString();
             args.add(urlString);
             ttv.run(args.toArray(new String[args.size()]));

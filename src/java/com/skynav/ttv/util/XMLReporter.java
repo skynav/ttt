@@ -31,6 +31,8 @@ public class XMLReporter extends TextReporter {
 
     public static final Reporter REPORTER = new XMLReporter();
 
+    private boolean showSource;
+
     public static String getNamespace() {
         return "http://skynav.com/ns/ttv/report";
     }
@@ -49,6 +51,8 @@ public class XMLReporter extends TextReporter {
             reporterOutputEncoding = (String) arguments[2];
         else
             reporterOutputEncoding = DEFAULT_ENCODING;
+        if ((arguments.length > 2) && (arguments[3] instanceof Boolean))
+            showSource = (Boolean) arguments[3];
         out("<?xml version=\"1.0\" encoding=\"" + reporterOutputEncoding.toLowerCase() + "\"?>\n");
         out("<report xmlns=\"" + getNamespace() + "\">\n");
     }
@@ -82,7 +86,7 @@ public class XMLReporter extends TextReporter {
         sb.append(type);
         sb.append('>');
         sb.append('\n');
-        sb.append(message.toXML(isHidingLocation(), isHidingPath()));
+        sb.append(message.toXML(isHidingLocation(), isHidingPath(), showSource));
         sb.append('<');
         sb.append('/');
         sb.append(type);

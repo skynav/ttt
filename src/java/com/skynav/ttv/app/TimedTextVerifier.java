@@ -157,6 +157,7 @@ public class TimedTextVerifier implements VerifierContext {
         "    --reporter-file FILE               - specify path to file to which reporter output is to be written\n" +
         "    --reporter-file-encoding ENCODING  - specify character encoding of reporter output (default: utf-8)\n" +
         "    --reporter-file-append             - if reporter file already exists, then append output to it\n" +
+        "    --reporter-include-source          - include source context in report messages\n" +
         "    --servlet                          - configure defaults for servlet operation\n" +
         "    --show-models                      - show built-in verification models (use with --verbose to show more details)\n" +
         "    --show-repository                  - show source code repository information\n" +
@@ -208,6 +209,7 @@ public class TimedTextVerifier implements VerifierContext {
     @SuppressWarnings("unused")
     private String externalFrameRate;
     private Map<String,String> extensionSchemas = new java.util.HashMap<String,String>();
+    private boolean includeSource;
     private String modelName;
     private boolean quiet;
     private boolean showModels;
@@ -296,25 +298,25 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     public TimedTextVerifier() {
-        this(null, null, null, null);
+        this(null, null, null, false, null);
     }
 
-    public TimedTextVerifier(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, PrintWriter showOutput) {
+    public TimedTextVerifier(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, PrintWriter showOutput) {
         if (reporter == null)
             reporter = Reporters.getDefaultReporter();
-        setReporter(reporter, reporterOutput, reporterOutputEncoding);
+        setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
         setShowOutput(showOutput);
     }
 
     private void resetReporter() {
-        setReporter(Reporters.getDefaultReporter(), null, null, true);
+        setReporter(Reporters.getDefaultReporter(), null, null, false, true);
     }
 
-    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding) {
-        setReporter(reporter, reporterOutput, reporterOutputEncoding, false);
+    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource) {
+        setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource, false);
     }
 
-    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean closeOldReporter) {
+    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, boolean closeOldReporter) {
         if (reporter == this.reporter)
             return;
         if (this.reporter != null)
@@ -329,14 +331,15 @@ public class TimedTextVerifier implements VerifierContext {
             }
         }
         try {
-            reporter.open(defaultWarningSpecifications, reporterOutput, reporterOutputEncoding);
+            reporter.open(defaultWarningSpecifications, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
             this.reporter = reporter;
+            this.includeSource = reporterIncludeSource;
         } catch (Throwable e) {
             this.reporter = null;
         }
     }
 
-    private void setReporter(String reporterName, String reporterFileName, String reporterFileEncoding, boolean reporterFileAppend) {
+    private void setReporter(String reporterName, String reporterFileName, String reporterFileEncoding, boolean reporterFileAppend, boolean reporterIncludeSource) {
         assert reporterName != null;
         Reporter reporter = Reporters.getReporter(reporterName);
         if (reporter == null)
@@ -371,7 +374,7 @@ public class TimedTextVerifier implements VerifierContext {
                 }
             }
         }
-        setReporter(reporter, reporterOutput, reporterFileEncoding);
+        setReporter(reporter, reporterOutput, reporterFileEncoding, reporterIncludeSource);
         if (reporterOutput != null) {
             if (getReporter().getOutput() != reporterOutput) {
                 reporterOutput.close();
@@ -626,6 +629,7 @@ public class TimedTextVerifier implements VerifierContext {
         String reporterFileName = null;
         String reporterFileEncoding = null;
         boolean reporterFileAppend = false;
+        boolean reporterIncludeSource = false;
         List<String> skippedArgs = new java.util.ArrayList<String>();
         for (int i = 0; i < args.length; ++i) {
             String arg = args[i];
@@ -648,6 +652,8 @@ public class TimedTextVerifier implements VerifierContext {
                     ++i;
                 } else if (option.equals("reporter-file-append")) {
                     reporterFileAppend = true;
+                } else if (option.equals("reporter-include-source")) {
+                    reporterIncludeSource = true;
                 } else {
                     skippedArgs.add(arg);
                 }
@@ -655,7 +661,7 @@ public class TimedTextVerifier implements VerifierContext {
                 skippedArgs.add(arg);
         }
         if (reporterName != null)
-            setReporter(reporterName, reporterFileName, reporterFileEncoding, reporterFileAppend);
+            setReporter(reporterName, reporterFileName, reporterFileEncoding, reporterFileAppend, reporterIncludeSource);
         return skippedArgs.toArray(new String[skippedArgs.size()]);
     }
 
@@ -1029,7 +1035,8 @@ public class TimedTextVerifier implements VerifierContext {
                     CharBuffer charsBuffer = decodeResource(bytesBuffer, charset, bomLength);
                     if (charsBuffer != null) {
                         setResourceBuffer(charset, charsBuffer, bytesBuffer);
-                        reporter.setLines(parseLines(charsBuffer, charset));
+                        if (includeSource)
+                            reporter.setLines(parseLines(charsBuffer, charset));
                         reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", charset.name()));
                         reporter.logInfo(reporter.message("*KEY*", "Resource length {0} bytes, decoded as {1} Java characters (char).",
                             bytesBuffer.limit(), charsBuffer.limit()));
