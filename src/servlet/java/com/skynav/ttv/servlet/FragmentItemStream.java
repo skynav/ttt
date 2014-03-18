@@ -1,6 +1,7 @@
 
 package com.skynav.ttv.servlet;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -9,12 +10,10 @@ import org.apache.commons.fileupload.FileItemHeaders;
 
 public class FragmentItemStream implements FileItemStream {
 
-    private FileItemStream item;
+    private String fragment;
 
-    public FragmentItemStream(FileItemStream item) {
-        assert item != null;
-        assert item.getFieldName().equals("fragment");
-        this.item = item;
+    public FragmentItemStream(String fragment) {
+        this.fragment = fragment;
     }
 
     public FileItemHeaders getHeaders() {
@@ -25,7 +24,7 @@ public class FragmentItemStream implements FileItemStream {
     }
 
     public String getContentType() {
-        return item.getContentType();
+        return null;
     }
 
     public String getFieldName() {
@@ -41,7 +40,7 @@ public class FragmentItemStream implements FileItemStream {
     }
 
     public InputStream openStream() throws IOException {
-        return item.openStream();
+        return new ByteArrayInputStream(fragment.getBytes("UTF-8"));
     }
 
 }

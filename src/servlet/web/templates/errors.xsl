@@ -15,7 +15,6 @@
       <span class="err_type"><img src="images/info_icons/error.png" alt="Error" title="Error" /></span>
       <xsl:apply-templates select="rpt:message"/>
       <!--
-      <pre><code class="input">...<strong title="Position where error was detected.">here</strong>...</code></pre>
       <p class="helpwanted">
         <a href="feedback.html?uri=;errmsg_id=libxml2-201#errormsg" title="Suggest improvements on this error message through our feedback channels">&#x2709;</a>
       </p>
@@ -39,4 +38,21 @@
     <span class="msg"><xsl:value-of select="."/></span>
   </xsl:template>
   <xsl:template match="rpt:reference"/>
+  <xsl:template match="rpt:source">
+    <table class="source">
+      <tr>
+        <th>Line</th>
+        <th>Source</th>
+      </tr>
+      <xsl:apply-templates select="rpt:line"/>
+    </table>
+  </xsl:template>
+  <xsl:template match="rpt:line">
+    <tr>
+      <td class="line"><xsl:value-of select="./@row"/></td>
+      <td class="source"><code class="input"><xsl:apply-templates/></code></td>
+    </tr>
+  </xsl:template>
+  <xsl:template match="rpt:unmarked"><xsl:value-of select="."/></xsl:template>
+  <xsl:template match="rpt:marked"><strong title="Position where error was detected."><xsl:value-of select="."/></strong></xsl:template>
 </xsl:stylesheet>

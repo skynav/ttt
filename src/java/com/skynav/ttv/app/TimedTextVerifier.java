@@ -244,6 +244,7 @@ public class TimedTextVerifier implements VerifierContext {
     private int resourceExpectedWarnings = -1;
     private Binder<Node> binder;
     private Object rootBinding;
+    private QName rootName;
 
     private enum ForeignTreatment {
         Error,          // error, don't apply foreign validation
@@ -947,6 +948,32 @@ public class TimedTextVerifier implements VerifierContext {
         }
     }
 
+    private String[] parseLines(CharBuffer cb, Charset charset) {
+        List<String> lines = new java.util.ArrayList<String>();
+        StringBuffer sb = new StringBuffer();
+        while (cb.hasRemaining()) {
+            while (cb.hasRemaining()) {
+                char c = cb.get();
+                if (c == '\n') {
+                    break;
+                } else if (c == '\r') {
+                    if (cb.hasRemaining()) {
+                        c = cb.charAt(0);
+                        if (c == '\n')
+                            cb.get();
+                    }
+                    break;
+                } else {
+                    sb.append(c);
+                }
+            }
+            lines.add(sb.toString());
+            sb.setLength(0);
+        }
+        cb.rewind();
+        return lines.toArray(new String[lines.size()]);
+    }
+
     private void resetResourceState() {
         resourceModel = model;
         resourceState = new java.util.HashMap<String,Object>();
@@ -958,6 +985,7 @@ public class TimedTextVerifier implements VerifierContext {
         resourceExpectedWarnings = -1;
         binder = null;
         rootBinding = null;
+        rootName = null;
         getReporter().resetResourceState();
     }
 
@@ -1001,6 +1029,7 @@ public class TimedTextVerifier implements VerifierContext {
                     CharBuffer charsBuffer = decodeResource(bytesBuffer, charset, bomLength);
                     if (charsBuffer != null) {
                         setResourceBuffer(charset, charsBuffer, bytesBuffer);
+                        reporter.setLines(parseLines(charsBuffer, charset));
                         reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", charset.name()));
                         reporter.logInfo(reporter.message("*KEY*", "Resource length {0} bytes, decoded as {1} Java characters (char).",
                             bytesBuffer.limit(), charsBuffer.limit()));
@@ -1536,6 +1565,7 @@ public class TimedTextVerifier implements VerifierContext {
                 Documents.assignIdAttributes(binder.getXMLNode(root).getOwnerDocument(), resourceModel.getIdAttributes());
                 if (verifyRootElement(root, resourceModel.getRootClasses())) {
                     this.rootBinding = root.getValue();
+                    this.rootName = root.getName();
                     resourceModel.getSemanticsVerifier().verify(this.rootBinding, this);
                 }
             }
@@ -1569,7 +1599,7 @@ public class TimedTextVerifier implements VerifierContext {
         reporter.logInfo(reporter.message("*KEY*", "{0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
         reporter.flush();
         Results results = new Results(uri, rv,
-            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), resourceModel, resourceCharset);
+            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), resourceModel, resourceCharset, rootName);
         this.results.put(uri, results);
         return rv;
     }
@@ -1855,39 +1885,6 @@ public class TimedTextVerifier implements VerifierContext {
         }
     }
 
-    /* not used
-    private static class ForeignVocabularyException extends RuntimeException {
-        static final long serialVersionUID = 0;
-        ForeignVocabularyException(QName name) {
-            super(name.toString());
-        }
-        ForeignVocabularyException(QName name, String message) {
-            super("'" + name.toString() + "': " + message);
-        }
-    }
-    */
-
-    /* not used
-    private static class XSIVocabularyException extends ForeignVocabularyException {
-        static final long serialVersionUID = 0;
-        XSIVocabularyException(QName name) {
-            super(name);
-        }
-        XSIVocabularyException(QName name, String message) {
-            super(name, message);
-        }
-    }
-    */
-
-    /* not used
-    private static class XSISchemaLocationException extends XSIVocabularyException {
-        static final long serialVersionUID = 0;
-        XSISchemaLocationException(String message) {
-            super(XML.getSchemaLocationAttributeName(), message);
-        }
-    }
-    */
-
     private class ForeignVocabularyFilter extends XMLFilterImpl {
 
         private Set<String> standardNamespaces;
@@ -2132,6 +2129,9 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     public static class Results {
+        private static final String NOURI = "*URI NOT AVAILABLE*";
+        private static final String NOENCODING = "*ENCODING NOT AVAILABLE*";
+        private static final String NOMODEL = "*MODEL NOT AVAILABLE*";
         public String uriString;
         public boolean passed;
         public int code;
@@ -2142,7 +2142,15 @@ public class TimedTextVerifier implements VerifierContext {
         public int warnings;
         public String modelName;
         public String encodingName;
-        Results(String uriString, int rv, int errorsExpected, int errors, int warningsExpected, int warnings, Model model, Charset encoding) {
+        public QName root;
+        public Results() {
+            this.uriString = NOURI;
+            this.passed = false;
+            this.code = RV_USAGE;
+            this.modelName = NOMODEL;
+            this.encodingName = NOENCODING;
+        }
+        Results(String uriString, int rv, int errorsExpected, int errors, int warningsExpected, int warnings, Model model, Charset encoding, QName root) {
             this.uriString = uriString;
             this.passed = rvPassed(rv);
             this.code = rvCode(rv);
@@ -2159,6 +2167,7 @@ public class TimedTextVerifier implements VerifierContext {
                 this.encodingName = encoding.name();
             else
                 this.encodingName = "unknown";
+            this.root = root;
        }
     }
 

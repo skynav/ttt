@@ -22,14 +22,19 @@
             out.println(sb.toString());
         }
     }
-    static void putVersionInfo(JspWriter out) throws java.io.IOException {
+    static void putVersionInfo(ServletContext context, JspWriter out) throws java.io.IOException {
         StringBuffer sb = new StringBuffer();
         sb.append("This service runs the ");
         sb.append("<a href=\""/*"*/);
         sb.append(TimedTextVerifier.getRepositoryURL());
         sb.append("\">"/*"*/);
         sb.append(TimedTextVerifier.getVersionTitle());
-        sb.append("</a>.");
+        sb.append("</a>");
+        sb.append(", using ");
+        sb.append(context.getServerInfo());
+        sb.append(" with Java Runtime ");
+        sb.append(System.getProperty("java.runtime.version"));
+        sb.append('.');
         out.println(sb.toString());                                          
     }
 %>
@@ -227,7 +232,7 @@
       </p>
       <p id="version_info">
 <%
-      putVersionInfo(out);
+      putVersionInfo(application, out);
 %>
       </p>
       <p class="copyright">

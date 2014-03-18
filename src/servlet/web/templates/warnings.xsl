@@ -14,10 +14,15 @@
   </xsl:template>
   <xsl:template match="rpt:error"/>
   <xsl:template match="rpt:warning">
-    <li class="msg_warn" id="W01">
+    <li class="msg_warn">
       <p>
         <span class="err_type"><img src="images/info_icons/warning.png" alt="Warning" title="Warning" /></span>
         <xsl:apply-templates select="rpt:message"/>
+      <!--
+      <p class="helpwanted">
+        <a href="feedback.html?uri=;errmsg_id=libxml2-201#errormsg" title="Suggest improvements on this error message through our feedback channels">&#x2709;</a>
+      </p>
+      -->
       </p>
     </li>
   </xsl:template>
@@ -26,15 +31,33 @@
   <xsl:template match="rpt:message">
     <xsl:apply-templates select="rpt:location"/>
     <xsl:apply-templates select="rpt:text"/>
+    <xsl:apply-templates select="rpt:source"/>
   </xsl:template>
   <xsl:template match="rpt:location">
-    <em>Line <xsl:value-of select=".//rpt:line"/>, Column <xsl:value-of select=".//rpt:column"/></em>:
+    <em>Line <xsl:value-of select=".//rpt:row"/>, Column <xsl:value-of select=".//rpt:col"/></em>:
   </xsl:template>
   <xsl:template match="rpt:url"/>
-  <xsl:template match="rpt:line"/>
-  <xsl:template match="rpt:column"/>
+  <xsl:template match="rpt:row"/>
+  <xsl:template match="rpt:col"/>
   <xsl:template match="rpt:text">
     <span class="msg"><xsl:value-of select="."/></span>
   </xsl:template>
   <xsl:template match="rpt:reference"/>
+  <xsl:template match="rpt:source">
+    <table class="source">
+      <tr>
+        <th class="line">Line</th>
+        <th class="source">Source</th>
+      </tr>
+      <xsl:apply-templates select="rpt:line"/>
+    </table>
+  </xsl:template>
+  <xsl:template match="rpt:line">
+    <tr>
+      <td class="line"><xsl:value-of select="./@row"/></td>
+      <td class="source"><code class="input"><xsl:apply-templates/></code></td>
+    </tr>
+  </xsl:template>
+  <xsl:template match="rpt:unmarked"><xsl:value-of select="."/></xsl:template>
+  <xsl:template match="rpt:marked"><strong title="Position where error was detected."><xsl:value-of select="."/></strong></xsl:template>
 </xsl:stylesheet>

@@ -10,6 +10,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -76,8 +80,20 @@ public class CheckerServlet extends HttpServlet {
             }
         }
         String[] uris = (String[]) parameters.get("uri");
-        if ((uris != null) && (uris.length > 0))
-            processFileItem(state, new UriItemStream(uris[0]));
+        if ((uris != null) && (uris.length > 0)) {
+            URL url = null;
+            try {
+                url = new URI(uris[0]).toURL();
+            } catch (URISyntaxException e) {
+                state.setPreverifyException(e);
+            } catch (MalformedURLException e) {
+                state.setPreverifyException(e);
+            } catch (IllegalArgumentException e) {
+                state.setPreverifyException(e);
+            }
+            if (url != null) 
+                processFileItem(state, new UrlItemStream(url));
+        }
     }
 
     private void processNonQueryRequest(RequestState state) throws ServletException, IOException {
@@ -96,13 +112,17 @@ public class CheckerServlet extends HttpServlet {
                         } finally {
                             StreamUtil.closeSafely(is);
                         }
-                    } else
-                        processFileItem(state, new FragmentItemStream(item));
+                    } else {
+                        String fragment = Streams.asString(item.openStream());
+                        processFileItem(state, new FragmentItemStream(fragment));
+                        state.fragment = fragment;
+                    }
                 } else {
                     processFileItem(state, item);
                 }
             }
         } catch (FileUploadException e) {
+            state.setPreverifyException(e);
         }
     }
 
@@ -140,6 +160,7 @@ public class CheckerServlet extends HttpServlet {
                     StreamUtil.closeSafely(is);
                 }
             } catch (IOException e) {
+                state.setPreverifyException(e);
             }
         }
     }
@@ -206,15 +227,13 @@ public class CheckerServlet extends HttpServlet {
             args.add(createReporterFile(state));
             String urlString = upload.toURI().toString();
             args.add(urlString);
-            StringBuffer sb = new StringBuffer();
-            for (String arg: args) {
-                if (sb.length() > 0)
-                    sb.append(' ');
-                sb.append(arg);
-            }
-            System.out.println("TTV: " + sb.toString());
             ttv.run(args.toArray(new String[args.size()]));
             state.results = ttv.getResults(urlString);
+        } else {
+            state.results = new Results();
+            if (state.preverifyException != null) {
+                state.request.setAttribute("PreverifyExceptionMessage", state.preverifyException.getMessage());
+            }
         }
     }
 
@@ -225,61 +244,52 @@ public class CheckerServlet extends HttpServlet {
             processReportWarnings(state);
             processReportErrors(state);
             request.setAttribute("Results", state.results);
-            request.setAttribute("UploadFileNameOriginal", state.uploadFileNameOriginal);
-            request.getRequestDispatcher("/results.jsp").forward(request, response);
-        } else
-            processResponseNoResults(state);
+            if (state.fragment != null)
+                request.setAttribute("Fragment", state.fragment);
+            else
+                request.setAttribute("UploadFileNameOriginal", state.uploadFileNameOriginal);
+        }
+        request.getRequestDispatcher("/results.jsp").forward(request, response);
     }
 
     private void processReportErrors(RequestState state) throws ServletException, IOException {
-        HttpServletRequest request = state.request;
-        try {
-            String errors;
-            if (state.results.errors > 0) {
-                TransformerFactory tf = TransformerFactory.newInstance();
-                Transformer t = tf.newTransformer(new StreamSource(getServletContext().getRealPath("/templates/errors.xsl")));
-                StringWriter sw = new StringWriter();
-                t.transform(new StreamSource(state.reportFile.getAbsolutePath()), new StreamResult(sw));
-                errors = sw.toString();
-            } else
-                errors = null;
-            request.setAttribute("Errors", errors);
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
+        if (state.results != null) {
+            HttpServletRequest request = state.request;
+            try {
+                String errors;
+                if (state.results.errors > 0) {
+                    TransformerFactory tf = TransformerFactory.newInstance();
+                    Transformer t = tf.newTransformer(new StreamSource(getServletContext().getRealPath("/templates/errors.xsl")));
+                    StringWriter sw = new StringWriter();
+                    t.transform(new StreamSource(state.reportFile.getAbsolutePath()), new StreamResult(sw));
+                    errors = sw.toString();
+                } else
+                    errors = null;
+                request.setAttribute("Errors", errors);
+            } catch (Throwable e) {
+                state.setPreverifyException(e);
+            }
         }
     }
 
     private void processReportWarnings(RequestState state) throws ServletException, IOException {
-        HttpServletRequest request = state.request;
-        try {
-            String warnings;
-            if (state.results.warnings > 0) {
-                TransformerFactory tf = TransformerFactory.newInstance();
-                Transformer t = tf.newTransformer(new StreamSource(getServletContext().getRealPath("/templates/warnings.xsl")));
-                StringWriter sw = new StringWriter();
-                t.transform(new StreamSource(state.reportFile.getAbsolutePath()), new StreamResult(sw));
-                warnings = sw.toString();
-            } else
-                warnings = null;
-            request.setAttribute("Warnings", warnings);
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
+        if (state.results != null) {
+            HttpServletRequest request = state.request;
+            try {
+                String warnings;
+                if (state.results.warnings > 0) {
+                    TransformerFactory tf = TransformerFactory.newInstance();
+                    Transformer t = tf.newTransformer(new StreamSource(getServletContext().getRealPath("/templates/warnings.xsl")));
+                    StringWriter sw = new StringWriter();
+                    t.transform(new StreamSource(state.reportFile.getAbsolutePath()), new StreamResult(sw));
+                    warnings = sw.toString();
+                } else
+                    warnings = null;
+                request.setAttribute("Warnings", warnings);
+            } catch (Throwable e) {
+                state.setPreverifyException(e);
+            }
         }
-    }
-
-    private void processResponseNoResults(RequestState state) throws ServletException, IOException {
-        HttpServletResponse response = state.response;
-        response.setContentType("text/html");
-        response.setCharacterEncoding("utf-8");
-        PrintWriter out = response.getWriter();
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>No Response</title>");
-        out.println("</head>");
-        out.println("<body>");
-        out.println("<p>No Response</p>");
-        out.println("</body>");
-        out.println("</html>");
     }
 
     class RequestState {
@@ -287,12 +297,15 @@ public class CheckerServlet extends HttpServlet {
         // request, response, and result output state
         HttpServletRequest request;
         HttpServletResponse response;
+        // pre-verification state
+        Throwable preverifyException;
         // fields state
         Map<String,List<String>> fields = new java.util.TreeMap<String,List<String>>();
         // upload state
         File uploadFile;
         int uploadFileLength;
         String uploadFileNameOriginal;
+        String fragment;
         // report state
         File reportFile;
         // ttv state
@@ -330,6 +343,11 @@ public class CheckerServlet extends HttpServlet {
                 else
                     return values.get(0).equals("1");
             }
+        }
+
+        void setPreverifyException(Throwable e) {
+            if (preverifyException == null)
+                preverifyException = e;
         }
 
     }

@@ -40,6 +40,7 @@ public class NullReporter implements Reporter {
     public void resetResourceState() {}
     public void setResourceURI(String uri) {}
     public void setResourceURI(URI uri) {}
+    public void setLines(String[] lines) {}
     public void hidePath() {}
     public void showPath() {}
     public boolean isHidingPath() { return false; }

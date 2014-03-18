@@ -3,17 +3,16 @@ package com.skynav.ttv.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemHeaders;
 
-public class UriItemStream implements FileItemStream {
+public class UrlItemStream implements FileItemStream {
 
-    private String url;
+    private URL url;
 
-    public UriItemStream(String url) {
+    public UrlItemStream(URL url) {
         this.url = url;
     }
 
@@ -41,11 +40,7 @@ public class UriItemStream implements FileItemStream {
     }
 
     public InputStream openStream() throws IOException {
-        try {
-            return new URI(url).toURL().openStream();
-        } catch (URISyntaxException e) {
-            throw new IOException(e);
-        }
+        return url.openStream();
     }
 
 }

@@ -61,6 +61,7 @@ public class TextReporter implements Reporter {
     /* per-resource state */
     private Set<String> resourceDisabledWarnings;
     private Set<String> resourceEnabledWarnings;
+    private String[] resourceLines;
     private int resourceErrors;
     private URI resourceUri;
     private String resourceUriString;
@@ -105,6 +106,7 @@ public class TextReporter implements Reporter {
     }
 
     public void resetResourceState() {
+        resourceLines = null;
         resourceDisabledWarnings = new java.util.HashSet<String>(disabledWarnings);
         resourceEnabledWarnings = new java.util.HashSet<String>(enabledWarnings);
         resourceErrors = 0;
@@ -117,6 +119,10 @@ public class TextReporter implements Reporter {
 
     public void setResourceURI(URI uri) {
         resourceUri = uri;
+    }
+
+    public void setLines(String[] lines) {
+        resourceLines = lines;
     }
 
     public void hidePath() {
@@ -246,7 +252,7 @@ public class TextReporter implements Reporter {
             uriString = resourceUriString;
         else
             uriString = null;
-        return new LocatedMessage(uriString, locator.getLineNumber(), locator.getColumnNumber(), key, format, arguments);
+        return new LocatedMessage(uriString, locator.getLineNumber(), locator.getColumnNumber(), resourceLines, key, format, arguments);
     }
 
     public void logError(Message message) {

@@ -487,3 +487,19 @@ pre.outline {
     line-height: 160%;
     padding-left: 1.5em;
 }
+
+table.source {
+  clear: both;
+  width: 80%;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+table.source th.line, table.source td.line {
+  width: 4em;
+  text-align: right;
+}
+
+table.source th.source, table.source td.source {
+  text-align: left;
+}

@@ -27,18 +27,49 @@ package com.skynav.ttv.util;
 
 import org.xml.sax.Locator;
 
+import com.skynav.xml.helpers.XML;
+
 public class LocatedMessage extends Message {
+    public static final int LINE_CONTEXT_COUNT = 3;
     private String uri;
-    private int line = -1;
-    private int column = -1;
+    private int row = -1;
+    private int col = -1;
+    private String[] lines;
+    private int linesRowOffset = -1;
     public LocatedMessage(Locator locator, String key, String format, Object... arguments) {
-        this(locator.getSystemId(), locator.getLineNumber(), locator.getColumnNumber(), key, format, arguments);
+        this(locator.getSystemId(), locator.getLineNumber(), locator.getColumnNumber(), null, key, format, arguments);
     }
-    public LocatedMessage(String uri, int line, int column, String key, String format, Object... arguments) {
+    public LocatedMessage(String uri, int row, int col, String[] resourceLines, String key, String format, Object... arguments) {
         super(key, format, arguments);
         this.uri = uri;
-        this.line = line;
-        this.column = column;
+        this.row = row;
+        this.col = col;
+        if ((resourceLines != null) && (row > 0))
+            populateLines(resourceLines, row, LINE_CONTEXT_COUNT);
+    }
+    private void populateLines(String[] resourceLines, int row, int lineContextCount) {
+        assert row > 0;
+        int lineNumber = row - 1;
+        int lineBeforeCount = (lineContextCount - 1) / 2;
+        int lineAfterCount = (lineContextCount - 1) / 2;
+        if (lineBeforeCount < 1)
+            lineBeforeCount = 1;
+        if (lineAfterCount < 1)
+            lineAfterCount = 1;
+        int lineBeforeCountAvailable = lineNumber;
+        if (lineBeforeCountAvailable < lineBeforeCount)
+            lineBeforeCount = lineBeforeCountAvailable;
+        int lineAfterCountAvailable = resourceLines.length - lineNumber;
+        if (lineAfterCountAvailable < lineAfterCount)
+            lineAfterCount = lineAfterCountAvailable;
+        int lineCount = lineBeforeCount + 1 + lineAfterCount;
+        String[] lines = new String[lineCount];
+        int firstLineOffset = lineNumber - lineBeforeCount;
+        for (int i = firstLineOffset, n = i + lineCount; i < n; ++i) {
+            lines[i - firstLineOffset] = resourceLines[i];
+        }
+        this.lines = lines;
+        this.linesRowOffset = firstLineOffset + 1;
     }
     @Override
     public String toText(boolean hideLocation, boolean hidePath) {
@@ -53,14 +84,14 @@ public class LocatedMessage extends Message {
                 sb.append(uriString);
                 sb.append('}');
             }
-            if (line >= 0) {
+            if (row >= 0) {
                 if (sb.length() > 0)
                     sb.append(':');
                 sb.append('[');
-                sb.append(line);
-                if (column >= 0) {
+                sb.append(row);
+                if (col >= 0) {
                     sb.append(',');
-                    sb.append(column);
+                    sb.append(col);
                 }
                 sb.append(']');
             }
@@ -77,6 +108,7 @@ public class LocatedMessage extends Message {
         sb.append(toXMLLocation(hideLocation, hidePath));
         sb.append(toXMLKey());
         sb.append(toXMLText());
+        sb.append(toXMLSource());
         sb.append("</message>\n");
         return sb.toString();
     }
@@ -92,17 +124,71 @@ public class LocatedMessage extends Message {
                 sb.append(escapeText(uriString));
                 sb.append("</url>\n");
             }
-            if (line >= 0) {
-                sb.append("<line>");
-                sb.append(line);
-                sb.append("</line>\n");
-                if (column >= 0) {
-                    sb.append("<column>");
-                    sb.append(column);
-                    sb.append("</column>\n");
+            if (row >= 0) {
+                sb.append("<row>");
+                sb.append(row);
+                sb.append("</row>\n");
+                if (col >= 0) {
+                    sb.append("<col>");
+                    sb.append(col);
+                    sb.append("</col>\n");
                 }
             }
             sb.append("</location>\n");
+        }
+        return sb.toString();
+    }
+    private String toXMLSource() {
+        StringBuffer sb = new StringBuffer();
+        if (lines != null) {
+            sb.append("<source>\n");
+            int i = linesRowOffset;
+            for (String line : lines) {
+                int lineLength = line.length();
+                sb.append("<line row=\"");
+                sb.append(i);
+                sb.append("\">");
+                if (i == row) {
+                    int j = col - 1;
+                    if (j > lineLength - 1)
+                        j = lineLength - 1;
+                    String s1, s2, s3;
+                    if (j > 0)
+                        s1 = line.substring(0, j - 1);
+                    else
+                        s1 = null;
+                    if (j < line.length())
+                        s2 = line.substring(j, j + 1);
+                    else
+                        s2 = null;
+                    if (j + 1 < line.length())
+                        s3 = line.substring(j + 1);
+                    else
+                        s3 = null;
+                    if (s1 != null) {
+                        sb.append("<unmarked>");
+                        sb.append(XML.escapeMarkup(s1, true));
+                        sb.append("</unmarked>");
+                    }
+                    if (s2 != null) {
+                        sb.append("<marked>");
+                        sb.append(XML.escapeMarkup(s2, true));
+                        sb.append("</marked>");
+                    }
+                    if (s3 != null) {
+                        sb.append("<unmarked>");
+                        sb.append(XML.escapeMarkup(s3, true));
+                        sb.append("</unmarked>");
+                    }
+                } else {
+                    sb.append("<unmarked>");
+                    sb.append(XML.escapeMarkup(line, true));
+                    sb.append("</unmarked>");
+                }
+                sb.append("</line>\n");
+                ++i;
+            }
+            sb.append("</source>\n");
         }
         return sb.toString();
     }
