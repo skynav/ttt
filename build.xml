@@ -393,12 +393,19 @@
   </exec>
 </target>
 
+<taskdef name="catalina-stop" classname="org.apache.catalina.ant.StopTask" classpathref="catalina.tasks.classpath"/>
+<taskdef name="catalina-undeploy" classname="org.apache.catalina.ant.UndeployTask" classpathref="catalina.tasks.classpath"/>
 <taskdef name="catalina-deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="catalina.tasks.classpath"/>
 
 <target name="deploy-servlet" depends="build-servlet">
   <mkdir dir="${servlet.deploy.dir}"/>
   <copy file="${servlet.target}" tofile="${servlet.deploy.target}"/>
-  <catalina-deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/ttv" localWar="file:${servlet.deploy.target}"/>
+  <echo message="Stopping servlet..."/>
+  <catalina-stop url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/ttv" failonerror="false"/>
+  <echo message="Undeploying servlet..."/>
+  <catalina-undeploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/ttv" failonerror="false"/>
+  <echo message="Deploying new servlet..."/>
+  <catalina-deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/ttv" war="file:${servlet.deploy.target}"/>
 </target>
 
 <target name="clean-classes">
