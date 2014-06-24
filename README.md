@@ -162,16 +162,19 @@ The full set of (public) `ant` targets can be listed by using `ant -p`, which pr
 <pre>
 Main targets:
 
-build              Build TTV
-clean-build        Clean and build TTV
-clean-test         Clean, build, and test TTV
-run-valid          Run verifier with valid input test files
-run-valid-verbose  Run verifier with valid input test files, with verbose output.
-test               Run all TTV test suites
-test-apps          Run TTV application tests
-test-ttml1         Run TTML1 tests
-test-verifier      Run TTV verification test suite
-test-xml           Run XML tests
+ build              Build All
+ build-servlet      Build TTV Servlet
+ build-ttv          Build TTV
+ clean-build        Clean and build TTV
+ clean-test         Clean, build, and test TTV
+ run-valid          Run verifier with valid input test files
+ run-valid-verbose  Run verifier with valid input test files, with verbose output.
+ test               Run all test suites
+ test-apps          Run TTV application tests
+ test-ttml1         Run TTML1 tests
+ test-ttv           Run all TTV test suites
+ test-verifier      Run TTV verification test suite
+ test-xml           Run XML tests
 
 Default target: clean-test
 </pre>
