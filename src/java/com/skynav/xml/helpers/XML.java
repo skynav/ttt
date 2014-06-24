@@ -29,8 +29,8 @@ import javax.xml.namespace.QName;
 
 public class XML {
 
-    public  static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
-    public  static final String xsiNamespace = "http://www.w3.org/2001/XMLSchema-instance";
+    public static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
+    public static final String xsiNamespace = "http://www.w3.org/2001/XMLSchema-instance";
 
     private XML() {
     }
@@ -64,6 +64,55 @@ public class XML {
     private static final QName xsiSchemaLocationName = new QName(getXSINamespaceUri(), "schemaLocation");
     public static QName getSchemaLocationAttributeName() {
         return xsiSchemaLocationName;
+    }
+
+    public static String escapeMarkup(String s) {
+        return escapeMarkup(s, false);
+    }
+
+    public static String escapeMarkup(String s, boolean escapeSpaceAsNBSP) {
+        if (s == null)
+            return null;
+        else {
+            StringBuffer sb = new StringBuffer(s.length());
+            for (int i = 0, n = s.length(); i < n; ++i) {
+                int c = s.codePointAt(i);
+                if ((c > 65535)) {
+                    appendNumericCharReference(sb, c);
+                    ++i;
+                } else if (Character.isISOControl(c) && !Character.isWhitespace(c))
+                    appendNumericCharReference(sb, c);
+                else if (c == '<')
+                    appendNamedCharReference(sb, "lt");
+                else if (c == '>')
+                    appendNamedCharReference(sb, "gt");
+                else if (c == '&')
+                    appendNamedCharReference(sb, "amp");
+                else if (c == '"')
+                    appendNamedCharReference(sb, "quot");
+                else if (c == '\'')
+                    appendNamedCharReference(sb, "apos");
+                else if ((c == ' ') && escapeSpaceAsNBSP)
+                    appendNumericCharReference(sb, 0x00A0);
+                else {
+                    assert c < 65536;
+                    sb.append((char) c);
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    private static void appendNumericCharReference(StringBuffer sb, int codepoint) {
+        sb.append("&#x");
+        sb.append(Integer.toString(codepoint, 16));
+        sb.append(';');
+    }
+
+    private static void appendNamedCharReference(StringBuffer sb, String name) {
+        sb.append('&');
+        sb.append(name);
+        sb.append(';');
     }
 
 }

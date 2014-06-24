@@ -42,6 +42,7 @@ import com.skynav.ttv.model.smpte.ST20522010;
 import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.smpte.tt.rel2010.Information;
 import com.skynav.ttv.model.smpte.tt.rel2010.Data;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.URIs;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -92,7 +93,8 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
             Model model = getModel();
             if (inSMPTENamespace(name)) {
                 if (!model.isElement(name)) {
-                    context.getReporter().logError(locator, "Unknown element in SMPTE namespace '" + name + "'.");
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator, "*KEY", "Unknown element in SMPTE namespace ''{0}''.", name));
                     failed = true;
                 } else if (isImageElement(content)) {
                     failed = !verifyImage(content, locator, context);
@@ -154,7 +156,8 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         Object informationAlreadyPresent = context.getResourceState(key);
         if (informationAlreadyPresent == Boolean.TRUE) {
             QName name = context.getBindingElementName(information);
-            context.getReporter().logError(locator, "SMPTE element '" + name + "' is already present, only one instance allowed.");
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "SMPTE element '" + name + "' is already present, only one instance allowed.", name));
             failed = true;
         } else {
             context.setResourceState(key, Boolean.TRUE);
@@ -193,19 +196,21 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
             failed = true;
         else if (!verifyDataType(data, name, value, locator, context))
             failed = true;
-        if (failed)
-            context.getReporter().logError(locator, "Invalid " + name + " value '" + value + "'.");
+        if (failed) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+        }
         return !failed;
     }
 
     private boolean verifyDataType(Object data, QName name, String value, Locator locator, VerifierContext context) {
-        Reporter reporter = context.getReporter();
         if (isStandardDataType(value))
             return true;
         else if (isPrivateDataType(value))
             return true;
         else {
-            reporter.logInfo(locator, "Non-standard " + name + " must start with 'x-' prefix, got '" + value + "'.");
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Non-standard {0} must start with 'x-' prefix, got ''{1}''.", value));
             return false;
         }
     }
@@ -230,7 +235,8 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
             List<List<QName>> ancestors = getModel().getElementPermissibleAncestors(name);
             if (ancestors != null) {
                 if (!Nodes.hasAncestors(node, ancestors)) {
-                    context.getReporter().logError(locator, "SMPTE element '" + name + "' must have ancestors " + ancestors + ".");
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator, "*KEY*", "SMPTE element ''{0}'' must have ancestors {1}.", name, ancestors));
                     failed = true;
                 }
             }
@@ -244,7 +250,8 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         try {
             Base64.decode(value);
         } catch (IllegalArgumentException e) {
-            context.getReporter().logError(locator, "SMPTE element '" + name + "' content does not conform to Base64 encoding: " + e.getMessage());
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "SMPTE element ''{0}'' content does not conform to Base64 encoding: {1}", name, e.getMessage()));
             failed = true;
         }
         return !failed;
@@ -268,14 +275,15 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
             Model model = getModel();
             if (model.isNamespace(name.getNamespaceURI())) {
                 if (name.getNamespaceURI().indexOf(NAMESPACE_PREFIX) == 0) {
+                    Reporter reporter = context.getReporter();
                     String value = attribute.getValue();
                     if (!model.isGlobalAttribute(name)) {
-                        context.getReporter().logError(locator, "Unknown attribute in SMPTE namespace '" + name + "' not permitted on '" +
-                            context.getBindingElementName(content) + "'.");
+                        reporter.logError(reporter.message(locator, "*KEY*",
+                            "Unknown attribute in SMPTE namespace ''{0}'' not permitted on ''{1}''.", name, context.getBindingElementName(content)));
                         return false;
                     } else if (!model.isGlobalAttributePermitted(name, context.getBindingElementName(content))) {
-                        context.getReporter().logError(locator, "SMPTE attribute '" + name + "' not permitted on '" +
-                            context.getBindingElementName(content) + "'.");
+                        reporter.logError(reporter.message(locator, "*KEY*",
+                            "SMPTE attribute ''{0}'' not permitted on ''{1}''.", name, context.getBindingElementName(content)));
                         return false;
                     } else if (!verifyNonEmptyOrPadded(content, name, value, locator, context)) {
                         failed = true;
@@ -287,7 +295,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
                             failed = true;
                     }
                     if (failed)
-                        context.getReporter().logError(locator, "Invalid " + name + " value '" + value + "'.");
+                        reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
                 }
             }
         }
@@ -297,13 +305,13 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
     private boolean verifyNonEmptyOrPadded(Object content, QName name, String value, Locator locator, VerifierContext context) {
         Reporter reporter = context.getReporter();
         if (value.length() == 0) {
-            reporter.logInfo(locator, "Empty " + name + " not permitted, got '" + value + "'.");
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", name, value));
             return false;
         } else if (Strings.isAllXMLSpace(value)) {
-            reporter.logInfo(locator, "The value of " + name + " is entirely XML space characters, got '" + value + "'.");
+            reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", name, value));
             return false;
         } else if (!value.equals(value.trim())) {
-            reporter.logInfo(locator, "XML space padding not permitted on " + name + ", got '" + value + "'.");
+            reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", name, value));
             return false;
         } else
             return true;
@@ -341,17 +349,17 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
                             }
                         }
                     } else {
-                        reporter.logInfo(locator, "SMPTE attribute " + name + " references local image element '" +
-                                         value + "', but no corresponding element is present.");
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "SMPTE attribute {0} references local image element ''{1}'', but no corresponding element is present.", name, value));
                         failed = true;
                     }
                 }
             }
         } else {
             if (reporter.isWarningEnabled("references-external-image")) {
-                String message = "SMPTE attribute " + name + " references external image at '" + value + "'.";
-                if (reporter.logWarning(locator, message)) {
-                    reporter.logError(locator, message);
+                Message message = reporter.message(locator, "*KEY*", "SMPTE attribute {0} references external image at ''{1}''.", name, value);;
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
                     failed = true;
                 }
             }

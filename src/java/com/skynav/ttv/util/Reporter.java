@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-14 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,20 +25,59 @@
  
 package com.skynav.ttv.util;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URI;
+
 import org.xml.sax.Locator;
 
 public interface Reporter {
-    // error reporting
-    public String message(String message);
-    public String message(Locator locator, String message);
-    public void logError(String message);
-    public void logError(Locator locator, String message);
+    public enum ReportType {
+        Error,
+        Warning,
+        Info,
+        Debug;
+    };
+    public String getName();
+    public void open(Object... arguments) throws IOException;
+    public void close() throws IOException;
+    public void resetResourceState();
+    public void setResourceURI(String uri);
+    public void setResourceURI(URI uri);
+    public void setLines(String[] lines);
+    public void hidePath();
+    public void showPath();
+    public boolean isHidingPath();
+    public void hideLocation();
+    public void showLocation();
+    public boolean isHidingLocation();
+    public int getResourceErrors();
+    public int getResourceWarnings();
+    public void setOutput(PrintWriter output);
+    public PrintWriter getOutput();
+    public void flush();
+    public void setVerbosityLevel(int level);
+    public void incrementVerbosityLevel();
+    public int getVerbosityLevel();
+    public void setDebugLevel(int level);
+    public void incrementDebugLevel();
+    public int getDebugLevel();
+    public Message message(String key, String format, Object... arguments);
+    public Message message(Locator locator, String key, String format, Object... arguments);
+    public void logError(Message message);
     public void logError(Exception e);
+    public boolean hasDefaultWarning(String token);
+    public void setTreatWarningAsError(boolean treatWarningAsError);
+    public boolean isTreatingWarningAsError();
     public boolean isWarningEnabled(String token);
-    public boolean logWarning(String message);
-    public boolean logWarning(Locator locator, String message);
-    public void logInfo(String message);
-    public void logInfo(Locator locator, String message);
-    public void logDebug(String message);
-    public void logDebug(Locator locator, String message);
+    public void enableWarning(String token);
+    public void disableWarning(String token);
+    public void disableWarnings();
+    public boolean areWarningsDisabled();
+    public void hideWarnings();
+    public boolean  areWarningsHidden();
+    public boolean logWarning(Message message);
+    public boolean logWarning(Exception e);
+    public void logInfo(Message message);
+    public void logDebug(Message message);
 }

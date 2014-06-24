@@ -32,6 +32,7 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.value.FontFamily;
 import com.skynav.ttv.model.value.GenericFontFamily;
 import com.skynav.ttv.model.value.impl.FontFamilyImpl;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -86,14 +87,15 @@ public class Fonts {
                 if (treatments != null) {
                     if (GenericFontFamily.isToken(stringContent)) {
                         QuotedGenericFontFamilyTreatment quotedGenericTreatment = (QuotedGenericFontFamilyTreatment) treatments[0];
-                        String message = "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic family name.";
+                        Message message = reporter.message(locator, "*KEY*",
+                            "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic family name.");
                         if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Warning) {
-                            if (reporter.logWarning(locator, message)) {
+                            if (reporter.logWarning(message)) {
                                 treatments[0] = QuotedGenericFontFamilyTreatment.Allow;     // suppress second warning
                                 return false;
                             }
                         } else if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Info) {
-                            reporter.logInfo(locator, message);
+                            reporter.logInfo(message);
                         }
                     }
                 }
@@ -108,7 +110,8 @@ public class Fonts {
     public static void badFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0) {
-            context.getReporter().logInfo(locator, "Bad <familyName> of <genericFamilyName> expression, value is empty or only XML space characters.");
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <familyName> of <genericFamilyName> expression, value is empty or only XML space characters."));
         } else {
             char c = trimmedValue.charAt(0);
             if ((c != '\"') && (c != '\''))
@@ -134,7 +137,7 @@ public class Fonts {
             c = value.charAt(valueIndex++);
             if (c == '\\') {
                 if (valueIndex == valueLength) {
-                    reporter.logInfo(locator, "Bad quoted string in <familyName> expression, incomplete escape.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad quoted string in <familyName> expression, incomplete escape."));
                     return;
                 } else
                     ++valueIndex;
@@ -142,12 +145,12 @@ public class Fonts {
                 break;
         }
         if (c != quote)
-            reporter.logInfo(locator, "Bad quoted string in <familyName> expression, not terminated.");
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad quoted string in <familyName> expression, not terminated."));
         else if (valueIndex < valueLength) {
-            reporter.logInfo(locator,
-                "Bad quoted string in <familyName> expression, unrecognized characters following string, got '" + value.substring(valueIndex) + "'.");
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Bad quoted string in <familyName> expression, unrecognized characters following string, got ''{0}''.", value.substring(valueIndex)));
         } else if (valueLength < 3) {
-            reporter.logInfo(locator, "Bad quoted string in <familyName> expression, empty string.");
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad quoted string in <familyName> expression, empty string."));
         }
     }
 

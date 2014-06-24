@@ -31,6 +31,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.value.Color;
 import com.skynav.ttv.model.value.impl.ColorImpl;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -69,8 +70,9 @@ public class Colors {
         else if (Strings.isLetters(value))
             badNamedColor(value, locator, context);
         else {
-            context.getReporter().logInfo(locator,
-                "Bad <color> expression, got '" + value + "', but expected <#rrggbb>, #<rrggbbaa>, <rgb(...)>, <rgba(...)>, or <named color>.");
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Bad <color> expression, got ''{0}'', but expected <#rrggbb>, #<rrggbbaa>, <rgb(...)>, <rgba(...)>, or <named color>.", value));
         }
     }
 
@@ -116,7 +118,8 @@ public class Colors {
 
     private static void badNamedColor(String value, Locator locator, VerifierContext context) {
         assert Strings.isLetters(value);
-        context.getReporter().logInfo(locator, "Unknown named color, got '" + value + "'.");
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message(locator, "*KEY*", "Unknown named color, got ''{0}''.", value));
     }
 
     private static boolean isRGBComponent(String value, int minValue, int maxValue, Double[] outputValue) {
@@ -139,24 +142,24 @@ public class Colors {
         try {
             int componentValue = Integer.parseInt(value);
             if ((componentValue < minValue) || (componentValue > maxValue) ) {
-                reporter.logInfo(locator,
-                    "Component out of range [" + minValue + "," + maxValue +
-                    "] in <rgb(...)> or <rgba(...)> color expression, got " + componentValue + ".");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Component out of range [{0},{1}] in <rgb(...)> or <rgba(...)> color expression, got {2}.",
+                    minValue, maxValue, componentValue));
             }
         } catch (NumberFormatException e) {
             if (Strings.containsXMLSpace(value)) {
                 String trimmedComponent = value.trim();
                 try {
                     Integer.parseInt(trimmedComponent);
-                    reporter.logInfo(locator,
-                        "XML space padding not permitted in <rgb(...)> or <rgba(...)> color expression component, got '" + value + "'.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*",
+                        "XML space padding not permitted in <rgb(...)> or <rgba(...)> color expression component, got ''{0}''.", value));
                 } catch (NumberFormatException ee) {
-                    reporter.logInfo(locator,
-                        "Component in <rgb(...)> or <rgba(...)> color expression is not a non-negative integer, got '" + value + "'.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*",
+                        "Component in <rgb(...)> or <rgba(...)> color expression is not a non-negative integer, got ''{0}''.", value));
                 }
             } else {
-                reporter.logInfo(locator,
-                    "Component in <rgb(...)> or <rgba(...)> color expression is not a non-negative integer, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Component in <rgb(...)> or <rgba(...)> color expression is not a non-negative integer, got ''{0}''.", value));
             }
         }
     }
@@ -196,10 +199,18 @@ public class Colors {
         String[] colorComponents = components.split(",");
         int numComponents = valueLimits.length;
         if (colorComponents.length != numComponents) {
-            context.getReporter().logInfo(locator,
-                ((colorComponents.length < numComponents) ? "Missing" : "Extra" ) +
-                " component in <rgb(...)> or <rgba(...)> color expression, got " + colorComponents.length +
-                ", expected " + numComponents + " components.");
+            Reporter reporter = context.getReporter();
+            Message message;
+            if (colorComponents.length < numComponents) {
+                message = reporter.message(locator, "*KEY*",
+                    "Missing component in <rgb(...)> or <rgba(...)> color expression, got {0}, expected {1} components.",
+                    colorComponents.length, numComponents);
+            } else {
+                message = reporter.message(locator, "*KEY*",
+                    "Extra component in <rgb(...)> or <rgba(...)> color expression, got {0}, expected {1} components.",
+                    colorComponents.length, numComponents);
+            }
+            reporter.logInfo(message);
         }
         int componentIndex = 0;
         for (String component : colorComponents) {
@@ -235,16 +246,20 @@ public class Colors {
         assert value.indexOf("rgb") == 0;
         int opIndex = value.indexOf("(");
         if (opIndex < 0) {
-            reporter.logInfo(locator, "Bad RGB function syntax in <color> expression, got '" + value + "', missing opening parenthesis of argument list.");
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Bad RGB function syntax in <color> expression, got ''{0}'', missing opening parenthesis of argument list.", value));
         } else {
             String functionName = value.substring(0, opIndex);
             if (!functionName.equals("rgb") && !functionName.equals("rgba")) {
-                reporter.logInfo(locator, "Bad RGB function syntax in <color> expression, got '" + value + "', incorrect function name, expect 'rgb' or 'rgba'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad RGB function syntax in <color> expression, got ''{0}'', incorrect function name, expect 'rgb' or 'rgba'.", value));
             }
         }
         int cpIndex = value.indexOf(")");
-        if (cpIndex < 0)
-            reporter.logInfo(locator, "Bad RGB function syntax in <color> expression, got '" + value + "', missing closing parenthesis of argument list.");
+        if (cpIndex < 0) {
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Bad RGB function syntax in <color> expression, got ''{0}'', missing closing parenthesis of argument list.", value));
+        }
         if ((opIndex >= 0) && (cpIndex >= 0)) {
             int componentsStart = opIndex + 1;
             int componentsEnd = cpIndex;
@@ -295,8 +310,8 @@ public class Colors {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <#...> color expression, XML space padding not permitted before '#'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <#...> color expression, XML space padding not permitted before '#'."));
             }
 
             // hash sign
@@ -304,16 +319,16 @@ public class Colors {
                 break;
             c = value.charAt(valueIndex);
             if (c != '#') {
-                reporter.logInfo(locator,
-                    "Bad <#...> color expression, expected '#', got '" + c + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <#...> color expression, expected '#', got '" + c + "'."));
                 break;
             } else
                 valueIndex++;
 
             // whitespace after hash sign
             if (valueIndex == valueLength) {
-                reporter.logInfo(locator,
-                    "Bad <#...> color expression, no hexadecimal digits, expect 6 ('rrggbb') or 8 ('rrggbbaa') hexadecimal digits after '#'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <#...> color expression, no hexadecimal digits, expect 6 ('rrggbb') or 8 ('rrggbbaa') hexadecimal digits after '#'."));
                 break;
             }
             c = value.charAt(valueIndex);
@@ -323,14 +338,14 @@ public class Colors {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <#...> color expression, XML space padding not permitted after '#'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <#...> color expression, XML space padding not permitted after '#'."));
             }
 
             // hex digits
             if (valueIndex == valueLength) {
-                reporter.logInfo(locator,
-                    "Bad <#...> color expression, no hexadecimal digits, expect 6 ('rrggbb') or 8 ('rrggbbaa') hexadecimal digits after '#'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <#...> color expression, no hexadecimal digits, expect 6 ('rrggbb') or 8 ('rrggbbaa') hexadecimal digits after '#'."));
                 break;
             }
             c = value.charAt(valueIndex);
@@ -349,12 +364,12 @@ public class Colors {
             if (hexDigits != null) {
                 int numDigits = hexDigits.length();
                 if ((numDigits != 6) && (numDigits != 8)) {
-                    reporter.logInfo(locator,
-                        "Bad <#...> color expression, expect 6 ('rrggbb') or 8 ('rrggbbaa') hexadecimal digits, got " + numDigits + " digits.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*",
+                        "Bad <#...> color expression, expect 6 ('rrggbb') or 8 ('rrggbbaa') hexadecimal digits, got {0} digits.", numDigits));
                 }
             } else {
-                reporter.logInfo(locator,
-                    "Bad <#...> color expression, no hexadecimal digits, expect 6 ('rrggbb') or 8 ('rrggbbaa') hexadecimal digits after '#'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <#...> color expression, no hexadecimal digits, expect 6 ('rrggbb') or 8 ('rrggbbaa') hexadecimal digits after '#'."));
             }
 
             // whitespace after hex digits
@@ -367,8 +382,8 @@ public class Colors {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <#...> color expression, XML space padding not permitted after hexadecimal digits.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <#...> color expression, XML space padding not permitted after hexadecimal digits."));
             }
 
             // garbage after (hexDigit+ S*)
@@ -377,9 +392,15 @@ public class Colors {
                 while (valueIndex < valueLength) {
                     sb.append(value.charAt(valueIndex++));
                 }
-                reporter.logInfo(locator,
-                    "Bad <#...> color expression, unrecognized characters not permitted after " +
-                    ((hexDigits ==  null) ? "sign" :  "hexadecimal digits") + ", got '" + sb + "'.");
+                Message message;
+                if (hexDigits  == null) {
+                    message = reporter.message(locator, "*KEY*",
+                        "Bad <#...> color expression, unrecognized characters not permitted after sign, got ''{0}''.", sb.toString());
+                } else {
+                    message = reporter.message(locator, "*KEY*", 
+                        "Bad <#...> color expression, unrecognized characters not permitted after hexadecimal digits, got ''{0}''.", sb.toString());
+                }
+                reporter.logInfo(message);
             }
 
         } while (false);

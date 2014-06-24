@@ -168,20 +168,20 @@ public class Identifiers {
 
             // ident-start
             if (valueIndex == valueLength) {
-                reporter.logInfo(locator, "Bad identifier in <familyName> expression, missing ident-start.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, missing ident-start."));
                 break;
             }
             c = value.charAt(valueIndex);
             if (c == '\\') {
                 if (valueIndex + 1 == valueLength) {
-                    reporter.logInfo(locator, "Bad identifier in <familyName> expression, incomplete escape in ident-start.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, incomplete escape in ident-start."));
                     valueIndex = valueLength;
                 } else
                     valueIndex += 2;
             } else if (isIdentStart(c)) {
                 ++valueIndex;
             } else {
-                reporter.logInfo(locator, "Bad identifier in <familyName> expression, unexpected ident-start character '" + c + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, unexpected ident-start character ''{0}''.", c));
                 valueIndex = valueLength;
             }
 
@@ -190,26 +190,26 @@ public class Identifiers {
                 c = value.charAt(valueIndex);
                 if (c == '\\') {
                     if (valueIndex + 1 == valueLength) {
-                        reporter.logInfo(locator, "Bad identifier in <familyName> expression, incomplete escape in ident-following.");
+                        reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, incomplete escape in ident-following."));
                         valueIndex = valueLength;
                     } else
                         valueIndex += 2;
                 } else if (isIdentFollowing(c)) {
                     ++valueIndex;
                 } else {
-                    reporter.logInfo(locator, "Bad identifier in <familyName> expression, unexpected ident-following character '" + c + "'.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, unexpected ident-following character ''{0}''.", c));
                     valueIndex = valueLength;
                 }
             }
             
             // don't allow subsequent characters that are not ident-following
             if (valueIndex < valueLength)
-                reporter.logInfo(locator, "Bad identifier in <familyName> expression, unexpected character '" + c + "' following last ident-following character.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, unexpected character ''{0}'' following last ident-following character.", c));
 
         } while (false);
 
         if (isReservedKeyword(value))
-            reporter.logInfo(locator, "Bad identifier in <familyName> expression, reserved keyword '" + value + "' used.");
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, reserved keyword ''{0}'' used.", value));
     }
 
     private static boolean isReservedKeyword(String value) {

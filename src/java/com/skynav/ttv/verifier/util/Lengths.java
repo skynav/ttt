@@ -95,12 +95,15 @@ public class Lengths {
                     if (negativeTreatment == NegativeTreatment.Error)
                         return false;
                     else if (negativeTreatment == NegativeTreatment.Warning) {
-                        if (reporter.logWarning(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*",
+                            "Negative <length> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
                             treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
                             return false;
                         }
-                    } else if (negativeTreatment == NegativeTreatment.Info)
-                        reporter.logInfo(locator, "Negative <length> expression " + Numbers.normalize(numberValue) + " used.");
+                    } else if (negativeTreatment == NegativeTreatment.Info) {
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Negative <length> expression {0} used.", Numbers.normalize(numberValue)));
+                    }
                 }
             }
             Length.Unit unitsValue;
@@ -143,8 +146,7 @@ public class Lengths {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <length> expression, XML space padding not permitted before number.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <length> expression, XML space padding not permitted before number."));
             }
 
             // optional sign before non-negative-number
@@ -168,8 +170,7 @@ public class Lengths {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <length> expression, XML space padding not permitted between sign and non-negative-number.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <length> expression, XML space padding not permitted between sign and non-negative-number."));
             }
 
             // non-negative-number (integral part)
@@ -218,8 +219,7 @@ public class Lengths {
             // number
             if (integralPart == null) {
                 if (fractionalPart == null) {
-                    reporter.logInfo(locator,
-                        "Bad <length> expression, missing number after optional sign.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <length> expression, missing number after optional sign."));
                 } else {
                     numberValue = fractionalPart.doubleValue();
                 }
@@ -241,8 +241,7 @@ public class Lengths {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <length> expression, XML space padding not permitted between number and units.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <length> expression, XML space padding not permitted between number and units."));
             }
 
             // units
@@ -266,11 +265,11 @@ public class Lengths {
                 } catch (IllegalArgumentException e) {
                     try {
                         units = Length.Unit.valueOfShorthandIgnoringCase(unitsAsString);
-                        reporter.logInfo(locator,
-                            "Bad <length> expression, units is not expressed with correct case, got '" + unitsAsString + "', expected " + units.shorthand() + "'.");
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Bad <length> expression, units is not expressed with correct case, got ''{0}'', expected ''{1}''.",
+                            unitsAsString, units.shorthand()));
                     } catch (IllegalArgumentException ee) {
-                        reporter.logInfo(locator,
-                            "Bad <length> expression, unknown units '" + unitsAsString + "'.");
+                        reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <length> expression, unknown units ''{0}''.", unitsAsString));
                     }
                 }
             }
@@ -285,8 +284,7 @@ public class Lengths {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <length> expression, XML space padding not permitted after units.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <length> expression, XML space padding not permitted after units."));
             }
 
             // garbage after (units S*)
@@ -295,8 +293,8 @@ public class Lengths {
                 while (valueIndex < valueLength) {
                     sb.append(value.charAt(valueIndex++));
                 }
-                reporter.logInfo(locator,
-                    "Bad <length> expression, unrecognized characters not permitted after units, got '" + sb + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <length> expression, unrecognized characters not permitted after units, got ''{0}''.", sb.toString()));
             }
 
         } while (false);
@@ -305,10 +303,14 @@ public class Lengths {
             numberValue = -numberValue;
         if (treatments != null) {
             NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
-            if ((numberValue < 0) && (negativeTreatment == NegativeTreatment.Error))
-                reporter.logInfo(locator, "Bad <length> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
-            if (units == null)
-                reporter.logInfo(locator, "Bad <length> expression, missing or unknown units, expected one of " + Length.Unit.shorthands() + ".");
+            if ((numberValue < 0) && (negativeTreatment == NegativeTreatment.Error)) {
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <length> expression, negative value {0} not permitted.", Numbers.normalize(numberValue)));
+            }
+            if (units == null) {
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <length> expression, missing or unknown units, expected one of {0}.", Length.Unit.shorthands()));
+            }
         }
     }
 
@@ -338,12 +340,14 @@ public class Lengths {
                 if (mixedUnitsTreatment == MixedUnitsTreatment.Error)
                     return false;
                 else if (mixedUnitsTreatment == MixedUnitsTreatment.Warning) {
-                    if (reporter.logWarning(locator, "Mixed units " +  Length.Unit.shorthands(units) + " should not be used in <length> expressions.")) {
+                    if (reporter.logWarning(reporter.message(locator, "*KEY*", 
+                        "Mixed units {0} should not be used in <length> expressions.", Length.Unit.shorthands(units)))) {
                         treatments[1] = MixedUnitsTreatment.Allow;                          // suppress second warning
                         return false;
                     }
-                } else if (mixedUnitsTreatment == MixedUnitsTreatment.Info)
-                    reporter.logInfo(locator, "Mixed units " + Length.Unit.shorthands(units) + " used in <length> expressions.");
+                } else if (mixedUnitsTreatment == MixedUnitsTreatment.Info) {
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Mixed units {0} used in <length> expressions.", Length.Unit.shorthands(units)));
+                }
             }
         }
         if (outputLengths != null) {
@@ -367,16 +371,17 @@ public class Lengths {
                 badLength(component, locator, context, treatmentsInner);
         }
         if (numComponents < minMax[0]) {
-            reporter.logInfo(locator,
-                "Missing <length> expression, got " + numComponents + ", but expected at least " + minMax[0] + " <length> expressions.");
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Missing <length> expression, got {0}, but expected at least {1} <length> expressions.", numComponents, minMax[0]));
         } else if (numComponents > minMax[1]) {
-            reporter.logInfo(locator,
-                "Extra <length> expression, got " + numComponents + ", but expected no more than " + minMax[1] + " <length> expressions.");
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Extra <length> expression, got {0}, but expected no more than {1} <length> expressions.", numComponents, minMax[1]));
         }
         if (treatments != null) {
             MixedUnitsTreatment mixedUnitsTreatment = (MixedUnitsTreatment) treatments[1];
-            if (!Units.sameUnits(lengths) && (mixedUnitsTreatment == MixedUnitsTreatment.Error))
-                reporter.logInfo(locator, "Mixed units " + Length.Unit.shorthands(Units.units(lengths)) + " not permitted.");
+            if (!Units.sameUnits(lengths) && (mixedUnitsTreatment == MixedUnitsTreatment.Error)) {
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Mixed units {0} not permitted.", Length.Unit.shorthands(Units.units(lengths))));
+            }
         }
     }
 

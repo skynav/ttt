@@ -149,7 +149,8 @@ public class TTML1TimingVerifier implements TimingVerifier {
             }
             if (!success) {
                 if (value != null) {
-                    context.getReporter().logError(locator, "Invalid " + timingName + " value '" + value + "'.");
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", timingName, value));
                 }
             }
             return success;
@@ -159,11 +160,11 @@ public class TTML1TimingVerifier implements TimingVerifier {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                reporter.logInfo(locator, "Empty " + timingName + " not permitted, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", timingName, value));
             else if (Strings.isAllXMLSpace(value))
-                reporter.logInfo(locator, "The value of " + timingName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", timingName, value));
             else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logInfo(locator, "XML space padding not permitted on " + timingName + ", got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", timingName, value));
             else
                 success = verifier.verify(model, content, timingName, value, locator, context, verificationParameters);
             return success;

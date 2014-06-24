@@ -59,24 +59,27 @@ public class Integers {
                     if (negativeTreatment == NegativeTreatment.Error)
                         return false;
                     else if (negativeTreatment == NegativeTreatment.Warning) {
-                        if (reporter.logWarning(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*",
+                            "Negative <integer> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
                             treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
                             return false;
                         }
-                    } else if (negativeTreatment == NegativeTreatment.Info)
-                        reporter.logInfo(locator, "Negative <integer> expression " + Numbers.normalize(numberValue) + " used.");
+                    } else if (negativeTreatment == NegativeTreatment.Info) {
+                        reporter.logInfo(reporter.message(locator, "*KEY*", "Negative <integer> expression {0} used.", Numbers.normalize(numberValue)));
+                    }
                 } else if (numberValue == 0) {
                     assert treatments.length > 1;
                     ZeroTreatment zeroTreatment = (ZeroTreatment) treatments[1];
                     if (zeroTreatment == ZeroTreatment.Error)
                         return false;
                     else if (zeroTreatment == ZeroTreatment.Warning) {
-                        if (reporter.logWarning(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " should not be used.")) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*", "Zero <integer> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
                             treatments[1] = ZeroTreatment.Allow;                            // suppress second warning
                             return false;
                         }
-                    } else if (zeroTreatment == ZeroTreatment.Info)
-                        reporter.logInfo(locator, "Zero <integer> expression " + Numbers.normalize(numberValue) + " used.");
+                    } else if (zeroTreatment == ZeroTreatment.Info) {
+                        reporter.logInfo(reporter.message(locator, "*KEY*", "Zero <integer> expression {0} used.", Numbers.normalize(numberValue)));
+                    }
                 }
             }
             if (outputInteger != null)
@@ -107,8 +110,7 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <integer> expression, XML space padding not permitted before integer.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <integer> expression, XML space padding not permitted before integer."));
             }
 
             // optional sign before non-negative-integer
@@ -132,8 +134,7 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <integer> expression, XML space padding not permitted between sign and non-negative-integer.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <integer> expression, XML space padding not permitted between sign and non-negative-integer."));
             }
 
             // non-negative-number (integral part only)
@@ -158,8 +159,7 @@ public class Integers {
 
             // non-negative-number
             if (integralPart == null) {
-                reporter.logInfo(locator,
-                    "Bad <integer> expression, missing non-negative integer after optional sign.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <integer> expression, missing non-negative integer after optional sign."));
             } else {
                 numberValue = integralPart.intValue();
             }
@@ -174,8 +174,7 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(locator,
-                    "Bad <integer> expression, XML space padding not permitted after integer.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <integer> expression, XML space padding not permitted after integer."));
             }
 
             // garbage after (number S*)
@@ -184,8 +183,8 @@ public class Integers {
                 while (valueIndex < valueLength) {
                     sb.append(value.charAt(valueIndex++));
                 }
-                reporter.logInfo(locator,
-                    "Bad <integer> expression, unrecognized characters not permitted after integer, got '" + sb + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <integer> expression, unrecognized characters not permitted after integer, got ''{0}''.", sb.toString()));
             }
 
         } while (false);
@@ -193,10 +192,13 @@ public class Integers {
         if (negative)
             numberValue = -numberValue;
         if (treatments != null) {
-            if ((numberValue < 0) && (((NegativeTreatment)treatments[0]) == NegativeTreatment.Error))
-                reporter.logInfo(locator, "Bad <integer> expression, negative value " + Numbers.normalize(numberValue) + " not permitted.");
-            else if ((numberValue == 0) && (((ZeroTreatment)treatments[1]) == ZeroTreatment.Error))
-                reporter.logInfo(locator, "Bad <integer> expression, zero value not permitted.");
+            if ((numberValue < 0) && (((NegativeTreatment)treatments[0]) == NegativeTreatment.Error)) {
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <integer> expression, negative value {0} not permitted.", Numbers.normalize(numberValue)));
+            } else if ((numberValue == 0) && (((ZeroTreatment)treatments[1]) == ZeroTreatment.Error)) {
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad <integer> expression, zero value not permitted."));
+            }
         }
     }
 
@@ -237,11 +239,11 @@ public class Integers {
         }
         if (minMax != null) {
             if (numComponents < minMax[0]) {
-                reporter.logInfo(locator,
-                    "Missing <integer> expression, got " + numComponents + ", but expected at least " + minMax[0] + " <integer> expressions.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Missing <integer> expression, got {0}, but expected at least {1} <integer> expressions.", numComponents, minMax[0]));
             } else if (numComponents > minMax[1]) {
-                reporter.logInfo(locator,
-                    "Extra <integer> expression, got " + numComponents + ", but expected no more than " + minMax[1] + " <integer> expressions.");
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Extra <integer> expression, got {0}, but expected no more than {1} <integer> expressions.", numComponents, minMax[1]));
             }
         }
     }

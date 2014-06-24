@@ -359,8 +359,10 @@ public class TTML1StyleVerifier implements StyleVerifier {
         boolean failed = false;
         if (content instanceof Set)
             failed = !verify((Set) content, locator, context);
-        if (failed)
-            context.getReporter().logError(locator, "Invalid '" + context.getBindingElementName(content) + "' styled item.");
+        if (failed) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid ''{0}'' styled item.", context.getBindingElementName(content)));
+        }
         return !failed;
     }
 
@@ -380,15 +382,16 @@ public class TTML1StyleVerifier implements StyleVerifier {
                 continue;
             QName name = new QName(nsUri != null ? nsUri : "", localName);
             if (name.getNamespaceURI().equals(NAMESPACE)) {
+                Reporter reporter = context.getReporter();
                 if ((content instanceof TimedText) && name.equals(extentAttributeName))
                     continue;
                 else if (!isStyleAttribute(name)) {
-                    context.getReporter().logError(locator, "Unknown attribute in TT Style namespace '" + name + "' not permitted on '" +
-                        context.getBindingElementName(content) + "'.");
+                    reporter.logError(reporter.message(locator, "*KEY*", "Unknown attribute in TT Style namespace ''{0}'' not permitted on ''{1}''.",
+                        name, context.getBindingElementName(content)));
                     failed = true;
                 } else if (!permitsStyleAttribute(content)) {
-                    context.getReporter().logError(locator, "TT Style attribute '" + name + "' not permitted on '" +
-                        context.getBindingElementName(content) + "'.");
+                    reporter.logError(reporter.message(locator, "*KEY*", "TT Style attribute ''{0}'' not permitted on ''{1}''.",
+                        name, context.getBindingElementName(content)));
                     failed = true;
                 }
             }
@@ -432,7 +435,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
                 ++numStyleAttributes;
         }
         if (numStyleAttributes > 1) {
-            context.getReporter().logInfo(locator, "Style attribute count exceeds maximum, got " + numStyleAttributes + ", expected no more than 1.");
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Style attribute count exceeds maximum, got {0}, expected no more than 1.", numStyleAttributes));
             failed = true;
         }
         return !failed;
@@ -488,7 +492,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
                         value = IdReferences.getIdReference(value);
                     } else
                         value = value.toString();
-                    context.getReporter().logError(locator, "Invalid " + styleName + " value '" + value + "'.");
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", styleName, value));
                 }
             }
             return success;
@@ -498,11 +503,11 @@ public class TTML1StyleVerifier implements StyleVerifier {
             boolean success = false;
             Reporter reporter = context.getReporter();
             if (value.length() == 0)
-                reporter.logInfo(locator, "Empty " + styleName + " not permitted, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", styleName, value));
             else if (Strings.isAllXMLSpace(value))
-                reporter.logInfo(locator, "The value of " + styleName + " is entirely XML space characters, got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", styleName, value));
             else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logInfo(locator, "XML space padding not permitted on " + styleName + ", got '" + value + "'.");
+                reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", styleName, value));
             else
                 success = verifier.verify(model, content, styleName, value, locator, context);
             return success;

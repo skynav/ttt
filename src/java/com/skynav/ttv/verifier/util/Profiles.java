@@ -32,6 +32,7 @@ import java.util.Set;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -61,26 +62,32 @@ public class Profiles {
     }
 
     public static void badFeatureDesignation(String value, Locator locator, VerifierContext context, String base) {
-        String message = null;
+        Reporter reporter = context.getReporter();
+        Message message = null;
         try {
             URI featureUri = new URI(base).resolve(value);
             String uriString = featureUri.toString();
             String uriFragment = featureUri.getFragment();
             String featureNamespace = (uriFragment != null) ? uriString.substring(0, uriString.indexOf("#" + uriFragment)) : uriString;
             String ttFeatureNamespace = context.getModel().getTTFeatureNamespaceUri().toString();
-            if (!featureNamespace.equals(ttFeatureNamespace))
-                message = "Unknown namespace in feature designation '" + featureUri + "', expect TT Feature Namespace '" + ttFeatureNamespace + "'.";
-            else if (uriFragment == null)
-                message = "Missing designation in feature designation '" + featureUri + "'.";
-            else if (uriFragment.length() == 0)
-                message = "Empty designation token in feature designation '" + featureUri + "'.";
-            else if (!context.getModel().isStandardFeatureDesignation(featureUri))
-                message = "Unknown designation token in feature designation '" + featureUri + "'.";
+            if (!featureNamespace.equals(ttFeatureNamespace)) {
+                message = reporter.message(locator, "*KEY*",
+                    "Unknown namespace in feature designation ''{0}'', expect TT Feature Namespace ''{1}''.", featureUri, ttFeatureNamespace);
+            } else if (uriFragment == null) {
+                message = reporter.message(locator, "*KEY*",
+                    "Missing designation in feature designation ''{0}''.", featureUri);
+            } else if (uriFragment.length() == 0) {
+                message =reporter.message(locator, "*KEY*",
+                    "Empty designation token in feature designation ''{0}''.", featureUri);
+            } else if (!context.getModel().isStandardFeatureDesignation(featureUri)) {
+                message =reporter.message(locator, "*KEY*",
+                    "Unknown designation token in feature designation ''{0}''.", featureUri);
+            }
         } catch (URISyntaxException e) {
             // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.
         }
         if (message != null)
-            context.getReporter().logInfo(locator, message);
+            reporter.logInfo(message);
     }
 
     public static boolean isExtensionDesignation(String value, Locator locator, VerifierContext context, String base) {
@@ -101,12 +108,12 @@ public class Profiles {
             else if (extensionNamespace.equals(modelExtensionNamespace))
                 return context.getModel().isStandardExtensionDesignation(extensionUri);
             else {
-                if (context.getReporter().isWarningEnabled("references-other-extension-namespace")) {
-                    if (reporter.logWarning(locator, "Other namespace in extension designation '" + extensionUri + "'."))
+                if (reporter.isWarningEnabled("references-other-extension-namespace")) {
+                    if (reporter.logWarning(reporter.message(locator, "*KEY*", "Other namespace in extension designation ''{0}''.", extensionUri)))
                         return false;
                 }
-                if (context.getReporter().isWarningEnabled("references-non-standard-extension")) {
-                    if (reporter.logWarning(locator, "Non-standard extension designation '" + extensionUri + "' in an Other Extension Namespace."))
+                if (reporter.isWarningEnabled("references-non-standard-extension")) {
+                    if (reporter.logWarning(reporter.message(locator, "*KEY*", "Non-standard extension designation ''{0}'' in an Other Extension Namespace.", extensionUri)))
                         return false;
                 }
                 return true;
@@ -118,7 +125,8 @@ public class Profiles {
     }
 
     public static void badExtensionDesignation(String value, Locator locator, VerifierContext context, String base) {
-        String message = null;
+        Reporter reporter = context.getReporter();
+        Message message = null;
         try {
             URI extensionUri = new URI(base).resolve(value);
             String uriString = extensionUri.toString();
@@ -129,23 +137,27 @@ public class Profiles {
             String modelExtensionNamespace = model.getExtensionNamespaceUri().toString();
             String modelName = model.getName();
             if (uriFragment == null) {
-                message = "Missing designation in extension designation '" + extensionUri + "'.";
+                message = reporter.message(locator, "*KEY*",
+                        "Missing designation in extension designation ''{0}''.", extensionUri);
             } else if (uriFragment.length() == 0) {
-                message = "Empty designation token in extension designation '" + extensionUri + "'.";
+                message = reporter.message(locator, "*KEY*",
+                        "Empty designation token in extension designation ''{0}''.", extensionUri);
             } else if (extensionNamespace.equals(ttExtensionNamespace)) {
                 if (!model.isStandardExtensionDesignation(extensionUri)) {
-                    message = "Unknown designation token in extension designation '" + extensionUri + "' in TT Extension Namespace.";
+                    message = reporter.message(locator, "*KEY*",
+                        "Unknown designation token in extension designation ''{0}'' in TT Extension Namespace.", extensionUri);
                 }
             } else if (extensionNamespace.equals(modelExtensionNamespace)) {
                 if (!model.isStandardExtensionDesignation(extensionUri)) {
-                    message = "Unknown designation token in extension designation '" + extensionUri + "' in Model (" + modelName + ") Extension Namespace.";
+                    message = reporter.message(locator, "*KEY*",
+                        "Unknown designation token in extension designation ''{0}'' in Model ({1}) Extension Namespace.", extensionUri, modelName);
                 }
             }
         } catch (URISyntaxException e) {
             // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.
         }
         if (message != null)
-            context.getReporter().logInfo(locator, message);
+            reporter.logInfo(message);
     }
 
     public static boolean isProfileDesignator(String value, Locator locator, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
@@ -161,7 +173,7 @@ public class Profiles {
             } else {
                 Reporter reporter = context.getReporter();
                 if (reporter.isWarningEnabled("references-non-standard-profile")) {
-                    if (reporter.logWarning(locator, "Non-standard profile designator '" + uri + "'."))
+                    if (reporter.logWarning(reporter.message(locator, "*KEY*", "Non-standard profile designator ''{0}''.", uri)))
                         return false;
                 }
                 return true;
@@ -180,9 +192,9 @@ public class Profiles {
                 uri = ttmlProfileNamespaceUri.resolve(uri);
             if (!designators.contains(uri)) {
                 if (uri.toString().indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
-                    reporter.logInfo(locator, "Bad profile designator, unrecognized designator '" + value + "' in TT Profile Namespace.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad profile designator, unrecognized designator ''{0}'' in TT Profile Namespace.", value));
                 } else {
-                    reporter.logInfo(locator, "Bad profile designator, unrecognized designator '" + value + "' in Other Profile Namespace.");
+                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad profile designator, unrecognized designator ''{0}'' in Other Profile Namespace.", value));
                 }
             }
         } catch (URISyntaxException e) {

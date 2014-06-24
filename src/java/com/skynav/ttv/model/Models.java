@@ -38,6 +38,10 @@ public class Models {
         return TTML1.MODEL;
     }
 
+    public static String getDefaultModelName() {
+        return getDefaultModel().getName();
+    }
+
     private static Map<String,Model> modelMap;
 
     static {
