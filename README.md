@@ -301,15 +301,15 @@ An example of a document fragment that uses annotations follows (taken from the 
 
 <pre>
     $ java -version
-    java version "1.6.0_51"
-    Java(TM) SE Runtime Environment (build 1.6.0_51-b11-457-11M4509)
-    Java HotSpot(TM) 64-Bit Server VM (build 20.51-b01-457, mixed mode)
+    java version "1.6.0_65"
+    Java(TM) SE Runtime Environment (build 1.6.0_65-b14-462-11M4609)
+    Java HotSpot(TM) 64-Bit Server VM (build 20.65-b04-462, mixed mode)
 
     $ ant -version
-    Apache Ant(TM) version 1.8.2 compiled on June 20 2012
+    Apache Ant(TM) version 1.9.3 compiled on December 23 2013
 
     $ java -cp /usr/share/java/junit.jar junit.runner.Version
-    4.10
+    4.11
 </pre>
 
  * An (Helios) Eclipse workspace and `ttv` project are available under the `.eclipse` directory.
