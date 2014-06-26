@@ -424,9 +424,9 @@ public class TimedTextVerifier implements VerifierContext {
             Object parent = getBindingElement(parentNode);
             if (parent != null)
                 return parent;
-            else if (rootBinding != null)
-                return resourceModel.getSemanticsVerifier().findBindingElement(rootBinding, parentNode);
-            else
+            else if (rootBinding != null) {
+                return getModel().getSemanticsVerifier().findBindingElement(rootBinding, parentNode);
+            } else
                 return null;
         }
     }
@@ -1270,7 +1270,7 @@ public class TimedTextVerifier implements VerifierContext {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            XMLReader filter = new ForeignVocabularyFilter(reader, resourceModel.getNamespaceURIs(), extensionSchemas.keySet(), foreignTreatment);
+            XMLReader filter = new ForeignVocabularyFilter(reader, getModel().getNamespaceURIs(), extensionSchemas.keySet(), foreignTreatment);
             SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
             Validator v = getSchema().newValidator();
@@ -1535,13 +1535,13 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.logInfo(reporter.message("*KEY*", "Skipping semantics verification phase ({0}).", currentPhase.ordinal()));
             return true;
         } else
-            reporter.logInfo(reporter.message("*KEY*", "Verifying semantics phase {0} using ''{1}'' model...", currentPhase.ordinal(), resourceModel.getName()));
+            reporter.logInfo(reporter.message("*KEY*", "Verifying semantics phase {0} using ''{1}'' model...", currentPhase.ordinal(), getModel().getName()));
         try {
             // construct source pipeline
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, resourceModel.getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
+            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, getModel().getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
             LocationAnnotatingFilter filter2 = new LocationAnnotatingFilter(filter1);
             SAXSource source = new SAXSource(filter2, new InputSource(openStream(resourceBufferRaw)));
             source.setSystemId(resourceUri.toString());
@@ -1555,7 +1555,7 @@ public class TimedTextVerifier implements VerifierContext {
             tf.newTransformer().transform(source, result);
 
             // unmarshall annotated infoset
-            JAXBContext context = JAXBContext.newInstance(resourceModel.getJAXBContextPath());
+            JAXBContext context = JAXBContext.newInstance(getModel().getJAXBContextPath());
             Binder<Node> binder = context.createBinder();
             Object unmarshalled = binder.unmarshal(result.getNode());
 
@@ -1569,11 +1569,11 @@ public class TimedTextVerifier implements VerifierContext {
                 reporter.logError(reporter.message("*KEY*", "Unexpected root element, can't introspect non-JAXBElement"));
             else {
                 JAXBElement<?> root = (JAXBElement<?>) unmarshalled;
-                Documents.assignIdAttributes(binder.getXMLNode(root).getOwnerDocument(), resourceModel.getIdAttributes());
-                if (verifyRootElement(root, resourceModel.getRootClasses())) {
+                Documents.assignIdAttributes(binder.getXMLNode(root).getOwnerDocument(), getModel().getIdAttributes());
+                if (verifyRootElement(root, getModel().getRootClasses())) {
                     this.rootBinding = root.getValue();
                     this.rootName = root.getName();
-                    resourceModel.getSemanticsVerifier().verify(this.rootBinding, this);
+                    getModel().getSemanticsVerifier().verify(this.rootBinding, this);
                 }
             }
         } catch (UnmarshalException e) {
@@ -1606,7 +1606,7 @@ public class TimedTextVerifier implements VerifierContext {
         reporter.logInfo(reporter.message("*KEY*", "{0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
         reporter.flush();
         Results results = new Results(uri, rv,
-            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), resourceModel, resourceCharset, rootName);
+            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), getModel(), resourceCharset, rootName);
         this.results.put(uri, results);
         return rv;
     }

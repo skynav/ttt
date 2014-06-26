@@ -77,8 +77,8 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
         return !failed;
     }
 
-    private final QName profileAttributeName = new QName(TTML1ParameterVerifier.getParameterNamespaceUri(), "profile");
-    private final QName profileElementName = new QName(TTML1ParameterVerifier.getParameterNamespaceUri(), "profile");
+    public static final QName profileAttributeName = new QName(TTML1ParameterVerifier.getParameterNamespaceUri(), "profile");
+    public static final QName profileElementName = new QName(TTML1ParameterVerifier.getParameterNamespaceUri(), "profile");
     public boolean verify(TimedText content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();

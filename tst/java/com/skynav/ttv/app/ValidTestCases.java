@@ -189,6 +189,11 @@ public class ValidTestCases {
         performValidityTest("st2052-2013-valid-all-styles.xml", -1, -1);
     }
 
+    @Test
+    public void testValidNFLXCC() throws Exception {
+        performValidityTest("nflxcc-valid.xml", -1, -1);
+    }
+
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

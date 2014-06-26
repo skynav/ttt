@@ -129,11 +129,11 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return context;
     }
 
-    private Locator getLocator(Object content) {
+    protected Locator getLocator(Object content) {
         return Locators.getLocator(content);
     }
 
-    private boolean verify(TimedText tt) {
+    protected boolean verify(TimedText tt) {
         boolean failed = false;
         if (!verifyParameterAttributes(tt))
             failed = true;
@@ -156,7 +156,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Head head, TimedText tt) {
+    protected boolean verify(Head head, TimedText tt) {
         boolean failed = false;
         if (!verifyOtherAttributes(head))
             failed = true;
@@ -177,7 +177,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Styling styling) {
+    protected boolean verify(Styling styling) {
         boolean failed = false;
         if (!verifyOtherAttributes(styling))
             failed = true;
@@ -192,7 +192,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Style style) {
+    protected boolean verify(Style style) {
         boolean failed = false;
         if (!verifyStyleAttributes(style))
             failed = true;
@@ -201,7 +201,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Layout layout) {
+    protected boolean verify(Layout layout) {
         boolean failed = false;
         if (!verifyOtherAttributes(layout))
             failed = true;
@@ -216,7 +216,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Region region) {
+    protected boolean verify(Region region) {
         boolean failed = false;
         if (!verifyStyleAttributes(region))
             failed = true;
@@ -239,7 +239,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Body body) {
+    protected boolean verify(Body body) {
         boolean failed = false;
         if (!verifyMetadataAttributes(body))
             failed = true;
@@ -264,7 +264,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Division division) {
+    protected boolean verify(Division division) {
         boolean failed = false;
         if (!verifyMetadataAttributes(division))
             failed = true;
@@ -289,7 +289,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Paragraph paragraph) {
+    protected boolean verify(Paragraph paragraph) {
         boolean failed = false;
         if (!verifyMetadataAttributes(paragraph))
             failed = true;
@@ -306,7 +306,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Span span) {
+    protected boolean verify(Span span) {
         boolean failed = false;
         if (!verifyMetadataAttributes(span))
             failed = true;
@@ -323,7 +323,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Break br) {
+    protected boolean verify(Break br) {
         boolean failed = false;
         if (!verifyMetadataAttributes(br))
             failed = true;
@@ -342,7 +342,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Set set) {
+    protected boolean verify(Set set) {
         boolean failed = false;
         if (!verifyStyleAttributes(set))
             failed = true;
@@ -359,7 +359,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Profile profile) {
+    protected boolean verify(Profile profile) {
         boolean failed = false;
         if (!verifyParameterAttributes(profile))
             failed = true;
@@ -382,7 +382,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Features features) {
+    protected boolean verify(Features features) {
         boolean failed = false;
         if (!verifyParameterAttributes(features))
             failed = true;
@@ -399,7 +399,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Feature feature) {
+    protected boolean verify(Feature feature) {
         boolean failed = false;
         if (!verifyOtherAttributes(feature))
             failed = true;
@@ -408,7 +408,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Extensions extensions) {
+    protected boolean verify(Extensions extensions) {
         boolean failed = false;
         if (!verifyParameterAttributes(extensions))
             failed = true;
@@ -425,7 +425,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Extension extension) {
+    protected boolean verify(Extension extension) {
         boolean failed = false;
         if (!verifyOtherAttributes(extension))
             failed = true;
@@ -438,7 +438,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return this.profileVerifier.verify(content, getLocator(content), this.context, ItemType.Element);
     }
 
-    private boolean verify(Actor actor) {
+    protected boolean verify(Actor actor) {
         boolean failed = false;
         if (!verifyOtherAttributes(actor))
             failed = true;
@@ -447,7 +447,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Agent agent) {
+    protected boolean verify(Agent agent) {
         boolean failed = false;
         if (!verifyOtherAttributes(agent))
             failed = true;
@@ -465,7 +465,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Copyright copyright) {
+    protected boolean verify(Copyright copyright) {
         boolean failed = false;
         if (!verifyOtherAttributes(copyright))
             failed = true;
@@ -474,7 +474,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Description description) {
+    protected boolean verify(Description description) {
         boolean failed = false;
         if (!verifyOtherAttributes(description))
             failed = true;
@@ -483,7 +483,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Metadata metadata) {
+    protected boolean verify(Metadata metadata) {
         boolean failed = false;
         if (!verifyMetadataAttributes(metadata))
             failed = true;
@@ -504,7 +504,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Name name) {
+    protected boolean verify(Name name) {
         boolean failed = false;
         if (!verifyOtherAttributes(name))
             failed = true;
@@ -513,7 +513,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verify(Title title) {
+    protected boolean verify(Title title) {
         boolean failed = false;
         if (!verifyOtherAttributes(title))
             failed = true;

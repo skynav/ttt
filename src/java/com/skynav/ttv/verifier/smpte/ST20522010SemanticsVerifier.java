@@ -96,12 +96,12 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
                     Reporter reporter = context.getReporter();
                     reporter.logError(reporter.message(locator, "*KEY", "Unknown element in SMPTE namespace ''{0}''.", name));
                     failed = true;
-                } else if (isImageElement(content)) {
-                    failed = !verifyImage(content, locator, context);
-                } else if (isInformationElement(content)) {
-                    failed = !verifyInformation(content, locator, context);
-                } else if (isDataElement(content)) {
-                    failed = !verifyData(content, locator, context);
+                } else if (isSMPTEImageElement(content)) {
+                    failed = !verifySMPTEImage(content, locator, context);
+                } else if (isSMPTEInformationElement(content)) {
+                    failed = !verifySMPTEInformation(content, locator, context);
+                } else if (isSMPTEDataElement(content)) {
+                    failed = !verifySMPTEData(content, locator, context);
                 } else {
                     return unexpectedContent(content);
                 }
@@ -110,19 +110,34 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean isDataElement(Object content) {
+    protected boolean verifySMPTEElement(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        assert context == getContext();
+        if (isSMPTEImageElement(content)) {
+            failed = !verifySMPTEImage(content, locator, context);
+        } else if (isSMPTEInformationElement(content)) {
+            failed = !verifySMPTEInformation(content, locator, context);
+        } else if (isSMPTEDataElement(content)) {
+            failed = !verifySMPTEData(content, locator, context);
+        } else {
+            return unexpectedContent(content);
+        }
+        return !failed;
+    }
+
+    protected boolean isSMPTEDataElement(Object content) {
         return content instanceof Data;
     }
 
-    protected boolean isImageElement(Object content) {
+    protected boolean isSMPTEImageElement(Object content) {
         return content instanceof Image;
     }
 
-    protected boolean isInformationElement(Object content) {
+    protected boolean isSMPTEInformationElement(Object content) {
         return content instanceof Information;
     }
 
-    private boolean verifyImage(Object image, Locator locator, VerifierContext context) {
+    protected boolean verifySMPTEImage(Object image, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (!verifyOtherAttributes(image))
             failed = true;
@@ -139,7 +154,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return ((Image) image).getValue();
     }
 
-    private boolean verifyInformation(Object information, Locator locator, VerifierContext context) {
+    protected boolean verifySMPTEInformation(Object information, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (!verifyOtherAttributes(information))
             failed = true;
@@ -165,7 +180,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verifyData(Object data, Locator locator, VerifierContext context) {
+    protected boolean verifySMPTEData(Object data, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (!verifyDataType(data, getDataDatatype(data), locator, context))
             failed = true;
@@ -261,6 +276,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+            boolean failedAttribute = false;
             Node item = attributes.item(i);
             if (!(item instanceof Attr))
                 continue;
@@ -280,24 +296,34 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
                     if (!model.isGlobalAttribute(name)) {
                         reporter.logError(reporter.message(locator, "*KEY*",
                             "Unknown attribute in SMPTE namespace ''{0}'' not permitted on ''{1}''.", name, context.getBindingElementName(content)));
-                        return false;
+                        failedAttribute = true;
                     } else if (!model.isGlobalAttributePermitted(name, context.getBindingElementName(content))) {
                         reporter.logError(reporter.message(locator, "*KEY*",
                             "SMPTE attribute ''{0}'' not permitted on ''{1}''.", name, context.getBindingElementName(content)));
-                        return false;
+                        failedAttribute = true;
                     } else if (!verifyNonEmptyOrPadded(content, name, value, locator, context)) {
-                        failed = true;
-                    } else if (isBackgroundImageAttribute(name)) {
-                        if (!verifyBackgroundImage(content, name, value, locator, context))
-                            failed = true;
-                    } else if (isBackgroundImageHVAttribute(name)) {
-                        if (!verifyBackgroundImageHV(content, name, value, locator, context))
-                            failed = true;
-                    }
-                    if (failed)
                         reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+                        failedAttribute = true;
+                    } else if (!verifySMPTEAttribute(content, locator, context, name, value)) {
+                        reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+                        failedAttribute = true;
+                    }
                 }
             }
+            if (failedAttribute)
+                failed = failedAttribute;
+        }
+        return !failed;
+    }
+
+    protected boolean verifySMPTEAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {
+        boolean failed = false;
+        if (isBackgroundImageAttribute(name)) {
+            if (!verifyBackgroundImage(content, name, value, locator, context))
+                failed = true;
+        } else if (isBackgroundImageHVAttribute(name)) {
+            if (!verifyBackgroundImageHV(content, name, value, locator, context))
+                failed = true;
         }
         return !failed;
     }

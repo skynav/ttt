@@ -98,7 +98,7 @@ public class ST20522010 {
         private URI[] namespaceURIs;
         private URI profileNamespaceUri;
         private URI extensionNamespaceUri;
-        ST20522010Model() {
+        protected ST20522010Model() {
             populate();
         }
         private void populate() {
@@ -128,17 +128,23 @@ public class ST20522010 {
         public String getName() {
             return MODEL_NAME;
         }
-        public String[] getSchemaResourceNames() {
+        public String[] getST20522010SchemaResourceNames() {
             return this.schemaResourceNames;
         }
-        public URI[] getNamespaceURIs() {
+        public String[] getSchemaResourceNames() {
+            return getST20522010SchemaResourceNames();
+        }
+        public URI[] getST20522010NamespaceURIs() {
             return this.namespaceURIs;
+        }
+        public URI[] getNamespaceURIs() {
+            return getST20522010NamespaceURIs();
         }
         public URI getProfileNamespaceUri() {
             return this.profileNamespaceUri;
         }
         public URI getExtensionNamespaceUri() {
-            return extensionNamespaceUri;
+            return this.extensionNamespaceUri;
         }
         private static Map<URI,Class<?>> profileSpecificationClasses;
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {

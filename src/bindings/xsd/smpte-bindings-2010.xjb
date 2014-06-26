@@ -31,6 +31,12 @@
         <jxb:package name="com.skynav.ttv.model.smpte.tt.rel2010"/>
       </jxb:schemaBindings>
     </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='data.eltype']">
+      <jxb:class name="Data"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='image.eltype']">
+      <jxb:class name="Image"/>
+    </jxb:bindings>
     <jxb:bindings node="//xs:complexType[@name='information.eltype']">
       <jxb:class name="Information"/>
     </jxb:bindings>

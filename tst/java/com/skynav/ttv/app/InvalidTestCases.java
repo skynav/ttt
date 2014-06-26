@@ -1354,6 +1354,51 @@ public class InvalidTestCases {
         performInvalidityTest("st2052-2013-invalid-bad-m708-global-attribute-disallowed.xml", -1, -1);
     }
 
+    @Test
+    public void testInvalidNFLXCCInvalidBadProfileAttribute() throws Exception {
+        performInvalidityTest("nflxcc-invalid-bad-profile-attribute.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidMissingBody() throws Exception {
+        performInvalidityTest("nflxcc-invalid-missing-body.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidMissingHead() throws Exception {
+        performInvalidityTest("nflxcc-invalid-missing-head.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidMissingProfileAttribute() throws Exception {
+        performInvalidityTest("nflxcc-invalid-missing-profile-attribute.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidNotPermittedBackgroundImageHorizontal() throws Exception {
+        performInvalidityTest("nflxcc-invalid-not-permitted-background-image-horizontal.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidNotPermittedBackgroundImageVertical() throws Exception {
+        performInvalidityTest("nflxcc-invalid-not-permitted-background-image-vertical.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidNotPermittedBackgroundImage() throws Exception {
+        performInvalidityTest("nflxcc-invalid-not-permitted-background-image.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidNotPermittedImage() throws Exception {
+        performInvalidityTest("nflxcc-invalid-not-permitted-image.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidRootProfile() throws Exception {
+        performInvalidityTest("nflxcc-invalid-root-profile.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

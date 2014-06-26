@@ -14,48 +14,46 @@ Copyright 2013 Skynav, Inc. Original modifications to SMPTE published schemas fo
    targetNamespace="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt" 
    elementFormDefault="qualified" attributeFormDefault="unqualified" version="2012-03-09">
   <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
-  <xs:element name="data">
-    <xs:complexType>
-      <xs:simpleContent>
-	<xs:extension base="xs:string">
-	  <xs:attribute ref="xml:id" use="optional"/>
-	  <xs:attribute name="encoding" use="required">
-	    <xs:simpleType>
-	      <xs:restriction base="xs:token">
-		<xs:enumeration value="Base64"/>
-	      </xs:restriction>
-	    </xs:simpleType>
-	  </xs:attribute>
-	  <xs:attribute name="datatype" type="xs:string" use="required"/>
-          <xs:anyAttribute namespace="##other" processContents="lax"/>
-	</xs:extension>
-      </xs:simpleContent>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="image">
-    <xs:complexType>
-      <xs:simpleContent>
-	<xs:extension base="xs:string">
-	  <xs:attribute ref="xml:id" use="optional"/>
-	  <xs:attribute name="imageType" use="required">
-	    <xs:simpleType>
-	      <xs:restriction base="xs:token">
-		<xs:enumeration value="PNG"/>
-	      </xs:restriction>
-	    </xs:simpleType>
-	  </xs:attribute>
-	  <xs:attribute name="encoding" use="required">
-	    <xs:simpleType>
-	      <xs:restriction base="xs:token">
-		<xs:enumeration value="Base64"/>
-	      </xs:restriction>
-	    </xs:simpleType>
-	  </xs:attribute>
-          <xs:anyAttribute namespace="##other" processContents="lax"/>
-	</xs:extension>
-      </xs:simpleContent>
-    </xs:complexType>
-  </xs:element>
+  <xs:complexType name="data.eltype">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute ref="xml:id" use="optional"/>
+        <xs:attribute name="encoding" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="Base64"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="datatype" type="xs:string" use="required"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:element name="data" type="smpte:data.eltype"/>
+  <xs:complexType name="image.eltype">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute ref="xml:id" use="optional"/>
+        <xs:attribute name="imageType" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="PNG"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="encoding" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="Base64"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:element name="image" type="smpte:image.eltype"/>
   <xs:attributeGroup name="information.attlist">
     <xs:attribute ref="xml:id" use="optional"/>
     <xs:attribute name="origin" type="xs:anyURI" use="optional"/>

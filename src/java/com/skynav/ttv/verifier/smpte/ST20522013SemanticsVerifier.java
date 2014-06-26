@@ -54,12 +54,12 @@ public class ST20522013SemanticsVerifier extends ST20522010SemanticsVerifier {
         return imageElementName;
     }
 
-    protected boolean isDataElement(Object content) {
+    protected boolean isSMPTEDataElement(Object content) {
         return content instanceof Data;
     }
 
     protected String getDataDatatype(Object data) {
-        assert isDataElement(data);
+        assert isSMPTEDataElement(data);
         return ((Data) data).getDatatype();
     }
 
@@ -73,20 +73,20 @@ public class ST20522013SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     protected String getDataValue(Object data) {
-        assert isDataElement(data);
+        assert isSMPTEDataElement(data);
         return ((Data) data).getValue();
     }
 
-    protected boolean isImageElement(Object content) {
+    protected boolean isSMPTEImageElement(Object content) {
         return content instanceof Image;
     }
 
     protected String getImageValue(Object image) {
-        assert isImageElement(image);
+        assert isSMPTEImageElement(image);
         return ((Image) image).getValue();
     }
 
-    protected boolean isInformationElement(Object content) {
+    protected boolean isSMPTEInformationElement(Object content) {
         return content instanceof Information;
     }
 
