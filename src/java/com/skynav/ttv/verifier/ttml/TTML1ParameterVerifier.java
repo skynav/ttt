@@ -211,7 +211,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             throw new IllegalArgumentException();
     }
 
-    private boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
             ParameterAccessor sa = accessors.get(name);
@@ -221,7 +221,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         return !failed;
     }
 
-    private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {
@@ -242,7 +242,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
                     reporter.logError(reporter.message(locator, "*KEY*", "Unknown attribute in TT Parameter namespace ''{0}'' not permitted on ''{1}''.",
                         name, context.getBindingElementName(content)));
                     failed = true;
-                } else if (!permitsParameterAttribute(content)) {
+                } else if (!permitsParameterAttribute(content, name)) {
                     reporter.logError(reporter.message(locator, "*KEY*", "TT Parameter attribute ''{0}'' not permitted on ''{1}''.",
                         name, context.getBindingElementName(content)));
                     failed = true;
@@ -252,14 +252,14 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         return !failed;
     }
 
-    private boolean permitsParameterAttribute(Object content) {
+    protected boolean permitsParameterAttribute(Object content, QName name) {
         if (content instanceof TimedText)
             return true;
         else
             return false;
     }
 
-    private boolean isParameterAttribute(QName name) {
+    protected boolean isParameterAttribute(QName name) {
         return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 

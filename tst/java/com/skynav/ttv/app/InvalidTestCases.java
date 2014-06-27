@@ -1395,6 +1395,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidNFLXCCInvalidNotPermittedMarkerMode() throws Exception {
+        performInvalidityTest("nflxcc-invalid-not-permitted-marker-mode.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidNotPermittedOverflow() throws Exception {
+        performInvalidityTest("nflxcc-invalid-not-permitted-overflow.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidNFLXCCInvalidRootProfile() throws Exception {
         performInvalidityTest("nflxcc-invalid-root-profile.xml", -1, -1);
     }

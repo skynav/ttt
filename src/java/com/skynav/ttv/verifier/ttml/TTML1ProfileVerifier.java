@@ -60,7 +60,7 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
             throw new IllegalArgumentException();
     }
 
-    private boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof TimedText)
             failed = !verify((TimedText) content, locator, context);
@@ -103,14 +103,14 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
         return !failed;
     }
 
-    public boolean verify(Profile content, Locator locator, VerifierContext context) {
+    protected boolean verify(Profile content, Locator locator, VerifierContext context) {
         boolean failed = false;
         // warn on duplicate features
         // warn on duplicate extensions
         return !failed;
     }
 
-    public boolean verify(Feature content, Locator locator, VerifierContext context) {
+    protected boolean verify(Feature content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Features features = (Features) context.getBindingElementParent(content);
         if (features != null) {
@@ -125,7 +125,7 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
         return !failed;
     }
 
-    public boolean verify(Extension content, Locator locator, VerifierContext context) {
+    protected boolean verify(Extension content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Extensions extensions = (Extensions) context.getBindingElementParent(content);
         if (extensions != null) {

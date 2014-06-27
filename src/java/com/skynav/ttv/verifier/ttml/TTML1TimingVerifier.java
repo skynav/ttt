@@ -95,7 +95,7 @@ public class TTML1TimingVerifier implements TimingVerifier {
             throw new IllegalArgumentException();
     }
 
-    private boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof TimedText) {
             verificationParameters = new TimingVerificationParameters((TimedText) content);

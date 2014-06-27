@@ -120,7 +120,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
             throw new IllegalArgumentException();
     }
 
-    private boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
             MetadataAccessor sa = accessors.get(name);
@@ -130,7 +130,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         return !failed;
     }
 
-    private boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof Actor)
             failed = !verify((Actor) content, locator, context);
@@ -147,7 +147,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         return !failed;
     }
 
-    private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {
@@ -168,7 +168,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
                     reporter.logError(reporter.message(locator, "*KEY*", "Unknown attribute in TT Metadata namespace ''{0}'' not permitted on ''{1}''.",
                         name, context.getBindingElementName(content)));
                     failed = true;
-                } else if (!permitsMetadataAttribute(content)) {
+                } else if (!permitsMetadataAttribute(content, name)) {
                     reporter.logError(reporter.message(locator, "*KEY*", "TT Metadata attribute ''{0}'' not permitted on ''{1}''.",
                         name, context.getBindingElementName(content)));
                     failed = true;
@@ -178,7 +178,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         return !failed;
     }
 
-    private boolean permitsMetadataAttribute(Object content) {
+    protected boolean permitsMetadataAttribute(Object content, QName name) {
         if (content instanceof Body)
             return true;
         else if (content instanceof Division)
@@ -195,12 +195,12 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
             return false;
     }
 
-    private boolean isMetadataAttribute(QName name) {
+    protected boolean isMetadataAttribute(QName name) {
         return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
-    private final QName actorAgentAttributeName = new QName("", "agent");
-    public boolean verify(Actor content, Locator locator, VerifierContext context) {
+    public static final QName actorAgentAttributeName = new QName("", "agent");
+    protected boolean verify(Actor content, Locator locator, VerifierContext context) {
         QName name = actorAgentAttributeName;
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
@@ -215,10 +215,10 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         }
     }
 
-    private final QName actorElementName = new QName(NAMESPACE, "actor");
-    private final QName agentElementName = new QName(NAMESPACE, "agent");
-    private final QName nameElementName = new QName(NAMESPACE, "name");
-    public boolean verify(Agent content, Locator locator, VerifierContext context) {
+    public static final QName actorElementName = new QName(NAMESPACE, "actor");
+    public static final QName agentElementName = new QName(NAMESPACE, "agent");
+    public static final QName nameElementName = new QName(NAMESPACE, "name");
+    protected boolean verify(Agent content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();
         if (content.getName().isEmpty()) {
@@ -242,11 +242,11 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         return !failed;
     }
 
-    public boolean verify(Metadata content, Locator locator, VerifierContext context) {
+    protected boolean verify(Metadata content, Locator locator, VerifierContext context) {
         return true;
     }
 
-    public boolean verify(Name content, Locator locator, VerifierContext context) {
+    protected boolean verify(Name content, Locator locator, VerifierContext context) {
         return true;
     }
 

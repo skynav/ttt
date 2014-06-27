@@ -36,8 +36,12 @@ import javax.xml.namespace.QName;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.smpte.ST20522010;
 import com.skynav.ttv.model.smpte.ST20522010.ST20522010Model;
+import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
+import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.netflix.NFLXTTParameterVerifier;
 import com.skynav.ttv.verifier.netflix.NFLXTTSemanticsVerifier;
+import com.skynav.ttv.verifier.netflix.NFLXTTStyleVerifier;
 
 public class NFLXTT {
 
@@ -128,6 +132,24 @@ public class NFLXTT {
                 }
             }
             return semanticsVerifier;
+        }
+        private ParameterVerifier parameterVerifier;
+        public ParameterVerifier getParameterVerifier() {
+            synchronized (this) {
+                if (parameterVerifier == null) {
+                    parameterVerifier = new NFLXTTParameterVerifier(this);
+                }
+            }
+            return parameterVerifier;
+        }
+        private StyleVerifier styleVerifier;
+        public StyleVerifier getStyleVerifier() {
+            synchronized (this) {
+                if (styleVerifier == null) {
+                    styleVerifier = new NFLXTTStyleVerifier(this);
+                }
+            }
+            return styleVerifier;
         }
     }
 }

@@ -345,7 +345,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
             throw new IllegalArgumentException();
     }
 
-    private boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (QName name : accessors.keySet()) {
             StyleAccessor sa = accessors.get(name);
@@ -355,7 +355,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
         return !failed;
     }
 
-    private boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof Set)
             failed = !verify((Set) content, locator, context);
@@ -366,7 +366,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
         return !failed;
     }
 
-    private boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {
@@ -389,7 +389,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
                     reporter.logError(reporter.message(locator, "*KEY*", "Unknown attribute in TT Style namespace ''{0}'' not permitted on ''{1}''.",
                         name, context.getBindingElementName(content)));
                     failed = true;
-                } else if (!permitsStyleAttribute(content)) {
+                } else if (!permitsStyleAttribute(content, name)) {
                     reporter.logError(reporter.message(locator, "*KEY*", "TT Style attribute ''{0}'' not permitted on ''{1}''.",
                         name, context.getBindingElementName(content)));
                     failed = true;
@@ -399,7 +399,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
         return !failed;
     }
 
-    private boolean permitsStyleAttribute(Object content) {
+    protected boolean permitsStyleAttribute(Object content, QName name) {
         if (content instanceof Body)
             return true;
         else if (content instanceof Division)
@@ -420,11 +420,11 @@ public class TTML1StyleVerifier implements StyleVerifier {
             return false;
     }
 
-    private boolean isStyleAttribute(QName name) {
+    protected boolean isStyleAttribute(QName name) {
         return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
-    public boolean verify(Set content, Locator locator, VerifierContext context) {
+    protected boolean verify(Set content, Locator locator, VerifierContext context) {
         boolean failed = false;
         int numStyleAttributes = 0;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
