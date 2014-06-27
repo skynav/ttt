@@ -76,6 +76,8 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         return NAMESPACE;
     }
 
+    public static final QName cellResolutionAttributeName = new QName(getParameterNamespaceUri(), "cellResolution");
+
     private static Object[][] parameterAccessorMap = new Object[][] {
         {
             new QName(NAMESPACE,"cellResolution"),     // attribute name

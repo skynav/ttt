@@ -1414,6 +1414,21 @@ public class InvalidTestCases {
         performInvalidityTest("nflxcc-invalid-root-profile.xml", -1, -1);
     }
 
+    @Test
+    public void testInvalidNFLXCCInvalidUsesCellUnitWithoutCellResolution() throws Exception {
+        performInvalidityTest("nflxcc-invalid-uses-cell-unit-without-cell-resolution.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidUsesEmUnit() throws Exception {
+        performInvalidityTest("nflxcc-invalid-uses-em-unit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidNFLXCCInvalidUsesPixelUnitWithoutRootExtent() throws Exception {
+        performInvalidityTest("nflxcc-invalid-uses-pixel-unit-without-root-extent.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

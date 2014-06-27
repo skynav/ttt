@@ -502,6 +502,8 @@
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-708.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-all-styles.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid.xml"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid-uses-cell-unit-with-cell-resolution.xml"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid-uses-pixel-unit-with-root-extent.xml"/>
     </java>
   </sequential>
 </macrodef>

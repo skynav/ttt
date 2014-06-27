@@ -118,9 +118,19 @@ public class Lengths {
                 return false;
             if (outputLength != null)
                 outputLength[0] = new LengthImpl(numberValue, unitsValue);
+            updateUsage(context, locator, unitsValue);
             return true;
         } else
             return false;
+    }
+
+    private static void updateUsage(VerifierContext context, Locator locator, Length.Unit unit) {
+        String key = "usage" + unit.name();
+        List<Locator> usage = (List<Locator>) context.getResourceState(key);
+        if (usage == null)
+            usage = new java.util.ArrayList<Locator>();
+        usage.add(locator);
+        context.setResourceState(key, usage);
     }
 
     public static void badLength(String value, Locator locator, VerifierContext context, Object[] treatments) {

@@ -105,7 +105,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
         return NAMESPACE;
     }
 
-    private static QName extentAttributeName = new QName(NAMESPACE,"extent");
+    public static final QName extentAttributeName = new QName(NAMESPACE,"extent");
     private static Object[][] styleAccessorMap = new Object[][] {
         {
             new QName(NAMESPACE,"backgroundColor"),        // attribute name
@@ -458,8 +458,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
         this.accessors = accessors;
     }
 
-    private static final QName styleAttributeName = new QName("", "style");
-    private static final QName regionAttributeName = new QName("", "region");
+    public static final QName styleAttributeName = new QName("", "style");
+    public static final QName regionAttributeName = new QName("", "region");
     private class StyleAccessor {
 
         private QName styleName;

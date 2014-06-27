@@ -194,6 +194,16 @@ public class ValidTestCases {
         performValidityTest("nflxcc-valid.xml", -1, -1);
     }
 
+    @Test
+    public void testValidNFLXCCUsesCellUnitWithCellResolution() throws Exception {
+        performValidityTest("nflxcc-valid-uses-cell-unit-with-cell-resolution.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidNFLXCCUsesPixelUnitWithRootExtent() throws Exception {
+        performValidityTest("nflxcc-valid-uses-pixel-unit-with-root-extent.xml", -1, -1);
+    }
+
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

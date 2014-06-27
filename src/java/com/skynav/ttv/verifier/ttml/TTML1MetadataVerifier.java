@@ -71,8 +71,8 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         return NAMESPACE;
     }
 
-    private static QName agentAttributeName = new QName(NAMESPACE,"agent");
-    private static QName roleAttributeName = new QName(NAMESPACE,"role");
+    public static final QName agentAttributeName = new QName(NAMESPACE,"agent");
+    public static final QName roleAttributeName = new QName(NAMESPACE,"role");
     private static Object[][] metadataAccessorMap = new Object[][] {
         {
             agentAttributeName,                                 // attribute name

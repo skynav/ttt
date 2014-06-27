@@ -44,6 +44,7 @@ import com.skynav.ttv.model.ttml1.tt.Metadata;
 import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.Style;
 import com.skynav.ttv.model.ttml1.tt.Styling;
+import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.ttml1.ttm.Agent;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
@@ -258,6 +259,7 @@ public class TTML1 {
             }
             return Object.class;
         }
+        public static final QName ttElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createTt(new TimedText()).getName();
         public static final QName headElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createHead(new Head()).getName();
         public static final QName metadataElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createMetadata(new Metadata()).getName();
         public static final QName stylingElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createStyling(new Styling()).getName();
