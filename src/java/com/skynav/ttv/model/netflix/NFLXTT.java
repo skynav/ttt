@@ -53,6 +53,8 @@ public class NFLXTT {
 
         public static final String PROFILE_CC_ABSOLUTE = NAMESPACE_PROFILE + PROFILE_CC;
         public static final String PROFILE_SDH_ABSOLUTE = NAMESPACE_PROFILE + PROFILE_SDH;
+
+        public static final String CHARSET_REQUIRED = "UTF-8";
     }
 
     public static final String MODEL_NAME = "nflxtt";

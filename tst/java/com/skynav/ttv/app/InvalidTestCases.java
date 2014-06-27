@@ -1355,6 +1355,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidNFLXCCInvalidBadEncoding() throws Exception {
+        performInvalidityTest("nflxcc-invalid-bad-encoding.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidNFLXCCInvalidBadProfileAttribute() throws Exception {
         performInvalidityTest("nflxcc-invalid-bad-profile-attribute.xml", -1, -1);
     }

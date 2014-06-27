@@ -27,6 +27,7 @@ package com.skynav.ttv.verifier.netflix;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Set;
 
 import org.xml.sax.Locator;
@@ -34,6 +35,7 @@ import org.xml.sax.Locator;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.netflix.NFLXTT;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Body;
@@ -52,16 +54,28 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
 
     protected static final QName ttElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createTt(new TimedText()).getName();
     public boolean verify(Object root, VerifierContext context) {
+        boolean failed = false;
         if (!super.verify(root, context))
-            return false;
-        else if (root instanceof TimedText)
-            return true;
-        else {
+            failed = true;
+        else if (root instanceof TimedText) {
+            TimedText tt = (TimedText) root;
+            if (!verifyCharset(tt))
+                failed = true;
+            if (!verifyCellResolutionIfUsesCellUnit(tt))
+                failed = true;
+            if (!verifyExtentIfUsesPixelUnit(tt))
+                failed = true;
+            if (!verifyRegionContainment(tt))
+                failed = true;
+            if (!verifyRegionNonOverlap(tt))
+                failed = true;
+        } else {
             QName rootName = context.getBindingElementName(root);
             Reporter reporter = context.getReporter();
             reporter.logError(reporter.message(getLocator(root), "*KEY*", "Root element must be ''{0}'', got ''{1}''.", ttElementName, rootName));
-            return false;
+            failed = true;
         }
+        return !failed;
     }
 
     protected boolean verify(TimedText tt) {
@@ -100,6 +114,40 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
             }
             return !failed;
         }
+    }
+
+    protected boolean verifyCharset(TimedText tt) {
+        boolean failed = true;
+        Reporter reporter = getContext().getReporter();
+        try {
+            Charset charsetRequired = Charset.forName(NFLXTT.Constants.CHARSET_REQUIRED);
+            String charsetRequiredName = charsetRequired.name();
+            Charset charset = (Charset) getContext().getResourceState("charset");
+            String charsetName = (charset != null) ? charset.name() : "unknown";
+            if (!charsetName.equals(charsetRequiredName)) {
+                reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Document encoding is ''{0}'', but requires ''{1}''.", charsetName, charsetRequiredName));
+            } else
+                failed = false;
+        } catch (Exception e) {
+            reporter.logError(e);
+        }
+        return !failed;
+    }
+
+    protected boolean verifyCellResolutionIfUsesCellUnit(TimedText tt) {
+        return true;
+    }
+
+    protected boolean verifyExtentIfUsesPixelUnit(TimedText tt) {
+        return true;
+    }
+
+    protected boolean verifyRegionContainment(TimedText tt) {
+        return true;
+    }
+
+    protected boolean verifyRegionNonOverlap(TimedText tt) {
+        return true;
     }
 
     protected static final QName smpteImageElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createImage(new Image()).getName();

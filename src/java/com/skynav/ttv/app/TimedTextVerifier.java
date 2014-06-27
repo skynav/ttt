@@ -1007,6 +1007,7 @@ public class TimedTextVerifier implements VerifierContext {
 
     private void setResourceBuffer(Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
         resourceCharset = charset;
+        setResourceState("charset", charset);
         resourceBufferRaw = bufferRaw;
         if (expectedErrors != null)
             resourceExpectedErrors = parseAnnotationAsInteger(expectedErrors, -1);
