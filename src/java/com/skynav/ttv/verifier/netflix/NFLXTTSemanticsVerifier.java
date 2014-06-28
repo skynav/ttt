@@ -53,9 +53,11 @@ import com.skynav.ttv.verifier.ttml.TTML1ParameterVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1StyleVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
+import com.skynav.ttv.verifier.util.Integers;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
 
@@ -202,8 +204,8 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         if (head != null) {
             Layout layout = head.getLayout();
             if (layout != null) {
-                double[] rootExtent = computeRootExtent(tt);
-                double[] cellResolution = null; // TBD - extract and parse cell resolution
+                double[] rootExtent = getRootExtent(tt);
+                double[] cellResolution = getCellResolution(tt);
                 for (Region r : layout.getRegion()) {
                     if (!verifyRegionContainment(r, rootExtent, cellResolution))
                         failed = true;
@@ -213,7 +215,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         return !failed;
     }
 
-    private double[] computeRootExtent(TimedText tt) {
+    private double[] getRootExtent(TimedText tt) {
         double[] externalExtent = (double[]) getContext().getResourceState("externalExtent");
         String extent = tt.getExtent();
         if (extent != null) {
@@ -226,6 +228,16 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
             }
         } else
             return externalExtent;
+    }
+
+    private double[] getCellResolution(TimedText tt) {
+        String cellResolution = tt.getCellResolution();
+        if (cellResolution != null) {
+            cellResolution = cellResolution.trim();
+            Integer[] integers = parseIntegerPair(cellResolution, getLocator(tt), getContext().getReporter());
+            return new double[] { integers[0], integers[1] };
+        } else
+            return null;
     }
 
     protected boolean verifyRegionContainment(Region region, double[] rootExtent, double[] cellResolution) {
@@ -296,6 +308,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     private double getPixels(Length length, double rootExtent, double cellResolution) {
+        System.err.println("getPixels(" + length + "," + rootExtent + "," + cellResolution + ")");
         double value = length.getValue();
         Length.Unit units = length.getUnits();
         if (rootExtent < 0)
@@ -332,6 +345,19 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         } else {
             if (reporter != null)
                 reporter.logError(reporter.message(locator, "*KEY*", "Invalid length pair ''{0}''.", pair));
+            return null;
+        }
+    }
+
+    private Integer[] parseIntegerPair(String pair, Locator locator, Reporter reporter) {
+        Integer[] minMax = new Integer[] { 2, 2 };
+        Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
+        List<Integer> integers = new java.util.ArrayList<Integer>();
+        if (Integers.isIntegers(pair, null, null, minMax, treatments, integers)) {
+            return integers.toArray(new Integer[2]);
+        } else {
+            if (reporter != null)
+                reporter.logError(reporter.message(locator, "*KEY*", "Invalid integer pair ''{0}''.", pair));
             return null;
         }
     }

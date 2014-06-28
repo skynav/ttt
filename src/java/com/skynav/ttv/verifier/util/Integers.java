@@ -41,7 +41,7 @@ public class Integers {
 
     private static Pattern integerPattern = Pattern.compile("([\\+\\-]?)(\\d+)");
     private static boolean isInteger(String value, Locator locator, VerifierContext context, Object[] treatments, Integer[] outputInteger) {
-        Reporter reporter = context.getReporter();
+        Reporter reporter = (context != null) ? context.getReporter() : null;
         Matcher m = integerPattern.matcher(value);
         if (m.matches()) {
             String number = m.group(0);
@@ -58,27 +58,31 @@ public class Integers {
                     NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
                     if (negativeTreatment == NegativeTreatment.Error)
                         return false;
-                    else if (negativeTreatment == NegativeTreatment.Warning) {
-                        if (reporter.logWarning(reporter.message(locator, "*KEY*",
-                            "Negative <integer> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
-                            treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
-                            return false;
+                    else if (reporter != null) {
+                        if (negativeTreatment == NegativeTreatment.Warning) {
+                            if (reporter.logWarning(reporter.message(locator, "*KEY*",
+                                "Negative <integer> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
+                                treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
+                                return false;
+                            }
+                        } else if (negativeTreatment == NegativeTreatment.Info) {
+                            reporter.logInfo(reporter.message(locator, "*KEY*", "Negative <integer> expression {0} used.", Numbers.normalize(numberValue)));
                         }
-                    } else if (negativeTreatment == NegativeTreatment.Info) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*", "Negative <integer> expression {0} used.", Numbers.normalize(numberValue)));
                     }
                 } else if (numberValue == 0) {
                     assert treatments.length > 1;
                     ZeroTreatment zeroTreatment = (ZeroTreatment) treatments[1];
                     if (zeroTreatment == ZeroTreatment.Error)
                         return false;
-                    else if (zeroTreatment == ZeroTreatment.Warning) {
-                        if (reporter.logWarning(reporter.message(locator, "*KEY*", "Zero <integer> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
-                            treatments[1] = ZeroTreatment.Allow;                            // suppress second warning
-                            return false;
+                    else if (reporter != null) {
+                        if (zeroTreatment == ZeroTreatment.Warning) {
+                            if (reporter.logWarning(reporter.message(locator, "*KEY*", "Zero <integer> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
+                                treatments[1] = ZeroTreatment.Allow;                            // suppress second warning
+                                return false;
+                            }
+                        } else if (zeroTreatment == ZeroTreatment.Info) {
+                            reporter.logInfo(reporter.message(locator, "*KEY*", "Zero <integer> expression {0} used.", Numbers.normalize(numberValue)));
                         }
-                    } else if (zeroTreatment == ZeroTreatment.Info) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*", "Zero <integer> expression {0} used.", Numbers.normalize(numberValue)));
                     }
                 }
             }
