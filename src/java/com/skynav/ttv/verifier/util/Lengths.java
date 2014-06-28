@@ -68,7 +68,7 @@ public class Lengths {
 
     private static Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*.\\d+|\\d+))(\\w+|%)?");
     public static boolean isLength(String value, Locator locator, VerifierContext context, Object[] treatments, Length[] outputLength) {
-        Reporter reporter = context.getReporter();
+        Reporter reporter = (context != null) ? context.getReporter() : null;
         Matcher m = lengthPattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() > 0;
@@ -94,15 +94,17 @@ public class Lengths {
                     NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
                     if (negativeTreatment == NegativeTreatment.Error)
                         return false;
-                    else if (negativeTreatment == NegativeTreatment.Warning) {
-                        if (reporter.logWarning(reporter.message(locator, "*KEY*",
-                            "Negative <length> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
-                            treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
-                            return false;
+                    else if (reporter != null) {
+                        if (negativeTreatment == NegativeTreatment.Warning) {
+                            if (reporter.logWarning(reporter.message(locator, "*KEY*",
+                                    "Negative <length> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
+                                treatments[0] = NegativeTreatment.Allow;                        // suppress second warning
+                                return false;
+                            }
+                        } else if (negativeTreatment == NegativeTreatment.Info) {
+                            reporter.logInfo(reporter.message(locator, "*KEY*",
+                                "Negative <length> expression {0} used.", Numbers.normalize(numberValue)));
                         }
-                    } else if (negativeTreatment == NegativeTreatment.Info) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*",
-                            "Negative <length> expression {0} used.", Numbers.normalize(numberValue)));
                     }
                 }
             }
@@ -118,7 +120,8 @@ public class Lengths {
                 return false;
             if (outputLength != null)
                 outputLength[0] = new LengthImpl(numberValue, unitsValue);
-            updateUsage(context, locator, unitsValue);
+            if ((context != null) && (locator != null))
+                updateUsage(context, locator, unitsValue);
             return true;
         } else
             return false;
@@ -325,7 +328,7 @@ public class Lengths {
     }
 
     public static boolean isLengths(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {
-        Reporter reporter = context.getReporter();
+        Reporter reporter = (context != null) ? context.getReporter() : null;
         List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
@@ -349,14 +352,16 @@ public class Lengths {
                 Set<Length.Unit> units = Units.units(lengths);
                 if (mixedUnitsTreatment == MixedUnitsTreatment.Error)
                     return false;
-                else if (mixedUnitsTreatment == MixedUnitsTreatment.Warning) {
-                    if (reporter.logWarning(reporter.message(locator, "*KEY*", 
-                        "Mixed units {0} should not be used in <length> expressions.", Length.Unit.shorthands(units)))) {
-                        treatments[1] = MixedUnitsTreatment.Allow;                          // suppress second warning
-                        return false;
+                else if (reporter != null) {
+                    if (mixedUnitsTreatment == MixedUnitsTreatment.Warning) {
+                        if (reporter.logWarning(reporter.message(locator, "*KEY*", 
+                                                                 "Mixed units {0} should not be used in <length> expressions.", Length.Unit.shorthands(units)))) {
+                            treatments[1] = MixedUnitsTreatment.Allow;                          // suppress second warning
+                            return false;
+                        }
+                    } else if (mixedUnitsTreatment == MixedUnitsTreatment.Info) {
+                        reporter.logInfo(reporter.message(locator, "*KEY*", "Mixed units {0} used in <length> expressions.", Length.Unit.shorthands(units)));
                     }
-                } else if (mixedUnitsTreatment == MixedUnitsTreatment.Info) {
-                    reporter.logInfo(reporter.message(locator, "*KEY*", "Mixed units {0} used in <length> expressions.", Length.Unit.shorthands(units)));
                 }
             }
         }

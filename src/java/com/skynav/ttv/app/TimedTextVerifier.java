@@ -88,6 +88,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
+import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Locators;
@@ -95,6 +96,9 @@ import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Reporters;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Sniffer;
 import com.skynav.xml.helpers.XML;
@@ -204,7 +208,6 @@ public class TimedTextVerifier implements VerifierContext {
     // options state
     private String expectedErrors;
     private String expectedWarnings;
-    @SuppressWarnings("unused")
     private String externalExtent;
     @SuppressWarnings("unused")
     private String externalFrameRate;
@@ -223,6 +226,7 @@ public class TimedTextVerifier implements VerifierContext {
     private Model model;
     private ForeignTreatment foreignTreatment;
     private Phase lastPhase;
+    private double[] parsedExternalExtent;
 
     // global processing state
     private PrintWriter showOutput;
@@ -612,6 +616,19 @@ public class TimedTextVerifier implements VerifierContext {
             }
         } else
             lastPhase = Phase.getDefault();
+        if (externalExtent != null) {
+            Integer[] minMax = new Integer[] { 2, 2 };
+            Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            if (Lengths.isLengths(externalExtent, null, null, minMax, treatments, lengths)) {
+                for (Length l : lengths) {
+                    if (l.getUnits() != Length.Unit.Pixel)
+                        throw new InvalidOptionUsageException("external-extent", "must use pixel (px) unit only: " + externalExtent);
+                }
+                parsedExternalExtent = new double[] { lengths.get(0).getValue(), lengths.get(1).getValue() };
+            } else
+                throw new InvalidOptionUsageException("external-extent", "invalid syntax: " + externalExtent);
+        }
     }
 
     private List<String> processOptionsAndArgs(List<String> nonOptionArgs) {
@@ -1009,10 +1026,21 @@ public class TimedTextVerifier implements VerifierContext {
         resourceCharset = charset;
         setResourceState("charset", charset);
         resourceBufferRaw = bufferRaw;
-        if (expectedErrors != null)
+        setResourceState("bufferRaw", bufferRaw);
+        if (expectedErrors != null) {
             resourceExpectedErrors = parseAnnotationAsInteger(expectedErrors, -1);
-        if (expectedWarnings != null)
+            setResourceState("resourceExpectedErrors", Integer.valueOf(resourceExpectedErrors));
+        }
+        if (expectedWarnings != null) {
             resourceExpectedWarnings = parseAnnotationAsInteger(expectedWarnings, -1);
+            setResourceState("resourceExpectedWarnings", Integer.valueOf(resourceExpectedWarnings));
+        }
+    }
+
+    private void setResourceDocumentContextState() {
+        if (parsedExternalExtent != null) {
+            setResourceState("externalExtent", parsedExternalExtent);
+        }
     }
 
     private boolean verifyResource() {
@@ -1574,6 +1602,7 @@ public class TimedTextVerifier implements VerifierContext {
                 if (verifyRootElement(root, getModel().getRootClasses())) {
                     this.rootBinding = root.getValue();
                     this.rootName = root.getName();
+                    setResourceDocumentContextState();
                     getModel().getSemanticsVerifier().verify(this.rootBinding, this);
                 }
             }

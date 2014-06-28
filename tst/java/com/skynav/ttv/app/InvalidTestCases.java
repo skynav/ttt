@@ -1410,6 +1410,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidNFLXCCInvalidRegionNotInRootContainer() throws Exception {
+        performInvalidityTest("nflxcc-invalid-region-not-in-root-container.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidNFLXCCInvalidRootProfile() throws Exception {
         performInvalidityTest("nflxcc-invalid-root-profile.xml", -1, -1);
     }

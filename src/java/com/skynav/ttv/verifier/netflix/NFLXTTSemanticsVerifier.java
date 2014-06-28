@@ -40,8 +40,10 @@ import javax.xml.namespace.QName;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.netflix.NFLXTT;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
-import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Body;
+import com.skynav.ttv.model.ttml1.tt.Head;
+import com.skynav.ttv.model.ttml1.tt.Layout;
+import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.value.Length;
@@ -51,6 +53,9 @@ import com.skynav.ttv.verifier.ttml.TTML1ParameterVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1StyleVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
+import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
 
@@ -192,11 +197,143 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     protected boolean verifyRegionContainment(TimedText tt) {
-        return true;
+        boolean failed = false;
+        Head head = tt.getHead();
+        if (head != null) {
+            Layout layout = head.getLayout();
+            if (layout != null) {
+                double[] rootExtent = computeRootExtent(tt);
+                double[] cellResolution = null; // TBD - extract and parse cell resolution
+                for (Region r : layout.getRegion()) {
+                    if (!verifyRegionContainment(r, rootExtent, cellResolution))
+                        failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    private double[] computeRootExtent(TimedText tt) {
+        double[] externalExtent = (double[]) getContext().getResourceState("externalExtent");
+        String extent = tt.getExtent();
+        if (extent != null) {
+            extent = extent.trim();
+            if (extent.equals("auto"))
+                return externalExtent;
+            else {
+                Length[] lengths = parseLengthPair(extent, getLocator(tt), getContext().getReporter(), true);
+                return new double[] { getPixels(lengths[0], 1, 1), getPixels(lengths[1], 1, 1) };
+            }
+        } else
+            return externalExtent;
+    }
+
+    protected boolean verifyRegionContainment(Region region, double[] rootExtent, double[] cellResolution) {
+        boolean failed = false;
+        Reporter reporter = getContext().getReporter();
+        Locator locator = getLocator(region);
+        if (rootExtent == null)
+            rootExtent = new double[] { -1, -1 };
+        if (cellResolution == null)
+            cellResolution = new double[] { 1, 1 };
+        // extract root edges in fractional pixels
+        double xRoot = 0;
+        double yRoot = 0;
+        double wRoot = rootExtent[0];
+        double hRoot = rootExtent[1];
+        // extract region origin in fractional pixels
+        String origin = region.getOrigin();
+        double x = xRoot;
+        double y = yRoot;
+        if (origin != null) {
+            origin = origin.trim();
+            if (!origin.equals("auto")) {
+                Length[] lengths = parseLengthPair(origin, locator, reporter, false);
+                if (lengths != null) {
+                    x = getPixels(lengths[0], rootExtent[0], cellResolution[0]);
+                    y = getPixels(lengths[1], rootExtent[1], cellResolution[1]);
+                } else
+                    failed = true;
+            }
+        }
+        // extract region extent in fractional pixels
+        String extent = region.getExtent();
+        double w = wRoot;
+        double h = hRoot;
+        if (extent != null) {
+            extent = extent.trim();
+            if (!extent.equals("auto")) {
+                Length[] lengths = parseLengthPair(extent, locator, reporter, false);
+                if (lengths != null) {
+                    w = getPixels(lengths[0], rootExtent[0], cellResolution[0]);
+                    h = getPixels(lengths[1], rootExtent[1], cellResolution[1]);
+                } else
+                    failed = true;
+            }
+        }
+        // check containment
+        if (!failed) {
+            if (x < xRoot) {
+                reporter.logError(reporter.message(locator, "*KEY*", "Left edge at {0}px is outside root container.", x));
+                failed = true;
+            }
+            if (y < yRoot) {
+                reporter.logError(reporter.message(locator, "*KEY*", "Top edge at {0}px is outside root container.", y));
+                failed = true;
+            }
+            if ((wRoot >= 0) && (hRoot >= 0)) {
+                if ((x + w) > (xRoot + wRoot)) {
+                    reporter.logError(reporter.message(locator, "*KEY*", "Right edge at {0}px is outside root container.", x + w));
+                    failed = true;
+                }
+                if ((y + h) > (yRoot + hRoot)) {
+                    reporter.logError(reporter.message(locator, "*KEY*", "Bottom edge at {0}px is outside root container.", y + h));
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    private double getPixels(Length length, double rootExtent, double cellResolution) {
+        double value = length.getValue();
+        Length.Unit units = length.getUnits();
+        if (rootExtent < 0)
+            rootExtent = 0;
+        if (units == Length.Unit.Pixel)
+            return value;
+        else if (units == Length.Unit.Cell)
+            return value * (rootExtent / cellResolution);
+        else if (units == Length.Unit.Percentage)
+            return value * (rootExtent / 100);
+        else
+            return 0;
     }
 
     protected boolean verifyRegionNonOverlap(TimedText tt) {
         return true;
+    }
+
+    private Length[] parseLengthPair(String pair, Locator locator, Reporter reporter, boolean enforcePixelsOnly) {
+        Integer[] minMax = new Integer[] { 2, 2 };
+        Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
+        List<Length> lengths = new java.util.ArrayList<Length>();
+        if (Lengths.isLengths(pair, null, null, minMax, treatments, lengths)) {
+            if (enforcePixelsOnly) {
+                for (Length l : lengths) {
+                    if (l.getUnits() != Length.Unit.Pixel) {
+                        if (reporter != null)
+                            reporter.logError(reporter.message(locator, "*KEY*", "Invalid length pair component ''{0}'', must use pixel (px) unit only.", l));
+                        return null;
+                    }
+                }
+            }
+            return lengths.toArray(new Length[2]);
+        } else {
+            if (reporter != null)
+                reporter.logError(reporter.message(locator, "*KEY*", "Invalid length pair ''{0}''.", pair));
+            return null;
+        }
     }
 
     protected static final QName smpteImageElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createImage(new Image()).getName();

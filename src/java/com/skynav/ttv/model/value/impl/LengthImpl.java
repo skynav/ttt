@@ -43,5 +43,9 @@ public class LengthImpl implements Length {
     public Length.Unit getUnits() {
         return units;
     }
+    @Override
+    public String toString() {
+        return Double.toString(value) + units.shorthand();
+    }
 }
 
