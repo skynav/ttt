@@ -65,6 +65,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         super(model);
     }
 
+    @Override
     public boolean verify(Object root, VerifierContext context) {
         boolean failed = false;
         if (!super.verify(root, context))
@@ -82,6 +83,8 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
             if (!verifyRegionContainment(tt))
                 failed = true;
             if (!verifyRegionNonOverlap(tt))
+                failed = true;
+            if (isSDHProfile(tt) && !verifySDHConstraints(tt))
                 failed = true;
         } else {
             QName rootName = context.getBindingElementName(root);
@@ -156,7 +159,6 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
             Element ttElement = (Element) getContext().getXMLNode(tt);
             QName cellResolutionName = TTML1ParameterVerifier.cellResolutionAttributeName;
             String cellResolution = ttElement.getAttributeNS(cellResolutionName.getNamespaceURI(), cellResolutionName.getLocalPart());
-            System.err.println(cellResolution);
             if ((cellResolution == null) || (cellResolution.length() == 0)) {
                 Reporter reporter = getContext().getReporter();
                 for (Locator locator : usage) {
@@ -308,7 +310,6 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     private double getPixels(Length length, double rootExtent, double cellResolution) {
-        System.err.println("getPixels(" + length + "," + rootExtent + "," + cellResolution + ")");
         double value = length.getValue();
         Length.Unit units = length.getUnits();
         if (rootExtent < 0)
@@ -362,7 +363,74 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         }
     }
 
+    private boolean isSDHProfile(TimedText tt) {
+        String profile = tt.getProfile();
+        if (profile != null) {
+            return profile.equals(NFLXTT.Constants.PROFILE_SDH_ABSOLUTE);
+        }
+        return false;
+    }
+
+    protected boolean verifySDHConstraints(TimedText tt) {
+        boolean failed = false;
+        if (!verifySDHRegionGeometry(tt))
+            failed = true;
+        return !failed;
+    }
+
+    protected boolean verifySDHRegionGeometry(TimedText tt) {
+        boolean failed = false;
+        Head head = tt.getHead();
+        if (head != null) {
+            Layout layout = head.getLayout();
+            if (layout != null) {
+                for (Region r : layout.getRegion()) {
+                    if (!verifySDHRegionGeometry(r))
+                        failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    protected static final String sdhRegionOrigin = "10% 10%";
+    protected static final String sdhRegionExtent = "80% 80%";
+    protected boolean verifySDHRegionGeometry(Region region) {
+        boolean failed = false;
+        Reporter reporter = getContext().getReporter();
+        Locator locator = getLocator(region);
+        Element regionElement = (Element) getContext().getXMLNode(region);
+        QName originName = TTML1StyleVerifier.originAttributeName;
+        if (regionElement.hasAttributeNS(originName.getNamespaceURI(), originName.getLocalPart())) {
+            String origin = regionElement.getAttributeNS(originName.getNamespaceURI(), originName.getLocalPart());
+            if (!origin.equals(sdhRegionOrigin)) {
+                reporter.logError(reporter.message(locator, "*KEY*", "Invalid ''{0}'' attribute, got ''{1}'', expected ''{2}''.",
+                    TTML1StyleVerifier.originAttributeName, origin, sdhRegionOrigin));
+                failed = true;
+            }
+        } else {
+            reporter.logError(reporter.message(locator, "*KEY*", "Missing ''{0}'' attribute, must be specified with value ''{1}''.",
+                TTML1StyleVerifier.originAttributeName, sdhRegionOrigin));
+            failed = true;
+        }
+        QName extentName = TTML1StyleVerifier.extentAttributeName;
+        if (regionElement.hasAttributeNS(extentName.getNamespaceURI(), extentName.getLocalPart())) {
+            String extent = regionElement.getAttributeNS(extentName.getNamespaceURI(), extentName.getLocalPart());
+            if (!extent.equals(sdhRegionExtent)) {
+                reporter.logError(reporter.message(locator, "*KEY*", "Invalid ''{0}'' attribute, got ''{1}'', expected ''{2}''.",
+                    TTML1StyleVerifier.extentAttributeName, extent, sdhRegionExtent));
+                failed = true;
+            }
+        } else {
+            reporter.logError(reporter.message(locator, "*KEY*", "Missing ''{0}'' attribute, must be specified with value ''{1}''.",
+                TTML1StyleVerifier.extentAttributeName, sdhRegionExtent));
+            failed = true;
+        }
+        return !failed;
+    }
+
     protected static final QName smpteImageElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createImage(new Image()).getName();
+    @Override
     protected boolean verifySMPTEImage(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (isSMPTEImageElement(content)) {
@@ -374,6 +442,5 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         }
         return !failed;
     }
-
 
 }

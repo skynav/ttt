@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- valid - simple nflx-cc document with smpte extension -->
+<!-- valid - simple nflx-sdh document with smpte extension -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
-    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.netflix.com/ns/ttml/profile/nflx-cc"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.netflix.com/ns/ttml/profile/nflx-sdh"
     xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="640px 480px"
     xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"
     xmlns:m608="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt#cea608"
@@ -12,7 +12,7 @@
         m608:channel="CC1" m608:programName="Six O'clock News" m608:captionService ="F1C1CC"/>
     </metadata>
     <layout>
-      <region xml:id="default" tts:origin="11% 11%" tts:extent="78% 78%"/>
+      <region xml:id="default" tts:origin="10% 10%" tts:extent="80% 80%"/>
     </layout>
   </head>
   <body region="default">

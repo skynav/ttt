@@ -204,6 +204,11 @@ public class ValidTestCases {
         performValidityTest("nflxcc-valid-uses-pixel-unit-with-root-extent.xml", -1, -1);
     }
 
+    @Test
+    public void testValidNFLXSDH() throws Exception {
+        performValidityTest("nflxsdh-valid.xml", -1, -1);
+    }
+
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

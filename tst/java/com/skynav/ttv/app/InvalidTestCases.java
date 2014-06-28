@@ -1434,6 +1434,11 @@ public class InvalidTestCases {
         performInvalidityTest("nflxcc-invalid-uses-pixel-unit-without-root-extent.xml", -1, -1);
     }
 
+    @Test
+    public void testInvalidNFLXSDHInvalidBadRegionGeometry() throws Exception {
+        performInvalidityTest("nflxsdh-invalid-bad-region-geometry.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

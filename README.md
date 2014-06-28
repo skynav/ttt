@@ -134,6 +134,28 @@ If one of the **smpte** verification models applies, a number of additional sema
  * Error if SMPTE-TT Namespace attribute specified on element where it is not explicitly permitted.
  * Error if SMPTE attribute is empty, all whitespace, or whitespace padded (unless explicitly permitted).
 
+If the **nflxtt** verification models applies, a number of additional semantic constraints are tested in the fourth phase:
+
+ * Error if document encoding is not UTF-8.
+ * Error if root element is not tt:tt.
+ * Error if tt:tt element does not specify ttp:profile attribute.
+ * Error if ttp:profile attribute is not `http://www.netflix.com/ns/ttml/profile/nflx-cc` or `http://www.netflix.com/ns/ttml/profile/nflx-sdh`.
+ * Error if tt:tt element does not specify ttp:cellResolution attribute and a cell (c) unit is used in document.
+ * Error if tt:tt element does not specify ttp:extent attribute and a pixel (px) unit is used in document.
+ * Error if tt:tt element does specify ttp:markerMode attribute.
+ * Error if tt:head element is missing.
+ * Error if tt:body element is missing.
+ * Error if tt:region element specifies tts:overflow attribute.
+ * Error if tt:region element specifies tts:origin attribute with value other than `10% 10%` when profile is `http://www.netflix.com/ns/ttml/profile/nflx-sdh`.
+ * Error if tt:region element specifies tts:extent attribute with value other than `80% 80%` when profile is `http://www.netflix.com/ns/ttml/profile/nflx-sdh`.
+ * Error if smpte:image element is present.
+ * Error if smpte:backgroundImage attribute is present.
+ * Error if smpte:backgroundImageHorizontal attribute is present.
+ * Error if smpte:backgroundImageVertical attribute is present.
+ * Error if smpte:backgroundImageVertical attribute is present.
+ * Error if \<length\> expression uses em unit.
+ * Error if computed geometry of a region is not contained in root container (requires specifying `tts:extent` on `tt:tt` or specifying `--external-extent``).
+
 ## Verification Model
 
 A verification *model* includes the following information:
@@ -243,8 +265,12 @@ Run `ttv` with the `--show-models` option to determine which verification models
 
 <pre>
 $ java -jar bld/artifacts/ttv.jar -v --show-models
-Timed Text Verifier (TTV) [1.0.0dev] Copyright 2013 Skynav, Inc.
+Timed Text Verifier (TTV) [1.0.0dev] Copyright 2013-14 Skynav, Inc.
 Verification Models:
+  nflxtt
+    XSD: xsd/ttml1/ttml1.xsd
+    XSD: xsd/smpte/2010/smpte-tt.xsd
+    XSD: xsd/smpte/2010/smpte-tt-608.xsd
   st2052-2010
     XSD: xsd/ttml1/ttml1.xsd
     XSD: xsd/smpte/2010/smpte-tt.xsd
@@ -273,12 +299,12 @@ In order to ease the use of `ttv`, a number of *annotation* attributes are suppo
  * expectedErrors
  * expectedWarnings
  * model
+ * noWarnOn
  * warnOn
- * warnOff
 
 The values of the `ttva:expectedErrors` and `ttva:expectedWarnings` annotations express a non-negative integer, indicating the expected number of errors and warnings to be encountered. When running `ttv` on a resource containing these annotations, a *PASS* result will be reported if the expected and actual numbers of errors and warnings match, and *FAIL* if not matched.
 
-The values of the `ttva:warnOn` and `ttva:warnOff` annotations express a whitespace separated listed of warning *TOKENs* to enable or disable, as if they had been specified on the command line.
+The values of the `ttva:warnOn` and `ttva:noWarnOn` annotations express a whitespace separated listed of warning *TOKENs* to enable or disable, as if they had been specified on the command line.
 
 The value of the `ttva:model` annotation expresses a model name to be used to verify the document.
 

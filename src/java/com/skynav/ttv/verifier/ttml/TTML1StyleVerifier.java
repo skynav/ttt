@@ -106,6 +106,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
     }
 
     public static final QName extentAttributeName = new QName(NAMESPACE,"extent");
+    public static final QName originAttributeName = new QName(NAMESPACE,"origin");
     private static Object[][] styleAccessorMap = new Object[][] {
         {
             new QName(NAMESPACE,"backgroundColor"),        // attribute name
