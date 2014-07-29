@@ -1,6 +1,6 @@
 # build related
 bld
-build.properties
+build.properties*
 
 # eclipse related
 .eclipse/.metadata

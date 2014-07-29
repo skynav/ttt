@@ -6,7 +6,6 @@
 <%@page contentType="text/html" pageEncoding="utf-8" %>
 <%!
     static void putModelOptions(JspWriter out) throws java.io.IOException {
-        String defaultModelName = Models.getDefaultModelName();
         StringBuffer sb = new StringBuffer();
         for (String name : Models.getModelNames()) {
             sb.setLength(0);
@@ -14,8 +13,6 @@
             sb.append(" value=\""/*"*/);
             sb.append(name);
             sb.append('\"'/*"*/);
-            if (name.equals(defaultModelName))
-                sb.append(" selected=\"selected\"");
             sb.append('>');                                              
             sb.append(name.toLowerCase());
             sb.append("</option>");
@@ -97,6 +94,7 @@
                     </th>
                     <td>
                       <select id="uri-model" name="model">
+                        <option value="(detect automatically)" selected="selected">(detect automatically)</option>
 <%
       putModelOptions(out);
 %>
@@ -142,6 +140,7 @@
                     </th>
                     <td>
                       <select id="upload-model" name="model">
+                        <option value="(detect automatically)" selected="selected">(detect automatically)</option>
 <%
       putModelOptions(out);
 %>
@@ -174,6 +173,7 @@
                     </th>
                     <td>
                       <select id="uri-model" name="model">
+                        <option value="(detect automatically)" selected="selected">(detect automatically)</option>
 <%
       putModelOptions(out);
 %>
@@ -206,6 +206,7 @@
         <li><a href="http://www.w3.org/TR/2013/REC-ttml1-20130924/">TTML1 (2nd Edition)</a></li>
         <li><a href="https://www.smpte.org/sites/default/files/st2052-1-2010.pdf">SMPTE ST2052 2010</a></li>
         <li><a href="https://www.smpte.org/sites/default/files/ST2052-1-2013.pdf">SMPTE ST2052 2013</a></li>
+        <li>NETFLIX NFLX-TT</li>
       </ul>
     </div>
     <div id="w3c-include" lang="en" dir="ltr">

@@ -220,6 +220,20 @@ public class CheckerServlet extends HttpServlet {
                 args.add("-v");
             if (state.getBooleanField("treatWarningAsError"))
                 args.add("--treat-warning-as-error");
+            if (state.hasField("encoding")) {
+                String encoding = state.getFirstFieldValue("encoding");
+                if (!encoding.equals("(detect automatically)")) {
+                    args.add("--force-encoding");
+                    args.add(encoding);
+                }
+            }
+            if (state.hasField("model")) {
+                String model = state.getFirstFieldValue("model");
+                if (!model.equals("(detect automatically)")) {
+                    args.add("--force-model");
+                    args.add(model);
+                }
+            }
             args.add("--servlet");
             args.add("--reporter");
             args.add("xml");
@@ -228,6 +242,7 @@ public class CheckerServlet extends HttpServlet {
             args.add("--reporter-include-source");
             String urlString = upload.toURI().toString();
             args.add(urlString);
+            System.out.println(args);
             ttv.run(args.toArray(new String[args.size()]));
             state.results = ttv.getResults(urlString);
         } else {
@@ -328,22 +343,36 @@ public class CheckerServlet extends HttpServlet {
             }
         }
 
+        boolean hasField(String name) {
+            return fields.containsKey(name);
+        }
+
         void addField(String name, String value) {
             if (!fields.containsKey(name))
                 fields.put(name, new java.util.ArrayList<String>());
             fields.get(name).add(value);
         }
 
-        boolean getBooleanField(String name) {
+        List<String> getFieldValues(String name) {
             if (!fields.containsKey(name))
+                return new java.util.ArrayList<String>();
+            else
+                return fields.get(name);
+        }
+
+        String getFirstFieldValue(String name) {
+            if (!fields.containsKey(name))
+                return null;
+            else
+                return getFieldValues(name).get(0);
+        }
+
+        boolean getBooleanField(String name) {
+            String value = getFirstFieldValue(name);
+            if (value == null)
                 return false;
-            else {
-                List<String> values = fields.get(name);
-                if (values.isEmpty())
-                    return false;
-                else
-                    return values.get(0).equals("1");
-            }
+            else
+                return value.equals("1");
         }
 
         void setPreverifyException(Throwable e) {

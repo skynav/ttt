@@ -116,6 +116,8 @@ public class TimedTextVerifier implements VerifierContext {
     public static final int RV_FLAG_WARNING_EXPECTED_MATCH      = 0x000020;
     public static final int RV_FLAG_WARNING_EXPECTED_MISMATCH   = 0x000040;
 
+    public static final String DEFAULT_ENCODING                 = "UTF-8";
+
     // miscelaneous defaults
     private static final Model defaultModel = Models.getDefaultModel();
     private static final String defaultReporterFileEncoding = Reporters.getDefaultEncoding();
@@ -148,6 +150,8 @@ public class TimedTextVerifier implements VerifierContext {
         "    --extension-schema NS URL          - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)\n" +
         "    --external-extent EXTENT           - specify extent for document processing context\n" +
         "    --external-frame-rate RATE         - specify frame rate for document processing context\n" +
+        "    --force-encoding NAME              - force use of named character encoding, overriding default and resource specified encoding\n" +
+        "    --force-model NAME                 - force use of named model, overriding default model and resource specified model\n" +
         "    --help                             - show usage help\n" +
         "    --hide-resource-location           - hide resource location (default: show)\n" +
         "    --hide-resource-path               - hide resource path (default: show)\n" +
@@ -212,6 +216,8 @@ public class TimedTextVerifier implements VerifierContext {
     @SuppressWarnings("unused")
     private String externalFrameRate;
     private Map<String,String> extensionSchemas = new java.util.HashMap<String,String>();
+    private String forceEncodingName;
+    private String forceModelName;
     private boolean includeSource;
     private String modelName;
     private boolean quiet;
@@ -223,6 +229,8 @@ public class TimedTextVerifier implements VerifierContext {
     private String untilPhase;
 
     // derived option state
+    private Charset forceEncoding;
+    private Model forceModel;
     private Model model;
     private ForeignTreatment foreignTreatment;
     private Phase lastPhase;
@@ -244,7 +252,7 @@ public class TimedTextVerifier implements VerifierContext {
     private String resourceUriString;
     private Map<String,Object> resourceState;
     private URI resourceUri;
-    private Charset resourceCharset;
+    private Charset resourceEncoding;
     private ByteBuffer resourceBufferRaw;
     private int resourceExpectedErrors = -1;
     private int resourceExpectedWarnings = -1;
@@ -395,10 +403,31 @@ public class TimedTextVerifier implements VerifierContext {
 
     @Override
     public Model getModel() {
-        if (this.resourceModel != null)
+        if (this.forceModel != null)
+            return this.forceModel;
+        else if (this.resourceModel != null)
             return this.resourceModel;
         else
             return this.model;
+    }
+
+    private static Charset defaultEncoding;
+
+    static {
+        try {
+            defaultEncoding = Charset.forName(DEFAULT_ENCODING);
+        } catch (RuntimeException e) {
+            defaultEncoding = Charset.defaultCharset();
+        }
+    }
+
+    public Charset getEncoding() {
+        if (this.forceEncoding != null)
+            return this.forceEncoding;
+        else if (this.resourceEncoding != null)
+            return this.resourceEncoding;
+        else
+            return defaultEncoding;
     }
 
     private static final QName qnEmpty = new QName("", "");
@@ -500,6 +529,14 @@ public class TimedTextVerifier implements VerifierContext {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             externalFrameRate = args[++index];
+        } else if (option.equals("force-encoding")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            forceEncodingName = args[++index];
+        } else if (option.equals("force-model")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            forceModelName = args[++index];
         } else if (option.equals("help")) {
             throw new ShowUsageException();
         } else if (option.equals("hide-resource-location")) {
@@ -590,6 +627,26 @@ public class TimedTextVerifier implements VerifierContext {
 
     private void processDerivedOptions() {
         Reporter reporter = getReporter();
+        Charset forceEncoding;
+        if (forceEncodingName != null) {
+            try {
+                forceEncoding = Charset.forName(forceEncodingName);
+            } catch (Exception e) {
+                forceEncoding = null;
+            }
+            if (forceEncoding == null)
+                throw new InvalidOptionUsageException("force-encoding", "unknown encoding: " + forceEncodingName);
+        } else
+            forceEncoding = null;
+        this.forceEncoding = forceEncoding;
+        Model forceModel;
+        if (forceModelName != null) {
+            forceModel = Models.getModel(forceModelName);
+            if (forceModel == null)
+                throw new InvalidOptionUsageException("force-model", "unknown model: " + forceModelName);
+        } else
+            forceModel = null;
+        this.forceModel = forceModel;
         Model model;
         if (modelName != null) {
             model = Models.getModel(modelName);
@@ -884,13 +941,13 @@ public class TimedTextVerifier implements VerifierContext {
         }
     }
 
-    private CharBuffer decodeResource(ByteBuffer rawBuffer, Charset charset, int bomLength) {
+    private CharBuffer decodeResource(ByteBuffer rawBuffer, Charset encoding, int bomLength) {
         Reporter reporter = getReporter();
         ByteBuffer bb = rawBuffer;
         bb.position(bomLength);
         List<CharBuffer> charBuffers = new java.util.ArrayList<CharBuffer>();
         do {
-            CharsetDecoder cd = charset.newDecoder();
+            CharsetDecoder cd = encoding.newDecoder();
             boolean endOfInput = false;
             CharBuffer cb = null;
             CoderResult r;
@@ -922,19 +979,19 @@ public class TimedTextVerifier implements VerifierContext {
                     } else if (r.isMalformed()) {
                         Message message = reporter.message("*KEY*",
                             "Malformed {0} at byte offset {1}{2,choice,0# of zero bytes|1# of one byte|1< of {2,number,integer} bytes}.",
-                            charset.name(), bb.position(), r.length());
+                            encoding.name(), bb.position(), r.length());
                         reporter.logError(message);
                         return null;
                     } else if (r.isUnmappable()) {
                         Message message = reporter.message("*KEY*",
                             "Unmappable {0} at byte offset {1}{2,choice,0# of zero bytes|1# of one byte|1< of {2,number,integer} bytes}.",
-                            charset.name(), bb.position(), r.length());
+                            encoding.name(), bb.position(), r.length());
                         reporter.logError(message);
                         return null;
                     } else if (r.isError()) {
                         Message message = reporter.message("*KEY*",
                             "Can't decode as {0} at byte offset {1}{2,choice,0# of zero bytes|1# of one byte|1< of {2,number,integer} bytes}.",
-                            charset.name(), bb.position(), r.length());
+                            encoding.name(), bb.position(), r.length());
                         reporter.logError(message);
                         return null;
                     }
@@ -961,17 +1018,17 @@ public class TimedTextVerifier implements VerifierContext {
         return newBuffer;
     }
 
-    private static Charset asciiCharset;
+    private static Charset asciiEncoding;
 
     static {
         try {
-            asciiCharset = Charset.forName("US-ASCII");
+            asciiEncoding = Charset.forName("US-ASCII");
         } catch (RuntimeException e) {
-            asciiCharset = null;
+            asciiEncoding = null;
         }
     }
 
-    private String[] parseLines(CharBuffer cb, Charset charset) {
+    private String[] parseLines(CharBuffer cb, Charset encoding) {
         List<String> lines = new java.util.ArrayList<String>();
         StringBuffer sb = new StringBuffer();
         while (cb.hasRemaining()) {
@@ -1002,7 +1059,7 @@ public class TimedTextVerifier implements VerifierContext {
         resourceState = new java.util.HashMap<String,Object>();
         resourceUriString = null;
         resourceUri = null;
-        resourceCharset = null;
+        resourceEncoding = null;
         resourceBufferRaw = null;
         resourceExpectedErrors = -1;
         resourceExpectedWarnings = -1;
@@ -1022,9 +1079,9 @@ public class TimedTextVerifier implements VerifierContext {
         getReporter().setResourceURI(uri);
     }
 
-    private void setResourceBuffer(Charset charset, CharBuffer buffer, ByteBuffer bufferRaw) {
-        resourceCharset = charset;
-        setResourceState("charset", charset);
+    private void setResourceBuffer(Charset encoding, CharBuffer buffer, ByteBuffer bufferRaw) {
+        resourceEncoding = encoding;
+        setResourceState("encoding", encoding);
         resourceBufferRaw = bufferRaw;
         setResourceState("bufferRaw", bufferRaw);
         if (expectedErrors != null) {
@@ -1058,20 +1115,24 @@ public class TimedTextVerifier implements VerifierContext {
             ByteBuffer bytesBuffer = readResource(uri);
             if (bytesBuffer != null) {
                 Object[] sniffOutputParameters = new Object[] { Integer.valueOf(0) };
-                Charset charset = Sniffer.sniff(bytesBuffer, asciiCharset, sniffOutputParameters);
-                if (isPermittedEncoding(charset.name())) {
+                Charset encoding;
+                if (this.forceEncoding != null)
+                    encoding = this.forceEncoding;
+                else
+                    encoding = Sniffer.sniff(bytesBuffer, asciiEncoding, sniffOutputParameters);
+                if (isPermittedEncoding(encoding.name())) {
                     int bomLength = (Integer) sniffOutputParameters[0];
-                    CharBuffer charsBuffer = decodeResource(bytesBuffer, charset, bomLength);
+                    CharBuffer charsBuffer = decodeResource(bytesBuffer, encoding, bomLength);
                     if (charsBuffer != null) {
-                        setResourceBuffer(charset, charsBuffer, bytesBuffer);
+                        setResourceBuffer(encoding, charsBuffer, bytesBuffer);
                         if (includeSource)
-                            reporter.setLines(parseLines(charsBuffer, charset));
-                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", charset.name()));
+                            reporter.setLines(parseLines(charsBuffer, encoding));
+                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", encoding.name()));
                         reporter.logInfo(reporter.message("*KEY*", "Resource length {0} bytes, decoded as {1} Java characters (char).",
                             bytesBuffer.limit(), charsBuffer.limit()));
                     }
                 } else {
-                    reporter.logError(reporter.message("*KEY*", "Encoding {0} is not permitted", charset.name()));
+                    reporter.logError(reporter.message("*KEY*", "Encoding {0} is not permitted", encoding.name()));
                 }
             }
         }
@@ -1144,6 +1205,12 @@ public class TimedTextVerifier implements VerifierContext {
             SAXParser p = pf.newSAXParser();
             p.parse(openStream(resourceBufferRaw), new DefaultHandler() {
                 private boolean expectRootElement = true;
+                public InputSource resolveEntity(String pubid, String sysid) throws SAXException, IOException {
+                    InputSource is = super.resolveEntity(pubid, sysid);
+                    if (forceEncoding != null)
+                        is.setEncoding(forceEncoding.name());
+                    return is;
+                }
                 public void startElement(String nsUri, String localName, String qualName, Attributes attrs) throws SAXException {
                     if (expectRootElement) {
                         processAnnotations(attrs);
@@ -1220,8 +1287,7 @@ public class TimedTextVerifier implements VerifierContext {
             // attempt to enable non-pool grammars, i.e., use of xsi:schemaLocation pool extensions
             sf.setFeature("http://apache.org/xml/features/internal/validation/schema/use-grammar-pool-only", false);
             nonPoolGrammarSupported = true;
-        } catch (SAXNotRecognizedException e) {
-        } catch (SAXNotSupportedException e) {
+        } catch (Exception e) {
         }
         try {
             reporter.logDebug(reporter.message("*KEY*", "Loading (and validating) schema components at '{'{0}'}'...", components));
@@ -1300,7 +1366,10 @@ public class TimedTextVerifier implements VerifierContext {
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
             XMLReader filter = new ForeignVocabularyFilter(reader, getModel().getNamespaceURIs(), extensionSchemas.keySet(), foreignTreatment);
-            SAXSource source = new SAXSource(filter, new InputSource(openStream(resourceBufferRaw)));
+            InputSource is = new InputSource(openStream(resourceBufferRaw));
+            if (this.forceEncoding != null)
+                is.setEncoding(this.forceEncoding.name());
+            SAXSource source = new SAXSource(filter, is);
             source.setSystemId(resourceUri.toString());
             Validator v = getSchema().newValidator();
             v.setErrorHandler(new ErrorHandler() {
@@ -1572,7 +1641,10 @@ public class TimedTextVerifier implements VerifierContext {
             XMLReader reader = pf.newSAXParser().getXMLReader();
             ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, getModel().getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
             LocationAnnotatingFilter filter2 = new LocationAnnotatingFilter(filter1);
-            SAXSource source = new SAXSource(filter2, new InputSource(openStream(resourceBufferRaw)));
+            InputSource is = new InputSource(openStream(resourceBufferRaw));
+            if (this.forceEncoding != null)
+                is.setEncoding(this.forceEncoding.name());
+            SAXSource source = new SAXSource(filter2, is);
             source.setSystemId(resourceUri.toString());
 
             // construct annotated infoset destination
@@ -1636,7 +1708,7 @@ public class TimedTextVerifier implements VerifierContext {
         reporter.logInfo(reporter.message("*KEY*", "{0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
         reporter.flush();
         Results results = new Results(uri, rv,
-            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), getModel(), resourceCharset, rootName);
+            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), getModel(), getEncoding(), rootName);
         this.results.put(uri, results);
         return rv;
     }

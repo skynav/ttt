@@ -139,7 +139,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         try {
             Charset charsetRequired = Charset.forName(NFLXTT.Constants.CHARSET_REQUIRED);
             String charsetRequiredName = charsetRequired.name();
-            Charset charset = (Charset) getContext().getResourceState("charset");
+            Charset charset = (Charset) getContext().getResourceState("encoding");
             String charsetName = (charset != null) ? charset.name() : "unknown";
             if (!charsetName.equals(charsetRequiredName)) {
                 reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Document encoding uses ''{0}'', but requires ''{1}''.", charsetName, charsetRequiredName));

@@ -82,7 +82,7 @@
 <property name="servlet.deploy.target" value="${servlet.deploy.dir}/${servlet.war}"/>
 <property name="servlet.title" value="TTV Servlet"/>
 <property name="servlet.version.major" value="1"/>
-<property name="servlet.version.minor" value="0"/>
+<property name="servlet.version.minor" value="1"/>
 <property name="servlet.version.micro" value="0"/>
 <property name="servlet.version.suffix" value="dev"/>
 <property name="servlet.version" value="${servlet.version.major}.${servlet.version.minor}.${servlet.version.micro}${servlet.version.suffix}"/>

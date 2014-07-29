@@ -201,30 +201,29 @@
     static void putResultModel(Results results, StringBuffer sb) {
         if (results != null) {
             String model = results.modelName;
-            if (model == null)
-                model = "unknown";
             sb.append("<tr>\n");
             sb.append("<th><label title=\"Model\" for=\"model\">Model</label>:</th>\n");
             sb.append("<td>");
-            sb.append(XML.escapeMarkup(model.toLowerCase()));
+            sb.append(XML.escapeMarkup((model != null) ? model.toLowerCase() : "unknown"));
             sb.append("</td>\n");
             sb.append("<td>\n");
             sb.append("<select name=\"model\" id=\"model\">\n");
-            putModelOptions(sb);
+            putModelOptions(sb, model);
             sb.append("</select>\n");
             sb.append("</td>\n");
             sb.append("</tr>\n");
         }
     }
-    static void putModelOptions(StringBuffer sb) {
-        String defaultModelName = Models.getDefaultModelName();
+    static void putModelOptions(StringBuffer sb, String model) {
+        if (model == null)
+            sb.append("<option value=\"(detect automatically)\" selected=\"selected\">(detect automatically)</option>\n");
         for (String name : Models.getModelNames()) {
             StringBuffer sbOption = new StringBuffer();
             sbOption.append("<option");
             sbOption.append(" value=\""/*"*/);
             sbOption.append(XML.escapeMarkup(name));
             sbOption.append('\"'/*"*/);
-            if (name.equals(defaultModelName))
+            if ((model != null) && name.equals(model))
                 sbOption.append(" selected=\"selected\"");
             sbOption.append('>');                                              
             sbOption.append(XML.escapeMarkup(name.toLowerCase()));
