@@ -930,6 +930,10 @@ public class TimedTextVerifier implements VerifierContext {
         try { permittedEncodings.add(Charset.forName("UTF-32")); } catch (RuntimeException e) {}
     }
 
+    public static Charset[] getPermittedEncodings() {
+        return permittedEncodings.toArray(new Charset[permittedEncodings.size()]);
+    }
+
     private boolean isPermittedEncoding(String name) {
         try {
             Charset cs = Charset.forName(name);

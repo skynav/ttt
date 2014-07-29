@@ -1,10 +1,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@page import="java.io.File" %>
+<%@page import="java.nio.charset.Charset" %>
 <%@page import="com.skynav.ttv.app.TimedTextVerifier" %>
 <%@page import="com.skynav.ttv.model.Model" %>
 <%@page import="com.skynav.ttv.model.Models" %>
 <%@page contentType="text/html" pageEncoding="utf-8" %>
 <%!
+    static void putEncodingOptions(JspWriter out) throws java.io.IOException {
+        StringBuffer sb = new StringBuffer();
+        for (Charset cs : TimedTextVerifier.getPermittedEncodings()) {
+            String name = cs.name();
+            sb.setLength(0);
+            sb.append("<option");
+            sb.append(" value=\""/*"*/);
+            sb.append(name);
+            sb.append('\"'/*"*/);
+            sb.append('>');                                              
+            sb.append(name.toLowerCase());
+            sb.append("</option>");
+            out.println(sb.toString());
+        }
+    }
     static void putModelOptions(JspWriter out) throws java.io.IOException {
         StringBuffer sb = new StringBuffer();
         for (String name : Models.getModelNames()) {
@@ -82,9 +98,9 @@
                     <td>
                       <select id="uri-encoding" name="encoding">
                         <option value="(detect automatically)" selected="selected">(detect automatically)</option>
-                        <option value="utf-8">utf-8</option>
-                        <option value="utf-16">utf-16</option>
-                        <option value="utf-32">utf-32</option>
+<%
+      putEncodingOptions(out);
+%>
                       </select>
                     </td>
                   </tr>
@@ -128,9 +144,9 @@
                     <td>
                       <select id="upload-encoding" name="encoding">
                         <option value="(detect automatically)" selected="selected">(detect automatically)</option>
-                        <option value="utf-8">UTF-8</option>
-                        <option value="utf-16">UTF-16</option>
-                        <option value="utf-32">UTF-32</option>
+<%
+      putEncodingOptions(out);
+%>
                       </select>
                     </td>
                   </tr>
@@ -181,10 +197,8 @@
                     </td>
                   </tr>
                   <tr>
-                    <td>
                     <td><input id="treatWarningAsError" name="treatWarningAsError" type="checkbox" value="1" /><label title="Treat Warning as Error" for="treatWarningAsError">Treat Warning as Error</label></td>
-                      <input id="direct-verbose" name="verbose" type="checkbox" value="1" /><label title="Verbose Output" for="direct-verbose">Verbose Output</label>
-                    </td>
+                    <td><input id="direct-verbose" name="verbose" type="checkbox" value="1" /><label title="Verbose Output" for="direct-verbose">Verbose Output</label></td>
                   </tr>
                 </table>
               </div>

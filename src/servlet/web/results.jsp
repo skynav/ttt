@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<%@page import="java.nio.charset.Charset" %>
 <%@page import="javax.xml.namespace.QName" %>
 <%@page import="com.skynav.ttv.app.TimedTextVerifier" %>
 <%@page import="com.skynav.ttv.app.TimedTextVerifier.Results" %>
@@ -180,22 +181,35 @@
     static void putResultEncoding(Results results, StringBuffer sb) {
         if (results != null) {
             String encoding = results.encodingName;
-            if (encoding == null)
-                encoding = "unknown";
             sb.append("<tr>\n");
-            sb.append("<th><label title=\"Character Encoding\" for=\"charset\">Encoding</label>:</th>\n");
+            sb.append("<th><label title=\"Character Encoding\" for=\"encoding\">Encoding</label>:</th>\n");
             sb.append("<td>");
-            sb.append(XML.escapeMarkup(encoding.toLowerCase()));
+            sb.append(XML.escapeMarkup((encoding != null) ? encoding.toLowerCase() : "unknown"));
             sb.append("</td>\n");
             sb.append("<td>\n");
-            sb.append("<select name=\"charset\" id=\"charset\">\n");
-            sb.append("<option value=\"(detect automatically)\">(detect automatically)</option>\n");
-            sb.append("<option value=\"utf-8\">utf-8</option>\n");
-            sb.append("<option value=\"utf-16\">utf-16</option>\n");
-            sb.append("<option value=\"utf-32\">utf-32</option>\n");
+            sb.append("<select name=\"encoding\" id=\"encoding\">\n");
+            putEncodingOptions(sb, encoding);
             sb.append("</select>\n");
             sb.append("</td>\n");
             sb.append("</tr>\n");
+        }
+    }
+    static void putEncodingOptions(StringBuffer sb, String encoding) {
+        if (encoding == null)
+            sb.append("<option value=\"(detect automatically)\" selected=\"selected\">(detect automatically)</option>\n");
+        for (Charset cs : TimedTextVerifier.getPermittedEncodings()) {
+            String name = cs.name();
+            StringBuffer sbOption = new StringBuffer();
+            sbOption.append("<option");
+            sbOption.append(" value=\""/*"*/);
+            sbOption.append(XML.escapeMarkup(name));
+            sbOption.append('\"'/*"*/);
+            if ((encoding != null) && name.equals(encoding))
+                sbOption.append(" selected=\"selected\"");
+            sbOption.append('>');                                              
+            sbOption.append(XML.escapeMarkup(name.toLowerCase()));
+            sbOption.append("</option>");
+            sb.append(sbOption.toString());
         }
     }
     static void putResultModel(Results results, StringBuffer sb) {
