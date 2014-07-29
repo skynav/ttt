@@ -27,10 +27,39 @@ package com.skynav.ttv.model;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-public abstract class AbstractModel implements Model {
+import com.skynav.ttv.verifier.MetadataVerifier;
+import com.skynav.ttv.verifier.ParameterVerifier;
+import com.skynav.ttv.verifier.ProfileVerifier;
+import com.skynav.ttv.verifier.SemanticsVerifier;
+import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.TimingVerifier;
+
+public class AbstractModel implements Model {
+
+    public String getName() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String[] getTTSchemaResourceNames() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String[] getSchemaResourceNames() {
+        throw new UnsupportedOperationException();
+    }
+
+    public URI[] getTTNamespaceURIs() {
+        throw new UnsupportedOperationException();
+    }
+
+    public URI[] getNamespaceURIs() {
+        throw new UnsupportedOperationException();
+    }
 
     public boolean isNamespace(String nsUri) {
         for (URI uri : getNamespaceURIs()) {
@@ -52,12 +81,100 @@ public abstract class AbstractModel implements Model {
         return false;
     }
 
+    public URI getTTProfileNamespaceUri() {
+        throw new UnsupportedOperationException();
+    }
+
+    public URI getProfileNamespaceUri() {
+        throw new UnsupportedOperationException();
+    }
+
+    public URI getTTFeatureNamespaceUri() {
+        throw new UnsupportedOperationException();
+    }
+
+    public URI getFeatureNamespaceUri() {
+        throw new UnsupportedOperationException();
+    }
+
+    public URI getTTExtensionNamespaceUri() {
+        throw new UnsupportedOperationException();
+    }
+
+    public URI getExtensionNamespaceUri() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Set<URI> getProfileDesignators() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Profile.Specification getProfileSpecification(URI uri) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Profile.StandardDesignations getStandardDesignations() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isStandardFeatureDesignation(URI uri) {
+        return false;
+    }
+
+    public boolean isStandardExtensionDesignation(URI uri) {
+        return false;
+    }
+
+    public String getJAXBContextPath() {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<QName> getIdAttributes() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Map<Class<?>,String> getRootClasses() {
+        throw new UnsupportedOperationException();
+    }
+
+    public QName getIdReferenceTargetName(QName attributeName) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Class<?> getIdReferenceTargetClass(QName attributeName) {
+        throw new UnsupportedOperationException();
+    }
+
     public List<List<QName>> getIdReferencePermissibleAncestors(QName attributeName) {
         return null;
     }
 
     public List<List<QName>> getElementPermissibleAncestors(QName attributeName) {
         return null;
+    }
+
+    public SemanticsVerifier getSemanticsVerifier() {
+        throw new UnsupportedOperationException();
+    }
+
+    public ParameterVerifier getParameterVerifier() {
+        throw new UnsupportedOperationException();
+    }
+
+    public ProfileVerifier getProfileVerifier() {
+        throw new UnsupportedOperationException();
+    }
+
+    public StyleVerifier getStyleVerifier() {
+        throw new UnsupportedOperationException();
+    }
+
+    public TimingVerifier getTimingVerifier() {
+        throw new UnsupportedOperationException();
+    }
+
+    public MetadataVerifier getMetadataVerifier() {
+        throw new UnsupportedOperationException();
     }
 
 }

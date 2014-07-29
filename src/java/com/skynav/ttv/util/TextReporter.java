@@ -297,15 +297,18 @@ public class TextReporter implements Reporter {
         else if (e instanceof UnmarshalException)
             return extractMessage((UnmarshalException) e);
         else {
-            String message = massageMessage(e.getMessage());
+            String message = e.getMessage();
             if ((message == null) || (message.length() == 0))
                 message = e.toString();
+            message = massageMessage(message);
             return message(message + ((debug < 2) ? "; retry with --debug-exceptions option for additional information." : "."));
         }
     }
 
     private String massageMessage(String message) {
         StringBuffer sb = new StringBuffer();
+        if (message == null)
+            message = "";
         for (int i = 0, n = message.length(); i < n; ++i) {
             char c = message.charAt(i);
             if (c == '\'')
@@ -319,7 +322,7 @@ public class TextReporter implements Reporter {
             else
                 sb.append(c);
         }
-        if (sb.charAt(sb.length() -1) != '.')
+        if ((sb.length() > 0) && (sb.charAt(sb.length() - 1) != '.'))
             sb.append('.');
         return sb.toString();
     }

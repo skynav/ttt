@@ -232,6 +232,9 @@ public class CheckerServlet extends HttpServlet {
                 if (!model.equals("(detect automatically)")) {
                     args.add("--force-model");
                     args.add(model);
+                } else {
+                    args.add("--model");
+                    args.add("auto");
                 }
             }
             args.add("--servlet");

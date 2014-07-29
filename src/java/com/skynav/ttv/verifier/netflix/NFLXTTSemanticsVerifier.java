@@ -40,7 +40,6 @@ import javax.xml.namespace.QName;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.netflix.NFLXTT;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
-import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
 import com.skynav.ttv.model.ttml1.tt.Region;
@@ -154,6 +153,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
 
     protected boolean verifyCellResolutionIfCellUnitUsed(TimedText tt) {
         boolean failed = false;
+        @SuppressWarnings("unchecked")
         List<Locator> usage = (List<Locator>) getContext().getResourceState("usageCell");
         if ((usage != null) && (usage.size() > 0)) {
             Element ttElement = (Element) getContext().getXMLNode(tt);
@@ -168,11 +168,12 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
                 failed = true;
             }
         }
-        return true;
+        return !failed;
     }
 
     protected boolean verifyExtentIfPixelUnitUsed(TimedText tt) {
         boolean failed = false;
+        @SuppressWarnings("unchecked")
         List<Locator> usage = (List<Locator>) getContext().getResourceState("usagePixel");
         if ((usage != null) && (usage.size() > 0)) {
             String extent = tt.getExtent();
@@ -185,11 +186,12 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
                 failed = true;
             }
         }
-        return true;
+        return !failed;
     }
 
     protected boolean verifyLengthAvoidsEmUnit(TimedText tt) {
         boolean failed = false;
+        @SuppressWarnings("unchecked")
         List<Locator> usage = (List<Locator>) getContext().getResourceState("usageEm");
         if ((usage != null) && (usage.size() > 0)) {
             Reporter reporter = getContext().getReporter();

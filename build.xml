@@ -506,6 +506,16 @@
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid-uses-pixel-unit-with-root-extent.xml"/>
       <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxsdh-valid.xml"/>
     </java>
+    <java jar="${ttv.target}" fork="true" failonerror="true">
+      <jvmarg value="-ea"/>
+      <arg value="@{verbose}"/>
+      <arg value="--hide-warnings"/>
+      <arg value="--warn-on"/>
+      <arg value="all"/>
+      <arg value="--force-encoding"/>
+      <arg value="utf8"/>
+      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-forced-encoding-utf8.xml"/>
+    </java>
   </sequential>
 </macrodef>
 

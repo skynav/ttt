@@ -28,7 +28,6 @@ package com.skynav.ttv.model.netflix;
 import java.net.URI;
 
 import com.skynav.ttv.model.Profile.Specification;
-import com.skynav.ttv.model.smpte.ST20522010FullProfileSpecification;
 
 import static com.skynav.ttv.model.smpte.ST20522010.Constants.PROFILE_2010_FULL_ABSOLUTE;
 

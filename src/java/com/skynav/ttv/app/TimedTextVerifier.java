@@ -32,8 +32,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -648,7 +650,7 @@ public class TimedTextVerifier implements VerifierContext {
             forceModel = null;
         this.forceModel = forceModel;
         Model model;
-        if (modelName != null) {
+        if ((modelName != null) && !modelName.equals("auto")) {
             model = Models.getModel(modelName);
             if (model == null)
                 throw new InvalidOptionUsageException("model", "unknown model: " + modelName);
@@ -1127,7 +1129,10 @@ public class TimedTextVerifier implements VerifierContext {
                         setResourceBuffer(encoding, charsBuffer, bytesBuffer);
                         if (includeSource)
                             reporter.setLines(parseLines(charsBuffer, encoding));
-                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", encoding.name()));
+                        if (this.forceEncoding != null)
+                            reporter.logInfo(reporter.message("*KEY*", "Resource encoding forced to {0}.", encoding.name()));
+                        else
+                            reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", encoding.name()));
                         reporter.logInfo(reporter.message("*KEY*", "Resource length {0} bytes, decoded as {1} Java characters (char).",
                             bytesBuffer.limit(), charsBuffer.limit()));
                     }
@@ -1203,14 +1208,12 @@ public class TimedTextVerifier implements VerifierContext {
             pf.setValidating(false);
             pf.setNamespaceAware(true);
             SAXParser p = pf.newSAXParser();
-            p.parse(openStream(resourceBufferRaw), new DefaultHandler() {
+            Charset encoding = getEncoding();
+            InputSource is = new InputSource(new InputStreamReader(openStream(resourceBufferRaw), encoding));
+            is.setEncoding(encoding.name());
+            is.setSystemId(resourceUri.toString());
+            p.parse(is, new DefaultHandler() {
                 private boolean expectRootElement = true;
-                public InputSource resolveEntity(String pubid, String sysid) throws SAXException, IOException {
-                    InputSource is = super.resolveEntity(pubid, sysid);
-                    if (forceEncoding != null)
-                        is.setEncoding(forceEncoding.name());
-                    return is;
-                }
                 public void startElement(String nsUri, String localName, String qualName, Attributes attrs) throws SAXException {
                     if (expectRootElement) {
                         processAnnotations(attrs);
@@ -1232,7 +1235,7 @@ public class TimedTextVerifier implements VerifierContext {
                     if (getReporter().logWarning(e))
                         throw new WellFormednessErrorException(e);
                 }
-            }, resourceUri.toString());
+            });
         } catch (ParserConfigurationException e) {
             reporter.logError(e);
         } catch (WellFormednessErrorException e) {
@@ -1366,9 +1369,10 @@ public class TimedTextVerifier implements VerifierContext {
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
             XMLReader filter = new ForeignVocabularyFilter(reader, getModel().getNamespaceURIs(), extensionSchemas.keySet(), foreignTreatment);
-            InputSource is = new InputSource(openStream(resourceBufferRaw));
-            if (this.forceEncoding != null)
-                is.setEncoding(this.forceEncoding.name());
+            Charset encoding = getEncoding();
+            InputSource is = new InputSource(new InputStreamReader(openStream(resourceBufferRaw), encoding));
+            is.setEncoding(encoding.name());
+            is.setSystemId(resourceUri.toString());
             SAXSource source = new SAXSource(filter, is);
             source.setSystemId(resourceUri.toString());
             Validator v = getSchema().newValidator();
@@ -1641,9 +1645,10 @@ public class TimedTextVerifier implements VerifierContext {
             XMLReader reader = pf.newSAXParser().getXMLReader();
             ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, getModel().getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
             LocationAnnotatingFilter filter2 = new LocationAnnotatingFilter(filter1);
-            InputSource is = new InputSource(openStream(resourceBufferRaw));
-            if (this.forceEncoding != null)
-                is.setEncoding(this.forceEncoding.name());
+            Charset encoding = getEncoding();
+            InputSource is = new InputSource(new InputStreamReader(openStream(resourceBufferRaw), encoding));
+            is.setEncoding(encoding.name());
+            is.setSystemId(resourceUri.toString());
             SAXSource source = new SAXSource(filter2, is);
             source.setSystemId(resourceUri.toString());
 

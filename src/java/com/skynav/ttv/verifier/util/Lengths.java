@@ -129,6 +129,7 @@ public class Lengths {
 
     private static void updateUsage(VerifierContext context, Locator locator, Length.Unit unit) {
         String key = "usage" + unit.name();
+        @SuppressWarnings("unchecked")
         List<Locator> usage = (List<Locator>) context.getResourceState(key);
         if (usage == null)
             usage = new java.util.ArrayList<Locator>();

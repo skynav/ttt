@@ -160,6 +160,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidForcedEncodingUTF8() throws Exception {
+        performValidityTest("ttml1-valid-forced-encoding-utf8.xml", 0, 0, new String[] { "--force-encoding", "utf-8" });
+    }
+
+    @Test
     public void testValidST20522010() throws Exception {
         performValidityTest("st2052-2010-valid.xml", -1, -1);
     }
@@ -210,6 +215,10 @@ public class ValidTestCases {
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
+        performValidityTest(resourceName, expectedErrors, expectedWarnings, null);
+    }
+
+    private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings, String[] additionalOptions) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
@@ -226,6 +235,9 @@ public class ValidTestCases {
         if (expectedWarnings >= 0) {
             args.add("--expect-warnings");
             args.add(Integer.toString(expectedWarnings));
+        }
+        if (additionalOptions != null) {
+            args.addAll(java.util.Arrays.asList(additionalOptions));
         }
         args.add(urlString);
         TimedTextVerifier ttv = new TimedTextVerifier();
