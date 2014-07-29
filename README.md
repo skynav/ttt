@@ -24,7 +24,9 @@ The encodings which `ttv` can successfully resolve include:
  * `UTF-32LE`
  * `UTF-32BE`
 
-If both BOM is present and XML declaration is present and the two encodings differ, then the BOM encoding is used.
+If both BOM is present and XML declaration is present and the two encodings differ, then the BOM encoding is used. If desired, the resource's character encoding may
+be overridden by using the `--force-encoding` option. If used, then no encoding sniffing occurs, and any internal XML encoding declaration is ignored in favor of the
+overriding encoding.
 
 The second phase performs well-formedness testing by attempting to parse the resource as XML but with validation disabled. If the syntax of the resource does not adhere to the XML specification, then this phase fails.
 
@@ -167,6 +169,8 @@ A verification *model* includes the following information:
  * a collection of acceptable root JAXB content classes, used to verify the root element
  * additional model specific verification tools used during the semantic verification phase
 
+The model used to perform phase 3 (validity) and phase 4 (semantics) verification is determined as follows: if a `--force-model` option is present, then the force model is used; otherwise, if the resource specifies a `ttva:model` annotation, then the annotated model is used; otherwise, the default model is used. In order to determine the default model, invoke **ttv** with the `--show-models` option.
+
 ## Building
 
 In order to build **ttv**, run *ant* with one of the following targets:
@@ -230,6 +234,8 @@ Usage: java -jar ttv.jar [options] URL*
     --extension-schema NS URL          - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)
     --external-extent EXTENT           - specify extent for document processing context
     --external-frame-rate RATE         - specify frame rate for document processing context
+    --force-encoding NAME              - force use of named character encoding, overriding default and resource specified encoding
+    --force-model NAME                 - force use of named model, overriding default model and resource specified model
     --help                             - show usage help
     --hide-resource-location           - hide resource location (default: show)
     --hide-resource-path               - hide resource path (default: show)
