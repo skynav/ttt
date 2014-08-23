@@ -42,14 +42,16 @@
 <property name="source.dir" value="${source.dir}"/>
 <property name="schemas.dir" value="${source.dir}/schemas"/>
 <property name="test.dir" value="${basedir}/tst"/>
+<property name="test.classes.dir" value="${build.dir}/test-classes"/>
+<property name="test.resources.dir" value="${build.dir}/test-resources"/>
 
 <property name="ttv.source.dir" value="${source.dir}/ttv/java"/>
 <property name="ttv.generated.dir" value="${generated.dir}/ttv/java"/>
 <property name="ttv.classes.dir" value="${classes.dir}/ttv"/>
 <property name="ttv.test.source.dir" value="${test.dir}/ttv/java"/>
 <property name="ttv.test.resources.source.dir" value="${test.dir}/ttv/resources"/>
-<property name="ttv.test.classes.dir" value="${build.dir}/test-classes/ttv"/>
-<property name="ttv.test.resources.dir" value="${build.dir}/test-resources/ttv"/>
+<property name="ttv.test.classes.dir" value="${test.classes.dir}/ttv"/>
+<property name="ttv.test.resources.dir" value="${test.resources.dir}/ttv"/>
 
 <property name="ttv.jar" value="ttv.jar"/>
 <property name="ttv.source.jar" value="ttv-source.jar"/>
@@ -412,14 +414,14 @@
   <catalina-deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/ttv" war="file:${servlet.deploy.target}"/>
 </target>
 
-<target name="clean-classes">
+<target name="clean-ttv-classes">
   <delete includeemptydirs="true" quiet="true">
     <fileset dir="${ttv.classes.dir}"/>
     <fileset dir="${ttv.test.classes.dir}"/>
   </delete>
 </target>
 
-<target name="clean-resources">
+<target name="clean-ttv-resources">
   <delete includeemptydirs="true" quiet="true">
     <fileset dir="${ttv.test.resources.dir}"/>
   </delete>
@@ -437,7 +439,7 @@
   </delete>
 </target>
 
-<target name="clean-ttv" depends="clean-classes, clean-resources, clean-artifacts, clean-test-output"/>
+<target name="clean-ttv" depends="clean-ttv-classes,clean-ttv-resources"/>
 
 <target name="clean-servlet">
   <delete includeemptydirs="true" quiet="true">
@@ -448,7 +450,13 @@
   </delete>
 </target>
 
-<target name="clean" depends="clean-ttv,clean-servlet"/>
+<target name="clean" depends="clean-ttv,clean-servlet,clean-artifacts,clean-test-output">
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${classes.dir}"/>
+    <fileset dir="${test.classes.dir}"/>
+    <fileset dir="${test.resources.dir}"/>
+  </delete>
+</target>
 
 <target name="clean-ttv-generated">
   <delete includeemptydirs="true">
@@ -456,17 +464,23 @@
   </delete>
 </target>
 
-<target name="clean-all" depends="clean-ttv, clean-ttv-generated"/>
+<target name="clean-ttv-all" depends="clean-ttv, clean-ttv-generated"/>
 
-<target name="clean-build" description="Clean and build TTV" depends="clean-ttv,build-ttv"/>
+<target name="clean-all" depends="clean-ttv-all"/>
+
+<target name="clean-ttv-build" description="Clean and build TTV." depends="clean-ttv, build-ttv"/>
+
+<target name="clean-build" description="Clean and build all targets." depends="clean-ttv-build"/>
+
+<target name="clean-ttv-test" description="Clean, build, and test TTV" depends="clean-ttv, build-ttv, test-ttv"/>
+
+<target name="clean-test" description="Clean, build, and test all targets." depends="clean-ttv-test"/>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
-<target name="clean-all-build" depends="clean-all,generate-code,build"/>
-
-<target name="clean-test" description="Clean, build, and test TTV" depends="clean-ttv,build-ttv,test-ttv"/>
+<target name="clean-all-build" depends="clean-all, generate-code, build"/>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
-<target name="clean-all-test" depends="clean-all,generate-code,build,test"/>
+<target name="clean-all-test" depends="clean-all, generate-code, build, test"/>
 
 <macrodef name="run-valid">
   <attribute name="verbose"/>
