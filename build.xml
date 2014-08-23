@@ -41,14 +41,15 @@
 <property name="generated.dir" value="${source.dir}/generated"/>
 <property name="source.dir" value="${source.dir}"/>
 <property name="schemas.dir" value="${source.dir}/schemas"/>
-<property name="test.classes.dir" value="${build.dir}/test-classes"/>
 <property name="test.dir" value="${basedir}/tst"/>
-<property name="test.source.dir" value="${test.dir}/java"/>
-<property name="test.resources.dir" value="${build.dir}/test-resources"/>
-<property name="test.resources.source.dir" value="${test.dir}/resources"/>
 
 <property name="ttv.source.dir" value="${source.dir}/ttv/java"/>
 <property name="ttv.generated.dir" value="${generated.dir}/ttv/java"/>
+<property name="ttv.classes.dir" value="${classes.dir}/ttv"/>
+<property name="ttv.test.source.dir" value="${test.dir}/ttv/java"/>
+<property name="ttv.test.resources.source.dir" value="${test.dir}/ttv/resources"/>
+<property name="ttv.test.classes.dir" value="${build.dir}/test-classes/ttv"/>
+<property name="ttv.test.resources.dir" value="${build.dir}/test-resources/ttv"/>
 
 <property name="ttv.jar" value="ttv.jar"/>
 <property name="ttv.source.jar" value="ttv-source.jar"/>
@@ -130,8 +131,8 @@
 <path id="default-junit-classpath">
   <path refid="junit.libs.classpath"/>
   <pathelement location="${ttv.target}"/>
-  <pathelement location="${test.classes.dir}"/>
-  <pathelement location="${test.resources.dir}"/>
+  <pathelement location="${ttv.test.classes.dir}"/>
+  <pathelement location="${ttv.test.resources.dir}"/>
 </path>
 
 <macrodef name="junit-run">
@@ -222,25 +223,25 @@
 <target name="generate-code" depends="create-xsd-bindings"/>
 
 <target name="compile-ttv">
-  <mkdir dir="${classes.dir}"/>
-  <javac destdir="${classes.dir}">
+  <mkdir dir="${ttv.classes.dir}"/>
+  <javac destdir="${ttv.classes.dir}">
     <src path="${ttv.source.dir}"/>
     <src path="${ttv.generated.dir}"/>
   </javac>
 </target>
 
 <target name="compile-ttv-tests" depends="compile-ttv">
-  <mkdir dir="${test.classes.dir}"/>
-  <javac destdir="${test.classes.dir}">
-    <src path="${test.source.dir}"/>
+  <mkdir dir="${ttv.test.classes.dir}"/>
+  <javac destdir="${ttv.test.classes.dir}">
+    <src path="${ttv.test.source.dir}"/>
     <classpath>
       <path refid="junit.libs.classpath"/>
-      <path location="${classes.dir}"/>
+      <path location="${ttv.classes.dir}"/>
     </classpath>
   </javac>
-  <mkdir dir="${test.resources.dir}"/>
-  <copy todir="${test.resources.dir}">
-    <fileset dir="${test.resources.source.dir}"/>
+  <mkdir dir="${ttv.test.resources.dir}"/>
+  <copy todir="${ttv.test.resources.dir}">
+    <fileset dir="${ttv.test.resources.source.dir}"/>
   </copy>
 </target>
 
@@ -277,7 +278,7 @@
   </tstamp>
   <property name="build.id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}, Java ${java.runtime.version}, Target Java ${javac.target}])"/>
   <jar jarfile="${ttv.target}">
-    <fileset dir="${classes.dir}"/>
+    <fileset dir="${ttv.classes.dir}"/>
     <fileset dir="${schemas.dir}"/>
     <manifest>
       <attribute name="Implementation-Title" value="${ttv.title}"/>
@@ -413,14 +414,14 @@
 
 <target name="clean-classes">
   <delete includeemptydirs="true" quiet="true">
-    <fileset dir="${classes.dir}"/>
-    <fileset dir="${test.classes.dir}"/>
+    <fileset dir="${ttv.classes.dir}"/>
+    <fileset dir="${ttv.test.classes.dir}"/>
   </delete>
 </target>
 
 <target name="clean-resources">
   <delete includeemptydirs="true" quiet="true">
-    <fileset dir="${test.resources.dir}"/>
+    <fileset dir="${ttv.test.resources.dir}"/>
   </delete>
 </target>
 
@@ -459,6 +460,9 @@
 
 <target name="clean-build" description="Clean and build TTV" depends="clean-ttv,build-ttv"/>
 
+<!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
+<target name="clean-all-build" depends="clean-all,generate-code,build"/>
+
 <target name="clean-test" description="Clean, build, and test TTV" depends="clean-ttv,build-ttv,test-ttv"/>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
@@ -473,41 +477,41 @@
       <arg value="--hide-warnings"/>
       <arg value="--warn-on"/>
       <arg value="all"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-simple.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-elements.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-metadata.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-parameters.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-profiles.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-styles.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-timing.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-agent-idref-duplicate.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-agent-missing-actor.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-agent-missing-name.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-extensions-base-other-namespace.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-extension-non-standard.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-font-family-quoted-generic.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-foreign.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-foreign-metadata.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-opacity-out-of-range.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-origin-negative.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-profile-attribute-ignored.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-profile-attribute-non-standard.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-profile-missing.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-profile-non-standard.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-role-duplicate.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-role-extension.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-style-idref-duplicate-with-intervening.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-style-idref-duplicate-without-intervening.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid-all-styles.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid-background-image-external.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-608.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-708.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-all-styles.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid-uses-cell-unit-with-cell-resolution.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid-uses-pixel-unit-with-root-extent.xml"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/nflxsdh-valid.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-simple.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-elements.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-metadata.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-parameters.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-profiles.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-styles.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-all-timing.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-agent-idref-duplicate.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-agent-missing-actor.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-agent-missing-name.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-extensions-base-other-namespace.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-extension-non-standard.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-font-family-quoted-generic.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-foreign.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-foreign-metadata.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-opacity-out-of-range.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-origin-negative.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-profile-attribute-ignored.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-profile-attribute-non-standard.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-profile-missing.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-profile-non-standard.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-role-duplicate.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-role-extension.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-style-idref-duplicate-with-intervening.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-style-idref-duplicate-without-intervening.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid-all-styles.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/st2052-2010-valid-background-image-external.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-608.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-with-708.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/st2052-2013-valid-all-styles.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid-uses-cell-unit-with-cell-resolution.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/nflxcc-valid-uses-pixel-unit-with-root-extent.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/nflxsdh-valid.xml"/>
     </java>
     <java jar="${ttv.target}" fork="true" failonerror="true">
       <jvmarg value="-ea"/>
@@ -517,7 +521,7 @@
       <arg value="all"/>
       <arg value="--force-encoding"/>
       <arg value="utf8"/>
-      <arg value="${test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-forced-encoding-utf8.xml"/>
+      <arg value="${ttv.test.resources.source.dir}/com/skynav/ttv/app/ttml1-valid-forced-encoding-utf8.xml"/>
     </java>
   </sequential>
 </macrodef>
