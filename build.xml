@@ -39,13 +39,16 @@
 <property name="classes.dir" value="${build.dir}/classes"/>
 <property name="ext.lib.dir" value="${ext.dir}/lib"/>
 <property name="generated.dir" value="${source.dir}/generated"/>
-<property name="java.source.dir" value="${source.dir}/java"/>
+<property name="source.dir" value="${source.dir}"/>
 <property name="schemas.dir" value="${source.dir}/schemas"/>
 <property name="test.classes.dir" value="${build.dir}/test-classes"/>
 <property name="test.dir" value="${basedir}/tst"/>
-<property name="test.java.source.dir" value="${test.dir}/java"/>
+<property name="test.source.dir" value="${test.dir}/java"/>
 <property name="test.resources.dir" value="${build.dir}/test-resources"/>
 <property name="test.resources.source.dir" value="${test.dir}/resources"/>
+
+<property name="ttv.source.dir" value="${source.dir}/ttv/java"/>
+<property name="ttv.generated.dir" value="${generated.dir}/ttv/java"/>
 
 <property name="ttv.jar" value="ttv.jar"/>
 <property name="ttv.source.jar" value="ttv-source.jar"/>
@@ -70,7 +73,7 @@
 <property name="servlet.classes.dir" value="${servlet.build.dir}/WEB-INF/classes"/>
 <property name="servlet.lib.dir" value="${servlet.build.dir}/WEB-INF/lib"/>
 <property name="servlet.source.dir" value="${source.dir}/servlet"/>
-<property name="servlet.java.source.dir" value="${servlet.source.dir}/java"/>
+<property name="servlet.source.dir" value="${servlet.source.dir}/java"/>
 <property name="servlet.web.source.dir" value="${servlet.source.dir}/web"/>
 <property name="servlet.jar" value="ttvservlet.jar"/>
 <property name="servlet.source.jar" value="ttvservlet-source.jar"/>
@@ -181,7 +184,7 @@
     <arg value="-b"/>
     <arg value="${bindings.dir}/xsd/ttml1-bindings.xjb"/>
     <arg value="-d"/>
-    <arg value="${generated.dir}"/>
+    <arg value="${ttv.generated.dir}"/>
     <arg value="${schemas.dir}/xsd/ttml1/ttml1.xsd"/>
   </exec>
 </target>
@@ -192,7 +195,7 @@
     <arg value="-b"/>
     <arg value="${bindings.dir}/xsd/smpte-bindings-2010.xjb"/>
     <arg value="-d"/>
-    <arg value="${generated.dir}"/>
+    <arg value="${ttv.generated.dir}"/>
     <arg value="${schemas.dir}/xsd/smpte/2010/smpte-tt.xsd"/>
     <arg value="${schemas.dir}/xsd/smpte/2010/smpte-tt-608.xsd"/>
   </exec>
@@ -203,7 +206,7 @@
     <arg value="-b"/>
     <arg value="${bindings.dir}/xsd/smpte-bindings-2013.xjb"/>
     <arg value="-d"/>
-    <arg value="${generated.dir}"/>
+    <arg value="${ttv.generated.dir}"/>
     <arg value="${schemas.dir}/xsd/smpte/2013/smpte-tt.xsd"/>
     <arg value="${schemas.dir}/xsd/smpte/2013/smpte-tt-608.xsd"/>
     <arg value="${schemas.dir}/xsd/smpte/2013/smpte-tt-708.xsd"/>
@@ -221,15 +224,15 @@
 <target name="compile-ttv">
   <mkdir dir="${classes.dir}"/>
   <javac destdir="${classes.dir}">
-    <src path="${java.source.dir}"/>
-    <src path="${generated.dir}"/>
+    <src path="${ttv.source.dir}"/>
+    <src path="${ttv.generated.dir}"/>
   </javac>
 </target>
 
 <target name="compile-ttv-tests" depends="compile-ttv">
   <mkdir dir="${test.classes.dir}"/>
   <javac destdir="${test.classes.dir}">
-    <src path="${test.java.source.dir}"/>
+    <src path="${test.source.dir}"/>
     <classpath>
       <path refid="junit.libs.classpath"/>
       <path location="${classes.dir}"/>
@@ -252,7 +255,7 @@
   <copy file="${ttv.target}" tofile="${servlet.lib.dir}/ttv-${ttv.version}.jar"/>
   <mkdir dir="${servlet.classes.dir}"/>
   <javac destdir="${servlet.classes.dir}">
-    <src path="${servlet.java.source.dir}"/>
+    <src path="${servlet.source.dir}"/>
     <classpath>
       <fileset dir="${catalina.lib.dir}">
         <include name="*.jar"/>
@@ -448,7 +451,7 @@
 
 <target name="clean-ttv-generated">
   <delete includeemptydirs="true">
-    <fileset dir="${generated.dir}" includes="**/*"/>
+    <fileset dir="${ttv.generated.dir}" includes="**/*"/>
   </delete>
 </target>
 
