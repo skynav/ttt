@@ -30,6 +30,7 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.verifier.TimingValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.VerificationParameters;
@@ -41,13 +42,11 @@ public class TimeCoordinateVerifier implements TimingValueVerifier {
         String value = (String) valueObject;
         assert parameters instanceof TimingVerificationParameters; 
         TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
-        String timeBase = timingParameters.getTimeBase().name();
-        int frameRate = timingParameters.getFrameRate();
-        int subFrameRate = timingParameters.getSubFrameRate();
-        if (Timing.isCoordinate(value, locator, context, timeBase, frameRate, subFrameRate, null))
+        TimeParameters timeParameters = ((TimingVerificationParameters) parameters).getTimeParameters();
+        if (Timing.isCoordinate(value, locator, context, timeParameters, null))
             return true;
         else {
-            Timing.badCoordinate(value, locator, context, timeBase, frameRate, subFrameRate);
+            Timing.badCoordinate(value, locator, context, timeParameters);
             return false;
         }
     }

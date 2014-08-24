@@ -26,6 +26,8 @@
 package com.skynav.ttv.model.value.impl;
 
 import com.skynav.ttv.model.value.OffsetTime;
+import com.skynav.ttv.model.value.TimeBase;
+import com.skynav.ttv.model.value.TimeParameters;
 
 public class OffsetTimeImpl implements OffsetTime {
     private double offset;
@@ -45,6 +47,32 @@ public class OffsetTimeImpl implements OffsetTime {
     }
     public double getOffset() {
         return offset;
+    }
+    public double getTime(TimeParameters parameters) {
+        assert parameters != null;
+        double offset = getOffset();
+        Metric m = getMetric();
+        if (m == OffsetTime.Metric.Hours)
+            return offset * 3600;
+        else if (m == OffsetTime.Metric.Minutes)
+            return offset * 60;
+        else if (m == OffsetTime.Metric.Seconds)
+            return offset * 1;
+        else if (m == OffsetTime.Metric.Milliseconds)
+            return offset / 1000;
+        else if (m == OffsetTime.Metric.Frames) {
+            if (parameters.getTimeBase() == TimeBase.MEDIA)
+                return offset / parameters.getEffectiveFrameRate();
+            else if (parameters.getTimeBase() == TimeBase.SMPTE)
+                return offset;
+            else
+                return 0;
+        } else if (m == OffsetTime.Metric.Ticks)
+            return offset / parameters.getTickRate();
+        else {
+            assert false;
+            return 0;
+        }
     }
     public OffsetTime.Metric getMetric() {
         return metric;

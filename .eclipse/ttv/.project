@@ -16,34 +16,40 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>classes</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/bld/classes</locationURI>
-		</link>
-		<link>
-			<name>generated</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/generated</locationURI>
-		</link>
-		<link>
-			<name>java</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/src/java</locationURI>
-		</link>
-		<link>
 			<name>schemas</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/schemas</locationURI>
 		</link>
 		<link>
-			<name>test</name>
+			<name>ttv</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/tst/java</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ttv/java</locationURI>
 		</link>
 		<link>
-			<name>test-resources</name>
+			<name>ttv-generated</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/tst/resources</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/generated/ttv/java</locationURI>
+		</link>
+		<link>
+			<name>ttv-test</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/tst/ttv/java</locationURI>
+		</link>
+		<link>
+			<name>ttx</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ttx/java</locationURI>
 		</link>
 	</linkedResources>
+	<filteredResources>
+		<filter>
+			<id>1408857859517</id>
+			<name>schemas</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-*.xsd</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>

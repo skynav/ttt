@@ -67,6 +67,28 @@
 <property name="ttv.vendor" value="Skynav, Inc."/>
 <property name="ttv.release.target" value="${release.dir}/ttv-bin-${ttv.version}.jar"/>
 
+<property name="ttx.source.dir" value="${source.dir}/ttx/java"/>
+<property name="ttx.generated.dir" value="${generated.dir}/ttx/java"/>
+<property name="ttx.classes.dir" value="${classes.dir}/ttx"/>
+<property name="ttx.test.source.dir" value="${test.dir}/ttx/java"/>
+<property name="ttx.test.resources.source.dir" value="${test.dir}/ttx/resources"/>
+<property name="ttx.test.classes.dir" value="${test.classes.dir}/ttx"/>
+<property name="ttx.test.resources.dir" value="${test.resources.dir}/ttx"/>
+
+<property name="ttx.jar" value="ttx.jar"/>
+<property name="ttx.source.jar" value="ttx-source.jar"/>
+<property name="ttx.main.class" value="com/skynav/ttx/app/TimedTextTransformer"/>
+<property name="ttx.target" value="${artifacts.dir}/${ttx.jar}"/>
+<property name="ttx.source.target" value="${artifacts.dir}/${ttx.source.jar}"/>
+<property name="ttx.title" value="Timed Text Transformer"/>
+<property name="ttx.version.major" value="1"/>
+<property name="ttx.version.minor" value="0"/>
+<property name="ttx.version.micro" value="0"/>
+<property name="ttx.version.suffix" value="dev"/>
+<property name="ttx.version" value="${ttx.version.major}.${ttx.version.minor}.${ttx.version.micro}${ttx.version.suffix}"/>
+<property name="ttx.vendor" value="Skynav, Inc."/>
+<property name="ttx.release.target" value="${release.dir}/ttx-bin-${ttx.version}.jar"/>
+
 <property name="catalina.dir" value="${env.CATALINA_HOME}"/>
 <property name="catalina.bin.dir" value="${catalina.dir}/bin"/>
 <property name="catalina.lib.dir" value="${catalina.dir}/lib"/>
@@ -232,6 +254,17 @@
   </javac>
 </target>
 
+<target name="compile-ttx" depends="build-ttv-artifacts">
+  <mkdir dir="${ttx.classes.dir}"/>
+  <javac destdir="${ttx.classes.dir}">
+    <src path="${ttx.source.dir}"/>
+    <src path="${ttx.generated.dir}"/>
+    <classpath>
+      <path location="${ttv.classes.dir}"/>
+    </classpath>
+  </javac>
+</target>
+
 <target name="compile-ttv-tests" depends="compile-ttv">
   <mkdir dir="${ttv.test.classes.dir}"/>
   <javac destdir="${ttv.test.classes.dir}">
@@ -244,6 +277,21 @@
   <mkdir dir="${ttv.test.resources.dir}"/>
   <copy todir="${ttv.test.resources.dir}">
     <fileset dir="${ttv.test.resources.source.dir}"/>
+  </copy>
+</target>
+
+<target name="compile-ttx-tests" depends="compile-ttx">
+  <mkdir dir="${ttx.test.classes.dir}"/>
+  <javac destdir="${ttx.test.classes.dir}">
+    <src path="${ttx.test.source.dir}"/>
+    <classpath>
+      <path refid="junit.libs.classpath"/>
+      <path location="${ttx.classes.dir}"/>
+    </classpath>
+  </javac>
+  <mkdir dir="${ttx.test.resources.dir}"/>
+  <copy todir="${ttx.test.resources.dir}">
+    <fileset dir="${ttx.test.resources.source.dir}"/>
   </copy>
 </target>
 
@@ -270,9 +318,13 @@
   </javac>
 </target>
 
-<target name="ensure-ttv-artifacts-directory">
+<target name="ensure-artifacts-directory">
   <mkdir dir="${artifacts.dir}"/>
 </target>
+
+<target name="ensure-ttv-artifacts-directory" depends="ensure-artifacts-directory"/>
+
+<target name="ensure-ttx-artifacts-directory" depends="ensure-artifacts-directory"/>
 
 <target name="build-ttv-jars" depends="compile-ttv">
   <tstamp>
@@ -294,8 +346,8 @@
     <fileset dir="${basedir}">
       <include name="build.xml"/>
       <include name="README.md"/>
-      <include name="src/**/*.*"/>
-      <include name="tst/**/*.*"/>
+      <include name="src/ttv/**/*.*"/>
+      <include name="tst/ttv/**/*.*"/>
     </fileset>
     <manifest>
       <attribute name="Implementation-Title" value="${ttv.title} Source"/>
@@ -306,9 +358,48 @@
   </jar>
 </target>
 
+<target name="build-ttx-jars" depends="compile-ttx">
+  <tstamp>
+    <format property="ts" pattern="yyyyMMdd-HHmmss-z"/>
+  </tstamp>
+  <property name="build.id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}, Java ${java.runtime.version}, Target Java ${javac.target}])"/>
+  <jar jarfile="${ttx.target}">
+    <zipfileset src="${ttv.target}">
+      <include name="**/*.class"/>
+      <include name="**/*.xsd"/>
+    </zipfileset>
+    <fileset dir="${ttx.classes.dir}"/>
+    <manifest>
+      <attribute name="Implementation-Title" value="${ttx.title}"/>
+      <attribute name="Implementation-Version" value="${ttx.version}"/>
+      <attribute name="Implementation-Vendor" value="${ttx.vendor}"/>
+      <attribute name="Build-Id" value="${build.id}"/>
+      <attribute name="Main-Class" value="${ttx.main.class}"/>
+    </manifest>
+  </jar>
+  <jar jarfile="${ttx.source.target}">
+    <fileset dir="${basedir}">
+      <include name="build.xml"/>
+      <include name="README.md"/>
+      <include name="src/ttx/**/*.*"/>
+      <include name="tst/ttx/**/*.*"/>
+    </fileset>
+    <manifest>
+      <attribute name="Implementation-Title" value="${ttx.title} Source"/>
+      <attribute name="Implementation-Version" value="${ttx.version}"/>
+      <attribute name="Implementation-Vendor" value="${ttx.vendor}"/>
+      <attribute name="Build-Id" value="${build.id}"/>
+    </manifest>
+  </jar>
+</target>
+
 <target name="build-ttv-artifacts" depends="ensure-ttv-artifacts-directory, build-ttv-jars"/>
 
+<target name="build-ttx-artifacts" depends="ensure-ttx-artifacts-directory, build-ttx-jars"/>
+
 <target name="build-ttv" description="Build TTV" depends="build-ttv-artifacts"/>
+
+<target name="build-ttx" description="Build TTX" depends="build-ttx-artifacts"/>
 
 <target name="build-servlet-jars" depends="compile-servlet">
   <jar jarfile="${servlet.target}">
@@ -355,12 +446,21 @@
 
 <target name="test-ttv" description="Run all TTV test suites" depends="compile-ttv-tests, test-xml, test-ttml1, test-apps"/>
 
-<target name="test" description="Run all test suites" depends="test-ttv"/>
+<target name="test-ttx" description="Run all TTX test suites" depends="compile-ttx-tests"/>
 
-<target name="release-dist">
+<target name="test" description="Run all test suites" depends="test-ttv, test-ttx"/>
+
+<target name="release-ttv-dist">
   <copy file="${ttv.target}" tofile="${release.dir}/ttv-bin-${ttv.version}.jar"/>
   <copy file="${ttv.source.target}" tofile="${release.dir}/ttv-src-${ttv.version}.jar"/>
 </target>
+
+<target name="release-ttx-dist">
+  <copy file="${ttx.target}" tofile="${release.dir}/ttx-bin-${ttx.version}.jar"/>
+  <copy file="${ttx.source.target}" tofile="${release.dir}/ttx-src-${ttx.version}.jar"/>
+</target>
+
+<target name="release-dist" depends="release-ttv-dist, release-ttx-dist"/>
 
 <target name="release-sign">
   <input message="Passphrase for your default private key (attention: passphrase will be echoed in clear text on the display!)" addproperty="pwd"/>
@@ -421,9 +521,22 @@
   </delete>
 </target>
 
+<target name="clean-ttx-classes">
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${ttx.classes.dir}"/>
+    <fileset dir="${ttx.test.classes.dir}"/>
+  </delete>
+</target>
+
 <target name="clean-ttv-resources">
   <delete includeemptydirs="true" quiet="true">
     <fileset dir="${ttv.test.resources.dir}"/>
+  </delete>
+</target>
+
+<target name="clean-ttx-resources">
+  <delete includeemptydirs="true" quiet="true">
+    <fileset dir="${ttx.test.resources.dir}"/>
   </delete>
 </target>
 
@@ -441,6 +554,8 @@
 
 <target name="clean-ttv" depends="clean-ttv-classes,clean-ttv-resources"/>
 
+<target name="clean-ttx" depends="clean-ttx-classes,clean-ttx-resources"/>
+
 <target name="clean-servlet">
   <delete includeemptydirs="true" quiet="true">
     <fileset dir="${servlet.build.dir}"/>
@@ -450,7 +565,7 @@
   </delete>
 </target>
 
-<target name="clean" depends="clean-ttv,clean-servlet,clean-artifacts,clean-test-output">
+<target name="clean" depends="clean-ttv, clean-ttx, clean-servlet, clean-artifacts, clean-test-output">
   <delete includeemptydirs="true" quiet="true">
     <fileset dir="${classes.dir}"/>
     <fileset dir="${test.classes.dir}"/>
@@ -466,15 +581,27 @@
 
 <target name="clean-ttv-all" depends="clean-ttv, clean-ttv-generated"/>
 
-<target name="clean-all" depends="clean-ttv-all"/>
+<target name="clean-ttx-generated">
+  <delete includeemptydirs="true">
+    <fileset dir="${ttx.generated.dir}" includes="**/*"/>
+  </delete>
+</target>
+
+<target name="clean-ttx-all" depends="clean-ttx, clean-ttx-generated"/>
+
+<target name="clean-all" depends="clean-ttv-all, clean-ttx-all"/>
 
 <target name="clean-ttv-build" description="Clean and build TTV." depends="clean-ttv, build-ttv"/>
 
-<target name="clean-build" description="Clean and build all targets." depends="clean-ttv-build"/>
+<target name="clean-ttx-build" description="Clean and build TTX." depends="clean-ttx, build-ttx"/>
+
+<target name="clean-build" description="Clean and build all targets." depends="clean-ttv-build, clean-ttx-build"/>
 
 <target name="clean-ttv-test" description="Clean, build, and test TTV" depends="clean-ttv, build-ttv, test-ttv"/>
 
-<target name="clean-test" description="Clean, build, and test all targets." depends="clean-ttv-test"/>
+<target name="clean-ttx-test" description="Clean, build, and test TTX" depends="clean-ttx, build-ttx, test-ttx"/>
+
+<target name="clean-test" description="Clean, build, and test all targets." depends="clean-ttv-test, clean-ttx-test"/>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="clean-all-build" depends="clean-all, generate-code, build"/>

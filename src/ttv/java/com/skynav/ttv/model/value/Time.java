@@ -31,4 +31,5 @@ public interface Time {
         Offset;
     }
     Type getType();
+    double getTime(TimeParameters parameters);
 }

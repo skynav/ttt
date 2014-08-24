@@ -26,6 +26,9 @@
 package com.skynav.ttv.model.value.impl;
 
 import com.skynav.ttv.model.value.ClockTime;
+import com.skynav.ttv.model.value.DropMode;
+import com.skynav.ttv.model.value.TimeBase;
+import com.skynav.ttv.model.value.TimeParameters;
 
 public class ClockTimeImpl implements ClockTime {
     private int hours;
@@ -58,6 +61,26 @@ public class ClockTimeImpl implements ClockTime {
     public Type getType() {
         return Type.Clock;
     }
+    public double getTime(TimeParameters parameters) {
+        assert parameters != null;
+        double t = 0;
+        t += (double) getHours() * 3600;
+        t += (double) getMinutes() * 60;
+        t += (double) getSeconds() *  1;
+        if (parameters.getTimeBase() == TimeBase.MEDIA) {
+            double frames = 0;
+            frames += (double) getFrames();
+            frames += (double) getSubFrames() / (double) parameters.getSubFrameRate();
+            t += frames / parameters.getEffectiveFrameRate();
+        } else if (parameters.getTimeBase() == TimeBase.SMPTE) {
+            double frames = t * (double) parameters.getFrameRate();
+            frames += (double) getFrames();
+            frames += (double) getSubFrames() / (double) parameters.getSubFrameRate();
+            frames -= (double) getDroppedFrames(parameters.getDropMode());
+            t  = frames / parameters.getEffectiveFrameRate();
+        }
+        return t;
+    }
     public int getHours() {
         return hours;
     }
@@ -72,6 +95,19 @@ public class ClockTimeImpl implements ClockTime {
     }
     public int getSubFrames() {
         return subFrames;
+    }
+    private long getDroppedFrames(DropMode dropMode) {
+        long droppedFrames = 0;
+        if (dropMode == DropMode.DROP_NTSC) {
+            droppedFrames += (long) getHours() * 54;
+            droppedFrames += (long) Math.floor( (double) getMinutes() - (double) getMinutes() / 10 );
+            droppedFrames *= 2;
+        } else if (dropMode == DropMode.DROP_PAL) {
+            droppedFrames += (long) getHours() * 27;
+            droppedFrames += (long) Math.floor( (double) getMinutes() / 2 - (double) getMinutes() / 20 );
+            droppedFrames *= 4;
+        }
+        return droppedFrames;
     }
 }
 

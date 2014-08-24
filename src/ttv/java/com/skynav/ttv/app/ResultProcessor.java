@@ -23,36 +23,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.timing;
+package com.skynav.ttv.app;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
+import java.net.URI;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.value.TimeParameters;
-import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.VerificationParameters;
-import com.skynav.ttv.verifier.util.Timing;
 
-public class TimeDurationVerifier implements TimingValueVerifier {
+public interface ResultProcessor extends OptionProcessor {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters) {
-        String value = (String) valueObject;
-        assert parameters instanceof TimingVerificationParameters; 
-        TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
-        TimeParameters timeParameters = timingParameters.getTimeParameters();
-        if (Timing.isDuration(value, locator, context, timeParameters, null)) {
-            if (!timingParameters.allowsDuration()) {
-                timingParameters.badDuration(name, value, locator, context);
-                return false;
-            } else
-                return true;
-        } else {
-            Timing.badDuration(value, locator, context, timeParameters);
-            return false;
-        }
-    }
+    /**
+     * Process results of (successfully) verification of a TTML resource.
+     * @param uri uri of verified resource
+     * @param model verification model used to verify resource
+     * @param root binding object associated with root element
+     */
+    void processResult(URI uri, Model model, Object root);
 
 }
+
+
+
+

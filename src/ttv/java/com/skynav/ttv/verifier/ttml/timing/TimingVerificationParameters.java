@@ -33,24 +33,23 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.ttml1.tt.TimedText;
+import com.skynav.ttv.model.value.DropMode;
+import com.skynav.ttv.model.value.TimeBase;
+import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class TimingVerificationParameters implements VerificationParameters {
 
-    public enum TimeBase {
-        MEDIA,
-        SMPTE,
-        CLOCK
-    };
-
     private TimeBase timeBase;
+    private DropMode dropMode;
     private boolean allowDuration;
     private int frameRate;
     private double frameRateMultiplier;
     private int subFrameRate;
     private double effectiveFrameRate;
+    private int tickRate;
 
     public TimingVerificationParameters(TimedText tt) {
         populate(tt);
@@ -85,14 +84,23 @@ public class TimingVerificationParameters implements VerificationParameters {
         return subFrameRate;
     }
 
+    private TimeParameters timeParameters;
+    public TimeParameters getTimeParameters() {
+        if (timeParameters == null)
+            timeParameters = new TimeParameters(timeBase, dropMode, frameRate, subFrameRate, effectiveFrameRate, tickRate);
+        return timeParameters;
+    }
+
     private void populate(TimedText tt) {
         this.timeBase = TimeBase.valueOf(tt.getTimeBase().name());
+        this.dropMode = DropMode.valueOf(tt.getDropMode().name());
         this.allowDuration = (timeBase != TimeBase.SMPTE) || !tt.getMarkerMode().name().equals("DISCONTINUOUS");
         this.frameRate = tt.getFrameRate().intValue();
         this.subFrameRate = tt.getSubFrameRate().intValue();
         BigDecimal multiplier = parseFrameRateMultiplier(tt.getFrameRateMultiplier());
         this.frameRateMultiplier = multiplier.doubleValue();
         this.effectiveFrameRate = new BigDecimal(tt.getFrameRate()).multiply(multiplier).doubleValue();
+        this.tickRate = tt.getTickRate().intValue();
     }
 
     private static final BigDecimal zero = new BigDecimal(0D);

@@ -23,36 +23,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.timing;
+package com.skynav.ttx.app;
 
-import javax.xml.namespace.QName;
+public class Version {
+    public static final String CURRENT = "1.0.0dev";
 
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.value.TimeParameters;
-import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.VerificationParameters;
-import com.skynav.ttv.verifier.util.Timing;
-
-public class TimeDurationVerifier implements TimingValueVerifier {
-
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters) {
-        String value = (String) valueObject;
-        assert parameters instanceof TimingVerificationParameters; 
-        TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
-        TimeParameters timeParameters = timingParameters.getTimeParameters();
-        if (Timing.isDuration(value, locator, context, timeParameters, null)) {
-            if (!timingParameters.allowsDuration()) {
-                timingParameters.badDuration(name, value, locator, context);
-                return false;
-            } else
-                return true;
-        } else {
-            Timing.badDuration(value, locator, context, timeParameters);
-            return false;
-        }
+    public static String getVersion() {
+        return CURRENT;
     }
 
+    public static void main(String[] args) {
+        System.out.println(getVersion());
+    }
 }
+
+
+
+

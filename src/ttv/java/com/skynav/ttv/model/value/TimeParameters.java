@@ -23,36 +23,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier.ttml.timing;
+package com.skynav.ttv.model.value;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.value.TimeParameters;
-import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.VerificationParameters;
-import com.skynav.ttv.verifier.util.Timing;
-
-public class TimeDurationVerifier implements TimingValueVerifier {
-
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters) {
-        String value = (String) valueObject;
-        assert parameters instanceof TimingVerificationParameters; 
-        TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
-        TimeParameters timeParameters = timingParameters.getTimeParameters();
-        if (Timing.isDuration(value, locator, context, timeParameters, null)) {
-            if (!timingParameters.allowsDuration()) {
-                timingParameters.badDuration(name, value, locator, context);
-                return false;
-            } else
-                return true;
-        } else {
-            Timing.badDuration(value, locator, context, timeParameters);
-            return false;
-        }
+public class TimeParameters {
+    private TimeBase timeBase;
+    private DropMode dropMode;
+    private int frameRate;
+    private int subFrameRate;
+    private double effectiveFrameRate;
+    private int tickRate;
+    public TimeParameters(TimeBase timeBase, DropMode dropMode, int frameRate, int subFrameRate, double effectiveFrameRate, int tickRate) {
+        this.timeBase = timeBase;
+        this.dropMode = dropMode;
+        this.frameRate = frameRate;
+        this.subFrameRate = subFrameRate;
+        this.effectiveFrameRate = effectiveFrameRate;
+        this.tickRate = tickRate;
     }
-
+    public TimeBase getTimeBase() { return this.timeBase; }
+    public DropMode getDropMode() { return dropMode; }
+    public int getFrameRate() { return this.frameRate; }
+    public int getSubFrameRate() { return this.subFrameRate; }
+    public double getEffectiveFrameRate() { return this.effectiveFrameRate; }
+    public int getTickRate() { return this.tickRate; }
 }

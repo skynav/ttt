@@ -135,33 +135,84 @@ public class TimedTextVerifier implements VerifierContext {
     private static final String repositoryInfo =
         "Source Repository: " + repositoryURL;
 
+    // option and usage info
+    private static final String[][] shortOptionSpecifications = new String[][] {
+        { "d",  "see --debug" },
+        { "q",  "see --quiet" },
+        { "v",  "see --verbose" },
+        { "?",  "see --help" },
+    };
+    private static final Set<OptionSpecification> shortOptions;
+    static {
+        shortOptions = new java.util.TreeSet<OptionSpecification>();
+        for (String[] spec : shortOptionSpecifications) {
+            shortOptions.add(new OptionSpecification(spec[0], spec[1]));
+        }
+    }
+
+    private static final String[][] longOptionSpecifications = new String[][] {
+        { "debug",                      "",         "enable debug output (may be specified multiple times to increase debug level)" },
+        { "debug-exceptions",           "",         "enable stack traces on exceptions (implies --debug)" },
+        { "disable-warnings",           "",         "disable warnings (both hide and don't count warnings)" },
+        { "expect-errors",              "COUNT",    "expect count errors or -1 meaning unspecified expectation (default: -1)" },
+        { "expect-warnings",            "COUNT",    "expect count warnings or -1 meaning unspecified expectation (default: -1)" },
+        { "extension-schema",           "NS URL",   "add schema for namespace NS at location URL to grammar pool (may be specified multiple times)" },
+        { "external-extent",            "EXTENT",   "specify extent for document processing context" },
+        { "external-frame-rate",        "RATE",     "specify frame rate for document processing context" },
+        { "force-encoding",             "NAME",     "force use of named character encoding, overriding default and resource specified encoding" },
+        { "force-model",                "NAME",     "force use of named model, overriding default model and resource specified model" },
+        { "help",                       "",         "show usage help" },
+        { "hide-warnings",              "",         "hide warnings (but count them)" },
+        { "hide-resource-location",     "",         "hide resource location (default: show)" },
+        { "hide-resource-path",         "",         "hide resource path (default: show)" },
+        { "model",                      "NAME",     "specify model name (default: " + defaultModel.getName() + ")" },
+        { "no-warn-on",                 "TOKEN",    "disable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
+        { "no-verbose",                 "",         "disable verbose output (resets verbosity level to 0)" },
+        { "quiet",                      "",         "don't show banner" },
+        { "reporter",                   "REPORTER", "specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
+             Reporters.getDefaultReporterName()+ ")" },
+        { "reporter-file",              "FILE",     "specify path to file to which reporter output is to be written" },
+        { "reporter-file-encoding",     "ENCODING", "specify character encoding of reporter output (default: utf-8)" },
+        { "reporter-file-append",       "",         "if reporter file already exists, then append output to it" },
+        { "reporter-include-source",    "",         "include source context in report messages" },
+        { "servlet",                    "",         "configure defaults for servlet operation" },
+        { "show-models",                "",         "show built-in verification models (use with --verbose to show more details)" },
+        { "show-repository",            "",         "show source code repository information" },
+        { "show-resource-location",     "",         "show resource location (default: show)" },
+        { "show-resource-path",         "",         "show resource path (default: show)" },
+        { "show-validator",             "",         "show platform validator information" },
+        { "show-warning-tokens",        "",         "show warning tokens (use with --verbose to show more details)" },
+        { "verbose",                    "",         "enable verbose output (may be specified multiple times to increase verbosity level)" },
+        { "treat-foreign-as",           "TOKEN",    "specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
+            ForeignTreatment.getDefault().name().toLowerCase() + ")" },
+        { "treat-warning-as-error",     "",         "treat warning as error (overrides --disable-warnings)" },
+        { "until-phase",                "PHASE",    "verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
+            Phase.getDefault().name().toLowerCase() + ")" },
+        { "warn-on",                    "TOKEN",    "enable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
+    };
+    private static final Set<OptionSpecification> longOptions;
+    static {
+        longOptions = new java.util.TreeSet<OptionSpecification>();
+        for (String[] spec : longOptionSpecifications) {
+            longOptions.add(new OptionSpecification(spec[0], spec[1], spec[2]));
+        }
+    }
+
+    private static final String usageCommand =
+        "java -jar ttv.jar [options] URL*";
+
+    private static final String[][] nonOptions = new String[][] {
+        { "URL", "an absolute or relative URL; if relative, resolved against current working directory" },
+    };
+
     // usage text
     private static final String usage =
         "Usage: java -jar ttv.jar [options] URL*\n" +
-        "  Short Options:\n" +
-        "    -d                                 - see --debug\n" +
-        "    -q                                 - see --quiet\n" +
-        "    -v                                 - see --verbose\n" +
-        "    -?                                 - see --help\n" +
         "  Long Options:\n" +
-        "    --debug                            - enable debug output (may be specified multiple times to increase debug level)\n" +
-        "    --debug-exceptions                 - enable stack traces on exceptions (implies --debug)\n" +
-        "    --disable-warnings                 - disable warnings (both hide and don't count warnings)\n" +
-        "    --expect-errors COUNT              - expect count errors or -1 meaning unspecified expectation (default: -1)\n" +
-        "    --expect-warnings COUNT            - expect count warnings or -1 meaning unspecified expectation (default: -1)\n" +
-        "    --extension-schema NS URL          - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)\n" +
-        "    --external-extent EXTENT           - specify extent for document processing context\n" +
-        "    --external-frame-rate RATE         - specify frame rate for document processing context\n" +
         "    --force-encoding NAME              - force use of named character encoding, overriding default and resource specified encoding\n" +
         "    --force-model NAME                 - force use of named model, overriding default model and resource specified model\n" +
-        "    --help                             - show usage help\n" +
         "    --hide-resource-location           - hide resource location (default: show)\n" +
         "    --hide-resource-path               - hide resource path (default: show)\n" +
-        "    --hide-warnings                    - hide warnings (but count them)\n" +
-        "    --model NAME                       - specify model name (default: " + defaultModel.getName() + ")\n" +
-        "    --no-warn-on TOKEN                 - disable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
-        "    --no-verbose                       - disable verbose output (resets verbosity level to 0)\n" +
-        "    --quiet                            - don't show banner\n" +
         "    --reporter REPORTER                - specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
              Reporters.getDefaultReporterName()+ ")\n" +
         "    --reporter-file FILE               - specify path to file to which reporter output is to be written\n" +
@@ -169,21 +220,10 @@ public class TimedTextVerifier implements VerifierContext {
         "    --reporter-file-append             - if reporter file already exists, then append output to it\n" +
         "    --reporter-include-source          - include source context in report messages\n" +
         "    --servlet                          - configure defaults for servlet operation\n" +
-        "    --show-models                      - show built-in verification models (use with --verbose to show more details)\n" +
-        "    --show-repository                  - show source code repository information\n" +
+
         "    --show-resource-location           - show resource location (default: show)\n" +
         "    --show-resource-path               - show resource path (default: show)\n" +
-        "    --show-validator                   - show platform validator information\n" +
-        "    --show-warning-tokens              - show warning tokens (use with --verbose to show more details)\n" +
-        "    --verbose                          - enable verbose output (may be specified multiple times to increase verbosity level)\n" +
-        "    --treat-foreign-as TOKEN           - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
-             ForeignTreatment.getDefault().name().toLowerCase() + ")\n" +
-        "    --treat-warning-as-error           - treat warning as error (overrides --disable-warnings)\n" +
-        "    --until-phase PHASE                - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
-             Phase.getDefault().name().toLowerCase() + ")\n" +
-        "    --warn-on TOKEN                    - enable warning specified by warning TOKEN, where multiple instances of this option may be specified\n" +
-        "  Non-Option Arguments:\n" +
-        "    URL                                - an absolute or relative URL; if relative, resolved against current working directory\n" +
+
         "";
 
     // default warnings
@@ -490,7 +530,7 @@ public class TimedTextVerifier implements VerifierContext {
             return null;
     }
 
-    private int parseLongOption(String args[], int index) {
+    private int parseLongOption(String args[], int index, OptionProcessor optionProcessor) {
         Reporter reporter = getReporter();
         String option = args[index];
         assert option.length() > 2;
@@ -595,6 +635,8 @@ public class TimedTextVerifier implements VerifierContext {
             if (!reporter.hasDefaultWarning(token))
                 throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
             reporter.enableWarning(token);
+        } else if ((optionProcessor != null) && optionProcessor.hasOption(args[index])) {
+            return optionProcessor.parseOption(args, index);
         } else
             throw new UnknownOptionException("--" + option);
         return index + 1;
@@ -604,7 +646,7 @@ public class TimedTextVerifier implements VerifierContext {
         getReporter().hideLocation();
     }
 
-    private int parseShortOption(String args[], int index) {
+    private int parseShortOption(String args[], int index, OptionProcessor optionProcessor) {
         Reporter reporter = getReporter();
         String option = args[index];
         assert option.length() == 2;
@@ -622,12 +664,15 @@ public class TimedTextVerifier implements VerifierContext {
         case '?':
             throw new ShowUsageException();
         default:
-            throw new UnknownOptionException("-" + option);
+            if ((optionProcessor != null) && optionProcessor.hasOption(args[index]))
+                return optionProcessor.parseOption(args, index);
+            else
+                throw new UnknownOptionException("-" + option);
         }
         return index + 1;
     }
 
-    private void processDerivedOptions() {
+    private void processDerivedOptions(OptionProcessor optionProcessor) {
         Reporter reporter = getReporter();
         Charset forceEncoding;
         if (forceEncodingName != null) {
@@ -688,10 +733,14 @@ public class TimedTextVerifier implements VerifierContext {
             } else
                 throw new InvalidOptionUsageException("external-extent", "invalid syntax: " + externalExtent);
         }
+        if (optionProcessor != null)
+            optionProcessor.processDerivedOptions();
     }
 
-    private List<String> processOptionsAndArgs(List<String> nonOptionArgs) {
-        processDerivedOptions();
+    private List<String> processOptionsAndArgs(List<String> nonOptionArgs, OptionProcessor optionProcessor) {
+        processDerivedOptions(optionProcessor);
+        if (optionProcessor != null)
+            nonOptionArgs = optionProcessor.processNonOptionArguments(nonOptionArgs);
         return nonOptionArgs;
     }
 
@@ -741,7 +790,7 @@ public class TimedTextVerifier implements VerifierContext {
         return skippedArgs.toArray(new String[skippedArgs.size()]);
     }
 
-    private List<String> parseArgs(String[] args) {
+    private List<String> parseArgs(String[] args, OptionProcessor optionProcessor) {
         List<String> nonOptionArgs = new java.util.ArrayList<String>();
         int nonOptionIndex = -1;
         for (int i = 0; i < args.length;) {
@@ -749,13 +798,13 @@ public class TimedTextVerifier implements VerifierContext {
             if (arg.charAt(0) == '-') {
                 switch (arg.charAt(1)) {
                 case '-':
-                    i = parseLongOption(args, i);
+                    i = parseLongOption(args, i, optionProcessor);
                     break;
                 default:
                     if (arg.length() != 2)
                         throw new UnknownOptionException(arg);
                     else
-                        i = parseShortOption(args, i);
+                        i = parseShortOption(args, i, optionProcessor);
                     break;
                 }
             } else {
@@ -767,7 +816,7 @@ public class TimedTextVerifier implements VerifierContext {
             for (int i = nonOptionIndex; i < args.length; ++i)
                 nonOptionArgs.add(args[i]);
         }
-        return processOptionsAndArgs(nonOptionArgs);
+        return processOptionsAndArgs(nonOptionArgs, optionProcessor);
     }
 
     public void setShowOutput(PrintWriter showOutput) {
@@ -782,9 +831,60 @@ public class TimedTextVerifier implements VerifierContext {
         return showOutput;
     }
 
-    private void showBanner() {
+    private void showBanner(PrintWriter out, OptionProcessor optionProcessor) {
+        if (optionProcessor != null)
+            optionProcessor.showBanner(out);
         if (!quiet)
-            getShowOutput().println(banner);
+            out.println(banner);
+    }
+
+    private void showUsage(PrintWriter out, OptionProcessor optionProcessor) {
+        showBanner(out, optionProcessor);
+        if (optionProcessor != null)
+            optionProcessor.showUsage(out, shortOptions, longOptions);
+        else
+            showUsage(out);
+    }
+
+    private void showUsage(PrintWriter out) {
+        out.print("Usage: " + usageCommand + "\n");
+        showOptions(out, "Short Options", shortOptions);
+        showOptions(out, "Long Options", longOptions);
+        showOptions(out, "Non-Option Arguments", nonOptions);
+    }
+
+    public static void showOptions(PrintWriter out, String label, Set<OptionSpecification> options) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("  ");
+        sb.append(label);
+        sb.append(':');
+        sb.append('\n');
+        for (OptionSpecification os : options) {
+            sb.append("    ");
+            sb.append(os.toString());
+            sb.append('\n');
+        }
+        out.print(sb.toString());
+    }
+
+    public static void showOptions(PrintWriter out, String label, String[][] options) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("  ");
+        sb.append(label);
+        sb.append(':');
+        sb.append('\n');
+        for (String[] option : options) {
+            assert option.length == 2;
+            sb.append("    ");
+            sb.append(option[0]);
+            for (int i = 0, n = OptionSpecification.OPTION_FIELD_LENGTH - option[0].length(); i < n; i++)
+                sb.append(' ');
+            sb.append('-');
+            sb.append(' ');
+            sb.append(option[1]);
+            sb.append('\n');
+        }
+        out.print(sb.toString());
     }
 
     private void showProcessingInfo() {
@@ -1868,10 +1968,19 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     public int run(String[] args) {
+        return run(args, null);
+    }
+
+    public int run(List<String> args, ResultProcessor resultProcessor) {
+        return run(args.toArray(new String[args.size()]), resultProcessor);
+    }
+
+    public int run(String[] args, ResultProcessor resultProcessor) {
         int rv = 0;
+        OptionProcessor optionProcessor = (OptionProcessor) resultProcessor;
         try {
-            List<String> nonOptionArgs = parseArgs(preProcessOptions(args));
-            showBanner();
+            List<String> nonOptionArgs = parseArgs(preProcessOptions(args), optionProcessor);
+            showBanner(getShowOutput(), optionProcessor);
             if (showModels)
                 showModels();
             if (showRepository)
@@ -1880,6 +1989,8 @@ public class TimedTextVerifier implements VerifierContext {
                 showValidator();
             if (showWarningTokens)
                 showWarningTokens();
+            if (optionProcessor != null)
+                optionProcessor.runOptions(getShowOutput());
             if (nonOptionArgs.size() > 1) {
                 if (expectedErrors != null)
                     throw new InvalidOptionUsageException("expect-errors", "must not specify more than one URL with this option");
@@ -1893,8 +2004,7 @@ public class TimedTextVerifier implements VerifierContext {
             } else
                 rv = RV_PASS;
         } catch (ShowUsageException e) {
-            getShowOutput().println(banner);
-            getShowOutput().println(usage);
+            showUsage(getShowOutput(), optionProcessor);
             rv = RV_USAGE;
         } catch (UsageException e) {
             getShowOutput().println("Usage: " + e.getMessage());

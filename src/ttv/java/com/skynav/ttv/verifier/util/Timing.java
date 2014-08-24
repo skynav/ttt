@@ -32,6 +32,8 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.Time;
+import com.skynav.ttv.model.value.TimeBase;
+import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.model.value.OffsetTime;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
 import com.skynav.ttv.model.value.impl.OffsetTimeImpl;
@@ -40,32 +42,32 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class Timing {
 
-    public static boolean isCoordinate(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate, Time[] outputTime) {
-        if (isClockTime(value, locator, context, timeBase, frameRate, subFrameRate, outputTime))
+    public static boolean isCoordinate(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+        if (isClockTime(value, locator, context, timeParameters, outputTime))
             return true;
-        else if (isOffsetTime(value, locator, context, timeBase, outputTime))
+        else if (isOffsetTime(value, locator, context, timeParameters, outputTime))
             return true;
         else
             return false;
     }
 
-    public static void badCoordinate(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate) {
+    public static void badCoordinate(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
         if (value.indexOf(':') >= 0)
-            badClockTime(value, locator, context, timeBase, frameRate, subFrameRate);
+            badClockTime(value, locator, context, timeParameters);
         else
-            badOffsetTime(value, locator, context, timeBase);
+            badOffsetTime(value, locator, context, timeParameters);
     }
 
-    public static boolean isDuration(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate, Time[] outputTime) {
-        return isCoordinate(value, locator, context, timeBase, frameRate, subFrameRate, outputTime);
+    public static boolean isDuration(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+        return isCoordinate(value, locator, context, timeParameters, outputTime);
     }
 
-    public static void badDuration(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate) {
-        badCoordinate(value, locator, context, timeBase, frameRate, subFrameRate);
+    public static void badDuration(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+        badCoordinate(value, locator, context, timeParameters);
     }
 
     private static Pattern clockTimePattern = Pattern.compile("(\\d{2,3}):(\\d{2}):(\\d{2})(\\.\\d+|:\\d{2,}(?:\\.\\d+)?)?");
-    public static boolean isClockTime(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate, Time[] outputTime) {
+    public static boolean isClockTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
         Matcher m = clockTimePattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() >= 3;
@@ -87,16 +89,16 @@ public class Timing {
                         seconds += remainder;
                 }
             }
-            if (timeBase.equals("CLOCK") && ((frames != null) || (subFrames != null)))
+            if ((timeParameters.getTimeBase() == TimeBase.CLOCK) && ((frames != null) || (subFrames != null)))
                 return false;
             ClockTime t = new ClockTimeImpl(hours, minutes, seconds, frames, subFrames);
             if (t.getMinutes() > 59)
                 return false;
             if (t.getSeconds() > 60.0)
                 return false;
-            if (t.getFrames() >= frameRate)
+            if (t.getFrames() >= timeParameters.getFrameRate())
                 return false;
-            if (t.getSubFrames() >= subFrameRate)
+            if (t.getSubFrames() >= timeParameters.getSubFrameRate())
                 return false;
             if (outputTime != null)
                 outputTime[0] = t;
@@ -105,7 +107,7 @@ public class Timing {
             return false;
     }
 
-    public static void badClockTime(String value, Locator locator, VerifierContext context, String timeBase, int frameRate, int subFrameRate) {
+    public static void badClockTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
         Reporter reporter = context.getReporter();
         assert value.indexOf(':') >= 0;
         String[] parts = value.split("\\:", 5);
@@ -257,14 +259,16 @@ public class Timing {
                 frames = Integer.parseInt(ff);
             }
             if (ff.length() > 0) {
-                if (timeBase.equals("CLOCK")) {
+                if (timeParameters.getTimeBase() == TimeBase.CLOCK) {
                     reporter.logInfo(reporter.message(locator, "*KEY*",
                         "Bad <timeExpression>, frames part not permitted when using 'clock' time base."));
                 }
+                double frameRate = timeParameters.getFrameRate();
                 if (frames >= frameRate) {
                     reporter.logInfo(reporter.message(locator, "*KEY*",
                         "Bad <timeExpression>, frames ''{0}'' must be less than frame rate {1}.", frames, frameRate));
                 }
+                double subFrameRate = timeParameters.getSubFrameRate();
                 if (subFrames >= subFrameRate) {
                     reporter.logInfo(reporter.message(locator, "*KEY*",
                         "Bad <timeExpression>, sub-frames ''{0}'' must be less than sub-frame rate {1}.", subFrames, subFrameRate));
@@ -284,14 +288,14 @@ public class Timing {
     }
 
     private static Pattern offsetTimePattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(h|m|s|ms|f|t)");
-    public static boolean isOffsetTime(String value, Locator locator, VerifierContext context, String timeBase, Time[] outputTime) {
+    public static boolean isOffsetTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
         Matcher m = offsetTimePattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() == 2;
             String offset = m.group(1);
             String units = m.group(2);
             OffsetTime t = new OffsetTimeImpl(offset, units);
-            if (timeBase.equals("CLOCK") && (t.getMetric() == OffsetTime.Metric.Frames))
+            if ((timeParameters.getTimeBase() == TimeBase.CLOCK) && (t.getMetric() == OffsetTime.Metric.Frames))
                 return false;
             if (outputTime != null)
                 outputTime[0] = t;
@@ -300,7 +304,7 @@ public class Timing {
             return false;
     }
 
-    public static void badOffsetTime(String value, Locator locator, VerifierContext context, String timeBase) {
+    public static void badOffsetTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
         Reporter reporter = context.getReporter();
         int valueIndex = 0;
         int valueLength = value.length();
@@ -390,7 +394,7 @@ public class Timing {
                 String metric = sb.toString();
                 try {
                     OffsetTime.Metric m = OffsetTime.Metric.valueOfShorthand(metric);
-                    if (timeBase.equals("CLOCK") && (m == OffsetTime.Metric.Frames)) {
+                    if ((timeParameters.getTimeBase() == TimeBase.CLOCK) && (m == OffsetTime.Metric.Frames)) {
                         reporter.logInfo(reporter.message(locator, "*KEY*",
                             "Bad <timeExpression>, frames metric not permitted when using 'clock' time base."));
                     }
