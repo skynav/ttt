@@ -29,7 +29,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -43,12 +43,15 @@ import com.skynav.ttx.util.Visitor;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
 import com.skynav.ttv.model.ttml1.tt.Division;
+import com.skynav.ttv.model.ttml1.tt.ObjectFactory;
 import com.skynav.ttv.model.ttml1.tt.Paragraph;
+import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.Set;
 import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
+import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.util.Timing;
 
@@ -60,8 +63,8 @@ public class ISD {
     public static class ISDTransformer extends AbstractTransformer {
 
         private Map<Object, Object> parents = new java.util.HashMap<Object, Object>();
-        private boolean recordedParents;
         private Map<Object, TimingState> timingStates = new java.util.HashMap<Object, TimingState>();
+        private int anonymousSpanIndex;
 
         protected ISDTransformer() {
         }
@@ -70,12 +73,64 @@ public class ISD {
             return TRANSFORMER_NAME;
         }
 
-        public void transform(Object root, OutputStream out) {
+        public void transform(Object root, ExternalParameters externalParameters, OutputStream out) {
             TimedText tt = (TimedText) root;
+            generateAnonymousSpans(tt);
             recordParents(tt);
-            resolveTiming(tt);
+            resolveTiming(tt, externalParameters);
         }
 
+        // generate anonymous spans in pre-traversal order  (albeit not sensitive to traversal order);
+        // this step must be performed prior to parent recording since new span nodes will be grafted into
+        // node hierarchy
+        private void generateAnonymousSpans(TimedText tt) {
+            traverse(tt, new PreVisitor() {
+                public void visit(Object content, Object parent, Visitor.Order order) {
+                    if (content instanceof String) {
+                        List<Serializable> contentChildren;
+                        if (parent instanceof Paragraph)
+                            contentChildren = ((Paragraph) parent).getContent();
+                        else if (parent instanceof Span) {
+                            contentChildren = ((Span) parent).getContent();
+                            if (contentChildren.size() == 1)
+                                contentChildren = null;
+                        } else
+                            contentChildren = null;
+                        if (contentChildren != null)
+                            contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content));
+                    }
+                }
+            });
+        }
+
+        private static final ObjectFactory spanFactory = new ObjectFactory();
+        private JAXBElement<Span> wrapInAnonymousSpan(Object content) {
+            assert content instanceof String;
+            Span span = spanFactory.createSpan();
+            span.setId(generateAnonymousSpanId());
+            span.getContent().add((Serializable) content);
+            return spanFactory.createSpan(span);
+        }
+
+        private String generateAnonymousSpanId() {
+            return "ttxSpan" + pad(++anonymousSpanIndex, 6);
+        }
+
+        private static String digits = "0123456789";
+        private static String pad(int value, int width) {
+            assert value > 0;
+            StringBuffer sb = new StringBuffer(width);
+            while (value > 0) {
+                sb.append(digits.charAt(value % 10));
+                value /= 10;
+            }
+            while (sb.length() < width) {
+                sb.append('0');
+            }
+            return sb.reverse().toString();
+        }
+
+        // record parents in pre-traversal order (albeit not sensitive to traversal order)
         private void recordParents(TimedText tt) {
             traverse(tt, new PreVisitor() {
                 public void visit(Object content, Object parent, Visitor.Order order) {
@@ -83,30 +138,62 @@ public class ISD {
                         parents.put(content, parent);
                 }
             });
-            recordedParents = true;
         }
 
         private Object getParent(Object content) {
-            assert recordedParents;
             if (parents.containsKey(content))
                 return parents.get(content);
             else
                 return null;
         }
 
-        private void resolveTiming(TimedText tt) {
-            resolveDurations(tt);
+        private void resolveTiming(TimedText tt, ExternalParameters externalParameters) {
+            // (1) resolve explicit timing
+            resolveExplicit(tt, externalParameters);
+
+            // (2) resolve implicit timing
+            resolveImplicit(tt, externalParameters);
         }
 
-        private void resolveDurations(TimedText tt) {
-            final TimeParameters timeParameters = new TimingVerificationParameters(tt).getTimeParameters();
-            traverse(tt, new PostVisitor() {
+        private void resolveExplicit(TimedText tt, ExternalParameters externalParameters) {
+            final TimeParameters timeParameters = new TimingVerificationParameters(tt, externalParameters).getTimeParameters();
+            traverse(tt, new PreVisitor() {
                 public void visit(Object content, Object parent, Visitor.Order order) {
-                    TimingState ts = getTimingState(content, timeParameters);
-                    ts.resolveBegin(content);
-                    ts.resolveDuration(content);
+                    if (isTimedElement(content)) {
+                        TimingState ts = getTimingState(content, timeParameters);
+                        ts.resolveExplicit(content);
+                    }
                 }
             });
+        }
+
+        private void resolveImplicit(TimedText tt, ExternalParameters externalParameters) {
+            final TimeParameters timeParameters = new TimingVerificationParameters(tt, externalParameters).getTimeParameters();
+            traverse(tt, new PostVisitor() {
+                public void visit(Object content, Object parent, Visitor.Order order) {
+                    if (isTimedElement(content)) {
+                        TimingState ts = getTimingState(content, timeParameters);
+                        ts.resolveImplicit(content, order);
+                    }
+                }
+            });
+        }
+
+        private boolean isTimedElement(Object content) {
+            if (content instanceof Body)
+                return true;
+            else if (content instanceof Division)
+                return true;
+            else if (content instanceof Paragraph)
+                return true;
+            else if (content instanceof Span)
+                return true;
+            else if (content instanceof Region)
+                return true;
+            else if (content instanceof Set)
+                return true;
+            else
+                return false;
         }
 
         private void traverse(TimedText tt, Visitor v) {
@@ -194,33 +281,36 @@ public class ISD {
             return timingStates.get(content);
         }
 
-        private static class Duration implements Comparable<Duration> {
+        private static class TimeCoordinate implements Comparable<TimeCoordinate> {
             public enum Type {
+                Unspecified,
                 Invalid,
                 Unresolved,
                 Indefinite,
                 Definite;
             }
-            public static final Duration INVALID = new Duration(Type.Invalid);
-            public static final Duration UNRESOLVED = new Duration(Type.Unresolved);
-            public static final Duration INDEFINITE = new Duration(Type.Indefinite);
-            public static final Duration ZERO = new Duration(0);
+            public static final TimeCoordinate UNSPECIFIED = new TimeCoordinate(Type.Unspecified);
+            public static final TimeCoordinate INVALID = new TimeCoordinate(Type.Invalid);
+            public static final TimeCoordinate UNRESOLVED = new TimeCoordinate(Type.Unresolved);
+            public static final TimeCoordinate INDEFINITE = new TimeCoordinate(Type.Indefinite);
+            public static final TimeCoordinate ZERO = new TimeCoordinate(0);
             private Type type = Type.Unresolved;
             private double value;
-            private Duration() {
+            private TimeCoordinate() {
                 this(Type.Unresolved);
             }
-            private Duration(Type type) {
+            private TimeCoordinate(Type type) {
                 this(type, 0);
             }
-            private Duration(double value) {
+            private TimeCoordinate(double value) {
                 this(Type.Definite, value);
             }
-            private Duration(Type type, double value) {
+            private TimeCoordinate(Type type, double value) {
                 assert (type == Type.Definite) | (value == 0);
                 this.type = type;
                 this.value = value;
             }
+            public boolean isUnspecified() { return type == Type.Unspecified; }
             public boolean isInvalid() { return type == Type.Invalid; }
             public boolean isUnresolved() { return type == Type.Unresolved; }
             public boolean isIndefinite() { return type == Type.Indefinite; }
@@ -232,23 +322,73 @@ public class ISD {
                 return getType().ordinal() + Double.valueOf(getValue()).hashCode();
             }
             public boolean equals(Object o) {
-                if (o instanceof Duration) {
-                    Duration d = (Duration) o;
-                    return (d.getType() == getType()) && (d.getValue() == getValue());
+                if (o instanceof TimeCoordinate) {
+                    TimeCoordinate c = (TimeCoordinate) o;
+                    return (c.getType() == getType()) && (c.getValue() == getValue());
                 } else
                     return false;
             }
-            public int compareTo(Duration d) {
-                if (less(this, d))
+            public String toString() {
+                return isDefinite() ? Double.toString(getValue()) : getType().name();
+            }
+            public int compareTo(TimeCoordinate c) {
+                if (less(this, c))
                     return -1;
-                else if (greater(this, d))
+                else if (greater(this, c))
                     return 1;
-                else if (equals(d))
+                else if (equals(c))
                     return 0;
                 else
                     return -1;
             }
-            public Duration neg() {
+            public static TimeCoordinate fromValue(double value) {
+                if (value == 0)
+                    return ZERO;
+                else
+                    return new TimeCoordinate(value);
+            }
+            public static TimeCoordinate min(TimeCoordinate c1, TimeCoordinate c2) {
+                assert !c1.isInvalid();
+                assert !c2.isInvalid();
+                if (c1.isZero())
+                    return c1;
+                else if (c2.isZero())
+                    return c2;
+                else if (c1.isDefinite()) {
+                    if (c2.isDefinite())
+                        return (c1.getValue() < c2.getValue()) ? c1 : c2;
+                    else
+                        return c1;
+                } else if (c1.isIndefinite()) {
+                    if (c2.isDefinite())
+                        return c2;
+                    else
+                        return c1;
+                } else
+                    return c2;
+            }
+            public static TimeCoordinate max(TimeCoordinate c1, TimeCoordinate c2) {
+                assert !c1.isInvalid();
+                assert !c2.isInvalid();
+                if (c1.isUnresolved())
+                    return c1;
+                else if (c2.isUnresolved())
+                    return c2;
+                else if (c1.isDefinite()) {
+                    if (c2.isDefinite())
+                        return (c1.getValue() > c2.getValue()) ? c1 : c2;
+                    else
+                        return c2;
+                } else
+                    return c1;
+            }
+            public static boolean less(TimeCoordinate c1, TimeCoordinate c2) {
+                return !c1.equals(c2) && min(c1,c2).equals(c1);
+            }
+            public static boolean greater(TimeCoordinate c1, TimeCoordinate c2) {
+                return !c1.equals(c2) && max(c1,c2).equals(c1);
+            }
+            public TimeCoordinate neg() {
                 if (isZero())
                     return this;
                 else if (isDefinite())
@@ -256,13 +396,7 @@ public class ISD {
                 else
                     return this;
             }
-            public static Duration fromValue(double value) {
-                if (value == 0)
-                    return ZERO;
-                else
-                    return new Duration(value);
-            }
-            public static Duration add(Duration d1, Duration d2) {
+            public static TimeCoordinate add(TimeCoordinate d1, TimeCoordinate d2) {
                 assert !d1.isInvalid();
                 assert !d2.isInvalid();
                 if (d1.isUnresolved())
@@ -277,7 +411,10 @@ public class ISD {
                 } else
                     return d1;
             }
-            public static Duration mul(Duration d1, Duration d2) {
+            public static TimeCoordinate sub(TimeCoordinate d1, TimeCoordinate d2) {
+                return add(d1, d2.neg());
+            }
+            public static TimeCoordinate mul(TimeCoordinate d1, TimeCoordinate d2) {
                 assert !d1.isInvalid();
                 assert !d2.isInvalid();
                 if (d1.isZero())
@@ -296,189 +433,243 @@ public class ISD {
                 } else
                     return d1;
             }
-            public static Duration min(Duration d1, Duration d2) {
-                assert !d1.isInvalid();
-                assert !d2.isInvalid();
-                if (d1.isZero())
-                    return d1;
-                else if (d2.isZero())
-                    return d2;
-                else if (d1.isDefinite()) {
-                    if (d2.isDefinite())
-                        return (d1.getValue() < d2.getValue()) ? d1 : d2;
-                    else
-                        return d1;
-                } else if (d1.isIndefinite()) {
-                    if (d2.isDefinite())
-                        return d2;
-                    else
-                        return d1;
-                } else
-                    return d2;
-            }
-            public static Duration max(Duration d1, Duration d2) {
-                assert !d1.isInvalid();
-                assert !d2.isInvalid();
-                if (d1.isUnresolved())
-                    return d1;
-                else if (d2.isUnresolved())
-                    return d2;
-                else if (d1.isDefinite()) {
-                    if (d2.isDefinite())
-                        return (d1.getValue() > d2.getValue()) ? d1 : d2;
-                    else
-                        return d2;
-                } else
-                    return d1;
-            }
-            public static boolean less(Duration d1, Duration d2) {
-                return !d1.equals(d2) && min(d1,d2).equals(d1);
-            }
-            public static boolean greater(Duration d1, Duration d2) {
-                return !d1.equals(d2) && max(d1,d2).equals(d1);
-            }
         }
 
-        public static class TimingState {
+        public class TimingState {
+            // contextual timing parameters
             private TimeParameters timeParameters;
-            public Duration begin = Duration.UNRESOLVED;
-            public Duration durImplicit = Duration.UNRESOLVED;
-            public Duration durSimple = Duration.UNRESOLVED;
-            public Duration durActive = Duration.UNRESOLVED;
+            // explicit timing state
+            private TimeCoordinate durExplicit = TimeCoordinate.UNSPECIFIED;
+            private TimeCoordinate beginExplicit = TimeCoordinate.UNSPECIFIED;
+            private TimeCoordinate endExplicit = TimeCoordinate.UNSPECIFIED;
+            // implicit timing state
+            private TimeCoordinate durImplicit = TimeCoordinate.UNRESOLVED;
             TimingState(TimeParameters timeParameters) {
                 this.timeParameters = timeParameters;
             }
-            void resolveBegin(Object content) {
-                /*
-                ** (1) Unless otherwise specified below, if there is any error in the argument value syntax for an attribute,
-                **     the attribute will be ignored (as though it were not specified).
-                ** (2) If no begin is specified, the default timing is dependent upon the time container.
-                ** (3) A time value may conform to the defined syntax but still be invalid (e.g. if an unknown element is referenced
-                **     by ID in a syncbase value). If there is such an evaluation error in an individual value in the list of begin or end values,
-                **     the individual value will be will be treated as though "indefinite" were specified, and the rest of the list will be processed normally.
-                **     If no legal value is specified for a begin or end attribute, the element assumes an "indefinite" begin or end time (respectively).
-                ** (4) The element will actually begin at the time computed according to the following algorithm:
-                **
-                **     Let o be the offset value of a given begin value,
-                **     d be the associated simple duration, 
-                **     AD be the associated active duration.
-                **     Let rAt be the time when the begin time becomes resolved.
-                **     Let rTo be the resolved sync-base or event-base time without the offset
-                **     Let rD be rTo - rAt.  If rD < 0 then rD is set to 0.
-                **
-                **     If AD is indefinite, it compares greater than any value of o or ABS(o).
-                **     REM( x, y ) is defined as x - (y * floor( x/y )). 
-                **     If y is indefinite or unresolved, REM( x, y ) is just x.
-                **     
-                **     Let mb = REM( ABS(o), d ) - rD
-                **     If ABS(o) >= AD then the element does not begin.
-                **     Else if mb >= 0 then the media begins at mb.
-                **     Else the media begins at mb + d.
-                */
-                if (this.begin.isUnresolved()) {
-                    Duration begin = getBegin(content, timeParameters);
-                    if (begin.isInvalid())
-                        begin = Duration.UNRESOLVED;
-                    if (begin.isUnresolved())
-                        begin = Duration.ZERO;
-                    this.begin = begin;
-                }
+            TimeCoordinate getSimpleDuration() {
+                if (durExplicit.isUnspecified()) {
+                    if (!endExplicit.isUnspecified())
+                        return TimeCoordinate.INDEFINITE;
+                    else if (durImplicit.isUnresolved())
+                        return TimeCoordinate.UNRESOLVED;
+                    else
+                        return durImplicit;
+                } else
+                    return durExplicit;
             }
-            void resolveDuration(Object content) {
-                /*
-                ** IMPLICIT DURATION
-                **
-                ** (1) An element with the timeContainer attribute behaves the same as a media time container.
-                ** (2) If a timeContainer attribute is not specified on an element that has time container semantics, then par time container semantics must apply.
-                ** (3) Time container semantics applies only to the following element types: body, div, p, region, span.
-                ** (4) The implicit duration of a par is controlled by endsync.
-                ** (5) For the purpose of determining the [SMIL 2.1] endsync semantics of a par time container, a default value of all applies.
-                ** (6) For endsync of 'all', the par, excl, or media element's implicit duration ends when all of the child elements have ended their
-                **     respective active durations. Elements with indefinite or unresolved begin times will keep the simple duration of the time container from ending.
-                **     When all elements have completed the active duration one or more times, the parent time container may end.
-                ** (7) The implicit duration of a seq ends with the active end of the last child of the seq.
-                ** (8) If any child of a seq has an indefinite active duration, the implicit duration of the seq is also indefinite.
-                */
-
-                /*
-                ** SIMPLE DURATION
-                **
-                ** (1) If there is any error in the argument value syntax for dur, the attribute will be ignored (as though it were not specified).
-                ** (2) If the element does not have a (valid) dur attribute, the simple duration for the element is defined to be the implicit duration of the element.
-                ** (3) If the author specifies a value for dur that is shorter than the implicit duration for an element,
-                **     the implicit duration will be cut short by the specified simple duration.
-                ** (4) If the author specifies a simple duration that is longer than the implicit duration for an element,
-                **     the implicit duration of the element is extended to the specified simple duration:
-                **     a) For a discrete media element, the media will be shown for the specified simple duration.
-                **     b) For a continuous media element, the ending state of the media (e.g. the last frame of video) will be shown
-                **        from the end of the intrinsic media duration to the end of the specified simple duration. This only applies
-                **        to visual media - aural media will simply stop playing (i.e. be silent).
-                **     c) For a seq time container, the last child is frozen until the end of the simple duration of the seq
-                **        if and only if its fill behavior is "freeze" or "hold" (otherwise the child just ends without freezing).
-                **     d) Children of a par or excl are frozen until the end of the simple duration of the par or excl
-                **        if and only if the children's fill behavior is "freeze" or "hold" (otherwise the children just ends without freezing).
-                */
-                if (this.durSimple.isUnresolved()) {
-                    Duration durExplicit = getDur(content, timeParameters);
-                    if (durExplicit.isInvalid())
-                        durExplicit = Duration.UNRESOLVED;
-                    Duration durImplicit = getDurImplicit(content, timeParameters);
-                    Duration durSimple = durExplicit.isUnresolved() ? durImplicit : durExplicit;
-                    switch (durSimple.compareTo(durImplicit)) {
-                    case -1: // explicit duration is shorter than implicit duration
-                        durImplicit = durExplicit;
-                        break;
-                    case 1: // explicit duration is longer than implicit duration
-                        durImplicit = durExplicit;
-                        break;
-                    default:
-                        break;
+            TimeCoordinate getBegin() {
+                if (!beginExplicit.isUnspecified())
+                    return beginExplicit;
+                else
+                    return TimeCoordinate.ZERO;
+            }
+            TimeCoordinate getEnd() {
+                return endExplicit;
+            }
+            TimeCoordinate getRepeatCount() {
+                return TimeCoordinate.UNSPECIFIED;
+            }
+            TimeCoordinate getRepeatDuration() {
+                return TimeCoordinate.UNSPECIFIED;
+            }
+            TimeCoordinate getMinimum() {
+                return TimeCoordinate.ZERO;
+            }
+            TimeCoordinate getMaximum() {
+                return TimeCoordinate.INDEFINITE;
+            }
+            TimeCoordinate computeIntermediateActiveDuration() {
+                TimeCoordinate p0 = getSimpleDuration();
+                TimeCoordinate rc = getRepeatCount();
+                TimeCoordinate rd = getRepeatDuration();
+                TimeCoordinate p1 = rc.isUnspecified() ? TimeCoordinate.INDEFINITE : TimeCoordinate.mul(rc, rd);
+                TimeCoordinate p2 = rd.isUnspecified() ? TimeCoordinate.INDEFINITE : rd;
+                if (p0.isZero())
+                    return TimeCoordinate.ZERO;
+                else if (rc.isUnspecified() && rd.isUnspecified())
+                    return p0;
+                else
+                    return TimeCoordinate.min(p1, TimeCoordinate.min(p2, TimeCoordinate.INDEFINITE));
+            }
+            TimeCoordinate getActiveDuration() {
+                TimeCoordinate b = getBegin();
+                TimeCoordinate e = getEnd();
+                TimeCoordinate pad;
+                if (!endExplicit.isUnspecified() && durExplicit.isUnspecified()) {
+                    if (e.isDefinite())
+                        pad = TimeCoordinate.sub(e, b);
+                    else if (e.isIndefinite())
+                        pad = TimeCoordinate.INDEFINITE;
+                    else
+                        pad = TimeCoordinate.UNRESOLVED;
+                } else {
+                    TimeCoordinate iad = computeIntermediateActiveDuration();
+                    if (endExplicit.isUnspecified() || endExplicit.isIndefinite()) {
+                        pad = iad;
+                    } else {
+                        pad = TimeCoordinate.min(iad, TimeCoordinate.sub(e, b));
                     }
-                    this.durImplicit = durImplicit;
-                    this.durSimple = durSimple;
                 }
+                TimeCoordinate min = getMinimum();
+                TimeCoordinate max = getMaximum();
+                return TimeCoordinate.min(max, TimeCoordinate.max(min, pad));
             }
-            void resolveEnd(Object content) {
-                /*
-                ** ACTIVE DURATION
-                **
-                ** (1) The end attribute allows the author to constrain the active duration ...
-                ** (2) If the end value becomes resolved while the element is still active, and the resolved time is in the past,
-                **     the element should end the active duration immediately.
-                ** (3) The rules for combining the attributes to compute the active duration are presented in the section, Computing the active duration.
-                */
-                Duration end = getEnd(content, timeParameters);
+            void resolveExplicit(Object content) {
+                 resolveExplicitDuration(content);
+                 resolveExplicitBegin(content);
+                 resolveExplicitEnd(content);
+                 // String cls = content.getClass().toString();
+                 // cls = cls.substring(cls.lastIndexOf('.') + 1);
+                 // System.out.println("[D]:RE: " + cls + this);
+            }
+            private void resolveExplicitDuration(Object content) {
+                TimeCoordinate durExplicit = getDurationAttribute(content, timeParameters);
+                if (durExplicit.isInvalid())
+                    durExplicit = TimeCoordinate.UNSPECIFIED;
+                this.durExplicit = durExplicit;
+            }
+            private void resolveExplicitBegin(Object content) {
+                TimeCoordinate beginExplicit = getBeginAttribute(content, timeParameters);
+                if (beginExplicit.isInvalid())
+                    beginExplicit = TimeCoordinate.UNSPECIFIED;
+                this.beginExplicit = beginExplicit;
+            }
+            private void resolveExplicitEnd(Object content) {
+                TimeCoordinate endExplicit = getEndAttribute(content, timeParameters);
+                if (endExplicit.isInvalid())
+                    endExplicit = TimeCoordinate.UNSPECIFIED;
+                this.endExplicit = endExplicit;
+            }
+            void resolveImplicit(Object content, Visitor.Order order) {
+                resolveImplicitDuration(content, order);
+                 String cls = content.getClass().toString();
+                 cls = cls.substring(cls.lastIndexOf('.') + 1);
+                 System.out.println("[D]:Resolved implicit: " + cls + this + ".");
+            }
+            private void resolveImplicitDuration(Object content, Visitor.Order order) {
+                TimeCoordinate durImplicit = this.durImplicit;
+                if (durImplicit == TimeCoordinate.UNRESOLVED) {
+                    if (isAnonymousSpan(content)) {
+                        Object parent = getParent(content);
+                        if (isSequenceContainer(parent))
+                            durImplicit = TimeCoordinate.ZERO;
+                        else
+                            durImplicit = TimeCoordinate.INDEFINITE;
+                    } else if (isSequenceContainer(content)) {
+                        TimeCoordinate sum = null;
+                        for (TimingState ts : getChildrenTiming(content, timeParameters)) {
+                            TimeCoordinate begin = ts.getBegin();
+                            TimeCoordinate activeDuration = ts.getActiveDuration();
+                            TimeCoordinate end = TimeCoordinate.add(begin, activeDuration);
+                            if (sum == null)
+                                sum = end;
+                            else
+                                sum = TimeCoordinate.add(sum, end);
+                        }
+                        if (sum != null)
+                            durImplicit = sum;
+                    } else {
+                        TimeCoordinate max = null;
+                        for (TimingState ts : getChildrenTiming(content, timeParameters)) {
+                            TimeCoordinate begin = ts.getBegin();
+                            TimeCoordinate activeDuration = ts.getActiveDuration();
+                            TimeCoordinate end = TimeCoordinate.add(begin, activeDuration);
+                            if (max == null)
+                                max = end;
+                            else
+                                max = TimeCoordinate.max(max, end);
+                        }
+                        if (max != null)
+                            durImplicit = max;
+                    }
+                }
+                if (!durExplicit.isUnspecified()) {
+                    TimeCoordinate durSimple = getSimpleDuration();
+                    if (durImplicit.compareTo(durSimple) != 0)
+                        durImplicit = durSimple;
+                } else if (content instanceof Body) {
+                    double externalDuration = timeParameters.getExternalDuration();
+                    if (!Double.isNaN(externalDuration))
+                        durImplicit = new TimeCoordinate(externalDuration);
+                }
+                this.durImplicit = durImplicit;
+            }
+            private List<TimingState> getChildrenTiming(Object content, TimeParameters timeParameters) {
+                @SuppressWarnings("rawtypes")
+                List children = null;
+                if (content instanceof Body)
+                    children = ((Body) content).getDiv();
+                else if (content instanceof Division)
+                    children = ((Division) content).getBlockClass();
+                else if (content instanceof Paragraph)
+                    children = dereferenceAsContent(((Paragraph) content).getContent());
+                else if (content instanceof Span)
+                    children = dereferenceAsContent(((Span) content).getContent());
+                List<TimingState> childrenTiming = new java.util.ArrayList<TimingState>();
+                for (Object child: children) {
+                    TimingState ts = getTimingState(child, timeParameters);
+                    childrenTiming.add(ts);
+                }
+                return childrenTiming;
+            }
+            @Override
+            public String toString() {
+                return "[b(" + getBegin() + "),e(" + getEnd() + "),d(" + getSimpleDuration() + "},di(" + durImplicit + ")]";
             }
         }
 
-        public static Duration getTimeAttribute(Object content, String name, TimeParameters timeParameters) {
+        public static TimeCoordinate getTimeCoordinateAttribute(Object content, String name, TimeParameters timeParameters) {
             String value = getStringValuedAttribute(content, name);
             if (value != null) {
                 Time[] times = new Time[1];
                 if (Timing.isCoordinate(value, null, null, timeParameters, times)) {
                     assert times.length > 0;
-                    return Duration.fromValue(times[0].getTime(timeParameters));
+                    return TimeCoordinate.fromValue(times[0].getTime(timeParameters));
                 } else {
-                    return Duration.INVALID;
+                    return TimeCoordinate.INVALID;
+                }
+            } else
+                return TimeCoordinate.UNSPECIFIED;
+        }
+
+        public static TimeCoordinate getDurationAttribute(Object content, TimeParameters timeParameters) {
+            return getTimeCoordinateAttribute(content, "dur", timeParameters);
+        }
+
+        public static TimeCoordinate getBeginAttribute(Object content, TimeParameters timeParameters) {
+            return getTimeCoordinateAttribute(content, "begin", timeParameters);
+        }
+
+        public static TimeCoordinate getEndAttribute(Object content, TimeParameters timeParameters) {
+            return getTimeCoordinateAttribute(content, "end", timeParameters);
+        }
+
+        private static boolean isAnonymousSpan(Object content) {
+            if (content instanceof Span) {
+                String value = getStringValuedAttribute(content, "id");
+                return (value != null) && (value.indexOf("ttxSpan") == 0);
+            } else
+                return false;
+        }
+
+        private static boolean isSequenceContainer(Object content) {
+            String value = getStringValuedAttribute(content, "timeContainer");
+            return (value != null) && value.equals("seq");
+        }
+
+        private static List<Object> dereferenceAsContent(List<Serializable> content) {
+            List<Object> dereferencedContent = new java.util.ArrayList<Object>(content.size());
+            for (Serializable s: content) {
+                if (s instanceof JAXBElement<?>) {
+                    Object element = ((JAXBElement<?>)s).getValue();
+                    if (element instanceof Span)
+                        dereferencedContent.add(element);
+                    else if (element instanceof Break)
+                        dereferencedContent.add(element);
                 }
             }
-            return Duration.UNRESOLVED;
-        }
-
-        public static Duration getBegin(Object content, TimeParameters timeParameters) {
-            return getTimeAttribute(content, "begin", timeParameters);
-        }
-
-        public static Duration getEnd(Object content, TimeParameters timeParameters) {
-            return getTimeAttribute(content, "end", timeParameters);
-        }
-
-        public static Duration getDur(Object content, TimeParameters timeParameters) {
-            return getTimeAttribute(content, "dur", timeParameters);
-        }
-
-        public static Duration getDurImplicit(Object content, TimeParameters timeParameters) {
-            return Duration.UNRESOLVED;
+            return dereferencedContent;
         }
 
         private static String getStringValuedAttribute(Object content, String attributeName) {

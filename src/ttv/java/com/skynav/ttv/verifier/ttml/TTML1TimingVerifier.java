@@ -98,7 +98,7 @@ public class TTML1TimingVerifier implements TimingVerifier {
     protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof TimedText) {
-            verificationParameters = new TimingVerificationParameters((TimedText) content);
+            verificationParameters = new TimingVerificationParameters((TimedText) content, context != null ? context.getExternalParameters() : null);
         } else {
             for (QName name : accessors.keySet()) {
                 TimingAccessor sa = accessors.get(name);

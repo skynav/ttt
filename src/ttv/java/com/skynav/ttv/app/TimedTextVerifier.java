@@ -91,7 +91,10 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.Time;
+import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.Message;
@@ -101,6 +104,7 @@ import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.Timing;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Sniffer;
 import com.skynav.xml.helpers.XML;
@@ -157,7 +161,8 @@ public class TimedTextVerifier implements VerifierContext {
         { "expect-errors",              "COUNT",    "expect count errors or -1 meaning unspecified expectation (default: -1)" },
         { "expect-warnings",            "COUNT",    "expect count warnings or -1 meaning unspecified expectation (default: -1)" },
         { "extension-schema",           "NS URL",   "add schema for namespace NS at location URL to grammar pool (may be specified multiple times)" },
-        { "external-extent",            "EXTENT",   "specify extent for document processing context" },
+        { "external-duration",          "DURATION", "specify root temporal extent duration for document processing context" },
+        { "external-extent",            "EXTENT",   "specify root container region extent for document processing context" },
         { "external-frame-rate",        "RATE",     "specify frame rate for document processing context" },
         { "force-encoding",             "NAME",     "force use of named character encoding, overriding default and resource specified encoding" },
         { "force-model",                "NAME",     "force use of named model, overriding default model and resource specified model" },
@@ -254,8 +259,8 @@ public class TimedTextVerifier implements VerifierContext {
     // options state
     private String expectedErrors;
     private String expectedWarnings;
+    private String externalDuration;
     private String externalExtent;
-    @SuppressWarnings("unused")
     private String externalFrameRate;
     private Map<String,String> extensionSchemas = new java.util.HashMap<String,String>();
     private String forceEncodingName;
@@ -276,12 +281,15 @@ public class TimedTextVerifier implements VerifierContext {
     private Model model;
     private ForeignTreatment foreignTreatment;
     private Phase lastPhase;
+    private double parsedExternalFrameRate;
+    private double parsedExternalDuration;
     private double[] parsedExternalExtent;
 
     // global processing state
     private PrintWriter showOutput;
     @SuppressWarnings("unused")
     private boolean showOutputDefaulted;
+    private ExternalParametersStore externalParameters = new ExternalParametersStore();
     private Reporter reporter;
     private SchemaFactory schemaFactory;
     private boolean nonPoolGrammarSupported;
@@ -439,6 +447,11 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     @Override
+    public ExternalParameters getExternalParameters() {
+        return externalParameters;
+    }
+
+    @Override
     public Reporter getReporter() {
         return reporter;
     }
@@ -563,6 +576,10 @@ public class TimedTextVerifier implements VerifierContext {
             String namespaceURI = args[++index];
             String schemaResourceURL = args[++index];
             extensionSchemas.put(namespaceURI, schemaResourceURL);
+        } else if (option.equals("external-duration")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            externalDuration = args[++index];
         } else if (option.equals("external-extent")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -720,6 +737,28 @@ public class TimedTextVerifier implements VerifierContext {
             }
         } else
             lastPhase = Phase.getDefault();
+        if (externalFrameRate != null) {
+            try {
+                parsedExternalFrameRate = Double.parseDouble(externalFrameRate);
+                getExternalParameters().setParameter("externalFrameRate", Double.valueOf(parsedExternalFrameRate));
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException("external-frame-rate", "invalid syntax, must be a double: " + externalFrameRate);
+            }
+        } else {
+            parsedExternalFrameRate = 30.0;
+            reporter.logInfo(reporter.message("*KEY*", "Defaulting external frame rate to " + parsedExternalFrameRate + "fps."));
+        }
+        if (externalDuration != null) {
+            Time[] duration = new Time[1];
+            TimeParameters timeParameters = new TimeParameters(parsedExternalFrameRate);
+            if (Timing.isDuration(externalDuration, null, null, timeParameters, duration)) {
+                if (duration[0].getType() != Time.Type.Offset)
+                    throw new InvalidOptionUsageException("external-duration", "must use offset time syntax only: " + externalDuration);
+                parsedExternalDuration = duration[0].getTime(timeParameters);
+                getExternalParameters().setParameter("externalDuration", Double.valueOf(parsedExternalDuration));
+            } else
+                throw new InvalidOptionUsageException("external-duration", "invalid syntax: " + externalDuration);
+        }
         if (externalExtent != null) {
             Integer[] minMax = new Integer[] { 2, 2 };
             Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
@@ -730,6 +769,7 @@ public class TimedTextVerifier implements VerifierContext {
                         throw new InvalidOptionUsageException("external-extent", "must use pixel (px) unit only: " + externalExtent);
                 }
                 parsedExternalExtent = new double[] { lengths.get(0).getValue(), lengths.get(1).getValue() };
+                getExternalParameters().setParameter("externalExtent", parsedExternalExtent);
             } else
                 throw new InvalidOptionUsageException("external-extent", "invalid syntax: " + externalExtent);
         }
@@ -831,11 +871,16 @@ public class TimedTextVerifier implements VerifierContext {
         return showOutput;
     }
 
+    public void showBanner(PrintWriter out, String banner) {
+        if (!quiet)
+            out.println(banner);
+    }
+
     private void showBanner(PrintWriter out, OptionProcessor optionProcessor) {
         if (optionProcessor != null)
             optionProcessor.showBanner(out);
-        if (!quiet)
-            out.println(banner);
+        else
+            showBanner(out, banner);
     }
 
     private void showUsage(PrintWriter out, OptionProcessor optionProcessor) {
@@ -1927,7 +1972,7 @@ public class TimedTextVerifier implements VerifierContext {
             return noun + "s";
     }
 
-    private int verify(List<String> nonOptionArgs) {
+    private int verify(List<String> nonOptionArgs, ResultProcessor resultProcessor) {
         Reporter reporter = getReporter();
         int numFailure = 0;
         int numSuccess = 0;
@@ -1935,6 +1980,8 @@ public class TimedTextVerifier implements VerifierContext {
             switch (rvCode(verify(uri))) {
             case RV_PASS:
                 ++numSuccess;
+                if (resultProcessor != null)
+                    resultProcessor.processResult(resourceUri, resourceModel, rootBinding);
                 break;
             case RV_FAIL:
                 ++numFailure;
@@ -2000,7 +2047,7 @@ public class TimedTextVerifier implements VerifierContext {
             getShowOutput().flush();
             if (nonOptionArgs.size() > 0) {
                 showProcessingInfo();
-                rv = verify(nonOptionArgs);
+                rv = verify(nonOptionArgs, resultProcessor);
             } else
                 rv = RV_PASS;
         } catch (ShowUsageException e) {
@@ -2055,41 +2102,6 @@ public class TimedTextVerifier implements VerifierContext {
             uriStrings.add(uri.toString());
         }
         return uriStrings.toArray(new String[uriStrings.size()]);
-    }
-
-    private static class UsageException extends RuntimeException {
-        static final long serialVersionUID = 0;
-        UsageException(String message) {
-            super(message);
-        }
-    }
-
-    private static class UnknownOptionException extends UsageException {
-        static final long serialVersionUID = 0;
-        UnknownOptionException(String option) {
-            super("unknown option: " + option);
-        }
-    }
-
-    private static class MissingOptionArgumentException extends UsageException {
-        static final long serialVersionUID = 0;
-        MissingOptionArgumentException(String option) {
-            super("missing option argument: " + option);
-        }
-    }
-
-    private static class InvalidOptionUsageException extends UsageException {
-        static final long serialVersionUID = 0;
-        InvalidOptionUsageException(String option, String details) {
-            super("invalid option argument: " + option + ": " + details);
-        }
-    }
-
-    private static class ShowUsageException extends UsageException {
-        static final long serialVersionUID = 0;
-        ShowUsageException() {
-            super("show usage");
-        }
     }
 
     private static class InvalidAnnotationException extends RuntimeException {
@@ -2397,6 +2409,16 @@ public class TimedTextVerifier implements VerifierContext {
                 this.encodingName = "unknown";
             this.root = root;
        }
+    }
+
+    public static class ExternalParametersStore implements ExternalParameters {
+        private Map<String, Object> parameters = new java.util.HashMap<String, Object>();
+        public Object getParameter(String name) {
+            return parameters.get(name);
+        }
+        public Object setParameter(String name, Object value) {
+            return parameters.put(name, value);
+        }
     }
 
 }

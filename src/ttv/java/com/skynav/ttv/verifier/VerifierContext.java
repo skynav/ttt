@@ -30,9 +30,16 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Node;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.Reporter;
 
 public interface VerifierContext {
+
+    /**
+     * Obtain external parameters.
+     * @return external parameters object
+     */
+    public ExternalParameters getExternalParameters();
 
     /**
      * Obtain reference to reporter.

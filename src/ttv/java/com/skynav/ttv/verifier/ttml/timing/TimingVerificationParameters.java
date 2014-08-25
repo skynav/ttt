@@ -36,6 +36,7 @@ import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.DropMode;
 import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.model.value.TimeParameters;
+import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -50,9 +51,10 @@ public class TimingVerificationParameters implements VerificationParameters {
     private int subFrameRate;
     private double effectiveFrameRate;
     private int tickRate;
+    private double externalDuration;
 
-    public TimingVerificationParameters(TimedText tt) {
-        populate(tt);
+    public TimingVerificationParameters(TimedText tt, ExternalParameters externalParameters) {
+        populate(tt, externalParameters);
     }
 
     public TimeBase getTimeBase() {
@@ -87,11 +89,11 @@ public class TimingVerificationParameters implements VerificationParameters {
     private TimeParameters timeParameters;
     public TimeParameters getTimeParameters() {
         if (timeParameters == null)
-            timeParameters = new TimeParameters(timeBase, dropMode, frameRate, subFrameRate, effectiveFrameRate, tickRate);
+            timeParameters = new TimeParameters(timeBase, dropMode, frameRate, subFrameRate, effectiveFrameRate, tickRate, externalDuration);
         return timeParameters;
     }
 
-    private void populate(TimedText tt) {
+    private void populate(TimedText tt, ExternalParameters externalParameters) {
         this.timeBase = TimeBase.valueOf(tt.getTimeBase().name());
         this.dropMode = DropMode.valueOf(tt.getDropMode().name());
         this.allowDuration = (timeBase != TimeBase.SMPTE) || !tt.getMarkerMode().name().equals("DISCONTINUOUS");
@@ -101,6 +103,13 @@ public class TimingVerificationParameters implements VerificationParameters {
         this.frameRateMultiplier = multiplier.doubleValue();
         this.effectiveFrameRate = new BigDecimal(tt.getFrameRate()).multiply(multiplier).doubleValue();
         this.tickRate = tt.getTickRate().intValue();
+        if (externalParameters != null) {
+            Double externalDuration = (Double) externalParameters.getParameter("externalDuration");
+            if (externalDuration != null)
+                this.externalDuration = externalDuration.doubleValue();
+            else
+                this.externalDuration = Double.NaN;
+        }
     }
 
     private static final BigDecimal zero = new BigDecimal(0D);

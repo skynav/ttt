@@ -133,7 +133,9 @@
     optimize="${javac.optimize}"
     source="${javac.source}"
     target="${javac.target}"
-  />
+  >
+    <compilerarg value="-Xlint:unchecked"/>
+  </javac>
 </presetdef>
 
 <property name="junit.errorproperty" value="junit.error"/>

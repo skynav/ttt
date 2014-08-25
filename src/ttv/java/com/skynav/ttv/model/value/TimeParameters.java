@@ -32,13 +32,21 @@ public class TimeParameters {
     private int subFrameRate;
     private double effectiveFrameRate;
     private int tickRate;
-    public TimeParameters(TimeBase timeBase, DropMode dropMode, int frameRate, int subFrameRate, double effectiveFrameRate, int tickRate) {
+    private double externalDuration;
+    public TimeParameters() {
+        this(30.0);
+    }
+    public TimeParameters(double frameRate) {
+        this(TimeBase.MEDIA, DropMode.NON_DROP, (int) frameRate, 1, frameRate, 1, Double.NaN);
+    }
+    public TimeParameters(TimeBase timeBase, DropMode dropMode, int frameRate, int subFrameRate, double effectiveFrameRate, int tickRate, double externalDuration) {
         this.timeBase = timeBase;
         this.dropMode = dropMode;
         this.frameRate = frameRate;
         this.subFrameRate = subFrameRate;
         this.effectiveFrameRate = effectiveFrameRate;
         this.tickRate = tickRate;
+        this.externalDuration = externalDuration;
     }
     public TimeBase getTimeBase() { return this.timeBase; }
     public DropMode getDropMode() { return dropMode; }
@@ -46,4 +54,5 @@ public class TimeParameters {
     public int getSubFrameRate() { return this.subFrameRate; }
     public double getEffectiveFrameRate() { return this.effectiveFrameRate; }
     public int getTickRate() { return this.tickRate; }
+    public double getExternalDuration() { return this.externalDuration; }
 }

@@ -93,6 +93,9 @@ public class TimedTextTransformer implements ResultProcessor {
         { "URL", "an absolute or relative URL; if relative, resolved against current working directory" },
     };
 
+    // controlling verifier
+    private TimedTextVerifier verifier;
+
     // options state
     private int debug;
     private boolean quiet;
@@ -108,7 +111,7 @@ public class TimedTextTransformer implements ResultProcessor {
 
     public void processResult(URI uri, Model model, Object root) {
         if (transformer != null) {
-            transformer.transform(root, null);
+            transformer.transform(root, verifier.getExternalParameters(), null);
         }
     }
 
@@ -147,8 +150,7 @@ public class TimedTextTransformer implements ResultProcessor {
     }
 
     public void showBanner(PrintWriter out) {
-        if (!quiet)
-            out.println(banner);
+        verifier.showBanner(out, banner);
     }
 
     public void showUsage(PrintWriter out, Set<OptionSpecification> baseShortOptions, Set<OptionSpecification> baseLongOptions) {
@@ -247,7 +249,7 @@ public class TimedTextTransformer implements ResultProcessor {
     }
 
     public int run(String[] args) {
-        return (new TimedTextVerifier()).run(args, this);
+        return (verifier = new TimedTextVerifier()).run(args, this);
     }
 
     public static void main(String[] args) {

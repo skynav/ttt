@@ -23,27 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttx.transformer;
+package com.skynav.ttv.app;
 
-import java.io.OutputStream;
-
-import com.skynav.ttv.util.ExternalParameters;
-
-public interface Transformer {
-
-    /**
-     * Obtain transformer name.
-     * @return transformer name
-     */
-    String getName();
-
-    /**
-     * Transform parsed document instance (as interned JAXP content document)
-     * into an output stream.
-     * @param root root content element
-     * @param externalParameters an external parameters object
-     * @param out stream to which to write transformed output
-     */
-    void transform(Object root, ExternalParameters externalParameters, OutputStream out);
-
+public class ShowUsageException extends UsageException {
+    static final long serialVersionUID = 0;
+    public ShowUsageException() {
+        super("show usage");
+    }
 }
