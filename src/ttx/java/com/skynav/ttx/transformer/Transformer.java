@@ -27,8 +27,6 @@ package com.skynav.ttx.transformer;
 
 import java.io.OutputStream;
 
-import com.skynav.ttv.util.ExternalParameters;
-
 public interface Transformer {
 
     /**
@@ -41,9 +39,9 @@ public interface Transformer {
      * Transform parsed document instance (as interned JAXP content document)
      * into an output stream.
      * @param root root content element
-     * @param externalParameters an external parameters object
+     * @param context state for transformation
      * @param out stream to which to write transformed output
      */
-    void transform(Object root, ExternalParameters externalParameters, OutputStream out);
+    void transform(Object root, TransformerContext context, OutputStream out);
 
 }

@@ -26,13 +26,15 @@
 package com.skynav.ttx.app;
 
 import java.io.PrintWriter;
-
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import java.net.URI;
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Node;
 
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
@@ -41,11 +43,14 @@ import com.skynav.ttv.app.ResultProcessor;
 import com.skynav.ttv.app.TimedTextVerifier;
 import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.ExternalParameters;
+import com.skynav.ttv.util.Reporter;
 
 import com.skynav.ttx.transformer.Transformer;
+import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.ttx.transformer.Transformers;
 
-public class TimedTextTransformer implements ResultProcessor {
+public class TimedTextTransformer implements ResultProcessor, TransformerContext {
 
     private static final Transformer defaultTransformer = Transformers.getDefaultTransformer();
 
@@ -55,10 +60,6 @@ public class TimedTextTransformer implements ResultProcessor {
 
     // option and usage info
     private static final String[][] shortOptionSpecifications = new String[][] {
-        { "d",  "see --debug" },
-        { "q",  "see --quiet" },
-        { "v",  "see --verbose" },
-        { "?",  "see --help" },
     };
     private static final Map<String,OptionSpecification> shortOptions;
     static {
@@ -69,14 +70,8 @@ public class TimedTextTransformer implements ResultProcessor {
     }
 
     private static final String[][] longOptionSpecifications = new String[][] {
-        { "debug",                      "",       "enable debug output (may be specified multiple times to increase debug level)" },
-        { "debug-exceptions",           "",       "enable stack traces on exceptions (implies --debug)" },
-        { "help",                       "",       "show usage help" },
-        { "no-verbose",                 "",       "disable verbose output (resets verbosity level to 0)" },
-        { "quiet",                      "",       "don't show banner" },
         { "show-transformers",          "",       "show built-in transformers (use with --verbose to show more details)" },
         { "transformer",                "NAME",   "specify transformer name (default: " + defaultTransformer.getName() + ")" },
-        { "verbose",                    "",       "enable verbose output (may be specified multiple times to increase verbosity level)" },
     };
     private static final Map<String,OptionSpecification> longOptions;
     static {
@@ -97,11 +92,8 @@ public class TimedTextTransformer implements ResultProcessor {
     private TimedTextVerifier verifier;
 
     // options state
-    private int debug;
-    private boolean quiet;
     private boolean showTransformers;
     private String transformerName;
-    private int verbose;
 
     // derived option state
     private Transformer transformer;
@@ -109,10 +101,56 @@ public class TimedTextTransformer implements ResultProcessor {
     public TimedTextTransformer() {
     }
 
-    public void processResult(URI uri, Model model, Object root) {
+    @Override
+    public void processResult(URI uri, Object root) {
         if (transformer != null) {
-            transformer.transform(root, verifier.getExternalParameters(), null);
+            transformer.transform(root, this, null);
         }
+    }
+
+    @Override
+    public ExternalParameters getExternalParameters() {
+        return verifier.getExternalParameters();
+    }
+
+    @Override
+    public Reporter getReporter() {
+        return verifier.getReporter();
+    }
+
+    @Override
+    public Model getModel() {
+        return verifier.getModel();
+    }
+
+    @Override
+    public QName getBindingElementName(Object value) {
+        return verifier.getBindingElementName(value);
+    }
+
+    @Override
+    public Object getBindingElementParent(Object value) {
+        return verifier.getBindingElementParent(value);
+    }
+
+    @Override
+    public Object getBindingElement(Node node) {
+        return verifier.getBindingElement(node);
+    }
+
+    @Override
+    public Node getXMLNode(Object value) {
+        return verifier.getXMLNode(value);
+    }
+
+    @Override
+    public void setResourceState(String key, Object value) {
+        verifier.setResourceState(key, value);
+    }
+
+    @Override
+    public Object getResourceState(String key) {
+        return verifier.getResourceState(key);
     }
 
     public boolean hasOption(String arg) {
@@ -182,26 +220,12 @@ public class TimedTextTransformer implements ResultProcessor {
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("debug")) {
-            if (debug < 1)
-                debug = 1;
-            else
-                debug += 1;
-        } else if (option.equals("debug-exceptions")) {
-            if (debug < 2)
-                debug = 2;
-        } else if (option.equals("no-verbose")) {
-            verbose = 0;
-        } else if (option.equals("quiet")) {
-            quiet = true;
-        } else if (option.equals("show-transformers")) {
+         if (option.equals("show-transformers")) {
             showTransformers = true;
         } else if (option.equals("transformer")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             transformerName = args[++index];
-        } else if (option.equals("verbose")) {
-            verbose += 1;
         } else {
             throw new UnknownOptionException("--" + option);
         }
@@ -217,20 +241,7 @@ public class TimedTextTransformer implements ResultProcessor {
         String option = args[index];
         assert option.length() == 2;
         option = option.substring(1);
-        switch (option.charAt(0)) {
-        case 'd':
-            debug += 1;
-            break;
-        case 'q':
-            quiet = true;
-            break;
-        case 'v':
-            verbose += 1;
-            break;
-        default:
-            throw new UnknownOptionException("-" + option);
-        }
-        return index + 1;
+        throw new UnknownOptionException("-" + option);
     }
 
     private void showTransformers(PrintWriter out) {

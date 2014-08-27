@@ -10,11 +10,7 @@
   <head/>
   <body>
     <div>
-      <p begin="1s">
-      Foo
-      <span dur="8s">Bar</span>
-      Baz
-      </p>
+      <p timeContainer="seq"><span dur="1s">Foo</span><span dur="1s">Bar</span>Baz</p>
     </div>
   </body>
 </tt>

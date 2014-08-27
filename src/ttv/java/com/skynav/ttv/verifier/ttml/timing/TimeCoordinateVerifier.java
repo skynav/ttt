@@ -41,7 +41,6 @@ public class TimeCoordinateVerifier implements TimingValueVerifier {
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters) {
         String value = (String) valueObject;
         assert parameters instanceof TimingVerificationParameters; 
-        TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
         TimeParameters timeParameters = ((TimingVerificationParameters) parameters).getTimeParameters();
         if (Timing.isCoordinate(value, locator, context, timeParameters, null))
             return true;

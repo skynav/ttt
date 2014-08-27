@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -157,6 +156,7 @@ public class TimedTextVerifier implements VerifierContext {
     private static final String[][] longOptionSpecifications = new String[][] {
         { "debug",                      "",         "enable debug output (may be specified multiple times to increase debug level)" },
         { "debug-exceptions",           "",         "enable stack traces on exceptions (implies --debug)" },
+        { "debug-level",                "LEVEL",    "enable debug output at specified level (default: 0)" },
         { "disable-warnings",           "",         "disable warnings (both hide and don't count warnings)" },
         { "expect-errors",              "COUNT",    "expect count errors or -1 meaning unspecified expectation (default: -1)" },
         { "expect-warnings",            "COUNT",    "expect count warnings or -1 meaning unspecified expectation (default: -1)" },
@@ -209,27 +209,6 @@ public class TimedTextVerifier implements VerifierContext {
     private static final String[][] nonOptions = new String[][] {
         { "URL", "an absolute or relative URL; if relative, resolved against current working directory" },
     };
-
-    // usage text
-    private static final String usage =
-        "Usage: java -jar ttv.jar [options] URL*\n" +
-        "  Long Options:\n" +
-        "    --force-encoding NAME              - force use of named character encoding, overriding default and resource specified encoding\n" +
-        "    --force-model NAME                 - force use of named model, overriding default model and resource specified model\n" +
-        "    --hide-resource-location           - hide resource location (default: show)\n" +
-        "    --hide-resource-path               - hide resource path (default: show)\n" +
-        "    --reporter REPORTER                - specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
-             Reporters.getDefaultReporterName()+ ")\n" +
-        "    --reporter-file FILE               - specify path to file to which reporter output is to be written\n" +
-        "    --reporter-file-encoding ENCODING  - specify character encoding of reporter output (default: utf-8)\n" +
-        "    --reporter-file-append             - if reporter file already exists, then append output to it\n" +
-        "    --reporter-include-source          - include source context in report messages\n" +
-        "    --servlet                          - configure defaults for servlet operation\n" +
-
-        "    --show-resource-location           - show resource location (default: show)\n" +
-        "    --show-resource-path               - show resource path (default: show)\n" +
-
-        "";
 
     // default warnings
     private static final Object[][] defaultWarningSpecifications = new Object[][] {
@@ -287,8 +266,6 @@ public class TimedTextVerifier implements VerifierContext {
 
     // global processing state
     private PrintWriter showOutput;
-    @SuppressWarnings("unused")
-    private boolean showOutputDefaulted;
     private ExternalParametersStore externalParameters = new ExternalParametersStore();
     private Reporter reporter;
     private SchemaFactory schemaFactory;
@@ -560,6 +537,19 @@ public class TimedTextVerifier implements VerifierContext {
             if (debug < 2)
                 debug = 2;
             reporter.setDebugLevel(debug);
+        } else if (option.equals("debug-level")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            String level = args[++index];
+            int debugNew;
+            try {
+                debugNew = Integer.parseInt(level);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException("debug-level", "bad syntax: " + level);
+            }
+            int debug = reporter.getDebugLevel();
+            if (debugNew > debug)
+                reporter.setDebugLevel(debugNew);
         } else if (option.equals("disable-warnings")) {
             reporter.disableWarnings();
         } else if (option.equals("expect-errors")) {
@@ -864,10 +854,8 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private PrintWriter getShowOutput() {
-        if (showOutput == null) {
+        if (showOutput == null)
             showOutput = new PrintWriter(System.err);
-            showOutputDefaulted = true;
-        }
         return showOutput;
     }
 
@@ -1859,7 +1847,7 @@ public class TimedTextVerifier implements VerifierContext {
                 break;
         } while (false);
         int rv = rvValue();
-        reporter.logInfo(reporter.message("*KEY*", "{0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
+        reporter.logInfo(reporter.message("*KEY*", "Verification {0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
         reporter.flush();
         Results results = new Results(uri, rv,
             resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), getModel(), getEncoding(), rootName);
@@ -1981,7 +1969,7 @@ public class TimedTextVerifier implements VerifierContext {
             case RV_PASS:
                 ++numSuccess;
                 if (resultProcessor != null)
-                    resultProcessor.processResult(resourceUri, resourceModel, rootBinding);
+                    resultProcessor.processResult(resourceUri, rootBinding);
                 break;
             case RV_FAIL:
                 ++numFailure;
@@ -1989,6 +1977,7 @@ public class TimedTextVerifier implements VerifierContext {
             default:
                 break;
             }
+            reporter.flush();
         }
         if (reporter.getVerbosityLevel() > 0) {
             Message message;
