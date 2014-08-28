@@ -95,6 +95,21 @@ public class TimeCoordinate implements Comparable<TimeCoordinate> {
         else
             return new TimeCoordinate(value);
     }
+    public static TimeCoordinate parse(String value) {
+        if (value == null)
+            return TimeCoordinate.UNSPECIFIED;
+        else if (value.equals("indefinite"))
+            return TimeCoordinate.INDEFINITE;
+        else if (value.equals("unresolved"))
+            return TimeCoordinate.UNRESOLVED;
+        else {
+            try {
+                return fromValue(Double.parseDouble(value));
+            } catch (NumberFormatException e) {
+                return TimeCoordinate.INVALID;
+            }
+        }
+    }
     public static TimeCoordinate min(TimeCoordinate c1, TimeCoordinate c2) {
         assert !c1.isInvalid();
         assert !c2.isInvalid();

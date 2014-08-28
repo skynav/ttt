@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
@@ -50,12 +51,10 @@ import com.skynav.ttx.util.TimeCoordinate;
 import com.skynav.ttx.util.TimeInterval;
 
 public class TimingState {
+
     // contextual state
     private TransformerContext context;                 // transformer context object
-    @SuppressWarnings("unused")
     private Object content;                             // (jaxb) content object
-    private Map<Object, Object> parents;                // parent map in transformer
-    private Map<Object, TimingState> timingStates;      // timing state map in transformer
     private TimeParameters timeParameters;              // timing parameters
     // explicit timing state
     private TimeCoordinate durExplicit = TimeCoordinate.UNSPECIFIED;
@@ -67,11 +66,9 @@ public class TimingState {
     private TimeCoordinate beginActive = TimeCoordinate.UNRESOLVED;
     private TimeCoordinate endActive = TimeCoordinate.UNRESOLVED;
 
-    public TimingState(TransformerContext context, Object content, Map<Object, Object> parents, Map<Object, TimingState> timingStates, TimeParameters timeParameters) {
+    public TimingState(TransformerContext context, Object content, TimeParameters timeParameters) {
         this.context = context;
         this.content = content;
-        this.parents = parents;
-        this.timingStates = timingStates;
         this.timeParameters = timeParameters;
     }
 
@@ -295,6 +292,9 @@ public class TimingState {
         debug(2, "Resolve implicit duration", durImplicit.toString());
     }
 
+    public static final QName beginAttributeName = new QName(ISD.NAMESPACE_ISD,"begin");
+    public static final QName endAttributeName = new QName(ISD.NAMESPACE_ISD,"end");
+
     public void resolveActive() {
         TimeCoordinate b = getBegin();
         TimeCoordinate e = getEnd();
@@ -331,6 +331,12 @@ public class TimingState {
                 endActive = beginActive;
         }
         debug(2, "Resolve active", getActiveBegin() + "," + getActiveEnd());
+        // record active interval attributes
+        Map<QName,String> otherAttributes = getOtherAttributes(content);
+        if (otherAttributes != null) {
+            otherAttributes.put(beginAttributeName, beginActive.toString().toLowerCase());
+            otherAttributes.put(endAttributeName, endActive.toString().toLowerCase());
+        }
     }
 
     public void extractActiveInterval(java.util.Set<TimeInterval> intervals) {
@@ -338,12 +344,14 @@ public class TimingState {
     }
 
     private Object getParent(Object content) {
+        Map<Object,Object> parents = ISD.getParents(context);
         if (parents.containsKey(content))
             return parents.get(content);
         else
             return null;
     }
 
+    /*
     private Object nearestExplicitTimedContainerAncestor(Object content) {
         for (Object p = getParent(content); p != null; p = getParent(p)) {
             if (isExplicitTimedContainer(p))
@@ -351,12 +359,14 @@ public class TimingState {
         }
         return null;
     }
+    */
 
     private TimingState getTimingState(Object content, TimeParameters timeParameters) {
         if (content == null)
             return null;
+        Map<Object,TimingState> timingStates = ISD.getTimingStates(context);
         if (!timingStates.containsKey(content))
-            timingStates.put(content, new TimingState(context, content, parents, timingStates, timeParameters));
+            timingStates.put(content, new TimingState(context, content, timeParameters));
         return timingStates.get(content);
     }
 
@@ -463,9 +473,11 @@ public class TimingState {
             return null;
     }
 
+    /*
     private static boolean isExplicitTimedContainer(Object content) {
         return getTimeContainer(content) != null;
     }
+    */
 
     private static boolean unexpectedContent(Object content) throws IllegalStateException {
         throw new IllegalStateException("Unexpected JAXB content object of type '" + content.getClass().getName() +  "'.");
@@ -537,4 +549,24 @@ public class TimingState {
         sb.append(attributeName.substring(1));
         return sb.toString();
     }
+
+    @SuppressWarnings("unchecked")
+    private static Map<QName,String> getOtherAttributes(Object content) {
+        try {
+            Class<?> contentClass = content.getClass();
+            Method m = contentClass.getMethod("getOtherAttributes", new Class<?>[]{});
+            return (Map<QName,String>) m.invoke(content, new Object[]{});
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            return null;
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

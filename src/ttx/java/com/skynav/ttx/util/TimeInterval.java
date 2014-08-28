@@ -26,10 +26,15 @@
 package com.skynav.ttx.util;
 
 public class TimeInterval implements Comparable<TimeInterval> {
+    public static final TimeInterval UNRESOLVED = new TimeInterval();
+    public static final TimeInterval EMPTY = new TimeInterval(TimeCoordinate.ZERO, TimeCoordinate.ZERO);
     public TimeCoordinate begin;
     public TimeCoordinate end;
     public TimeInterval() {
         this(TimeCoordinate.UNRESOLVED, TimeCoordinate.UNRESOLVED);
+    }
+    public TimeInterval(String begin, String end) {
+        this(TimeCoordinate.parse(begin), TimeCoordinate.parse(end));
     }
     public TimeInterval(TimeCoordinate begin, TimeCoordinate end) {
         this.begin = begin;
@@ -43,6 +48,17 @@ public class TimeInterval implements Comparable<TimeInterval> {
     }
     public TimeCoordinate getDuration() {
         return TimeCoordinate.sub(end, begin);
+    }
+    public boolean isEmpty() {
+        return begin.compareTo(end) >= 0;
+    }
+    public boolean intersects(TimeInterval other) {
+        if (end.compareTo(other.begin) <= 0)
+            return false;
+        else if (begin.compareTo(other.end) >= 0)
+            return false;
+        else
+            return true;
     }
     @Override
     public int compareTo(TimeInterval other) {

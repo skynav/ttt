@@ -31,15 +31,19 @@ public abstract class Visitor {
     public Visitor(Order order) {
         this.order = order;
     }
-    public void preVisit(Object content, Object parent) {
+    public boolean preVisit(Object content, Object parent) {
         if (order != Order.Post)
-            visit(content, parent, Order.Pre);
+            return visit(content, parent, Order.Pre);
+        else
+            return true;
     }
-    public void postVisit(Object content, Object parent) {
+    public boolean postVisit(Object content, Object parent) {
         if (order != Order.Pre)
-            visit(content, parent, Order.Post);
+            return visit(content, parent, Order.Post);
+        else
+            return true;
     }
-    public abstract void visit(Object content, Object parent, Order order);
+    public abstract boolean visit(Object content, Object parent, Order order);
 
 }
 
