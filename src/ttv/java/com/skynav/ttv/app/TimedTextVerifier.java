@@ -46,6 +46,7 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +146,7 @@ public class TimedTextVerifier implements VerifierContext {
         { "v",  "see --verbose" },
         { "?",  "see --help" },
     };
-    private static final Set<OptionSpecification> shortOptions;
+    private static final Collection<OptionSpecification> shortOptions;
     static {
         shortOptions = new java.util.TreeSet<OptionSpecification>();
         for (String[] spec : shortOptionSpecifications) {
@@ -195,7 +196,7 @@ public class TimedTextVerifier implements VerifierContext {
             Phase.getDefault().name().toLowerCase() + ")" },
         { "warn-on",                    "TOKEN",    "enable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
     };
-    private static final Set<OptionSpecification> longOptions;
+    private static final Collection<OptionSpecification> longOptions;
     static {
         longOptions = new java.util.TreeSet<OptionSpecification>();
         for (String[] spec : longOptionSpecifications) {
@@ -774,8 +775,10 @@ public class TimedTextVerifier implements VerifierContext {
         return nonOptionArgs;
     }
 
-    private String[] preProcessOptions(String[] args) {
+    private String[] preProcessOptions(String[] args, OptionProcessor optionProcessor) {
         args = processReporterOptions(args);
+        if (optionProcessor != null)
+            args = optionProcessor.preProcessOptions(args, shortOptions, longOptions);
         return args;
     }
 
@@ -874,7 +877,7 @@ public class TimedTextVerifier implements VerifierContext {
     private void showUsage(PrintWriter out, OptionProcessor optionProcessor) {
         showBanner(out, optionProcessor);
         if (optionProcessor != null)
-            optionProcessor.showUsage(out, shortOptions, longOptions);
+            optionProcessor.showUsage(out);
         else
             showUsage(out);
     }
@@ -886,13 +889,13 @@ public class TimedTextVerifier implements VerifierContext {
         showOptions(out, "Non-Option Arguments", nonOptions);
     }
 
-    public static void showOptions(PrintWriter out, String label, Set<OptionSpecification> options) {
+    public static void showOptions(PrintWriter out, String label, Collection<OptionSpecification> optionSpecs) {
         StringBuffer sb = new StringBuffer();
         sb.append("  ");
         sb.append(label);
         sb.append(':');
         sb.append('\n');
-        for (OptionSpecification os : options) {
+        for (OptionSpecification os : optionSpecs) {
             sb.append("    ");
             sb.append(os.toString());
             sb.append('\n');
@@ -900,13 +903,13 @@ public class TimedTextVerifier implements VerifierContext {
         out.print(sb.toString());
     }
 
-    public static void showOptions(PrintWriter out, String label, String[][] options) {
+    public static void showOptions(PrintWriter out, String label, String[][] optionSpecs) {
         StringBuffer sb = new StringBuffer();
         sb.append("  ");
         sb.append(label);
         sb.append(':');
         sb.append('\n');
-        for (String[] option : options) {
+        for (String[] option : optionSpecs) {
             assert option.length == 2;
             sb.append("    ");
             sb.append(option[0]);
@@ -1960,7 +1963,7 @@ public class TimedTextVerifier implements VerifierContext {
             return noun + "s";
     }
 
-    private int verify(List<String> nonOptionArgs, ResultProcessor resultProcessor) {
+    private int verify(String[] args, List<String> nonOptionArgs, ResultProcessor resultProcessor) {
         Reporter reporter = getReporter();
         int numFailure = 0;
         int numSuccess = 0;
@@ -1969,7 +1972,7 @@ public class TimedTextVerifier implements VerifierContext {
             case RV_PASS:
                 ++numSuccess;
                 if (resultProcessor != null)
-                    resultProcessor.processResult(resourceUri, rootBinding);
+                    resultProcessor.processResult(args, resourceUri, rootBinding);
                 break;
             case RV_FAIL:
                 ++numFailure;
@@ -2015,7 +2018,7 @@ public class TimedTextVerifier implements VerifierContext {
         int rv = 0;
         OptionProcessor optionProcessor = (OptionProcessor) resultProcessor;
         try {
-            List<String> nonOptionArgs = parseArgs(preProcessOptions(args), optionProcessor);
+            List<String> nonOptionArgs = parseArgs(preProcessOptions(args, optionProcessor), optionProcessor);
             showBanner(getShowOutput(), optionProcessor);
             if (showModels)
                 showModels();
@@ -2036,7 +2039,7 @@ public class TimedTextVerifier implements VerifierContext {
             getShowOutput().flush();
             if (nonOptionArgs.size() > 0) {
                 showProcessingInfo();
-                rv = verify(nonOptionArgs, resultProcessor);
+                rv = verify(args, nonOptionArgs, resultProcessor);
             } else
                 rv = RV_PASS;
         } catch (ShowUsageException e) {

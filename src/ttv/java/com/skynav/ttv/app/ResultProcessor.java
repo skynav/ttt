@@ -31,10 +31,11 @@ public interface ResultProcessor extends OptionProcessor {
 
     /**
      * Process results of (successfully) verification of a TTML resource.
+     * @param args command line arguments
      * @param uri uri of verified resource
      * @param root binding object associated with root element
      */
-    void processResult(URI uri, Object root);
+    void processResult(String[] args, URI uri, Object root);
 
 }
 

@@ -49,6 +49,10 @@ public class OptionSpecification implements Comparable<OptionSpecification> {
         this.description = description;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public int compareTo(OptionSpecification os) {
         int d = name.compareTo(os.name);
         if (d < 0)
@@ -84,7 +88,10 @@ public class OptionSpecification implements Comparable<OptionSpecification> {
 
     @Override
     public int hashCode() {
-        return name.hashCode() ^ ((parameters != null) ? parameters.hashCode() : 0);
+        int hc = 23;
+        hc = hc * 31 + name.hashCode();
+        hc = hc * 31 + ((parameters != null) ? parameters.hashCode() : 0);
+        return hc;
     }
 
     @Override

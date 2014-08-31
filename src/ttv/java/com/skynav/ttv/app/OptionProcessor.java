@@ -28,16 +28,17 @@ package com.skynav.ttv.app;
 import java.io.PrintWriter;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 
 public interface OptionProcessor {
 
+    String[] preProcessOptions(String[] args, Collection<OptionSpecification> shortOptions, Collection<OptionSpecification> longOptions);
     boolean hasOption(String arg);
     int parseOption(String[] args, int index) throws UsageException;
     void processDerivedOptions();
     List<String> processNonOptionArguments(List<String> nonOptionArgs);
     void showBanner(PrintWriter out);
-    void showUsage(PrintWriter out, Set<OptionSpecification> shortOptions, Set<OptionSpecification> longOptions);
+    void showUsage(PrintWriter out);
     void runOptions(PrintWriter out);
 
 }

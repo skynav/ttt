@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2014 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,14 +25,9 @@
  
 package com.skynav.ttx.transformer;
 
-import java.util.Collection;
-
-import com.skynav.ttv.app.OptionSpecification;
-
-public interface TransformerOptions {
-    Collection<OptionSpecification> getShortOptionSpecs();
-    Collection<OptionSpecification> getLongOptionSpecs();
-    int parseLongOption(String args[], int index);
-    int parseShortOption(String args[], int index);
-    void processDerivedOptions();
+public class TransformerException extends RuntimeException {
+    static final long serialVersionUID = 0;
+    public TransformerException(String message) {
+        super(message);
+    }
 }

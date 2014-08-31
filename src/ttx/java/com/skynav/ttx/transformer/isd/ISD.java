@@ -25,8 +25,15 @@
  
 package com.skynav.ttx.transformer.isd;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -39,12 +46,23 @@ import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import com.skynav.ttv.app.InvalidOptionUsageException;
+import com.skynav.ttv.app.MissingOptionArgumentException;
+import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
@@ -54,12 +72,14 @@ import com.skynav.ttv.model.ttml1.tt.Paragraph;
 import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.TimeParameters;
+import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 
 import com.skynav.ttx.transformer.AbstractTransformer;
 import com.skynav.ttx.transformer.Transformer;
 import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.ttx.transformer.TransformerException;
 import com.skynav.ttx.util.PostVisitor;
 import com.skynav.ttx.util.PreVisitor;
 import com.skynav.ttx.util.TimeCoordinate;
@@ -74,6 +94,37 @@ public class ISD {
     public static final Transformer TRANSFORMER = new ISDTransformer();
     public static final String NAMESPACE_ISD = "http://www.w3.org/ns/ttml#isd";
     public static final String NAMESPACE_TT = TTML1.Constants.NAMESPACE_TT;
+    public static final String NAMESPACE_TT_METADATA = TTML1.Constants.NAMESPACE_TT_METADATA;
+    public static final String NAMESPACE_TT_STYLE = TTML1.Constants.NAMESPACE_TT_STYLE;
+    public static final String NAMESPACE_TT_PARAMETER = TTML1.Constants.NAMESPACE_TT_PARAMETER;
+
+    private static final String DEFAULT_OUTPUT_ENCODING     = AbstractTransformer.DEFAULT_OUTPUT_ENCODING;
+
+    private static Charset defaultOutputEncoding;
+
+    static {
+        try {
+            defaultOutputEncoding = Charset.forName(DEFAULT_OUTPUT_ENCODING);
+        } catch (RuntimeException e) {
+            defaultOutputEncoding = Charset.defaultCharset();
+        }
+    }
+
+    // option and usage info
+    private static final String[][] longOptionSpecifications = new String[][] {
+        { "isd-output-clean",           "",         "clean (remove) all files in output directory prior to writing ISD output" },
+        { "isd-output-directory",       "DIRECTORY","specify path to directory where ISD output is to be written" },
+        { "isd-output-encoding",        "ENCODING", "specify character encoding of ISD output (default: " + defaultOutputEncoding.name() + ")" },
+        { "isd-output-indent",          "",         "indent ISD output (default: no indent)" },
+        { "isd-output-pattern",         "PATTERN",  "specify ISD output file name pattern (default: 'isd00000')" },
+    };
+    private static final Map<String,OptionSpecification> longOptions;
+    static {
+        longOptions = new java.util.TreeMap<String,OptionSpecification>();
+        for (String[] spec : longOptionSpecifications) {
+            longOptions.put(spec[0], new OptionSpecification(spec[0], spec[1], spec[2]));
+        }
+    }
 
     enum GenerationIndex {
         isdInstanceIndex,
@@ -103,6 +154,18 @@ public class ISD {
 
     public static class ISDTransformer extends AbstractTransformer {
 
+        // options state
+        private boolean outputDirectoryClean;
+        private String outputDirectoryPath;
+        private String outputEncodingName;
+        private boolean outputIndent;
+        @SuppressWarnings("unused")
+        private String outputPattern;
+
+        // derived option state
+        private File outputDirectory;
+        private Charset outputEncoding;
+
         protected ISDTransformer() {
         }
 
@@ -110,7 +173,80 @@ public class ISD {
             return TRANSFORMER_NAME;
         }
 
-        public void transform(Object root, TransformerContext context, OutputStream out) {
+        @Override
+        public Collection<OptionSpecification> getShortOptionSpecs() {
+            return null;
+        }
+
+        @Override
+        public Collection<OptionSpecification> getLongOptionSpecs() {
+            return longOptions.values();
+        }
+
+        @Override
+        public int parseLongOption(String args[], int index) {
+            String option = args[index];
+            assert option.length() > 2;
+            option = option.substring(2);
+            if (option.equals("isd-output-clean")) {
+                outputDirectoryClean = true;
+            } else if (option.equals("isd-output-directory")) {
+                if (index + 1 > args.length)
+                    throw new MissingOptionArgumentException("--" + option);
+                outputDirectoryPath = args[++index];
+            } else if (option.equals("isd-output-encoding")) {
+                if (index + 1 > args.length)
+                    throw new MissingOptionArgumentException("--" + option);
+                outputEncodingName = args[++index];
+            } else if (option.equals("isd-output-indent")) {
+                outputIndent = true;
+            } else if (option.equals("isd-output-pattern")) {
+                if (index + 1 > args.length)
+                    throw new MissingOptionArgumentException("--" + option);
+                outputPattern = args[++index];
+            } else
+                throw new UnknownOptionException("--" + option);
+            return index + 1;
+        }
+
+        @Override
+        public int parseShortOption(String args[], int index) {
+            String option = args[index];
+            assert option.length() == 2;
+            option = option.substring(1);
+            throw new UnknownOptionException("-" + option);
+        }
+
+        @Override
+        public void processDerivedOptions() {
+            File outputDirectory;
+            if (outputDirectoryPath != null) {
+                outputDirectory = new File(outputDirectoryPath);
+                if (!outputDirectory.exists())
+                    throw new InvalidOptionUsageException("isd-output-directory", "directory does not exist: " + outputDirectoryPath);
+                else if (!outputDirectory.isDirectory())
+                    throw new InvalidOptionUsageException("isd-output-directory", "not a directory: " + outputDirectoryPath);
+            } else
+                outputDirectory = new File(".");
+            this.outputDirectory = outputDirectory;
+            Charset outputEncoding;
+            if (outputEncodingName != null) {
+                try {
+                    outputEncoding = Charset.forName(outputEncodingName);
+                } catch (Exception e) {
+                    outputEncoding = null;
+                }
+                if (outputEncoding == null)
+                    throw new InvalidOptionUsageException("isd-output-encoding", "unknown encoding: " + outputEncodingName);
+            } else
+                outputEncoding = null;
+            if (outputEncoding == null)
+                outputEncoding = defaultOutputEncoding;
+            this.outputEncoding = outputEncoding;
+        }
+
+        @Override
+        public void transform(String[] args, Object root, TransformerContext context, OutputStream out) {
             assert root != null;
             assert context != null;
             populateContext(context);
@@ -388,7 +524,7 @@ public class ISD {
             return getTimingStates(context).get(content);
         }
 
-        private static void writeISDSequence(Object root, TransformerContext context, Set<TimeInterval> intervals, OutputStream out) {
+        private void writeISDSequence(Object root, TransformerContext context, Set<TimeInterval> intervals, OutputStream out) {
             Reporter reporter = context.getReporter();
             try {
                 JAXBContext jc = JAXBContext.newInstance(context.getModel().getJAXBContextPath());
@@ -403,6 +539,9 @@ public class ISD {
                     pruneIntervals(doc, context, interval);
                     pruneRegions(doc, context);
                     pruneTimingAndRegionAttributes(doc, context);
+                    generateISDWrapper(doc, interval);
+                    pruneISDExclusions(doc);
+                    normalizeNamespaces(doc);
                     if (hasUsableContent(doc, context)) {
                         isdDocuments.add(doc);
                     }
@@ -617,13 +756,13 @@ public class ISD {
             return isRegionElement(elt) && isLayoutElement((Element) elt.getParentNode());
         }
 
-        private static Element maybeImplyHeadElement(Document doc, TransformerContext context) {
-            Element head = getHeadElement(doc);
+        private static Element maybeImplyHeadElement(Document document, TransformerContext context) {
+            Element head = getHeadElement(document);
             if (head == null) {
-                Element defaultHead = doc.createElementNS(NAMESPACE_TT, "head");
-                Element body = getBodyElement(doc);
+                Element defaultHead = document.createElementNS(NAMESPACE_TT, "head");
+                Element body = getBodyElement(document);
                 try {
-                    Element root = doc.getDocumentElement();
+                    Element root = document.getDocumentElement();
                     if (body != null)
                         root.insertBefore(defaultHead, body);
                     else
@@ -636,11 +775,11 @@ public class ISD {
             return head;
         }
 
-        private static Element maybeImplyLayoutElement(Document doc, TransformerContext context) {
-            Element layout = getLayoutElement(doc);
+        private static Element maybeImplyLayoutElement(Document document, TransformerContext context) {
+            Element layout = getLayoutElement(document);
             if (layout == null) {
-                Element defaultLayout = doc.createElementNS(NAMESPACE_TT, "layout");
-                Element head = maybeImplyHeadElement(doc, context);
+                Element defaultLayout = document.createElementNS(NAMESPACE_TT, "layout");
+                Element head = maybeImplyHeadElement(document, context);
                 assert head != null;
                 try {
                     head.appendChild(defaultLayout);
@@ -652,12 +791,12 @@ public class ISD {
             return layout;
         }
 
-        private static List<Element> maybeImplyDefaultRegion(Document doc, TransformerContext context, List<Element> regions) {
+        private static List<Element> maybeImplyDefaultRegion(Document document, TransformerContext context, List<Element> regions) {
             if (regions.isEmpty()) {
                 try {
-                    Element defaultRegion = doc.createElementNS(NAMESPACE_TT, "region");
+                    Element defaultRegion = document.createElementNS(NAMESPACE_TT, "region");
                     defaultRegion.setAttributeNS(XML.xmlNamespace, "id", generateAnonymousRegionId(context));
-                    Element layout = maybeImplyLayoutElement(doc, context);
+                    Element layout = maybeImplyLayoutElement(document, context);
                     assert layout != null;
                     layout.appendChild(defaultRegion);
                     regions.add(defaultRegion);
@@ -673,9 +812,9 @@ public class ISD {
             return "isdRegion" + pad(indices[GenerationIndex.isdAnonymousRegionIndex.ordinal()]++, 6);
         }
 
-        private static Element extractBodyElement(Document doc, TransformerContext context) {
+        private static Element extractBodyElement(Document document, TransformerContext context) {
             try {
-                Element body = getBodyElement(doc);
+                Element body = getBodyElement(document);
                 return (Element) body.getParentNode().removeChild(body);
             } catch (DOMException e) {
                 context.getReporter().logError(e);
@@ -683,9 +822,9 @@ public class ISD {
             }
         }
 
-        private static Element getHeadElement(Document doc) {
+        private static Element getHeadElement(Document document) {
             final Element[] retHead = new Element[1];
-            traverseElements(doc, new PreVisitor() {
+            traverseElements(document, new PreVisitor() {
                 public boolean visit(Object content, Object parent, Visitor.Order order) {
                     assert content instanceof Element;
                     Element elt = (Element) content;
@@ -715,9 +854,9 @@ public class ISD {
                 return false;
         }
 
-        private static Element getBodyElement(Document doc) {
+        private static Element getBodyElement(Document document) {
             final Element[] retBody = new Element[1];
-            traverseElements(doc, new PreVisitor() {
+            traverseElements(document, new PreVisitor() {
                 public boolean visit(Object content, Object parent, Visitor.Order order) {
                     assert content instanceof Element;
                     Element elt = (Element) content;
@@ -747,9 +886,9 @@ public class ISD {
                 return false;
         }
 
-        private static Element getLayoutElement(Document doc) {
+        private static Element getLayoutElement(Document document) {
             final Element[] retLayout = new Element[1];
-            traverseElements(doc, new PreVisitor() {
+            traverseElements(document, new PreVisitor() {
                 public boolean visit(Object content, Object parent, Visitor.Order order) {
                     assert content instanceof Element;
                     Element elt = (Element) content;
@@ -829,8 +968,8 @@ public class ISD {
             }
         }
 
-        private static void pruneTimingAndRegionAttributes(Document doc, TransformerContext context) {
-            traverseElements(doc, new PreVisitor() {
+        private static void pruneTimingAndRegionAttributes(Document document, TransformerContext context) {
+            traverseElements(document, new PreVisitor() {
                 public boolean visit(Object content, Object parent, Visitor.Order order) {
                     assert content instanceof Element;
                     Element elt = (Element) content;
@@ -854,16 +993,228 @@ public class ISD {
             elt.removeAttributeNS(null, "region");
         }
 
-        private static boolean hasUsableContent(Document doc, TransformerContext context) {
-            Element root = doc.getDocumentElement();
+        private static void generateISDWrapper(Document document, TimeInterval interval) {
+                Element tt = document.getDocumentElement();
+                document.removeChild(tt);
+                Element isd = document.createElementNS(NAMESPACE_ISD, "isd");
+                isd.setAttributeNS(null, "begin", interval.getBegin().toString());
+                isd.setAttributeNS(null, "end", interval.getEnd().toString());
+                isd.appendChild(tt);
+                document.appendChild(isd);
+        }
+
+        private void pruneISDExclusions(Document document) {
+            traverseElements(document, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (!maybeExcludeElement(elt))
+                        maybeExcludeAttributes(elt);
+                    return true;
+                }
+            });
+        }
+
+        private static boolean maybeExcludeElement(Element elt) {
+            boolean excluded = false;
+            String nsUri = elt.getNamespaceURI();
+            if (nsUri.equals(NAMESPACE_TT_METADATA)) {
+                excludeElement(elt);
+                excluded = true;
+            }
+            return excluded;
+        }
+
+        private static void excludeElement(Element elt) {
+            Node parent = elt.getParentNode();
+            if (parent != null) {
+                parent.removeChild(elt);
+            }
+        }
+
+        private static boolean maybeExcludeAttributes(Element elt) {
+            String nsUriElt = elt.getNamespaceURI();
+            NamedNodeMap attrs = elt.getAttributes();
+            List<Attr> exclusions = new java.util.ArrayList<Attr>();
+            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+                Node node = attrs.item(i);
+                if (node instanceof Attr) {
+                    Attr a = (Attr) node;
+                    String nsUri = a.getNamespaceURI();
+                    String localName = a.getLocalName();
+                    String value = a.getValue();
+                    if (nsUri == null) {
+                        if (localName.equals("style") && value.isEmpty())
+                            exclusions.add(a);
+                        else
+                            continue;
+                    } else if (nsUri.equals(NAMESPACE_TT_METADATA)) {
+                        exclusions.add(a);
+                    } else if (nsUri.equals(NAMESPACE_TT_PARAMETER)) {
+                        if (isDefaultParameterValue(a))
+                            exclusions.add(a);
+                    } else if (nsUri.equals(NAMESPACE_ISD)) {
+                        exclusions.add(a);
+                    } else if (nsUri.equals(Annotations.getNamespace())) {
+                        exclusions.add(a);
+                    } else if (nsUri.equals(XML.xmlnsNamespace)) {
+                        if (value != null) {
+                            if (value.equals(NAMESPACE_ISD)) {
+                                if ((nsUriElt != null) && nsUriElt.equals(NAMESPACE_TT))
+                                    exclusions.add(a);
+                            } else if (value.equals(NAMESPACE_TT))
+                                exclusions.add(a);
+                            else if (value.equals(NAMESPACE_TT_METADATA))
+                                exclusions.add(a);
+                            else if (value.equals(Annotations.getNamespace()))
+                                exclusions.add(a);
+                        }
+                    }
+                }
+            }
+            for (Attr a : exclusions)
+                elt.removeAttributeNode(a);
+            return exclusions.size() > 0;
+        } 
+
+        // TODO: use defaulting data from TTML1ParameterVerifier.parameterAccessorMap
+        private static boolean isDefaultParameterValue(Attr attr) {
+            String localName = attr.getLocalName();
+            String value = attr.getValue();
+            if ((value == null) || value.isEmpty())
+                return false;
+            else if (localName.equals("cellResolution"))
+                return value.equals("32 15");
+            else if (localName.equals("clockMode"))
+                return value.equals("utc");
+            else if (localName.equals("dropMode"))
+                return value.equals("nonDrop");
+            else if (localName.equals("frameRateMultiplier"))
+                return value.equals("1 1");
+            else if (localName.equals("markerMode"))
+                return value.equals("discontinuous");
+            else if (localName.equals("pixelAspectRatio"))
+                return value.equals("1 1");
+            else if (localName.equals("subFrameRate"))
+                return value.equals("1");
+            else if (localName.equals("tickRate"))
+                return value.equals("1");
+            else if (localName.equals("timeBase"))
+                return value.equals("media");
+            else
+                return false;
+        }
+
+        private void normalizeNamespaces(Document document) {
+            traverseElements(document, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    normalizeNamespaces(elt);
+                    return true;
+                }
+            });
+        }
+
+        static private Map<String,String> normalizedPrefixes = new java.util.HashMap<String,String>();
+        static {
+            normalizedPrefixes.put(NAMESPACE_TT, "");
+            normalizedPrefixes.put(NAMESPACE_TT_STYLE, "tts");
+            normalizedPrefixes.put(NAMESPACE_TT_PARAMETER, "ttp");
+        }
+
+        private void normalizeNamespaces(Element elt) {
+            normalizeNamespace((Node) elt);
+            NamedNodeMap attrs = elt.getAttributes();
+            List<Attr> xmlnsFixups = new java.util.ArrayList<Attr>();
+            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+                Node node = attrs.item(i);
+                if (node instanceof Attr) {
+                    String nsUri = node.getNamespaceURI();
+                    if ((nsUri != null) && nsUri.equals(XML.xmlnsNamespace))
+                        xmlnsFixups.add((Attr) node);
+                    else
+                        normalizeNamespace(node);
+                }
+            }
+            for (Attr a : xmlnsFixups)
+                normalizeNamespaceDeclaration(a, elt);
+        }
+
+        private void normalizeNamespaceDeclaration(Attr attr, Element elt) {
+            String nsUri = attr.getValue();
+            String normalizedPrefix = normalizedPrefixes.get(nsUri);
+            if (normalizedPrefix != null) {
+                if (normalizedPrefix.length() == 0)
+                    normalizedPrefix = null;
+                elt.removeAttributeNode(attr);
+            }
+        }
+
+        private void normalizeNamespace(Node node) {
+            String nsUri = node.getNamespaceURI();
+            String normalizedPrefix = normalizedPrefixes.get(nsUri);
+            if (normalizedPrefix != null) {
+                if (normalizedPrefix.length() == 0)
+                    normalizedPrefix = null;
+                node.setPrefix(normalizedPrefix);
+            }
+        }
+
+        private static boolean hasUsableContent(Document document, TransformerContext context) {
+            Element root = document.getDocumentElement();
             return (root != null) && hasUsableContent(root, context);
         }
 
-        private static void writeISDSequence(List<Document> isdDocuments, TransformerContext context, OutputStream out) {
+        private void writeISDSequence(List<Document> isdDocuments, TransformerContext context, OutputStream out) {
+            if (outputDirectoryClean)
+                cleanOutputDirectory(outputDirectory, context);
+            int isdSequenceIndex = 0;
+            for (Document d : isdDocuments)
+                writeISD(d, isdSequenceIndex++, context);
         }
 
-        private static void traverseElements(Document doc, Visitor v) {
-            Element root = doc.getDocumentElement();
+        private static void cleanOutputDirectory(File directory, TransformerContext context) {
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message("*KEY*", "Cleaning ISD artifacts from output directory ''{0}''...", directory.getPath()));
+            for (File f : directory.listFiles()) {
+                String name = f.getName();
+                if (name.indexOf("isd") != 0)
+                    continue;
+                else if (name.indexOf(".xml") != (name.length() - 4))
+                    continue;
+                else if (!f.delete())
+                    throw new TransformerException("unable to clean output directory: can't delete: '" + name + "'");
+            }
+        }
+
+        private void writeISD(Document document, int sequenceIndex, TransformerContext context) {
+           Reporter reporter = context.getReporter();
+           BufferedWriter bw = null;
+           try {
+               TransformerFactory tf = TransformerFactory.newInstance();
+               DOMSource source = new DOMSource(document);
+               String outputFileName = "isd" + pad(sequenceIndex, 5) + ".xml";
+               File outputFile = new File(outputDirectory, outputFileName);
+               bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), outputEncoding));
+               StreamResult result = new StreamResult(bw);
+               javax.xml.transform.Transformer t = tf.newTransformer();
+               t.setOutputProperty(OutputKeys.INDENT, outputIndent ? "yes" : "no");
+               t.transform(source, result);
+               reporter.logInfo(reporter.message("*KEY*", "Wrote ISD ''{0}''.", outputFile.getAbsolutePath()));
+           } catch (TransformerFactoryConfigurationError e) {
+               reporter.logError(new Exception(e));
+           } catch (Exception e) {
+               reporter.logError(e);
+           } finally {
+               if (bw != null) {
+                   try { bw.close(); } catch (IOException e) {}
+               }
+           }
+        } 
+
+        private static void traverseElements(Document document, Visitor v) {
+            Element root = document.getDocumentElement();
             if (root != null)
                 traverseElements(root, null, v);
         }

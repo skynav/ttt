@@ -27,7 +27,7 @@ package com.skynav.ttx.transformer;
 
 import java.io.OutputStream;
 
-public interface Transformer {
+public interface Transformer extends TransformerOptions {
 
     /**
      * Obtain transformer name.
@@ -38,10 +38,11 @@ public interface Transformer {
     /**
      * Transform parsed document instance (as interned JAXP content document)
      * into an output stream.
+     * @param args command line arguments
      * @param root root content element
      * @param context state for transformation
      * @param out stream to which to write transformed output
      */
-    void transform(Object root, TransformerContext context, OutputStream out);
+    void transform(String[] args, Object root, TransformerContext context, OutputStream out);
 
 }

@@ -30,6 +30,7 @@ import javax.xml.namespace.QName;
 public class XML {
 
     public static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
+    public static final String xmlnsNamespace = "http://www.w3.org/2000/xmlns/";
     public static final String xsiNamespace = "http://www.w3.org/2001/XMLSchema-instance";
 
     private XML() {

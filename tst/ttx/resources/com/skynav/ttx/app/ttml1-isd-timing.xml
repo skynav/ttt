@@ -3,6 +3,7 @@
 <tt xml:lang=""
     xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
     ttp:frameRate="9999"
     ttp:subFrameRate="9999"
     ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
@@ -10,7 +11,7 @@
   <head/>
   <body>
     <div>
-      <p timeContainer="seq"><span dur="1s">Foo</span><span dur="1s">Bar</span>Baz</p>
+      <p timeContainer="seq" tts:color="black"><span dur="1s">Foo</span><span dur="1s">Bar</span>Baz</p>
     </div>
   </body>
 </tt>
