@@ -743,7 +743,7 @@
 
 <target name="clean-ttxv-build" description="Clean and build TTXV." depends="clean-ttxv, build-ttxv"/>
 
-<target name="clean-build" description="Clean and build all targets." depends="clean-ttv-build, clean-ttx-build"/>
+<target name="clean-build" description="Clean and build all targets." depends="clean-ttv-build, clean-ttx-build, clean-ttxv-build"/>
 
 <target name="clean-ttv-test" description="Clean, build, and test TTV" depends="clean-ttv, build-ttv, test-ttv"/>
 
