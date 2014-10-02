@@ -26,6 +26,7 @@
 package com.skynav.ttv.model;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -236,6 +237,41 @@ public interface Model {
      * ancestor element type
      */
     List<List<QName>> getElementPermissibleAncestors(QName elementName);
+
+    /**
+     * Obtain defined style names.
+     * @return a collection of style names defined by this model.
+     */
+    Collection<QName> getDefinedStyleNames();
+
+    /**
+     * Obtain applicable style names for a specified named element type.
+     * @param name of element type
+     * @return a collection of style names that apply to named element
+     */
+    Collection<QName> getApplicableStyleNames(QName eltName);
+
+    /**
+     * Determine if named style is inheritable.
+     * @param styleName name of style
+     * @return true if named style is inheritable.
+     */
+    boolean isInheritableStyle(QName styleName);
+
+    /**
+     * Obtain initial value of named style.
+     * @param styleName name of style
+     * @return a initial value of named style or null if none defined or unknown named style
+     */
+    String getInitialStyleValue(QName styleName);
+
+    /**
+     * Determine if named style applies (semantically) to the named element type.
+     * @param eltName name of element type
+     * @param styleName name of style
+     * @return true if named style apples to named element type
+     */
+    boolean doesStyleApply(QName eltName, QName styleName);
 
     /**
      * Obtain semantics verifier for model.

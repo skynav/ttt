@@ -26,6 +26,7 @@
 package com.skynav.ttv.model;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -151,6 +152,26 @@ public class AbstractModel implements Model {
 
     public List<List<QName>> getElementPermissibleAncestors(QName attributeName) {
         return null;
+    }
+
+    public Collection<QName> getDefinedStyleNames() {
+        return new java.util.ArrayList<QName>();
+    }
+
+    public Collection<QName> getApplicableStyleNames(QName eltName) {
+        return new java.util.ArrayList<QName>();
+    }
+
+    public boolean isInheritableStyle(QName styleName) {
+        return false;
+    }
+
+    public String getInitialStyleValue(QName styleName) {
+        return null;
+    }
+
+    public boolean doesStyleApply(QName eltName, QName styleName) {
+        return false;
     }
 
     public SemanticsVerifier getSemanticsVerifier() {

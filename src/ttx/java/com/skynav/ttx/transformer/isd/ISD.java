@@ -33,7 +33,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -46,6 +48,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -63,6 +66,7 @@ import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttv.app.UnknownOptionException;
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
@@ -73,18 +77,20 @@ import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.PostVisitor;
+import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 
 import com.skynav.ttx.transformer.AbstractTransformer;
 import com.skynav.ttx.transformer.Transformer;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.ttx.transformer.TransformerException;
-import com.skynav.ttx.util.PostVisitor;
-import com.skynav.ttx.util.PreVisitor;
+import com.skynav.ttx.util.DirectedGraph;
 import com.skynav.ttx.util.TimeCoordinate;
 import com.skynav.ttx.util.TimeInterval;
-import com.skynav.ttx.util.Visitor;
+import com.skynav.ttx.util.TopologicalSort;
 
 import com.skynav.xml.helpers.XML;
 
@@ -92,7 +98,7 @@ public class ISD {
 
     public static final String TRANSFORMER_NAME = "isd";
     public static final Transformer TRANSFORMER = new ISDTransformer();
-    public static final String NAMESPACE_ISD = "http://www.w3.org/ns/ttml#isd";
+    public static final String NAMESPACE_ISD = TTML1.Constants.NAMESPACE_TT_ISD;
     public static final String NAMESPACE_TT = TTML1.Constants.NAMESPACE_TT;
     public static final String NAMESPACE_TT_METADATA = TTML1.Constants.NAMESPACE_TT_METADATA;
     public static final String NAMESPACE_TT_STYLE = TTML1.Constants.NAMESPACE_TT_STYLE;
@@ -126,13 +132,13 @@ public class ISD {
         }
     }
 
-    enum GenerationIndex {
+    protected enum GenerationIndex {
         isdInstanceIndex,
         isdAnonymousSpanIndex,
         isdAnonymousRegionIndex;
     };
 
-    enum ResourceState {
+    protected enum ResourceState {
         isdParents,
         isdTimingStates,
         isdGenerationIndices;
@@ -267,7 +273,7 @@ public class ISD {
             writeISDSequence(root, context, intervals, out);
         }
 
-        private void populateContext(TransformerContext context) {
+        void populateContext(TransformerContext context) {
             context.setResourceState(ResourceState.isdParents.name(), new java.util.HashMap<Object, Object>());
             context.setResourceState(ResourceState.isdTimingStates.name(), new java.util.HashMap<Object, TimingState>());
             context.setResourceState(ResourceState.isdGenerationIndices.name(), new int[GenerationIndex.values().length]);
@@ -527,7 +533,8 @@ public class ISD {
         private void writeISDSequence(Object root, TransformerContext context, Set<TimeInterval> intervals, OutputStream out) {
             Reporter reporter = context.getReporter();
             try {
-                JAXBContext jc = JAXBContext.newInstance(context.getModel().getJAXBContextPath());
+                Model model = context.getModel();
+                JAXBContext jc = JAXBContext.newInstance(model.getJAXBContextPath());
                 Marshaller m = jc.createMarshaller();
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 dbf.setNamespaceAware(true);
@@ -536,11 +543,12 @@ public class ISD {
                 for (TimeInterval interval : intervals) {
                     Document doc = db.newDocument();
                     m.marshal(context.getBindingElement(context.getXMLNode(root)), doc);
+                    markIdAttributes(doc);
                     pruneIntervals(doc, context, interval);
                     pruneRegions(doc, context);
                     pruneTimingAndRegionAttributes(doc, context);
-                    generateISDWrapper(doc, interval);
-                    pruneISDExclusions(doc);
+                    generateISDWrapper(doc, interval, context);
+                    pruneISDExclusions(doc, context);
                     normalizeNamespaces(doc);
                     if (hasUsableContent(doc, context)) {
                         isdDocuments.add(doc);
@@ -552,6 +560,18 @@ public class ISD {
             } catch (ParserConfigurationException e) {
                 reporter.logError(e);
             }
+        }
+
+        private static void markIdAttributes(Document doc) {
+            traverseElements(doc, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (elt.hasAttributeNS(XML.xmlNamespace, "id"))
+                        elt.setIdAttributeNS(XML.xmlNamespace, "id", true);
+                    return true;
+                }
+            });
         }
 
         private static void pruneIntervals(Document doc, TransformerContext context, final TimeInterval interval) {
@@ -624,7 +644,7 @@ public class ISD {
             regions = maybeImplyDefaultRegion(doc, context, regions);
             for (Element region : regions) {
                 try {
-                    Element body = extractBodyElement(doc, context);
+                    Element body = copyBodyElement(doc, context);
                     if (body != null) {
                         pruneUnselectedContent(body, context, region);
                         if (hasUsableContent(body, context))
@@ -634,6 +654,7 @@ public class ISD {
                     context.getReporter().logError(e);
                 }
             }
+            removeBodyElement(doc, context);
         }
 
         private static boolean hasUsableContent(Element elt, TransformerContext context) {
@@ -658,9 +679,11 @@ public class ISD {
                     assert content instanceof Element;
                     Element elt = (Element) content;
                     if (!isSelectedContent(elt, region)) {
-                        if (parent != null)
-                            ((Node) parent).removeChild(elt);
-                        else if (elt != body)
+                        if (parent != null) {
+                            assert parent instanceof Element;
+                            Element eltParent = (Element) parent;
+                            pruneElement(elt, eltParent);
+                        } else if (elt != body)
                             assert parent != null;
                     }
                     return true;
@@ -812,7 +835,15 @@ public class ISD {
             return "isdRegion" + pad(indices[GenerationIndex.isdAnonymousRegionIndex.ordinal()]++, 6);
         }
 
-        private static Element extractBodyElement(Document document, TransformerContext context) {
+        private static Element copyBodyElement(Document document, TransformerContext context) {
+            Element body = getBodyElement(document);
+            if (body != null)
+                return (Element) body.cloneNode(true);
+            else
+                return null;
+        }
+
+        private static Element removeBodyElement(Document document, TransformerContext context) {
             try {
                 Element body = getBodyElement(document);
                 return (Element) body.getParentNode().removeChild(body);
@@ -820,6 +851,25 @@ public class ISD {
                 context.getReporter().logError(e);
                 return null;
             }
+        }
+
+        private static boolean isTimedTextElement(Element elt, String localName) {
+            if (elt != null) {
+                String nsUri = elt.getNamespaceURI();
+                if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
+                    return false;
+                else {
+                    if (elt.getLocalName().equals(localName))
+                        return true;
+                    else
+                        return false;
+                }
+            } else
+                return false;
+        }
+
+        private static boolean isRootElement(Element elt) {
+            return isTimedTextElement(elt, "tt");
         }
 
         private static Element getHeadElement(Document document) {
@@ -839,19 +889,7 @@ public class ISD {
         }
 
         private static boolean isHeadElement(Element elt) {
-            if (elt != null) {
-                String nsUri = elt.getNamespaceURI();
-                if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
-                    return false;
-                else {
-                    String localName = elt.getLocalName();
-                    if (localName.equals("head"))
-                        return true;
-                    else
-                        return false;
-                }
-            } else
-                return false;
+            return isTimedTextElement(elt, "head");
         }
 
         private static Element getBodyElement(Document document) {
@@ -871,19 +909,7 @@ public class ISD {
         }
 
         private static boolean isBodyElement(Element elt) {
-            if (elt != null) {
-                String nsUri = elt.getNamespaceURI();
-                if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
-                    return false;
-                else {
-                    String localName = elt.getLocalName();
-                    if (localName.equals("body"))
-                        return true;
-                    else
-                        return false;
-                }
-            } else
-                return false;
+            return isTimedTextElement(elt, "body");
         }
 
         private static Element getLayoutElement(Document document) {
@@ -903,35 +929,11 @@ public class ISD {
         }
 
         private static boolean isLayoutElement(Element elt) {
-            if (elt != null) {
-                String nsUri = elt.getNamespaceURI();
-                if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
-                    return false;
-                else {
-                    String localName = elt.getLocalName();
-                    if (localName.equals("layout"))
-                        return true;
-                    else
-                        return false;
-                }
-            } else
-                return false;
+            return isTimedTextElement(elt, "layout");
         }
 
         private static boolean isRegionElement(Element elt) {
-            if (elt != null) {
-                String nsUri = elt.getNamespaceURI();
-                if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
-                    return false;
-                else {
-                    String localName = elt.getLocalName();
-                    if (localName.equals("region"))
-                        return true;
-                    else
-                        return false;
-                }
-            } else
-                return false;
+            return isTimedTextElement(elt, "region");
         }
 
         private static boolean isAnonymousRegionElement(Element elt) {
@@ -944,19 +946,7 @@ public class ISD {
         }
 
         private static boolean isSpanElement(Element elt) {
-            if (elt != null) {
-                String nsUri = elt.getNamespaceURI();
-                if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
-                    return false;
-                else {
-                    String localName = elt.getLocalName();
-                    if (localName.equals("span"))
-                        return true;
-                    else
-                        return false;
-                }
-            } else
-                return false;
+            return isTimedTextElement(elt, "span");
         }
 
         private static boolean isAnonymousSpanElement(Element elt) {
@@ -966,6 +956,54 @@ public class ISD {
                 String id = getXmlIdentifier(elt);
                 return (id != null) && (id.indexOf("isdSpan") == 0);
             }
+        }
+
+        private static boolean isStyleElement(Element elt) {
+            return isTimedTextElement(elt, "style");
+        }
+
+        private static boolean isAnimationElement(Element elt) {
+            return isTimedTextElement(elt, "set");
+        }
+
+        /*
+        private static boolean isStyledElement(Element elt) {
+            if (isRootElement(elt))
+                return true;
+            else if (isStyleElement(elt))
+                return true;
+            else if (isAnimationElement(elt))
+                return true;
+            else if (isContentElement(elt))
+                return true;
+            else
+                return false;
+        }
+        */
+
+        private static boolean isContentElement(Element elt) {
+            String nsUri = elt.getNamespaceURI();
+            if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
+                return false;
+            else {
+                String localName = elt.getLocalName();
+                if (localName.equals("body"))
+                    return true;
+                else if (localName.equals("div"))
+                    return true;
+                else if (localName.equals("p"))
+                    return true;
+                else if (localName.equals("span"))
+                    return true;
+                else if (localName.equals("br"))
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        private static boolean isRegionOrContentElement(Element elt) {
+            return isRegionElement(elt) || isContentElement(elt);
         }
 
         private static void pruneTimingAndRegionAttributes(Document document, TransformerContext context) {
@@ -993,36 +1031,436 @@ public class ISD {
             elt.removeAttributeNS(null, "region");
         }
 
-        private static void generateISDWrapper(Document document, TimeInterval interval) {
+        private static void generateISDWrapper(Document document, TimeInterval interval, TransformerContext context) {
                 Element tt = document.getDocumentElement();
-                document.removeChild(tt);
                 Element isd = document.createElementNS(NAMESPACE_ISD, "isd");
                 isd.setAttributeNS(null, "begin", interval.getBegin().toString());
                 isd.setAttributeNS(null, "end", interval.getEnd().toString());
-                isd.appendChild(tt);
+                copyParameterAttributes(isd, tt);
+                generateISDComputedStyleSets(isd, tt, context);
+                generateISDRegions(isd, tt, context);
+                document.removeChild(tt);
                 document.appendChild(isd);
         }
 
-        private void pruneISDExclusions(Document document) {
-            traverseElements(document, new PreVisitor() {
+        private static void copyParameterAttributes(Element isd, Element tt) {
+            NamedNodeMap attrs = tt.getAttributes();
+            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+                Node node = attrs.item(i);
+                if (node instanceof Attr) {
+                    Attr a = (Attr) node;
+                    String nsUri = a.getNamespaceURI();
+                    if ((nsUri != null) && nsUri.equals(NAMESPACE_TT_PARAMETER)) {
+                        if (inISDParameterAttributeSet(a) && !isDefaultParameterValue(a)) {
+                            isd.setAttributeNS(nsUri, a.getLocalName(), a.getValue());
+                        }
+                    }
+                }
+            }
+        }
+
+        private static boolean inISDParameterAttributeSet(Attr attr) {
+            String localName = attr.getLocalName();
+            String value = attr.getValue();
+            if ((value == null) || value.isEmpty())
+                return false;
+            else if (localName.equals("cellResolution"))
+                return true;
+            else if (localName.equals("frameRate"))
+                return true;
+            else if (localName.equals("frameRateMultiplier"))
+                return true;
+            else if (localName.equals("pixelAspectRatio"))
+                return true;
+            else if (localName.equals("subFrameRate"))
+                return true;
+            else if (localName.equals("tickRate"))
+                return true;
+            else
+                return false;
+        }
+
+        private static void generateISDComputedStyleSets(final Element isd, Element tt, TransformerContext context) {
+            final Map<Element, StyleSet> computedStyleSets = resolveComputedStyles(tt, context);
+            final Document document = isd.getOwnerDocument();
+            traverseElements(tt, null, new PreVisitor() {
                 public boolean visit(Object content, Object parent, Visitor.Order order) {
                     assert content instanceof Element;
                     Element elt = (Element) content;
-                    if (!maybeExcludeElement(elt))
-                        maybeExcludeAttributes(elt);
+                    if (computedStyleSets.containsKey(elt)) {
+                        StyleSet css = computedStyleSets.get(elt);
+                        Element isdStyle = document.createElementNS(NAMESPACE_ISD, "css");
+                        String idStyle = css.generateAttributes(isdStyle);
+                        if (idStyle != null) {
+                            elt.setAttributeNS(NAMESPACE_ISD, "css", idStyle);
+                            isd.appendChild(isdStyle);
+                        }
+                    }
                     return true;
                 }
             });
         }
 
-        private static boolean maybeExcludeElement(Element elt) {
-            boolean excluded = false;
-            String nsUri = elt.getNamespaceURI();
-            if (nsUri.equals(NAMESPACE_TT_METADATA)) {
-                excludeElement(elt);
-                excluded = true;
+        private static Map<Element, StyleSet> resolveComputedStyles(Element tt, TransformerContext context) {
+            // resolve specified style sets
+            Map<Element, StyleSet> specifiedStyleSets = resolveSpecifiedStyles(tt, context);
+
+            // derive {CSS(E)} from {SSS(E)}
+            Map<Element, StyleSet> computedStyleSets = new java.util.HashMap<Element, StyleSet>();
+            for (Map.Entry<Element, StyleSet> e : specifiedStyleSets.entrySet()) {
+                Element elt = e.getKey();
+                if (isRegionElement(elt)) {
+                    if (findChildElement(elt, NAMESPACE_TT, "body") != null)
+                        computedStyleSets.put(elt, e.getValue().applicableStyles(elt, context));
+                } else if (isContentElement(elt)) {
+                    computedStyleSets.put(elt, e.getValue().applicableStyles(elt, context));
+                }
             }
-            return excluded;
+
+            // compute set of unique CSSs
+            Set<StyleSet> uniqueComputedStyleSets = new java.util.TreeSet<StyleSet>();
+            for (StyleSet css : computedStyleSets.values())
+                uniqueComputedStyleSets.add(css);
+
+            // obtain ordered list of unique CSSs
+            List<StyleSet> uniqueStyles = new java.util.ArrayList<StyleSet>(uniqueComputedStyleSets);
+
+            // assign identifiers to unique CSSs
+            int uniqueStyleIndex = 0;
+            for (StyleSet css : uniqueStyles)
+                css.setId("s" + uniqueStyleIndex++);
+
+            // remap CSS map entries to unique CSSs
+            for (Map.Entry<Element,StyleSet> e : computedStyleSets.entrySet()) {
+                int index = uniqueStyles.indexOf(e.getValue());
+                if (index >= 0)
+                    computedStyleSets.put(e.getKey(), uniqueStyles.get(index));
+            }
+            
+            return computedStyleSets;
+        }
+
+        private static Map<Element, StyleSet> resolveSpecifiedStyles(Element tt, TransformerContext context) {
+            Map<Element, StyleSet> specifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
+            specifiedStyleSets.putAll(resolveSpecifiedStyles(getStyleElements(tt, context), specifiedStyleSets, context));
+            specifiedStyleSets.putAll(resolveSpecifiedStyles(getAnimationElements(tt, context), specifiedStyleSets, context));
+            specifiedStyleSets.putAll(resolveSpecifiedStyles(getRegionOrContentElements(tt, context), specifiedStyleSets, context));
+            return specifiedStyleSets;
+        }
+
+        private static Collection<Element> getStyleElements(Element tt, TransformerContext context) {
+            final Collection<Element> elts = new java.util.ArrayList<Element>();
+            traverseElements(tt, null, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (isStyleElement(elt)) {
+                        elts.add(elt);
+                    }
+                    return true;
+                }
+            });
+            return topoSortByStyleReferences(elts, context);
+        }
+
+        private static Collection<Element> topoSortByStyleReferences(Collection<Element> elts, TransformerContext context) {
+            DirectedGraph<Element> graph = new DirectedGraph<Element>();
+            for (Element elt : elts)
+                graph.addNode(elt);
+            for (Element elt : elts) {
+                for (Element refStyle : getReferencedStyleElements(elt)) {
+                    graph.addEdge(elt, refStyle);
+                }
+            }
+            try {
+                List<Element> eltsSorted = TopologicalSort.sort(graph);
+                // topo sort ensures all forward refs, but we want all reverse refs, so reverse sorted results
+                Collections.reverse(eltsSorted);
+                return eltsSorted;
+            } catch (IllegalArgumentException e) {
+                Reporter reporter = context.getReporter();
+                reporter.logError(reporter.message("*KEY*", "Cycle in style chain, unable to resolve styles."));
+                return new java.util.ArrayList<Element>();
+            }
+        }
+
+        private static Collection<Element> getAnimationElements(Element tt, TransformerContext context) {
+            final Collection<Element> elts = new java.util.ArrayList<Element>();
+            traverseElements(tt, null, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (isAnimationElement(elt)) {
+                        elts.add(elt);
+                    }
+                    return true;
+                }
+            });
+            return elts;
+        }
+
+        private static Collection<Element> getRegionOrContentElements(Element tt, TransformerContext context) {
+            final Collection<Element> elts = new java.util.ArrayList<Element>();
+            traverseElements(tt, null, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (isRegionOrContentElement(elt))
+                        elts.add(elt);
+                    return true;
+                }
+            });
+            return elts;
+        }
+
+        private static Map<Element, StyleSet> resolveSpecifiedStyles(Collection<Element> elts, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
+            Map<Element, StyleSet> newSpecifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
+            for (Element elt : elts) {
+                assert !newSpecifiedStyleSets.containsKey(elt);
+                newSpecifiedStyleSets.put(elt, computeSpecifiedStyleSet(elt, specifiedStyleSets, context));
+            }
+            return newSpecifiedStyleSets;
+        }
+
+        private static StyleSet computeSpecifiedStyleSet(Element elt, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
+            // See TTML2, Section 8.4.4.2
+            // 1. initialization
+            StyleSet sss = new StyleSet();
+            // 2. referential and chained referential styling
+            for (StyleSet ss : getSpecifiedStyleSets(getReferencedStyleElements(elt), specifiedStyleSets))
+                sss.merge(ss);
+            // 3. nested styling
+            for (StyleSet ss : getSpecifiedStyleSets(getChildStyleElements(elt), specifiedStyleSets))
+                sss.merge(ss);
+            // 4. inline styling
+            sss.merge(getInlineStyles(elt));
+            // 5. animation styling
+            if (!isAnimationElement(elt)) {
+                for (StyleSet ss : getSpecifiedStyleSets(getChildAnimationElements(elt), specifiedStyleSets))
+                    sss.merge(ss);
+            }
+            // 6. implicit inheritance and initial value fallback
+            if (!isAnimationElement(elt) && !isStyleElement(elt)) {
+                for (QName name : getDefinedStyleNames(context)) {
+                    if (!sss.containsKey(name)) {
+                        StyleSpecification s;
+                        if (isInheritableStyle(name, context) && !isRootElement(elt))
+                            s = getNearestAncestorStyle(elt, name, specifiedStyleSets);
+                        else
+                            s = getInitialStyle(elt, name, context);
+                        if ((s != null) && doesStyleApply(elt, name, context))
+                            sss.merge(s);
+                    }
+                }
+            }
+            return sss;
+        }
+
+        private static Collection<Element> getReferencedStyleElements(Element elt) {
+            Collection<Element> elts = new java.util.ArrayList<Element>();
+            if (elt.hasAttribute("style")) {
+                String style = elt.getAttribute("style");
+                if (!style.isEmpty()) {
+                    Document document = elt.getOwnerDocument();
+                    String[] idrefs = style.split("\\s+");
+                    for (String idref : idrefs) {
+                        Element refStyle = document.getElementById(idref);
+                        if (refStyle != null)
+                            elts.add(refStyle);
+                    }
+                }
+            }
+            return elts;
+        }
+
+        private static Collection<Element> getChildStyleElements(Element elt) {
+            Collection<Element> elts = new java.util.ArrayList<Element>();
+            for (Node n = elt.getFirstChild(); n != null; n = n.getNextSibling()) {
+                if (n instanceof Element) {
+                    Element c = (Element) n;
+                    if (isStyleElement(c))
+                        elts.add(c);
+                }
+            }
+            return elts;
+        }
+
+        private static Collection<Element> getChildAnimationElements(Element elt) {
+            Collection<Element> elts = new java.util.ArrayList<Element>();
+            for (Node n = elt.getFirstChild(); n != null; n = n.getNextSibling()) {
+                if (n instanceof Element) {
+                    Element c = (Element) n;
+                    if (isAnimationElement(c))
+                        elts.add(c);
+                }
+            }
+            return elts;
+        }
+
+        private static Collection<StyleSet> getSpecifiedStyleSets(Collection<Element> elts, Map<Element, StyleSet> specifiedStyleSets) {
+            Collection<StyleSet> styleSets = new java.util.ArrayList<StyleSet>();
+            for (Element elt : elts) {
+                if (specifiedStyleSets.containsKey(elt))
+                    styleSets.add(specifiedStyleSets.get(elt));
+            }
+            return styleSets;
+        }
+
+        private static StyleSet getInlineStyles(Element elt) {
+            StyleSet styles = new StyleSet();
+            NamedNodeMap attrs = elt.getAttributes();
+            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+                Node node = attrs.item(i);
+                if (node instanceof Attr) {
+                    Attr a = (Attr) node;
+                    String nsUri = a.getNamespaceURI();
+                    if ((nsUri != null) && nsUri.equals(NAMESPACE_TT_STYLE)) {
+                        styles.merge(new StyleSpecification(new ComparableQName(a.getNamespaceURI(), a.getLocalName()), a.getValue()));
+                    }
+                }
+            }
+            return styles;
+        }
+
+        private static Collection<QName> getDefinedStyleNames(TransformerContext context) {
+            return context.getModel().getDefinedStyleNames();
+        }
+
+        private static boolean isInheritableStyle(QName styleName, TransformerContext context) {
+            return context.getModel().isInheritableStyle(styleName);
+        }
+
+        private static StyleSpecification getNearestAncestorStyle(Element elt, QName styleName, Map<Element, StyleSet> specifiedStyleSets) {
+            for (Node a = elt.getParentNode(); a != null; a = a.getParentNode()) {
+                if (a instanceof Element) {
+                    Element p = (Element) a;
+                    StyleSet ss = specifiedStyleSets.get(p);
+                    if (ss != null) {
+                        if (ss.containsKey(styleName))
+                            return ss.get(styleName);
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static StyleSpecification getInitialStyle(Element elt, QName styleName, TransformerContext context) {
+            String value = context.getModel().getInitialStyleValue(styleName);
+            if (value != null)
+                return new StyleSpecification(new ComparableQName(styleName), value);
+            else
+                return null;
+        }
+
+        private static void generateISDRegions(final Element isd, Element tt, final TransformerContext context) {
+            traverseElements(tt, null, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (isRegionElement(elt)) {
+                        generateISDRegion(isd, elt, context);
+                    }
+                    return true;
+                }
+            });
+        }
+
+        private static void generateISDRegion(Element isd, Element region, TransformerContext context) {
+            Element body = detachBody(region);
+            if (body != null) {
+                Document document = isd.getOwnerDocument();
+                Element isdRegion = document.createElementNS(NAMESPACE_ISD, "region");
+                copyRegionAttributes(isdRegion, region, context);
+                isdRegion.appendChild(body);
+                isd.appendChild(isdRegion);
+            }
+        }
+
+        private static void copyRegionAttributes(Element isdRegion, Element region, TransformerContext context) {
+            boolean retainLocations = (Boolean) context.getResourceState(TransformerContext.ResourceState.ttxRetainLocations.name());
+            NamedNodeMap attrs = region.getAttributes();
+            List<Attr> attrsNew = new java.util.ArrayList<Attr>();
+            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+                Node node = attrs.item(i);
+                Attr aNew = null;
+                if (node instanceof Attr) {
+                    Attr a = (Attr) node;
+                    String nsUri = a.getNamespaceURI();
+                    String localName = a.getLocalName();
+                    if (nsUri != null) {
+                        if (nsUri.equals(XML.xmlNamespace)) {
+                            if (localName.equals("id"))
+                                aNew = a;
+                        } else if (nsUri.equals(NAMESPACE_ISD)) {
+                            if (localName.equals("css"))
+                                aNew = a;
+                        } else if (nsUri.equals(Annotations.getNamespace())) {
+                            if (retainLocations) {
+                                if (localName.equals("loc"))
+                                    aNew = a;
+                            }
+                        }
+                    }
+                }
+                if (aNew != null)
+                    attrsNew.add(aNew);
+            }
+            for (Attr a : attrsNew)
+                isdRegion.setAttributeNS(a.getNamespaceURI(), a.getLocalName(), a.getValue());
+        }
+
+        private static Element detachBody(Element region) {
+            Element body = findChildElement(region, NAMESPACE_TT, "body");
+            if (body != null) {
+                assert body.getParentNode() == region;
+                region.removeChild(body);
+                return body;
+            } else
+                return null;
+        }
+
+        private static Element findChildElement(Element elt, String namespace, String name) {
+            for (Node n = elt.getFirstChild(); n != null; n = n.getNextSibling()) {
+                if (n instanceof Element) {
+                    Element c = (Element) n;
+                    String nsUri = c.getNamespaceURI();
+                    String localName = c.getLocalName();
+                    if ((namespace == null) ^ (nsUri == null))
+                        continue;
+                    else if (!localName.equals(name))
+                        continue;
+                    else
+                        return c;
+                }
+            }
+            return null;
+        }
+
+        private void pruneISDExclusions(Document document, final TransformerContext context) {
+            traverseElements(document, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (!maybeExcludeElement(elt, context))
+                        maybeExcludeAttributes(elt, context);
+                    return true;
+                }
+            });
+        }
+
+        private static boolean maybeExcludeElement(Element elt, TransformerContext context) {
+            boolean retainMetadata = (Boolean) context.getResourceState(TransformerContext.ResourceState.ttxRetainMetadata.name());
+            String nsUri = elt.getNamespaceURI();
+            boolean exclude = false;
+            if (nsUri.equals(NAMESPACE_TT_METADATA)) {
+                if (!retainMetadata)
+                    exclude = true;
+            }
+            if (exclude) {
+                excludeElement(elt);
+                return true;
+            } else
+                return false;
         }
 
         private static void excludeElement(Element elt) {
@@ -1032,7 +1470,8 @@ public class ISD {
             }
         }
 
-        private static boolean maybeExcludeAttributes(Element elt) {
+        private static boolean maybeExcludeAttributes(Element elt, TransformerContext context) {
+            boolean retainLocations = (Boolean) context.getResourceState(TransformerContext.ResourceState.ttxRetainLocations.name());
             String nsUriElt = elt.getNamespaceURI();
             NamedNodeMap attrs = elt.getAttributes();
             List<Attr> exclusions = new java.util.ArrayList<Attr>();
@@ -1053,10 +1492,15 @@ public class ISD {
                     } else if (nsUri.equals(NAMESPACE_TT_PARAMETER)) {
                         if (isDefaultParameterValue(a))
                             exclusions.add(a);
+                    } else if (nsUri.equals(NAMESPACE_TT_STYLE)) {
+                        if ((nsUriElt == null) || !nsUriElt.equals(NAMESPACE_ISD))
+                            exclusions.add(a);
                     } else if (nsUri.equals(NAMESPACE_ISD)) {
-                        exclusions.add(a);
+                        if (!localName.equals("css"))
+                            exclusions.add(a);
                     } else if (nsUri.equals(Annotations.getNamespace())) {
-                        exclusions.add(a);
+                        if (!retainLocations)
+                            exclusions.add(a);
                     } else if (nsUri.equals(XML.xmlnsNamespace)) {
                         if (value != null) {
                             if (value.equals(NAMESPACE_ISD)) {
@@ -1077,7 +1521,7 @@ public class ISD {
             return exclusions.size() > 0;
         } 
 
-        // TODO: use defaulting data from TTML1ParameterVerifier.parameterAccessorMap
+        // TBD - use defaulting data from TTML1ParameterVerifier.parameterAccessorMap
         private static boolean isDefaultParameterValue(Attr attr) {
             String localName = attr.getLocalName();
             String value = attr.getValue();
@@ -1121,6 +1565,8 @@ public class ISD {
             normalizedPrefixes.put(NAMESPACE_TT, "");
             normalizedPrefixes.put(NAMESPACE_TT_STYLE, "tts");
             normalizedPrefixes.put(NAMESPACE_TT_PARAMETER, "ttp");
+            normalizedPrefixes.put(NAMESPACE_ISD, "isd");
+            normalizedPrefixes.put(Annotations.getNamespace(), Annotations.getNamespacePrefix());
         }
 
         private void normalizeNamespaces(Element elt) {
@@ -1167,11 +1613,18 @@ public class ISD {
         }
 
         private void writeISDSequence(List<Document> isdDocuments, TransformerContext context, OutputStream out) {
-            if (outputDirectoryClean)
-                cleanOutputDirectory(outputDirectory, context);
-            int isdSequenceIndex = 0;
-            for (Document d : isdDocuments)
-                writeISD(d, isdSequenceIndex++, context);
+            boolean suppressOutput = (Boolean) context.getResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name());
+            if (!suppressOutput) {
+                if (outputDirectoryClean)
+                    cleanOutputDirectory(outputDirectory, context);
+                int isdSequenceIndex = 0;
+                for (Document d : isdDocuments)
+                    writeISD(d, isdSequenceIndex++, context);
+            } else {
+                Reporter reporter = context.getReporter();
+                reporter.logInfo(reporter.message("*KEY*", "Suppressing ''{0}'' transformer output serialization.", getName()));
+                context.setResourceState(TransformerContext.ResourceState.ttxOutput.name(), isdDocuments);
+            }
         }
 
         private static void cleanOutputDirectory(File directory, TransformerContext context) {
@@ -1236,6 +1689,248 @@ public class ISD {
                 return;
         }
 
+    }
+
+    public static class StyleSpecification implements Comparable<StyleSpecification> {
+
+        private ComparableQName name;
+        private String value;
+
+        public StyleSpecification(String nsUri, String localName, String value) {
+            this(new ComparableQName(nsUri, localName), value);
+        }
+        
+        public StyleSpecification(ComparableQName name, String value) {
+            assert name != null;
+            assert value != null;
+            this.name = name;
+            this.value = value;
+        }
+        
+        public ComparableQName getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public int compareTo(StyleSpecification other) {
+            int d = name.compareTo(other.name);
+            if (d != 0)
+                return d;
+            return value.compareTo(other.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int hc = 23;
+            hc = hc * 31 + name.hashCode();
+            hc = hc * 31 + value.hashCode();
+            return hc;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof StyleSpecification) {
+                StyleSpecification other = (StyleSpecification) o;
+                if (!name.equals(other.name))
+                    return false;
+                else if (!value.equals(other.value))
+                    return false;
+                else
+                    return true;
+            } else
+                return false;
+        }
+
+        @Override
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append('[');
+            sb.append(name);
+            sb.append(',');
+            sb.append(value);
+            sb.append(']');
+            return sb.toString();
+        }
+
+    }
+
+    public static class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> implements Comparable<StyleSet> {
+
+        private Map<ComparableQName, StyleSpecification> styles;
+        private String id = new String();
+
+        public StyleSet() {
+            this(null);
+        }
+
+        public StyleSet(StyleSet styles) {
+            if (styles == null)
+                this.styles = new java.util.TreeMap<ComparableQName,StyleSpecification>();
+            else
+                this.styles = new java.util.TreeMap<ComparableQName,StyleSpecification>(styles);
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void merge(StyleSet styles) {
+            merge(styles.styles);
+        }
+
+        public void merge(Map<ComparableQName, StyleSpecification> styles) {
+            this.styles.putAll(styles);
+        }
+
+        public void merge(StyleSpecification style) {
+            this.styles.put(style.getName(), style);
+        }
+
+        public StyleSet applicableStyles(Element elt, TransformerContext context) {
+            boolean containsInapplicableStyle = false;
+            for (StyleSpecification s : styles.values()) {
+                if (!doesStyleApply(elt, s.getName(), context)) {
+                    containsInapplicableStyle = true;
+                    break;
+                }
+            }
+            StyleSet ss;
+            if (!containsInapplicableStyle)
+                ss = this;
+            else {
+                ss = new StyleSet();
+                for (StyleSpecification s : styles.values()) {
+                    if (doesStyleApply(elt, s.getName(), context)) {
+                        ss.merge(s);
+                    }
+                }
+            }
+            return ss;
+        }
+
+        public String generateAttributes(Element elt) {
+            if (!id.isEmpty()) {
+                for (StyleSpecification s : styles.values()) {
+                    ComparableQName n = s.getName();
+                    elt.setAttributeNS(n.getNamespaceURI(), n.getLocalPart(), s.getValue());
+                }
+                elt.setAttributeNS(XML.xmlNamespace, "id", id);
+                return id;
+            } else
+                return null;
+        }
+
+        @Override
+        public Set<Map.Entry<ComparableQName, StyleSpecification>> entrySet() {
+            return styles.entrySet();
+        }
+
+        public int compareTo(StyleSet other) {
+            int d = compare(styles.values(),other.styles.values());
+            if (d != 0)
+                return d;
+            return id.compareTo(other.id);
+        }
+
+        private static final int compare(Collection<StyleSpecification> styles1, Collection<StyleSpecification> styles2) {
+            List<StyleSpecification> sl1 = new java.util.ArrayList<StyleSpecification>(styles1);
+            List<StyleSpecification> sl2 = new java.util.ArrayList<StyleSpecification>(styles2);
+            int nsl1 = sl1.size();
+            int nsl2 = sl2.size();
+            for (int i = 0, n = Math.min(nsl1, nsl2); i < n; ++i) {
+                StyleSpecification s1 = sl1.get(i);
+                StyleSpecification s2 = sl2.get(i);
+                int d = s1.compareTo(s2);
+                if (d != 0)
+                    return d;
+            }
+            if (nsl1 < nsl2)
+                return -1;
+            else if (nsl1 > nsl2)
+                return 1;
+            else
+                return 0;
+        }
+
+        @Override
+        public int hashCode() {
+            int hc = 23;
+            hc = hc * 31 + styles.hashCode();
+            hc = hc * 31 + ((id != null) ? id.hashCode() : 0);
+            return hc;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof StyleSpecification) {
+                StyleSet ss = (StyleSet) o;
+                if (!styles.equals(ss.styles))
+                    return false;
+                else if ((id == null) ^ (ss.id == null))
+                    return false;
+                else if (id == null)
+                    return true;
+                else
+                    return id.equals(ss.id);
+            } else
+                return false;
+        }
+
+        @Override
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append('{');
+            for (StyleSpecification ss : styles.values()) {
+                if (sb.length() > 1)
+                    sb.append(',');
+                sb.append(ss);
+            }
+            sb.append('}');
+            return sb.toString();
+        }
+
+    }
+
+    public static class ComparableQName extends QName implements Comparable<ComparableQName> {
+        
+        private static final long serialVersionUID = 6595331889303441857L;
+
+        public ComparableQName(QName name) {
+            this(name.getNamespaceURI(), name.getLocalPart());
+        }
+
+        public ComparableQName(String nsUri, String localPart) {
+            super(nsUri, localPart);
+        }
+
+        public int compareTo(ComparableQName other) {
+            String ns1 = getNamespaceURI();
+            String ns2 = other.getNamespaceURI();
+            if ((ns1 == null) && (ns2 != null))
+                return -1;
+            else if ((ns1 != null) && (ns2 == null))
+                return 1;
+            else if ((ns1 != null) && (ns2 != null)) {
+                int d = ns1.compareTo(ns2);
+                if (d != 0)
+                    return d;
+            }
+            String n1 = getLocalPart();
+            String n2 = other.getLocalPart();
+            return n1.compareTo(n2);
+        }
+
+    }
+
+    private static boolean doesStyleApply(Element elt, QName styleName, TransformerContext context) {
+        return context.getModel().doesStyleApply(new QName(elt.getNamespaceURI(), elt.getLocalName()), styleName);
     }
 
 }

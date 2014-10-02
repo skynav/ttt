@@ -114,6 +114,10 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return true;
     }
 
+    public boolean verifyPostTransform(Object content, Object contentTransformed, VerifierContext context) {
+        return true;
+    }
+
     private void setState(Object root, VerifierContext context) {
         // passed state
         this.context = context;

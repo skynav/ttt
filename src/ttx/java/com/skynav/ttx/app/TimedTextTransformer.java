@@ -55,8 +55,9 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     private static final Transformer defaultTransformer = Transformers.getDefaultTransformer();
 
     // banner text
-    private static final String banner =
-        "Timed Text Transformer (TTX) [" + Version.CURRENT + "] Copyright 2013 Skynav, Inc.";
+    private static final String title = "Timed Text Transformer (TTX) [" + Version.CURRENT + "]";
+    private static final String copyright = "Copyright 2013-14 Skynav, Inc.";
+    private static final String banner = title + " " + copyright;
 
     // option and usage info
     private static final String[][] shortOptionSpecifications = new String[][] {
@@ -109,9 +110,18 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
 
     @Override
     public void processResult(String[] args, URI uri, Object root) {
+        initializeResourceState();
         if (transformer != null) {
             transformer.transform(args, root, this, null);
         }
+    }
+
+    protected void initializeResourceState() {
+        setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), transformer);
+        setResourceState(TransformerContext.ResourceState.ttxOutput.name(), null);
+        setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.FALSE);
+        setResourceState(TransformerContext.ResourceState.ttxRetainMetadata.name(), Boolean.FALSE);
+        setResourceState(TransformerContext.ResourceState.ttxRetainLocations.name(), Boolean.FALSE);
     }
 
     @Override
@@ -160,15 +170,17 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     public String[] preProcessOptions(String[] args, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
-        for (int i = 0; i < args.length; ++i) {
-            String arg = args[i];
-            if (arg.indexOf("--") == 0) {
-                String option = arg.substring(2);
-                if (option.equals("transformer")) {
-                    if (i + 1 <= args.length) {
-                        Transformer transformerOptions = Transformers.getTransformer(args[++i]);
-                        if (transformerOptions != null)
-                            this.transformerOptions = transformerOptions;
+        if (doMergeTransformerOptions()) {
+            for (int i = 0; i < args.length; ++i) {
+                String arg = args[i];
+                if (arg.indexOf("--") == 0) {
+                    String option = arg.substring(2);
+                    if (option.equals("transformer")) {
+                        if (i + 1 <= args.length) {
+                            Transformer transformerOptions = Transformers.getTransformer(args[++i]);
+                            if (transformerOptions != null)
+                                this.transformerOptions = transformerOptions;
+                        }
                     }
                 }
             }
@@ -177,7 +189,25 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return args;
     }
 
+    protected boolean doMergeTransformerOptions() {
+        return true;
+    }
+
     private void populateMergedOptionMaps(Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
+        // configure for transformer options merging
+        TransformerOptions transformerOptions;
+        Collection<OptionSpecification> shortOptions;
+        Collection<OptionSpecification> longOptions;
+        if (doMergeTransformerOptions()) {
+            transformerOptions = this.transformerOptions;
+            shortOptions = TimedTextTransformer.shortOptions;
+            longOptions = TimedTextTransformer.longOptions;
+        } else {
+            transformerOptions = null;
+            shortOptions = null;
+            longOptions = null;
+        }
+        // short options
         Collection<OptionSpecification> mergedShortOptions = mergeOptions(baseShortOptions, shortOptions);
         if (transformerOptions != null)
             mergedShortOptions = mergeOptions(mergedShortOptions, transformerOptions.getShortOptionSpecs());
@@ -185,6 +215,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         for (OptionSpecification s : mergedShortOptions)
             mergedShortOptionsMap.put(s.getName(), s);
         this.mergedShortOptionsMap = mergedShortOptionsMap;
+        // long options
         Collection<OptionSpecification> mergedLongOptions = mergeOptions(baseLongOptions, longOptions);
         if (transformerOptions != null)
             mergedLongOptions = mergeOptions(mergedLongOptions, transformerOptions.getLongOptionSpecs());
@@ -232,6 +263,8 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
             transformer = Transformers.getTransformer(transformerName);
             if (transformer == null)
                 throw new InvalidOptionUsageException("transformer", "unknown transformer: " + transformerName);
+        } else if (getResourceState(TransformerContext.ResourceState.ttxTransformer.name()) != null) {
+            transformer = (Transformer) getResourceState(TransformerContext.ResourceState.ttxTransformer.name());
         } else
             transformer = Transformers.getDefaultTransformer();
         this.transformer = transformer;
@@ -244,6 +277,10 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     public void showBanner(PrintWriter out) {
+        showBanner(out, TimedTextTransformer.banner);
+    }
+
+    protected void showBanner(PrintWriter out, String banner) {
         verifier.showBanner(out, banner);
     }
 
@@ -259,11 +296,11 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
             showTransformers(out);
     }
 
-    private boolean hasLongOption(String option) {
+    protected boolean hasLongOption(String option) {
         return mergedLongOptionsMap.containsKey(option);
     }
 
-    private int parseLongOption(String args[], int index) {
+    protected int parseLongOption(String args[], int index) {
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
@@ -283,11 +320,11 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return index + 1;
     }
 
-    private boolean hasShortOption(String option) {
+    protected boolean hasShortOption(String option) {
         return mergedShortOptionsMap.containsKey(option);
     }
 
-    private int parseShortOption(String args[], int index) {
+    protected int parseShortOption(String args[], int index) {
         String option = args[index];
         assert option.length() == 2;
         option = option.substring(1);
@@ -314,6 +351,14 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
 
     public int run(String[] args) {
         return (verifier = new TimedTextVerifier()).run(args, this);
+    }
+
+    public int getResultCode(String uri) {
+        return verifier.getResultCode(uri);
+    }
+
+    public int getResultFlags(String uri) {
+        return verifier.getResultFlags(uri);
     }
 
     public static void main(String[] args) {

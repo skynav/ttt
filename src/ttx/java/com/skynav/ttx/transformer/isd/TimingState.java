@@ -95,7 +95,7 @@ public class TimingState {
     }
 
     public TimeCoordinate getEnd() {
-        if (beginExplicit.isSpecified())
+        if (endExplicit.isSpecified())
             return endExplicit;
         else
             return TimeCoordinate.UNRESOLVED;
@@ -320,8 +320,10 @@ public class TimingState {
             beginActive = TimeCoordinate.add(reference, b);
             // set active end
             endActive = TimeCoordinate.add(reference, e);
-            if (!endActive.isDefinite())
-                endActive = TimeCoordinate.add(reference, getActiveDuration());
+            if (!endActive.isDefinite()) {
+                assert beginActive.isDefinite();
+                endActive = TimeCoordinate.add(beginActive, getActiveDuration());
+            }
             // clip active end to parent's active end
             TimeCoordinate eParent = tsParent.getActiveEnd();
             if (!endActive.isDefinite() || endActive.compareTo(eParent) > 0)

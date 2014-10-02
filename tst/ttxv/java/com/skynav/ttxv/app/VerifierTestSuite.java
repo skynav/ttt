@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-14 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,35 +23,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier;
+package com.skynav.ttxv.app;
 
-import org.xml.sax.Locator;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import org.w3c.dom.Node;
-
-public interface SemanticsVerifier {
-
-    /**
-     * Find binding content element associated with infoset
-     * node, starting at root binding content element.
-     * @param root root binding content element
-     * @param node infoset node for which search is being made
-     * @return the binding object associated with node or null if not found
-     */
-    Object findBindingElement(Object root, Node node);
-
-    /**
-     * Verify semantics of content object.
-     * @param content a JAXB content object
-     * @param context verifier context
-     * @return true if validation succeeds without error
-     */
-    boolean verify(Object root, VerifierContext context);
-
-    boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context);
-
-    boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context);
-
-    boolean verifyPostTransform(Object content, Object contentTransformed, VerifierContext context);
-
+@RunWith(Suite.class)
+@SuiteClasses({
+    ValidTestCases.class,
+    InvalidTestCases.class
+})
+public class VerifierTestSuite {
 }
+

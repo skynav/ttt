@@ -27,6 +27,7 @@ package com.skynav.ttv.verifier.ttml;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -105,135 +106,192 @@ public class TTML1StyleVerifier implements StyleVerifier {
         return NAMESPACE;
     }
 
-    public static final QName extentAttributeName = new QName(NAMESPACE,"extent");
-    public static final QName originAttributeName = new QName(NAMESPACE,"origin");
-    private static Object[][] styleAccessorMap = new Object[][] {
+    public static final int APPLIES_TO_TT                       = 0x00000001;
+    public static final int APPLIES_TO_BODY                     = 0x00000002;
+    public static final int APPLIES_TO_DIV                      = 0x00000004;
+    public static final int APPLIES_TO_P                        = 0x00000008;
+    public static final int APPLIES_TO_SPAN                     = 0x00000010;
+    public static final int APPLIES_TO_BR                       = 0x00000020;
+    public static final int APPLIES_TO_CONTENT                  = (APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN|APPLIES_TO_BR);
+    public static final int APPLIES_TO_REGION                   = 0x00010000;
+
+    public static final QName extentAttributeName               = new QName(NAMESPACE,"extent");
+    public static final QName originAttributeName               = new QName(NAMESPACE,"origin");
+    private static Object[][] styleAccessorMap                  = new Object[][] {
         {
-            new QName(NAMESPACE,"backgroundColor"),        // attribute name
-            "BackgroundColor",                               // accessor method name suffix
+            new QName(NAMESPACE,"backgroundColor"),             // attribute name
+            "BackgroundColor",                                  // accessor method name suffix
             String.class,                                       // value type
             BackgroundColorVerifier.class,                      // specialized verifier
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION), // applicability
             Boolean.FALSE,                                      // padding permitted
-            "transparent",                                      // initial (default) value
+            Boolean.FALSE,                                      // inheritable
+            "transparent",                                      // initial value (as object suitable for setter)
+            null,                                               // initial value as string (or null if same as previous)
         },
         {
             new QName(NAMESPACE,"color"),
             "Color",
             String.class,
             ColorVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
+            Boolean.TRUE,
             "white",
+            null,
         },
         {
             new QName(NAMESPACE,"direction"),
             "Direction",
             Direction.class,
             DirectionVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
             Boolean.FALSE,
+            Boolean.TRUE,
             Direction.LTR,
+            Direction.LTR.value(),
         },
         {
             new QName(NAMESPACE,"display"),
             "Display",
             Display.class,
             DisplayVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             Display.AUTO,
+            Display.AUTO.value(),
         },
         {
             new QName(NAMESPACE,"displayAlign"),
             "DisplayAlign",
             DisplayAlign.class,
             DisplayAlignVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             DisplayAlign.BEFORE,
+            DisplayAlign.BEFORE.value(),
         },
         {
             extentAttributeName,
             "Extent",
             String.class,
             ExtentVerifier.class,
+            Integer.valueOf(APPLIES_TO_TT|APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             "auto",
+            null,
         },
         {
             new QName(NAMESPACE,"fontFamily"),
             "FontFamily",
             String.class,
             FontFamilyVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.TRUE,
             Boolean.TRUE,
             "default",
+            null,
         },
         {
             new QName(NAMESPACE,"fontSize"),
             "FontSize",
             String.class,
             FontSizeVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
+            Boolean.TRUE,
             "1c",
+            null,
         },
         {
             new QName(NAMESPACE,"fontStyle"),
             "FontStyle",
             FontStyle.class,
             FontStyleVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
+            Boolean.TRUE,
             FontStyle.NORMAL,
+            FontStyle.NORMAL.value(),
         },
         {
             new QName(NAMESPACE,"fontWeight"),
             "FontWeight",
             FontWeight.class,
             FontWeightVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
+            Boolean.TRUE,
             FontWeight.NORMAL,
+            FontWeight.NORMAL.value(),
         },
         {
             new QName(NAMESPACE,"lineHeight"),
             "LineHeight",
             String.class,
             LineHeightVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
             Boolean.FALSE,
+            Boolean.TRUE,
             "normal",
+            null,
         },
         {
             new QName(NAMESPACE,"opacity"),
             "Opacity",
             Float.class,
             OpacityVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             Float.valueOf(1.0F),
+            "1.0",
         },
         {
             new QName(NAMESPACE,"origin"),
             "Origin",
             String.class,
             OriginVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             "auto",
+            null
         },
         {
             new QName(NAMESPACE,"overflow"),
             "Overflow",
             Overflow.class,
             OverflowVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             Overflow.HIDDEN,
+            Overflow.HIDDEN.value(),
         },
         {
             new QName(NAMESPACE,"padding"),
             "Padding",
             String.class,
             PaddingVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             "0px",
+            null,
         },
         {
             new QName("","region"),
             "Region",
             Object.class,
             RegionAttributeVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT),
             Boolean.FALSE,
+            Boolean.FALSE,
+            null,
             null,
         },
         {
@@ -241,15 +299,21 @@ public class TTML1StyleVerifier implements StyleVerifier {
             "ShowBackground",
             ShowBackground.class,
             ShowBackgroundVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             ShowBackground.ALWAYS,
+            ShowBackground.ALWAYS.value(),
         },
         {
             new QName("","style"),
             "StyleAttribute",
             List.class,
             StyleAttributeVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT),
             Boolean.FALSE,
+            Boolean.FALSE,
+            null,
             null,
         },
         {
@@ -257,64 +321,88 @@ public class TTML1StyleVerifier implements StyleVerifier {
             "TextAlign",
             TextAlign.class,
             TextAlignVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
             Boolean.FALSE,
+            Boolean.TRUE,
             TextAlign.START,
+            TextAlign.START.value(),
         },
         {
             new QName(NAMESPACE,"textDecoration"),
             "TextDecoration",
             TextDecoration.class,
             TextDecorationVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
+            Boolean.TRUE,
             TextDecoration.NONE,
+            TextDecoration.NONE.value(),
         },
         {
             new QName(NAMESPACE,"textOutline"),
             "TextOutline",
             String.class,
             TextOutlineVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
+            Boolean.TRUE,
             "none",
+            null,
         },
         {
             new QName(NAMESPACE,"unicodeBidi"),
             "UnicodeBidi",
             UnicodeBidi.class,
             UnicodeBidiVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
             Boolean.FALSE,
             UnicodeBidi.NORMAL,
+            UnicodeBidi.NORMAL.value(),
         },
         {
             new QName(NAMESPACE,"visibility"),
             "Visibility",
             Visibility.class,
             VisibilityVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
             Boolean.FALSE,
+            Boolean.TRUE,
             Visibility.VISIBLE,
+            Visibility.VISIBLE.value(),
         },
         {
             new QName(NAMESPACE,"wrapOption"),
             "WrapOption",
             WrapOption.class,
             WrapOptionVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
+            Boolean.TRUE,
             WrapOption.WRAP,
+            WrapOption.WRAP.value(),
         },
         {
             new QName(NAMESPACE,"writingMode"),
             "WritingMode",
             WritingMode.class,
             WritingModeVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             WritingMode.LRTB,
+            WritingMode.LRTB.value(),
         },
         {
             new QName(NAMESPACE,"zIndex"),
             "ZIndex",
             String.class,
             ZIndexVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
             Boolean.FALSE,
             "auto",
+            null,
         },
     };
 
@@ -333,6 +421,40 @@ public class TTML1StyleVerifier implements StyleVerifier {
                 return name;
         }
         return null;
+    }
+
+    public Collection<QName> getDefinedStyleNames() {
+        return accessors.keySet();
+    }
+
+    public Collection<QName> getApplicableStyleNames(QName eltName) {
+        Collection<QName> names = new java.util.ArrayList<QName>();
+        for (Map.Entry<QName, StyleAccessor> e : accessors.entrySet()) {
+            if (e.getValue().doesStyleApply(eltName))
+                names.add(e.getKey());
+        }
+        return names;
+    }
+
+    public boolean isInheritableStyle(QName styleName) {
+        if (accessors.containsKey(styleName))
+            return accessors.get(styleName).isInheritable();
+        else
+            return false;
+    }
+
+    public String getInitialStyleValue(QName styleName) {
+        if (accessors.containsKey(styleName))
+            return accessors.get(styleName).initialValueAsString();
+        else
+            return null;
+    }
+
+    public boolean doesStyleApply(QName eltName, QName styleName) {
+        if (accessors.containsKey(styleName)) {
+            return accessors.get(styleName).doesStyleApply(eltName);
+        } else
+            return false;
     }
 
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
@@ -446,14 +568,20 @@ public class TTML1StyleVerifier implements StyleVerifier {
     private void populate(Model model) {
         Map<QName, StyleAccessor> accessors = new java.util.HashMap<QName, StyleAccessor>();
         for (Object[] styleAccessorEntry : styleAccessorMap) {
-            assert styleAccessorEntry.length >= 6;
+            assert styleAccessorEntry.length >= 9;
             QName styleName = (QName) styleAccessorEntry[0];
             String accessorName = (String) styleAccessorEntry[1];
             Class<?> valueClass = (Class<?>) styleAccessorEntry[2];
             Class<?> verifierClass = (Class<?>) styleAccessorEntry[3];
-            boolean paddingPermitted = ((Boolean) styleAccessorEntry[4]).booleanValue();
-            Object defaultValue = styleAccessorEntry[5];
-            accessors.put(styleName, new StyleAccessor(styleName, accessorName, valueClass, verifierClass, paddingPermitted, defaultValue));
+            int applicability = ((Integer) styleAccessorEntry[4]).intValue();
+            boolean paddingPermitted = ((Boolean) styleAccessorEntry[5]).booleanValue();
+            boolean inheritable = ((Boolean) styleAccessorEntry[6]).booleanValue();
+            Object initialValue = styleAccessorEntry[7];
+            String initialValueAsString = (String) styleAccessorEntry[8];
+            if (initialValueAsString == null)
+                initialValueAsString = (initialValue != null) ? initialValue.toString() : null;
+            accessors.put(styleName,
+                new StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString));
         }
         this.model = model;
         this.accessors = accessors;
@@ -468,11 +596,54 @@ public class TTML1StyleVerifier implements StyleVerifier {
         private String setterName;
         private Class<?> valueClass;
         private StyleValueVerifier verifier;
+        private int applicability;
         private boolean paddingPermitted;
-        private Object defaultValue;
+        private boolean inheritable;
+        private Object initialValue;
+        private String initialValueAsString;
 
-        public StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted, Object defaultValue) {
-            populate(styleName, accessorName, valueClass, verifierClass, paddingPermitted, defaultValue);
+        public StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
+                             int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
+            populate(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
+        }
+
+        public boolean doesStyleApply(QName eltName) {
+            String nsUri = eltName.getNamespaceURI();
+            if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT)) {
+                return false;
+            } else {
+                String localName = eltName.getLocalPart();
+                if (localName.equals("tt"))
+                    return (applicability & APPLIES_TO_TT) == APPLIES_TO_TT;
+                else if (localName.equals("body"))
+                    return (applicability & APPLIES_TO_BODY) == APPLIES_TO_BODY;
+                else if (localName.equals("div"))
+                    return (applicability & APPLIES_TO_DIV) == APPLIES_TO_DIV;
+                else if (localName.equals("p"))
+                    return (applicability & APPLIES_TO_P) == APPLIES_TO_P;
+                else if (localName.equals("span"))
+                    return (applicability & APPLIES_TO_SPAN) == APPLIES_TO_SPAN;
+                else if (localName.equals("br"))
+                    return (applicability & APPLIES_TO_BR) == APPLIES_TO_BR;
+                else if (localName.equals("region"))
+                    return (applicability & APPLIES_TO_REGION) == APPLIES_TO_REGION;
+                else
+                    return false;
+            }
+        }
+
+        public boolean isInheritable() {
+            return inheritable;
+        }
+
+        /*
+        public Object initialValue() {
+            return initialValue;
+        }
+        */
+
+        public String initialValueAsString() {
+            return initialValueAsString;
         }
 
         private boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
@@ -484,7 +655,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
                 else
                     success = verifier.verify(model, content, styleName, value, locator, context);
             } else
-                setStyleDefaultValue(content);
+                setStyleInitialValue(content);
             if (!success) {
                 if (value != null) {
                     if (styleName.equals(styleAttributeName)) {
@@ -524,14 +695,18 @@ public class TTML1StyleVerifier implements StyleVerifier {
             }
         }
 
-        private void populate(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted, Object defaultValue) {
+        private void populate(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
+                              int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
             this.styleName = styleName;
             this.getterName = "get" + accessorName;
             this.setterName = "set" + accessorName;
             this.valueClass = valueClass;
             this.verifier = createStyleValueVerifier(verifierClass);
             this.paddingPermitted = paddingPermitted;
-            this.defaultValue = defaultValue;
+            this.applicability = applicability;
+            this.inheritable = inheritable;
+            this.initialValue = initialValue;
+            this.initialValueAsString = initialValueAsString;
         }
 
         private Object getStyleValue(Object content) {
@@ -552,10 +727,10 @@ public class TTML1StyleVerifier implements StyleVerifier {
             }
         }
 
-        private void setStyleDefaultValue(Object content) {
+        private void setStyleInitialValue(Object content) {
             if (content instanceof Region) {
-                if (defaultValue != null)
-                    setStyleValue(content, defaultValue);
+                if (initialValue != null)
+                    setStyleValue(content, initialValue);
             }
         }
 

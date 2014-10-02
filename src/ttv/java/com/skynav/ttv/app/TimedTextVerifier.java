@@ -1833,7 +1833,7 @@ public class TimedTextVerifier implements VerifierContext {
         return reporter.getResourceErrors() == 0;
     }
 
-    private int verify(String uri) {
+    private int verify(String[] args, String uri, ResultProcessor resultProcessor) {
         Reporter reporter = getReporter();
         if (!reporter.isHidingLocation())
             reporter.logInfo(reporter.message("*KEY*", "Verifying '{'{0}'}'.", uri));
@@ -1848,6 +1848,8 @@ public class TimedTextVerifier implements VerifierContext {
                 break;
             if (!verifySemantics())
                 break;
+            if (resultProcessor != null)
+                resultProcessor.processResult(args, resourceUri, rootBinding);
         } while (false);
         int rv = rvValue();
         reporter.logInfo(reporter.message("*KEY*", "Verification {0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
@@ -1968,11 +1970,9 @@ public class TimedTextVerifier implements VerifierContext {
         int numFailure = 0;
         int numSuccess = 0;
         for (String uri : nonOptionArgs) {
-            switch (rvCode(verify(uri))) {
+            switch (rvCode(verify(args, uri, resultProcessor))) {
             case RV_PASS:
                 ++numSuccess;
-                if (resultProcessor != null)
-                    resultProcessor.processResult(args, resourceUri, rootBinding);
                 break;
             case RV_FAIL:
                 ++numFailure;

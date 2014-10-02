@@ -31,7 +31,9 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
@@ -39,6 +41,7 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.netflix.NFLXTT;
+import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
@@ -46,7 +49,9 @@ import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.TTML1ParameterVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier;
@@ -445,4 +450,95 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         return !failed;
     }
 
+    @Override
+    public boolean verifyPostTransform(Object root, Object contentTransformed, VerifierContext context) {
+        boolean failed = false;
+        if (contentTransformed != null) {
+            if (contentTransformed instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<Document> isdDocuments = (List<Document>) contentTransformed;
+                Reporter reporter = context.getReporter();
+                reporter.logInfo(reporter.message("*KEY*", "Verifying post-transform semantics phase {0} using ''{1}'' model...", 5, getModel().getName()));
+                for (Document isd : isdDocuments) {
+                    if (!verifyPostTransform(root, isd, context))
+                        failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    private boolean verifyPostTransform(Object root, Document isd, VerifierContext context) {
+        boolean failed = false;
+        int maxRegions = NFLXTT.Constants.MAX_REGIONS;
+        List<Element> regions = getISDRegionElements(isd);
+        if (regions.size() > maxRegions) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(getLocator(root),
+                "*KEY*", "Maximum number of regions exceeded in ISD instance, expected no more than {0}, got {1}.", maxRegions, regions.size()));
+            failed = true;
+        }
+        return !failed;
+    }
+
+    private static List<Element> getISDRegionElements(Document doc) {
+        final List<Element> regions = new java.util.ArrayList<Element>();
+        traverseElements(doc, new PreVisitor() {
+            public boolean visit(Object content, Object parent, Visitor.Order order) {
+                assert content instanceof Element;
+                Element elt = (Element) content;
+                if (isISDRegionElement(elt))
+                    regions.add(elt);
+                return true;
+            }
+        });
+        return regions;
+    }
+
+    private static boolean isISDRegionElement(Element elt) {
+        return isISDElement(elt, "region");
+    }
+
+    private static boolean isISDElement(Element elt, String localName) {
+        if (elt != null) {
+            String nsUri = elt.getNamespaceURI();
+            if ((nsUri == null) || !nsUri.equals(TTML1.Constants.NAMESPACE_TT_ISD))
+                return false;
+            else {
+                if (elt.getLocalName().equals(localName))
+                    return true;
+                else
+                    return false;
+            }
+        } else
+            return false;
+    }
+
+    private static void traverseElements(Document document, Visitor v) {
+        Element root = document.getDocumentElement();
+        if (root != null)
+            traverseElements(root, null, v);
+    }
+
+    private static void traverseElements(Element elt, Element parent, Visitor v) {
+        if (!v.preVisit(elt, parent))
+            return;
+        // extract stable (non-live) list of children in case visitors mutate child list
+        List<Element> children = new java.util.ArrayList<Element>();
+        for (Node node = elt.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (node instanceof Element)
+                children.add((Element) node);
+        }
+        // traverse stable (non-live) list of children
+        for (Element child : children) {
+            traverseElements(child, elt, v);
+        }
+        if (!v.postVisit(elt, parent))
+            return;
+    }
+
 }
+
+
+
+

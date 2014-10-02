@@ -40,6 +40,11 @@
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ttx/java</locationURI>
 		</link>
+		<link>
+			<name>ttxv</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/src/ttxv/java</locationURI>
+		</link>
 	</linkedResources>
 	<filteredResources>
 		<filter>

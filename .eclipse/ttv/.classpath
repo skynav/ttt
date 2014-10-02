@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="ttv"/>
 	<classpathentry kind="src" path="ttx"/>
+	<classpathentry kind="src" path="ttxv"/>
 	<classpathentry kind="src" path="ttv-generated"/>
 	<classpathentry kind="src" path="schemas"/>
 	<classpathentry kind="src" path="ttv-test"/>

@@ -27,4 +27,14 @@ package com.skynav.ttx.transformer;
 
 import com.skynav.ttv.verifier.VerifierContext;
 
-public interface TransformerContext extends VerifierContext {}
+public interface TransformerContext extends VerifierContext {
+
+    public enum ResourceState {
+        ttxTransformer,
+        ttxOutput,
+        ttxSuppressOutputSerialization,
+        ttxRetainMetadata,
+        ttxRetainLocations
+    };
+
+}

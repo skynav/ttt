@@ -27,6 +27,7 @@ package com.skynav.ttv.model.ttml;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,6 +75,8 @@ public class TTML1 {
         public static final String NAMESPACE_TT_PROFILE = "http://www.w3.org/ns/ttml/profile/";
         public static final String NAMESPACE_TT_FEATURE = "http://www.w3.org/ns/ttml/feature/";
         public static final String NAMESPACE_TT_EXTENSION = "http://www.w3.org/ns/ttml/extension/";
+        public static final String NAMESPACE_TT_ISD = "http://www.w3.org/ns/ttml#isd";
+
         public static final String XSD_TT = "xsd/ttml1/ttml1.xsd";
 
         public static final String PROFILE_TT_PRESENTATION = "dfxp-presentation";
@@ -296,6 +299,21 @@ public class TTML1 {
         public static final QName divElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createDiv(new Division()).getName();
         protected boolean isTTDivElement(QName name) {
             return name.equals(divElementName);
+        }
+        public Collection<QName> getDefinedStyleNames() {
+            return getStyleVerifier().getDefinedStyleNames();
+        }
+        public Collection<QName> getApplicableStyleNames(QName eltName) {
+            return getStyleVerifier().getApplicableStyleNames(eltName);
+        }
+        public boolean isInheritableStyle(QName styleName) {
+            return getStyleVerifier().isInheritableStyle(styleName);
+        }
+        public String getInitialStyleValue(QName styleName) {
+            return getStyleVerifier().getInitialStyleValue(styleName);
+        }
+        public boolean doesStyleApply(QName eltName, QName styleName) {
+            return getStyleVerifier().doesStyleApply(eltName, styleName);
         }
         private SemanticsVerifier semanticsVerifier;
         public SemanticsVerifier getSemanticsVerifier() {

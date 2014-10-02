@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2014 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,35 +23,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.verifier;
+package com.skynav.ttxv.app;
 
-import org.xml.sax.Locator;
+public class Version {
+    public static final String CURRENT = "1.0.0dev";
 
-import org.w3c.dom.Node;
+    public static String getVersion() {
+        return CURRENT;
+    }
 
-public interface SemanticsVerifier {
-
-    /**
-     * Find binding content element associated with infoset
-     * node, starting at root binding content element.
-     * @param root root binding content element
-     * @param node infoset node for which search is being made
-     * @return the binding object associated with node or null if not found
-     */
-    Object findBindingElement(Object root, Node node);
-
-    /**
-     * Verify semantics of content object.
-     * @param content a JAXB content object
-     * @param context verifier context
-     * @return true if validation succeeds without error
-     */
-    boolean verify(Object root, VerifierContext context);
-
-    boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context);
-
-    boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context);
-
-    boolean verifyPostTransform(Object content, Object contentTransformed, VerifierContext context);
-
+    public static void main(String[] args) {
+        System.out.println(getVersion());
+    }
 }
+
+
+
+
