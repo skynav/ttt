@@ -1,6 +1,6 @@
 # cap2tt
 
-Lambda CAP to TtML Converter
+Lambda CAP to TTML Converter
 
 ## Building
 
