@@ -1,0 +1,16 @@
+# build related
+bld
+build.properties*
+
+# eclipse related
+.eclipse/.metadata
+.eclipse/RemoteSystemsTempFiles
+.eclipse/Servers
+.eclipse/cap2tt/bin
+
+# other
+.DS_Store
+*~
+*.orig
+*.bak
+tmp
