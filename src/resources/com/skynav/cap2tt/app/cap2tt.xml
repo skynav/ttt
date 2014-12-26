@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cap2tt version="1" xmlns="http://skynav.com/ns/cap2tt">
+<head xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+<styling>
+<initial tts:fontSize="4vh"/>
+<initial tts:lineHeight="5vh"/>
+<initial tts:showBackground="whenActive"/>
+</styling>
+<layout>
+<region xml:id="横下" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>
+<region xml:id="横上" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center top 5vh"/>
+<region xml:id="横適" tts:writingMode="lrtb" tts:extent="80vw 80vh" tts:position="center" tts:displayAlign="justify"/>
+<region xml:id="横中" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center"/>
+<region xml:id="縦右" tts:writingMode="tbrl" tts:extent="15vw 80vh" tts:position="center right 5vh"/>
+<region xml:id="縦左" tts:writingMode="tbrl" tts:extent="15vw 80vh" tts:position="center left 5vh"/>
+<region xml:id="縦適" tts:writingMode="tbrl" tts:extent="80vw 80vh" tts:position="center" tts:displayAlign="justify"/>
+<region xml:id="横中" tts:writingMode="tbrl" tts:extent="15vw 80vh" tts:position="center"/>
+</layout>
+</head>
+</cap2tt>
