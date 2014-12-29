@@ -350,7 +350,6 @@
       <arg value="Shift_JIS"/>
       <arg value="--hide-resource-path"/>
       <arg value="--output-indent"/>
-      <arg value="--metadata-creation"/>
       <arg value="${cap2tt.test.resources.source.dir}/com/skynav/cap2tt/samples/sample-001.cap"/>
     </java>
   </sequential>

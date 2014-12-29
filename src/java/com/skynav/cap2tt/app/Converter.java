@@ -34,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -50,8 +51,10 @@ import java.text.Annotation;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.text.CharacterIterator;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -96,26 +99,37 @@ import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
+import com.skynav.ttv.util.ComparableQName;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Namespaces;
+import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Reporters;
+import com.skynav.ttv.util.StyleSet;
+import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.util.TextTransformer;
+import com.skynav.ttv.util.Traverse;
+import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.Timing;
+import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Sniffer;
+import com.skynav.xml.helpers.XML;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.LocatorImpl;
+
+import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
 
 public class Converter implements ConverterContext {
 
@@ -133,10 +147,19 @@ public class Converter implements ConverterContext {
     private static final String DEFAULT_INPUT_ENCODING          = "UTF-8";
     private static final String DEFAULT_OUTPUT_ENCODING         = "UTF-8";
 
+    // uri related constants
+    private static final String uriFileDescriptorScheme         = "fd";
+    private static final String uriFileDescriptorStandardIn     = "stdin";
+    private static final String uriFileDescriptorStandardOut    = "stdout";
+    private static final String uriStandardInput                = uriFileDescriptorScheme + ":" + uriFileDescriptorStandardIn;
+    private static final String uriStandardOutput               = uriFileDescriptorScheme + ":" + uriFileDescriptorStandardOut;
+    private static final String uriFileScheme                   = "file";
+
     // miscelaneous defaults
-    private static final String defaultReporterFileEncoding = Reporters.getDefaultEncoding();
+    private static final String defaultReporterFileEncoding     = Reporters.getDefaultEncoding();
     private static Charset defaultEncoding;
     private static Charset defaultOutputEncoding;
+    private static final String defaultOutputFileNamePattern    = "tt{0,number,0000}.xml";
 
     static {
         try {
@@ -152,22 +175,27 @@ public class Converter implements ConverterContext {
     }
 
     // element names
-    private static final QName ttBreakEltName = new QName(TTML1.Constants.NAMESPACE_TT, "br");
-    private static final QName ttHeadEltName = new QName(TTML1.Constants.NAMESPACE_TT, "head");
-    private static final QName ttParagraphEltName = new QName(TTML1.Constants.NAMESPACE_TT, "p");
-    private static final QName ttSpanEltName = new QName(TTML1.Constants.NAMESPACE_TT, "span");
-    private static final QName ttmItemEltName = new QName(TTML1.Constants.NAMESPACE_TT_METADATA, "item");
+    private static final QName ttBreakEltName = new QName(NAMESPACE_TT, "br");
+    private static final QName ttHeadEltName = new QName(NAMESPACE_TT, "head");
+    private static final QName ttInitialEltName = new QName(NAMESPACE_TT, "initial");
+    private static final QName ttParagraphEltName = new QName(NAMESPACE_TT, "p");
+    private static final QName ttRegionEltName = new QName(NAMESPACE_TT, "region");
+    private static final QName ttSpanEltName = new QName(NAMESPACE_TT, "span");
+    private static final QName ttStylingEltName = new QName(NAMESPACE_TT, "styling");
+    private static final QName ttmItemEltName = new QName(NAMESPACE_TT_METADATA, "item");
 
-    // attribute names
+    // ttml1 attribute names
     private static final QName regionAttrName = new QName("", "region");
-    private static final QName ttsFontFamilyAttrName = new QName(TTML1.Constants.NAMESPACE_TT_STYLE, "fontFamily");
-    private static final QName ttsFontKerningAttrName = new QName(TTML1.Constants.NAMESPACE_TT_STYLE, "fontKerning");
-    private static final QName ttsFontShearAttrName = new QName(TTML1.Constants.NAMESPACE_TT_STYLE, "fontShear");
-    private static final QName ttsFontSizeAttrName = new QName(TTML1.Constants.NAMESPACE_TT_STYLE, "fontSize");
-    private static final QName ttsFontStyleAttrName = new QName(TTML1.Constants.NAMESPACE_TT_STYLE, "fontStyle");
-    private static final QName ttsRubyAttrName = new QName(TTML1.Constants.NAMESPACE_TT_STYLE, "ruby");
-    private static final QName ttsTextAlignAttrName = new QName(TTML1.Constants.NAMESPACE_TT_STYLE, "textAlign");
-    private static final QName ttsTextEmphasisStyleAttrName = new QName(TTML1.Constants.NAMESPACE_TT_STYLE, "textEmphasisStyle");
+    private static final QName ttsFontFamilyAttrName = new QName(NAMESPACE_TT_STYLE, "fontFamily");
+    private static final QName ttsFontSizeAttrName = new QName(NAMESPACE_TT_STYLE, "fontSize");
+    private static final QName ttsFontStyleAttrName = new QName(NAMESPACE_TT_STYLE, "fontStyle");
+    private static final QName ttsTextAlignAttrName = new QName(NAMESPACE_TT_STYLE, "textAlign");
+
+    // ttml2 attribute names 
+    private static final QName ttsFontKerningAttrName = new QName(NAMESPACE_TT_STYLE, "fontKerning");
+    private static final QName ttsFontShearAttrName = new QName(NAMESPACE_TT_STYLE, "fontShear");
+    private static final QName ttsRubyAttrName = new QName(NAMESPACE_TT_STYLE, "ruby");
+    private static final QName ttsTextEmphasisStyleAttrName = new QName(NAMESPACE_TT_STYLE, "textEmphasisStyle");
 
     // banner text
     private static final String title = "CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
@@ -195,10 +223,12 @@ public class Converter implements ConverterContext {
     }
 
     private static final String[][] longOptionSpecifications = new String[][] {
+        { "add-creation-metadata",      "[BOOLEAN]","add creation metadata (default: see configuration)" },
         { "config",                     "FILE",     "specify path to configuration file" },
         { "debug",                      "",         "enable debug output (may be specified multiple times to increase debug level)" },
         { "debug-exceptions",           "",         "enable stack traces on exceptions (implies --debug)" },
         { "debug-level",                "LEVEL",    "enable debug output at specified level (default: 0)" },
+        { "default-region",             "ID",       "specify identifier of default region (default: undefined)" },
         { "disable-warnings",           "",         "disable warnings (both hide and don't count warnings)" },
         { "expect-errors",              "COUNT",    "expect count errors or -1 meaning unspecified expectation (default: -1)" },
         { "expect-warnings",            "COUNT",    "expect count warnings or -1 meaning unspecified expectation (default: -1)" },
@@ -209,13 +239,13 @@ public class Converter implements ConverterContext {
         { "hide-warnings",              "",         "hide warnings (but count them)" },
         { "hide-resource-location",     "",         "hide resource location (default: show)" },
         { "hide-resource-path",         "",         "hide resource path (default: show)" },
-        { "merge-styles",               "",         "merge styles (default: don't merge)" },
-        { "metadata-creation",          "",         "add creation metadata (default: don't add)" },
+        { "merge-styles",               "[BOOLEAN]","merge styles (default: see configuration)" },
         { "no-warn-on",                 "TOKEN",    "disable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
         { "no-verbose",                 "",         "disable verbose output (resets verbosity level to 0)" },
-        { "output-directory",           "DIRECTORY","specify path to directory where ISD output is to be written" },
-        { "output-encoding",            "ENCODING", "specify character encoding of ISD output (default: " + defaultOutputEncoding.name() + ")" },
-        { "output-indent",              "",         "indent ISD output (default: no indent)" },
+        { "output-directory",           "DIRECTORY","specify path to directory where TTML output is to be written" },
+        { "output-encoding",            "ENCODING", "specify character encoding of TTML output (default: " + defaultOutputEncoding.name() + ")" },
+        { "output-file-pattern",        "PATTERN",  "specify TTML output file name pattern" },
+        { "output-indent",              "",         "indent TTML output (default: no indent)" },
         { "quiet",                      "",         "don't show banner" },
         { "reporter",                   "REPORTER", "specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
              Reporters.getDefaultReporterName()+ ")" },
@@ -226,6 +256,8 @@ public class Converter implements ConverterContext {
         { "show-resource-location",     "",         "show resource location (default: show)" },
         { "show-resource-path",         "",         "show resource path (default: show)" },
         { "show-warning-tokens",        "",         "show warning tokens (use with --verbose to show more details)" },
+        { "style-id-pattern",           "PATTERN",  "specify style identifier format pattern (default: s{0})" },
+        { "style-id-sequence-start",    "NUMBER",   "specify style identifier sequence starting value, must be non-negative (default: 0)" },
         { "verbose",                    "",         "enable verbose output (may be specified multiple times to increase verbosity level)" },
         { "treat-warning-as-error",     "",         "treat warning as error (overrides --disable-warnings)" },
         { "warn-on",                    "TOKEN",    "enable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
@@ -334,8 +366,12 @@ public class Converter implements ConverterContext {
         }
     }
 
+    protected enum GenerationIndex {
+        styleSetIndex;
+    };
+
     // options state
-    private String configFilePath;
+    private String defaultRegion;
     private String expectedErrors;
     private String expectedWarnings;
     private String externalDuration;
@@ -347,13 +383,15 @@ public class Converter implements ConverterContext {
     private boolean metadataCreation;
     private String outputDirectoryPath;
     private String outputEncodingName;
+    private String outputFileNamePattern;
     private boolean outputIndent;
     private boolean quiet;
     private boolean showRepository;
     private boolean showWarningTokens;
+    private String styleIdPattern;
+    private int styleIdSequenceStart;
 
     // derived option state
-    private File configFile;
     private Charset forceEncoding;
     private File outputDirectory;
     private Charset outputEncoding;
@@ -367,11 +405,11 @@ public class Converter implements ConverterContext {
     private Reporter reporter;
     private Map<String,Results> results = new java.util.HashMap<String,Results>();
     private Configuration configuration;
+    private int outputFileSequence;
 
     // per-resource processing state
     private String resourceUriString;
     private Map<String,Object> resourceState;
-    @SuppressWarnings("unused")
     private URI resourceUri;
     private Charset resourceEncoding;
     private ByteBuffer resourceBufferRaw;
@@ -380,6 +418,7 @@ public class Converter implements ConverterContext {
 
     // per-resource parsing state
     private List<Screen> screens;
+    private int[] indices; 
 
     public Converter() {
         this(null, null, null, false, null);
@@ -506,10 +545,12 @@ public class Converter implements ConverterContext {
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("config")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            configFilePath = args[++index];
+        if (option.equals("add-creation-metadata")) {
+            Boolean b = Boolean.TRUE;
+            if ((index + 1 < args.length) && isBoolean(args[index + 1])) {
+                b = Boolean.valueOf(args[++index]);
+            }
+            metadataCreation = b.booleanValue();
         } else if (option.equals("debug")) {
             int debug = reporter.getDebugLevel();
             if (debug < 1)
@@ -535,6 +576,10 @@ public class Converter implements ConverterContext {
             int debug = reporter.getDebugLevel();
             if (debugNew > debug)
                 reporter.setDebugLevel(debugNew);
+        } else if (option.equals("default-region")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultRegion = args[++index];
         } else if (option.equals("disable-warnings")) {
             reporter.disableWarnings();
         } else if (option.equals("expect-errors")) {
@@ -570,9 +615,11 @@ public class Converter implements ConverterContext {
         } else if (option.equals("hide-warnings")) {
             reporter.hideWarnings();
         } else if (option.equals("merge-styles")) {
-            mergeStyles = true;
-        } else if (option.equals("metadata-creation")) {
-            metadataCreation = true;
+            Boolean b = Boolean.TRUE;
+            if ((index + 1 < args.length) && isBoolean(args[index + 1])) {
+                b = parseBoolean(args[++index]);
+            }
+            mergeStyles = b.booleanValue();
         } else if (option.equals("no-warn-on")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -590,6 +637,10 @@ public class Converter implements ConverterContext {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             outputEncodingName = args[++index];
+        } else if (option.equals("output-file-pattern")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            outputFileNamePattern = args[++index];
         } else if (option.equals("output-indent")) {
             outputIndent = true;
         } else if (option.equals("quiet")) {
@@ -602,6 +653,22 @@ public class Converter implements ConverterContext {
             reporter.showPath();
         } else if (option.equals("show-warning-tokens")) {
             showWarningTokens = true;
+        } else if (option.equals("style-id-pattern")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            styleIdPattern = args[++index];
+        } else if (option.equals("style-id-sequence-start")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            String optionArgument = args[++index];
+            try {
+                int number = Integer.parseInt(optionArgument);
+                if (number < 0)
+                    throw new NumberFormatException();
+                styleIdSequenceStart = number;
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException("--" + option, "number '" + optionArgument + "' is not a non-negative integer");
+            }
         } else if (option.equals("treat-warning-as-error")) {
             reporter.setTreatWarningAsError(true);
         } else if (option.equals("verbose")) {
@@ -618,6 +685,30 @@ public class Converter implements ConverterContext {
         } else
             throw new UnknownOptionException("--" + option);
         return index + 1;
+    }
+
+    private static boolean isBoolean(String s) {
+        String sLower = s.toLowerCase();
+        if (sLower.equals("true"))
+            return true;
+        else if (sLower.equals("1"))
+            return true;
+        else if (sLower.equals("false"))
+            return true;
+        else if (sLower.equals("0"))
+            return true;
+        else
+            return false;
+    }
+
+    private static Boolean parseBoolean(String s) {
+        String sLower = s.toLowerCase();
+        if (sLower.equals("1"))
+            return Boolean.TRUE;
+        else if (sLower.equals("0"))
+            return Boolean.FALSE;
+        else
+            return Boolean.valueOf(s);
     }
 
     private int parseShortOption(String args[], int index, OptionProcessor optionProcessor) {
@@ -646,18 +737,17 @@ public class Converter implements ConverterContext {
         return index + 1;
     }
 
+    private void processConfigurationOptions(Map<String,String> options, OptionProcessor optionProcessor) {
+        for (Map.Entry<String,String> e : options.entrySet()) {
+            String[] args = new String[] { "--" + e.getKey(), e.getValue() };
+            int index = 0;
+            index = parseLongOption(args, index, optionProcessor);
+            assert index == 2;
+        }
+    }
+
     private void processDerivedOptions(OptionProcessor optionProcessor) {
         Reporter reporter = getReporter();
-        File configFile;
-        if (configFilePath != null) {
-            configFile = new File(configFilePath);
-            if (!configFile.exists())
-                throw new InvalidOptionUsageException("config", "configuration does not exist: " + configFilePath);
-            else if (!configFile.isFile())
-                throw new InvalidOptionUsageException("config", "not a file: " + configFilePath);
-        } else
-            configFile = null;
-        this.configFile = configFile;
         if (externalFrameRate != null) {
             try {
                 parsedExternalFrameRate = Double.parseDouble(externalFrameRate);
@@ -730,11 +820,16 @@ public class Converter implements ConverterContext {
         if (outputEncoding == null)
             outputEncoding = defaultOutputEncoding;
         this.outputEncoding = outputEncoding;
+        String outputFileNamePattern = this.outputFileNamePattern;
+        if (outputFileNamePattern == null)
+            outputFileNamePattern = defaultOutputFileNamePattern;
+        this.outputFileNamePattern = outputFileNamePattern;
         if (optionProcessor != null)
             optionProcessor.processDerivedOptions();
     }
 
     private List<String> processOptionsAndArgs(List<String> nonOptionArgs, OptionProcessor optionProcessor) {
+        processConfigurationOptions(configuration.getOptions(), optionProcessor);
         processDerivedOptions(optionProcessor);
         if (optionProcessor != null)
             nonOptionArgs = optionProcessor.processNonOptionArguments(nonOptionArgs);
@@ -743,6 +838,7 @@ public class Converter implements ConverterContext {
 
     private String[] preProcessOptions(String[] args, OptionProcessor optionProcessor) {
         args = processReporterOptions(args);
+        args = processConfigurationOptions(args);
         if (optionProcessor != null)
             args = optionProcessor.preProcessOptions(args, shortOptions, longOptions);
         return args;
@@ -789,12 +885,65 @@ public class Converter implements ConverterContext {
         return skippedArgs.toArray(new String[skippedArgs.size()]);
     }
 
+    private String[] processConfigurationOptions(String[] args) {
+        String configFilePath = null;
+        List<String> skippedArgs = new java.util.ArrayList<String>();
+        for (int i = 0; i < args.length; ++i) {
+            String arg = args[i];
+            if (arg.indexOf("--") == 0) {
+                String option = arg.substring(2);
+                if (option.equals("config")) {
+                    if (i + 1 >= args.length)
+                        throw new MissingOptionArgumentException("--" + option);
+                    configFilePath = args[i + 1];
+                    ++i;
+                } else {
+                    skippedArgs.add(arg);
+                }
+            } else
+                skippedArgs.add(arg);
+        }
+        configuration = loadConfiguration(configFilePath);
+        return skippedArgs.toArray(new String[skippedArgs.size()]);
+    }
+
+    private Configuration loadConfiguration(String configFilePath) {
+        File configFile;
+        if (configFilePath != null) {
+            configFile = new File(configFilePath);
+            if (!configFile.exists())
+                throw new InvalidOptionUsageException("config", "configuration does not exist: " + configFilePath);
+            else if (!configFile.isFile())
+                throw new InvalidOptionUsageException("config", "not a file: " + configFilePath);
+        } else
+            configFile = null;
+        return loadConfiguration(configFile);
+    }
+
+    private Configuration loadConfiguration(File configFile) {
+        Reporter reporter = getReporter();
+        try {
+            Configuration c;
+            if (configFile != null)
+                c = Configuration.fromFile(configFile);
+            else
+                c = Configuration.fromDefault();
+            return c;
+        } catch (IOException e) {
+            reporter.logError(e);
+            return null;
+        }
+    }
+
     private List<String> parseArgs(String[] args, OptionProcessor optionProcessor) {
         List<String> nonOptionArgs = new java.util.ArrayList<String>();
         int nonOptionIndex = -1;
         for (int i = 0; i < args.length;) {
             String arg = args[i];
-            if (arg.charAt(0) == '-') {
+            if (arg.equals("--")) {
+                nonOptionIndex = i + 1;
+                break;
+            } else if (arg.charAt(0) == '-') {
                 switch (arg.charAt(1)) {
                 case '-':
                     i = parseLongOption(args, i, optionProcessor);
@@ -814,6 +963,8 @@ public class Converter implements ConverterContext {
         if (nonOptionIndex >= 0) {
             for (int i = nonOptionIndex; i < args.length; ++i)
                 nonOptionArgs.add(args[i]);
+            if (nonOptionArgs.isEmpty())
+                nonOptionArgs.add(uriStandardInput);
         }
         return processOptionsAndArgs(nonOptionArgs, optionProcessor);
     }
@@ -939,20 +1090,6 @@ public class Converter implements ConverterContext {
         getShowOutput().println(sb.toString());
     }
 
-    private void loadConfiguration() {
-        Reporter reporter = getReporter();
-        try {
-            Configuration c;
-            if (configFile != null)
-                c = Configuration.fromFile(configFile);
-            else
-                c = Configuration.fromDefault();
-            this.configuration = c;
-        } catch (IOException e) {
-            reporter.logError(e);
-        }
-    }
-
     private URI getCWDAsURI() {
         return new File(".").toURI();
     }
@@ -984,7 +1121,7 @@ public class Converter implements ConverterContext {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         InputStream is = null;
         try {
-            is = uri.toURL().openStream();
+            is = getInputStream(uri);
             byte[] buffer = new byte[1024];
             int nb;
             while ((nb = is.read(buffer)) >= 0) {
@@ -998,6 +1135,49 @@ public class Converter implements ConverterContext {
                 try { is.close(); } catch (Exception e) {}
         }
         return (os != null) ? ByteBuffer.wrap(os.toByteArray()) : null;
+    }
+
+    private InputStream getInputStream(URI uri) throws IOException {
+        if (isStandardInput(uri))
+            return System.in;
+        else
+            return uri.toURL().openStream();
+    }
+
+    private boolean isStandardInput(URI uri) {
+        String scheme = uri.getScheme();
+        if ((scheme == null) || !scheme.equals(uriFileDescriptorScheme))
+            return false;
+        String schemeSpecificPart = uri.getSchemeSpecificPart();
+        if ((schemeSpecificPart == null) || !schemeSpecificPart.equals(uriFileDescriptorStandardIn))
+            return false;
+        return true;
+    }
+
+    private boolean isStandardOutput(String uri) {
+        try {
+            return isStandardOutput(new URI(uri));
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
+
+    private boolean isStandardOutput(URI uri) {
+        String scheme = uri.getScheme();
+        if ((scheme == null) || !scheme.equals(uriFileDescriptorScheme))
+            return false;
+        String schemeSpecificPart = uri.getSchemeSpecificPart();
+        if ((schemeSpecificPart == null) || !schemeSpecificPart.equals(uriFileDescriptorStandardOut))
+            return false;
+        return true;
+    }
+
+    private boolean isFile(URI uri) {
+        String scheme = uri.getScheme();
+        if ((scheme == null) || !scheme.equals(uriFileScheme))
+            return false;
+        else
+            return true;
     }
 
     private static final List<Charset> permittedEncodings;
@@ -1149,6 +1329,7 @@ public class Converter implements ConverterContext {
         getReporter().resetResourceState();
         // parsing state
         screens = new java.util.ArrayList<Screen>();
+        indices = new int[GenerationIndex.values().length];
     }
 
     private void setResourceURI(String uri) {
@@ -1927,39 +2108,8 @@ public class Converter implements ConverterContext {
             return c;
     }
 
-    /*
-    private static boolean warnOrError(Reporter reporter, String token, Message message) {
-        boolean fail = false;
-        if (reporter.isWarningEnabled(token)) {
-            if (reporter.isTreatingWarningAsError()) {
-                reporter.logError(message);
-                fail = true;
-            } else {
-                reporter.logWarning(message);
-            }
-        }
-        return fail;
-    }
-    */
-
-    private static String makeScreenCode(int number, char letter) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(Integer.toString(number));
-        if (letter != 0)
-            sb.append(letter);
-        return sb.toString();
-    }
-
-    private static String makeInOutCodes(ClockTime in, ClockTime out) {
-        return toString(in) + '/' + toString(out);
-    }
-
     private static String makeTimeExpression(ClockTime time) {
         return toString(time, ':');
-    }
-
-    private static String toString(ClockTime time) {
-        return toString(time, (char) 0);
     }
 
     private static String toString(ClockTime time, char sep) {
@@ -2019,14 +2169,14 @@ public class Converter implements ConverterContext {
         reporter.logInfo(reporter.message("*KEY*", "Converting resource ..."));
         try {
             //  convert screens to a div of paragraphs
-            State state = new State();
+            State state = new State(configuration);
             state.process(screens);
+            // populate body, extracting division from state object, must be performed prior to populating head
+            Body body = ttmlFactory.createBody();
+            state.populate(body, defaultRegion);
             // populate head
             Head head = ttmlFactory.createHead();
             state.populate(head);
-            // populate body, extracting division from state object
-            Body body = ttmlFactory.createBody();
-            state.populate(body);
             // populate root (tt)
             TimedText tt = ttmlFactory.createTimedText();
             if ((head.getStyling() != null) || (head.getLayout() != null))
@@ -2053,11 +2203,13 @@ public class Converter implements ConverterContext {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document d = db.newDocument();
             m.marshal(ttmlFactory.createTt(tt), d);
-            Map<String, String> prefixes = model.getNormalizedPrefixes();
+            mergeConfiguration(d);
+            elideInitials(d, getInitials(d, model));
             if (mergeStyles)
-                mergeStyles(d);
+                mergeStyles(d, indices);
             if (metadataCreation)
                 addCreationMetadata(d);
+            Map<String, String> prefixes = model.getNormalizedPrefixes();
             Namespaces.normalize(d, prefixes);
             if (!writeDocument(d, prefixes))
                 fail = true;
@@ -2067,23 +2219,45 @@ public class Converter implements ConverterContext {
         return !fail && (reporter.getResourceErrors() == 0);
     }
 
-    private void mergeStyles(Document d) {
-        // for each content element div, p, and span E in body
-        // 1. collect styles S of E with normalized order
-        // 2. if !M.contains(S), assign unique ID to S, add S to M (map of S to ID)
-        // 3. set S on E to null
-        // 4. add style attribute with value ID to E
-        
-        // if !M.empty(), create Styling element STYLING
-        // for each S in M
-        // 1. create Style element STYLE
-        // 2. add STYLE to STYLING
-        // then, add STYLING to HEAD
+    private void mergeConfiguration(Document d) {
+        assert configuration != null;
+        List<Element> initials = new java.util.ArrayList<Element>(configuration.getInitials());
+        Collections.reverse(initials);
+        if (!initials.isEmpty()) {
+            Element e = Documents.findElementByName(d, ttStylingEltName);
+            if (e != null) {
+                for (Element initial : initials) {
+                    e.insertBefore(d.importNode(initial, true), e.getFirstChild());
+                }
+            }
+        }
+        List<Element> regions = Documents.findElementsByName(d, ttRegionEltName);
+        for (Element e : regions) {
+            Element eConfig = configuration.getRegion(e.getAttributeNS(XML.getNamespaceUri(), "id"));
+            if (eConfig != null)
+                mergeStyles(e, eConfig);
+        }
+    }
+
+    private void mergeStyles(Element dst, Element src) {
+        NamedNodeMap attrs = src.getAttributes();
+        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+            Node node = attrs.item(i);
+            if (node instanceof Attr) {
+                Attr a = (Attr) node;
+                String ns = a.getNamespaceURI();
+                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
+                    String ln = a.getLocalName();
+                    String v = a.getValue();
+                    dst.setAttributeNS(ns, ln, v);
+                }
+            }
+        }
     }
 
     private void addCreationMetadata(Document d) {
         Element e;
-        if ((e = findElementByName(d, ttHeadEltName)) != null) {
+        if ((e = Documents.findElementByName(d, ttHeadEltName)) != null) {
             Node m, f;
             if ((m = createMetadataItemElement(d, "creationSystem", creationSystem)) != null) {
                 f = e.getFirstChild();
@@ -2094,19 +2268,6 @@ public class Converter implements ConverterContext {
                 e.insertBefore(m, f);
             }
         }
-    }
-
-    private Element findElementByName(Document d, QName qn) {
-        String ns = qn.getNamespaceURI();
-        NodeList nodes;
-        if ((ns == null) || (ns.length() == 0))
-            nodes = d.getElementsByTagName(qn.getLocalPart());
-        else
-            nodes = d.getElementsByTagNameNS(ns, qn.getLocalPart());
-        if ((nodes == null) || (nodes.getLength() == 0))
-            return null;
-        else
-            return (Element) nodes.item(0);
     }
 
     private Element createMetadataItemElement(Document d, String name, String value) {
@@ -2126,6 +2287,267 @@ public class Converter implements ConverterContext {
         return gmtDateTimeFormat.format(date);
     }
 
+    private void mergeStyles(final Document d, int[] indices) {
+        try {
+            final Map<Element,StyleSet> styleSets = getUniqueSpecifiedStyles(d, indices, styleIdPattern, styleIdSequenceStart);
+            final Set<String> styleIds = new java.util.HashSet<String>();
+            final Element styling = Documents.findElementByName(d, ttStylingEltName);
+            assert styling != null;
+            Traverse.traverseElements(d, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element e = (Element) content;
+                    if (styleSets.containsKey(e)) {
+                        StyleSet ss = styleSets.get(e);
+                        String id = ss.getId();
+                        if (!id.isEmpty()) {
+                            e.setAttribute("style", id);
+                            if (!styleIds.contains(id)) {
+                                Element ttStyle = d.createElementNS(NAMESPACE_TT, "style");
+                                generateAttributes(ss, ttStyle);
+                                styling.appendChild(ttStyle);
+                                styleIds.add(id);
+                            }
+                        }
+                        pruneStyles(e);
+                    }
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+            getReporter().logError(e);
+        }
+    }
+
+    private static void generateAttributes(StyleSet ss, Element e) {
+        String id = ss.getId();
+        if ((id != null) && !id.isEmpty()) {
+            for (StyleSpecification s : ss.getStyles().values()) {
+                ComparableQName n = s.getName();
+                e.setAttributeNS(n.getNamespaceURI(), n.getLocalPart(), s.getValue());
+            }
+            e.setAttributeNS(XML.xmlNamespace, "id", id);
+        }
+    }
+
+    private Map<QName,String> getInitials(Document d, Model model) {
+        Map<QName,String> initials = new java.util.HashMap<QName,String>();
+        // get initials from model
+        for (QName qn : model.getDefinedStyleNames()) {
+            initials.put(qn, model.getInitialStyleValue(qn));
+        }
+        // get initials from model augmentation (temporary until we add TTML2 model)
+        initials = augmentInitials(initials);
+        // get initials from document
+        for (Element e : Documents.findElementsByName(d, ttInitialEltName)) {
+            NamedNodeMap attrs = e.getAttributes();
+            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+                Node node = attrs.item(i);
+                if (node instanceof Attr) {
+                    Attr a = (Attr) node;
+                    String ns = a.getNamespaceURI();
+                    if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
+                        String ln = a.getLocalName();
+                        String v = a.getValue();
+                        initials.put(new QName(ns, ln), v);
+                    }
+                }
+            }
+        }
+        return initials;
+    }
+
+    private Map<QName,String> augmentInitials(Map<QName,String> initials) {
+        initials.put(ttsFontKerningAttrName, "normal");
+        initials.put(ttsFontShearAttrName, "0%");
+        initials.put(ttsRubyAttrName, "none");
+        initials.put(ttsTextEmphasisStyleAttrName, "none");
+        return initials;
+    }
+
+    private void elideInitials(Document d, final Map<QName,String> initials) {
+        try {
+            Traverse.traverseElements(d, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element e = (Element) content;
+                    if (isRegionOrContentElement(e))
+                        elideInitials(e, initials);
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+            getReporter().logError(e);
+        }
+    }
+
+    private static void elideInitials(Element e, final Map<QName,String> initials) {
+        List<Attr> elide = new java.util.ArrayList<Attr>();
+        NamedNodeMap attrs = e.getAttributes();
+        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+            Node node = attrs.item(i);
+            if (node instanceof Attr) {
+                Attr a = (Attr) node;
+                String ns = a.getNamespaceURI();
+                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
+                    QName qn = new QName(ns, a.getLocalName());
+                    String initial = initials.get(qn);
+                    if ((initial != null) && a.getValue().equals(initial)) {
+                        elide.add(a);
+                    }
+                }
+            }
+        }
+        for (Attr a: elide) {
+            e.removeAttributeNode(a);
+        }
+    }
+
+    private static Map<Element, StyleSet> getUniqueSpecifiedStyles(Document d, int[] indices, String styleIdPattern, int styleIdStart) {
+        // get specified style sets
+        Map<Element, StyleSet> specifiedStyleSets = getSpecifiedStyles(d, indices);
+
+        // obtain ordered set of SSs, ordered by SS generation
+        Set<StyleSet> orderedStyles = new java.util.TreeSet<StyleSet>(StyleSet.getGenerationComparator());
+        orderedStyles.addAll(specifiedStyleSets.values());
+
+        // obtain unique set of SSs
+        Set<StyleSet> uniqueStyles = new java.util.TreeSet<StyleSet>(StyleSet.getValuesComparator());
+        uniqueStyles.addAll(orderedStyles);
+
+        // final reorder by generation 
+        orderedStyles.clear();
+        orderedStyles.addAll(uniqueStyles);
+        List<StyleSet> styles = new java.util.ArrayList<StyleSet>(orderedStyles);
+
+        // assign identifiers to unique SSs
+        int uniqueStyleIndex = styleIdStart;
+        for (StyleSet ss : styles)
+            ss.setId(MessageFormat.format(styleIdPattern, uniqueStyleIndex++));
+
+        // remap SS map entries to unique SSs
+        for (Map.Entry<Element,StyleSet> e : specifiedStyleSets.entrySet()) {
+            StyleSet ss = e.getValue();
+            int index = styles.indexOf(ss);
+            if (index >= 0) {
+                StyleSet ssUnique = styles.get(index);
+                if (ss != ssUnique) // N.B. must not use equals() here
+                    e.setValue(ssUnique);
+            }
+        }
+
+        return specifiedStyleSets;
+    }
+
+    private static Map<Element, StyleSet> getSpecifiedStyles(Document d, int[] indices) {
+        Map<Element, StyleSet> specifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
+        specifiedStyleSets = getSpecifiedStyles(getContentElements(d), specifiedStyleSets, indices);
+        return specifiedStyleSets;
+    }
+
+    private static List<Element> getContentElements(Document d) {
+        final List<Element> elements = new java.util.ArrayList<Element>();
+        try {
+            Traverse.traverseElements(d, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element e = (Element) content;
+                    if (isContentElement(e))
+                        elements.add(e);
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+        }
+        return elements;
+    }
+
+    private static boolean isRegionOrContentElement(Element e) {
+        return isRegionElement(e) || isContentElement(e);
+    }
+
+    private static boolean isRegionElement(Element e) {
+        String ns = e.getNamespaceURI();
+        if ((ns == null) || !ns.equals(NAMESPACE_TT))
+            return false;
+        else {
+            String localName = e.getLocalName();
+            if (localName.equals("region"))
+                return true;
+            else
+                return false;
+        }
+    }
+
+    private static boolean isContentElement(Element e) {
+        String ns = e.getNamespaceURI();
+        if ((ns == null) || !ns.equals(NAMESPACE_TT))
+            return false;
+        else {
+            String localName = e.getLocalName();
+            if (localName.equals("body"))
+                return true;
+            else if (localName.equals("div"))
+                return true;
+            else if (localName.equals("p"))
+                return true;
+            else if (localName.equals("span"))
+                return true;
+            else if (localName.equals("br"))
+                return true;
+            else
+                return false;
+        }
+    }
+
+    private static Map<Element, StyleSet> getSpecifiedStyles(List<Element> elements, Map<Element, StyleSet> specifiedStyleSets, int[] indices) {
+        for (Element e : elements) {
+            assert !specifiedStyleSets.containsKey(e);
+            StyleSet ss = getInlineStyles(e, indices);
+            if (!ss.isEmpty())
+                specifiedStyleSets.put(e, ss);
+        }
+        return specifiedStyleSets;
+    }
+
+    private static StyleSet getInlineStyles(Element e, int[] indices) {
+        StyleSet styles = new StyleSet(generateStyleSetIndex(indices));
+        NamedNodeMap attrs = e.getAttributes();
+        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+            Node node = attrs.item(i);
+            if (node instanceof Attr) {
+                Attr a = (Attr) node;
+                String ns = a.getNamespaceURI();
+                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
+                    styles.merge(new StyleSpecification(new ComparableQName(a.getNamespaceURI(), a.getLocalName()), a.getValue()));
+                }
+            }
+        }
+        return styles;
+    }
+
+    private static int generateStyleSetIndex(int[] indices) {
+        return indices[GenerationIndex.styleSetIndex.ordinal()]++;
+    }
+
+    private void pruneStyles(Element e) {
+        List<Attr> prune = new java.util.ArrayList<Attr>();
+        NamedNodeMap attrs = e.getAttributes();
+        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+            Node node = attrs.item(i);
+            if (node instanceof Attr) {
+                Attr a = (Attr) node;
+                String ns = a.getNamespaceURI();
+                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
+                    prune.add(a);
+                }
+            }
+        }
+        for (Attr a : prune) {
+            e.removeAttributeNode(a);
+        }
+    }
+
     private static Set<QName> startTagIndentExclusions;
     private static Set<QName> endTagIndentExclusions;
     static {
@@ -2143,16 +2565,15 @@ public class Converter implements ConverterContext {
         boolean fail = false;
         Reporter reporter = getReporter();
         BufferedWriter bw = null;
-        int sequenceIndex = 0;  // TBD - remove me
         try {
             DOMSource source = new DOMSource(d);
-            String outputFileName = "tt" + pad(sequenceIndex, 5, '0') + ".xml";
-            File outputFile = new File(outputDirectory, outputFileName);
-            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), outputEncoding));
+            File[] retOutputFile = new File[1];
+            bw = new BufferedWriter(new OutputStreamWriter(getOutputStream(retOutputFile), outputEncoding));
             StreamResult result = new StreamResult(bw);
             Transformer t = new TextTransformer(outputEncoding.name(), outputIndent, prefixes, startTagIndentExclusions, endTagIndentExclusions);
             t.transform(source, result);
-            reporter.logInfo(reporter.message("*KEY*", "Wrote TTML ''{0}''.", outputFile.getAbsolutePath()));
+            File outputFile = retOutputFile[0];
+            reporter.logInfo(reporter.message("*KEY*", "Wrote TTML ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
         } catch (Exception e) {
             reporter.logError(e);
         } finally {
@@ -2161,6 +2582,35 @@ public class Converter implements ConverterContext {
             }
         }
         return !fail && (reporter.getResourceErrors() == 0);
+    }
+
+    private OutputStream getOutputStream(File[] retOutputFile) throws IOException {
+        assert resourceUri != null;
+        StringBuffer sb = new StringBuffer();
+        if (isFile(resourceUri)) {
+            String path = resourceUri.getPath();
+            int s = 0;
+            int e = path.length();
+            int lastPathSeparator = path.lastIndexOf('/');
+            if (lastPathSeparator >= 0)
+                s = lastPathSeparator + 1;
+            int lastExtensionSeparator = path.lastIndexOf('.');
+            if (lastExtensionSeparator >= 0)
+                e = lastExtensionSeparator;
+            sb.append(path.substring(s, e));
+            sb.append(".xml");
+        } else {
+            sb.append(MessageFormat.format(outputFileNamePattern, ++outputFileSequence));
+        }
+        String outputFileName = sb.toString();
+        if (isStandardOutput(outputFileName))
+            return System.out;
+        else {
+            File outputFile = new File(outputDirectory, outputFileName).getCanonicalFile();
+            if (retOutputFile != null)
+                retOutputFile[0] = outputFile;
+            return new FileOutputStream(outputFile);
+        }
     }
 
     private int convert(String[] args, String uri) {
@@ -2346,7 +2796,6 @@ public class Converter implements ConverterContext {
             if (showWarningTokens)
                 showWarningTokens();
             getShowOutput().flush();
-            loadConfiguration();
             if (nonOptionArgs.size() > 0) {
                 showProcessingInfo();
                 rv = convert(args, nonOptionArgs);
@@ -2401,8 +2850,11 @@ public class Converter implements ConverterContext {
     private static class AttributeSpecification {
         public String name;
         public AttrContext context;
+        @SuppressWarnings("unused")
         public AttrCount count;
+        @SuppressWarnings("unused")
         public int minCount;
+        @SuppressWarnings("unused")
         public int maxCount;
         public AttributeSpecification(String name, AttrContext context, AttrCount count, int minCount, int maxCount) {
             this.name = name;
@@ -2416,6 +2868,7 @@ public class Converter implements ConverterContext {
     private static class Attribute {
         public AttributeSpecification specification;
         public int count;
+        @SuppressWarnings("unused")
         public boolean retain;
         public String text;
         public String annotation;
@@ -2586,7 +3039,7 @@ public class Converter implements ConverterContext {
             } else if (name.equals("詰")) {
                 String kerning;
                 if (count < 0)
-                    kerning = "auto";
+                    kerning = "normal";
                 else if (count == 0)
                     kerning = "none";
                 else
@@ -2657,7 +3110,7 @@ public class Converter implements ConverterContext {
             }
             for (QName qn : p.getOtherAttributes().keySet()) {
                 String ns = qn.getNamespaceURI();
-                if ((ns != null) && ns.equals(TTML1.Constants.NAMESPACE_TT_STYLE))
+                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE))
                     styles.add(qn);
             }
         }
@@ -2732,7 +3185,7 @@ public class Converter implements ConverterContext {
             }
             for (QName qn : s.getOtherAttributes().keySet()) {
                 String ns = qn.getNamespaceURI();
-                if ((ns != null) && ns.equals(TTML1.Constants.NAMESPACE_TT_STYLE))
+                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE))
                     styles.add(qn);
             }
         }
@@ -2758,6 +3211,7 @@ public class Converter implements ConverterContext {
     }
 
     private static class Screen {
+        @SuppressWarnings("unused")
         public Locator locator;
         public int number;
         public char letter;
@@ -2767,33 +3221,6 @@ public class Converter implements ConverterContext {
         public AttributedString text;
         public Screen(Locator locator) {
             this.locator = locator;
-        }
-        public String getLocationString(boolean abbreviated) {
-            StringBuffer sb = new StringBuffer();
-            if (locator != null) {
-                String uriString = locator.getSystemId();
-                int row = locator.getLineNumber();
-                int col = locator.getColumnNumber();
-                if (uriString != null) {
-                    if (!abbreviated) {
-                        sb.append('{');
-                        sb.append(uriString);
-                        sb.append('}');
-                    }
-                    if (row >= 0) {
-                        if (sb.length() > 0)
-                            sb.append(':');
-                        sb.append('[');
-                        sb.append(row);
-                        if (col >= 0) {
-                            sb.append(',');
-                            sb.append(col);
-                        }
-                        sb.append(']');
-                    }
-                }
-            }                
-            return sb.toString();
         }
         public boolean empty() {
             if (hasInOutCodes())
@@ -2805,14 +3232,8 @@ public class Converter implements ConverterContext {
             else
                 return true;
         }
-        public String getScreenCode() {
-            return makeScreenCode(number, letter);
-        }
         public boolean hasInOutCodes() {
             return (in != null) && (out != null);
-        }
-        public String getInOutCodes() {
-            return makeInOutCodes(in, out);
         }
         public String getInTimeExpression() {
             return makeTimeExpression(in);
@@ -2839,12 +3260,14 @@ public class Converter implements ConverterContext {
 
     private static final ObjectFactory ttmlFactory = new ObjectFactory();
     private static class State {
+        @SuppressWarnings("unused")
+        private Configuration configuration;
         private Division division;
         private Paragraph paragraph;
         private String placement;
         private Map<String,Region> regions;
         private Set<QName> styles;
-        public State() {
+        public State(Configuration configuration) {
             this.division = ttmlFactory.createDivision();
             this.regions = new java.util.TreeMap<String,Region>();
             this.styles = new java.util.HashSet<QName>();
@@ -2866,8 +3289,12 @@ public class Converter implements ConverterContext {
                 head.setLayout(layout);
             }
         }
-        public void populate(Body body) {
+        public void populate(Body body, String defaultRegion) {
             if (hasParagraph()) {
+                if (defaultRegion != null) {
+                    body.getOtherAttributes().put(regionAttrName, defaultRegion);
+                    maybeAddRegion(defaultRegion);
+                }
                 body.getDiv().add(division);
             }
         }
@@ -2929,18 +3356,20 @@ public class Converter implements ConverterContext {
         }
         private Paragraph populate(Division d, Paragraph p) {
             if ((p != null) && (p.getContent().size() > 0)) {
-                String id = p.getOtherAttributes().get(regionAttrName);
-                if (id != null) {
-                    if (!regions.containsKey(id)) {
-                        Region r = ttmlFactory.createRegion();
-                        r.setId(id);
-                        populateStyles(r, id);
-                        regions.put(id, r);
-                    }
-                }
+                maybeAddRegion(p.getOtherAttributes().get(regionAttrName));
                 d.getBlockClass().add(p);
             }
             return ttmlFactory.createParagraph();
+        }
+        private void maybeAddRegion(String id) {
+            if (id != null) {
+                if (!regions.containsKey(id)) {
+                    Region r = ttmlFactory.createRegion();
+                    r.setId(id);
+                    populateStyles(r, id);
+                    regions.put(id, r);
+                }
+            }
         }
         private void populateText(Paragraph p, AttributedString as, boolean insertBreakBefore) {
             if (as != null) {
