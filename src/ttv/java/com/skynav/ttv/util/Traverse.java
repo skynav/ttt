@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-14 Skynav, Inc. All rights reserved.
+ * Copyright 2014 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,25 +25,37 @@
  
 package com.skynav.ttv.util;
 
-public abstract class Visitor {
-    public enum Order { Pre, Post, Both };
-    private Order order;
-    public Visitor(Order order) {
-        this.order = order;
+import java.util.List;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+public class Traverse {
+
+    private Traverse() {}
+
+    public static void traverseElements(Document document, Visitor v) throws Exception {
+        Element root = document.getDocumentElement();
+        if (root != null)
+            traverseElements(root, null, v);
     }
-    public boolean preVisit(Object content, Object parent) throws Exception {
-        if (order != Order.Post)
-            return visit(content, parent, Order.Pre);
-        else
-            return true;
+
+    public static void traverseElements(Element elt, Element parent, Visitor v) throws Exception {
+        if (!v.preVisit(elt, parent))
+            return;
+        // extract stable (non-live) list of children in case visitors mutate child list
+        List<Element> children = new java.util.ArrayList<Element>();
+        for (Node node = elt.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (node instanceof Element)
+                children.add((Element) node);
+        }
+        // traverse stable (non-live) list of children
+        for (Element child : children) {
+            traverseElements(child, elt, v);
+        }
+        if (!v.postVisit(elt, parent))
+            return;
     }
-    public boolean postVisit(Object content, Object parent) throws Exception {
-        if (order != Order.Pre)
-            return visit(content, parent, Order.Post);
-        else
-            return true;
-    }
-    public abstract boolean visit(Object content, Object parent, Order order) throws Exception;
+
 }
-
-

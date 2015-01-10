@@ -106,6 +106,10 @@ public class AbstractModel implements Model {
         throw new UnsupportedOperationException();
     }
 
+    public Map<String,String> getNormalizedPrefixes() {
+        throw new UnsupportedOperationException();
+    }
+
     public Set<URI> getProfileDesignators() {
         throw new UnsupportedOperationException();
     }

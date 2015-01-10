@@ -524,7 +524,7 @@
 
 <target name="build-servlet" description="Build TTV Servlet" depends="build-servlet-artifacts"/>
 
-<target name="build" description="Build All" depends="build-ttv"/>
+<target name="build" description="Build All" depends="build-ttv, build-ttx, build-ttxv"/>
 
 <target name="test-xml" description="Run XML tests">
   <junit-run testsuite="com.skynav.xml.helpers.HelpersTestSuite" outfile="TEST-xml-helpers"/>

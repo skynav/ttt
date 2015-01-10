@@ -77,9 +77,14 @@ import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.ComparableQName;
+import com.skynav.ttv.util.Namespaces;
 import com.skynav.ttv.util.PostVisitor;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.StyleSet;
+import com.skynav.ttv.util.StyleSpecification;
+import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 
@@ -135,7 +140,8 @@ public class ISD {
     protected enum GenerationIndex {
         isdInstanceIndex,
         isdAnonymousSpanIndex,
-        isdAnonymousRegionIndex;
+        isdAnonymousRegionIndex,
+        isdStyleSetIndex;
     };
 
     protected enum ResourceState {
@@ -309,22 +315,25 @@ public class ISD {
         }
 
         private void generateAnonymousSpans(TimedText tt, final TransformerContext context) {
-            traverse(tt, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    if (content instanceof String) {
-                        List<Serializable> contentChildren;
-                        if (parent instanceof Paragraph)
-                            contentChildren = ((Paragraph) parent).getContent();
-                        else if (parent instanceof Span)
-                            contentChildren = ((Span) parent).getContent();
-                        else
-                            contentChildren = null;
-                        if (contentChildren != null)
-                            contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
+            try {
+                traverse(tt, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        if (content instanceof String) {
+                            List<Serializable> contentChildren;
+                            if (parent instanceof Paragraph)
+                                contentChildren = ((Paragraph) parent).getContent();
+                            else if (parent instanceof Span)
+                                contentChildren = ((Span) parent).getContent();
+                            else
+                                contentChildren = null;
+                            if (contentChildren != null)
+                                contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
         }
 
         private static final ObjectFactory spanFactory = new ObjectFactory();
@@ -356,14 +365,17 @@ public class ISD {
         }
 
         private void recordParents(TimedText tt, final TransformerContext context) {
-            traverse(tt, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    Map<Object,Object> parents = getParents(context);
-                    if (!parents.containsKey(content))
-                        parents.put(content, parent);
-                    return true;
-                }
-            });
+            try {
+                traverse(tt, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        Map<Object,Object> parents = getParents(context);
+                        if (!parents.containsKey(content))
+                            parents.put(content, parent);
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
         }
 
         private void resolveTiming(TimedText tt, TransformerContext context) {
@@ -373,60 +385,72 @@ public class ISD {
         }
 
         private void resolveExplicit(TimedText tt, final TransformerContext context) {
-            final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
-            traverse(tt, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    if (TimingState.isTimedElement(content)) {
-                        TimingState ts = getTimingState(content, context, timeParameters);
-                        ts.resolveExplicit();
+            try {
+                final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
+                traverse(tt, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        if (TimingState.isTimedElement(content)) {
+                            TimingState ts = getTimingState(content, context, timeParameters);
+                            ts.resolveExplicit();
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
         }
 
         private void resolveImplicit(TimedText tt, final TransformerContext context) {
-            final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
-            traverse(tt, new PostVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    if (TimingState.isTimedElement(content)) {
-                        TimingState ts = getTimingState(content, context, timeParameters);
-                        ts.resolveImplicit();
+            try {
+                final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
+                traverse(tt, new PostVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        if (TimingState.isTimedElement(content)) {
+                            TimingState ts = getTimingState(content, context, timeParameters);
+                            ts.resolveImplicit();
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
         }
 
         private void resolveActive(TimedText tt, final TransformerContext context) {
-            final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
-            traverse(tt, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    if (TimingState.isTimedElement(content)) {
-                        TimingState ts = getTimingState(content, context, timeParameters);
-                        ts.resolveActive();
+            try {
+                final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
+                traverse(tt, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        if (TimingState.isTimedElement(content)) {
+                            TimingState ts = getTimingState(content, context, timeParameters);
+                            ts.resolveActive();
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
         }
 
         private java.util.Set<TimeInterval> extractActiveIntervals(TimedText tt, final TransformerContext context) {
             final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
             final java.util.Set<TimeInterval> intervals = new java.util.TreeSet<TimeInterval>();
-            traverse(tt, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    if (TimingState.isTimedElement(content)) {
-                        TimingState ts = getTimingState(content,context, timeParameters);
-                        ts.extractActiveInterval(intervals);
+            try {
+                traverse(tt, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        if (TimingState.isTimedElement(content)) {
+                            TimingState ts = getTimingState(content,context, timeParameters);
+                            ts.extractActiveInterval(intervals);
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
             return intervals;
         }
 
-        private static void traverse(TimedText tt, Visitor v) {
+        private static void traverse(TimedText tt, Visitor v) throws Exception {
             Body body = tt.getBody();
             if (body != null) {
                 if (!v.preVisit(tt, null))
@@ -437,7 +461,7 @@ public class ISD {
             }
         }
 
-        private static void traverse(Body body, Object parent, Visitor v) {
+        private static void traverse(Body body, Object parent, Visitor v) throws Exception {
             if (!v.preVisit(body, parent))
                 return;
             for (com.skynav.ttv.model.ttml1.tt.Set a : body.getAnimationClass())
@@ -448,7 +472,7 @@ public class ISD {
                 return;
         }
 
-        private static void traverse(Division division, Object parent, Visitor v) {
+        private static void traverse(Division division, Object parent, Visitor v) throws Exception {
             if (!v.preVisit(division, parent))
                 return;
             for (com.skynav.ttv.model.ttml1.tt.Set a : division.getAnimationClass())
@@ -459,7 +483,7 @@ public class ISD {
                 return;
         }
 
-        private static void traverse(Paragraph paragraph, Object parent, Visitor v) {
+        private static void traverse(Paragraph paragraph, Object parent, Visitor v) throws Exception {
             if (!v.preVisit(paragraph, parent))
                 return;
             for (Serializable s : paragraph.getContent())
@@ -468,7 +492,7 @@ public class ISD {
                 return;
         }
 
-        private static void traverse(Span span, Object parent, Visitor v) {
+        private static void traverse(Span span, Object parent, Visitor v) throws Exception {
             if (!v.preVisit(span, parent))
                 return;
             for (Serializable s : span.getContent())
@@ -477,7 +501,7 @@ public class ISD {
                 return;
         }
 
-        private static void traverse(Break br, Object parent, Visitor v) {
+        private static void traverse(Break br, Object parent, Visitor v) throws Exception {
             if(!v.preVisit(br, parent))
                 return;
             for (com.skynav.ttv.model.ttml1.tt.Set a : br.getAnimationClass())
@@ -486,28 +510,28 @@ public class ISD {
                 return;
         }
 
-        private static void traverse(com.skynav.ttv.model.ttml1.tt.Set set, Object parent, Visitor v) {
+        private static void traverse(com.skynav.ttv.model.ttml1.tt.Set set, Object parent, Visitor v) throws Exception {
             if (!v.preVisit(set, parent))
                 return;
             if (!v.postVisit(set, parent))
                 return;
         }
 
-        private static void traverse(String string, Object parent, Visitor v) {
+        private static void traverse(String string, Object parent, Visitor v) throws Exception {
             if (!v.preVisit(string, parent))
                 return;
             if (!v.postVisit(string, parent))
                 return;
         }
 
-        private static void traverseBlock(Object block, Object parent, Visitor v) {
+        private static void traverseBlock(Object block, Object parent, Visitor v) throws Exception {
             if (block instanceof Division)
                 traverse((Division) block, parent, v);
             else if (block instanceof Paragraph)
                 traverse((Paragraph) block, parent, v);
         }
 
-        private static void traverseContent(Serializable content, Object parent, Visitor v) {
+        private static void traverseContent(Serializable content, Object parent, Visitor v) throws Exception {
             if (content instanceof JAXBElement<?>) {
                 Object element = ((JAXBElement<?>)content).getValue();
                 if (element instanceof com.skynav.ttv.model.ttml1.tt.Set)
@@ -549,7 +573,7 @@ public class ISD {
                     pruneTimingAndRegionAttributes(doc, context);
                     generateISDWrapper(doc, interval, context);
                     pruneISDExclusions(doc, context);
-                    normalizeNamespaces(doc);
+                    Namespaces.normalize(doc, model.getNormalizedPrefixes());
                     if (hasUsableContent(doc, context)) {
                         isdDocuments.add(doc);
                     }
@@ -563,33 +587,39 @@ public class ISD {
         }
 
         private static void markIdAttributes(Document doc) {
-            traverseElements(doc, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (elt.hasAttributeNS(XML.xmlNamespace, "id"))
-                        elt.setIdAttributeNS(XML.xmlNamespace, "id", true);
-                    return true;
-                }
-            });
+            try {
+                Traverse.traverseElements(doc, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (elt.hasAttributeNS(XML.xmlNamespace, "id"))
+                            elt.setIdAttributeNS(XML.xmlNamespace, "id", true);
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
         }
 
         private static void pruneIntervals(Document doc, TransformerContext context, final TimeInterval interval) {
-            traverseElements(doc, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isTimedElement(elt)) {
-                        TimeInterval eltInterval = getActiveInterval(elt);
-                        if (eltInterval.isEmpty() || !eltInterval.intersects(interval)) {
-                            assert parent instanceof Element;
-                            Element eltParent = (Element) parent;
-                            pruneElement(elt, eltParent);
+            try {
+                Traverse.traverseElements(doc, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isTimedElement(elt)) {
+                            TimeInterval eltInterval = getActiveInterval(elt);
+                            if (eltInterval.isEmpty() || !eltInterval.intersects(interval)) {
+                                assert parent instanceof Element;
+                                Element eltParent = (Element) parent;
+                                pruneElement(elt, eltParent);
+                            }
                         }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
         }
 
         private static boolean isTimedElement(Element elt) {
@@ -659,36 +689,42 @@ public class ISD {
 
         private static boolean hasUsableContent(Element elt, TransformerContext context) {
             final boolean returnUsable[] = new boolean[1];
-            traverseElements(elt, null, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isAnonymousSpanElement(elt)) {
-                        returnUsable[0] = true;
-                        return false;
-                    } else
-                        return true;
-                }
-            });
+            try {
+                Traverse.traverseElements(elt, null, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isAnonymousSpanElement(elt)) {
+                            returnUsable[0] = true;
+                            return false;
+                        } else
+                            return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
             return returnUsable[0];
         }
 
         private static void pruneUnselectedContent(final Element body, TransformerContext context, final Element region) {
-            traverseElements(body, null, new PostVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (!isSelectedContent(elt, region)) {
-                        if (parent != null) {
-                            assert parent instanceof Element;
-                            Element eltParent = (Element) parent;
-                            pruneElement(elt, eltParent);
-                        } else if (elt != body)
-                            assert parent != null;
+            try {
+                Traverse.traverseElements(body, null, new PostVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (!isSelectedContent(elt, region)) {
+                            if (parent != null) {
+                                assert parent instanceof Element;
+                                Element eltParent = (Element) parent;
+                                pruneElement(elt, eltParent);
+                            } else if (elt != body)
+                                assert parent != null;
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
         }
 
         private static boolean isSelectedContent(Element elt, Element region) {
@@ -763,15 +799,18 @@ public class ISD {
 
         private static List<Element> getRegionElements(Document doc) {
             final List<Element> regions = new java.util.ArrayList<Element>();
-            traverseElements(doc, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isOutOfLineRegionElement(elt))
-                        regions.add(elt);
-                    return true;
-                }
-            });
+            try {
+                Traverse.traverseElements(doc, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isOutOfLineRegionElement(elt))
+                            regions.add(elt);
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
             return regions;
         }
 
@@ -874,17 +913,20 @@ public class ISD {
 
         private static Element getHeadElement(Document document) {
             final Element[] retHead = new Element[1];
-            traverseElements(document, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isHeadElement(elt)) {
-                        retHead[0] = elt;
-                        return false;
-                    } else
-                        return true;
-                }
-            });
+            try {
+                Traverse.traverseElements(document, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isHeadElement(elt)) {
+                            retHead[0] = elt;
+                            return false;
+                        } else
+                            return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
             return retHead[0];
         }
 
@@ -894,17 +936,21 @@ public class ISD {
 
         private static Element getBodyElement(Document document) {
             final Element[] retBody = new Element[1];
-            traverseElements(document, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isBodyElement(elt)) {
-                        retBody[0] = elt;
-                        return false;
-                    } else
-                        return true;
-                }
-            });
+            try {
+                Traverse.traverseElements(document, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        Element eltParent = (Element) parent;
+                        if (isBodyElement(elt) && isRootElement(eltParent)) {
+                            retBody[0] = elt;
+                            return false;
+                        } else
+                            return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
             return retBody[0];
         }
 
@@ -914,17 +960,20 @@ public class ISD {
 
         private static Element getLayoutElement(Document document) {
             final Element[] retLayout = new Element[1];
-            traverseElements(document, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isLayoutElement(elt)) {
-                        retLayout[0] = elt;
-                        return false;
-                    } else
-                        return true;
-                }
-            });
+            try {
+                Traverse.traverseElements(document, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isLayoutElement(elt)) {
+                            retLayout[0] = elt;
+                            return false;
+                        } else
+                            return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
             return retLayout[0];
         }
 
@@ -1007,17 +1056,20 @@ public class ISD {
         }
 
         private static void pruneTimingAndRegionAttributes(Document document, TransformerContext context) {
-            traverseElements(document, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isTimedElement(elt)) {
-                        pruneTimingAttributes(elt);
-                        pruneRegionAttributes(elt);
+            try {
+                Traverse.traverseElements(document, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isTimedElement(elt)) {
+                            pruneTimingAttributes(elt);
+                            pruneRegionAttributes(elt);
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
         }
 
         private static void pruneTimingAttributes(Element elt) {
@@ -1039,6 +1091,7 @@ public class ISD {
                 copyParameterAttributes(isd, tt);
                 generateISDComputedStyleSets(isd, tt, context);
                 generateISDRegions(isd, tt, context);
+                unwrapRedundantAnonymousSpans(isd);
                 document.removeChild(tt);
                 document.appendChild(isd);
         }
@@ -1081,24 +1134,43 @@ public class ISD {
         }
 
         private static void generateISDComputedStyleSets(final Element isd, Element tt, TransformerContext context) {
-            final Map<Element, StyleSet> computedStyleSets = resolveComputedStyles(tt, context);
-            final Document document = isd.getOwnerDocument();
-            traverseElements(tt, null, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (computedStyleSets.containsKey(elt)) {
-                        StyleSet css = computedStyleSets.get(elt);
-                        Element isdStyle = document.createElementNS(NAMESPACE_ISD, "css");
-                        String idStyle = css.generateAttributes(isdStyle);
-                        if (idStyle != null) {
-                            elt.setAttributeNS(NAMESPACE_ISD, "css", idStyle);
-                            isd.appendChild(isdStyle);
+            try {
+                final Map<Element, StyleSet> computedStyleSets = resolveComputedStyles(tt, context);
+                final Set<String> styleIds = new java.util.HashSet<String>();
+                final Document document = isd.getOwnerDocument();
+                Traverse.traverseElements(tt, null, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (computedStyleSets.containsKey(elt)) {
+                            StyleSet css = computedStyleSets.get(elt);
+                            String id = css.getId();
+                            if (!id.isEmpty()) {
+                                elt.setAttributeNS(NAMESPACE_ISD, "css", id);
+                                if (!styleIds.contains(id)) {
+                                    Element isdStyle = document.createElementNS(NAMESPACE_ISD, "css");
+                                    generateAttributes(css, isdStyle);
+                                    isd.appendChild(isdStyle);
+                                    styleIds.add(id);
+                                }
+                            }
                         }
+                        return true;
                     }
-                    return true;
+                });
+            } catch (Exception e) {
+            }
+        }
+
+        private static void generateAttributes(StyleSet ss, Element elt) {
+            String id = ss.getId();
+            if ((id != null) && !id.isEmpty()) {
+                for (StyleSpecification s : ss.getStyles().values()) {
+                    ComparableQName n = s.getName();
+                    elt.setAttributeNS(n.getNamespaceURI(), n.getLocalPart(), s.getValue());
                 }
-            });
+                elt.setAttributeNS(XML.xmlNamespace, "id", id);
+            }
         }
 
         private static Map<Element, StyleSet> resolveComputedStyles(Element tt, TransformerContext context) {
@@ -1111,16 +1183,22 @@ public class ISD {
                 Element elt = e.getKey();
                 if (isRegionElement(elt)) {
                     if (findChildElement(elt, NAMESPACE_TT, "body") != null)
-                        computedStyleSets.put(elt, e.getValue().applicableStyles(elt, context));
+                        computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
                 } else if (isContentElement(elt)) {
-                    computedStyleSets.put(elt, e.getValue().applicableStyles(elt, context));
+                    computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
                 }
             }
 
+            // elide initial values
+            for (Map.Entry<Element, StyleSet> e : computedStyleSets.entrySet())
+                elideInitialValues(e.getValue(), e.getKey(), context);
+
             // compute set of unique CSSs
-            Set<StyleSet> uniqueComputedStyleSets = new java.util.TreeSet<StyleSet>();
-            for (StyleSet css : computedStyleSets.values())
-                uniqueComputedStyleSets.add(css);
+            Set<StyleSet> uniqueComputedStyleSets = new java.util.TreeSet<StyleSet>(StyleSet.getValuesComparator());
+            for (StyleSet css : computedStyleSets.values()) {
+                if (!css.isEmpty())
+                    uniqueComputedStyleSets.add(css);
+            }
 
             // obtain ordered list of unique CSSs
             List<StyleSet> uniqueStyles = new java.util.ArrayList<StyleSet>(uniqueComputedStyleSets);
@@ -1132,9 +1210,13 @@ public class ISD {
 
             // remap CSS map entries to unique CSSs
             for (Map.Entry<Element,StyleSet> e : computedStyleSets.entrySet()) {
-                int index = uniqueStyles.indexOf(e.getValue());
-                if (index >= 0)
-                    computedStyleSets.put(e.getKey(), uniqueStyles.get(index));
+                StyleSet css = e.getValue();
+                int index = uniqueStyles.indexOf(css);
+                if (index >= 0) {
+                    StyleSet cssUnique = uniqueStyles.get(index);
+                    if (css != cssUnique) // N.B. must not use equals() here
+                        e.setValue(cssUnique);
+                }
             }
             
             return computedStyleSets;
@@ -1142,24 +1224,27 @@ public class ISD {
 
         private static Map<Element, StyleSet> resolveSpecifiedStyles(Element tt, TransformerContext context) {
             Map<Element, StyleSet> specifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
-            specifiedStyleSets.putAll(resolveSpecifiedStyles(getStyleElements(tt, context), specifiedStyleSets, context));
-            specifiedStyleSets.putAll(resolveSpecifiedStyles(getAnimationElements(tt, context), specifiedStyleSets, context));
-            specifiedStyleSets.putAll(resolveSpecifiedStyles(getRegionOrContentElements(tt, context), specifiedStyleSets, context));
+            specifiedStyleSets = resolveSpecifiedStyles(getStyleElements(tt, context), specifiedStyleSets, context);
+            specifiedStyleSets = resolveSpecifiedStyles(getAnimationElements(tt, context), specifiedStyleSets, context);
+            specifiedStyleSets = resolveSpecifiedStyles(getRegionOrContentElements(tt, context), specifiedStyleSets, context);
             return specifiedStyleSets;
         }
 
         private static Collection<Element> getStyleElements(Element tt, TransformerContext context) {
             final Collection<Element> elts = new java.util.ArrayList<Element>();
-            traverseElements(tt, null, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isStyleElement(elt)) {
-                        elts.add(elt);
+            try {
+                Traverse.traverseElements(tt, null, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isStyleElement(elt)) {
+                            elts.add(elt);
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
             return topoSortByStyleReferences(elts, context);
         }
 
@@ -1186,46 +1271,99 @@ public class ISD {
 
         private static Collection<Element> getAnimationElements(Element tt, TransformerContext context) {
             final Collection<Element> elts = new java.util.ArrayList<Element>();
-            traverseElements(tt, null, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isAnimationElement(elt)) {
-                        elts.add(elt);
+            try {
+                Traverse.traverseElements(tt, null, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isAnimationElement(elt)) {
+                            elts.add(elt);
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
             return elts;
         }
 
         private static Collection<Element> getRegionOrContentElements(Element tt, TransformerContext context) {
             final Collection<Element> elts = new java.util.ArrayList<Element>();
-            traverseElements(tt, null, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isRegionOrContentElement(elt))
-                        elts.add(elt);
-                    return true;
-                }
-            });
+            try {
+                Traverse.traverseElements(tt, null, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isRegionOrContentElement(elt))
+                            elts.add(elt);
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
             return elts;
         }
 
         private static Map<Element, StyleSet> resolveSpecifiedStyles(Collection<Element> elts, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
-            Map<Element, StyleSet> newSpecifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
             for (Element elt : elts) {
-                assert !newSpecifiedStyleSets.containsKey(elt);
-                newSpecifiedStyleSets.put(elt, computeSpecifiedStyleSet(elt, specifiedStyleSets, context));
+                assert !specifiedStyleSets.containsKey(elt);
+                specifiedStyleSets.put(elt, computeSpecifiedStyleSet(elt, specifiedStyleSets, context));
             }
-            return newSpecifiedStyleSets;
+            return specifiedStyleSets;
+        }
+
+        private static StyleSet applicableStyles(StyleSet ss, Element elt, TransformerContext context) {
+            boolean containsInapplicableStyle = false;
+            for (StyleSpecification s : ss.getStyles().values()) {
+                if (!doesStyleApply(elt, s.getName(), context)) {
+                    containsInapplicableStyle = true;
+                    break;
+                }
+            }
+            if (!containsInapplicableStyle)
+                return ss;
+            else {
+                StyleSet ssNew = new StyleSet(ss.getGeneration());
+                for (StyleSpecification s : ss.getStyles().values()) {
+                    if (doesStyleApply(elt, s.getName(), context)) {
+                        ssNew.merge(s);
+                    }
+                }
+                return ssNew;
+            }
+        }
+
+        private static boolean doesStyleApply(Element elt, QName styleName, TransformerContext context) {
+            return context.getModel().doesStyleApply(new QName(elt.getNamespaceURI(), elt.getLocalName()), styleName);
+        }
+
+        private static void elideInitialValues(StyleSet ss, Element elt, TransformerContext context) {
+            List<StyleSpecification> elisions = new java.util.ArrayList<StyleSpecification>();
+            for (StyleSpecification s : ss.getStyles().values()) {
+                StyleSpecification initial = getInitialStyle(elt, s.getName(), context);
+                if (initial != null) {
+                    String value = initial.getValue();
+                    if ((value != null) && value.equals(s.getValue()))
+                        elisions.add(s);
+                }
+            }
+            for (StyleSpecification s : elisions) {
+                ss.remove(s.getName());
+            }
+        }
+
+        private static StyleSpecification getInitialStyle(Element elt, QName styleName, TransformerContext context) {
+            String value = context.getModel().getInitialStyleValue(styleName);
+            if (value != null)
+                return new StyleSpecification(new ComparableQName(styleName), value);
+            else
+                return null;
         }
 
         private static StyleSet computeSpecifiedStyleSet(Element elt, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
             // See TTML2, Section 8.4.4.2
             // 1. initialization
-            StyleSet sss = new StyleSet();
+            StyleSet sss = new StyleSet(generateStyleSetIndex(context));
             // 2. referential and chained referential styling
             for (StyleSet ss : getSpecifiedStyleSets(getReferencedStyleElements(elt), specifiedStyleSets))
                 sss.merge(ss);
@@ -1254,6 +1392,11 @@ public class ISD {
                 }
             }
             return sss;
+        }
+
+        private static int generateStyleSetIndex(TransformerContext context) {
+            int[] indices = getGenerationIndices(context);
+            return indices[GenerationIndex.isdStyleSetIndex.ordinal()]++;
         }
 
         private static Collection<Element> getReferencedStyleElements(Element elt) {
@@ -1344,25 +1487,20 @@ public class ISD {
             return null;
         }
 
-        private static StyleSpecification getInitialStyle(Element elt, QName styleName, TransformerContext context) {
-            String value = context.getModel().getInitialStyleValue(styleName);
-            if (value != null)
-                return new StyleSpecification(new ComparableQName(styleName), value);
-            else
-                return null;
-        }
-
         private static void generateISDRegions(final Element isd, Element tt, final TransformerContext context) {
-            traverseElements(tt, null, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isRegionElement(elt)) {
-                        generateISDRegion(isd, elt, context);
+            try {
+                Traverse.traverseElements(tt, null, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isRegionElement(elt)) {
+                            generateISDRegion(isd, elt, context);
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            } catch (Exception e) {
+            }
         }
 
         private static void generateISDRegion(Element isd, Element region, TransformerContext context) {
@@ -1419,6 +1557,15 @@ public class ISD {
                 return null;
         }
 
+        // Unwrap and elide (redundant) anonymous spans that satisfy:
+        // 1. parent is a span
+        // 2. parent has exactly one child
+        // 3. parent's CSS is same as child's CSS
+        // To unwrap, replace single child of parent with children
+        // of anonymous span.
+        private static void unwrapRedundantAnonymousSpans(Element isd) {
+        }
+
         private static Element findChildElement(Element elt, String namespace, String name) {
             for (Node n = elt.getFirstChild(); n != null; n = n.getNextSibling()) {
                 if (n instanceof Element) {
@@ -1437,15 +1584,18 @@ public class ISD {
         }
 
         private void pruneISDExclusions(Document document, final TransformerContext context) {
-            traverseElements(document, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (!maybeExcludeElement(elt, context))
-                        maybeExcludeAttributes(elt, context);
-                    return true;
-                }
-            });
+            try {
+                Traverse.traverseElements(document, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (!maybeExcludeElement(elt, context))
+                            maybeExcludeAttributes(elt, context);
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
         }
 
         private static boolean maybeExcludeElement(Element elt, TransformerContext context) {
@@ -1549,64 +1699,6 @@ public class ISD {
                 return false;
         }
 
-        private void normalizeNamespaces(Document document) {
-            traverseElements(document, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    normalizeNamespaces(elt);
-                    return true;
-                }
-            });
-        }
-
-        static private Map<String,String> normalizedPrefixes = new java.util.HashMap<String,String>();
-        static {
-            normalizedPrefixes.put(NAMESPACE_TT, "");
-            normalizedPrefixes.put(NAMESPACE_TT_STYLE, "tts");
-            normalizedPrefixes.put(NAMESPACE_TT_PARAMETER, "ttp");
-            normalizedPrefixes.put(NAMESPACE_ISD, "isd");
-            normalizedPrefixes.put(Annotations.getNamespace(), Annotations.getNamespacePrefix());
-        }
-
-        private void normalizeNamespaces(Element elt) {
-            normalizeNamespace((Node) elt);
-            NamedNodeMap attrs = elt.getAttributes();
-            List<Attr> xmlnsFixups = new java.util.ArrayList<Attr>();
-            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
-                Node node = attrs.item(i);
-                if (node instanceof Attr) {
-                    String nsUri = node.getNamespaceURI();
-                    if ((nsUri != null) && nsUri.equals(XML.xmlnsNamespace))
-                        xmlnsFixups.add((Attr) node);
-                    else
-                        normalizeNamespace(node);
-                }
-            }
-            for (Attr a : xmlnsFixups)
-                normalizeNamespaceDeclaration(a, elt);
-        }
-
-        private void normalizeNamespaceDeclaration(Attr attr, Element elt) {
-            String nsUri = attr.getValue();
-            String normalizedPrefix = normalizedPrefixes.get(nsUri);
-            if (normalizedPrefix != null) {
-                if (normalizedPrefix.length() == 0)
-                    normalizedPrefix = null;
-                elt.removeAttributeNode(attr);
-            }
-        }
-
-        private void normalizeNamespace(Node node) {
-            String nsUri = node.getNamespaceURI();
-            String normalizedPrefix = normalizedPrefixes.get(nsUri);
-            if (normalizedPrefix != null) {
-                if (normalizedPrefix.length() == 0)
-                    normalizedPrefix = null;
-                node.setPrefix(normalizedPrefix);
-            }
-        }
-
         private static boolean hasUsableContent(Document document, TransformerContext context) {
             Element root = document.getDocumentElement();
             return (root != null) && hasUsableContent(root, context);
@@ -1666,271 +1758,6 @@ public class ISD {
            }
         } 
 
-        private static void traverseElements(Document document, Visitor v) {
-            Element root = document.getDocumentElement();
-            if (root != null)
-                traverseElements(root, null, v);
-        }
-
-        private static void traverseElements(Element elt, Element parent, Visitor v) {
-            if (!v.preVisit(elt, parent))
-                return;
-            // extract stable (non-live) list of children in case visitors mutate child list
-            List<Element> children = new java.util.ArrayList<Element>();
-            for (Node node = elt.getFirstChild(); node != null; node = node.getNextSibling()) {
-                if (node instanceof Element)
-                    children.add((Element) node);
-            }
-            // traverse stable (non-live) list of children
-            for (Element child : children) {
-                traverseElements(child, elt, v);
-            }
-            if (!v.postVisit(elt, parent))
-                return;
-        }
-
-    }
-
-    public static class StyleSpecification implements Comparable<StyleSpecification> {
-
-        private ComparableQName name;
-        private String value;
-
-        public StyleSpecification(String nsUri, String localName, String value) {
-            this(new ComparableQName(nsUri, localName), value);
-        }
-        
-        public StyleSpecification(ComparableQName name, String value) {
-            assert name != null;
-            assert value != null;
-            this.name = name;
-            this.value = value;
-        }
-        
-        public ComparableQName getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public int compareTo(StyleSpecification other) {
-            int d = name.compareTo(other.name);
-            if (d != 0)
-                return d;
-            return value.compareTo(other.value);
-        }
-
-        @Override
-        public int hashCode() {
-            int hc = 23;
-            hc = hc * 31 + name.hashCode();
-            hc = hc * 31 + value.hashCode();
-            return hc;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof StyleSpecification) {
-                StyleSpecification other = (StyleSpecification) o;
-                if (!name.equals(other.name))
-                    return false;
-                else if (!value.equals(other.value))
-                    return false;
-                else
-                    return true;
-            } else
-                return false;
-        }
-
-        @Override
-        public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append('[');
-            sb.append(name);
-            sb.append(',');
-            sb.append(value);
-            sb.append(']');
-            return sb.toString();
-        }
-
-    }
-
-    public static class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> implements Comparable<StyleSet> {
-
-        private Map<ComparableQName, StyleSpecification> styles;
-        private String id = new String();
-
-        public StyleSet() {
-            this(null);
-        }
-
-        public StyleSet(StyleSet styles) {
-            if (styles == null)
-                this.styles = new java.util.TreeMap<ComparableQName,StyleSpecification>();
-            else
-                this.styles = new java.util.TreeMap<ComparableQName,StyleSpecification>(styles);
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void merge(StyleSet styles) {
-            merge(styles.styles);
-        }
-
-        public void merge(Map<ComparableQName, StyleSpecification> styles) {
-            this.styles.putAll(styles);
-        }
-
-        public void merge(StyleSpecification style) {
-            this.styles.put(style.getName(), style);
-        }
-
-        public StyleSet applicableStyles(Element elt, TransformerContext context) {
-            boolean containsInapplicableStyle = false;
-            for (StyleSpecification s : styles.values()) {
-                if (!doesStyleApply(elt, s.getName(), context)) {
-                    containsInapplicableStyle = true;
-                    break;
-                }
-            }
-            StyleSet ss;
-            if (!containsInapplicableStyle)
-                ss = this;
-            else {
-                ss = new StyleSet();
-                for (StyleSpecification s : styles.values()) {
-                    if (doesStyleApply(elt, s.getName(), context)) {
-                        ss.merge(s);
-                    }
-                }
-            }
-            return ss;
-        }
-
-        public String generateAttributes(Element elt) {
-            if (!id.isEmpty()) {
-                for (StyleSpecification s : styles.values()) {
-                    ComparableQName n = s.getName();
-                    elt.setAttributeNS(n.getNamespaceURI(), n.getLocalPart(), s.getValue());
-                }
-                elt.setAttributeNS(XML.xmlNamespace, "id", id);
-                return id;
-            } else
-                return null;
-        }
-
-        @Override
-        public Set<Map.Entry<ComparableQName, StyleSpecification>> entrySet() {
-            return styles.entrySet();
-        }
-
-        public int compareTo(StyleSet other) {
-            int d = compare(styles.values(),other.styles.values());
-            if (d != 0)
-                return d;
-            return id.compareTo(other.id);
-        }
-
-        private static final int compare(Collection<StyleSpecification> styles1, Collection<StyleSpecification> styles2) {
-            List<StyleSpecification> sl1 = new java.util.ArrayList<StyleSpecification>(styles1);
-            List<StyleSpecification> sl2 = new java.util.ArrayList<StyleSpecification>(styles2);
-            int nsl1 = sl1.size();
-            int nsl2 = sl2.size();
-            for (int i = 0, n = Math.min(nsl1, nsl2); i < n; ++i) {
-                StyleSpecification s1 = sl1.get(i);
-                StyleSpecification s2 = sl2.get(i);
-                int d = s1.compareTo(s2);
-                if (d != 0)
-                    return d;
-            }
-            if (nsl1 < nsl2)
-                return -1;
-            else if (nsl1 > nsl2)
-                return 1;
-            else
-                return 0;
-        }
-
-        @Override
-        public int hashCode() {
-            int hc = 23;
-            hc = hc * 31 + styles.hashCode();
-            hc = hc * 31 + ((id != null) ? id.hashCode() : 0);
-            return hc;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof StyleSpecification) {
-                StyleSet ss = (StyleSet) o;
-                if (!styles.equals(ss.styles))
-                    return false;
-                else if ((id == null) ^ (ss.id == null))
-                    return false;
-                else if (id == null)
-                    return true;
-                else
-                    return id.equals(ss.id);
-            } else
-                return false;
-        }
-
-        @Override
-        public String toString() {
-            StringBuffer sb = new StringBuffer();
-            sb.append('{');
-            for (StyleSpecification ss : styles.values()) {
-                if (sb.length() > 1)
-                    sb.append(',');
-                sb.append(ss);
-            }
-            sb.append('}');
-            return sb.toString();
-        }
-
-    }
-
-    public static class ComparableQName extends QName implements Comparable<ComparableQName> {
-        
-        private static final long serialVersionUID = 6595331889303441857L;
-
-        public ComparableQName(QName name) {
-            this(name.getNamespaceURI(), name.getLocalPart());
-        }
-
-        public ComparableQName(String nsUri, String localPart) {
-            super(nsUri, localPart);
-        }
-
-        public int compareTo(ComparableQName other) {
-            String ns1 = getNamespaceURI();
-            String ns2 = other.getNamespaceURI();
-            if ((ns1 == null) && (ns2 != null))
-                return -1;
-            else if ((ns1 != null) && (ns2 == null))
-                return 1;
-            else if ((ns1 != null) && (ns2 != null)) {
-                int d = ns1.compareTo(ns2);
-                if (d != 0)
-                    return d;
-            }
-            String n1 = getLocalPart();
-            String n2 = other.getLocalPart();
-            return n1.compareTo(n2);
-        }
-
-    }
-
-    private static boolean doesStyleApply(Element elt, QName styleName, TransformerContext context) {
-        return context.getModel().doesStyleApply(new QName(elt.getNamespaceURI(), elt.getLocalName()), styleName);
     }
 
 }

@@ -33,17 +33,18 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class Documents {
 
     private Documents() {
     }
 
-    static public void assignIdAttributes(Document document, List<QName> idAttrs) {
+    public static void assignIdAttributes(Document document, List<QName> idAttrs) {
         assignIdAttributes(document.getDocumentElement(), idAttrs);
     }
 
-    static public void assignIdAttributes(Element elt, List<QName> idAttrs) {
+    public static void assignIdAttributes(Element elt, List<QName> idAttrs) {
         for (QName idAttr : idAttrs) {
             String ns = idAttr.getNamespaceURI();
             String ln = idAttr.getLocalPart();
@@ -60,6 +61,30 @@ public class Documents {
                 assignIdAttributes((Element) n, idAttrs);
             }
         }
+    }
+
+    public static List<Element> findElementsByName(Document d, QName qn) {
+        String ns = qn.getNamespaceURI();
+        NodeList nodes;
+        if ((ns == null) || (ns.length() == 0))
+            nodes = d.getElementsByTagName(qn.getLocalPart());
+        else
+            nodes = d.getElementsByTagNameNS(ns, qn.getLocalPart());
+        List<Element> elts = new java.util.ArrayList<Element>();
+        if (nodes != null) {
+            for (int i = 0, n = nodes.getLength(); i < n; ++i) {
+                elts.add((Element) nodes.item(i));
+            }
+        }
+        return elts;
+    }
+
+    public static Element findElementByName(Document d, QName qn) {
+        List<Element> elts = findElementsByName(d, qn);
+        if (!elts.isEmpty())
+            return elts.get(0);
+        else
+            return null;
     }
 
 }

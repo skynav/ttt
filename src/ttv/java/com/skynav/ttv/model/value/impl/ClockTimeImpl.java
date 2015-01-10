@@ -31,6 +31,7 @@ import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.model.value.TimeParameters;
 
 public class ClockTimeImpl implements ClockTime {
+    public static final ClockTime ZERO = new ClockTimeImpl(0, 0, 0, 0, 0);
     private int hours;
     private int minutes;
     private double seconds;

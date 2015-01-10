@@ -62,6 +62,19 @@ public class XML {
         return (nsUri != null) && nsUri.equals(getXSINamespaceUri());
     }
 
+    public static boolean isXMLNSNamespace(String nsUri) {
+        return (nsUri != null) && nsUri.equals(xmlnsNamespace);
+    }
+
+    public static boolean isAnyXMLNamespace(String nsUri) {
+        if (isXMLNamespace(nsUri))
+            return true;
+        else if (isXMLNSNamespace(nsUri))
+            return true;
+        else
+            return false;
+    }
+
     private static final QName xsiSchemaLocationName = new QName(getXSINamespaceUri(), "schemaLocation");
     public static QName getSchemaLocationAttributeName() {
         return xsiSchemaLocationName;

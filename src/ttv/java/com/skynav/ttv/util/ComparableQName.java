@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-14 Skynav, Inc. All rights reserved.
+ * Copyright 2014 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,25 +25,35 @@
  
 package com.skynav.ttv.util;
 
-public abstract class Visitor {
-    public enum Order { Pre, Post, Both };
-    private Order order;
-    public Visitor(Order order) {
-        this.order = order;
+import javax.xml.namespace.QName;
+
+public class ComparableQName extends QName implements Comparable<ComparableQName> {
+
+    private static final long serialVersionUID = 6595331889303441857L;
+
+    public ComparableQName(QName name) {
+        this(name.getNamespaceURI(), name.getLocalPart());
     }
-    public boolean preVisit(Object content, Object parent) throws Exception {
-        if (order != Order.Post)
-            return visit(content, parent, Order.Pre);
-        else
-            return true;
+
+    public ComparableQName(String nsUri, String localPart) {
+        super(nsUri, localPart);
     }
-    public boolean postVisit(Object content, Object parent) throws Exception {
-        if (order != Order.Pre)
-            return visit(content, parent, Order.Post);
-        else
-            return true;
+
+    public int compareTo(ComparableQName other) {
+        String ns1 = getNamespaceURI();
+        String ns2 = other.getNamespaceURI();
+        if ((ns1 == null) && (ns2 != null))
+            return -1;
+        else if ((ns1 != null) && (ns2 == null))
+            return 1;
+        else if ((ns1 != null) && (ns2 != null)) {
+            int d = ns1.compareTo(ns2);
+            if (d != 0)
+                return d;
+        }
+        String n1 = getLocalPart();
+        String n2 = other.getLocalPart();
+        return n1.compareTo(n2);
     }
-    public abstract boolean visit(Object content, Object parent, Order order) throws Exception;
+
 }
-
-

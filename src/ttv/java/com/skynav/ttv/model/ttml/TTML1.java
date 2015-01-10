@@ -47,6 +47,7 @@ import com.skynav.ttv.model.ttml1.tt.Style;
 import com.skynav.ttv.model.ttml1.tt.Styling;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.ttml1.ttm.Agent;
+import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
@@ -159,6 +160,21 @@ public class TTML1 {
         }
         public URI getExtensionNamespaceUri() {
             return getTTExtensionNamespaceUri();
+        }
+        static private Map<String,String> normalizedPrefixes = new java.util.HashMap<String,String>();
+        static {
+            normalizedPrefixes.put(XML.xmlNamespace, "xml");
+            normalizedPrefixes.put(XML.xmlnsNamespace, "xmlns");
+            normalizedPrefixes.put(XML.xsiNamespace, "xsi");
+            normalizedPrefixes.put(Constants.NAMESPACE_TT, "");
+            normalizedPrefixes.put(Constants.NAMESPACE_TT_METADATA, "ttm");
+            normalizedPrefixes.put(Constants.NAMESPACE_TT_PARAMETER, "ttp");
+            normalizedPrefixes.put(Constants.NAMESPACE_TT_STYLE, "tts");
+            normalizedPrefixes.put(Constants.NAMESPACE_TT_ISD, "isd");
+            normalizedPrefixes.put(Annotations.getNamespace(), Annotations.getNamespacePrefix());
+        }
+        public Map<String,String> getNormalizedPrefixes() {
+            return normalizedPrefixes;
         }
         private static Map<URI,Class<?>> profileSpecificationClasses;
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {

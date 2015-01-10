@@ -51,6 +51,7 @@ import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.TTML1ParameterVerifier;
@@ -483,15 +484,18 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
 
     private static List<Element> getISDRegionElements(Document doc) {
         final List<Element> regions = new java.util.ArrayList<Element>();
-        traverseElements(doc, new PreVisitor() {
-            public boolean visit(Object content, Object parent, Visitor.Order order) {
-                assert content instanceof Element;
-                Element elt = (Element) content;
-                if (isISDRegionElement(elt))
-                    regions.add(elt);
-                return true;
-            }
-        });
+        try {
+            Traverse.traverseElements(doc, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (isISDRegionElement(elt))
+                        regions.add(elt);
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+        }
         return regions;
     }
 
@@ -512,29 +516,6 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
             }
         } else
             return false;
-    }
-
-    private static void traverseElements(Document document, Visitor v) {
-        Element root = document.getDocumentElement();
-        if (root != null)
-            traverseElements(root, null, v);
-    }
-
-    private static void traverseElements(Element elt, Element parent, Visitor v) {
-        if (!v.preVisit(elt, parent))
-            return;
-        // extract stable (non-live) list of children in case visitors mutate child list
-        List<Element> children = new java.util.ArrayList<Element>();
-        for (Node node = elt.getFirstChild(); node != null; node = node.getNextSibling()) {
-            if (node instanceof Element)
-                children.add((Element) node);
-        }
-        // traverse stable (non-live) list of children
-        for (Element child : children) {
-            traverseElements(child, elt, v);
-        }
-        if (!v.postVisit(elt, parent))
-            return;
     }
 
 }

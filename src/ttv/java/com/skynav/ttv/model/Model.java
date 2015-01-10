@@ -139,6 +139,12 @@ public interface Model {
     URI getExtensionNamespaceUri();
 
     /**
+     * Obtain map of normalized namespace prefixes.
+     * @return model's normalized prefixes
+     */
+    Map<String,String> getNormalizedPrefixes();
+
+    /**
      * Obtain set of profiles designators.
      * @return model's profile designators 
      */
