@@ -239,6 +239,19 @@
 </target>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
+<target name="create-xsd-bindings-ttml2">
+  <exec executable="xjc" dir="${build.dir}">
+    <arg value="-b"/>
+    <arg value="${bindings.dir}/xsd/ttml2-bindings.xjb"/>
+    <arg value="-d"/>
+    <arg value="${ttv.generated.dir}"/>
+    <arg value="${schemas.dir}/xsd/ttml2/ttml2.xsd"/>
+  </exec>
+</target>
+
+<target name="create-xsd-bindings-ttml" depends="create-xsd-bindings-ttml1,create-xsd-bindings-ttml2"/>
+
+<!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="create-xsd-bindings-smpte-2010">
   <exec executable="xjc" dir="${build.dir}">
     <arg value="-b"/>
@@ -250,6 +263,7 @@
   </exec>
 </target>
 
+<!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="create-xsd-bindings-smpte-2013">
   <exec executable="xjc" dir="${build.dir}">
     <arg value="-b"/>
@@ -265,7 +279,7 @@
 <target name="create-xsd-bindings-smpte" depends="create-xsd-bindings-smpte-2010,create-xsd-bindings-smpte-2013"/>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
-<target name="create-xsd-bindings" depends="create-xsd-bindings-ttml1, create-xsd-bindings-smpte"/>
+<target name="create-xsd-bindings" depends="create-xsd-bindings-ttml, create-xsd-bindings-smpte"/>
 
 <!-- WARNING - THIS TARGET OVERWRITES EXISTING BINDING SOURCES!! -->
 <target name="generate-code" depends="create-xsd-bindings"/>

@@ -100,20 +100,21 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean verify(TimedText tt) {
-        if (!super.verify(tt))
+    protected boolean verifyTimedText(Object tt) {
+        if (!super.verifyTimedText(tt))
             return false;
         else {
+            assert tt instanceof TimedText;
             boolean failed = false;
             Reporter reporter = getContext().getReporter();
-            if (tt.getProfile() == null) {
+            if (((TimedText)tt).getProfile() == null) {
                 reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' must have a ''{1}'' attribute, but it is missing.",
                     TTML1Model.ttElementName, TTML1ProfileVerifier.profileAttributeName));
                 failed = true;
             } else {
                 try {
                     Set<URI> designators = getModel().getProfileDesignators();
-                    String value = tt.getProfile();
+                    String value = ((TimedText)tt).getProfile();
                     URI uri = new URI(value);
                     if (!designators.contains(uri)) {
                         reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' has a ''{1}'' attribute with value ''{2}'', but must have a value that matches one of following: {3}.",
@@ -124,12 +125,12 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
                     // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.
                 }
             }
-            if (tt.getHead() == null) {
+            if (((TimedText)tt).getHead() == null) {
                 reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' must have a ''{1}'' child element, but it is missing.",
                     TTML1Model.ttElementName, TTML1Model.headElementName));
                 failed = true;
             }
-            if (tt.getBody() == null) {
+            if (((TimedText)tt).getBody() == null) {
                 reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' must have a ''{1}'' child element, but it is missing.",
                     TTML1Model.ttElementName, TTML1Model.bodyElementName));
                 failed = true;

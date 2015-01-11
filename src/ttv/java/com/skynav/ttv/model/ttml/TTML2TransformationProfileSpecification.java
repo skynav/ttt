@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2015 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,44 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.model;
+package com.skynav.ttv.model.ttml;
 
-import java.util.Map;
-import java.util.Set;
+import java.net.URI;
 
-import com.skynav.ttv.model.ttml.TTML1;
-import com.skynav.ttv.model.ttml.TTML2;
-import com.skynav.ttv.model.smpte.ST20522010;
-import com.skynav.ttv.model.smpte.ST20522013;
-import com.skynav.ttv.model.netflix.NFLXTT;
-
-public class Models {
-
-    public static Model getDefaultModel() {
-        return TTML1.MODEL;
-    }
-
-    public static String getDefaultModelName() {
-        return getDefaultModel().getName();
-    }
-
-    private static Map<String,Model> modelMap;
-
-    static {
-        modelMap = new java.util.TreeMap<String,Model>();
-        modelMap.put(TTML1.MODEL.getName(), TTML1.MODEL);
-        modelMap.put(TTML2.MODEL.getName(), TTML2.MODEL);
-        modelMap.put(ST20522010.MODEL.getName(), ST20522010.MODEL);
-        modelMap.put(ST20522013.MODEL.getName(), ST20522013.MODEL);
-        modelMap.put(NFLXTT.MODEL.getName(), NFLXTT.MODEL);
-    }
-
-    public static Set<String> getModelNames() {
-        return modelMap.keySet();
-    }
-
-    public static Model getModel(String name) {
-        return modelMap.get(name);
+public class TTML2TransformationProfileSpecification extends TTML1TransformationProfileSpecification {
+    
+    public TTML2TransformationProfileSpecification(URI profileUri) {
+        super(profileUri);
     }
 
 }

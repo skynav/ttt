@@ -78,15 +78,15 @@ public class TTML1 {
         public static final String NAMESPACE_TT_EXTENSION = "http://www.w3.org/ns/ttml/extension/";
         public static final String NAMESPACE_TT_ISD = "http://www.w3.org/ns/ttml#isd";
 
-        public static final String XSD_TT = "xsd/ttml1/ttml1.xsd";
+        public static final String XSD_TTML1 = "xsd/ttml1/ttml1.xsd";
 
-        public static final String PROFILE_TT_PRESENTATION = "dfxp-presentation";
-        public static final String PROFILE_TT_TRANSFORMATION = "dfxp-transformation";
-        public static final String PROFILE_TT_FULL = "dfxp-full";
+        public static final String PROFILE_TTML1_PRESENTATION = "dfxp-presentation";
+        public static final String PROFILE_TTML1_TRANSFORMATION = "dfxp-transformation";
+        public static final String PROFILE_TTML1_FULL = "dfxp-full";
 
-        public static final String PROFILE_TT_PRESENTATION_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TT_PRESENTATION;
-        public static final String PROFILE_TT_TRANSFORMATION_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TT_TRANSFORMATION;
-        public static final String PROFILE_TT_FULL_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TT_FULL;
+        public static final String PROFILE_TTML1_PRESENTATION_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TTML1_PRESENTATION;
+        public static final String PROFILE_TTML1_TRANSFORMATION_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TTML1_TRANSFORMATION;
+        public static final String PROFILE_TTML1_FULL_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TTML1_FULL;
 
         public static final String ATTR_AGENT = "agent";
         public static final String ATTR_REGION = "region";
@@ -111,7 +111,7 @@ public class TTML1 {
         }
         private void populateSchemaResourceNames() {
             List<String> resourceNames = new java.util.ArrayList<String>();
-            resourceNames.add(Constants.XSD_TT);
+            resourceNames.add(Constants.XSD_TTML1);
             this.schemaResourceNames = resourceNames.toArray(new String[resourceNames.size()]);
         }
         private void populateNamespaceURIs() {
@@ -180,9 +180,9 @@ public class TTML1 {
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {
             if (profileSpecificationClasses == null) {
                 profileSpecificationClasses = new java.util.HashMap<URI,Class<?>>();
-                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_TT_TRANSFORMATION), TTML1TransformationProfileSpecification.class);
-                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_TT_PRESENTATION), TTML1PresentationProfileSpecification.class);
-                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_TT_FULL), TTML1FullProfileSpecification.class);
+                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_TTML1_TRANSFORMATION), TTML1TransformationProfileSpecification.class);
+                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_TTML1_PRESENTATION), TTML1PresentationProfileSpecification.class);
+                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_TTML1_FULL), TTML1FullProfileSpecification.class);
             }
             return profileSpecificationClasses;
         }
@@ -245,7 +245,6 @@ public class TTML1 {
         public static final QName agentElementName = new com.skynav.ttv.model.ttml1.ttm.ObjectFactory().createAgent(new Agent()).getName();
         public static final QName regionElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createRegion(new Region()).getName();
         public static final QName styleElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createStyle(new Style()).getName();
-        private static final String metadataNamespaceUri = com.skynav.ttv.verifier.ttml.TTML1MetadataVerifier.getMetadataNamespaceUri();
         public QName getIdReferenceTargetName(QName attributeName) {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
@@ -256,7 +255,7 @@ public class TTML1 {
                     return regionElementName;
                 else if (localName.equals(Constants.ATTR_STYLE))
                     return styleElementName;
-            } else if (namespaceUri.equals(metadataNamespaceUri)) {
+            } else if (namespaceUri.equals(Constants.NAMESPACE_TT_METADATA)) {
                 if (localName.equals(Constants.ATTR_AGENT))
                     return agentElementName;
             }
@@ -272,7 +271,7 @@ public class TTML1 {
                     return Region.class;
                 else if (localName.equals(Constants.ATTR_STYLE))
                     return Style.class;
-            } else if (namespaceUri.equals(metadataNamespaceUri)) {
+            } else if (namespaceUri.equals(Constants.NAMESPACE_TT_METADATA)) {
                 if (localName.equals(Constants.ATTR_AGENT))
                     return Agent.class;
             }
@@ -298,7 +297,7 @@ public class TTML1 {
                 ancestors.add(layoutElementName);
                 ancestors.add(headElementName);
                 permissibleAncestors.add(ancestors);
-            } else if (localName.equals(Constants.ATTR_AGENT) && (isEmptyNamespace(namespaceUri) || namespaceUri.equals(metadataNamespaceUri))) {
+            } else if (localName.equals(Constants.ATTR_AGENT) && (isEmptyNamespace(namespaceUri) || namespaceUri.equals(Constants.NAMESPACE_TT_METADATA))) {
                 List<QName> ancestors1 = new java.util.ArrayList<QName>();
                 ancestors1.add(metadataElementName);
                 ancestors1.add(headElementName);
@@ -309,7 +308,7 @@ public class TTML1 {
             }
             return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
         }
-        private boolean isEmptyNamespace(String namespaceUri) {
+        public static boolean isEmptyNamespace(String namespaceUri) {
             return (namespaceUri == null) || (namespaceUri.length() == 0);
         }
         public static final QName divElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createDiv(new Division()).getName();

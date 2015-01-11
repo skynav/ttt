@@ -30,7 +30,7 @@ import java.net.URI;
 import com.skynav.ttv.model.Profile.Specification;
 import com.skynav.ttv.model.Profile.Usage;
 
-import static com.skynav.ttv.model.ttml.TTML1.Constants.PROFILE_TT_FULL_ABSOLUTE;
+import static com.skynav.ttv.model.ttml.TTML1.Constants.PROFILE_TTML1_FULL_ABSOLUTE;
 import static com.skynav.ttv.model.smpte.ST20522010.Constants.NAMESPACE_2010_EXTENSION;
 
 public class ST20522010FullProfileSpecification extends Specification {
@@ -42,6 +42,6 @@ public class ST20522010FullProfileSpecification extends Specification {
     };
 
     public ST20522010FullProfileSpecification(URI profileUri) {
-        super(profileUri, PROFILE_TT_FULL_ABSOLUTE, null, extensionsMap(NAMESPACE_2010_EXTENSION, extensionMapEntries));
+        super(profileUri, PROFILE_TTML1_FULL_ABSOLUTE, null, extensionsMap(NAMESPACE_2010_EXTENSION, extensionMapEntries));
     }
 }

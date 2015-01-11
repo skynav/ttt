@@ -26,6 +26,7 @@
 package com.skynav.ttv.verifier.ttml;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.xml.bind.JAXBElement;
 
@@ -89,19 +90,23 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
 
     public Object findBindingElement(Object root, Node node) {
         if (root instanceof TimedText)
-            return findBindingElement((TimedText)root, node);
+            return findTimedTextBindingElement(root, node);
         else if (root instanceof Profile)
-            return findBindingElement((Profile)root, node);
+            return findProfileBindingElement(root, node);
         else
             return null;
     }
 
     public boolean verify(Object root, VerifierContext context) {
         setState(root, context);
+        return verifyRoot(root);
+    }
+
+    protected boolean verifyRoot(Object root) {
         if (root instanceof TimedText)
-            return verify((TimedText)root);
+            return verifyTimedText(root);
         else if (root instanceof Profile)
-            return verify((Profile)root);
+            return verifyProfile(root);
         else
             return unexpectedContent(root);
     }
@@ -137,9 +142,9 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return Locators.getLocator(content);
     }
 
-    protected boolean verify(TimedText tt) {
+    protected boolean verifyTimedText(Object tt) {
         boolean failed = false;
-        if (!verifyParameterAttributes(tt))
+        if (!verifyTimedTextParameterAttributes(tt))
             failed = true;
         if (!verifyStyleAttributes(tt))
             failed = true;
@@ -147,56 +152,91 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!verifyOtherAttributes(tt))
             failed = true;
-        Head head = tt.getHead();
+        Object head = getTimedTextHead(tt);
         if (head != null) {
-            if (!verify(head, tt))
+            if (!verifyHead(head, tt))
                 failed = true;
         }
-        Body body = tt.getBody();
+        Object body = getTimedTextBody(tt);
         if (body != null) {
-            if (!verify(body))
+            if (!verifyBody(body))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Head head, TimedText tt) {
+    protected Object getTimedTextHead(Object tt) {
+        assert tt instanceof TimedText;
+        return ((TimedText) tt).getHead();
+    }
+
+    protected Object getTimedTextBody(Object tt) {
+        assert tt instanceof TimedText;
+        return ((TimedText) tt).getBody();
+    }
+
+    protected boolean verifyHead(Object head, Object tt) {
         boolean failed = false;
         if (!verifyOtherAttributes(head))
             failed = true;
-        for (Object m : head.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getHeadMetadata(head)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        Styling styling  = head.getStyling();
+        Object styling  = getHeadStyling(head);
         if (styling != null) {
-            if (!verify(styling))
+            if (!verifyStyling(styling))
                 failed = true;
         }
-        Layout layout  = head.getLayout();
+        Object layout  = getHeadLayout(head);
         if (layout != null) {
-            if (!verify(layout))
+            if (!verifyLayout(layout))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Styling styling) {
+    protected Collection<? extends Object> getHeadMetadata(Object head) {
+        assert head instanceof Head;
+        return ((Head) head).getMetadataClass();
+    }
+
+    protected Object getHeadStyling(Object head) {
+        assert head instanceof Head;
+        return ((Head) head).getStyling();
+    }
+
+    protected Object getHeadLayout(Object head) {
+        assert head instanceof Head;
+        return ((Head) head).getLayout();
+    }
+
+    protected boolean verifyStyling(Object styling) {
         boolean failed = false;
         if (!verifyOtherAttributes(styling))
             failed = true;
-        for (Object m : styling.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getStylingMetadata(styling)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Style s : styling.getStyle()) {
-            if (!verify(s))
+        for (Object s : getStylingStyles(styling)) {
+            if (!verifyStyle(s))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Style style) {
+    protected Collection<? extends Object> getStylingMetadata(Object styling) {
+        assert styling instanceof Styling;
+        return ((Styling) styling).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getStylingStyles(Object styling) {
+        assert styling instanceof Styling;
+        return ((Styling) styling).getStyle();
+    }
+
+    protected boolean verifyStyle(Object style) {
         boolean failed = false;
         if (!verifyStyleAttributes(style))
             failed = true;
@@ -205,22 +245,32 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean verify(Layout layout) {
+    protected boolean verifyLayout(Object layout) {
         boolean failed = false;
         if (!verifyOtherAttributes(layout))
             failed = true;
-        for (Object m : layout.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getLayoutMetadata(layout)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Region r : layout.getRegion()) {
-            if (!verify(r))
+        for (Object r : getLayoutRegions(layout)) {
+            if (!verifyRegion(r))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Region region) {
+    protected Collection<? extends Object> getLayoutMetadata(Object layout) {
+        assert layout instanceof Layout;
+        return ((Layout) layout).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getLayoutRegions(Object layout) {
+        assert layout instanceof Layout;
+        return ((Layout) layout).getRegion();
+    }
+
+    protected boolean verifyRegion(Object region) {
         boolean failed = false;
         if (!verifyStyleAttributes(region))
             failed = true;
@@ -228,24 +278,39 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!verifyOtherAttributes(region))
             failed = true;
-        for (Object m : region.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getRegionMetadata(region)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Set a : region.getAnimationClass()) {
-            if (!verify(a))
+        for (Object a : getRegionAnimations(region)) {
+            if (!verifyAnimation(a))
                 failed = true;
         }
-        for (Style s : region.getStyle()) {
-            if (!verify(s))
+        for (Object s : getRegionStyles(region)) {
+            if (!verifyStyle(s))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Body body) {
+    protected Collection<? extends Object> getRegionMetadata(Object region) {
+        assert region instanceof Region;
+        return ((Region) region).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getRegionAnimations(Object region) {
+        assert region instanceof Region;
+        return ((Region) region).getAnimationClass();
+    }
+
+    protected Collection<? extends Object> getRegionStyles(Object region) {
+        assert region instanceof Region;
+        return ((Region) region).getStyle();
+    }
+
+    protected boolean verifyBody(Object body) {
         boolean failed = false;
-        if (!verifyMetadataAttributes(body))
+        if (!verifyMetadataAttributes(metadataVerifier, body))
             failed = true;
         if (!verifyStyleAttributes(body))
             failed = true;
@@ -253,24 +318,39 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!verifyOtherAttributes(body))
             failed = true;
-        for (Object m : body.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getBodyMetadata(body)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Set a : body.getAnimationClass()) {
-            if (!verify(a))
+        for (Object a : getBodyAnimations(body)) {
+            if (!verifyAnimation(a))
                 failed = true;
         }
-        for (Division d : body.getDiv()) {
-            if (!verify(d))
+        for (Object d : getBodyDivisions(body)) {
+            if (!verifyDivision(d))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Division division) {
+    protected Collection<? extends Object> getBodyMetadata(Object body) {
+        assert body instanceof Body;
+        return ((Body) body).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getBodyAnimations(Object body) {
+        assert body instanceof Body;
+        return ((Body) body).getAnimationClass();
+    }
+
+    protected Collection<? extends Object> getBodyDivisions(Object body) {
+        assert body instanceof Body;
+        return ((Body) body).getDiv();
+    }
+
+    protected boolean verifyDivision(Object division) {
         boolean failed = false;
-        if (!verifyMetadataAttributes(division))
+        if (!verifyMetadataAttributes(metadataVerifier, division))
             failed = true;
         if (!verifyStyleAttributes(division))
             failed = true;
@@ -278,24 +358,39 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!verifyOtherAttributes(division))
             failed = true;
-        for (Object m : division.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getDivisionMetadata(division)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Set a : division.getAnimationClass()) {
-            if (!verify(a))
+        for (Object a : getDivisionAnimations(division)) {
+            if (!verifyAnimation(a))
                 failed = true;
         }
-        for (Object b : division.getBlockClass()) {
+        for (Object b : getDivisionBlocks(division)) {
             if (!verifyBlock(b))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Paragraph paragraph) {
+    protected Collection<? extends Object> getDivisionMetadata(Object division) {
+        assert division instanceof Division;
+        return ((Division) division).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getDivisionAnimations(Object division) {
+        assert division instanceof Division;
+        return ((Division) division).getAnimationClass();
+    }
+
+    protected Collection<? extends Object> getDivisionBlocks(Object division) {
+        assert division instanceof Division;
+        return ((Division) division).getBlockClass();
+    }
+
+    protected boolean verifyParagraph(Object paragraph) {
         boolean failed = false;
-        if (!verifyMetadataAttributes(paragraph))
+        if (!verifyMetadataAttributes(metadataVerifier, paragraph))
             failed = true;
         if (!verifyStyleAttributes(paragraph))
             failed = true;
@@ -303,16 +398,21 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!verifyOtherAttributes(paragraph))
             failed = true;
-        for (Serializable s : paragraph.getContent()) {
+        for (Serializable s : getParagraphContent(paragraph)) {
             if (!verifyContent(s))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Span span) {
+    protected Collection<Serializable> getParagraphContent(Object paragraph) {
+        assert paragraph instanceof Paragraph;
+        return ((Paragraph) paragraph).getContent();
+    }
+
+    protected boolean verifySpan(Object span) {
         boolean failed = false;
-        if (!verifyMetadataAttributes(span))
+        if (!verifyMetadataAttributes(metadataVerifier, span))
             failed = true;
         if (!verifyStyleAttributes(span))
             failed = true;
@@ -320,33 +420,55 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!verifyOtherAttributes(span))
             failed = true;
-        for (Serializable s : span.getContent()) {
+        for (Serializable s : getSpanContent(span)) {
             if (!verifyContent(s))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Break br) {
+    protected Collection<Serializable> getSpanContent(Object span) {
+        assert span instanceof Span;
+        return ((Span) span).getContent();
+    }
+
+    protected boolean verifyBreak(Object br) {
         boolean failed = false;
-        if (!verifyMetadataAttributes(br))
+        if (!verifyMetadataAttributes(metadataVerifier, br))
             failed = true;
         if (!verifyStyleAttributes(br))
             failed = true;
         if (!verifyOtherAttributes(br))
             failed = true;
-        for (Object m : br.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getBreakMetadata(br)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Set a : br.getAnimationClass()) {
-            if (!verify(a))
+        for (Object a : getBreakAnimations(br)) {
+            if (!verifyAnimation(a))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Set set) {
+    protected Collection<? extends Object> getBreakMetadata(Object br) {
+        assert br instanceof Break;
+        return ((Break) br).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getBreakAnimations(Object br) {
+        assert br instanceof Break;
+        return ((Break) br).getAnimationClass();
+    }
+
+    protected boolean verifyAnimation(Object animation) {
+        if (animation instanceof Set)
+            return verifySet(animation);
+        else
+            return unexpectedContent(animation);
+    }
+
+    protected boolean verifySet(Object set) {
         boolean failed = false;
         if (!verifyStyleAttributes(set))
             failed = true;
@@ -354,8 +476,8 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!verifyOtherAttributes(set))
             failed = true;
-        for (Object m : set.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getSetMetadata(set)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
         if (!verifyStyledItem(set))
@@ -363,22 +485,27 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean verify(Profile profile) {
+    protected Collection<? extends Object> getSetMetadata(Object set) {
+        assert set instanceof Set;
+        return ((Set) set).getMetadataClass();
+    }
+
+    protected boolean verifyProfile(Object profile) {
         boolean failed = false;
         if (!verifyParameterAttributes(profile))
             failed = true;
         if (!verifyOtherAttributes(profile))
             failed = true;
-        for (Object m : profile.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getProfileMetadata(profile)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Features features : profile.getFeatures()) {
-            if (!verify(features))
+        for (Object features : getProfileFeatures(profile)) {
+            if (!verifyFeatures(features))
                 failed = true;
         }
-        for (Extensions extensions: profile.getExtensions()) {
-            if (!verify(extensions))
+        for (Object extensions : getProfileExtensions(profile)) {
+            if (!verifyExtensions(extensions))
                 failed = true;
         }
         if (!verifyProfileItem(profile))
@@ -386,24 +513,49 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean verify(Features features) {
+    protected Collection<? extends Object> getProfileMetadata(Object profile) {
+        assert profile instanceof Profile;
+        return ((Profile) profile).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getProfileFeatures(Object profile) {
+        assert profile instanceof Profile;
+        return ((Profile) profile).getFeatures();
+    }
+
+    protected Collection<? extends Object> getProfileExtensions(Object profile) {
+        assert profile instanceof Profile;
+        return ((Profile) profile).getExtensions();
+    }
+
+    protected boolean verifyFeatures(Object features) {
         boolean failed = false;
         if (!verifyParameterAttributes(features))
             failed = true;
         if (!verifyOtherAttributes(features))
             failed = true;
-        for (Object m : features.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getFeaturesMetadata(features)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Feature feature : features.getFeature()) {
-            if (!verify(feature))
+        for (Object feature : getFeaturesFeatures(features)) {
+            if (!verifyFeature(feature))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Feature feature) {
+    protected Collection<? extends Object> getFeaturesMetadata(Object features) {
+        assert features instanceof Features;
+        return ((Features) features).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getFeaturesFeatures(Object features) {
+        assert features instanceof Features;
+        return ((Features) features).getFeature();
+    }
+
+    protected boolean verifyFeature(Object feature) {
         boolean failed = false;
         if (!verifyOtherAttributes(feature))
             failed = true;
@@ -412,24 +564,34 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean verify(Extensions extensions) {
+    protected boolean verifyExtensions(Object extensions) {
         boolean failed = false;
         if (!verifyParameterAttributes(extensions))
             failed = true;
         if (!verifyOtherAttributes(extensions))
             failed = true;
-        for (Object m : extensions.getMetadataClass()) {
-            if (!verifyMetadata(m))
+        for (Object m : getExtensionsMetadata(extensions)) {
+            if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Extension extension : extensions.getExtension()) {
-            if (!verify(extension))
+        for (Object extension : getExtensionsExtensions(extensions)) {
+            if (!verifyExtension(extension))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verify(Extension extension) {
+    protected Collection<? extends Object> getExtensionsMetadata(Object extensions) {
+        assert extensions instanceof Extensions;
+        return ((Extensions) extensions).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getExtensionsExtensions(Object extensions) {
+        assert extensions instanceof Extensions;
+        return ((Extensions) extensions).getExtension();
+    }
+
+    protected boolean verifyExtension(Object extension) {
         boolean failed = false;
         if (!verifyOtherAttributes(extension))
             failed = true;
@@ -442,60 +604,70 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return this.profileVerifier.verify(content, getLocator(content), this.context, ItemType.Element);
     }
 
-    protected boolean verify(Actor actor) {
+    protected boolean verifyActor(Object actor) {
         boolean failed = false;
         if (!verifyOtherAttributes(actor))
             failed = true;
-        if (!verifyMetadataItem(actor))
+        if (!verifyMetadataItem(metadataVerifier, actor))
             failed = true;
         return !failed;
     }
 
-    protected boolean verify(Agent agent) {
+    protected boolean verifyAgent(Object agent) {
         boolean failed = false;
         if (!verifyOtherAttributes(agent))
             failed = true;
-        for (Name name : agent.getName()) {
-            if (!verify(name))
+        for (Object name : getAgentNames(agent)) {
+            if (!verifyName(name))
                 failed = true;
         }
-        Actor actor = agent.getActor();
+        Object actor = getAgentActor(agent);
         if (actor != null ) {
-            if (!verify(actor))
+            if (!verifyActor(actor))
                 failed = true;
         }
-        if (!verifyMetadataItem(agent))
+        if (!verifyMetadataItem(metadataVerifier, agent))
             failed = true;
         return !failed;
     }
 
-    protected boolean verify(Copyright copyright) {
+    protected Collection<? extends Object> getAgentNames(Object agent) {
+        assert agent instanceof Agent;
+        return ((Agent) agent).getName();
+    }
+
+    protected Object getAgentActor(Object agent) {
+        assert agent instanceof Agent;
+        return ((Agent) agent).getActor();
+    }
+
+    protected boolean verifyCopyright(Object copyright) {
         boolean failed = false;
         if (!verifyOtherAttributes(copyright))
             failed = true;
-        if (!verifyMetadataItem(copyright))
+        if (!verifyMetadataItem(metadataVerifier, copyright))
             failed = true;
         return !failed;
     }
 
-    protected boolean verify(Description description) {
+    protected boolean verifyDescription(Object description) {
         boolean failed = false;
         if (!verifyOtherAttributes(description))
             failed = true;
-        if (!verifyMetadataItem(description))
+        if (!verifyMetadataItem(metadataVerifier, description))
             failed = true;
         return !failed;
     }
 
-    protected boolean verify(Metadata metadata) {
+    protected boolean verifyMetadata(Object metadata) {
         boolean failed = false;
-        if (!verifyMetadataAttributes(metadata))
+        if (!verifyMetadataAttributes(metadataVerifier, metadata))
             failed = true;
         if (!verifyOtherAttributes(metadata))
             failed = true;
-        for (Object content : metadata.getAny()) {
+        for (Object content : getMetadataAny(metadata)) {
             if (isMetadataItem(content)) {
-                if (!verifyMetadata(content))
+                if (!verifyMetadataItem(content))
                     failed = true;
             } else {
                 if (content instanceof JAXBElement<?>)
@@ -503,77 +675,82 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
                 failed = !verifyNonTTOtherElement(content, getLocator(content), this.context);
             }
         }
-        if (!verifyMetadataItem(metadata))
+        if (!verifyMetadataItem(metadataVerifier, metadata))
             failed = true;
         return !failed;
     }
 
-    protected boolean verify(Name name) {
+    protected Collection<? extends Object> getMetadataAny(Object metadata) {
+        assert metadata instanceof Metadata;
+        return ((Metadata) metadata).getAny();
+    }
+
+    protected boolean verifyName(Object name) {
         boolean failed = false;
         if (!verifyOtherAttributes(name))
             failed = true;
-        if (!verifyMetadataItem(name))
+        if (!verifyMetadataItem(metadataVerifier, name))
             failed = true;
         return !failed;
     }
 
-    protected boolean verify(Title title) {
+    protected boolean verifyTitle(Object title) {
         boolean failed = false;
         if (!verifyOtherAttributes(title))
             failed = true;
-        if (!verifyMetadataItem(title))
+        if (!verifyMetadataItem(metadataVerifier, title))
             failed = true;
         return !failed;
     }
 
-    private boolean verifyForeignMetadata(Element metadata) {
+    protected boolean verifyForeignMetadata(Element metadata) {
         boolean failed = false;
         return !failed;
     }
 
-    private boolean verifyMetadata(Object metadata) {
+    protected boolean verifyMetadataItem(Object metadata) {
         if (metadata instanceof JAXBElement<?>)
-            return verifyMetadata(((JAXBElement<?>)metadata).getValue());
+            return verifyMetadataItem(((JAXBElement<?>)metadata).getValue());
         else if (metadata instanceof Actor)
-            return verify((Actor)metadata);
+            return verifyActor(metadata);
         else if (metadata instanceof Agent)
-            return verify((Agent)metadata);
+            return verifyAgent(metadata);
         else if (metadata instanceof Copyright)
-            return verify((Copyright)metadata);
+            return verifyCopyright(metadata);
         else if (metadata instanceof Description)
-            return verify((Description)metadata);
+            return verifyDescription(metadata);
         else if (metadata instanceof Metadata)
-            return verify((Metadata)metadata);
+            return verifyMetadata(metadata);
         else if (metadata instanceof Name)
-            return verify((Name)metadata);
+            return verifyName(metadata);
         else if (metadata instanceof Title)
-            return verify((Title)metadata);
+            return verifyTitle(metadata);
         else if (metadata instanceof Element)
             return verifyForeignMetadata((Element)metadata);
         else
             return unexpectedContent(metadata);
     }
 
-    private boolean verifyBlock(Object block) {
+    protected boolean verifyBlock(Object block) {
         if (block instanceof Division)
-            return verify((Division) block);
+            return verifyDivision(block);
         else if (block instanceof Paragraph)
-            return verify((Paragraph) block);
+            return verifyParagraph(block);
         else
             return unexpectedContent(block);
     }
 
-    private boolean verifyContent(Serializable content) {
+    protected boolean verifyContent(Serializable content) {
         if (content instanceof JAXBElement<?>) {
             Object element = ((JAXBElement<?>)content).getValue();
             if (isMetadataItem(element))
                 return verifyMetadata(element);
             else if (element instanceof Set)
-                return verify((Set) element);
+                return verifySet(element);
             else if (element instanceof Span)
-                return verify((Span) element);
+                return verifySpan(element);
             else if (element instanceof Break)
-                return verify((Break) element);
+                return verifyBreak(element);
             else
                 return unexpectedContent(element);
         } else if (content instanceof String) {
@@ -582,21 +759,21 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             return unexpectedContent(content);
     }
 
-    private boolean verifyMetadataAttributes(Object content) {
-        return this.metadataVerifier.verify(content, getLocator(content), this.context, ItemType.Attributes);
+    private boolean verifyMetadataAttributes(MetadataVerifier verifier, Object content) {
+        return verifier.verify(content, getLocator(content), this.context, ItemType.Attributes);
     }
 
-    private boolean verifyMetadataItem(Object content) {
-        return this.metadataVerifier.verify(content, getLocator(content), this.context, ItemType.Element);
+    private boolean verifyMetadataItem(MetadataVerifier verifier, Object content) {
+        return verifier.verify(content, getLocator(content), this.context, ItemType.Element);
     }
 
-    private boolean verifyParameterAttributes(TimedText tt) {
+    private boolean verifyTimedTextParameterAttributes(Object tt) {
         boolean failed = false;
         if (!this.parameterVerifier.verify(tt, getLocator(tt), this.context, ItemType.Attributes))
             failed = true;
-        Head head = tt.getHead();
+        Object head = getTimedTextHead(tt);
         if (head != null) {
-            if (!verifyParameterAttributes(head))
+            if (!verifyHeadParameterAttributes(head))
                 failed = true;
         }
         if (!failed)
@@ -604,24 +781,22 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verifyParameterAttributes(Head head) {
+    private boolean verifyHeadParameterAttributes(Object head) {
         boolean failed = false;
-        for (Profile p : head.getParametersClass()) {
-            if (!verify(p))
+        for (Object p : getHeadParameters(head)) {
+            if (!verifyProfile(p))
                 failed = true;
         }
         return !failed;
     }
 
-    private boolean verifyParameterAttributes(Object content) {
-        return this.parameterVerifier.verify(content, getLocator(content), this.context, ItemType.Attributes);
+    protected Collection<? extends Object> getHeadParameters(Object head) {
+        assert head instanceof Head;
+        return ((Head) head).getParametersClass();
     }
 
-    private boolean verifyStyleAttributes(TimedText tt) {
-        boolean failed = false;
-        if (!verifyStyleAttributes((Object) tt))
-            failed = true;
-        return !failed;
+    private boolean verifyParameterAttributes(Object content) {
+        return this.parameterVerifier.verify(content, getLocator(content), this.context, ItemType.Attributes);
     }
 
     private boolean verifyStyleAttributes(Object content) {
@@ -649,19 +824,19 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return !failed;
     }
 
-    private Object findBindingElement(TimedText root, Node node) {
-        if (context.getXMLNode(root) == node)
-            return root;
+    protected Object findTimedTextBindingElement(Object tt, Node node) {
+        if (context.getXMLNode(tt) == node)
+            return tt;
         else {
-            Head head = root.getHead();
+            Object head = getTimedTextHead(tt);
             if (head != null) {
-                Object content = findBindingElement(head, node);
+                Object content = findHeadBindingElement(head, node);
                 if (content != null)
                     return content;
             }
-            Body body = root.getBody();
+            Object body = getTimedTextBody(tt);
             if (body != null) {
-                Object content = findBindingElement(body, node);
+                Object content = findBodyBindingElement(body, node);
                 if (content != null)
                     return content;
             }
@@ -669,24 +844,24 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Head head, Node node) {
+    protected Object findHeadBindingElement(Object head, Node node) {
         if (context.getXMLNode(head) == node)
             return head;
         else {
-            for (Object m : head.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getHeadMetadata(head)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            Styling styling = head.getStyling();
+            Object styling = getHeadStyling(head);
             if (styling != null) {
-                Object content = findBindingElement(styling, node);
+                Object content = findStylingBindingElement(styling, node);
                 if (content != null)
                     return content;
             }
-            Layout layout = head.getLayout();
+            Object layout = getHeadLayout(head);
             if (layout != null) {
-                Object content = findBindingElement(layout, node);
+                Object content = findLayoutBindingElement(layout, node);
                 if (content != null)
                     return content;
             }
@@ -694,17 +869,17 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Styling styling, Node node) {
+    protected Object findStylingBindingElement(Object styling, Node node) {
         if (context.getXMLNode(styling) == node)
             return styling;
         else {
-            for (Object m : styling.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getStylingMetadata(styling)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Style s : styling.getStyle()) {
-                Object content = findBindingElement(s, node);
+            for (Object s : getStylingStyles(styling)) {
+                Object content = findStyleBindingElement(s, node);
                 if (content != null)
                     return content;
             }
@@ -712,24 +887,24 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Style style, Node node) {
+    protected Object findStyleBindingElement(Object style, Node node) {
         if (context.getXMLNode(style) == node)
             return style;
         else
             return null;
     }
 
-    private Object findBindingElement(Layout layout, Node node) {
+    protected Object findLayoutBindingElement(Object layout, Node node) {
         if (context.getXMLNode(layout) == node)
             return layout;
         else {
-            for (Object m : layout.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getLayoutMetadata(layout)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Region r : layout.getRegion()) {
-                Object content = findBindingElement(r, node);
+            for (Object r : getLayoutRegions(layout)) {
+                Object content = findRegionBindingElement(r, node);
                 if (content != null)
                     return content;
             }
@@ -737,17 +912,17 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Region region, Node node) {
+    protected Object findRegionBindingElement(Object region, Node node) {
         if (context.getXMLNode(region) == node)
             return region;
         else {
-            for (Object m : region.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getRegionMetadata(region)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Set s : region.getAnimationClass()) {
-                Object content = findBindingElement(s, node);
+            for (Object a : getRegionAnimations(region)) {
+                Object content = findAnimationBindingElement(a, node);
                 if (content != null)
                     return content;
             }
@@ -755,22 +930,22 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Body body, Node node) {
+    protected Object findBodyBindingElement(Object body, Node node) {
         if (context.getXMLNode(body) == node)
             return body;
         else {
-            for (Object m : body.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getBodyMetadata(body)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Set s : body.getAnimationClass()) {
-                Object content = findBindingElement(s, node);
+            for (Object a : getBodyAnimations(body)) {
+                Object content = findAnimationBindingElement(a, node);
                 if (content != null)
                     return content;
             }
-            for (Division d : body.getDiv()) {
-                Object content = findBindingElement(d, node);
+            for (Object d : getBodyDivisions(body)) {
+                Object content = findDivisionBindingElement(d, node);
                 if (content != null)
                     return content;
             }
@@ -778,21 +953,21 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Division division, Node node) {
+    protected Object findDivisionBindingElement(Object division, Node node) {
         if (context.getXMLNode(division) == node)
             return division;
         else {
-            for (Object m : division.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getDivisionMetadata(division)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Set s : division.getAnimationClass()) {
-                Object content = findBindingElement(s, node);
+            for (Object a : getDivisionAnimations(division)) {
+                Object content = findAnimationBindingElement(a, node);
                 if (content != null)
                     return content;
             }
-            for (Object b : division.getBlockClass()) {
+            for (Object b : getDivisionBlocks(division)) {
                 Object content = findBlockBindingElement(b, node);
                 if (content != null)
                     return content;
@@ -801,11 +976,11 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Paragraph paragraph, Node node) {
+    protected Object findParagraphBindingElement(Object paragraph, Node node) {
         if (context.getXMLNode(paragraph) == node)
             return paragraph;
         else {
-            for (Serializable s : paragraph.getContent()) {
+            for (Serializable s : getParagraphContent(paragraph)) {
                 Object content = findContentBindingElement(s, node);
                 if (content != null)
                     return content;
@@ -814,11 +989,11 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Span span, Node node) {
+    protected Object findSpanBindingElement(Object span, Node node) {
         if (context.getXMLNode(span) == node)
             return span;
         else {
-            for (Serializable s : span.getContent()) {
+            for (Serializable s : getSpanContent(span)) {
                 Object content = findContentBindingElement(s, node);
                 if (content != null)
                     return content;
@@ -827,17 +1002,17 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Break br, Node node) {
+    protected Object findBreakBindingElement(Object br, Node node) {
         if (context.getXMLNode(br) == node)
             return br;
         else {
-            for (Object m : br.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getBreakMetadata(br)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Set s : br.getAnimationClass()) {
-                Object content = findBindingElement(s, node);
+            for (Object a : getBreakAnimations(br)) {
+                Object content = findAnimationBindingElement(a, node);
                 if (content != null)
                     return content;
             }
@@ -845,19 +1020,19 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Actor actor, Node node) {
+    protected Object findActorBindingElement(Object actor, Node node) {
         if (context.getXMLNode(actor) == node)
             return actor;
         else
             return null;
     }
 
-    private Object findBindingElement(Agent agent, Node node) {
+    protected Object findAgentBindingElement(Object agent, Node node) {
         if (context.getXMLNode(agent) == node)
             return agent;
         else {
-            for (Name name : agent.getName()) {
-                Object content = findBindingElement(name, node);
+            for (Object name : getAgentNames(agent)) {
+                Object content = findNameBindingElement(name, node);
                 if (content != null)
                     return content;
             }
@@ -865,27 +1040,27 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Copyright copyright, Node node) {
+    protected Object findCopyrightBindingElement(Object copyright, Node node) {
         if (context.getXMLNode(copyright) == node)
             return copyright;
         else
             return null;
     }
 
-    private Object findBindingElement(Description description, Node node) {
+    protected Object findDescriptionBindingElement(Object description, Node node) {
         if (context.getXMLNode(description) == node)
             return description;
         else
             return null;
     }
 
-    private Object findBindingElement(Metadata metadata, Node node) {
+    protected Object findMetadataBindingElement(Object metadata, Node node) {
         if (context.getXMLNode(metadata) == node)
             return metadata;
         else {
-            for (Object m : metadata.getAny()) {
+            for (Object m : getMetadataAny(metadata)) {
                 if (!isMetadataItem(m)) {
-                    Object content = findMetadataBindingElement(m, node);
+                    Object content = findMetadataItemBindingElement(m, node);
                     if (content != null)
                         return content;
                 }
@@ -894,53 +1069,53 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Name name, Node node) {
+    protected Object findNameBindingElement(Object name, Node node) {
         if (context.getXMLNode(name) == node)
             return name;
         else
             return null;
     }
 
-    private Object findBindingElement(Title title, Node node) {
+    protected Object findTitleBindingElement(Object title, Node node) {
         if (context.getXMLNode(title) == node)
             return title;
         else
             return null;
     }
 
-    private Object findMetadataBindingElement(Object metadata, Node node) {
+    protected Object findMetadataItemBindingElement(Object metadata, Node node) {
         if (metadata instanceof JAXBElement<?>)
-            return findMetadataBindingElement(((JAXBElement<?>)metadata).getValue(), node);
+            return findMetadataItemBindingElement(((JAXBElement<?>)metadata).getValue(), node);
         else if (context.getXMLNode(metadata) == node)
             return metadata;
         else if (metadata instanceof Actor)
-            return findBindingElement((Actor)metadata, node);
+            return findActorBindingElement(metadata, node);
         else if (metadata instanceof Agent)
-            return findBindingElement((Agent)metadata, node);
+            return findAgentBindingElement(metadata, node);
         else if (metadata instanceof Copyright)
-            return findBindingElement((Copyright)metadata, node);
+            return findCopyrightBindingElement(metadata, node);
         else if (metadata instanceof Description)
-            return findBindingElement((Description)metadata, node);
+            return findDescriptionBindingElement(metadata, node);
         else if (metadata instanceof Metadata)
-            return findBindingElement((Metadata)metadata, node);
+            return findMetadataBindingElement(metadata, node);
         else if (metadata instanceof Name)
-            return findBindingElement((Name)metadata, node);
+            return findNameBindingElement(metadata, node);
         else if (metadata instanceof Title)
-            return findBindingElement((Title)metadata, node);
+            return findTitleBindingElement(metadata, node);
         else if (metadata instanceof Element)
             return findForeignMetadataBindingElement((Element)metadata, node);
         else
             return null;
     }
 
-    private Object findForeignMetadataBindingElement(Element metadata, Node node) {
+    protected Object findForeignMetadataBindingElement(Element metadata, Node node) {
         if (context.getXMLNode(metadata) == node)
             return metadata;
         else
             return null;
     }
 
-    private Object findBlockBindingElement(Object block, Node node) {
+    protected Object findBlockBindingElement(Object block, Node node) {
         if (context.getXMLNode(block) == node)
             return block;
         else if (block instanceof Division)
@@ -951,13 +1126,13 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             return null;
     }
 
-    private Object findContentBindingElement(Serializable content, Node node) {
+    protected Object findContentBindingElement(Serializable content, Node node) {
         if (content instanceof JAXBElement<?>) {
             Object element = ((JAXBElement<?>)content).getValue();
             if (context.getXMLNode(element) == node)
                 return element;
             else if (isMetadataItem(element))
-                return findMetadataBindingElement(element, node);
+                return findMetadataItemBindingElement(element, node);
             else if (element instanceof Set)
                 return findBindingElement((Set) element, node);
             else if (element instanceof Span)
@@ -970,12 +1145,19 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             return null;
     }
 
-    private Object findBindingElement(Set set, Node node) {
+    protected Object findAnimationBindingElement(Object animation, Node node) {
+        if (animation instanceof Set)
+            return findAnimationBindingElement(animation, node);
+        else
+            return null;
+    }
+
+    protected Object findSetBindingElement(Object set, Node node) {
         if (context.getXMLNode(set) == node)
             return set;
         else {
-            for (Object m : set.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getSetMetadata(set)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
@@ -983,22 +1165,22 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Profile profile, Node node) {
+    protected Object findProfileBindingElement(Object profile, Node node) {
         if (context.getXMLNode(profile) == node)
             return profile;
         else {
-            for (Object m : profile.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getProfileMetadata(profile)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Features features : profile.getFeatures()) {
-                Object content = findBindingElement(features, node);
+            for (Object features : getProfileFeatures(profile)) {
+                Object content = findFeaturesBindingElement(features, node);
                 if (content != null)
                     return content;
             }
-            for (Extensions extensions : profile.getExtensions()) {
-                Object content = findBindingElement(extensions, node);
+            for (Object extensions : getProfileExtensions(profile)) {
+                Object content = findExtensionsBindingElement(extensions, node);
                 if (content != null)
                     return content;
             }
@@ -1006,17 +1188,17 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Features features, Node node) {
+    protected Object findFeaturesBindingElement(Object features, Node node) {
         if (context.getXMLNode(features) == node)
             return features;
         else {
-            for (Object m : features.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getFeaturesMetadata(features)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Feature feature : features.getFeature()) {
-                Object content = findBindingElement(feature, node);
+            for (Object feature : getFeaturesFeatures(features)) {
+                Object content = findFeatureBindingElement(feature, node);
                 if (content != null)
                     return content;
             }
@@ -1024,24 +1206,24 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Feature feature, Node node) {
+    protected Object findFeatureBindingElement(Object feature, Node node) {
         if (context.getXMLNode(feature) == node)
             return feature;
         else
             return null;
     }
 
-    private Object findBindingElement(Extensions extensions, Node node) {
+    protected Object findExtensionsBindingElement(Object extensions, Node node) {
         if (context.getXMLNode(extensions) == node)
             return extensions;
         else {
-            for (Object m : extensions.getMetadataClass()) {
-                Object content = findMetadataBindingElement(m, node);
+            for (Object m : getExtensionsMetadata(extensions)) {
+                Object content = findMetadataItemBindingElement(m, node);
                 if (content != null)
                     return content;
             }
-            for (Extension extension : extensions.getExtension()) {
-                Object content = findBindingElement(extension, node);
+            for (Object extension : getExtensionsExtensions(extensions)) {
+                Object content = findExtensionBindingElement(extension, node);
                 if (content != null)
                     return content;
             }
@@ -1049,7 +1231,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         }
     }
 
-    private Object findBindingElement(Extension extension, Node node) {
+    protected Object findExtensionBindingElement(Object extension, Node node) {
         if (context.getXMLNode(extension) == node)
             return extension;
         else
@@ -1060,7 +1242,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         throw new IllegalStateException("Unexpected JAXB content object of type '" + content.getClass().getName() +  "'.");
     }
 
-    private static boolean isMetadataItem(Object element) {
+    protected boolean isMetadataItem(Object element) {
         if (element instanceof Agent)
             return true;
         else if (element instanceof Copyright)
