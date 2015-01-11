@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,10 +25,34 @@
  
 package com.skynav.ttv.verifier.ttml;
 
+import javax.xml.namespace.QName;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
+import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters2;
 
 public class TTML2TimingVerifier extends TTML1TimingVerifier {
+
     public TTML2TimingVerifier(Model model) {
         super(model);
     }
+
+    @Override
+    protected TimingVerificationParameters makeTimingVerificationParameters(Object content, VerifierContext context) {
+        return new TimingVerificationParameters2(content, context != null ? context.getExternalParameters() : null);
+    }
+
+    @Override
+    protected boolean isTimedText(Object content) {
+        return content instanceof TimedText;
+    }
+
+    @Override
+    protected String getTimingValueAsString(Object content, QName timingName) {
+        assert content instanceof TimedText;
+        return ((TimedText)content).getOtherAttributes().get(timingName);
+    }
+
 }

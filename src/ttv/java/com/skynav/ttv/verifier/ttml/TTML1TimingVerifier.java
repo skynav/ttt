@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,7 @@ import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimeCoordinateVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimeDurationVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
+import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters1;
 import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML1TimingVerifier implements TimingVerifier {
@@ -97,8 +98,8 @@ public class TTML1TimingVerifier implements TimingVerifier {
 
     protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        if (content instanceof TimedText) {
-            verificationParameters = new TimingVerificationParameters((TimedText) content, context != null ? context.getExternalParameters() : null);
+        if (isTimedText(content)) {
+            verificationParameters = makeTimingVerificationParameters(content, context);
         } else {
             for (QName name : accessors.keySet()) {
                 TimingAccessor sa = accessors.get(name);
@@ -107,6 +108,14 @@ public class TTML1TimingVerifier implements TimingVerifier {
             }
         }
         return !failed;
+    }
+
+    protected boolean isTimedText(Object content) {
+        return content instanceof TimedText;
+    }
+
+    protected TimingVerificationParameters makeTimingVerificationParameters(Object content, VerifierContext context) {
+        return new TimingVerificationParameters1(content, context != null ? context.getExternalParameters() : null);
     }
 
     private void populate(Model model) {
@@ -122,6 +131,11 @@ public class TTML1TimingVerifier implements TimingVerifier {
         }
         this.model = model;
         this.accessors = accessors;
+    }
+
+    protected String getTimingValueAsString(Object content, QName timingName) {
+        assert content instanceof TimedText;
+        return ((TimedText)content).getOtherAttributes().get(timingName);
     }
 
     private class TimingAccessor {
@@ -201,17 +215,13 @@ public class TTML1TimingVerifier implements TimingVerifier {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (NoSuchMethodException e) {
-                if (content instanceof TimedText)
-                    return convertType(getTimingValueAsString((TimedText) content), valueClass);
+                if (isTimedText(content))
+                    return convertType(getTimingValueAsString(content, timingName), valueClass);
                 else
                     throw new RuntimeException(e);
             } catch (SecurityException e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        private String getTimingValueAsString(TimedText content) {
-            return content.getOtherAttributes().get(timingName);
         }
 
         private Object convertType(Object value, Class<?> targetClass) {

@@ -26,21 +26,16 @@
 package com.skynav.ttv.model.ttml;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import com.skynav.ttv.model.AbstractModel;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.Style;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
-import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
@@ -53,7 +48,6 @@ import com.skynav.ttv.verifier.ttml.TTML2ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2StyleVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2TimingVerifier;
-import com.skynav.xml.helpers.XML;
 
 
 public class TTML2 {

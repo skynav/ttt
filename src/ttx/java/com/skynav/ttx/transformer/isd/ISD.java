@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -386,7 +385,7 @@ public class ISD {
 
         private void resolveExplicit(TimedText tt, final TransformerContext context) {
             try {
-                final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
+                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(tt, context.getExternalParameters()).getTimeParameters();
                 traverse(tt, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         if (TimingState.isTimedElement(content)) {
@@ -402,7 +401,7 @@ public class ISD {
 
         private void resolveImplicit(TimedText tt, final TransformerContext context) {
             try {
-                final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
+                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(tt, context.getExternalParameters()).getTimeParameters();
                 traverse(tt, new PostVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         if (TimingState.isTimedElement(content)) {
@@ -418,7 +417,7 @@ public class ISD {
 
         private void resolveActive(TimedText tt, final TransformerContext context) {
             try {
-                final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
+                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(tt, context.getExternalParameters()).getTimeParameters();
                 traverse(tt, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         if (TimingState.isTimedElement(content)) {
@@ -433,7 +432,7 @@ public class ISD {
         }
 
         private java.util.Set<TimeInterval> extractActiveIntervals(TimedText tt, final TransformerContext context) {
-            final TimeParameters timeParameters = new TimingVerificationParameters(tt, context.getExternalParameters()).getTimeParameters();
+            final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(tt, context.getExternalParameters()).getTimeParameters();
             final java.util.Set<TimeInterval> intervals = new java.util.TreeSet<TimeInterval>();
             try {
                 traverse(tt, new PreVisitor() {

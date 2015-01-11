@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.w3c.dom.Element;
-
 public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> implements Comparable<StyleSet> {
 
     private int generation;
