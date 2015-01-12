@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,10 +25,97 @@
  
 package com.skynav.ttv.verifier.ttml;
 
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.ClockMode;
+import com.skynav.ttv.model.ttml2.ttd.DropMode;
+import com.skynav.ttv.model.ttml2.ttd.MarkerMode;
+import com.skynav.ttv.model.ttml2.ttd.TimeBase;
+import com.skynav.ttv.model.ttml2.ttp.Extensions;
+import com.skynav.ttv.model.ttml2.ttp.Features;
+import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.DropModeVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.MarkerModeVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
+
+import com.skynav.xml.helpers.XML;
+
 
 public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
+
+    private static Object[][] parameterAccessorMap = new Object[][] {
+        {
+            new QName(NAMESPACE,"clockMode"),
+            "ClockMode",
+            ClockMode.class,
+            ClockModeVerifier.class,
+            Boolean.FALSE,
+            ClockMode.UTC,
+        },
+        {
+            new QName(NAMESPACE,"dropMode"),
+            "DropMode",
+            DropMode.class,
+            DropModeVerifier.class,
+            Boolean.FALSE,
+            DropMode.NON_DROP,
+        },
+        {
+            new QName(NAMESPACE,"markerMode"),
+            "MarkerMode",
+            MarkerMode.class,
+            MarkerModeVerifier.class,
+            Boolean.FALSE,
+            MarkerMode.DISCONTINUOUS,
+        },
+        {
+            new QName(NAMESPACE,"timeBase"),
+            "TimeBase",
+            TimeBase.class,
+            TimeBaseVerifier.class,
+            Boolean.FALSE,
+            TimeBase.MEDIA,
+        },
+    };
+
     public TTML2ParameterVerifier(Model model) {
         super(model);
     }
+
+    @Override
+    protected void populateAccessors(Map<QName, ParameterAccessor> accessors) {
+        super.populateAccessors(accessors);
+        populateAccessors(accessors, parameterAccessorMap);
+    }
+
+    @Override
+    protected boolean permitsParameterAttribute(Object content, QName name) {
+        if (content instanceof TimedText)
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    protected void setParameterDefaultValue(Object content, ParameterAccessor pa, Object defaultValue) {
+        if (content instanceof TimedText) {
+            if (defaultValue != null)
+                setParameterValue(content, pa.setterName, pa.valueClass, defaultValue);
+        } else if ((content instanceof Features) || (content instanceof Extensions)) {
+            if (pa.parameterName.equals(XML.getBaseAttributeName())) {
+                Model model = getModel();
+                if (content instanceof Features)
+                    defaultValue = model.getFeatureNamespaceUri().toString();
+                else if (content instanceof Extensions)
+                    defaultValue = model.getExtensionNamespaceUri().toString();
+                if (defaultValue != null)
+                    setParameterValue(content, pa.setterName, pa.valueClass, defaultValue);
+            }
+        }
+    }
+
 }

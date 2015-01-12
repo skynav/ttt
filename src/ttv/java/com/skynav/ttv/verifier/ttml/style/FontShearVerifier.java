@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,16 +33,11 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
-public class WrapOptionVerifier implements StyleValueVerifier {
+public class FontShearVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        // Schema validation phase (3) reports invalid values.
-        if (model.isTTMLVersion(1) && (valueObject instanceof com.skynav.ttv.model.ttml1.ttd.WrapOption))
-            return true;
-        else if (model.isTTMLVersion(2) && (valueObject instanceof com.skynav.ttv.model.ttml2.ttd.WrapOption))
-            return true;
-        else
-            throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());
+        // [TBD] - IMPLEMENT ME
+        return true;
     }
 
 }

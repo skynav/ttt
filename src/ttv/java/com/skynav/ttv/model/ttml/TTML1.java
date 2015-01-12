@@ -95,6 +95,7 @@ public class TTML1 {
     }
 
     public static final String MODEL_NAME = "ttml1";
+    public static final int MODEL_VERSION = 1;
     public static final Model MODEL = new TTML1Model();
     public static class TTML1Model extends AbstractModel {
         private String[] schemaResourceNames;
@@ -130,6 +131,12 @@ public class TTML1 {
         }
         public String getName() {
             return MODEL_NAME;
+        }
+        public int getTTMLVersion() {
+            return MODEL_VERSION;
+        }
+        public boolean isTTMLVersion(int version) {
+            return getTTMLVersion() == MODEL_VERSION;
         }
         public String[] getTTSchemaResourceNames() {
             return schemaResourceNames;

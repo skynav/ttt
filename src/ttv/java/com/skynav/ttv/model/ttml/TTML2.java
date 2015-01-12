@@ -63,6 +63,7 @@ public class TTML2 {
         public static final String PROFILE_TTML2_FULL_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TTML2_FULL;
     }
     public static final String MODEL_NAME = "ttml2";
+    public static final int MODEL_VERSION = 2;
     public static final Model MODEL = new TTML2Model();
     public static class TTML2Model extends TTML1.TTML1Model {
         private String[] schemaResourceNames;
@@ -79,6 +80,12 @@ public class TTML2 {
         }
         public String getName() {
             return MODEL_NAME;
+        }
+        public int getTTMLVersion() {
+            return MODEL_VERSION;
+        }
+        public boolean isTTMLVersion(int version) {
+            return getTTMLVersion() == MODEL_VERSION;
         }
         public String[] getTTSchemaResourceNames() {
             return schemaResourceNames;

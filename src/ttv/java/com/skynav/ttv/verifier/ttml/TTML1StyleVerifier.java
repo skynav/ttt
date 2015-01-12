@@ -480,11 +480,29 @@ public class TTML1StyleVerifier implements StyleVerifier {
 
     protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        if (content instanceof Set)
-            failed = !verify((Set) content, locator, context);
+        if (isSet(content))
+            failed = !verifySet(content, locator, context);
         if (failed) {
             Reporter reporter = context.getReporter();
             reporter.logError(reporter.message(locator, "*KEY*", "Invalid ''{0}'' styled item.", context.getBindingElementName(content)));
+        }
+        return !failed;
+    }
+
+    protected boolean verifySet(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        int numStyleAttributes = 0;
+        NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
+        for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+            Node attribute = attributes.item(i);
+            String nsUri = attribute.getNamespaceURI();
+            if ((nsUri != null) && nsUri.equals(NAMESPACE))
+                ++numStyleAttributes;
+        }
+        if (numStyleAttributes > 1) {
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Style attribute count exceeds maximum, got {0}, expected no more than 1.", numStyleAttributes));
+            failed = true;
         }
         return !failed;
     }
@@ -543,31 +561,39 @@ public class TTML1StyleVerifier implements StyleVerifier {
             return false;
     }
 
+    protected boolean isRegion(Object content) {
+        return content instanceof Region;
+    }
+
+    protected boolean isSet(Object content) {
+        return content instanceof Set;
+    }
+
+    protected boolean isTimedText(Object content) {
+        return content instanceof TimedText;
+    }
+
     protected boolean isStyleAttribute(QName name) {
         return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
-    protected boolean verify(Set content, Locator locator, VerifierContext context) {
-        boolean failed = false;
-        int numStyleAttributes = 0;
-        NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
-        for (int i = 0, n = attributes.getLength(); i < n; ++i) {
-            Node attribute = attributes.item(i);
-            String nsUri = attribute.getNamespaceURI();
-            if ((nsUri != null) && nsUri.equals(NAMESPACE))
-                ++numStyleAttributes;
-        }
-        if (numStyleAttributes > 1) {
-            Reporter reporter = context.getReporter();
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Style attribute count exceeds maximum, got {0}, expected no more than 1.", numStyleAttributes));
-            failed = true;
-        }
-        return !failed;
+    private void populate(Model model) {
+        this.model = model;
+        this.accessors = makeAccessors();
     }
 
-    private void populate(Model model) {
+    private Map<QName, StyleAccessor> makeAccessors() {
         Map<QName, StyleAccessor> accessors = new java.util.HashMap<QName, StyleAccessor>();
-        for (Object[] styleAccessorEntry : styleAccessorMap) {
+        populateAccessors(accessors);
+        return accessors;
+    }
+
+    protected void populateAccessors(Map<QName, StyleAccessor> accessors) {
+        populateAccessors(accessors, styleAccessorMap);
+    }
+
+    protected void populateAccessors(Map<QName, StyleAccessor> accessors, Object[][] accessorMap) {
+        for (Object[] styleAccessorEntry : accessorMap) {
             assert styleAccessorEntry.length >= 9;
             QName styleName = (QName) styleAccessorEntry[0];
             String accessorName = (String) styleAccessorEntry[1];
@@ -583,24 +609,47 @@ public class TTML1StyleVerifier implements StyleVerifier {
             accessors.put(styleName,
                 new StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString));
         }
-        this.model = model;
-        this.accessors = accessors;
+    }
+
+    protected void setStyleInitialValue(Object content, StyleAccessor sa, Object initialValue) {
+        if (isRegion(content)) {
+            if (initialValue != null)
+                setStyleValue(content, sa.setterName, sa.valueClass, initialValue);
+        }
+    }
+
+    protected void setStyleValue(Object content, String setterName, Class<?> valueClass, Object value) {
+        try {
+            Class<?> contentClass = content.getClass();
+            Method m = contentClass.getMethod(setterName, new Class<?>[]{ valueClass });
+            m.invoke(content, new Object[]{ value });
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static final QName styleAttributeName = new QName("", "style");
     public static final QName regionAttributeName = new QName("", "region");
-    private class StyleAccessor {
+    protected class StyleAccessor {
 
-        private QName styleName;
-        private String getterName;
-        private String setterName;
-        private Class<?> valueClass;
-        private StyleValueVerifier verifier;
-        private int applicability;
-        private boolean paddingPermitted;
-        private boolean inheritable;
-        private Object initialValue;
-        private String initialValueAsString;
+        QName styleName;
+        String getterName;
+        String setterName;
+        Class<?> valueClass;
+        StyleValueVerifier verifier;
+        int applicability;
+        boolean paddingPermitted;
+        boolean inheritable;
+        Object initialValue;
+        String initialValueAsString;
 
         public StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
                              int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
@@ -728,28 +777,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
         }
 
         private void setStyleInitialValue(Object content) {
-            if (content instanceof Region) {
-                if (initialValue != null)
-                    setStyleValue(content, initialValue);
-            }
-        }
-
-        private void setStyleValue(Object content, Object value) {
-            try {
-                Class<?> contentClass = content.getClass();
-                Method m = contentClass.getMethod(setterName, new Class<?>[]{ valueClass });
-                m.invoke(content, new Object[]{ value });
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            } catch (SecurityException e) {
-                throw new RuntimeException(e);
-            }
+            TTML1StyleVerifier.this.setStyleInitialValue(content, this, initialValue);
         }
 
         private Object convertType(Object value, Class<?> targetClass) {

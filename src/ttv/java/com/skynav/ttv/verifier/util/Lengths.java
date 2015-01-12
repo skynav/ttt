@@ -113,6 +113,11 @@ public class Lengths {
                 String units = m.group(2);
                 try {
                     unitsValue = Length.Unit.valueOfShorthand(units);
+                    int unitVersion = unitsValue.fromVersion();
+                    int ttmlVersion = context.getModel().getTTMLVersion();
+                    if (unitVersion > ttmlVersion) {
+                        return false;
+                    }
                 } catch (IllegalArgumentException e) {
                     return false;
                 }
@@ -276,6 +281,13 @@ public class Lengths {
                 String unitsAsString = sb.toString();
                 try {
                     units = Length.Unit.valueOfShorthand(unitsAsString);
+                    int unitVersion = units.fromVersion();
+                    int ttmlVersion = context.getModel().getTTMLVersion();
+                    if (unitVersion > ttmlVersion) {
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Bad <length> expression, units ''{0}'' not supported in TTML version {1}, requires TTML version {2}.",
+                            unitsAsString, ttmlVersion, unitVersion));
+                    }
                 } catch (IllegalArgumentException e) {
                     try {
                         units = Length.Unit.valueOfShorthandIgnoringCase(unitsAsString);

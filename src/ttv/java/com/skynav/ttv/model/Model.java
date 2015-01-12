@@ -49,6 +49,16 @@ public interface Model {
     String getName();
 
     /**
+     * Return TTML version number.
+     */
+    int getTTMLVersion();
+
+    /**
+     * Return true if this model is or is based upon the specified version of TTML.
+     */
+    boolean isTTMLVersion(int version);
+
+    /**
      * Obtain TT schema resource names (paths), each of which should be
      * an acceptable argument to pass to ClassLoader.getResource().
      * @return schema resource names (paths)

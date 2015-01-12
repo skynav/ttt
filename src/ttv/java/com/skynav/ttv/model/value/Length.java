@@ -32,13 +32,23 @@ public interface Length {
         Cell("c"),
         Em("em"),
         Pixel("px"),
-        Percentage("%");
+        Percentage("%"),
+        ViewportHeight("vh"),
+        ViewportWidth("vw");
         private String shorthand;
         Unit(String shorthand) {
             this.shorthand = shorthand;
         }
         public String shorthand() {
             return shorthand;
+        }
+        public int fromVersion() {
+            if (this == ViewportHeight)
+                return 2;
+            else if (this == ViewportWidth)
+                return 2;
+            else
+                return 1;
         }
         public static String shorthands() {
             StringBuffer sb = new StringBuffer();

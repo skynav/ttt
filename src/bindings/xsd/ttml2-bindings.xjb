@@ -26,6 +26,12 @@
 <jxb:bindings version="2.1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <jxb:bindings schemaLocation="../../schemas/xsd/ttml2/ttml2-animation.xsd">
+    <jxb:bindings node="//xs:complexType[@name='animate.eltype']">
+      <jxb:class name="Animate"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='animation.eltype']">
+      <jxb:class name="Animation"/>
+    </jxb:bindings>
     <jxb:bindings node="//xs:complexType[@name='set.eltype']">
       <jxb:class name="Set"/>
     </jxb:bindings>
@@ -80,6 +86,30 @@
     </jxb:bindings>
   </jxb:bindings>
 
+  <jxb:bindings schemaLocation="../../schemas/xsd/ttml2/ttml2-embedded.xsd">
+    <jxb:bindings node="//xs:complexType[@name='audio.eltype']">
+      <jxb:class name="Audio"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='chunk.eltype']">
+      <jxb:class name="Chunk"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='data.eltype']">
+      <jxb:class name="Data"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='font.eltype']">
+      <jxb:class name="Font"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='image.eltype']">
+      <jxb:class name="Image"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='resources.eltype']">
+      <jxb:class name="Resources"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='source.eltype']">
+      <jxb:class name="Source"/>
+    </jxb:bindings>
+  </jxb:bindings>
+
   <jxb:bindings schemaLocation="../../schemas/xsd/ttml2/ttml2-head.xsd">
     <jxb:bindings node="//xs:complexType[@name='head.eltype']">
       <jxb:class name="Head"/>
@@ -121,6 +151,9 @@
     </jxb:bindings>
     <jxb:bindings node="//xs:complexType[@name='desc.eltype']">
       <jxb:class name="Description"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='item.eltype']">
+      <jxb:class name="Item"/>
     </jxb:bindings>
     <jxb:bindings node="//xs:complexType[@name='name.eltype']">
       <jxb:class name="Name"/>
@@ -167,6 +200,9 @@
     <jxb:bindings node="//xs:attributeGroup[@name='StyleBinding.attrib.class']/xs:attribute[@name='style']">
       <jxb:property name="styleAttribute"/>
     </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='initial.eltype']">
+      <jxb:class name="Initial"/>
+    </jxb:bindings>
     <jxb:bindings node="//xs:complexType[@name='styling.eltype']">
       <jxb:class name="Styling"/>
     </jxb:bindings>
@@ -192,8 +228,22 @@
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="../../schemas/xsd/ttml2/xlink.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.ttml2.xlink"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
     <jxb:bindings node="//xs:attribute[@name='role']">
       <jxb:property name="xlinkRole"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='actuateType']">
+      <jxb:typesafeEnumClass name="Actuate"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='showType']">
+      <jxb:typesafeEnumClass name="Show"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='typeType']">
+      <jxb:typesafeEnumClass name="Type"/>
     </jxb:bindings>
   </jxb:bindings>
 

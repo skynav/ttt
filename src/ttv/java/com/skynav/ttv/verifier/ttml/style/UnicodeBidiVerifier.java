@@ -30,7 +30,6 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml1.ttd.UnicodeBidi;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -38,7 +37,9 @@ public class UnicodeBidiVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         // Schema validation phase (3) reports invalid values.
-        if (valueObject instanceof UnicodeBidi)
+        if (model.isTTMLVersion(1) && (valueObject instanceof com.skynav.ttv.model.ttml1.ttd.UnicodeBidi))
+            return true;
+        else if (model.isTTMLVersion(2) && (valueObject instanceof com.skynav.ttv.model.ttml2.ttd.UnicodeBidi))
             return true;
         else
             throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());

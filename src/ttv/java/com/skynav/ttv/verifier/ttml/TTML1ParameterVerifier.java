@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -80,7 +80,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
 
     private static Object[][] parameterAccessorMap = new Object[][] {
         {
-            new QName(NAMESPACE,"cellResolution"),     // attribute name
+            new QName(NAMESPACE,"cellResolution"),              // attribute name
             "CellResolution",                                   // accessor method name suffix
             String.class,                                       // value type
             CellResolutionVerifier.class,                       // specialized verifier
@@ -194,6 +194,10 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         populate(model);
     }
 
+    public Model getModel() {
+        return model;
+    }
+
     public QName getParameterAttributeName(String parameterName) {
         // assumes that parameter name is same as local part of qualified attribute name, which
         // is presently true in TTML1
@@ -266,8 +270,22 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
     }
 
     private void populate(Model model) {
+        this.model = model;
+        this.accessors = makeAccessors();
+    }
+
+    private Map<QName, ParameterAccessor> makeAccessors() {
         Map<QName, ParameterAccessor> accessors = new java.util.HashMap<QName, ParameterAccessor>();
-        for (Object[] parameterAccessorEntry : parameterAccessorMap) {
+        populateAccessors(accessors);
+        return accessors;
+    }
+
+    protected void populateAccessors(Map<QName, ParameterAccessor> accessors) {
+        populateAccessors(accessors, parameterAccessorMap);
+    }
+
+    protected void populateAccessors(Map<QName, ParameterAccessor> accessors, Object[][] accessorMap) {
+        for (Object[] parameterAccessorEntry : accessorMap) {
             assert parameterAccessorEntry.length >= 6;
             QName parameterName = (QName) parameterAccessorEntry[0];
             String accessorName = (String) parameterAccessorEntry[1];
@@ -277,19 +295,52 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             Object defaultValue = parameterAccessorEntry[5];
             accessors.put(parameterName, new ParameterAccessor(parameterName, accessorName, valueClass, verifierClass, paddingPermitted, defaultValue));
         }
-        this.model = model;
-        this.accessors = accessors;
     }
 
-    private class ParameterAccessor {
+    protected void setParameterDefaultValue(Object content, ParameterAccessor pa, Object defaultValue) {
+        if (content instanceof TimedText) {
+            if (defaultValue != null)
+                setParameterValue(content, pa.setterName, pa.valueClass, defaultValue);
+        } else if ((content instanceof Features) || (content instanceof Extensions)) {
+            if (pa.parameterName.equals(XML.getBaseAttributeName())) {
+                Model model = getModel();
+                if (content instanceof Features)
+                    defaultValue = model.getFeatureNamespaceUri().toString();
+                else if (content instanceof Extensions)
+                    defaultValue = model.getExtensionNamespaceUri().toString();
+                if (defaultValue != null)
+                    setParameterValue(content, pa.setterName, pa.valueClass, defaultValue);
+            }
+        }
+    }
 
-        private QName parameterName;
-        private String getterName;
-        private String setterName;
-        private Class<?> valueClass;
-        private ParameterValueVerifier verifier;
-        private boolean paddingPermitted;
-        private Object defaultValue;
+    protected void setParameterValue(Object content, String setterName, Class<?> valueClass, Object value) {
+        try {
+            Class<?> contentClass = content.getClass();
+            Method m = contentClass.getMethod(setterName, new Class<?>[]{ valueClass });
+            m.invoke(content, new Object[]{ value });
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected class ParameterAccessor {
+
+        QName parameterName;
+        String getterName;
+        String setterName;
+        Class<?> valueClass;
+        ParameterValueVerifier verifier;
+        boolean paddingPermitted;
+        Object defaultValue;
 
         public ParameterAccessor(QName parameterName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted, Object defaultValue) {
             populate(parameterName, accessorName, valueClass, verifierClass, paddingPermitted, defaultValue);
@@ -365,38 +416,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         }
 
         private void setParameterDefaultValue(Object content) {
-            Object defaultValue = this.defaultValue;
-            if (content instanceof TimedText) {
-                if (defaultValue != null)
-                    setParameterValue(content, defaultValue);
-            } else if ((content instanceof Features) || (content instanceof Extensions)) {
-                if (parameterName.equals(XML.getBaseAttributeName())) {
-                    if (content instanceof Features)
-                        defaultValue = model.getFeatureNamespaceUri().toString();
-                    else if (content instanceof Extensions)
-                        defaultValue = model.getExtensionNamespaceUri().toString();
-                    if (defaultValue != null)
-                        setParameterValue(content, defaultValue);
-                }
-            }
-        }
-
-        private void setParameterValue(Object content, Object value) {
-            try {
-                Class<?> contentClass = content.getClass();
-                Method m = contentClass.getMethod(setterName, new Class<?>[]{ valueClass });
-                m.invoke(content, new Object[]{ value });
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            } catch (SecurityException e) {
-                throw new RuntimeException(e);
-            }
+            TTML1ParameterVerifier.this.setParameterDefaultValue(content, this, defaultValue);
         }
 
         private Object convertType(Object value, Class<?> targetClass) {

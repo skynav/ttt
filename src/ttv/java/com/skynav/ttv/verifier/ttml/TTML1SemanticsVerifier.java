@@ -71,11 +71,11 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
 
     private Model model;
     private VerifierContext context;
-    private MetadataVerifier metadataVerifier;
-    private ParameterVerifier parameterVerifier;
-    private ProfileVerifier profileVerifier;
-    private StyleVerifier styleVerifier;
-    private TimingVerifier timingVerifier;
+    protected MetadataVerifier metadataVerifier;
+    protected ParameterVerifier parameterVerifier;
+    protected ProfileVerifier profileVerifier;
+    protected StyleVerifier styleVerifier;
+    protected TimingVerifier timingVerifier;
 
     public TTML1SemanticsVerifier(Model model) {
         this.model = model;
@@ -756,11 +756,11 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             return unexpectedContent(content);
     }
 
-    private boolean verifyMetadataAttributes(MetadataVerifier verifier, Object content) {
+    protected boolean verifyMetadataAttributes(MetadataVerifier verifier, Object content) {
         return verifier.verify(content, getLocator(content), this.context, ItemType.Attributes);
     }
 
-    private boolean verifyMetadataItem(MetadataVerifier verifier, Object content) {
+    protected boolean verifyMetadataItem(MetadataVerifier verifier, Object content) {
         return verifier.verify(content, getLocator(content), this.context, ItemType.Element);
     }
 

@@ -53,6 +53,7 @@ import com.skynav.ttv.model.ttml2.ttm.Actor;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
 import com.skynav.ttv.model.ttml2.ttm.Copyright;
 import com.skynav.ttv.model.ttml2.ttm.Description;
+import com.skynav.ttv.model.ttml2.ttm.Item;
 import com.skynav.ttv.model.ttml2.ttm.Name;
 import com.skynav.ttv.model.ttml2.ttm.Title;
 
@@ -86,6 +87,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return verifyCopyright(metadata);
         else if (metadata instanceof Description)
             return verifyDescription(metadata);
+        else if (metadata instanceof Item)
+            return verifyItem(metadata);
         else if (metadata instanceof Metadata)
             return verifyMetadata(metadata);
         else if (metadata instanceof Name)
@@ -392,6 +395,17 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     protected Collection<? extends Object> getMetadataAny(Object metadata) {
         assert metadata instanceof Metadata;
         return ((Metadata) metadata).getAny();
+    }
+
+    // new elements
+
+    protected boolean verifyItem(Object item) {
+        boolean failed = false;
+        if (!verifyOtherAttributes(item))
+            failed = true;
+        if (!verifyMetadataItem(metadataVerifier, item))
+            failed = true;
+        return !failed;
     }
 
 }

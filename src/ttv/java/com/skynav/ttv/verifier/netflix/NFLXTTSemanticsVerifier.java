@@ -340,7 +340,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
         List<Length> lengths = new java.util.ArrayList<Length>();
-        if (Lengths.isLengths(pair, null, null, minMax, treatments, lengths)) {
+        if (Lengths.isLengths(pair, null, getContext(), minMax, treatments, lengths)) {
             if (enforcePixelsOnly) {
                 for (Length l : lengths) {
                     if (l.getUnits() != Length.Unit.Pixel) {

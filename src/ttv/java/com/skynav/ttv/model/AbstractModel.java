@@ -46,6 +46,14 @@ public class AbstractModel implements Model {
         throw new UnsupportedOperationException();
     }
 
+    public int getTTMLVersion() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isTTMLVersion(int version) {
+        throw new UnsupportedOperationException();
+    }
+
     public String[] getTTSchemaResourceNames() {
         throw new UnsupportedOperationException();
     }

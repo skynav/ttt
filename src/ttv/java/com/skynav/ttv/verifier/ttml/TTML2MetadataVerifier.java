@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,10 +25,30 @@
  
 package com.skynav.ttv.verifier.ttml;
 
+import org.xml.sax.Locator;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml2.ttm.Item;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class TTML2MetadataVerifier extends TTML1MetadataVerifier {
+
     public TTML2MetadataVerifier(Model model) {
         super(model);
     }
+
+    protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (content instanceof Item)
+            failed = !verify((Item) content, locator, context);
+        else
+            failed = !super.verifyElementItem(content, locator, context);
+        return !failed;
+    }
+
+    protected boolean verify(Item content, Locator locator, VerifierContext context) {
+        // [TBD] - IMPLEMENT ME
+        return true;
+    }
+
 }
