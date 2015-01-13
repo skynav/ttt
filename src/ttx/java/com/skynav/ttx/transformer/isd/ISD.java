@@ -31,7 +31,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,7 +40,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
@@ -66,14 +64,6 @@ import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml.TTML1;
-import com.skynav.ttv.model.ttml1.tt.Body;
-import com.skynav.ttv.model.ttml1.tt.Break;
-import com.skynav.ttv.model.ttml1.tt.Division;
-import com.skynav.ttv.model.ttml1.tt.ObjectFactory;
-import com.skynav.ttv.model.ttml1.tt.Paragraph;
-import com.skynav.ttv.model.ttml1.tt.Span;
-import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.util.ComparableQName;
@@ -100,15 +90,9 @@ import com.skynav.xml.helpers.XML;
 
 public class ISD {
 
-    public static final String TRANSFORMER_NAME = "isd";
-    public static final Transformer TRANSFORMER = new ISDTransformer();
-    public static final String NAMESPACE_ISD = TTML1.Constants.NAMESPACE_TT_ISD;
-    public static final String NAMESPACE_TT = TTML1.Constants.NAMESPACE_TT;
-    public static final String NAMESPACE_TT_METADATA = TTML1.Constants.NAMESPACE_TT_METADATA;
-    public static final String NAMESPACE_TT_STYLE = TTML1.Constants.NAMESPACE_TT_STYLE;
-    public static final String NAMESPACE_TT_PARAMETER = TTML1.Constants.NAMESPACE_TT_PARAMETER;
-
-    private static final String DEFAULT_OUTPUT_ENCODING     = AbstractTransformer.DEFAULT_OUTPUT_ENCODING;
+    public static final String TRANSFORMER_NAME                 = "isd";
+    public static final Transformer TRANSFORMER                 = new ISDTransformer();
+    private static final String DEFAULT_OUTPUT_ENCODING         = AbstractTransformer.DEFAULT_OUTPUT_ENCODING;
 
     private static Charset defaultOutputEncoding;
 
@@ -136,18 +120,9 @@ public class ISD {
         }
     }
 
-    protected enum GenerationIndex {
-        isdInstanceIndex,
-        isdAnonymousSpanIndex,
-        isdAnonymousRegionIndex,
-        isdStyleSetIndex;
-    };
-
-    protected enum ResourceState {
-        isdParents,
-        isdTimingStates,
-        isdGenerationIndices;
-    };
+    public static TTMLHelper getHelper(TransformerContext context) {
+        return (TTMLHelper) context.getResourceState(ResourceState.isdHelper.name());
+    }
 
     @SuppressWarnings("unchecked")
     public static Map<Object,Object> getParents(TransformerContext context) {
@@ -157,10 +132,6 @@ public class ISD {
     @SuppressWarnings("unchecked")
     public static Map<Object,TimingState> getTimingStates(TransformerContext context) {
         return (Map<Object,TimingState>) context.getResourceState(ResourceState.isdTimingStates.name());
-    }
-
-    public static int[] getGenerationIndices(TransformerContext context) {
-        return (int[]) context.getResourceState(ResourceState.isdGenerationIndices.name());
     }
 
     public static class ISDTransformer extends AbstractTransformer {
@@ -263,9 +234,8 @@ public class ISD {
             populateContext(context);
             Reporter reporter = context.getReporter();
             reporter.logInfo(reporter.message("*KEY*", "Transforming result using ''{0}'' transformer...", getName()));
-            TimedText tt = (TimedText) root;
             // extract significant time intervals
-            Set<TimeInterval> intervals = extractISDIntervals(tt, context);
+            Set<TimeInterval> intervals = extractISDIntervals(root, context);
             if (reporter.getDebugLevel() > 0) {
                 StringBuffer sb = new StringBuffer();
                 for (TimeInterval interval : intervals) {
@@ -279,18 +249,19 @@ public class ISD {
         }
 
         void populateContext(TransformerContext context) {
+            context.setResourceState(ResourceState.isdHelper.name(), TTMLHelper.makeInstance(context.getModel().getTTMLVersion()));
             context.setResourceState(ResourceState.isdParents.name(), new java.util.HashMap<Object, Object>());
             context.setResourceState(ResourceState.isdTimingStates.name(), new java.util.HashMap<Object, TimingState>());
             context.setResourceState(ResourceState.isdGenerationIndices.name(), new int[GenerationIndex.values().length]);
         }
 
-        private Set<TimeInterval> extractISDIntervals(TimedText tt, TransformerContext context) {
+        private Set<TimeInterval> extractISDIntervals(Object root, TransformerContext context) {
             Reporter reporter = context.getReporter();
-            generateAnonymousSpans(tt, context);
-            recordParents(tt, context);
-            resolveTiming(tt, context);
+            getHelper(context).generateAnonymousSpans(root, context);
+            recordParents(root, context);
+            resolveTiming(root, context);
             Set<TimeCoordinate> coordinates = new java.util.TreeSet<TimeCoordinate>();
-            for (TimeInterval interval : extractActiveIntervals(tt, context)) {
+            for (TimeInterval interval : extractActiveIntervals(root, context)) {
                 coordinates.add(interval.getBegin());
                 coordinates.add(interval.getEnd());
             }
@@ -313,59 +284,9 @@ public class ISD {
             return intervals;
         }
 
-        private void generateAnonymousSpans(TimedText tt, final TransformerContext context) {
+        private void recordParents(Object root, final TransformerContext context) {
             try {
-                traverse(tt, new PreVisitor() {
-                    public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (content instanceof String) {
-                            List<Serializable> contentChildren;
-                            if (parent instanceof Paragraph)
-                                contentChildren = ((Paragraph) parent).getContent();
-                            else if (parent instanceof Span)
-                                contentChildren = ((Span) parent).getContent();
-                            else
-                                contentChildren = null;
-                            if (contentChildren != null)
-                                contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
-                        }
-                        return true;
-                    }
-                });
-            } catch (Exception e) {
-            }
-        }
-
-        private static final ObjectFactory spanFactory = new ObjectFactory();
-        private JAXBElement<Span> wrapInAnonymousSpan(Object content, TransformerContext context) {
-            assert content instanceof String;
-            Span span = spanFactory.createSpan();
-            span.setId(generateAnonymousSpanId(context));
-            span.getContent().add((Serializable) content);
-            return spanFactory.createSpan(span);
-        }
-
-        private String generateAnonymousSpanId(TransformerContext context) {
-            int[] indices = getGenerationIndices(context);
-            return "isdSpan" + pad(indices[GenerationIndex.isdAnonymousSpanIndex.ordinal()]++, 6);
-        }
-
-        private static String digits = "0123456789";
-        private static String pad(int value, int width) {
-            assert value >= 0;
-            StringBuffer sb = new StringBuffer(width);
-            while (value > 0) {
-                sb.append(digits.charAt(value % 10));
-                value /= 10;
-            }
-            while (sb.length() < width) {
-                sb.append('0');
-            }
-            return sb.reverse().toString();
-        }
-
-        private void recordParents(TimedText tt, final TransformerContext context) {
-            try {
-                traverse(tt, new PreVisitor() {
+                getHelper(context).traverse(root, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         Map<Object,Object> parents = getParents(context);
                         if (!parents.containsKey(content))
@@ -377,18 +298,18 @@ public class ISD {
             }
         }
 
-        private void resolveTiming(TimedText tt, TransformerContext context) {
-            resolveExplicit(tt, context);
-            resolveImplicit(tt, context);
-            resolveActive(tt, context);
+        private void resolveTiming(Object root, TransformerContext context) {
+            resolveExplicit(root, context);
+            resolveImplicit(root, context);
+            resolveActive(root, context);
         }
 
-        private void resolveExplicit(TimedText tt, final TransformerContext context) {
+        private void resolveExplicit(Object root, final TransformerContext context) {
             try {
-                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(tt, context.getExternalParameters()).getTimeParameters();
-                traverse(tt, new PreVisitor() {
+                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(root, context.getExternalParameters()).getTimeParameters();
+                getHelper(context).traverse(root, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (TimingState.isTimedElement(content)) {
+                        if (getHelper(context).isTimedElement(content)) {
                             TimingState ts = getTimingState(content, context, timeParameters);
                             ts.resolveExplicit();
                         }
@@ -399,12 +320,12 @@ public class ISD {
             }
         }
 
-        private void resolveImplicit(TimedText tt, final TransformerContext context) {
+        private void resolveImplicit(Object root, final TransformerContext context) {
             try {
-                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(tt, context.getExternalParameters()).getTimeParameters();
-                traverse(tt, new PostVisitor() {
+                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(root, context.getExternalParameters()).getTimeParameters();
+                getHelper(context).traverse(root, new PostVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (TimingState.isTimedElement(content)) {
+                        if (getHelper(context).isTimedElement(content)) {
                             TimingState ts = getTimingState(content, context, timeParameters);
                             ts.resolveImplicit();
                         }
@@ -415,12 +336,12 @@ public class ISD {
             }
         }
 
-        private void resolveActive(TimedText tt, final TransformerContext context) {
+        private void resolveActive(Object root, final TransformerContext context) {
             try {
-                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(tt, context.getExternalParameters()).getTimeParameters();
-                traverse(tt, new PreVisitor() {
+                final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(root, context.getExternalParameters()).getTimeParameters();
+                getHelper(context).traverse(root, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (TimingState.isTimedElement(content)) {
+                        if (getHelper(context).isTimedElement(content)) {
                             TimingState ts = getTimingState(content, context, timeParameters);
                             ts.resolveActive();
                         }
@@ -431,13 +352,13 @@ public class ISD {
             }
         }
 
-        private java.util.Set<TimeInterval> extractActiveIntervals(TimedText tt, final TransformerContext context) {
-            final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(tt, context.getExternalParameters()).getTimeParameters();
+        private java.util.Set<TimeInterval> extractActiveIntervals(Object root, final TransformerContext context) {
+            final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(root, context.getExternalParameters()).getTimeParameters();
             final java.util.Set<TimeInterval> intervals = new java.util.TreeSet<TimeInterval>();
             try {
-                traverse(tt, new PreVisitor() {
+                getHelper(context).traverse(root, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (TimingState.isTimedElement(content)) {
+                        if (getHelper(context).isTimedElement(content)) {
                             TimingState ts = getTimingState(content,context, timeParameters);
                             ts.extractActiveInterval(intervals);
                         }
@@ -447,101 +368,6 @@ public class ISD {
             } catch (Exception e) {
             }
             return intervals;
-        }
-
-        private static void traverse(TimedText tt, Visitor v) throws Exception {
-            Body body = tt.getBody();
-            if (body != null) {
-                if (!v.preVisit(tt, null))
-                    return;
-                traverse(body, tt, v);
-                if (!v.postVisit(tt, null))
-                    return;
-            }
-        }
-
-        private static void traverse(Body body, Object parent, Visitor v) throws Exception {
-            if (!v.preVisit(body, parent))
-                return;
-            for (com.skynav.ttv.model.ttml1.tt.Set a : body.getAnimationClass())
-                traverse(a, body, v);
-            for (Division d : body.getDiv())
-                traverse(d, body, v);
-            if (!v.postVisit(body, parent))
-                return;
-        }
-
-        private static void traverse(Division division, Object parent, Visitor v) throws Exception {
-            if (!v.preVisit(division, parent))
-                return;
-            for (com.skynav.ttv.model.ttml1.tt.Set a : division.getAnimationClass())
-                traverse(a, division, v);
-            for (Object b : division.getBlockClass())
-                traverseBlock(b, division, v);
-            if (!v.postVisit(division, parent))
-                return;
-        }
-
-        private static void traverse(Paragraph paragraph, Object parent, Visitor v) throws Exception {
-            if (!v.preVisit(paragraph, parent))
-                return;
-            for (Serializable s : paragraph.getContent())
-                traverseContent(s, paragraph, v);
-            if (!v.postVisit(paragraph, parent))
-                return;
-        }
-
-        private static void traverse(Span span, Object parent, Visitor v) throws Exception {
-            if (!v.preVisit(span, parent))
-                return;
-            for (Serializable s : span.getContent())
-                traverseContent(s, span, v);
-            if(!v.postVisit(span, parent))
-                return;
-        }
-
-        private static void traverse(Break br, Object parent, Visitor v) throws Exception {
-            if(!v.preVisit(br, parent))
-                return;
-            for (com.skynav.ttv.model.ttml1.tt.Set a : br.getAnimationClass())
-                traverse(a, br, v);
-            if (!v.postVisit(br, parent))
-                return;
-        }
-
-        private static void traverse(com.skynav.ttv.model.ttml1.tt.Set set, Object parent, Visitor v) throws Exception {
-            if (!v.preVisit(set, parent))
-                return;
-            if (!v.postVisit(set, parent))
-                return;
-        }
-
-        private static void traverse(String string, Object parent, Visitor v) throws Exception {
-            if (!v.preVisit(string, parent))
-                return;
-            if (!v.postVisit(string, parent))
-                return;
-        }
-
-        private static void traverseBlock(Object block, Object parent, Visitor v) throws Exception {
-            if (block instanceof Division)
-                traverse((Division) block, parent, v);
-            else if (block instanceof Paragraph)
-                traverse((Paragraph) block, parent, v);
-        }
-
-        private static void traverseContent(Serializable content, Object parent, Visitor v) throws Exception {
-            if (content instanceof JAXBElement<?>) {
-                Object element = ((JAXBElement<?>)content).getValue();
-                if (element instanceof com.skynav.ttv.model.ttml1.tt.Set)
-                    traverse((com.skynav.ttv.model.ttml1.tt.Set) element, parent, v);
-                else if (element instanceof Span)
-                    traverse((Span) element, parent, v);
-                else if (element instanceof Break)
-                    traverse((Break) element, parent, v);
-            } else if (content instanceof String) {
-                traverse((String) content, parent, v);
-            }
         }
 
         private TimingState getTimingState(Object content, TransformerContext context, TimeParameters timeParameters) {
@@ -623,7 +449,7 @@ public class ISD {
 
         private static boolean isTimedElement(Element elt) {
             String nsUri = elt.getNamespaceURI();
-            if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
+            if ((nsUri == null) || !nsUri.equals(TTMLHelper.NAMESPACE_TT))
                 return false;
             else {
                 String localName = elt.getLocalName();
@@ -648,13 +474,13 @@ public class ISD {
 
         private static TimeInterval getActiveInterval(Element elt) {
             String begin;
-            if (elt.hasAttributeNS(NAMESPACE_ISD, "begin"))
-                begin = elt.getAttributeNS(NAMESPACE_ISD, "begin");
+            if (elt.hasAttributeNS(TTMLHelper.NAMESPACE_ISD, "begin"))
+                begin = elt.getAttributeNS(TTMLHelper.NAMESPACE_ISD, "begin");
             else
                 begin = null;
             String end;
-            if (elt.hasAttributeNS(NAMESPACE_ISD, "end"))
-                end = elt.getAttributeNS(NAMESPACE_ISD, "end");
+            if (elt.hasAttributeNS(TTMLHelper.NAMESPACE_ISD, "end"))
+                end = elt.getAttributeNS(TTMLHelper.NAMESPACE_ISD, "end");
             else
                 end = null;
             return new TimeInterval(begin, end);
@@ -820,7 +646,7 @@ public class ISD {
         private static Element maybeImplyHeadElement(Document document, TransformerContext context) {
             Element head = getHeadElement(document);
             if (head == null) {
-                Element defaultHead = document.createElementNS(NAMESPACE_TT, "head");
+                Element defaultHead = document.createElementNS(TTMLHelper.NAMESPACE_TT, "head");
                 Element body = getBodyElement(document);
                 try {
                     Element root = document.getDocumentElement();
@@ -839,7 +665,7 @@ public class ISD {
         private static Element maybeImplyLayoutElement(Document document, TransformerContext context) {
             Element layout = getLayoutElement(document);
             if (layout == null) {
-                Element defaultLayout = document.createElementNS(NAMESPACE_TT, "layout");
+                Element defaultLayout = document.createElementNS(TTMLHelper.NAMESPACE_TT, "layout");
                 Element head = maybeImplyHeadElement(document, context);
                 assert head != null;
                 try {
@@ -855,8 +681,8 @@ public class ISD {
         private static List<Element> maybeImplyDefaultRegion(Document document, TransformerContext context, List<Element> regions) {
             if (regions.isEmpty()) {
                 try {
-                    Element defaultRegion = document.createElementNS(NAMESPACE_TT, "region");
-                    defaultRegion.setAttributeNS(XML.xmlNamespace, "id", generateAnonymousRegionId(context));
+                    Element defaultRegion = document.createElementNS(TTMLHelper.NAMESPACE_TT, "region");
+                    defaultRegion.setAttributeNS(XML.xmlNamespace, "id", getHelper(context).generateAnonymousRegionId(context));
                     Element layout = maybeImplyLayoutElement(document, context);
                     assert layout != null;
                     layout.appendChild(defaultRegion);
@@ -866,11 +692,6 @@ public class ISD {
                 }
             }
             return regions;
-        }
-
-        private static String generateAnonymousRegionId(TransformerContext context) {
-            int[] indices = getGenerationIndices(context);
-            return "isdRegion" + pad(indices[GenerationIndex.isdAnonymousRegionIndex.ordinal()]++, 6);
         }
 
         private static Element copyBodyElement(Document document, TransformerContext context) {
@@ -894,7 +715,7 @@ public class ISD {
         private static boolean isTimedTextElement(Element elt, String localName) {
             if (elt != null) {
                 String nsUri = elt.getNamespaceURI();
-                if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
+                if ((nsUri == null) || !nsUri.equals(TTMLHelper.NAMESPACE_TT))
                     return false;
                 else {
                     if (elt.getLocalName().equals(localName))
@@ -1031,7 +852,7 @@ public class ISD {
 
         private static boolean isContentElement(Element elt) {
             String nsUri = elt.getNamespaceURI();
-            if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
+            if ((nsUri == null) || !nsUri.equals(TTMLHelper.NAMESPACE_TT))
                 return false;
             else {
                 String localName = elt.getLocalName();
@@ -1083,26 +904,26 @@ public class ISD {
         }
 
         private static void generateISDWrapper(Document document, TimeInterval interval, TransformerContext context) {
-                Element tt = document.getDocumentElement();
-                Element isd = document.createElementNS(NAMESPACE_ISD, "isd");
-                isd.setAttributeNS(null, "begin", interval.getBegin().toString());
-                isd.setAttributeNS(null, "end", interval.getEnd().toString());
-                copyParameterAttributes(isd, tt);
-                generateISDComputedStyleSets(isd, tt, context);
-                generateISDRegions(isd, tt, context);
-                unwrapRedundantAnonymousSpans(isd);
-                document.removeChild(tt);
-                document.appendChild(isd);
+            Element root = document.getDocumentElement();
+            Element isd = document.createElementNS(TTMLHelper.NAMESPACE_ISD, "isd");
+            isd.setAttributeNS(null, "begin", interval.getBegin().toString());
+            isd.setAttributeNS(null, "end", interval.getEnd().toString());
+            copyParameterAttributes(isd, root);
+            generateISDComputedStyleSets(isd, root, context);
+            generateISDRegions(isd, root, context);
+            unwrapRedundantAnonymousSpans(isd);
+            document.removeChild(root);
+            document.appendChild(isd);
         }
 
-        private static void copyParameterAttributes(Element isd, Element tt) {
-            NamedNodeMap attrs = tt.getAttributes();
+        private static void copyParameterAttributes(Element isd, Element root) {
+            NamedNodeMap attrs = root.getAttributes();
             for (int i = 0, n = attrs.getLength(); i < n; ++i) {
                 Node node = attrs.item(i);
                 if (node instanceof Attr) {
                     Attr a = (Attr) node;
                     String nsUri = a.getNamespaceURI();
-                    if ((nsUri != null) && nsUri.equals(NAMESPACE_TT_PARAMETER)) {
+                    if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT_PARAMETER)) {
                         if (inISDParameterAttributeSet(a) && !isDefaultParameterValue(a)) {
                             isd.setAttributeNS(nsUri, a.getLocalName(), a.getValue());
                         }
@@ -1132,12 +953,12 @@ public class ISD {
                 return false;
         }
 
-        private static void generateISDComputedStyleSets(final Element isd, Element tt, TransformerContext context) {
+        private static void generateISDComputedStyleSets(final Element isd, Element root, TransformerContext context) {
             try {
-                final Map<Element, StyleSet> computedStyleSets = resolveComputedStyles(tt, context);
+                final Map<Element, StyleSet> computedStyleSets = resolveComputedStyles(root, context);
                 final Set<String> styleIds = new java.util.HashSet<String>();
                 final Document document = isd.getOwnerDocument();
-                Traverse.traverseElements(tt, null, new PreVisitor() {
+                Traverse.traverseElements(root, null, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
@@ -1145,9 +966,9 @@ public class ISD {
                             StyleSet css = computedStyleSets.get(elt);
                             String id = css.getId();
                             if (!id.isEmpty()) {
-                                elt.setAttributeNS(NAMESPACE_ISD, "css", id);
+                                elt.setAttributeNS(TTMLHelper.NAMESPACE_ISD, "css", id);
                                 if (!styleIds.contains(id)) {
-                                    Element isdStyle = document.createElementNS(NAMESPACE_ISD, "css");
+                                    Element isdStyle = document.createElementNS(TTMLHelper.NAMESPACE_ISD, "css");
                                     generateAttributes(css, isdStyle);
                                     isd.appendChild(isdStyle);
                                     styleIds.add(id);
@@ -1172,16 +993,16 @@ public class ISD {
             }
         }
 
-        private static Map<Element, StyleSet> resolveComputedStyles(Element tt, TransformerContext context) {
+        private static Map<Element, StyleSet> resolveComputedStyles(Element root, TransformerContext context) {
             // resolve specified style sets
-            Map<Element, StyleSet> specifiedStyleSets = resolveSpecifiedStyles(tt, context);
+            Map<Element, StyleSet> specifiedStyleSets = resolveSpecifiedStyles(root, context);
 
             // derive {CSS(E)} from {SSS(E)}
             Map<Element, StyleSet> computedStyleSets = new java.util.HashMap<Element, StyleSet>();
             for (Map.Entry<Element, StyleSet> e : specifiedStyleSets.entrySet()) {
                 Element elt = e.getKey();
                 if (isRegionElement(elt)) {
-                    if (findChildElement(elt, NAMESPACE_TT, "body") != null)
+                    if (findChildElement(elt, TTMLHelper.NAMESPACE_TT, "body") != null)
                         computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
                 } else if (isContentElement(elt)) {
                     computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
@@ -1221,18 +1042,18 @@ public class ISD {
             return computedStyleSets;
         }
 
-        private static Map<Element, StyleSet> resolveSpecifiedStyles(Element tt, TransformerContext context) {
+        private static Map<Element, StyleSet> resolveSpecifiedStyles(Element root, TransformerContext context) {
             Map<Element, StyleSet> specifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
-            specifiedStyleSets = resolveSpecifiedStyles(getStyleElements(tt, context), specifiedStyleSets, context);
-            specifiedStyleSets = resolveSpecifiedStyles(getAnimationElements(tt, context), specifiedStyleSets, context);
-            specifiedStyleSets = resolveSpecifiedStyles(getRegionOrContentElements(tt, context), specifiedStyleSets, context);
+            specifiedStyleSets = resolveSpecifiedStyles(getStyleElements(root, context), specifiedStyleSets, context);
+            specifiedStyleSets = resolveSpecifiedStyles(getAnimationElements(root, context), specifiedStyleSets, context);
+            specifiedStyleSets = resolveSpecifiedStyles(getRegionOrContentElements(root, context), specifiedStyleSets, context);
             return specifiedStyleSets;
         }
 
-        private static Collection<Element> getStyleElements(Element tt, TransformerContext context) {
+        private static Collection<Element> getStyleElements(Element root, TransformerContext context) {
             final Collection<Element> elts = new java.util.ArrayList<Element>();
             try {
-                Traverse.traverseElements(tt, null, new PreVisitor() {
+                Traverse.traverseElements(root, null, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
@@ -1268,10 +1089,10 @@ public class ISD {
             }
         }
 
-        private static Collection<Element> getAnimationElements(Element tt, TransformerContext context) {
+        private static Collection<Element> getAnimationElements(Element root, TransformerContext context) {
             final Collection<Element> elts = new java.util.ArrayList<Element>();
             try {
-                Traverse.traverseElements(tt, null, new PreVisitor() {
+                Traverse.traverseElements(root, null, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
@@ -1286,10 +1107,10 @@ public class ISD {
             return elts;
         }
 
-        private static Collection<Element> getRegionOrContentElements(Element tt, TransformerContext context) {
+        private static Collection<Element> getRegionOrContentElements(Element root, TransformerContext context) {
             final Collection<Element> elts = new java.util.ArrayList<Element>();
             try {
-                Traverse.traverseElements(tt, null, new PreVisitor() {
+                Traverse.traverseElements(root, null, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
@@ -1362,7 +1183,7 @@ public class ISD {
         private static StyleSet computeSpecifiedStyleSet(Element elt, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
             // See TTML2, Section 8.4.4.2
             // 1. initialization
-            StyleSet sss = new StyleSet(generateStyleSetIndex(context));
+            StyleSet sss = new StyleSet(getHelper(context).generateStyleSetIndex(context));
             // 2. referential and chained referential styling
             for (StyleSet ss : getSpecifiedStyleSets(getReferencedStyleElements(elt), specifiedStyleSets))
                 sss.merge(ss);
@@ -1391,11 +1212,6 @@ public class ISD {
                 }
             }
             return sss;
-        }
-
-        private static int generateStyleSetIndex(TransformerContext context) {
-            int[] indices = getGenerationIndices(context);
-            return indices[GenerationIndex.isdStyleSetIndex.ordinal()]++;
         }
 
         private static Collection<Element> getReferencedStyleElements(Element elt) {
@@ -1456,7 +1272,7 @@ public class ISD {
                 if (node instanceof Attr) {
                     Attr a = (Attr) node;
                     String nsUri = a.getNamespaceURI();
-                    if ((nsUri != null) && nsUri.equals(NAMESPACE_TT_STYLE)) {
+                    if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT_STYLE)) {
                         styles.merge(new StyleSpecification(new ComparableQName(a.getNamespaceURI(), a.getLocalName()), a.getValue()));
                     }
                 }
@@ -1486,9 +1302,9 @@ public class ISD {
             return null;
         }
 
-        private static void generateISDRegions(final Element isd, Element tt, final TransformerContext context) {
+        private static void generateISDRegions(final Element isd, Element root, final TransformerContext context) {
             try {
-                Traverse.traverseElements(tt, null, new PreVisitor() {
+                Traverse.traverseElements(root, null, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
@@ -1506,7 +1322,7 @@ public class ISD {
             Element body = detachBody(region);
             if (body != null) {
                 Document document = isd.getOwnerDocument();
-                Element isdRegion = document.createElementNS(NAMESPACE_ISD, "region");
+                Element isdRegion = document.createElementNS(TTMLHelper.NAMESPACE_ISD, "region");
                 copyRegionAttributes(isdRegion, region, context);
                 isdRegion.appendChild(body);
                 isd.appendChild(isdRegion);
@@ -1528,7 +1344,7 @@ public class ISD {
                         if (nsUri.equals(XML.xmlNamespace)) {
                             if (localName.equals("id"))
                                 aNew = a;
-                        } else if (nsUri.equals(NAMESPACE_ISD)) {
+                        } else if (nsUri.equals(TTMLHelper.NAMESPACE_ISD)) {
                             if (localName.equals("css"))
                                 aNew = a;
                         } else if (nsUri.equals(Annotations.getNamespace())) {
@@ -1547,7 +1363,7 @@ public class ISD {
         }
 
         private static Element detachBody(Element region) {
-            Element body = findChildElement(region, NAMESPACE_TT, "body");
+            Element body = findChildElement(region, TTMLHelper.NAMESPACE_TT, "body");
             if (body != null) {
                 assert body.getParentNode() == region;
                 region.removeChild(body);
@@ -1601,7 +1417,7 @@ public class ISD {
             boolean retainMetadata = (Boolean) context.getResourceState(TransformerContext.ResourceState.ttxRetainMetadata.name());
             String nsUri = elt.getNamespaceURI();
             boolean exclude = false;
-            if (nsUri.equals(NAMESPACE_TT_METADATA)) {
+            if (nsUri.equals(TTMLHelper.NAMESPACE_TT_METADATA)) {
                 if (!retainMetadata)
                     exclude = true;
             }
@@ -1636,15 +1452,15 @@ public class ISD {
                             exclusions.add(a);
                         else
                             continue;
-                    } else if (nsUri.equals(NAMESPACE_TT_METADATA)) {
+                    } else if (nsUri.equals(TTMLHelper.NAMESPACE_TT_METADATA)) {
                         exclusions.add(a);
-                    } else if (nsUri.equals(NAMESPACE_TT_PARAMETER)) {
+                    } else if (nsUri.equals(TTMLHelper.NAMESPACE_TT_PARAMETER)) {
                         if (isDefaultParameterValue(a))
                             exclusions.add(a);
-                    } else if (nsUri.equals(NAMESPACE_TT_STYLE)) {
-                        if ((nsUriElt == null) || !nsUriElt.equals(NAMESPACE_ISD))
+                    } else if (nsUri.equals(TTMLHelper.NAMESPACE_TT_STYLE)) {
+                        if ((nsUriElt == null) || !nsUriElt.equals(TTMLHelper.NAMESPACE_ISD))
                             exclusions.add(a);
-                    } else if (nsUri.equals(NAMESPACE_ISD)) {
+                    } else if (nsUri.equals(TTMLHelper.NAMESPACE_ISD)) {
                         if (!localName.equals("css"))
                             exclusions.add(a);
                     } else if (nsUri.equals(Annotations.getNamespace())) {
@@ -1652,12 +1468,12 @@ public class ISD {
                             exclusions.add(a);
                     } else if (nsUri.equals(XML.xmlnsNamespace)) {
                         if (value != null) {
-                            if (value.equals(NAMESPACE_ISD)) {
-                                if ((nsUriElt != null) && nsUriElt.equals(NAMESPACE_TT))
+                            if (value.equals(TTMLHelper.NAMESPACE_ISD)) {
+                                if ((nsUriElt != null) && nsUriElt.equals(TTMLHelper.NAMESPACE_TT))
                                     exclusions.add(a);
-                            } else if (value.equals(NAMESPACE_TT))
+                            } else if (value.equals(TTMLHelper.NAMESPACE_TT))
                                 exclusions.add(a);
-                            else if (value.equals(NAMESPACE_TT_METADATA))
+                            else if (value.equals(TTMLHelper.NAMESPACE_TT_METADATA))
                                 exclusions.add(a);
                             else if (value.equals(Annotations.getNamespace()))
                                 exclusions.add(a);
@@ -1738,7 +1554,7 @@ public class ISD {
            try {
                TransformerFactory tf = TransformerFactory.newInstance();
                DOMSource source = new DOMSource(document);
-               String outputFileName = "isd" + pad(sequenceIndex, 5) + ".xml";
+               String outputFileName = "isd" + TTMLHelper.pad(sequenceIndex, 5) + ".xml";
                File outputFile = new File(outputDirectory, outputFileName);
                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), outputEncoding));
                StreamResult result = new StreamResult(bw);

@@ -25,22 +25,11 @@
  
 package com.skynav.ttx.transformer.isd;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import com.skynav.ttv.model.ttml1.tt.Body;
-import com.skynav.ttv.model.ttml1.tt.Break;
-import com.skynav.ttv.model.ttml1.tt.Division;
-import com.skynav.ttv.model.ttml1.tt.Paragraph;
-import com.skynav.ttv.model.ttml1.tt.Region;
-import com.skynav.ttv.model.ttml1.tt.Span;
-import com.skynav.ttv.model.ttml1.ttd.TimeContainer;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Reporter;
@@ -54,6 +43,7 @@ public class TimingState {
 
     // contextual state
     private TransformerContext context;                 // transformer context object
+    private TTMLHelper helper;                          // ttml helper
     private Object content;                             // (jaxb) content object
     private TimeParameters timeParameters;              // timing parameters
     // explicit timing state
@@ -68,6 +58,7 @@ public class TimingState {
 
     public TimingState(TransformerContext context, Object content, TimeParameters timeParameters) {
         this.context = context;
+        this.helper = (TTMLHelper) context.getResourceState(ResourceState.isdHelper.name());
         this.content = content;
         this.timeParameters = timeParameters;
     }
@@ -174,38 +165,8 @@ public class TimingState {
     private void debug(int level, String label, String details) {
         Reporter reporter = context.getReporter();
         if (reporter.getDebugLevel() >= level) {
-            String cls = content.getClass().toString();
-            cls = cls.substring(cls.lastIndexOf('.') + 1);
-            if (isAnonymousSpan(content)) {
-                List<Serializable> spanContent = ((Span) content).getContent();
-                if (spanContent.size() == 1) {
-                    Serializable spanContentFirst = spanContent.get(0);
-                    if (spanContentFirst instanceof String) {
-                        String spanText = (String) spanContentFirst;
-                        cls = "AnonSpan(" + escapeControls(spanText) + ")";
-                    }
-                }
-            }
-            reporter.logDebug(reporter.message("*KEY*", "{0}: {1}[{2}].", label, cls, details));
+            reporter.logDebug(reporter.message("*KEY*", "{0}: {1}[{2}].", label, helper.getClassString(content), details));
         }
-    }
-
-    private static String escapeControls(String s) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0, n = s.length(); i < n; ++i) {
-            char c = s.charAt(i);
-            if (c == '\n')
-                sb.append("\\n");
-            else if (c == '\r')
-                sb.append("\\r");
-            else if (c == '\t')
-                sb.append("\\t");
-            else if (c == '\f')
-                sb.append("\\f");
-            else
-                sb.append(c);
-        }
-        return sb.toString();
     }
 
     private void resolveExplicitDuration() {
@@ -241,18 +202,18 @@ public class TimingState {
 
     private void resolveImplicitDuration() {
         TimeCoordinate durImplicit = this.durImplicit;
-        if (isAnonymousSpan(content)) {
+        if (helper.isAnonymousSpan(content)) {
             /*
             if (isSequenceContainer(nearestExplicitTimedContainerAncestor(content)))
                 durImplicit = TimeCoordinate.ZERO;
             else
                 durImplicit = TimeCoordinate.INDEFINITE;
             */
-            if (isSequenceContainer(getParent(content)))
+            if (helper.isSequenceContainer(getParent(content)))
                 durImplicit = TimeCoordinate.ZERO;
             else
                 durImplicit = TimeCoordinate.INDEFINITE;
-        } else if (isSequenceContainer(content)) {
+        } else if (helper.isSequenceContainer(content)) {
             TimeCoordinate sum = null;
             for (TimingState ts : getChildrenTiming(content, timeParameters)) {
                 TimeCoordinate begin = ts.getBegin();
@@ -283,7 +244,7 @@ public class TimingState {
             TimeCoordinate durSimple = getSimpleDuration();
             if (durImplicit.compareTo(durSimple) != 0)
                 durImplicit = durSimple;
-        } else if (content instanceof Body) {
+        } else if (helper.isBody(content)) {
             double externalDuration = timeParameters.getExternalDuration();
             if (!Double.isNaN(externalDuration))
                 durImplicit = new TimeCoordinate(externalDuration);
@@ -292,13 +253,13 @@ public class TimingState {
         debug(2, "Resolve implicit duration", durImplicit.toString());
     }
 
-    public static final QName beginAttributeName = new QName(ISD.NAMESPACE_ISD,"begin");
-    public static final QName endAttributeName = new QName(ISD.NAMESPACE_ISD,"end");
+    public static final QName beginAttributeName = new QName(TTMLHelper.NAMESPACE_ISD,"begin");
+    public static final QName endAttributeName = new QName(TTMLHelper.NAMESPACE_ISD,"end");
 
     public void resolveActive() {
         TimeCoordinate b = getBegin();
         TimeCoordinate e = getEnd();
-        if (content instanceof Body) {
+        if (helper.isBody(content)) {
             beginActive = b;
             endActive = e;
             if (!endActive.isDefinite())
@@ -310,7 +271,7 @@ public class TimingState {
             TimingState tsParent = getTimingState(parent, timeParameters);
             TimeCoordinate bParent = tsParent.getActiveBegin();
             TimeCoordinate reference;
-            if (isSequenceContainer(parent)) {
+            if (helper.isSequenceContainer(parent)) {
                 TimingState tsElder = getTimingState(getPrevSibling(content, parent), timeParameters);
                 reference = (tsElder != null) ? tsElder.getActiveEnd() : bParent;
             } else {
@@ -334,7 +295,7 @@ public class TimingState {
         }
         debug(2, "Resolve active", getActiveBegin() + "," + getActiveEnd());
         // record active interval attributes
-        Map<QName,String> otherAttributes = getOtherAttributes(content);
+        Map<QName,String> otherAttributes = TTMLHelper.getOtherAttributes(content);
         if (otherAttributes != null) {
             otherAttributes.put(beginAttributeName, beginActive.toString().toLowerCase());
             otherAttributes.put(endAttributeName, endActive.toString().toLowerCase());
@@ -351,6 +312,18 @@ public class TimingState {
             return parents.get(content);
         else
             return null;
+    }
+
+    private Object getPrevSibling(Object content, Object parent) {
+        if (parent == null)
+            return null;
+        Object prevSibling = null;
+        for (Object sibling : helper.getChildren(parent)) {
+            if (sibling == content)
+                return prevSibling;
+            prevSibling = sibling;
+        }
+        return null;
     }
 
     /*
@@ -374,7 +347,7 @@ public class TimingState {
 
     private List<TimingState> getChildrenTiming(Object content, TimeParameters timeParameters) {
         List<TimingState> childrenTiming = new java.util.ArrayList<TimingState>();
-        for (Object child: getChildren(content)) {
+        for (Object child: helper.getChildren(content)) {
             TimingState ts = getTimingState(child, timeParameters);
             childrenTiming.add(ts);
         }
@@ -386,40 +359,8 @@ public class TimingState {
         return "[b(" + getBegin() + "),e(" + getEnd() + "),d(" + getSimpleDuration() + "),di(" + durImplicit + ")]";
     }
 
-    public static boolean isTimedElement(Object content) {
-        if (content instanceof Body)
-            return true;
-        else if (content instanceof Division)
-            return true;
-        else if (content instanceof Paragraph)
-            return true;
-        else if (content instanceof Span)
-            return true;
-        else if (content instanceof Break)
-            return true;
-        else if (content instanceof Region)
-            return true;
-        else if (content instanceof com.skynav.ttv.model.ttml1.tt.Set)
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isTimedContainerElement(Object content) {
-        if (content instanceof Body)
-            return true;
-        else if (content instanceof Division)
-            return true;
-        else if (content instanceof Paragraph)
-            return true;
-        else if (content instanceof Span)
-            return true;
-        else
-            return false;
-    }
-
     public static TimeCoordinate getTimeCoordinateAttribute(Object content, String name, TimeParameters timeParameters) {
-        String value = getStringValuedAttribute(content, name);
+        String value = TTMLHelper.getStringValuedAttribute(content, name);
         if (value != null) {
             Time[] times = new Time[1];
             if (Timing.isCoordinate(value, null, null, timeParameters, times)) {
@@ -442,133 +383,6 @@ public class TimingState {
 
     public static TimeCoordinate getEndAttribute(Object content, TimeParameters timeParameters) {
         return getTimeCoordinateAttribute(content, "end", timeParameters);
-    }
-
-    private static boolean isAnonymousSpan(Object content) {
-        if (content instanceof Span) {
-            String value = getStringValuedAttribute(content, "id");
-            return (value != null) && (value.indexOf("ttxSpan") == 0);
-        } else
-            return false;
-    }
-
-    private static boolean isSequenceContainer(Object content) {
-        TimeContainer container = getTimeContainer(content);
-        return (container != null ) ? container.value().equals("seq") : false;
-    }
-
-    private static TimeContainer getTimeContainer(Object content) {
-        if (isTimedContainerElement(content)) {
-            TimeContainer container = null;
-            if (content instanceof Body)
-                container = ((Body) content).getTimeContainer();
-            else if (content instanceof Division)
-                container = ((Division) content).getTimeContainer();
-            else if (content instanceof Paragraph)
-                container = ((Paragraph) content).getTimeContainer();
-            else if (content instanceof Span)
-                container = ((Span) content).getTimeContainer();
-            else
-                unexpectedContent(content);
-            return container;
-        } else
-            return null;
-    }
-
-    /*
-    private static boolean isExplicitTimedContainer(Object content) {
-        return getTimeContainer(content) != null;
-    }
-    */
-
-    private static boolean unexpectedContent(Object content) throws IllegalStateException {
-        throw new IllegalStateException("Unexpected JAXB content object of type '" + content.getClass().getName() +  "'.");
-    }
-
-    @SuppressWarnings("rawtypes")
-    private static List getChildren(Object content) {
-        List children = null;
-        if (content instanceof Body)
-            children = ((Body) content).getDiv();
-        else if (content instanceof Division)
-            children = ((Division) content).getBlockClass();
-        else if (content instanceof Paragraph)
-            children = dereferenceAsContent(((Paragraph) content).getContent());
-        else if (content instanceof Span)
-            children = dereferenceAsContent(((Span) content).getContent());
-        return children;
-    }
-
-    private static List<Object> dereferenceAsContent(List<Serializable> content) {
-        List<Object> dereferencedContent = new java.util.ArrayList<Object>(content.size());
-        for (Serializable s: content) {
-            if (s instanceof JAXBElement<?>) {
-                Object element = ((JAXBElement<?>)s).getValue();
-                if (element instanceof Span)
-                    dereferencedContent.add(element);
-                else if (element instanceof Break)
-                    dereferencedContent.add(element);
-            }
-        }
-        return dereferencedContent;
-    }
-
-    private static Object getPrevSibling(Object content, Object parent) {
-        if (parent == null)
-            return null;
-        Object prevSibling = null;
-        for (Object sibling : getChildren(parent)) {
-            if (sibling == content)
-                return prevSibling;
-            prevSibling = sibling;
-        }
-        return null;
-    }
-
-    private static String getStringValuedAttribute(Object content, String attributeName) {
-        try {
-            Class<?> contentClass = content.getClass();
-            Method m = contentClass.getMethod(makeGetterName(attributeName), new Class<?>[]{});
-            return (String) m.invoke(content, new Object[]{});
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            return null;
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String makeGetterName(String attributeName) {
-        assert attributeName.length() > 0;
-        StringBuffer sb = new StringBuffer();
-        sb.append("get");
-        sb.append(Character.toUpperCase(attributeName.charAt(0)));
-        sb.append(attributeName.substring(1));
-        return sb.toString();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<QName,String> getOtherAttributes(Object content) {
-        try {
-            Class<?> contentClass = content.getClass();
-            Method m = contentClass.getMethod("getOtherAttributes", new Class<?>[]{});
-            return (Map<QName,String>) m.invoke(content, new Object[]{});
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            return null;
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

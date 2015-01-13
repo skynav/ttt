@@ -65,18 +65,7 @@ import com.skynav.xml.helpers.XML;
 
 public class TTML1 {
 
-    public static class Constants {
-
-        public static final String NAMESPACE_PREFIX = "http://www.w3.org/ns/ttml";
-
-        public static final String NAMESPACE_TT = "http://www.w3.org/ns/ttml";
-        public static final String NAMESPACE_TT_METADATA = "http://www.w3.org/ns/ttml#metadata";
-        public static final String NAMESPACE_TT_PARAMETER = "http://www.w3.org/ns/ttml#parameter";
-        public static final String NAMESPACE_TT_STYLE = "http://www.w3.org/ns/ttml#styling";
-        public static final String NAMESPACE_TT_PROFILE = "http://www.w3.org/ns/ttml/profile/";
-        public static final String NAMESPACE_TT_FEATURE = "http://www.w3.org/ns/ttml/feature/";
-        public static final String NAMESPACE_TT_EXTENSION = "http://www.w3.org/ns/ttml/extension/";
-        public static final String NAMESPACE_TT_ISD = "http://www.w3.org/ns/ttml#isd";
+    public static class Constants extends TTML.Constants {
 
         public static final String XSD_TTML1 = "xsd/ttml1/ttml1.xsd";
 
