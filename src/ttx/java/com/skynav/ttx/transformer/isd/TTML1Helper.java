@@ -33,6 +33,8 @@ import javax.xml.bind.JAXBElement;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
 import com.skynav.ttv.model.ttml1.tt.Division;
+import com.skynav.ttv.model.ttml1.tt.Head;
+import com.skynav.ttv.model.ttml1.tt.Layout;
 import com.skynav.ttv.model.ttml1.tt.ObjectFactory;
 import com.skynav.ttv.model.ttml1.tt.Paragraph;
 import com.skynav.ttv.model.ttml1.tt.Region;
@@ -53,14 +55,42 @@ public class TTML1Helper extends TTMLHelper {
     }
 
     private static void traverse(TimedText tt, Visitor v) throws Exception {
+        if (!v.preVisit(tt, null))
+            return;
+        Head head = tt.getHead();
+        if (head != null)
+            traverse(head, tt, v);
         Body body = tt.getBody();
-        if (body != null) {
-            if (!v.preVisit(tt, null))
-                return;
+        if (body != null)
             traverse(body, tt, v);
-            if (!v.postVisit(tt, null))
-                return;
-        }
+        if (!v.postVisit(tt, null))
+            return;
+    }
+
+    private static void traverse(Head head, Object parent, Visitor v) throws Exception {
+        if (!v.preVisit(head, parent))
+            return;
+        Layout layout = head.getLayout();
+        if (layout != null)
+            traverse(layout, head, v);
+        if (!v.postVisit(head, parent))
+            return;
+    }
+
+    private static void traverse(Layout layout, Object parent, Visitor v) throws Exception {
+        if (!v.preVisit(layout, parent))
+            return;
+        for (Region r : layout.getRegion())
+            traverse(r, layout, v);
+        if (!v.postVisit(layout, parent))
+            return;
+    }
+
+    private static void traverse(Region region, Object parent, Visitor v) throws Exception {
+        if (!v.preVisit(region, parent))
+            return;
+        if (!v.postVisit(region, parent))
+            return;
     }
 
     private static void traverse(Body body, Object parent, Visitor v) throws Exception {
@@ -180,17 +210,35 @@ public class TTML1Helper extends TTMLHelper {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes","unchecked"})
     public List getChildren(Object content) {
         List children = null;
-        if (content instanceof Body)
+        if (content instanceof TimedText) {
+            children = new java.util.ArrayList<Object>();
+            Head head = ((TimedText) content).getHead();
+            if (head != null)
+                children.add(head);
+            Body body = ((TimedText) content).getBody();
+            if (body != null)
+                children.add(body);
+        } else if (content instanceof Head) {
+            children = new java.util.ArrayList<Object>();
+            Layout layout = ((Head) content).getLayout();
+            if (layout != null)
+                children.add(layout);
+        } else if (content instanceof Layout) {
+            children = ((Layout) content).getRegion();
+        } else if (content instanceof Body) {
             children = ((Body) content).getDiv();
-        else if (content instanceof Division)
+        } else if (content instanceof Division) {
             children = ((Division) content).getBlockClass();
-        else if (content instanceof Paragraph)
+        } else if (content instanceof Paragraph) {
             children = dereferenceAsContent(((Paragraph) content).getContent());
-        else if (content instanceof Span)
+        } else if (content instanceof Span) {
             children = dereferenceAsContent(((Span) content).getContent());
+        } else {
+            children = new java.util.ArrayList<Object>();
+        }
         return children;
     }
 
@@ -209,8 +257,8 @@ public class TTML1Helper extends TTMLHelper {
     }
 
     @Override
-    public boolean isBody(Object content) {
-        return content instanceof Body;
+    public boolean isTimedText(Object content) {
+        return content instanceof TimedText;
     }
 
     @Override
@@ -224,7 +272,15 @@ public class TTML1Helper extends TTMLHelper {
 
     @Override
     public boolean isTimedElement(Object content) {
-        if (content instanceof Body)
+        if (content instanceof TimedText)
+            return true;
+        else if (content instanceof Head)
+            return true;
+        else if (content instanceof Layout)
+            return true;
+        else if (content instanceof Region)
+            return true;
+        else if (content instanceof Body)
             return true;
         else if (content instanceof Division)
             return true;
@@ -234,8 +290,6 @@ public class TTML1Helper extends TTMLHelper {
             return true;
         else if (content instanceof Break)
             return true;
-        else if (content instanceof Region)
-            return true;
         else if (content instanceof Set)
             return true;
         else
@@ -244,7 +298,13 @@ public class TTML1Helper extends TTMLHelper {
 
     @Override
     public boolean isTimedContainerElement(Object content) {
-        if (content instanceof Body)
+        if (content instanceof TimedText)
+            return true;
+        else if (content instanceof Head)
+            return true;
+        else if (content instanceof Layout)
+            return true;
+        else if (content instanceof Body)
             return true;
         else if (content instanceof Division)
             return true;
@@ -265,7 +325,13 @@ public class TTML1Helper extends TTMLHelper {
     private TimeContainer getTimeContainer(Object content) {
         if (isTimedContainerElement(content)) {
             TimeContainer container = null;
-            if (content instanceof Body)
+            if (content instanceof TimedText)
+                container = TimeContainer.PAR;
+            else if (content instanceof Head)
+                container = TimeContainer.PAR;
+            else if (content instanceof Layout)
+                container = TimeContainer.PAR;
+            else if (content instanceof Body)
                 container = ((Body) content).getTimeContainer();
             else if (content instanceof Division)
                 container = ((Division) content).getTimeContainer();

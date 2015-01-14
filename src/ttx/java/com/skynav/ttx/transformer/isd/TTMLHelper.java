@@ -88,7 +88,7 @@ public abstract class TTMLHelper {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isBody(Object content) {
+    public boolean isTimedText(Object content) {
         throw new UnsupportedOperationException();
     }
 

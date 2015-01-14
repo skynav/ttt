@@ -295,6 +295,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -317,6 +318,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -333,6 +335,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -349,6 +352,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -366,6 +370,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return intervals;
         }
@@ -392,7 +397,7 @@ public class ISD {
                 for (TimeInterval interval : intervals) {
                     Document doc = db.newDocument();
                     m.marshal(context.getBindingElement(context.getXMLNode(root)), doc);
-                    markIdAttributes(doc);
+                    markIdAttributes(doc, context);
                     pruneIntervals(doc, context, interval);
                     pruneRegions(doc, context);
                     pruneTimingAndRegionAttributes(doc, context);
@@ -411,7 +416,7 @@ public class ISD {
             }
         }
 
-        private static void markIdAttributes(Document doc) {
+        private static void markIdAttributes(Document doc, TransformerContext context) {
             try {
                 Traverse.traverseElements(doc, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
@@ -423,6 +428,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -444,6 +450,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -453,7 +460,9 @@ public class ISD {
                 return false;
             else {
                 String localName = elt.getLocalName();
-                if (localName.equals("body"))
+                if (localName.equals("animate"))
+                    return true;
+                else if (localName.equals("body"))
                     return true;
                 else if (localName.equals("div"))
                     return true;
@@ -463,7 +472,7 @@ public class ISD {
                     return true;
                 else if (localName.equals("br"))
                     return true;
-                else if (localName.equals("retion"))
+                else if (localName.equals("region"))
                     return true;
                 else if (localName.equals("set"))
                     return true;
@@ -495,7 +504,7 @@ public class ISD {
         }
 
         private static void pruneRegions(Document doc, TransformerContext context) {
-            List<Element> regions = getRegionElements(doc);
+            List<Element> regions = getRegionElements(doc, context);
             regions = maybeImplyDefaultRegion(doc, context, regions);
             for (Element region : regions) {
                 try {
@@ -527,6 +536,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return returnUsable[0];
         }
@@ -549,6 +559,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -622,7 +633,7 @@ public class ISD {
                 return null;
         }
 
-        private static List<Element> getRegionElements(Document doc) {
+        private static List<Element> getRegionElements(Document doc, TransformerContext context) {
             final List<Element> regions = new java.util.ArrayList<Element>();
             try {
                 Traverse.traverseElements(doc, new PreVisitor() {
@@ -635,6 +646,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return regions;
         }
@@ -644,10 +656,10 @@ public class ISD {
         }
 
         private static Element maybeImplyHeadElement(Document document, TransformerContext context) {
-            Element head = getHeadElement(document);
+            Element head = getHeadElement(document, context);
             if (head == null) {
                 Element defaultHead = document.createElementNS(TTMLHelper.NAMESPACE_TT, "head");
-                Element body = getBodyElement(document);
+                Element body = getBodyElement(document, context);
                 try {
                     Element root = document.getDocumentElement();
                     if (body != null)
@@ -663,7 +675,7 @@ public class ISD {
         }
 
         private static Element maybeImplyLayoutElement(Document document, TransformerContext context) {
-            Element layout = getLayoutElement(document);
+            Element layout = getLayoutElement(document, context);
             if (layout == null) {
                 Element defaultLayout = document.createElementNS(TTMLHelper.NAMESPACE_TT, "layout");
                 Element head = maybeImplyHeadElement(document, context);
@@ -695,7 +707,7 @@ public class ISD {
         }
 
         private static Element copyBodyElement(Document document, TransformerContext context) {
-            Element body = getBodyElement(document);
+            Element body = getBodyElement(document, context);
             if (body != null)
                 return (Element) body.cloneNode(true);
             else
@@ -704,12 +716,13 @@ public class ISD {
 
         private static Element removeBodyElement(Document document, TransformerContext context) {
             try {
-                Element body = getBodyElement(document);
-                return (Element) body.getParentNode().removeChild(body);
+                Element body = getBodyElement(document, context);
+                if (body != null)
+                    return (Element) body.getParentNode().removeChild(body);
             } catch (DOMException e) {
                 context.getReporter().logError(e);
-                return null;
             }
+            return null;
         }
 
         private static boolean isTimedTextElement(Element elt, String localName) {
@@ -731,7 +744,7 @@ public class ISD {
             return isTimedTextElement(elt, "tt");
         }
 
-        private static Element getHeadElement(Document document) {
+        private static Element getHeadElement(Document document, TransformerContext context) {
             final Element[] retHead = new Element[1];
             try {
                 Traverse.traverseElements(document, new PreVisitor() {
@@ -746,6 +759,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return retHead[0];
         }
@@ -754,7 +768,7 @@ public class ISD {
             return isTimedTextElement(elt, "head");
         }
 
-        private static Element getBodyElement(Document document) {
+        private static Element getBodyElement(Document document, TransformerContext context) {
             final Element[] retBody = new Element[1];
             try {
                 Traverse.traverseElements(document, new PreVisitor() {
@@ -770,6 +784,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return retBody[0];
         }
@@ -778,7 +793,7 @@ public class ISD {
             return isTimedTextElement(elt, "body");
         }
 
-        private static Element getLayoutElement(Document document) {
+        private static Element getLayoutElement(Document document, TransformerContext context) {
             final Element[] retLayout = new Element[1];
             try {
                 Traverse.traverseElements(document, new PreVisitor() {
@@ -793,6 +808,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return retLayout[0];
         }
@@ -889,6 +905,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -979,6 +996,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -1064,6 +1082,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return topoSortByStyleReferences(elts, context);
         }
@@ -1103,6 +1122,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return elts;
         }
@@ -1120,6 +1140,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
             return elts;
         }
@@ -1315,6 +1336,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 
@@ -1410,6 +1432,7 @@ public class ISD {
                     }
                 });
             } catch (Exception e) {
+                context.getReporter().logError(e);
             }
         }
 

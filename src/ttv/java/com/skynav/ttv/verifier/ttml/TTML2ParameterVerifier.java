@@ -41,6 +41,7 @@ import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DropModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.MarkerModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.VersionVerifier;
 
 import com.skynav.xml.helpers.XML;
 
@@ -79,6 +80,14 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             TimeBaseVerifier.class,
             Boolean.FALSE,
             TimeBase.MEDIA,
+        },
+        {
+            new QName(NAMESPACE,"version"),
+            "Version",
+            String.class,
+            VersionVerifier.class,
+            Boolean.FALSE,
+            "2",
         },
     };
 

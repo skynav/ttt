@@ -244,7 +244,7 @@ public class TimingState {
             TimeCoordinate durSimple = getSimpleDuration();
             if (durImplicit.compareTo(durSimple) != 0)
                 durImplicit = durSimple;
-        } else if (helper.isBody(content)) {
+        } else if (helper.isTimedText(content)) {
             double externalDuration = timeParameters.getExternalDuration();
             if (!Double.isNaN(externalDuration))
                 durImplicit = new TimeCoordinate(externalDuration);
@@ -259,7 +259,7 @@ public class TimingState {
     public void resolveActive() {
         TimeCoordinate b = getBegin();
         TimeCoordinate e = getEnd();
-        if (helper.isBody(content)) {
+        if (helper.isTimedText(content)) {
             beginActive = b;
             endActive = e;
             if (!endActive.isDefinite())
@@ -269,7 +269,7 @@ public class TimingState {
         } else {
             Object parent = getParent(content);
             TimingState tsParent = getTimingState(parent, timeParameters);
-            TimeCoordinate bParent = tsParent.getActiveBegin();
+            TimeCoordinate bParent = (tsParent != null) ? tsParent.getActiveBegin() : TimeCoordinate.ZERO;
             TimeCoordinate reference;
             if (helper.isSequenceContainer(parent)) {
                 TimingState tsElder = getTimingState(getPrevSibling(content, parent), timeParameters);
@@ -286,7 +286,7 @@ public class TimingState {
                 endActive = TimeCoordinate.add(beginActive, getActiveDuration());
             }
             // clip active end to parent's active end
-            TimeCoordinate eParent = tsParent.getActiveEnd();
+            TimeCoordinate eParent = (tsParent != null) ? tsParent.getActiveEnd() : TimeCoordinate.UNRESOLVED;
             if (!endActive.isDefinite() || endActive.compareTo(eParent) > 0)
                 endActive = eParent;
             // pin active end to active begin if the former precedes the latter
