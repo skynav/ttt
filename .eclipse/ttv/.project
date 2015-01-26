@@ -36,14 +36,39 @@
 			<locationURI>PARENT-2-PROJECT_LOC/tst/ttv/java</locationURI>
 		</link>
 		<link>
+			<name>ttv-test-resources</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/tst/ttv/resources</locationURI>
+		</link>
+		<link>
 			<name>ttx</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ttx/java</locationURI>
 		</link>
 		<link>
+			<name>ttx-test</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/tst/ttx/java</locationURI>
+		</link>
+		<link>
+			<name>ttx-test-resources</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/tst/ttx/resources</locationURI>
+		</link>
+		<link>
 			<name>ttxv</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/src/ttxv/java</locationURI>
+		</link>
+		<link>
+			<name>ttxv-test</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/tst/ttxv/java</locationURI>
+		</link>
+		<link>
+			<name>ttxv-test-resources</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/tst/ttxv/resources</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>

@@ -97,7 +97,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     private String transformerName;
 
     // pre-processed options state
-    private TransformerOptions transformerOptions;
+    private TransformerOptions[] transformerOptions;
     private Map<String,OptionSpecification> mergedShortOptionsMap;
     private Map<String,OptionSpecification> mergedLongOptionsMap;
 
@@ -105,7 +105,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     private Transformer transformer;
 
     public TimedTextTransformer() {
-        transformerOptions = defaultTransformer;
+        transformerOptions = new TransformerOptions[] { defaultTransformer };
     }
 
     @Override
@@ -177,9 +177,9 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
                     String option = arg.substring(2);
                     if (option.equals("transformer")) {
                         if (i + 1 <= args.length) {
-                            Transformer transformerOptions = Transformers.getTransformer(args[++i]);
+                            TransformerOptions transformerOptions = Transformers.getTransformer(args[++i]);
                             if (transformerOptions != null)
-                                this.transformerOptions = transformerOptions;
+                                this.transformerOptions = new TransformerOptions[] { transformerOptions };
                         }
                     }
                 }
@@ -195,7 +195,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
 
     private void populateMergedOptionMaps(Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
         // configure for transformer options merging
-        TransformerOptions transformerOptions;
+        TransformerOptions[] transformerOptions;
         Collection<OptionSpecification> shortOptions;
         Collection<OptionSpecification> longOptions;
         if (doMergeTransformerOptions()) {
@@ -207,25 +207,36 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
             shortOptions = null;
             longOptions = null;
         }
+        populateMergedOptionsMaps(baseShortOptions, baseLongOptions, transformerOptions, shortOptions, longOptions);
+    }
+
+    protected void populateMergedOptionsMaps(Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions,
+        TransformerOptions[] transformerOptions, Collection<OptionSpecification> shortOptions, Collection<OptionSpecification> longOptions) {
         // short options
         Collection<OptionSpecification> mergedShortOptions = mergeOptions(baseShortOptions, shortOptions);
-        if (transformerOptions != null)
-            mergedShortOptions = mergeOptions(mergedShortOptions, transformerOptions.getShortOptionSpecs());
+        if (transformerOptions != null) {
+            for (TransformerOptions options : transformerOptions) {
+                mergedShortOptions = mergeOptions(mergedShortOptions, options.getShortOptionSpecs());
+            }
+        }
         Map<String,OptionSpecification> mergedShortOptionsMap = new java.util.TreeMap<String,OptionSpecification>();
         for (OptionSpecification s : mergedShortOptions)
             mergedShortOptionsMap.put(s.getName(), s);
         this.mergedShortOptionsMap = mergedShortOptionsMap;
         // long options
         Collection<OptionSpecification> mergedLongOptions = mergeOptions(baseLongOptions, longOptions);
-        if (transformerOptions != null)
-            mergedLongOptions = mergeOptions(mergedLongOptions, transformerOptions.getLongOptionSpecs());
+        if (transformerOptions != null) {
+            for (TransformerOptions options : transformerOptions) {
+                mergedLongOptions = mergeOptions(mergedLongOptions, options.getLongOptionSpecs());
+            }
+        }
         Map<String,OptionSpecification> mergedLongOptionsMap = new java.util.TreeMap<String,OptionSpecification>();
         for (OptionSpecification s : mergedLongOptions)
             mergedLongOptionsMap.put(s.getName(), s);
         this.mergedLongOptionsMap = mergedLongOptionsMap;
     }
 
-    private Collection<OptionSpecification> mergeOptions(Collection<OptionSpecification> options, Collection<OptionSpecification> additionalOptions) {
+    protected Collection<OptionSpecification> mergeOptions(Collection<OptionSpecification> options, Collection<OptionSpecification> additionalOptions) {
         Collection<OptionSpecification> mergedOptions = new java.util.TreeSet<OptionSpecification>();
         if (options != null) {
             for (OptionSpecification os : options)
@@ -268,7 +279,6 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         } else
             transformer = Transformers.getDefaultTransformer();
         this.transformer = transformer;
-        assert this.transformer == this.transformerOptions;
         transformer.processDerivedOptions();
     }
 
@@ -311,12 +321,15 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
                 throw new MissingOptionArgumentException("--" + option);
             transformerName = args[++index];
         } else {
-            if (transformerOptions != null)
-                return transformerOptions.parseLongOption(args, index);
-            else
-                throw new UnknownOptionException("--" + option);
+            if (transformerOptions != null) {
+                for (TransformerOptions options: transformerOptions) {
+                    int i =  options.parseLongOption(args, index);
+                    if (i > index)
+                        return i;
+                }
+            }
+            throw new UnknownOptionException("--" + option);
         }
-            
         return index + 1;
     }
 
@@ -328,10 +341,14 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         String option = args[index];
         assert option.length() == 2;
         option = option.substring(1);
-        if (transformerOptions != null)
-            return transformerOptions.parseLongOption(args, index);
-        else
-            throw new UnknownOptionException("-" + option);
+        if (transformerOptions != null) {
+            for (TransformerOptions options: transformerOptions) {
+                int i =  options.parseShortOption(args, index);
+                if (i > index)
+                    return i;
+            }
+        }
+        throw new UnknownOptionException("--" + option);
     }
 
     private void showTransformers(PrintWriter out) {

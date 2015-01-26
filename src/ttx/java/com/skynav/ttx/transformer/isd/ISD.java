@@ -187,7 +187,7 @@ public class ISD {
                     throw new MissingOptionArgumentException("--" + option);
                 outputPattern = args[++index];
             } else
-                throw new UnknownOptionException("--" + option);
+                index = index - 1;
             return index + 1;
         }
 

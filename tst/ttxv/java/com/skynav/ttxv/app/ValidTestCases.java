@@ -54,6 +54,8 @@ public class ValidTestCases {
         args.add("-v");
         args.add("--warn-on");
         args.add("all");
+        args.add("--external-duration");
+        args.add("1h");
         if (expectedErrors >= 0) {
             args.add("--expect-errors");
             args.add(Integer.toString(expectedErrors));

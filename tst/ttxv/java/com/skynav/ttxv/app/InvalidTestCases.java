@@ -49,6 +49,8 @@ public class InvalidTestCases {
         List<String> args = new java.util.ArrayList<String>();
         args.add("-q");
         args.add("-v");
+        args.add("--external-duration");
+        args.add("1h");
         if (expectedErrors >= 0) {
             args.add("--expect-errors");
             args.add(Integer.toString(expectedErrors));
