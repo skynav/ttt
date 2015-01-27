@@ -13,4 +13,5 @@ build.properties*
 *~
 *.orig
 *.bak
+run
 tmp
