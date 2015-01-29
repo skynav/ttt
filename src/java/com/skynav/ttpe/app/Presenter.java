@@ -29,7 +29,6 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 
@@ -100,10 +99,18 @@ public class Presenter extends TimedTextTransformer {
     @Override
     protected void initializeResourceState() {
         super.initializeResourceState();
-        setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), Transformers.getTransformer("isd"));
         setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.TRUE);
         setResourceState(TransformerContext.ResourceState.ttxRetainLocations.name(), Boolean.FALSE);
     }
+
+    @Override
+    public Object getResourceState(String key) {
+        if (key == TransformerContext.ResourceState.ttxTransformer.name())
+            return Transformers.getTransformer("isd");
+        else
+            return super.getResourceState(key);
+    }
+
 
     @Override
     public String[] preProcessOptions(String[] args, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
@@ -194,6 +201,7 @@ public class Presenter extends TimedTextTransformer {
 
     @Override
     public void processDerivedOptions() {
+        super.processDerivedOptions();
         LayoutProcessor layout;
         if (layoutName != null) {
             layout = LayoutProcessor.getProcessor(layoutName);

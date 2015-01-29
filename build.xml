@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
  * 
@@ -42,6 +42,7 @@
 <property name="test.dir" value="${basedir}/tst"/>
 <property name="test.classes.dir" value="${build.dir}/test-classes"/>
 <property name="test.resources.dir" value="${build.dir}/test-resources"/>
+<property name="test.fonts.dir" value="${build.dir}/test-fonts"/>
 
 <property name="ttpe.source.dir" value="${source.dir}/java"/>
 <property name="ttpe.classes.dir" value="${classes.dir}"/>
@@ -49,8 +50,10 @@
 <property name="ttpe.resources.dir" value="${resources.dir}"/>
 <property name="ttpe.test.source.dir" value="${test.dir}/java"/>
 <property name="ttpe.test.resources.source.dir" value="${test.dir}/resources"/>
+<property name="ttpe.test.fonts.source.dir" value="${test.dir}/fonts"/>
 <property name="ttpe.test.classes.dir" value="${test.classes.dir}"/>
 <property name="ttpe.test.resources.dir" value="${test.resources.dir}"/>
+<property name="ttpe.test.fonts.dir" value="${test.fonts.dir}"/>
 
 <property name="ttpe.jar" value="ttpe.jar"/>
 <property name="ttpe.source.jar" value="ttpe-source.jar"/>
@@ -68,6 +71,10 @@
 <property name="ttpe.release.target" value="${release.dir}/ttpe-bin-${ttpe.version}.jar"/>
 
 <property name="ttx.jar" value="${ext.lib.dir}/ttx.jar"/>
+<property name="icu.jar" value="${ext.lib.dir}/icu4j-54_1_1.jar"/>
+<property name="fontbox.jar" value="${ext.lib.dir}/fontbox-2.0.0-SNAPSHOT.jar"/>
+<property name="commons.logging.jar" value="${ext.lib.dir}/commons-logging-1.0.4.jar"/>
+<property name="batik.jar" value="${ext.lib.dir}/batik-all-1.8pre.jar"/>
 
 <property name="javac.debug" value="true"/>
 <property name="javac.deprecation" value="true"/>
@@ -149,12 +156,27 @@
 
 <target name="generate-code"/>
 
+<path id="default-junit-classpath">
+  <path refid="junit.libs.classpath"/>
+  <pathelement location="${ttpe.target}"/>
+  <pathelement location="${ttpe.test.classes.dir}"/>
+  <pathelement location="${ttpe.test.resources.dir}"/>
+</path>
+
+<path id="ext.libs.classpath">
+  <path location="${ttx.jar}"/>
+  <path location="${icu.jar}"/>
+  <path location="${fontbox.jar}"/>
+  <path location="${commons.logging.jar}"/>
+  <path location="${batik.jar}"/>
+</path>
+
 <target name="compile-ttpe">
   <mkdir dir="${ttpe.classes.dir}"/>
   <javac destdir="${ttpe.classes.dir}">
     <src path="${ttpe.source.dir}"/>
     <classpath>
-      <path location="${ttx.jar}"/>
+      <path refid="ext.libs.classpath"/>
     </classpath>
   </javac>
   <mkdir dir="${ttpe.resources.dir}"/>
@@ -162,6 +184,23 @@
     <fileset dir="${ttpe.resources.source.dir}"/>
   </copy>
 </target>
+
+<target name="generate-ttpe-icu-break-data" depends="compile-ttpe">
+    <java classname="com.skynav.ttpe.text.LineBreaker" fork="true" failonerror="true">
+      <classpath>
+        <path location="${ttpe.classes.dir}"/>
+        <path refid="ext.libs.classpath"/>
+      </classpath>
+      <jvmarg value="-ea"/>
+      <sysproperty key="file.encoding" value="utf-8"/>
+      <arg value="${ttpe.resources.source.dir}/com/skynav/ttpe/text/icu-brkiter-uax14.txt"/>
+      <arg value="${ttpe.resources.source.dir}/com/skynav/ttpe/text/icu-brkiter-uax14.dat"/>
+    </java>
+</target>
+
+<target name="generate-ttpe-icu-data" depends="generate-ttpe-icu-break-data"/>
+
+<target name="generate-ttpe-data" depends="generate-ttpe-icu-data"/>
 
 <target name="compile-ttpe-tests" depends="compile-ttpe">
   <mkdir dir="${ttpe.test.classes.dir}"/>
@@ -171,12 +210,16 @@
       <path refid="junit.libs.classpath"/>
       <path location="${ttpe.classes.dir}"/>
       <path location="${ttpe.resources.dir}"/>
-      <path location="${ttx.jar}"/>
+      <path refid="ext.libs.classpath"/>
     </classpath>
   </javac>
   <mkdir dir="${ttpe.test.resources.dir}"/>
   <copy todir="${ttpe.test.resources.dir}">
     <fileset dir="${ttpe.test.resources.source.dir}"/>
+  </copy>
+  <mkdir dir="${ttpe.test.fonts.dir}"/>
+  <copy todir="${ttpe.test.fonts.dir}">
+    <fileset dir="${ttpe.test.fonts.source.dir}"/>
   </copy>
 </target>
 
@@ -293,6 +336,8 @@
   <delete includeemptydirs="true" quiet="true">
     <fileset dir="${ttpe.resources.dir}"/>
     <fileset dir="${ttpe.test.resources.dir}"/>
+    <fileset dir="${ttpe.fonts.dir}"/>
+    <fileset dir="${ttpe.test.fonts.dir}"/>
   </delete>
 </target>
 
@@ -338,7 +383,11 @@
 <macrodef name="run-samples">
   <attribute name="verbose"/>
   <sequential>
-    <java jar="${ttpe.target}" fork="true" failonerror="true">
+    <java classname="com.skynav.ttpe.app.Presenter" fork="true" failonerror="true">
+      <classpath>
+        <path location="${ttpe.classes.dir}"/>
+        <path refid="ext.libs.classpath"/>
+      </classpath>
       <jvmarg value="-ea"/>
       <sysproperty key="file.encoding" value="utf-8"/>
       <arg value="-d"/>
@@ -349,7 +398,9 @@
       <arg value="--hide-resource-path"/>
       <arg value="--model"/>
       <arg value="ttml2"/>
-      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/samples/sample-001.xml"/>
+      <arg value="--font-directory"/>
+      <arg value="${ttpe.test.fonts.source.dir}"/>
+      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-001.xml"/>
     </java>
   </sequential>
 </macrodef>

@@ -25,7 +25,79 @@
 
 package com.skynav.ttpe.layout;
 
+import java.util.Stack;
+
+import org.w3c.dom.Element;
+
+import com.skynav.ttpe.area.BlockArea;
+import com.skynav.ttpe.area.NonLeafAreaNode;
+import com.skynav.ttpe.fonts.FontCache;
+import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.text.LineBreakIterator;
+
+import static com.skynav.ttpe.geometry.Dimension.*;
+
 public class BasicLayoutState implements LayoutState {
+
+    // initialized state
+    private FontCache fontCache;
+    private LineBreakIterator breakIterator;
+    private Stack<NonLeafAreaNode> areas;
+
     public BasicLayoutState() {
+    }
+
+    public LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator) {
+        this.fontCache = fontCache.maybeLoad();
+        this.breakIterator = breakIterator;
+        this.areas = new java.util.Stack<NonLeafAreaNode>();
+        return this;
+    }
+
+    public FontCache getFontCache() {
+        return fontCache;
+    }
+
+    public LineBreakIterator getBreakIterator() {
+        return breakIterator;
+    }
+
+    public NonLeafAreaNode pushBlock(Element e) {
+        return pushBlock(e, 0, 0, getAvailable(IPD), getAvailable(BPD));
+    }
+
+    public NonLeafAreaNode pushBlock(Element e, double x, double y, double w, double h) {
+        return pushBlock(e, getWritingMode(), x, y, w, h);
+    }
+
+    public NonLeafAreaNode pushBlock(Element e, WritingMode wm, double x, double y, double w, double h) {
+        NonLeafAreaNode p = !areas.empty() ? peek() : null;
+        NonLeafAreaNode b = new BlockArea(e, wm, x, y, w, h);
+        if (p != null)
+            p.addChild(b);
+        return areas.push(b);
+    }
+
+    public NonLeafAreaNode pop() {
+        return areas.pop();
+    }
+
+    public NonLeafAreaNode peek() {
+        return areas.peek();
+    }
+
+    public WritingMode getWritingMode() {
+        if (!areas.empty())
+            return areas.peek().getWritingMode();
+        else
+            return WritingMode.LRTB;
+    }
+
+    public double getAvailable(Dimension dimension) {
+        if (!areas.empty())
+            return areas.peek().getAvailable(dimension);
+        else
+            return 0;
     }
 }

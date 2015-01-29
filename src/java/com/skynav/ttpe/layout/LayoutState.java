@@ -25,5 +25,23 @@
 
 package com.skynav.ttpe.layout;
 
+import org.w3c.dom.Element;
+
+import com.skynav.ttpe.area.NonLeafAreaNode;
+import com.skynav.ttpe.fonts.FontCache;
+import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.text.LineBreakIterator;
+
 public interface LayoutState {
+    LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator);
+    FontCache getFontCache();
+    LineBreakIterator getBreakIterator();
+    NonLeafAreaNode pushBlock(Element e);
+    NonLeafAreaNode pushBlock(Element e, double x, double y, double w, double h);
+    NonLeafAreaNode pushBlock(Element e, WritingMode wm, double x, double y, double w, double h);
+    NonLeafAreaNode pop();
+    NonLeafAreaNode peek();
+    WritingMode getWritingMode();
+    double getAvailable(Dimension dimension);
 }

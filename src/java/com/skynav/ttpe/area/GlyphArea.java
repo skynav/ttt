@@ -25,5 +25,14 @@
 
 package com.skynav.ttpe.area;
 
+import org.w3c.dom.Element;
+
+import com.skynav.ttpe.geometry.WritingMode;
+
 public class GlyphArea extends LeafInlineArea {
+
+    public GlyphArea(Element e, WritingMode wm, double x, double y, double w, double h) {
+        super(e, wm, x, y, w, h);
+    }
+
 }

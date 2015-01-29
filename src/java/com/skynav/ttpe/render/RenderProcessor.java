@@ -25,7 +25,6 @@
 
 package com.skynav.ttpe.render;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

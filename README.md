@@ -25,11 +25,12 @@ Main targets:
  clean-ttpe-build    Clean and build TTPE.
  clean-ttpe-test     Clean, build, and test TTPE
  clean-test          Clean, build, and test all targets.
- run-samples         Run converter with sample input test files
+ run-samples         Run with sample input test files
  test                Run all test suites
  test-apps           Run TTPE application tests
+ test-layout         Run TTPE layout test suite
+ test-renderer       Run TTPE renderer test suite
  test-ttpe           Run all TTPE test suites
- test-converter      Run TTPE conversion test suite
 
 Default target: clean-test
 </pre>

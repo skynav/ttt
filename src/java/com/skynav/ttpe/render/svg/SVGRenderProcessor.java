@@ -25,7 +25,6 @@
 
 package com.skynav.ttpe.render.svg;
 
-import java.net.URI;
 import java.util.List;
 
 import com.skynav.ttpe.render.Frame;

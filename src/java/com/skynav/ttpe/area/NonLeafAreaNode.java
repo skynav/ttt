@@ -27,9 +27,27 @@ package com.skynav.ttpe.area;
 
 import java.util.List;
 
+import org.w3c.dom.Element;
+
+import com.skynav.ttpe.geometry.WritingMode;
+
 public abstract class NonLeafAreaNode extends AreaNode {
+
     private List<AreaNode> children;
+
+    public NonLeafAreaNode(Element e, WritingMode wm, double x, double y, double w, double h) {
+        super(e, wm, x, y, w, h);
+    }
+
+    public void addChild(AreaNode c) {
+        c.setParent(this);
+        if (children == null)
+            children = new java.util.ArrayList<AreaNode>();
+        children.add(c);
+    }
+
     public List<AreaNode> getChildren() {
         return children;
     }
+
 }

@@ -26,7 +26,6 @@
 package com.skynav.ttpe.render.xml;
 
 import java.io.File;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
@@ -72,14 +71,19 @@ public class XMLRenderProcessor extends RenderProcessor {
     }
 
     // options state
+    @SuppressWarnings("unused")
     private boolean outputDirectoryClean;
     private String outputDirectoryPath;
     private String outputEncodingName;
+    @SuppressWarnings("unused")
     private boolean outputIndent;
+    @SuppressWarnings("unused")
     private String outputPattern;
 
     // derived option state
+    @SuppressWarnings("unused")
     private File outputDirectory;
+    @SuppressWarnings("unused")
     private Charset outputEncoding;
 
     public XMLRenderProcessor() {

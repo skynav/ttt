@@ -25,5 +25,6 @@
 
 package com.skynav.ttpe.area;
 
-public interface Area {
+public interface Area extends AreaGeometry {
 }
+

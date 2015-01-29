@@ -27,9 +27,24 @@ package com.skynav.ttpe.area;
 
 import java.lang.ref.WeakReference;
 
-public class AreaNode implements Area {
+import org.w3c.dom.Element;
+
+import com.skynav.ttpe.geometry.WritingMode;
+
+public class AreaNode extends AbstractArea {
+
     private WeakReference<NonLeafAreaNode> parent;
+
+    public AreaNode(Element e, WritingMode wm, double x, double y, double w, double h) {
+        super(e, wm, x, y, w, h);
+    }
+
+    public void setParent(NonLeafAreaNode parent) {
+        this.parent = new WeakReference<NonLeafAreaNode>(parent);
+    }
+
     public NonLeafAreaNode getParent() {
         return (parent != null) ? parent.get() : null;
     }
+
 }
