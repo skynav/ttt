@@ -60,6 +60,7 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.TextTransformer;
 import com.skynav.ttx.transformer.Transformers;
 import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.ttx.transformer.TransformerException;
 import com.skynav.ttx.transformer.TransformerOptions;
 
 public class Presenter extends TimedTextTransformer {
@@ -85,7 +86,7 @@ public class Presenter extends TimedTextTransformer {
 
     private static final String DEFAULT_OUTPUT_ENCODING         = "utf-8";
     private static Charset defaultOutputEncoding;
-    private static final String defaultOutputFileNamePattern    = "ttpa{0,number,0000}.xml";
+    private static final String defaultOutputFileNamePattern    = "ttpa-{1,number,0000}.xml";
 
     static {
         try {
@@ -362,10 +363,13 @@ public class Presenter extends TimedTextTransformer {
                 if (doc instanceof Document)
                     frames.addAll(rp.render(lp.layout((Document) doc, this), this));
         }
+        if (outputDirectoryClean)
+            cleanOutputDirectory(uri);
         processFrames(frames);
     }
 
     private void processFrames(List<Frame> frames) {
+        this.outputFileSequence = 0;
         for (Frame f : frames) {
             processFrame(f);
         }
@@ -411,7 +415,23 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private OutputStream getOutputStream(URI uri, File[] retOutputFile) throws IOException {
-        StringBuffer sb = new StringBuffer();
+        String resourceName = getResourceNameComponent(uri);
+        File d = new File(outputDirectory, resourceName);
+        if (!d.exists())
+            d.mkdir();
+        if (!d.exists())
+            return System.out;
+        else {
+            String outputFileName = MessageFormat.format(outputPattern, ++outputFileSequence);
+            File outputFile = new File(d, outputFileName).getCanonicalFile();
+            if (retOutputFile != null)
+                retOutputFile[0] = outputFile;
+            return new FileOutputStream(outputFile);
+            
+        }
+    }
+
+    private String getResourceNameComponent(URI uri) {
         if (isFile(uri)) {
             String path = uri.getPath();
             int s = 0;
@@ -422,20 +442,9 @@ public class Presenter extends TimedTextTransformer {
             int lastExtensionSeparator = path.lastIndexOf('.');
             if (lastExtensionSeparator >= 0)
                 e = lastExtensionSeparator;
-            sb.append(path.substring(s, e));
-            sb.append(".xml");
-        } else {
-            sb.append(MessageFormat.format(outputPattern, ++outputFileSequence));
-        }
-        String outputFileName = sb.toString();
-        if (isStandardOutput(outputFileName))
-            return System.out;
-        else {
-            File outputFile = new File(outputDirectory, outputFileName).getCanonicalFile();
-            if (retOutputFile != null)
-                retOutputFile[0] = outputFile;
-            return new FileOutputStream(outputFile);
-        }
+            return path.substring(s, e);
+        } else
+            return "stdin";
     }
 
     private boolean isStandardOutput(String uri) {
@@ -462,6 +471,24 @@ public class Presenter extends TimedTextTransformer {
             return false;
         else
             return true;
+    }
+
+    private void cleanOutputDirectory(URI uri) {
+        Reporter reporter = getReporter();
+        String resourceName = getResourceNameComponent(uri);
+        File directory = new File(outputDirectory, resourceName);
+        if (directory.exists()) {
+            reporter.logInfo(reporter.message("*KEY*", "Cleaning TTPE artifacts from output directory ''{0}''...", directory.getPath()));
+            for (File f : directory.listFiles()) {
+                String name = f.getName();
+                if (name.indexOf("ttpa") != 0)
+                    continue;
+                else if (name.indexOf(".xml") != (name.length() - 4))
+                    continue;
+                else if (!f.delete())
+                    throw new TransformerException("unable to clean output directory: can't delete: '" + name + "'");
+            }
+        }
     }
 
     public static void main(String[] args) {

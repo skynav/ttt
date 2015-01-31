@@ -56,10 +56,12 @@
 <property name="ttpe.test.fonts.dir" value="${test.fonts.dir}"/>
 
 <property name="ttpe.jar" value="ttpe.jar"/>
+<property name="ttpe.min.jar" value="ttpe-min.jar"/>
 <property name="ttpe.source.jar" value="ttpe-source.jar"/>
 <property name="ttpe.main.class" value="com/skynav/ttpe/app/Presenter"/>
 <property name="ttpe.main.classname" value="com.skynav.ttpe.app.Presenter"/>
 <property name="ttpe.target" value="${artifacts.dir}/${ttpe.jar}"/>
+<property name="ttpe.min.target" value="${artifacts.dir}/${ttpe.min.jar}"/>
 <property name="ttpe.source.target" value="${artifacts.dir}/${ttpe.source.jar}"/>
 <property name="ttpe.title" value="TTML Presentation Engine (TTPE)"/>
 <property name="ttpe.version.major" value="1"/>
@@ -237,6 +239,22 @@
   <jar jarfile="${ttpe.target}">
     <fileset dir="${ttpe.classes.dir}"/>
     <fileset dir="${ttpe.resources.dir}"/>
+    <zipfileset src="${ttx.jar}"/>
+    <zipfileset src="${icu.jar}"/>
+    <zipfileset src="${fontbox.jar}"/>
+    <zipfileset src="${commons.logging.jar}"/>
+    <zipfileset src="${batik.jar}"/>
+    <manifest>
+      <attribute name="Implementation-Title" value="${ttpe.title}"/>
+      <attribute name="Implementation-Version" value="${ttpe.version}"/>
+      <attribute name="Implementation-Vendor" value="${ttpe.vendor}"/>
+      <attribute name="Build-Id" value="${build.id}"/>
+      <attribute name="Main-Class" value="${ttpe.main.class}"/>
+    </manifest>
+  </jar>
+  <jar jarfile="${ttpe.min.target}">
+    <fileset dir="${ttpe.classes.dir}"/>
+    <fileset dir="${ttpe.resources.dir}"/>
     <manifest>
       <attribute name="Implementation-Title" value="${ttpe.title}"/>
       <attribute name="Implementation-Version" value="${ttpe.version}"/>
@@ -379,16 +397,13 @@
 <macrodef name="run-samples">
   <attribute name="verbose"/>
   <sequential>
-    <java classname="com.skynav.ttpe.app.Presenter" fork="true" failonerror="true">
-      <classpath>
-        <path location="${ttpe.target}"/>
-        <path refid="ext.libs.classpath"/>
-      </classpath>
+    <mkdir dir="${basedir}/run/out"/>
+    <java jar="${ttpe.target}" fork="true" failonerror="true">
       <jvmarg value="-ea"/>
       <sysproperty key="file.encoding" value="utf-8"/>
       <arg value="@{verbose}"/>
       <arg value="--external-duration"/>
-      <arg value="2h"/>
+      <arg value="3600s"/>
       <arg value="--external-extent"/>
       <arg value="1280px 720px"/>
       <arg value="--font-directory"/>

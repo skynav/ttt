@@ -75,25 +75,26 @@ Usage: java -jar ttpe.jar [options] URL*
     --hide-resource-path                - hide resource path (default: show)
     --hide-warnings                     - hide warnings (but count them)
     --layout NAME                       - specify layout name (default: basic)
+    --line-breaker NAME                 - specify line breaker name (default: uax14)
     --model NAME                        - specify model name (default: ttml1)
     --no-verbose                        - disable verbose output (resets verbosity level to 0)
     --no-warn-on TOKEN                  - disable warning specified by warning TOKEN, where multiple instances of this option may be specified
     --output-clean                      - clean (remove) all files matching output pattern in output directory prior to writing output
     --output-directory DIRECTORY        - specify path to directory where output is to be written
     --output-encoding ENCODING          - specify character encoding of output (default: UTF-8)
+    --output-format NAME                - specify output format name (default: xml)
     --output-indent                     - indent output (default: no indent)
     --output-pattern PATTERN            - specify output file name pattern
     --quiet                             - don't show banner
-    --renderer NAME                     - specify renderer name (default: xml)
     --reporter REPORTER                 - specify reporter, where REPORTER is null|text|xml (default: text)
     --reporter-file FILE                - specify path to file to which reporter output is to be written
     --reporter-file-append              - if reporter file already exists, then append output to it
     --reporter-file-encoding ENCODING   - specify character encoding of reporter output (default: utf-8)
     --reporter-include-source           - include source context in report messages
     --servlet                           - configure defaults for servlet operation
-    --show-layouts                      - show built-in layouts (use with --verbose to show more details)
+    --show-formats                      - show output formats
+    --show-layouts                      - show built-in layouts
     --show-models                       - show built-in verification models (use with --verbose to show more details)
-    --show-renderers                    - show built-in renderers (use with --verbose to show more details)
     --show-repository                   - show source code repository information
     --show-resource-location            - show resource location (default: show)
     --show-resource-path                - show resource path (default: show)
