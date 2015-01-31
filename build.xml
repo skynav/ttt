@@ -56,7 +56,7 @@
 <property name="ttpe.test.fonts.dir" value="${test.fonts.dir}"/>
 
 <property name="ttpe.jar" value="ttpe.jar"/>
-<property name="ttpe.min.jar" value="ttpe-min.jar"/>
+<property name="ttpe.min.jar" value="ttpe-minimum.jar"/>
 <property name="ttpe.source.jar" value="ttpe-source.jar"/>
 <property name="ttpe.main.class" value="com/skynav/ttpe/app/Presenter"/>
 <property name="ttpe.main.classname" value="com.skynav.ttpe.app.Presenter"/>
