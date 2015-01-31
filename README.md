@@ -38,27 +38,29 @@ Default target: clean-test
 
 In order to run the convert, use the following (or an equivalent):
 
-`java -cp bld/artifacts/cap2tt.jar:ext/lib/ttv.jar com.skynav.cap2tt.app.Converter input.cap`
+`java -jar bld/artifacts/cap2tt.jar input.cap`
 
 Usage information can be obtained by using:
 
-`java -cp bld/artifacts/cap2tt.jar:ext/lib/ttv.jar com.skynav.cap2tt.app.Converter --help`
+`java -jar bld/artifacts/cap2tt.jar --help`
 
 At present, this will output the following:
 
 <pre>
 CAP To Timed Text (CAP2TT) [1.0.0dev] Copyright 2014 Skynav, Inc.
-Usage: java -cp bld/artifacts/cap2tt.jar:ext/lib/ttv.jar com.skynav.cap2tt.app.Converter [options] URL*
+Usage: java -jar cap2tt.jar [options] URL*
   Short Options:
     -?                                  - see --help
     -d                                  - see --debug
     -q                                  - see --quiet
     -v                                  - see --verbose
   Long Options:
+    --add-creation-metadata [BOOLEAN]   - add creation metadata (default: see configuration)
     --config FILE                       - specify path to configuration file
     --debug                             - enable debug output (may be specified multiple times to increase debug level)
     --debug-exceptions                  - enable stack traces on exceptions (implies --debug)
     --debug-level LEVEL                 - enable debug output at specified level (default: 0)
+    --default-region ID                 - specify identifier of default region (default: undefined)
     --disable-warnings                  - disable warnings (both hide and don't count warnings)
     --expect-errors COUNT               - expect count errors or -1 meaning unspecified expectation (default: -1)
     --expect-warnings COUNT             - expect count warnings or -1 meaning unspecified expectation (default: -1)
@@ -69,13 +71,13 @@ Usage: java -cp bld/artifacts/cap2tt.jar:ext/lib/ttv.jar com.skynav.cap2tt.app.C
     --hide-resource-location            - hide resource location (default: show)
     --hide-resource-path                - hide resource path (default: show)
     --hide-warnings                     - hide warnings (but count them)
-    --merge-styles                      - merge styles (default: don't merge)
-    --metadata-creation                 - add creation metadata (default: don't add)
+    --merge-styles [BOOLEAN]            - merge styles (default: see configuration)
     --no-verbose                        - disable verbose output (resets verbosity level to 0)
     --no-warn-on TOKEN                  - disable warning specified by warning TOKEN, where multiple instances of this option may be specified
-    --output-directory DIRECTORY        - specify path to directory where ISD output is to be written
-    --output-encoding ENCODING          - specify character encoding of ISD output (default: UTF-8)
-    --output-indent                     - indent ISD output (default: no indent)
+    --output-directory DIRECTORY        - specify path to directory where TTML output is to be written
+    --output-encoding ENCODING          - specify character encoding of TTML output (default: UTF-8)
+    --output-indent                     - indent TTML output (default: no indent)
+    --output-pattern PATTERN            - specify TTML output file name pattern
     --quiet                             - don't show banner
     --reporter REPORTER                 - specify reporter, where REPORTER is null|text|xml (default: text)
     --reporter-file FILE                - specify path to file to which reporter output is to be written
@@ -85,6 +87,8 @@ Usage: java -cp bld/artifacts/cap2tt.jar:ext/lib/ttv.jar com.skynav.cap2tt.app.C
     --show-resource-location            - show resource location (default: show)
     --show-resource-path                - show resource path (default: show)
     --show-warning-tokens               - show warning tokens (use with --verbose to show more details)
+    --style-id-pattern PATTERN          - specify style identifier format pattern (default: s{0})
+    --style-id-sequence-start NUMBER    - specify style identifier sequence starting value, must be non-negative (default: 0)
     --treat-warning-as-error            - treat warning as error (overrides --disable-warnings)
     --verbose                           - enable verbose output (may be specified multiple times to increase verbosity level)
     --warn-on TOKEN                     - enable warning specified by warning TOKEN, where multiple instances of this option may be specified
