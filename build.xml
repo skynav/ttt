@@ -53,10 +53,12 @@
 <property name="cap2tt.test.resources.dir" value="${test.resources.dir}"/>
 
 <property name="cap2tt.jar" value="cap2tt.jar"/>
+<property name="cap2tt.min.jar" value="cap2tt-minimum.jar"/>
 <property name="cap2tt.source.jar" value="cap2tt-source.jar"/>
 <property name="cap2tt.main.class" value="com/skynav/cap2tt/app/Converter"/>
 <property name="cap2tt.main.classname" value="com.skynav.cap2tt.app.Converter"/>
 <property name="cap2tt.target" value="${artifacts.dir}/${cap2tt.jar}"/>
+<property name="cap2tt.min.target" value="${artifacts.dir}/${cap2tt.min.jar}"/>
 <property name="cap2tt.source.target" value="${artifacts.dir}/${cap2tt.source.jar}"/>
 <property name="cap2tt.title" value="CAP To TTML Converter"/>
 <property name="cap2tt.version.major" value="1"/>
@@ -192,6 +194,21 @@
   </tstamp>
   <property name="build.id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}, Java ${java.runtime.version}, Target Java ${javac.target}])"/>
   <jar jarfile="${cap2tt.target}">
+    <fileset dir="${cap2tt.classes.dir}"/>
+    <fileset dir="${cap2tt.resources.dir}"/>
+    <zipfileset src="${ttv.jar}">
+      <include name="**/*.class"/>
+      <include name="**/*.xsd"/>
+    </zipfileset>
+    <manifest>
+      <attribute name="Implementation-Title" value="${cap2tt.title}"/>
+      <attribute name="Implementation-Version" value="${cap2tt.version}"/>
+      <attribute name="Implementation-Vendor" value="${cap2tt.vendor}"/>
+      <attribute name="Build-Id" value="${build.id}"/>
+      <attribute name="Main-Class" value="${cap2tt.main.class}"/>
+    </manifest>
+  </jar>
+  <jar jarfile="${cap2tt.min.target}">
     <fileset dir="${cap2tt.classes.dir}"/>
     <fileset dir="${cap2tt.resources.dir}"/>
     <manifest>
