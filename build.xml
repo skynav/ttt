@@ -235,10 +235,6 @@
   </tstamp>
   <property name="build.id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}, Java ${java.runtime.version}, Target Java ${javac.target}])"/>
   <jar jarfile="${ttpe.target}">
-    <zipfileset src="${ttx.jar}">
-      <include name="**/*.class"/>
-      <include name="**/*.xsd"/>
-    </zipfileset>
     <fileset dir="${ttpe.classes.dir}"/>
     <fileset dir="${ttpe.resources.dir}"/>
     <manifest>
@@ -385,21 +381,26 @@
   <sequential>
     <java classname="com.skynav.ttpe.app.Presenter" fork="true" failonerror="true">
       <classpath>
-        <path location="${ttpe.classes.dir}"/>
+        <path location="${ttpe.target}"/>
         <path refid="ext.libs.classpath"/>
       </classpath>
       <jvmarg value="-ea"/>
       <sysproperty key="file.encoding" value="utf-8"/>
-      <arg value="-d"/>
       <arg value="@{verbose}"/>
-      <arg value="--debug-exceptions"/>
-      <arg value="--warn-on"/>
-      <arg value="all"/>
-      <arg value="--hide-resource-path"/>
-      <arg value="--model"/>
-      <arg value="ttml2"/>
+      <arg value="--external-duration"/>
+      <arg value="2h"/>
+      <arg value="--external-extent"/>
+      <arg value="1280px 720px"/>
       <arg value="--font-directory"/>
       <arg value="${ttpe.test.fonts.source.dir}"/>
+      <arg value="--output-format"/>
+      <arg value="xml"/>
+      <arg value="--output-directory"/>
+      <arg value="${basedir}/run/out"/>
+      <arg value="--output-pattern"/>
+      <arg value="ttpa{0,number,0000}.xml"/>
+      <arg value="--output-indent"/>
+      <arg value="--output-clean"/>
       <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-001.xml"/>
     </java>
   </sequential>

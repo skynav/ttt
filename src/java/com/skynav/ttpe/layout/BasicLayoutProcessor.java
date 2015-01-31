@@ -36,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.area.Area;
+import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.text.LineBreaker;
 import com.skynav.ttpe.text.LineBreakIterator;
@@ -44,6 +45,7 @@ import com.skynav.ttpe.text.ParagraphCollector;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
 
 import static com.skynav.ttv.model.ttml.TTML.Constants.*;
@@ -159,7 +161,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     @Override
-    public List<Area> layout(Document d) {
+    public List<Area> layout(Document d, TransformerContext context) {
         if (d != null) {
             Element root = d.getDocumentElement();
             if (root != null) {
@@ -188,9 +190,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     protected List<Area> layoutISDSequence(Element e, LayoutState ls) {
         List<Area> areas = new java.util.ArrayList<Area>();
         for (Element c : getChildElements(e)) {
-            if (isElement(c, isdInstanceElementName)) {
+            if (isElement(c, isdInstanceElementName))
                 areas.addAll(layoutISDInstance(c, ls));
-            }
         }
         return areas;
     }
@@ -199,68 +200,59 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         List<Area> areas = new java.util.ArrayList<Area>();
         ls.pushBlock(e, 0, 0, 1280, 720);
         for (Element c : getChildElements(e)) {
-            if (isElement(c, isdRegionElementName)) {
-                ls.pushBlock(c, 540, 630, 200, 60);
-                areas.addAll(layoutRegion(c, ls));
-                ls.pop();
+            if (isElement(c, isdRegionElementName))
+                layoutRegion(c, ls);
+        }
+        areas.add(ls.pop());
+        return areas;
+    }
+
+    protected void layoutRegion(Element e, LayoutState ls) {
+        ls.pushBlock(e, 540, 630, 200, 60);
+        for (Element c : getChildElements(e)) {
+            if (isElement(c, ttBodyElementName))
+                layoutBody(c, ls);
+        }
+        ls.pop();
+    }
+
+    protected void layoutBody(Element e, LayoutState ls) {
+        ls.pushBlock(e);
+        for (Element c : getChildElements(e)) {
+            if (isElement(c, ttDivisionElementName))
+                layoutDivision(c, ls);
+        }
+        ls.pop();
+    }
+
+    protected void layoutDivision(Element e, LayoutState ls) {
+        ls.pushBlock(e);
+        for (Element c : getChildElements(e)) {
+            if (isElement(c, ttDivisionElementName)) {
+                layoutDivision(c, ls);
+            } else if (isElement(c, ttParagraphElementName)) {
+                layoutParagraph(c, ls);
             }
         }
         ls.pop();
-        return areas;
     }
 
-    protected List<Area> layoutRegion(Element e, LayoutState ls) {
-        List<Area> areas = new java.util.ArrayList<Area>();
-        for (Element c : getChildElements(e)) {
-            if (isElement(c, ttBodyElementName)) {
-                ls.pushBlock(c);
-                areas.addAll(layoutBody(c, ls));
-                ls.pop();
-            }
-        }
-        return areas;
+    protected void layoutParagraph(Element e, LayoutState ls) {
+        layoutParagraphs(e, new ParagraphCollector().collect(e), ls);
     }
 
-    protected List<Area> layoutBody(Element e, LayoutState ls) {
-        List<Area> areas = new java.util.ArrayList<Area>();
-        for (Element c : getChildElements(e)) {
-            if (isElement(c, ttDivisionElementName)) {
-                ls.pushBlock(c);
-                areas.addAll(layoutDivision(c, ls));
-                ls.pop();
-            }
-        }
-        return areas;
-    }
-
-    protected List<Area> layoutDivision(Element e, LayoutState ls) {
-        List<Area> areas = new java.util.ArrayList<Area>();
-        for (Element c : getChildElements(e)) {
-            if (isElement(c, ttDivisionElementName)) {
-                ls.pushBlock(c);
-                areas.addAll(layoutDivision(c, ls));
-                ls.pop();
-            } else if (isElement(c, ttParagraphElementName)) {
-                areas.addAll(layoutParagraph(c, ls));
-            }
-        }
-        return areas;
-    }
-
-    protected List<Area> layoutParagraph(Element e, LayoutState ls) {
-        return layoutParagraphs(new ParagraphCollector().collect(e), ls);
-    }
-
-    protected List<Area> layoutParagraphs(List<Paragraph> paragraphs, LayoutState ls) {
-        List<Area> areas = new java.util.ArrayList<Area>();
+    protected void layoutParagraphs(Element e, List<Paragraph> paragraphs, LayoutState ls) {
         for (Paragraph p : paragraphs) {
-            areas.addAll(layoutParagraph(p, ls));
+            layoutParagraph(p, ls);
         }
-        return areas;
     }
 
-    protected List<Area> layoutParagraph(Paragraph p, LayoutState ls) {
-        return new ParagraphLayout(p, ls).layout();
+    protected void layoutParagraph(Paragraph p, LayoutState ls) {
+        ls.pushBlock(p.getElement());
+        for (LineArea l : new ParagraphLayout(p, ls).layout()) {
+            ls.addLine(l);
+        }
+        ls.pop();
     }
 
     protected List<Element> getChildElements(Element e) {

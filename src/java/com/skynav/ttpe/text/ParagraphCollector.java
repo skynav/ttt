@@ -66,7 +66,7 @@ public class ParagraphCollector {
                 String t = ((Text) n).getWholeText();
                 for (int i = t.indexOf(UC_PARA_SEPARATOR); (t != null) && (i >= 0);) {
                     text.append(t.substring(0, i));
-                    emit();
+                    emit(e);
                     if ((i + 1) < t.length())
                         t = t.substring(i + 1);
                     else
@@ -76,12 +76,12 @@ public class ParagraphCollector {
                     text.append(t);
             } else if (n instanceof Element) {
                 if (Documents.isElement((Element) n, ttSpanElementName))
-                    collectSpan((Element) n);
+                    collectSpan((Element) n, e);
                 else if (Documents.isElement((Element) n, ttBreakElementName))
-                    collectBreak((Element) n);
+                    collectBreak((Element) n, e);
             }
         }
-        emit();
+        emit(e);
         return extract();
     }
 
@@ -90,9 +90,9 @@ public class ParagraphCollector {
         this.text = new StringBuffer();
     }
 
-    private void emit() {
+    private void emit(Element e) {
         if (text.length() > 0) {
-            paragraphs.add(new Paragraph(text.toString()));
+            paragraphs.add(new Paragraph(e, text.toString()));
         }
         text.setLength(0);
     }
@@ -103,13 +103,13 @@ public class ParagraphCollector {
         return paragraphs;
     }
 
-    private void collectSpan(Element e) {
+    private void collectSpan(Element e, Element p) {
         for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Text) {
                 String t = ((Text) n).getWholeText();
                 for (int i = t.indexOf(UC_PARA_SEPARATOR); (t != null) && (i >= 0);) {
                     text.append(t.substring(0, i));
-                    emit();
+                    emit(p);
                     if ((i + 1) < t.length())
                         t = t.substring(i + 1);
                     else
@@ -119,14 +119,14 @@ public class ParagraphCollector {
                     text.append(t);
             } else if (n instanceof Element) {
                 if (Documents.isElement((Element) n, ttSpanElementName))
-                    collectSpan((Element) n);
+                    collectSpan((Element) n, p);
                 else if (Documents.isElement((Element) n, ttBreakElementName))
-                    collectBreak((Element) n);
+                    collectBreak((Element) n, p);
             }
         }
     }
 
-    private void collectBreak(Element e) {
+    private void collectBreak(Element e, Element p) {
         text.append(UC_LINE_SEPARATOR);
     }
 

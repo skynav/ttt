@@ -30,13 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.skynav.ttv.app.OptionSpecification;
-import com.skynav.ttx.transformer.TransformerOptions;
-
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.render.png.PNGRenderProcessor;
 import com.skynav.ttpe.render.svg.SVGRenderProcessor;
 import com.skynav.ttpe.render.xml.XMLRenderProcessor;
+import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.ttx.transformer.TransformerOptions;
 
 public abstract class RenderProcessor implements TransformerOptions, Render {
 
@@ -64,7 +64,7 @@ public abstract class RenderProcessor implements TransformerOptions, Render {
 
     public abstract String getName();
 
-    public abstract List<Frame> render(List<Area> areas);
+    public abstract List<Frame> render(List<Area> areas, TransformerContext context);
 
     public static RenderProcessor getDefaultProcessor() {
         return XMLRenderProcessor.PROCESSOR;

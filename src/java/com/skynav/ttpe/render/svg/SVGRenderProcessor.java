@@ -27,9 +27,10 @@ package com.skynav.ttpe.render.svg;
 
 import java.util.List;
 
+import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
-import com.skynav.ttpe.area.Area;
+import com.skynav.ttx.transformer.TransformerContext;
 
 public class SVGRenderProcessor extends RenderProcessor {
 
@@ -43,7 +44,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         return PROCESSOR_NAME;
     }
 
-    public List<Frame> render(List<Area> areas) {
+    public List<Frame> render(List<Area> areas, TransformerContext context) {
         return new java.util.ArrayList<Frame>();
     }
 

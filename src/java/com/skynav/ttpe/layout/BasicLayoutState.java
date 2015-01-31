@@ -29,6 +29,7 @@ import java.util.Stack;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.fonts.FontCache;
@@ -77,6 +78,13 @@ public class BasicLayoutState implements LayoutState {
         if (p != null)
             p.addChild(b);
         return areas.push(b);
+    }
+
+    public NonLeafAreaNode addLine(LineArea l) {
+        NonLeafAreaNode p = !areas.empty() ? peek() : null;
+        if (p != null)
+            p.addChild(l);
+        return l;
     }
 
     public NonLeafAreaNode pop() {

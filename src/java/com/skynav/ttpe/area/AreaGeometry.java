@@ -56,6 +56,16 @@ public interface AreaGeometry {
     double getHeight();
 
     /**
+     * Obtain IPD of area.
+     */
+    double getIPD();
+
+    /**
+     * Obtain BPD of area.
+     */
+    double getBPD();
+
+    /**
      * Obtain available measure in allocation area in the indicated dimension.
      */
     double getAvailable(Dimension dimension);

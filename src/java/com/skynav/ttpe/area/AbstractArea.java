@@ -88,11 +88,21 @@ public abstract class AbstractArea implements Area {
         return h;
     }
 
+    public double getIPD() {
+        return (wm.getAxis(IPD) == HORIZONTAL) ? w : h;
+    }
+
+    public double getBPD() {
+        return (wm.getAxis(BPD) == VERTICAL) ? h : w;
+    }
+
     public double getAvailable(Dimension dimension) {
         if (dimension == IPD)
             return (wm.getAxis(IPD) == HORIZONTAL) ? w : h;
-        else
+        else if (dimension == BPD)
             return (wm.getAxis(BPD) == VERTICAL) ? h : w;
+        else
+            throw new IllegalStateException();
     }
 
 }

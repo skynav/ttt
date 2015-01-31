@@ -25,42 +25,39 @@
 
 package com.skynav.ttpe.render.xml;
 
-import java.io.File;
-import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import com.skynav.ttpe.app.Namespace;
+import com.skynav.ttpe.area.Area;
+import com.skynav.ttpe.area.BlockArea;
+import com.skynav.ttpe.area.GlyphArea;
+import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
-import com.skynav.ttpe.area.Area;
-import com.skynav.ttv.app.InvalidOptionUsageException;
-import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttv.util.Namespaces;
+import com.skynav.ttv.util.Reporter;
+import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.xml.helpers.Documents;
+import com.skynav.xml.helpers.XML;
 
 public class XMLRenderProcessor extends RenderProcessor {
 
-    public static final String PROCESSOR_NAME                   = "xml";
     public static final RenderProcessor PROCESSOR               = new XMLRenderProcessor();
-    private static final String DEFAULT_OUTPUT_ENCODING         = "utf-8";
 
-    private static Charset defaultOutputEncoding;
-
-    static {
-        try {
-            defaultOutputEncoding = Charset.forName(DEFAULT_OUTPUT_ENCODING);
-        } catch (RuntimeException e) {
-            defaultOutputEncoding = Charset.defaultCharset();
-        }
-    }
+    private static final String PROCESSOR_NAME                  = "xml";
 
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
-        { "output-clean",               "",         "clean (remove) all files matching output pattern in output directory prior to writing output" },
-        { "output-directory",           "DIRECTORY","specify path to directory where output is to be written" },
-        { "output-encoding",            "ENCODING", "specify character encoding of output (default: " + defaultOutputEncoding.name() + ")" },
-        { "output-indent",              "",         "indent output (default: no indent)" },
-        { "output-pattern",             "PATTERN",  "specify output file name pattern" },
     };
     private static final Map<String,OptionSpecification> longOptions;
     static {
@@ -69,22 +66,6 @@ public class XMLRenderProcessor extends RenderProcessor {
             longOptions.put(spec[0], new OptionSpecification(spec[0], spec[1], spec[2]));
         }
     }
-
-    // options state
-    @SuppressWarnings("unused")
-    private boolean outputDirectoryClean;
-    private String outputDirectoryPath;
-    private String outputEncodingName;
-    @SuppressWarnings("unused")
-    private boolean outputIndent;
-    @SuppressWarnings("unused")
-    private String outputPattern;
-
-    // derived option state
-    @SuppressWarnings("unused")
-    private File outputDirectory;
-    @SuppressWarnings("unused")
-    private Charset outputEncoding;
 
     public XMLRenderProcessor() {
     }
@@ -100,62 +81,76 @@ public class XMLRenderProcessor extends RenderProcessor {
     }
 
     @Override
-    public int parseLongOption(String args[], int index) {
-            String option = args[index];
-            assert option.length() > 2;
-            option = option.substring(2);
-            if (option.equals("output-clean")) {
-                outputDirectoryClean = true;
-            } else if (option.equals("output-directory")) {
-                if (index + 1 > args.length)
-                    throw new MissingOptionArgumentException("--" + option);
-                outputDirectoryPath = args[++index];
-            } else if (option.equals("output-encoding")) {
-                if (index + 1 > args.length)
-                    throw new MissingOptionArgumentException("--" + option);
-                outputEncodingName = args[++index];
-            } else if (option.equals("output-indent")) {
-                outputIndent = true;
-            } else if (option.equals("output-pattern")) {
-                if (index + 1 > args.length)
-                    throw new MissingOptionArgumentException("--" + option);
-                outputPattern = args[++index];
-            } else
-                index = index - 1;
-            return index + 1;
+    public List<Frame> render(List<Area> areas, TransformerContext context) {
+        List<Frame> frames = new java.util.ArrayList<Frame>();
+        for (Area a : areas) {
+            Frame f = renderRoot(a, context);
+            if (f != null)
+                frames.add(f);
+        }
+        return frames;
     }
 
-    @Override
-    public void processDerivedOptions() {
-        File outputDirectory;
-        if (outputDirectoryPath != null) {
-            outputDirectory = new File(outputDirectoryPath);
-            if (!outputDirectory.exists())
-                throw new InvalidOptionUsageException("output-directory", "directory does not exist: " + outputDirectoryPath);
-            else if (!outputDirectory.isDirectory())
-                throw new InvalidOptionUsageException("output-directory", "not a directory: " + outputDirectoryPath);
-        } else
-            outputDirectory = new File(".");
-        this.outputDirectory = outputDirectory;
-        Charset outputEncoding;
-        if (outputEncodingName != null) {
-            try {
-                outputEncoding = Charset.forName(outputEncodingName);
-            } catch (Exception e) {
-                outputEncoding = null;
-            }
-            if (outputEncoding == null)
-                throw new InvalidOptionUsageException("output-encoding", "unknown encoding: " + outputEncodingName);
-        } else
-            outputEncoding = null;
-        if (outputEncoding == null)
-            outputEncoding = defaultOutputEncoding;
-        this.outputEncoding = outputEncoding;
+    private Frame renderRoot(Area a, TransformerContext context) {
+        Reporter reporter = context.getReporter();
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document d = db.newDocument();
+            Element e = Documents.createElement(d, XMLDocumentFrame.ttpeCanvasEltName);
+            e.setAttributeNS(XML.xmlnsNamespace, "xmlns:ttpe", Namespace.NAMESPACE);
+            e.appendChild(renderArea(a, d, context));
+            d.appendChild(e);
+            Namespaces.normalize(d, XMLDocumentFrame.prefixes);
+            return new XMLDocumentFrame(d);
+        } catch (Exception e) {
+            reporter.logError(e);
+        }
+        return null;
     }
 
-    @Override
-    public List<Frame> render(List<Area> areas) {
-        return new java.util.ArrayList<Frame>();
+    private Element renderArea(Area a, Document d, TransformerContext context) {
+        if (a instanceof GlyphArea)
+            return renderGlyph((GlyphArea) a, d, context);
+        else if (a instanceof LineArea)
+            return renderLine((LineArea) a, d, context);
+        else if (a instanceof BlockArea)
+            return renderBlock((BlockArea) a, d, context);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    private Element renderGlyph(GlyphArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeGlyphsEltName);
+        renderCommonAreaAttributes(a, e, context);
+        Documents.setAttribute(e, XMLDocumentFrame.textAttrName, a.getText());
+        return e;
+    }
+
+    private Element renderLine(LineArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeLineEltName);
+        renderCommonAreaAttributes(a, e, context);
+        for (Area c : a.getChildren()) {
+            e.appendChild(renderArea(c, d, context));
+        }
+        return e;
+    }
+
+    private Element renderBlock(BlockArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeBlockEltName);
+        renderCommonAreaAttributes(a, e, context);
+        for (Area c : a.getChildren()) {
+            e.appendChild(renderArea(c, d, context));
+        }
+        return e;
+    }
+
+   private static final String doubleFormat = "{0,number,#.####}";
+   private Element renderCommonAreaAttributes(Area a, Element e, TransformerContext context) {
+        Documents.setAttribute(e, XMLDocumentFrame.ipdAttrName, MessageFormat.format(doubleFormat, a.getIPD()));
+        Documents.setAttribute(e, XMLDocumentFrame.bpdAttrName, MessageFormat.format(doubleFormat, a.getBPD()));
+        return e;
     }
 
 }

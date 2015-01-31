@@ -28,12 +28,20 @@ package com.skynav.ttpe.text;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 
+import org.w3c.dom.Element;
+
 public class Paragraph {
 
+    private Element element;
     private AttributedString content;
 
-    public Paragraph(String text) {
+    public Paragraph(Element e, String text) {
+        this.element = e;
         this.content = new AttributedString(text);
+    }
+
+    public Element getElement() {
+        return element;
     }
 
     public AttributedCharacterIterator getIterator() {

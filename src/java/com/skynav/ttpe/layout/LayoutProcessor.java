@@ -33,6 +33,7 @@ import java.util.Set;
 import org.w3c.dom.Document;
 
 import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.ttx.transformer.TransformerOptions;
 
 import com.skynav.ttpe.area.Area;
@@ -63,7 +64,7 @@ public abstract class LayoutProcessor implements TransformerOptions, DocumentLay
 
     public abstract String getName();
 
-    public abstract List<Area> layout(Document d);
+    public abstract List<Area> layout(Document d, TransformerContext context);
 
     public static LayoutProcessor getDefaultProcessor() {
         return BasicLayoutProcessor.PROCESSOR;
