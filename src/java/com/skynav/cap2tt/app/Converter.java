@@ -244,7 +244,7 @@ public class Converter implements ConverterContext {
         { "no-verbose",                 "",         "disable verbose output (resets verbosity level to 0)" },
         { "output-directory",           "DIRECTORY","specify path to directory where TTML output is to be written" },
         { "output-encoding",            "ENCODING", "specify character encoding of TTML output (default: " + defaultOutputEncoding.name() + ")" },
-        { "output-file-pattern",        "PATTERN",  "specify TTML output file name pattern" },
+        { "output-pattern",             "PATTERN",  "specify TTML output file name pattern" },
         { "output-indent",              "",         "indent TTML output (default: no indent)" },
         { "quiet",                      "",         "don't show banner" },
         { "reporter",                   "REPORTER", "specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
@@ -383,7 +383,7 @@ public class Converter implements ConverterContext {
     private boolean metadataCreation;
     private String outputDirectoryPath;
     private String outputEncodingName;
-    private String outputFileNamePattern;
+    private String outputPattern;
     private boolean outputIndent;
     private boolean quiet;
     private boolean showRepository;
@@ -637,10 +637,10 @@ public class Converter implements ConverterContext {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             outputEncodingName = args[++index];
-        } else if (option.equals("output-file-pattern")) {
+        } else if (option.equals("output-pattern")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
-            outputFileNamePattern = args[++index];
+            outputPattern = args[++index];
         } else if (option.equals("output-indent")) {
             outputIndent = true;
         } else if (option.equals("quiet")) {
@@ -820,10 +820,10 @@ public class Converter implements ConverterContext {
         if (outputEncoding == null)
             outputEncoding = defaultOutputEncoding;
         this.outputEncoding = outputEncoding;
-        String outputFileNamePattern = this.outputFileNamePattern;
-        if (outputFileNamePattern == null)
-            outputFileNamePattern = defaultOutputFileNamePattern;
-        this.outputFileNamePattern = outputFileNamePattern;
+        String outputPattern = this.outputPattern;
+        if (outputPattern == null)
+            outputPattern = defaultOutputFileNamePattern;
+        this.outputPattern = outputPattern;
         if (optionProcessor != null)
             optionProcessor.processDerivedOptions();
     }
@@ -2600,7 +2600,7 @@ public class Converter implements ConverterContext {
             sb.append(path.substring(s, e));
             sb.append(".xml");
         } else {
-            sb.append(MessageFormat.format(outputFileNamePattern, ++outputFileSequence));
+            sb.append(MessageFormat.format(outputPattern, ++outputFileSequence));
         }
         String outputFileName = sb.toString();
         if (isStandardOutput(outputFileName))
