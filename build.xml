@@ -351,11 +351,8 @@
 <macrodef name="run-samples">
   <attribute name="verbose"/>
   <sequential>
-    <java classname="${cap2tt.main.classname}" fork="true" failonerror="true">
-      <classpath>
-        <path location="${cap2tt.target}"/>
-        <path location="${ttv.jar}"/>
-      </classpath>
+    <mkdir dir="${basedir}/run/out"/>
+    <java jar="${cap2tt.target}" fork="true" failonerror="true">
       <jvmarg value="-ea"/>
       <sysproperty key="file.encoding" value="utf-8"/>
       <arg value="-d"/>
@@ -366,6 +363,8 @@
       <arg value="--force-encoding"/>
       <arg value="Shift_JIS"/>
       <arg value="--hide-resource-path"/>
+      <arg value="--output-directory"/>
+      <arg value="${basedir}/run/out"/>
       <arg value="--output-indent"/>
       <arg value="${cap2tt.test.resources.source.dir}/com/skynav/cap2tt/samples/sample-001.cap"/>
     </java>
