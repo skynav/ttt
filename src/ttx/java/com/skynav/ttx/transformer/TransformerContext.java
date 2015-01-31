@@ -31,6 +31,7 @@ public interface TransformerContext extends VerifierContext {
 
     public enum ResourceState {
         ttxTransformer,
+        ttxInputUri,
         ttxOutput,
         ttxSuppressOutputSerialization,
         ttxRetainMetadata,

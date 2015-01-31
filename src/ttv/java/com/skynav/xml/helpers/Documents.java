@@ -79,12 +79,75 @@ public class Documents {
         return elts;
     }
 
+    public static List<Element> findElementsByName(Element e, QName qn) {
+        String ns = qn.getNamespaceURI();
+        NodeList nodes;
+        if ((ns == null) || (ns.length() == 0))
+            nodes = e.getElementsByTagName(qn.getLocalPart());
+        else
+            nodes = e.getElementsByTagNameNS(ns, qn.getLocalPart());
+        List<Element> elts = new java.util.ArrayList<Element>();
+        if (nodes != null) {
+            for (int i = 0, n = nodes.getLength(); i < n; ++i) {
+                elts.add((Element) nodes.item(i));
+            }
+        }
+        return elts;
+    }
+
     public static Element findElementByName(Document d, QName qn) {
         List<Element> elts = findElementsByName(d, qn);
         if (!elts.isEmpty())
             return elts.get(0);
         else
             return null;
+    }
+
+    public static List<Element> getChildElements(Element e) {
+        List<Element> elts = new java.util.ArrayList<Element>();
+        for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
+            if (n instanceof Element) {
+                elts.add((Element) n);
+            }
+        }
+        return elts;
+    }
+
+    public static boolean isElement(Element e, QName qn) {
+        String nsElt    = e.getNamespaceURI();
+        String lnElt    = e.getLocalName();
+        String ns       = qn.getNamespaceURI();
+        String ln       = qn.getLocalPart();
+        if ((ns == null) || (ns.length() == 0))
+            return lnElt.equals(ln);
+        else if (nsElt != null)
+            return nsElt.equals(ns) && lnElt.equals(ln);
+        else
+            return false;
+    }
+
+    public static Element createElement(Document d, QName qn) {
+        String ns       = qn.getNamespaceURI();
+        String ln       = qn.getLocalPart();
+        if ((ns == null) || (ns.length() == 0))
+            return d.createElement(ln);
+        else
+            return d.createElementNS(ns, ln);
+    }
+
+    public static void addChildren(Element e, List<Element> children) {
+        for (Element c : children) {
+            e.appendChild(c);
+        }
+    }
+
+    public static void setAttribute(Element e, QName qn, String value) {
+        String ns       = qn.getNamespaceURI();
+        String ln       = qn.getLocalPart();
+        if ((ns == null) || (ns.length() == 0))
+            e.setAttribute(ln, value);
+        else
+             e.setAttributeNS(ns, ln, value);
     }
 
 }

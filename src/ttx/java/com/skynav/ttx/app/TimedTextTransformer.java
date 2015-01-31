@@ -110,14 +110,15 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
 
     @Override
     public void processResult(String[] args, URI uri, Object root) {
-        initializeResourceState();
+        initializeResourceState(uri);
         if (transformer != null) {
             transformer.transform(args, root, this, null);
         }
     }
 
-    protected void initializeResourceState() {
+    protected void initializeResourceState(URI uri) {
         setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), transformer);
+        setResourceState(TransformerContext.ResourceState.ttxInputUri.name(), uri);
         setResourceState(TransformerContext.ResourceState.ttxOutput.name(), null);
         setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.FALSE);
         setResourceState(TransformerContext.ResourceState.ttxRetainMetadata.name(), Boolean.FALSE);
@@ -234,6 +235,8 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         for (OptionSpecification s : mergedLongOptions)
             mergedLongOptionsMap.put(s.getName(), s);
         this.mergedLongOptionsMap = mergedLongOptionsMap;
+        // update transformer options
+        this.transformerOptions = transformerOptions;
     }
 
     protected Collection<OptionSpecification> mergeOptions(Collection<OptionSpecification> options, Collection<OptionSpecification> additionalOptions) {

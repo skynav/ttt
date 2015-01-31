@@ -742,7 +742,7 @@ public class TimedTextVerifier implements VerifierContext {
         if (externalDuration != null) {
             Time[] duration = new Time[1];
             TimeParameters timeParameters = new TimeParameters(parsedExternalFrameRate);
-            if (Timing.isDuration(externalDuration, null, null, timeParameters, duration)) {
+            if (Timing.isDuration(externalDuration, null, this, timeParameters, duration)) {
                 if (duration[0].getType() != Time.Type.Offset)
                     throw new InvalidOptionUsageException("external-duration", "must use offset time syntax only: " + externalDuration);
                 parsedExternalDuration = duration[0].getTime(timeParameters);
@@ -754,7 +754,7 @@ public class TimedTextVerifier implements VerifierContext {
             Integer[] minMax = new Integer[] { 2, 2 };
             Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
             List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths(externalExtent, null, null, minMax, treatments, lengths)) {
+            if (Lengths.isLengths(externalExtent, null, this, minMax, treatments, lengths)) {
                 for (Length l : lengths) {
                     if (l.getUnits() != Length.Unit.Pixel)
                         throw new InvalidOptionUsageException("external-extent", "must use pixel (px) unit only: " + externalExtent);

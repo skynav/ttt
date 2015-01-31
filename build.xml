@@ -451,7 +451,9 @@
     <fileset dir="${basedir}">
       <include name="build.xml"/>
       <include name="README.md"/>
+      <include name="src/ttv/**/*.*"/>
       <include name="src/ttx/**/*.*"/>
+      <include name="tst/ttv/**/*.*"/>
       <include name="tst/ttx/**/*.*"/>
     </fileset>
     <manifest>
@@ -489,7 +491,11 @@
     <fileset dir="${basedir}">
       <include name="build.xml"/>
       <include name="README.md"/>
+      <include name="src/ttv/**/*.*"/>
+      <include name="src/ttx/**/*.*"/>
       <include name="src/ttxv/**/*.*"/>
+      <include name="tst/ttv/**/*.*"/>
+      <include name="tst/ttx/**/*.*"/>
       <include name="tst/ttxv/**/*.*"/>
     </fileset>
     <manifest>
