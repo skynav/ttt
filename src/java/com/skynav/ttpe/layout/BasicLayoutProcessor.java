@@ -90,6 +90,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     // derived state
     private FontCache fontCache;
     private LineBreakIterator breakIterator;
+    private LineBreakIterator characterIterator;
 
     protected BasicLayoutProcessor() {
     }
@@ -158,6 +159,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             lineBreakerName = defaultLineBreakerName;
         LineBreaker lb = LineBreaker.getInstance(lineBreakerName);
         this.breakIterator = (lb != null) ? lb.getIterator() : null;
+        LineBreaker cb = LineBreaker.getInstance(null);
+        this.characterIterator = (cb != null) ? cb.getIterator() : null;
     }
 
     @Override
@@ -184,7 +187,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected LayoutState initializeLayoutState(LayoutState ls) {
-        return ls.initialize(fontCache, breakIterator);
+        return ls.initialize(fontCache, breakIterator, characterIterator);
     }
 
     protected List<Area> layoutISDSequence(Element e, LayoutState ls) {

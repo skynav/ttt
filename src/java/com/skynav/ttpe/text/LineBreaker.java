@@ -81,7 +81,8 @@ public class LineBreaker {
             if (rulesLocator != null) {
                 is = rulesLocator.openStream();
                 iterator = RuleBasedBreakIterator.getInstanceFromCompiledRules(is);
-            }
+            } else
+                iterator = BreakIterator.getCharacterInstance();
         } catch (IOException e) {
         } finally {
             IOUtil.closeSafely(is);
@@ -102,6 +103,8 @@ public class LineBreaker {
     }
 
     public static LineBreaker getInstance(String name) {
+        if (name == null)
+            name = "";
         LineBreaker lb = breakers.get(name);
         if (lb != null)
             return lb;

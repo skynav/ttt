@@ -33,7 +33,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
+//import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -123,7 +123,6 @@ public class Presenter extends TimedTextTransformer {
 
     // options state
     private String layoutName;
-    @SuppressWarnings("unused")
     private boolean outputDirectoryClean;
     private String outputDirectoryPath;
     private String outputEncodingName;
@@ -447,6 +446,7 @@ public class Presenter extends TimedTextTransformer {
             return "stdin";
     }
 
+    /*
     private boolean isStandardOutput(String uri) {
         try {
             return isStandardOutput(new URI(uri));
@@ -464,6 +464,7 @@ public class Presenter extends TimedTextTransformer {
             return false;
         return true;
     }
+    */
 
     private boolean isFile(URI uri) {
         String scheme = uri.getScheme();

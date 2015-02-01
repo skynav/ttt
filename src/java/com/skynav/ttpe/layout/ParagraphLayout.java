@@ -29,8 +29,10 @@ import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
 import java.util.List;
 
+import com.skynav.ttpe.area.LeafInlineArea;
 import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.LineArea;
+import com.skynav.ttpe.area.SpaceArea;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.text.LineBreakIterator;
@@ -50,6 +52,7 @@ public class ParagraphLayout {
     private double xCurrent;
     private double yCurrent;
     // style related state
+    private boolean allowOverflow;
     private Font font;
     private double fontSize;
     private double lineHeight;
@@ -70,19 +73,28 @@ public class ParagraphLayout {
         double available = state.getAvailable(IPD);
         double consumed = 0;
         List<InlineBreakOpportunity> breaks = new java.util.ArrayList<InlineBreakOpportunity>();
-        LineBreakIterator bi = state.getBreakIterator();
+        LineBreakIterator lbi = state.getBreakIterator();
+        LineBreakIterator lci = state.getCharacterIterator();
+        LineBreakIterator bi;
         for (TextRun r = getNextTextRun(); r != null;) {
-            updateIterator(bi, r);
-            for (InlineBreakOpportunity b = getNextBreakOpportunity(bi, r); b != null; b = getNextBreakOpportunity(bi, r)) {
+            bi = updateIterator(lbi, r);
+            for (InlineBreakOpportunity b = getNextBreakOpportunity(bi, r); b != null; ) {
                 double advance = b.advance;
                 if ((consumed + advance) > available) {
-                    lines.add(emit(available, consumed, breaks));
-                    breaks.clear();
-                    consumed = 0;
-                } else {
-                    breaks.add(b);
-                    consumed += advance;
+                    if (!breaks.isEmpty()) {
+                        lines.add(emit(available, consumed, breaks));
+                        consumed = 0;
+                        continue;
+                    } else if (!allowOverflow) {
+                        if (bi != lci)
+                            bi = updateIterator(lci, b);
+                        b = getNextBreakOpportunity(bi, r);
+                        continue;
+                    }
                 }
+                breaks.add(b);
+                consumed += advance;
+                b = getNextBreakOpportunity(bi, r);
             }
             r = getNextTextRun();
         }
@@ -105,16 +117,24 @@ public class ParagraphLayout {
         return inBreakingWhitespace ? new WhitespaceRun(s, e) : new NonWhitespaceRun(s, e);
     }
 
-    private void updateIterator(LineBreakIterator bi, TextRun r) {
+    private LineBreakIterator updateIterator(LineBreakIterator bi, TextRun r) {
         bi.setText(r.getText());
         bi.first();
+        return bi;
+    }
+
+    private LineBreakIterator updateIterator(LineBreakIterator bi, InlineBreakOpportunity b) {
+        bi.setText(b.run.getText(b.start));
+        bi.first();
+        return bi;
     }
 
     private InlineBreakOpportunity getNextBreakOpportunity(LineBreakIterator bi, TextRun r) {
         if (bi != null) {
+            int start = bi.current();
             int limit = bi.next();
             if (limit != LineBreakIterator.DONE)
-                return new InlineBreakOpportunity(r, r.getInlineBreak(limit), limit, r.getAdvance(limit));
+                return new InlineBreakOpportunity(r, r.getInlineBreak(limit), start, limit, r.getAdvance(start, limit));
         }
         return null;
     }
@@ -137,21 +157,47 @@ public class ParagraphLayout {
     private void populate(LineArea l, List<InlineBreakOpportunity> breaks) {
         if (!breaks.isEmpty()) {
             int nb = breaks.size();
-            InlineBreakOpportunity fb = breaks.get(0);
-            InlineBreakOpportunity lb = breaks.get(nb - 1);
-            while ((lb.run instanceof WhitespaceRun) && (nb > 0)) {
-                lb = breaks.get(--nb - 1);
+            for (int i = nb; i > 0; --i) {
+                int k = i - 1;
+                InlineBreakOpportunity b = breaks.get(k);
+                if (b.run instanceof WhitespaceRun)
+                    breaks.remove(k);
+                else
+                    break;
             }
-            int s = fb.run.start;
-            int e = lb.run.start + lb.index;
-            StringBuffer sb = new StringBuffer();
             int savedIndex = iterator.getIndex();
-            for (int i = s; i < e; ++i) {
-                sb.append(iterator.setIndex(i));
+            StringBuffer sb = new StringBuffer();
+            TextRun lastRun = null;
+            double spaceAdvance = 0;
+            for (InlineBreakOpportunity b : breaks) {
+                TextRun r = b.run;
+                if ((lastRun != null) && (r != lastRun)) {
+                    String text = sb.toString();
+                    LeafInlineArea a;
+                    if (lastRun instanceof WhitespaceRun)
+                        a = new SpaceArea(paragraph.getElement(), writingMode, 0, 0, spaceAdvance, l.getHeight());
+                    else
+                        a = new GlyphArea(paragraph.getElement(), writingMode, 0, 0, font.getAdvance(text), l.getHeight(), text, font);
+                    l.addChild(a);
+                    sb.setLength(0);
+                    spaceAdvance = 0;
+                }
+                if (r instanceof NonWhitespaceRun) {
+                    int s = r.start + b.start;
+                    int e = r.start + b.index;
+                    for (int i = s; i < e; ++i) {
+                        sb.append(iterator.setIndex(i));
+                    }
+                } else
+                    spaceAdvance += b.advance;
+                lastRun = r;
+            }
+            if (sb.length() > 0) {
+                String text = sb.toString();
+                l.addChild(new GlyphArea(paragraph.getElement(), writingMode, 0, 0, font.getAdvance(text), l.getHeight(), text, font));
             }
             iterator.setIndex(savedIndex);
-            String text = sb.toString();
-            l.addChild(new GlyphArea(paragraph.getElement(), writingMode, 0, 0, font.getAdvance(text), l.getHeight(), text, font));
+            breaks.clear();
         }
     }
 
@@ -174,11 +220,13 @@ public class ParagraphLayout {
         TextRun run;            // associated text run
         @SuppressWarnings("unused")
         InlineBreak type;
-        int index;              // index within text run
+        int start;            // start index within text run
+        int index;              // index (of break) within text run
         double advance;         // advance (in IPD) within text run
-        InlineBreakOpportunity(TextRun run, InlineBreak type, int index, double advance) {
+        InlineBreakOpportunity(TextRun run, InlineBreak type, int start, int index, double advance) {
             this.run = run;
             this.type = type;
+            this.start = start;
             this.index = index;
             this.advance = advance;
         }
@@ -187,28 +235,33 @@ public class ParagraphLayout {
     private class TextRun {
         int start;              // start index in outer iterator
         int end;                // end index in outer iterator
-        String text;
+        String text;            // cached text over complete run interval
         TextRun(int start, int end) {
             this.start = start;
             this.end = end;
         }
         String getText() {
-            if (text == null) {
-                StringBuffer sb = new StringBuffer();
-                int savedIndex = iterator.getIndex();
-                for (int i = start; i < end; ++i) {
-                    sb.append(iterator.setIndex(i));
-                }
-                iterator.setIndex(savedIndex);
-                text = sb.toString();
-            }
+            if (text == null)
+                text = getText(start);
             return text;
+        }
+        String getText(int from) {
+            return getText(from, end);
+        }
+        String getText(int from, int to) {
+            StringBuffer sb = new StringBuffer();
+            int savedIndex = iterator.getIndex();
+            for (int i = from; i < to; ++i) {
+                sb.append(iterator.setIndex(i));
+            }
+            iterator.setIndex(savedIndex);
+            return sb.toString();
         }
         InlineBreak getInlineBreak(int index) {
             return InlineBreak.UNKNOWN;
         }
-        double getAdvance(int limit) {
-            return font.getAdvance(getText().substring(0, limit));
+        double getAdvance(int start, int limit) {
+            return font.getAdvance(getText().substring(start, limit));
         }
     }
 

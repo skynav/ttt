@@ -43,6 +43,7 @@ public class XMLDocumentFrame implements DocumentFrame {
     public static final QName ttpeCanvasEltName                = new QName(Namespace.NAMESPACE, "canvas");
     public static final QName ttpeGlyphsEltName                = new QName(Namespace.NAMESPACE, "glyphs");
     public static final QName ttpeLineEltName                  = new QName(Namespace.NAMESPACE, "line");
+    public static final QName ttpeSpaceEltName                 = new QName(Namespace.NAMESPACE, "space");
 
     // attribute name constants
     public static final QName bpdAttrName                      = new QName("", "bpd");
@@ -74,6 +75,7 @@ public class XMLDocumentFrame implements DocumentFrame {
     static {
         startTagIndentExclusions = new java.util.HashSet<QName>();
         startTagIndentExclusions.add(ttpeGlyphsEltName);
+        startTagIndentExclusions.add(ttpeSpaceEltName);
     }
 
     public Set<QName> getStartExclusions() {

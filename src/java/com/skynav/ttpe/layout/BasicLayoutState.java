@@ -44,14 +44,16 @@ public class BasicLayoutState implements LayoutState {
     // initialized state
     private FontCache fontCache;
     private LineBreakIterator breakIterator;
+    private LineBreakIterator characterIterator;
     private Stack<NonLeafAreaNode> areas;
 
     public BasicLayoutState() {
     }
 
-    public LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator) {
+    public LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator) {
         this.fontCache = fontCache.maybeLoad();
         this.breakIterator = breakIterator;
+        this.characterIterator = characterIterator;
         this.areas = new java.util.Stack<NonLeafAreaNode>();
         return this;
     }
@@ -62,6 +64,10 @@ public class BasicLayoutState implements LayoutState {
 
     public LineBreakIterator getBreakIterator() {
         return breakIterator;
+    }
+
+    public LineBreakIterator getCharacterIterator() {
+        return characterIterator;
     }
 
     public NonLeafAreaNode pushBlock(Element e) {

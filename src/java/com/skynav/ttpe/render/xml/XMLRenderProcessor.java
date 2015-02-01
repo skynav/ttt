@@ -41,6 +41,7 @@ import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.LineArea;
+import com.skynav.ttpe.area.SpaceArea;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttv.app.OptionSpecification;
@@ -113,6 +114,8 @@ public class XMLRenderProcessor extends RenderProcessor {
     private Element renderArea(Area a, Document d, TransformerContext context) {
         if (a instanceof GlyphArea)
             return renderGlyph((GlyphArea) a, d, context);
+        else if (a instanceof SpaceArea)
+            return renderSpace((SpaceArea) a, d, context);
         else if (a instanceof LineArea)
             return renderLine((LineArea) a, d, context);
         else if (a instanceof BlockArea)
@@ -125,6 +128,12 @@ public class XMLRenderProcessor extends RenderProcessor {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeGlyphsEltName);
         renderCommonAreaAttributes(a, e, context);
         Documents.setAttribute(e, XMLDocumentFrame.textAttrName, a.getText());
+        return e;
+    }
+
+    private Element renderSpace(SpaceArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeSpaceEltName);
+        renderCommonAreaAttributes(a, e, context);
         return e;
     }
 
