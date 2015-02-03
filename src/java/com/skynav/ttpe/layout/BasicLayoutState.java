@@ -32,12 +32,13 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
+import com.skynav.ttpe.area.ReferenceArea;
+import com.skynav.ttpe.area.ViewportArea;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.text.LineBreakIterator;
-
-import static com.skynav.ttpe.geometry.Dimension.*;
 
 public class BasicLayoutState implements LayoutState {
 
@@ -70,25 +71,34 @@ public class BasicLayoutState implements LayoutState {
         return characterIterator;
     }
 
+    public NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip) {
+        return push(new ViewportArea(e, width, height, clip));
+    }
+
+    public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
+        return push(new ReferenceArea(e, x, y, width, height, wm, ctm));
+    }
+
     public NonLeafAreaNode pushBlock(Element e) {
-        return pushBlock(e, 0, 0, getAvailable(IPD), getAvailable(BPD));
+        ReferenceArea ra = getReferenceArea();
+        if (ra != null)
+            return push(new BlockArea(e, ra.getIPD(), ra.getBPD()));
+        else
+            throw new IllegalStateException();
     }
 
-    public NonLeafAreaNode pushBlock(Element e, double x, double y, double w, double h) {
-        return pushBlock(e, getWritingMode(), x, y, w, h);
-    }
-
-    public NonLeafAreaNode pushBlock(Element e, WritingMode wm, double x, double y, double w, double h) {
+    public NonLeafAreaNode push(NonLeafAreaNode a) {
         NonLeafAreaNode p = !areas.empty() ? peek() : null;
-        NonLeafAreaNode b = new BlockArea(e, wm, x, y, w, h);
         if (p != null)
-            p.addChild(b);
-        return areas.push(b);
+            p.addChild(a);
+        return (NonLeafAreaNode) areas.push(a);
     }
 
     public NonLeafAreaNode addLine(LineArea l) {
         NonLeafAreaNode p = !areas.empty() ? peek() : null;
-        if (p != null)
+        if ((p == null) || !(p instanceof BlockArea))
+            throw new IllegalStateException();
+        else
             p.addChild(l);
         return l;
     }
@@ -99,6 +109,18 @@ public class BasicLayoutState implements LayoutState {
 
     public NonLeafAreaNode peek() {
         return areas.peek();
+    }
+
+    public ReferenceArea getReferenceArea() {
+        if (!areas.empty()) {
+            for (int i = 0, n = areas.size(); i < n; ++i) {
+                int k = n - i - 1;
+                NonLeafAreaNode a = areas.get(k);
+                if (a instanceof ReferenceArea)
+                    return (ReferenceArea) a;
+            }
+        }
+        return null;
     }
 
     public WritingMode getWritingMode() {

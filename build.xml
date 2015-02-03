@@ -402,6 +402,7 @@
       <jvmarg value="-ea"/>
       <sysproperty key="file.encoding" value="utf-8"/>
       <arg value="@{verbose}"/>
+      <arg value="--debug-exceptions"/>
       <arg value="--external-duration"/>
       <arg value="3600s"/>
       <arg value="--external-extent"/>
@@ -422,6 +423,10 @@
 </macrodef>
 
 <target name="run-samples" description="Run presenter with sample input test files" depends="build-ttpe">
+  <run-samples verbose="--verbose"/>
+</target>
+
+<target name="run-samples-no-build" description="Run presenter with sample input test files">
   <run-samples verbose="--verbose"/>
 </target>
 

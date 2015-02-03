@@ -38,6 +38,8 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.fonts.FontCache;
+import com.skynav.ttpe.geometry.TransformMatrix;
+import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.text.LineBreaker;
 import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttpe.text.Paragraph;
@@ -201,21 +203,35 @@ public class BasicLayoutProcessor extends LayoutProcessor {
 
     protected List<Area> layoutISDInstance(Element e, LayoutState ls) {
         List<Area> areas = new java.util.ArrayList<Area>();
-        ls.pushBlock(e, 0, 0, 1280, 720);
+        boolean clip = false;                                   // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        double w = 1280;                                        // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        double h = 720;                                         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        ls.pushViewport(e, w, h, clip);
+        ls.pushReference(e, 0, 0, w, h, null, TransformMatrix.IDENTITY);
         for (Element c : getChildElements(e)) {
             if (isElement(c, isdRegionElementName))
                 layoutRegion(c, ls);
         }
+        ls.pop();
         areas.add(ls.pop());
         return areas;
     }
 
     protected void layoutRegion(Element e, LayoutState ls) {
-        ls.pushBlock(e, 540, 630, 200, 60);
+        boolean clip = false;                                   // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        double x = 540;                                         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        double y = 630;                                         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        double w = 200;                                         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        double h = 60;                                          // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        ls.pushViewport(e, w, h, clip);
+        WritingMode wm = WritingMode.LRTB;                      // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        TransformMatrix ctm = TransformMatrix.IDENTITY;         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        ls.pushReference(e, x, y, w, h, wm, ctm);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttBodyElementName))
                 layoutBody(c, ls);
         }
+        ls.pop();
         ls.pop();
     }
 

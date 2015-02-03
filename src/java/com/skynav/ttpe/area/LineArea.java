@@ -27,12 +27,28 @@ package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.InlineAlignment;
 
 public class LineArea extends BlockArea {
 
-    public LineArea(Element e, WritingMode wm, double x, double y, double w, double h) {
-        super(e, wm, x, y, w, h);
+    private InlineAlignment alignment;
+    private double overflow;
+
+    public LineArea(Element e, double ipd, double bpd, InlineAlignment alignment) {
+        super(e, ipd, bpd);
+        this.alignment = alignment;
+    }
+
+    public InlineAlignment getAlignment() {
+        return alignment;
+    }
+
+    public void setOverflow(double overflow) {
+        this.overflow = overflow;
+    }
+
+    public double getOverflow() {
+        return overflow;
     }
 
 }

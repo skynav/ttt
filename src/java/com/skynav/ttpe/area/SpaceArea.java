@@ -27,12 +27,25 @@ package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.fonts.Font;
 
-public class SpaceArea extends LeafInlineArea {
+public class SpaceArea extends InlineFillerArea {
 
-    public SpaceArea(Element e, WritingMode wm, double x, double y, double w, double h) {
-        super(e, wm, x, y, w, h);
+    private String text;
+    private Font font;
+
+    public SpaceArea(Element e, double ipd, double bpd, String text, Font font) {
+        super(e, ipd, bpd);
+        this.text = text;
+        this.font = font;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Font getFont() {
+        return font;
     }
 
 }

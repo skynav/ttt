@@ -23,32 +23,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.layout;
+package com.skynav.ttpe.geometry;
 
-import org.w3c.dom.Element;
+import java.text.MessageFormat;
 
-import com.skynav.ttpe.area.LineArea;
-import com.skynav.ttpe.area.NonLeafAreaNode;
-import com.skynav.ttpe.area.ReferenceArea;
-import com.skynav.ttpe.fonts.FontCache;
-import com.skynav.ttpe.geometry.Dimension;
-import com.skynav.ttpe.geometry.TransformMatrix;
-import com.skynav.ttpe.geometry.WritingMode;
-import com.skynav.ttpe.text.LineBreakIterator;
+public class TransformMatrix {
+    
+    public static final TransformMatrix IDENTITY = new TransformMatrix(1,0,0,1,0,0);
 
-public interface LayoutState {
-    LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator);
-    FontCache getFontCache();
-    LineBreakIterator getBreakIterator();
-    LineBreakIterator getCharacterIterator();
-    NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
-    NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm);
-    NonLeafAreaNode pushBlock(Element e);
-    NonLeafAreaNode push(NonLeafAreaNode a);
-    NonLeafAreaNode addLine(LineArea l);
-    NonLeafAreaNode pop();
-    NonLeafAreaNode peek();
-    ReferenceArea getReferenceArea();
-    WritingMode getWritingMode();
-    double getAvailable(Dimension dimension);
+    private double[] m;
+
+    public TransformMatrix(double m00, double m10, double m01, double m11, double m02, double m12) {
+        this(new double[] { m00, m10, m01, m11, m02, m12 });
+    }
+
+    public TransformMatrix(double[] m) {
+        if ((m == null) || (m.length != 6))
+            throw new IllegalArgumentException();
+        this.m = m;
+    }
+
+    private static final MessageFormat transformMatrixFormatter =
+        new MessageFormat("[{0,number,#.####},{1,number,#.####},{2,number,#.####},{3,number,#.####},{4,number,#.####},{5,number,#.####}]");
+
+    @Override
+    public String toString() {
+        return transformMatrixFormatter.format(new Object[] {m[0], m[1], m[2], m[3], m[4], m[5]});
+    }
 }

@@ -30,79 +30,36 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.WritingMode;
 
-
-import static com.skynav.ttpe.geometry.Axis.*;
-import static com.skynav.ttpe.geometry.Dimension.*;
-
 public abstract class AbstractArea implements Area {
 
     protected Element           e;
-    protected WritingMode       wm;
-    protected double            x;
-    protected double            y;
-    protected double            w;
-    protected double            h;
 
     protected AbstractArea() {
         this(null);
     }
 
     protected AbstractArea(Element e) {
-        this(e, WritingMode.LRTB);
-    }
-
-    protected AbstractArea(Element e, WritingMode wm) {
-        this(e, wm, 0, 0, 0, 0);
-    }
-
-    protected AbstractArea(Element e, WritingMode wm, double x, double y, double w, double h) {
         this.e = e;
-        this.wm = wm;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
+    }
+
+    public WritingMode getWritingMode() {
+        return null;
+    }
+
+    public double getIPD() {
+        return getAvailable(Dimension.IPD);
+    }
+
+    public double getBPD() {
+        return getAvailable(Dimension.BPD);
+    }
+
+    public double getAvailable(Dimension dimension) {
+        return 0;
     }
 
     public Element getElement() {
         return e;
-    }
-
-    public WritingMode getWritingMode() {
-        return wm;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getWidth() {
-        return w;
-    }
-
-    public double getHeight() {
-        return h;
-    }
-
-    public double getIPD() {
-        return (wm.getAxis(IPD) == HORIZONTAL) ? w : h;
-    }
-
-    public double getBPD() {
-        return (wm.getAxis(BPD) == VERTICAL) ? h : w;
-    }
-
-    public double getAvailable(Dimension dimension) {
-        if (dimension == IPD)
-            return (wm.getAxis(IPD) == HORIZONTAL) ? w : h;
-        else if (dimension == BPD)
-            return (wm.getAxis(BPD) == VERTICAL) ? h : w;
-        else
-            throw new IllegalStateException();
     }
 
 }

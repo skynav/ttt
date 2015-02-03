@@ -29,14 +29,33 @@ import java.lang.ref.WeakReference;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.WritingMode;
 
 public class AreaNode extends AbstractArea {
 
     private WeakReference<NonLeafAreaNode> parent;
 
-    public AreaNode(Element e, WritingMode wm, double x, double y, double w, double h) {
-        super(e, wm, x, y, w, h);
+    public AreaNode(Element e) {
+        super(e);
+    }
+
+    @Override
+    public WritingMode getWritingMode() {
+        for (AreaNode p = getParent(); p != null; p = p.getParent()) {
+            if (p instanceof ReferenceArea)
+                return p.getWritingMode();
+        }
+        return super.getWritingMode();
+    }
+
+    @Override
+    public double getAvailable(Dimension dimension) {
+        for (AreaNode p = getParent(); p != null; p = p.getParent()) {
+            if (p instanceof ReferenceArea)
+                return p.getAvailable(dimension);
+        }
+        return super.getAvailable(dimension);
     }
 
     public void setParent(NonLeafAreaNode parent) {

@@ -29,14 +29,26 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.geometry.WritingMode;
-
 public abstract class NonLeafAreaNode extends AreaNode {
 
     private List<AreaNode> children;
 
-    public NonLeafAreaNode(Element e, WritingMode wm, double x, double y, double w, double h) {
-        super(e, wm, x, y, w, h);
+    public NonLeafAreaNode(Element e) {
+        super(e);
+    }
+
+    public AreaNode firstChild() {
+        if ((children == null) || children.isEmpty())
+            return null;
+        else
+            return children.get(0);
+    }
+
+    public AreaNode lastChild() {
+        if ((children == null) || children.isEmpty())
+            return null;
+        else
+            return children.get(children.size() - 1);
     }
 
     public void addChild(AreaNode c) {
@@ -46,7 +58,24 @@ public abstract class NonLeafAreaNode extends AreaNode {
         children.add(c);
     }
 
+    public void insertChild(AreaNode c, AreaNode cBefore) {
+        c.setParent(this);
+        if (children == null)
+            children = new java.util.ArrayList<AreaNode>();
+        if (cBefore == null)
+            children.add(c);
+        else {
+            int i = children.indexOf(cBefore);
+            if (i < 0)
+                throw new IllegalArgumentException();
+            else
+                children.add(i, c);
+        }
+    }
+
     public List<AreaNode> getChildren() {
+        if (children == null)
+            children = new java.util.ArrayList<AreaNode>();
         return children;
     }
 

@@ -91,4 +91,25 @@ public class Characters {
         return isBreakingWhitespace(c) || isNonBreakingWhitespace(c);
     }
 
+    public static boolean isZeroWidthWhitespace(int c) {
+        if (c == UC_HT)
+            return true;
+        else if (c == UC_LF)
+            return true;
+        else if (c == UC_VT)
+            return true;
+        else if (c == UC_FF)
+            return true;
+        else if (c == UC_CR)
+            return true;
+        else if (c == UC_SPACE_ZWSP)
+            return true;
+        else if (c == UC_LINE_SEPARATOR)
+            return true;
+        else if (c == UC_LINE_SEPARATOR)
+            return true;
+        else
+            return false;
+    }
+
 }

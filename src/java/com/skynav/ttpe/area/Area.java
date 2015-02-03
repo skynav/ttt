@@ -25,6 +25,14 @@
 
 package com.skynav.ttpe.area;
 
+import org.w3c.dom.Element;
+
 public interface Area extends AreaGeometry {
+
+    /**
+     * Obtain element that generated area.
+     */
+    Element getElement();
+
 }
 

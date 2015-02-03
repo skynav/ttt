@@ -31,29 +31,9 @@ import com.skynav.ttpe.geometry.WritingMode;
 public interface AreaGeometry {
 
     /**
-     * Obtain writing mode.
+     * Obtain writing mode of area.
      */
     WritingMode getWritingMode();
-
-    /**
-     * Obtain X coordinate of origin of area.
-     */
-    double getX();
-
-    /**
-     * Obtain Y coordinate of origin of area.
-     */
-    double getY();
-
-    /**
-     * Obtain width of area (always along HORIZONTAL axis).
-     */
-    double getWidth();
-
-    /**
-     * Obtain height of area (always along VERTICAL axis).
-     */
-    double getHeight();
 
     /**
      * Obtain IPD of area.
@@ -66,7 +46,7 @@ public interface AreaGeometry {
     double getBPD();
 
     /**
-     * Obtain available measure in allocation area in the indicated dimension.
+     * Obtain available measure of area in specified dimension.
      */
     double getAvailable(Dimension dimension);
 

@@ -28,15 +28,14 @@ package com.skynav.ttpe.area;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.geometry.WritingMode;
 
 public class GlyphArea extends LeafInlineArea {
 
     private String text;
     private Font font;
 
-    public GlyphArea(Element e, WritingMode wm, double x, double y, double w, double h, String text, Font font) {
-        super(e, wm, x, y, w, h);
+    public GlyphArea(Element e, double ipd, double bpd, String text, Font font) {
+        super(e, ipd, bpd);
         this.text = text;
         this.font = font;
     }

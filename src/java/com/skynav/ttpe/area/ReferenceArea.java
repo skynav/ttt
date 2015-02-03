@@ -23,32 +23,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.layout;
+package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.area.LineArea;
-import com.skynav.ttpe.area.NonLeafAreaNode;
-import com.skynav.ttpe.area.ReferenceArea;
-import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
-import com.skynav.ttpe.text.LineBreakIterator;
 
-public interface LayoutState {
-    LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator);
-    FontCache getFontCache();
-    LineBreakIterator getBreakIterator();
-    LineBreakIterator getCharacterIterator();
-    NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
-    NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm);
-    NonLeafAreaNode pushBlock(Element e);
-    NonLeafAreaNode push(NonLeafAreaNode a);
-    NonLeafAreaNode addLine(LineArea l);
-    NonLeafAreaNode pop();
-    NonLeafAreaNode peek();
-    ReferenceArea getReferenceArea();
-    WritingMode getWritingMode();
-    double getAvailable(Dimension dimension);
+public class ReferenceArea extends BoundedBlockArea {
+
+    private WritingMode wm;
+    private TransformMatrix ctm;
+
+    public ReferenceArea(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
+        super(e, x, y, width, height);
+        this.wm = wm;
+        this.ctm = TransformMatrix.IDENTITY;
+    }
+
+    @Override
+    public double getAvailable(Dimension dimension) {
+        WritingMode wm = this.wm;
+        if (wm == null)
+            wm = WritingMode.LRTB;
+        if (wm.isHorizontal())
+            return (dimension == Dimension.IPD) ? getWidth() : getHeight();
+        else
+            return (dimension == Dimension.IPD) ? getHeight() : getWidth();
+    }
+
+    public WritingMode getWritingMode() {
+        return wm;
+    }
+
+    public TransformMatrix getCTM() {
+        return ctm;
+    }
+
 }

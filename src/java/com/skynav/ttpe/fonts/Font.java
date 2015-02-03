@@ -80,8 +80,7 @@ public class Font {
                             c = substitution;
                         }
                     }
-                    int g = cmapSubtable.getGlyphId(c);
-                    int a = otf.getAdvanceWidth(g);
+                    int a = Characters.isZeroWidthWhitespace(c) ? 0 : otf.getAdvanceWidth(cmapSubtable.getGlyphId(c));
                     advance += (double) a;
                 }
                 advance = advance / (double) otf.getUnitsPerEm();

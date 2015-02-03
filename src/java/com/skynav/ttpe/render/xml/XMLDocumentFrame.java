@@ -41,14 +41,25 @@ public class XMLDocumentFrame implements DocumentFrame {
     // element name constants
     public static final QName ttpeBlockEltName                 = new QName(Namespace.NAMESPACE, "block");
     public static final QName ttpeCanvasEltName                = new QName(Namespace.NAMESPACE, "canvas");
+    public static final QName ttpeFillEltName                  = new QName(Namespace.NAMESPACE, "fill");
     public static final QName ttpeGlyphsEltName                = new QName(Namespace.NAMESPACE, "glyphs");
     public static final QName ttpeLineEltName                  = new QName(Namespace.NAMESPACE, "line");
+    public static final QName ttpeReferenceEltName             = new QName(Namespace.NAMESPACE, "reference");
     public static final QName ttpeSpaceEltName                 = new QName(Namespace.NAMESPACE, "space");
+    public static final QName ttpeViewportEltName              = new QName(Namespace.NAMESPACE, "viewport");
 
     // attribute name constants
+    public static final QName alignAttrName                    = new QName("", "align");
     public static final QName bpdAttrName                      = new QName("", "bpd");
+    public static final QName clipAttrName                     = new QName("", "clip");
+    public static final QName ctmAttrName                      = new QName("", "ctm");
+    public static final QName extentAttrName                   = new QName("", "extent");
+    public static final QName fromAttrName                     = new QName("", "from");
     public static final QName ipdAttrName                      = new QName("", "ipd");
+    public static final QName originAttrName                   = new QName("", "origin");
+    public static final QName overflowAttrName                 = new QName("", "overflow");
     public static final QName textAttrName                     = new QName("", "text");
+    public static final QName wmAttrName                       = new QName("", "wm");
 
     private Document document;
 
