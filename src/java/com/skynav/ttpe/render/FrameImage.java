@@ -26,50 +26,13 @@
 package com.skynav.ttpe.render;
 
 import java.io.File;
-import java.util.List;
 
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.geometry.Point;
 
-public abstract class AbstractFrame implements Frame {
-
-    private double begin;
-    private double end;
-    private Extent extent;
-    private File file;
-
-    protected AbstractFrame(double begin, double end, Extent extent) {
-        this.begin = begin;
-        this.end = end;
-        assert extent != null;
-        this.extent = extent;
-    }
-
-    public double getBegin() {
-        return begin;
-    }
-
-    public double getEnd() {
-        return end;
-    }
-
-    public Extent getExtent() {
-        return extent;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    public boolean hasImages() {
-        return false;
-    }
-
-    public List<FrameImage> getImages() {
-        return new java.util.ArrayList<FrameImage>();
-    }
-
+public interface FrameImage {
+    Extent getExtent();
+    Point getOrigin();
+    File getFile();
+    void setFile(File f);
 }

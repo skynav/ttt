@@ -81,7 +81,7 @@ public class XMLRenderProcessor extends RenderProcessor {
     }
 
     // miscellaneous statics
-    private static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
+    public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
 
     // options state
     private boolean includeISDGenerator;
@@ -134,7 +134,7 @@ public class XMLRenderProcessor extends RenderProcessor {
             Document d = db.newDocument();
             d.appendChild(renderCanvas(a, d, context));
             Namespaces.normalize(d, XMLDocumentFrame.prefixes);
-            return new XMLDocumentFrame(a.getBegin(), a.getEnd(), d);
+            return new XMLDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d);
         } catch (Exception e) {
             reporter.logError(e);
         }
@@ -143,7 +143,6 @@ public class XMLRenderProcessor extends RenderProcessor {
 
     private Element renderCanvas(CanvasArea a, Document d, TransformerContext context) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeCanvasEltName);
-        e.setAttributeNS(XML.xmlnsNamespace, "xmlns:ttpe", Namespace.NAMESPACE);
         for (Area c : a.getChildren()) {
             e.appendChild(renderArea(c, d, context));
         }

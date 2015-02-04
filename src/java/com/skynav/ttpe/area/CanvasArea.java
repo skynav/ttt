@@ -28,6 +28,7 @@ package com.skynav.ttpe.area;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.WritingMode;
 
 public class CanvasArea extends NonLeafAreaNode {
@@ -47,6 +48,14 @@ public class CanvasArea extends NonLeafAreaNode {
 
     public double getEnd() {
         return end;
+    }
+
+    public Extent getExtent() {
+        AreaNode fc = firstChild();
+        if (fc instanceof ViewportArea)
+            return ((ViewportArea) fc).getExtent();
+        else
+            return Extent.EMPTY;
     }
 
     @Override

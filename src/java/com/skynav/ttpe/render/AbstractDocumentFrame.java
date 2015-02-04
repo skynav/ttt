@@ -32,12 +32,15 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Document;
 
+import com.skynav.ttpe.geometry.Extent;
+
 public abstract class AbstractDocumentFrame extends AbstractFrame implements DocumentFrame {
 
     private Document document;
 
-    protected AbstractDocumentFrame(double begin, double end, Document document) {
-        super(begin, end);
+    protected AbstractDocumentFrame(double begin, double end, Extent extent, Document document) {
+        super(begin, end, extent);
+        assert document != null;
         this.document = document;
     }
 

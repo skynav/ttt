@@ -415,6 +415,7 @@
       <arg value="--output-clean"/>
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
+      <arg value="--output-indent"/>
       <arg value="--output-pattern"/>
       <arg value="ttpa{0,number,000000}.xml"/>
       <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-001.xml"/>

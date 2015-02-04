@@ -33,33 +33,36 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 
 import com.skynav.ttpe.app.Namespace;
+import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.render.AbstractDocumentFrame;
 import com.skynav.xml.helpers.XML;
 
 public class XMLDocumentFrame extends AbstractDocumentFrame {
 
+    private static final String NAMESPACE                       = Namespace.NAMESPACE + "#areas";
+
     // element name constants
-    public static final QName ttpeBlockEltName                 = new QName(Namespace.NAMESPACE, "block");
-    public static final QName ttpeCanvasEltName                = new QName(Namespace.NAMESPACE, "canvas");
-    public static final QName ttpeFillEltName                  = new QName(Namespace.NAMESPACE, "fill");
-    public static final QName ttpeGlyphsEltName                = new QName(Namespace.NAMESPACE, "glyphs");
-    public static final QName ttpeLineEltName                  = new QName(Namespace.NAMESPACE, "line");
-    public static final QName ttpeReferenceEltName             = new QName(Namespace.NAMESPACE, "reference");
-    public static final QName ttpeSpaceEltName                 = new QName(Namespace.NAMESPACE, "space");
-    public static final QName ttpeViewportEltName              = new QName(Namespace.NAMESPACE, "viewport");
+    public static final QName ttpeBlockEltName                  = new QName(NAMESPACE, "block");
+    public static final QName ttpeCanvasEltName                 = new QName(NAMESPACE, "canvas");
+    public static final QName ttpeFillEltName                   = new QName(NAMESPACE, "fill");
+    public static final QName ttpeGlyphsEltName                 = new QName(NAMESPACE, "glyphs");
+    public static final QName ttpeLineEltName                   = new QName(NAMESPACE, "line");
+    public static final QName ttpeReferenceEltName              = new QName(NAMESPACE, "reference");
+    public static final QName ttpeSpaceEltName                  = new QName(NAMESPACE, "space");
+    public static final QName ttpeViewportEltName               = new QName(NAMESPACE, "viewport");
 
     // attribute name constants
-    public static final QName alignAttrName                    = new QName("", "align");
-    public static final QName bpdAttrName                      = new QName("", "bpd");
-    public static final QName clipAttrName                     = new QName("", "clip");
-    public static final QName ctmAttrName                      = new QName("", "ctm");
-    public static final QName extentAttrName                   = new QName("", "extent");
-    public static final QName fromAttrName                     = new QName("", "from");
-    public static final QName ipdAttrName                      = new QName("", "ipd");
-    public static final QName originAttrName                   = new QName("", "origin");
-    public static final QName overflowAttrName                 = new QName("", "overflow");
-    public static final QName textAttrName                     = new QName("", "text");
-    public static final QName wmAttrName                       = new QName("", "wm");
+    public static final QName alignAttrName                     = new QName("", "align");
+    public static final QName bpdAttrName                       = new QName("", "bpd");
+    public static final QName clipAttrName                      = new QName("", "clip");
+    public static final QName ctmAttrName                       = new QName("", "ctm");
+    public static final QName extentAttrName                    = new QName("", "extent");
+    public static final QName fromAttrName                      = new QName("", "from");
+    public static final QName ipdAttrName                       = new QName("", "ipd");
+    public static final QName originAttrName                    = new QName("", "origin");
+    public static final QName overflowAttrName                  = new QName("", "overflow");
+    public static final QName textAttrName                      = new QName("", "text");
+    public static final QName wmAttrName                        = new QName("", "wm");
 
     // namespace prefixes
     public static Map<String, String> prefixes;
@@ -67,7 +70,7 @@ public class XMLDocumentFrame extends AbstractDocumentFrame {
         prefixes = new java.util.HashMap<String,String>();
         prefixes.put(XML.xmlNamespace, "xml");
         prefixes.put(XML.xmlnsNamespace, "xmlns");
-        prefixes.put(Namespace.NAMESPACE, "");
+        prefixes.put(NAMESPACE, "");
     }
 
     // serialization exclusions
@@ -78,8 +81,8 @@ public class XMLDocumentFrame extends AbstractDocumentFrame {
         startTagIndentExclusions.add(ttpeSpaceEltName);
     }
 
-    public XMLDocumentFrame(double begin, double end, Document d) {
-        super(begin, end, d);
+    public XMLDocumentFrame(double begin, double end, Extent extent, Document d) {
+        super(begin, end, extent, d);
     }
 
     @Override

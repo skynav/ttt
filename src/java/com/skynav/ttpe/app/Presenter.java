@@ -32,11 +32,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
-//import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -512,13 +510,14 @@ public class Presenter extends TimedTextTransformer {
             if ((bos = getArchiveOutputStream(uri, archiveFile, retArchiveFile)) != null) {
                 zos = new ZipOutputStream(bos);
                 Date now = new Date();
+                writeManifestEntry(zos, now, frames);
                 for (Frame f : frames) {
                     File fFile = f.getFile();
                     if (fFile != null) {
                         ZipEntry ze = new ZipEntry(fFile.getName());
                         ze.setTime(now.getTime());
                         zos.putNextEntry(ze);
-                        writeFrameEntry(fFile, zos);
+                        writeFrameEntry(zos, fFile);
                         zos.closeEntry();
                     }
                 }
@@ -530,7 +529,19 @@ public class Presenter extends TimedTextTransformer {
         }
     }
 
-    private void writeFrameEntry(File f, ZipOutputStream zos) {
+    private void writeManifestEntry(ZipOutputStream zos, Date now, List<Frame> frames) {
+        try {
+            Manifest manifest = new Manifest();
+            ZipEntry ze = new ZipEntry(manifest.getName());
+            ze.setTime(now.getTime());
+            zos.putNextEntry(ze);
+            manifest.write(zos, frames, rendererName, outputEncoding, outputIndent, this);
+            zos.closeEntry();
+        } catch (IOException e) {
+        }
+    }
+
+    private void writeFrameEntry(ZipOutputStream zos, File f) {
         BufferedInputStream bis = null;
         try {
             bis = new BufferedInputStream(new FileInputStream(f));

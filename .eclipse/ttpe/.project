@@ -16,14 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>externals</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/ext/lib</locationURI>
+		</link>
+		<link>
 			<name>ttpe</name>
 			<type>2</type>
-                        <locationURI>PARENT-2-PROJECT_LOC/src/java</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/java</locationURI>
 		</link>
 		<link>
 			<name>ttpe-resources</name>
 			<type>2</type>
-                        <locationURI>PARENT-2-PROJECT_LOC/src/resources</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/src/resources</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

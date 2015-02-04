@@ -26,10 +26,16 @@
 package com.skynav.ttpe.render;
 
 import java.io.File;
+import java.util.List;
+
+import com.skynav.ttpe.geometry.Extent;
 
 public interface Frame {
     double getBegin();
     double getEnd();
+    Extent getExtent();
     File getFile();
     void setFile(File f);
+    boolean hasImages();
+    List<FrameImage> getImages();
 }
