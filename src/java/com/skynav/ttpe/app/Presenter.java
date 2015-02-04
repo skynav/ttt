@@ -362,34 +362,34 @@ public class Presenter extends TimedTextTransformer {
                 if (doc instanceof Document)
                     frames.addAll(rp.render(lp.layout((Document) doc, this), this));
         }
-        if (outputDirectoryClean)
-            cleanOutputDirectory(uri);
-        processFrames(frames);
+        processFrames(uri, frames);
     }
 
-    private void processFrames(List<Frame> frames) {
+    private void processFrames(URI uri, List<Frame> frames) {
+        if (outputDirectoryClean)
+            cleanOutputDirectory(uri);
         this.outputFileSequence = 0;
-        for (Frame f : frames) {
+        for (Frame f : frames)
             processFrame(f);
-        }
+        // [TBD] perform final frame combination if enabled
     }
 
     private void processFrame(Frame f) {
-        writeFrame(f, this);
+        writeFrame(f);
     }
 
-    private boolean writeFrame(Frame f, TransformerContext context) {
+    private boolean writeFrame(Frame f) {
         if (f instanceof DocumentFrame)
-            return writeDocumentFrame((DocumentFrame) f, context);
+            return writeDocumentFrame((DocumentFrame) f);
         else
             throw new UnsupportedOperationException();
     }
 
-    private boolean writeDocumentFrame(DocumentFrame f, TransformerContext context) {
+    private boolean writeDocumentFrame(DocumentFrame f) {
         boolean fail = false;
         Document d = f.getDocument();
-        Reporter reporter = context.getReporter();
-        URI resourceUri = (URI) context.getResourceState(TransformerContext.ResourceState.ttxInputUri.name());
+        Reporter reporter = getReporter();
+        URI resourceUri = (URI) getResourceState(TransformerContext.ResourceState.ttxInputUri.name());
         Map<String,String> prefixes = f.getPrefixes();
         Set<QName> startTagExclusions = f.getStartExclusions();
         Set<QName> endTagExclusions = f.getEndExclusions();

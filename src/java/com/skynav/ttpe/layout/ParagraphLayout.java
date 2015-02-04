@@ -52,11 +52,11 @@ public class ParagraphLayout {
     // layout state
     private LayoutState state;
     // style related state
-    private boolean allowOverflow;
     private Font font;
     private double fontSize;
     private double lineHeight;
     private InlineAlignment textAlign;
+    private boolean wrap;
     private WritingMode writingMode;
 
     public ParagraphLayout(Paragraph paragraph, LayoutState state) {
@@ -65,11 +65,11 @@ public class ParagraphLayout {
         this.state = state;
         this.writingMode = state.getWritingMode();
         // [TBD] initialize following states from paragraph styles
-        this.allowOverflow = false;
         this.fontSize = 24;
         this.font = state.getFontCache().getDefaultFont(writingMode.getAxis(IPD), fontSize);
         this.lineHeight = fontSize * 1.25;
         this.textAlign = InlineAlignment.CENTER;
+        this.wrap = true;
     }
 
     public List<LineArea> layout() {
@@ -84,22 +84,29 @@ public class ParagraphLayout {
             for (TextRun r = getNextTextRun(); r != null;) {
                 bi = updateIterator(lbi, r);
                 for (InlineBreakOpportunity b = getNextBreakOpportunity(bi, r); b != null; ) {
-                    double advance = b.advance;
-                    if ((consumed + advance) > available) {
-                        if (!breaks.isEmpty()) {
-                            lines.add(emit(available, consumed, breaks));
-                            consumed = 0;
-                            continue;
-                        } else if (!allowOverflow) {
-                            if (bi != lci)
-                                bi = updateIterator(lci, b);
-                            b = getNextBreakOpportunity(bi, r);
-                            continue;
+                    if (b.isHard()) {
+                        lines.add(emit(available, consumed, breaks));
+                        consumed = 0;
+                        break;
+                    } else {
+                        double advance = b.advance;
+                        if ((consumed + advance) > available) {
+                            if (wrap) {
+                                if (!breaks.isEmpty()) {
+                                    lines.add(emit(available, consumed, breaks));
+                                    consumed = 0;
+                                } else {
+                                    if (bi != lci)
+                                        bi = updateIterator(lci, b);
+                                    b = getNextBreakOpportunity(bi, r);
+                                }
+                                continue;
+                            }
                         }
+                        breaks.add(b);
+                        consumed += advance;
+                        b = getNextBreakOpportunity(bi, r);
                     }
-                    breaks.add(b);
-                    consumed += advance;
-                    b = getNextBreakOpportunity(bi, r);
                 }
                 r = getNextTextRun();
             }
@@ -137,10 +144,10 @@ public class ParagraphLayout {
 
     private InlineBreakOpportunity getNextBreakOpportunity(LineBreakIterator bi, TextRun r) {
         if (bi != null) {
-            int start = bi.current();
-            int limit = bi.next();
-            if (limit != LineBreakIterator.DONE)
-                return new InlineBreakOpportunity(r, r.getInlineBreak(limit), start, limit, r.getAdvance(start, limit));
+            int from = bi.current();
+            int to = bi.next();
+            if (to != LineBreakIterator.DONE)
+                return new InlineBreakOpportunity(r, r.getInlineBreak(to), from, to, r.getAdvance(from, to));
         }
         return null;
     }
@@ -259,7 +266,6 @@ public class ParagraphLayout {
 
     private static class InlineBreakOpportunity {
         TextRun run;            // associated text run
-        @SuppressWarnings("unused")
         InlineBreak type;
         int start;              // start index within text run
         int index;              // index (of break) within text run
@@ -271,6 +277,16 @@ public class ParagraphLayout {
             this.index = index;
             this.advance = advance;
         }
+        boolean isHard() {
+            if (type.isHard())
+                return true;
+            else if (run instanceof NonWhitespaceRun)
+                return false;
+            else {
+                String lwsp = run.getText(start, index);
+                return (lwsp.length() == 1) && (lwsp.charAt(0) == Characters.UC_LINE_SEPARATOR);
+            }
+        }
     }
 
     private class TextRun {
@@ -281,28 +297,33 @@ public class ParagraphLayout {
             this.start = start;
             this.end = end;
         }
+        // obtain all of text associated with run
         String getText() {
             if (text == null)
-                text = getText(start);
+                text = getText(0);
             return text;
         }
+        // obtain text starting at FROM to END of run, where FROM is index into run, not outer iterator
         String getText(int from) {
-            return getText(from, end);
+            return getText(from, from + (end - start));
         }
+        // obtain text starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
         String getText(int from, int to) {
             StringBuffer sb = new StringBuffer();
             int savedIndex = iterator.getIndex();
-            for (int i = from; i < to; ++i) {
+            for (int i = start + from, e = start + to; i < e; ++i) {
                 sb.append(iterator.setIndex(i));
             }
             iterator.setIndex(savedIndex);
             return sb.toString();
         }
+        // obtain inline break type at INDEX of run, where INDEX is index into run, not outer iterator
         InlineBreak getInlineBreak(int index) {
             return InlineBreak.UNKNOWN;
         }
-        double getAdvance(int start, int limit) {
-            return font.getAdvance(getText().substring(start, limit));
+        // obtain advance of text starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
+        double getAdvance(int from, int to) {
+            return font.getAdvance(getText().substring(from, to));
         }
     }
 

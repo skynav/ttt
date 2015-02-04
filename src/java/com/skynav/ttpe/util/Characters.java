@@ -106,7 +106,7 @@ public class Characters {
             return true;
         else if (c == UC_LINE_SEPARATOR)
             return true;
-        else if (c == UC_LINE_SEPARATOR)
+        else if (c == UC_PARA_SEPARATOR)
             return true;
         else
             return false;
