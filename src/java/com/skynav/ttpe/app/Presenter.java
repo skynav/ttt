@@ -25,8 +25,11 @@
 
 package com.skynav.ttpe.app;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,9 +40,12 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Transformer;
@@ -56,6 +62,7 @@ import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttx.app.TimedTextTransformer;
+import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.TextTransformer;
 import com.skynav.ttx.transformer.Transformers;
@@ -86,7 +93,7 @@ public class Presenter extends TimedTextTransformer {
 
     private static final String DEFAULT_OUTPUT_ENCODING         = "utf-8";
     private static Charset defaultOutputEncoding;
-    private static final String defaultOutputFileNamePattern    = "ttpa-{1,number,0000}.xml";
+    private static final String defaultOutputFileNamePattern    = "ttpa-{0,number,0000}.xml";
 
     static {
         try {
@@ -98,12 +105,15 @@ public class Presenter extends TimedTextTransformer {
 
     private static final String[][] longOptionSpecifications = new String[][] {
         { "layout",                     "NAME",     "specify layout name (default: " + defaultLayout.getName() + ")" },
+        { "output-archive",             "",         "combine output frames into frames archive file" },
+        { "output-archive-file",        "NAME",     "specify path of frames archive file" },
         { "output-clean",               "",         "clean (remove) all files matching output pattern in output directory prior to writing output" },
         { "output-directory",           "DIRECTORY","specify path to directory where output is to be written" },
         { "output-encoding",            "ENCODING", "specify character encoding of output (default: " + defaultOutputEncoding.name() + ")" },
         { "output-format",              "NAME",     "specify output format name (default: " + defaultRenderer.getName() + ")" },
         { "output-indent",              "",         "indent output (default: no indent)" },
         { "output-pattern",             "PATTERN",  "specify output file name pattern" },
+        { "output-retain-frames",       "",         "retain individual frame files after archiving" },
         { "show-formats",               "",         "show output formats" },
         { "show-layouts",               "",         "show built-in layouts" },
     };
@@ -123,17 +133,21 @@ public class Presenter extends TimedTextTransformer {
 
     // options state
     private String layoutName;
+    private boolean outputArchive;
+    private String outputArchiveFilePath;
     private boolean outputDirectoryClean;
     private String outputDirectoryPath;
     private String outputEncodingName;
     private boolean outputIndent;
     private String outputPattern;
+    private boolean outputRetainFrames;
     private String rendererName;
     private boolean showLayouts;
     private boolean showRenderers;
 
     // derived option state
     private LayoutProcessor layout;
+    private File outputArchiveFile;
     private File outputDirectory;
     private Charset outputEncoding;
     private RenderProcessor renderer;
@@ -231,6 +245,12 @@ public class Presenter extends TimedTextTransformer {
             layoutName = args[++index];
         } else if (option.equals("output-clean")) {
             outputDirectoryClean = true;
+        } else if (option.equals("output-archive")) {
+            outputArchive = true;
+        } else if (option.equals("output-archive-file")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            outputArchiveFilePath = args[++index];
         } else if (option.equals("output-directory")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -249,6 +269,8 @@ public class Presenter extends TimedTextTransformer {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             outputPattern = args[++index];
+        } else if (option.equals("output-retain-frames")) {
+            outputRetainFrames = true;
         } else if (option.equals("show-formats")) {
             showRenderers = true;
         } else if (option.equals("show-layouts")) {
@@ -281,6 +303,14 @@ public class Presenter extends TimedTextTransformer {
             layout = defaultLayout;
         this.layout = layout;
         layout.processDerivedOptions();
+        File outputArchiveFile;
+        if (outputArchive && (outputArchiveFilePath != null)) {
+            outputArchiveFile = new File(outputArchiveFilePath);
+            if (!outputArchiveFile.getParentFile().exists())
+                throw new InvalidOptionUsageException("output-archive-file", "directory does not exist: " + outputArchiveFilePath);
+        } else
+            outputArchiveFile = null;
+        this.outputArchiveFile = outputArchiveFile;
         File outputDirectory;
         if (outputDirectoryPath != null) {
             outputDirectory = new File(outputDirectoryPath);
@@ -370,64 +400,84 @@ public class Presenter extends TimedTextTransformer {
             cleanOutputDirectory(uri);
         this.outputFileSequence = 0;
         for (Frame f : frames)
-            processFrame(f);
-        // [TBD] perform final frame combination if enabled
+            writeFrame(uri, f);
+        if (outputArchive)
+            archiveFrames(uri, frames, outputArchiveFile);
+        if (!outputRetainFrames)
+            removeFrameFiles(frames);
     }
 
-    private void processFrame(Frame f) {
-        writeFrame(f);
+    private void cleanOutputDirectory(URI uri) {
+        Reporter reporter = getReporter();
+        String resourceName = getResourceNameComponent(uri);
+        File directory = new File(outputDirectory, resourceName);
+        if (directory.exists()) {
+            reporter.logInfo(reporter.message("*KEY*", "Cleaning TTPE artifacts from output directory ''{0}''...", directory.getPath()));
+            for (File f : directory.listFiles()) {
+                String name = f.getName();
+                if (name.indexOf("ttpa") != 0)
+                    continue;
+                else if (name.indexOf(".xml") != (name.length() - 4))
+                    continue;
+                else if (!f.delete())
+                    throw new TransformerException("unable to clean output directory: can't delete: '" + name + "'");
+            }
+        }
     }
 
-    private boolean writeFrame(Frame f) {
+    private boolean writeFrame(URI uri, Frame f) {
         if (f instanceof DocumentFrame)
-            return writeDocumentFrame((DocumentFrame) f);
+            return writeDocumentFrame(uri, (DocumentFrame) f);
         else
             throw new UnsupportedOperationException();
     }
 
-    private boolean writeDocumentFrame(DocumentFrame f) {
+    private boolean writeDocumentFrame(URI uri, DocumentFrame f) {
         boolean fail = false;
         Document d = f.getDocument();
         Reporter reporter = getReporter();
-        URI resourceUri = (URI) getResourceState(TransformerContext.ResourceState.ttxInputUri.name());
         Map<String,String> prefixes = f.getPrefixes();
         Set<QName> startTagExclusions = f.getStartExclusions();
         Set<QName> endTagExclusions = f.getEndExclusions();
+        BufferedOutputStream bos = null;
         BufferedWriter bw = null;
         try {
             DOMSource source = new DOMSource(d);
             File[] retOutputFile = new File[1];
-            bw = new BufferedWriter(new OutputStreamWriter(getOutputStream(resourceUri, retOutputFile), outputEncoding));
-            StreamResult result = new StreamResult(bw);
-            Transformer t = new TextTransformer(outputEncoding.name(), outputIndent, prefixes, startTagExclusions, endTagExclusions);
-            t.transform(source, result);
-            File outputFile = retOutputFile[0];
-            reporter.logInfo(reporter.message("*KEY*", "Wrote TTPA ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+            if ((bos = getFrameOutputStream(uri, retOutputFile)) != null) {
+                bw = new BufferedWriter(new OutputStreamWriter(bos, outputEncoding));
+                StreamResult result = new StreamResult(bw);
+                Transformer t = new TextTransformer(outputEncoding.name(), outputIndent, prefixes, startTagExclusions, endTagExclusions);
+                t.transform(source, result);
+                File outputFile = retOutputFile[0];
+                reporter.logInfo(reporter.message("*KEY*", "Wrote TTPA ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+                f.setFile(outputFile);
+            }
         } catch (Exception e) {
             reporter.logError(e);
         } finally {
             if (bw != null) {
                 try { bw.close(); } catch (IOException e) {}
             }
+            IOUtil.closeSafely(bos);
         }
         return !fail && (reporter.getResourceErrors() == 0);
     }
 
-    private OutputStream getOutputStream(URI uri, File[] retOutputFile) throws IOException {
+    private BufferedOutputStream getFrameOutputStream(URI uri, File[] retOutputFile) throws IOException {
         String resourceName = getResourceNameComponent(uri);
         File d = new File(outputDirectory, resourceName);
         if (!d.exists())
             d.mkdir();
-        if (!d.exists())
-            return System.out;
-        else {
+        if (d.exists()) {
             String outputFileName = MessageFormat.format(outputPattern, ++outputFileSequence);
             File outputFile = new File(d, outputFileName).getCanonicalFile();
             if (retOutputFile != null)
                 retOutputFile[0] = outputFile;
-            return new FileOutputStream(outputFile);
+            return new BufferedOutputStream(new FileOutputStream(outputFile));
             
-        }
+        } else
+            return null;
     }
 
     private String getResourceNameComponent(URI uri) {
@@ -446,26 +496,6 @@ public class Presenter extends TimedTextTransformer {
             return "stdin";
     }
 
-    /*
-    private boolean isStandardOutput(String uri) {
-        try {
-            return isStandardOutput(new URI(uri));
-        } catch (URISyntaxException e) {
-            return false;
-        }
-    }
-
-    private boolean isStandardOutput(URI uri) {
-        String scheme = uri.getScheme();
-        if ((scheme == null) || !scheme.equals(uriFileDescriptorScheme))
-            return false;
-        String schemeSpecificPart = uri.getSchemeSpecificPart();
-        if ((schemeSpecificPart == null) || !schemeSpecificPart.equals(uriFileDescriptorStandardOut))
-            return false;
-        return true;
-    }
-    */
-
     private boolean isFile(URI uri) {
         String scheme = uri.getScheme();
         if ((scheme == null) || !scheme.equals(uriFileScheme))
@@ -474,21 +504,84 @@ public class Presenter extends TimedTextTransformer {
             return true;
     }
 
-    private void cleanOutputDirectory(URI uri) {
-        Reporter reporter = getReporter();
-        String resourceName = getResourceNameComponent(uri);
-        File directory = new File(outputDirectory, resourceName);
-        if (directory.exists()) {
-            reporter.logInfo(reporter.message("*KEY*", "Cleaning TTPE artifacts from output directory ''{0}''...", directory.getPath()));
-            for (File f : directory.listFiles()) {
-                String name = f.getName();
-                if (name.indexOf("ttpa") != 0)
-                    continue;
-                else if (name.indexOf(".xml") != (name.length() - 4))
-                    continue;
-                else if (!f.delete())
-                    throw new TransformerException("unable to clean output directory: can't delete: '" + name + "'");
+    private void archiveFrames(URI uri, List<Frame> frames, File archiveFile) {
+        BufferedOutputStream bos = null;
+        ZipOutputStream zos = null;
+        try {
+            File[] retArchiveFile = new File[1];
+            if ((bos = getArchiveOutputStream(uri, archiveFile, retArchiveFile)) != null) {
+                zos = new ZipOutputStream(bos);
+                Date now = new Date();
+                for (Frame f : frames) {
+                    File fFile = f.getFile();
+                    if (fFile != null) {
+                        ZipEntry ze = new ZipEntry(fFile.getName());
+                        ze.setTime(now.getTime());
+                        zos.putNextEntry(ze);
+                        writeFrameEntry(fFile, zos);
+                        zos.closeEntry();
+                    }
+                }
             }
+        } catch (IOException e) {
+        } finally {
+            IOUtil.closeSafely(zos);
+            IOUtil.closeSafely(bos);
+        }
+    }
+
+    private void writeFrameEntry(File f, ZipOutputStream zos) {
+        BufferedInputStream bis = null;
+        try {
+            bis = new BufferedInputStream(new FileInputStream(f));
+            byte[] buffer = new byte[4096];
+            int nb;
+            while ((nb = bis.read(buffer, 0, buffer.length)) >= 0) {
+                if (nb > 0) {
+                    zos.write(buffer, 0, nb);
+                } else
+                    Thread.sleep(0);
+            }
+        } catch (InterruptedException e) {
+        } catch (IOException e) {
+        } finally {
+            IOUtil.closeSafely(bis);
+        }
+    }
+
+    private BufferedOutputStream getArchiveOutputStream(URI uri, File archiveFile, File[] retArchiveFile) throws IOException {
+        if (archiveFile == null) {
+            String resourceName = getResourceNameComponent(uri);
+            File d = outputDirectory;
+            if (d.exists()) {
+                archiveFile = new File(d, resourceName + ".zip").getCanonicalFile();
+            }
+        }
+        if (archiveFile != null) {
+            if (retArchiveFile != null)
+                retArchiveFile[0] = archiveFile;
+            return new BufferedOutputStream(new FileOutputStream(archiveFile));
+        } else
+            return null;
+    }
+
+    private void removeFrameFiles(List<Frame> frames) {
+        try {
+            Map<String,File> directories = new java.util.HashMap<String,File>();
+            for (Frame f : frames) {
+                File fFile = f.getFile();
+                if (fFile != null) {
+                    if (fFile.delete()) {
+                        File d = fFile.getParentFile();
+                        directories.put(d.getCanonicalPath(), d);
+                    }
+                }
+            }
+            for (File fDirectory : directories.values()) {
+                if (fDirectory.list().length == 0)
+                    fDirectory.delete();
+            }
+        } catch (IOException e) {
         }
     }
 

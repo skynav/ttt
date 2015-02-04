@@ -203,17 +203,24 @@ public class BasicLayoutProcessor extends LayoutProcessor {
 
     protected List<Area> layoutISDInstance(Element e, LayoutState ls) {
         List<Area> areas = new java.util.ArrayList<Area>();
-        boolean clip = false;                                   // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
-        double w = 1280;                                        // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
-        double h = 720;                                         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
-        ls.pushViewport(e, w, h, clip);
-        ls.pushReference(e, 0, 0, w, h, null, TransformMatrix.IDENTITY);
-        for (Element c : getChildElements(e)) {
-            if (isElement(c, isdRegionElementName))
-                layoutRegion(c, ls);
+        try {
+            double begin = Double.parseDouble(e.getAttribute("begin"));
+            double end = Double.parseDouble(e.getAttribute("end"));
+            boolean clip = false;                                   // [TBD] TEMPORARY - INITIALIZE FROM CONTEXT STATE
+            double w = 1280;                                        // [TBD] TEMPORARY - INITIALIZE FROM CONTEXT STATE
+            double h = 720;                                         // [TBD] TEMPORARY - INITIALIZE FROM CONTEXT STATE
+            ls.pushCanvas(e, begin, end);
+            ls.pushViewport(e, w, h, clip);
+            ls.pushReference(e, 0, 0, w, h, null, TransformMatrix.IDENTITY);
+            for (Element c : getChildElements(e)) {
+                if (isElement(c, isdRegionElementName))
+                    layoutRegion(c, ls);
+            }
+            ls.pop();
+            ls.pop();
+            areas.add(ls.pop());
+        } catch (NumberFormatException x) {
         }
-        ls.pop();
-        areas.add(ls.pop());
         return areas;
     }
 

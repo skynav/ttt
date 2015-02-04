@@ -411,12 +411,12 @@
       <arg value="${ttpe.test.fonts.source.dir}"/>
       <arg value="--output-format"/>
       <arg value="xml"/>
+      <arg value="--output-archive"/>
+      <arg value="--output-clean"/>
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
       <arg value="--output-pattern"/>
-      <arg value="ttpa{0,number,0000}.xml"/>
-      <arg value="--output-indent"/>
-      <arg value="--output-clean"/>
+      <arg value="ttpa{0,number,000000}.xml"/>
       <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-001.xml"/>
     </java>
   </sequential>

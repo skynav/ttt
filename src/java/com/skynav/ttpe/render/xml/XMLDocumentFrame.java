@@ -33,10 +33,10 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 
 import com.skynav.ttpe.app.Namespace;
-import com.skynav.ttpe.render.DocumentFrame;
+import com.skynav.ttpe.render.AbstractDocumentFrame;
 import com.skynav.xml.helpers.XML;
 
-public class XMLDocumentFrame implements DocumentFrame {
+public class XMLDocumentFrame extends AbstractDocumentFrame {
 
     // element name constants
     public static final QName ttpeBlockEltName                 = new QName(Namespace.NAMESPACE, "block");
@@ -61,16 +61,7 @@ public class XMLDocumentFrame implements DocumentFrame {
     public static final QName textAttrName                     = new QName("", "text");
     public static final QName wmAttrName                       = new QName("", "wm");
 
-    private Document document;
-
-    public XMLDocumentFrame(Document d) {
-        this.document = d;
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
+    // namespace prefixes
     public static Map<String, String> prefixes;
     static {
         prefixes = new java.util.HashMap<String,String>();
@@ -78,10 +69,8 @@ public class XMLDocumentFrame implements DocumentFrame {
         prefixes.put(XML.xmlnsNamespace, "xmlns");
         prefixes.put(Namespace.NAMESPACE, "");
     }
-    public Map<String, String> getPrefixes() {
-        return prefixes;
-    }
 
+    // serialization exclusions
     private static Set<QName> startTagIndentExclusions;
     static {
         startTagIndentExclusions = new java.util.HashSet<QName>();
@@ -89,10 +78,21 @@ public class XMLDocumentFrame implements DocumentFrame {
         startTagIndentExclusions.add(ttpeSpaceEltName);
     }
 
+    public XMLDocumentFrame(double begin, double end, Document d) {
+        super(begin, end, d);
+    }
+
+    @Override
+    public Map<String, String> getPrefixes() {
+        return prefixes;
+    }
+
+    @Override
     public Set<QName> getStartExclusions() {
         return startTagIndentExclusions;
     }
 
+    @Override
     public Set<QName> getEndExclusions() {
         return null;
     }

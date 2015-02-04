@@ -27,9 +27,31 @@ package com.skynav.ttpe.render;
 
 import java.io.File;
 
-public interface Frame {
-    double getBegin();
-    double getEnd();
-    File getFile();
-    void setFile(File f);
+public abstract class AbstractFrame implements Frame {
+
+    private double begin;
+    private double end;
+    private File file;
+
+    protected AbstractFrame(double begin, double end) {
+        this.begin = begin;
+        this.end = end;
+    }
+
+    public double getBegin() {
+        return begin;
+    }
+
+    public double getEnd() {
+        return end;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
 }

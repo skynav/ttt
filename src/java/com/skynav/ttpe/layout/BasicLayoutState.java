@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.BlockArea;
+import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.area.ReferenceArea;
 import com.skynav.ttpe.area.ViewportArea;
@@ -69,6 +70,10 @@ public class BasicLayoutState implements LayoutState {
 
     public LineBreakIterator getCharacterIterator() {
         return characterIterator;
+    }
+
+    public NonLeafAreaNode pushCanvas(Element e, double begin, double end) {
+        return push(new CanvasArea(e, begin, end));
     }
 
     public NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip) {

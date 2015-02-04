@@ -23,13 +23,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.render;
+package com.skynav.ttpe.area;
 
-import java.io.File;
+import org.w3c.dom.Element;
 
-public interface Frame {
-    double getBegin();
-    double getEnd();
-    File getFile();
-    void setFile(File f);
+import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.WritingMode;
+
+public class CanvasArea extends NonLeafAreaNode {
+
+    private double begin;
+    private double end;
+
+    public CanvasArea(Element e, double begin, double end) {
+        super(e);
+        this.begin = begin;
+        this.end = end;
+    }
+
+    public double getBegin() {
+        return begin;
+    }
+
+    public double getEnd() {
+        return end;
+    }
+
+    @Override
+    public WritingMode getWritingMode() {
+        return WritingMode.LRTB;
+    }
+
+    @Override
+    public double getAvailable(Dimension dimension) {
+        return Double.POSITIVE_INFINITY;
+    }
+
 }

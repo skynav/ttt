@@ -39,6 +39,7 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.app.Namespace;
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
+import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.InlineFillerArea;
@@ -115,95 +116,52 @@ public class XMLRenderProcessor extends RenderProcessor {
     public List<Frame> render(List<Area> areas, TransformerContext context) {
         List<Frame> frames = new java.util.ArrayList<Frame>();
         for (Area a : areas) {
-            Frame f = renderRoot(a, context);
-            if (f != null)
-                frames.add(f);
+            if (a instanceof CanvasArea) {
+                Frame f = renderCanvas((CanvasArea) a, context);
+                if (f != null)
+                    frames.add(f);
+            }
         }
         return frames;
     }
 
-    private Frame renderRoot(Area a, TransformerContext context) {
+    private Frame renderCanvas(CanvasArea a, TransformerContext context) {
         Reporter reporter = context.getReporter();
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document d = db.newDocument();
-            Element e = Documents.createElement(d, XMLDocumentFrame.ttpeCanvasEltName);
-            e.setAttributeNS(XML.xmlnsNamespace, "xmlns:ttpe", Namespace.NAMESPACE);
-            e.appendChild(renderArea(a, d, context));
-            d.appendChild(e);
+            d.appendChild(renderCanvas(a, d, context));
             Namespaces.normalize(d, XMLDocumentFrame.prefixes);
-            return new XMLDocumentFrame(d);
+            return new XMLDocumentFrame(a.getBegin(), a.getEnd(), d);
         } catch (Exception e) {
             reporter.logError(e);
         }
         return null;
     }
 
-    private Element renderArea(Area a, Document d, TransformerContext context) {
-        if (a instanceof GlyphArea)
-            return renderGlyph((GlyphArea) a, d, context);
-        else if (a instanceof SpaceArea)
-            return renderSpace((SpaceArea) a, d, context);
-        else if (a instanceof InlineFillerArea)
-            return renderFiller((InlineFillerArea) a, d, context);
-        else if (a instanceof LineArea)
-            return renderLine((LineArea) a, d, context);
-        else if (a instanceof ReferenceArea)
-            return renderReference((ReferenceArea) a, d, context);
-        else if (a instanceof ViewportArea)
-            return renderViewport((ViewportArea) a, d, context);
-        else if (a instanceof BlockArea)
-            return renderBlock((BlockArea) a, d, context);
-        else
-            throw new IllegalArgumentException();
-    }
-
-    private Element renderGlyph(GlyphArea a, Document d, TransformerContext context) {
-        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeGlyphsEltName);
-        renderCommonInlineAreaAttributes(a, e, false, context);
-        Documents.setAttribute(e, XMLDocumentFrame.textAttrName, a.getText());
-        return e;
-    }
-
-    private Element renderSpace(SpaceArea a, Document d, TransformerContext context) {
-        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeSpaceEltName);
-        renderCommonInlineAreaAttributes(a, e, false, context);
-        Documents.setAttribute(e, XMLDocumentFrame.textAttrName, escapeWhitespace(a.getText()));
-        return e;
-    }
-
-    private Element renderFiller(InlineFillerArea a, Document d, TransformerContext context) {
-        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeFillEltName);
-        renderCommonInlineAreaAttributes(a, e, false, context);
-        return e;
-    }
-
-    private Element renderLine(LineArea a, Document d, TransformerContext context) {
-        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeLineEltName);
-        renderCommonBlockAreaAttributes(a, e, context);
-        if (isOverflowed(a)) {
-            InlineAlignment alignment = a.getAlignment();
-            String align;
-            if (alignment == InlineAlignment.START)
-                align = null;
-            else if (alignment == InlineAlignment.END)
-                align = "end";
-            else
-                align = "center";
-            if (align != null)
-                Documents.setAttribute(e, XMLDocumentFrame.alignAttrName, align);
-            Documents.setAttribute(e, XMLDocumentFrame.overflowAttrName, doubleFormatter.format(new Object[] {a.getOverflow()}));
-        }
+    private Element renderCanvas(CanvasArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeCanvasEltName);
+        e.setAttributeNS(XML.xmlnsNamespace, "xmlns:ttpe", Namespace.NAMESPACE);
         for (Area c : a.getChildren()) {
             e.appendChild(renderArea(c, d, context));
         }
         return e;
     }
 
-    private boolean isOverflowed(LineArea a) {
-        return a.getOverflow() > 0;
+    private Element renderViewport(ViewportArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeViewportEltName);
+        renderCommonAreaAttributes(a, e, false, false, context);
+        Extent extent = a.getExtent();
+        if (extent != null)
+            Documents.setAttribute(e, XMLDocumentFrame.extentAttrName, extent.toString());
+        if (a.getClip())
+            Documents.setAttribute(e, XMLDocumentFrame.clipAttrName, Boolean.valueOf(a.getClip()).toString().toLowerCase());
+        for (Area c : a.getChildren()) {
+            e.appendChild(renderArea(c, d, context));
+        }
+        return e;
     }
 
     private Element renderReference(ReferenceArea a, Document d, TransformerContext context) {
@@ -237,20 +195,6 @@ public class XMLRenderProcessor extends RenderProcessor {
         return true;
     }
 
-    private Element renderViewport(ViewportArea a, Document d, TransformerContext context) {
-        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeViewportEltName);
-        renderCommonAreaAttributes(a, e, false, false, context);
-        Extent extent = a.getExtent();
-        if (extent != null)
-            Documents.setAttribute(e, XMLDocumentFrame.extentAttrName, extent.toString());
-        if (a.getClip())
-            Documents.setAttribute(e, XMLDocumentFrame.clipAttrName, Boolean.valueOf(a.getClip()).toString().toLowerCase());
-        for (Area c : a.getChildren()) {
-            e.appendChild(renderArea(c, d, context));
-        }
-        return e;
-    }
-
     private Element renderBlock(BlockArea a, Document d, TransformerContext context) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeBlockEltName);
         renderCommonBlockAreaAttributes(a, e, context);
@@ -258,6 +202,71 @@ public class XMLRenderProcessor extends RenderProcessor {
             e.appendChild(renderArea(c, d, context));
         }
         return e;
+    }
+
+    private Element renderLine(LineArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeLineEltName);
+        renderCommonBlockAreaAttributes(a, e, context);
+        if (isOverflowed(a)) {
+            InlineAlignment alignment = a.getAlignment();
+            String align;
+            if (alignment == InlineAlignment.START)
+                align = null;
+            else if (alignment == InlineAlignment.END)
+                align = "end";
+            else
+                align = "center";
+            if (align != null)
+                Documents.setAttribute(e, XMLDocumentFrame.alignAttrName, align);
+            Documents.setAttribute(e, XMLDocumentFrame.overflowAttrName, doubleFormatter.format(new Object[] {a.getOverflow()}));
+        }
+        for (Area c : a.getChildren()) {
+            e.appendChild(renderArea(c, d, context));
+        }
+        return e;
+    }
+
+    private boolean isOverflowed(LineArea a) {
+        return a.getOverflow() > 0;
+    }
+
+    private Element renderGlyph(GlyphArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeGlyphsEltName);
+        renderCommonInlineAreaAttributes(a, e, false, context);
+        Documents.setAttribute(e, XMLDocumentFrame.textAttrName, a.getText());
+        return e;
+    }
+
+    private Element renderSpace(SpaceArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeSpaceEltName);
+        renderCommonInlineAreaAttributes(a, e, false, context);
+        Documents.setAttribute(e, XMLDocumentFrame.textAttrName, escapeWhitespace(a.getText()));
+        return e;
+    }
+
+    private Element renderFiller(InlineFillerArea a, Document d, TransformerContext context) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeFillEltName);
+        renderCommonInlineAreaAttributes(a, e, false, context);
+        return e;
+    }
+
+    private Element renderArea(Area a, Document d, TransformerContext context) {
+        if (a instanceof GlyphArea)
+            return renderGlyph((GlyphArea) a, d, context);
+        else if (a instanceof SpaceArea)
+            return renderSpace((SpaceArea) a, d, context);
+        else if (a instanceof InlineFillerArea)
+            return renderFiller((InlineFillerArea) a, d, context);
+        else if (a instanceof LineArea)
+            return renderLine((LineArea) a, d, context);
+        else if (a instanceof ReferenceArea)
+            return renderReference((ReferenceArea) a, d, context);
+        else if (a instanceof ViewportArea)
+            return renderViewport((ViewportArea) a, d, context);
+        else if (a instanceof BlockArea)
+            return renderBlock((BlockArea) a, d, context);
+        else
+            throw new IllegalArgumentException();
     }
 
     private Element renderCommonInlineAreaAttributes(Area a, Element e, boolean bpdInclude, TransformerContext context) {

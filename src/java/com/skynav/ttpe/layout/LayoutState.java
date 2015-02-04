@@ -41,6 +41,7 @@ public interface LayoutState {
     FontCache getFontCache();
     LineBreakIterator getBreakIterator();
     LineBreakIterator getCharacterIterator();
+    NonLeafAreaNode pushCanvas(Element e, double begin, double end);
     NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
     NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm);
     NonLeafAreaNode pushBlock(Element e);

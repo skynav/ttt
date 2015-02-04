@@ -25,11 +25,36 @@
 
 package com.skynav.ttpe.render;
 
-import java.io.File;
+import java.util.Map;
+import java.util.Set;
 
-public interface Frame {
-    double getBegin();
-    double getEnd();
-    File getFile();
-    void setFile(File f);
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Document;
+
+public abstract class AbstractDocumentFrame extends AbstractFrame implements DocumentFrame {
+
+    private Document document;
+
+    protected AbstractDocumentFrame(double begin, double end, Document document) {
+        super(begin, end);
+        this.document = document;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public Map<String, String> getPrefixes() {
+        return new java.util.HashMap<String,String>();
+    }
+
+    public Set<QName> getStartExclusions() {
+        return null;
+    }
+
+    public Set<QName> getEndExclusions() {
+        return null;
+    }
+
 }
