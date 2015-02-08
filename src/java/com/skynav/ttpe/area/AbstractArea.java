@@ -29,17 +29,34 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.Whitespace;
+
+import com.skynav.xml.helpers.XML;
 
 public abstract class AbstractArea implements Area {
 
-    protected Element           e;
+    protected Element element;
 
     protected AbstractArea() {
         this(null);
     }
 
-    protected AbstractArea(Element e) {
-        this.e = e;
+    protected AbstractArea(Element element) {
+        this.element = element;
+    }
+
+    public String getLanguage() {
+        if (element.hasAttributeNS(XML.xmlNamespace, "lang"))
+            return element.getAttributeNS(XML.xmlNamespace, "lang");
+        else
+            return null;
+    }
+
+    public Whitespace getWhitespace() {
+        if (element.hasAttributeNS(XML.xmlNamespace, "space"))
+            return Whitespace.valueOf(element.getAttributeNS(XML.xmlNamespace, "space"));
+        else
+            return null;
     }
 
     public WritingMode getWritingMode() {
@@ -59,7 +76,7 @@ public abstract class AbstractArea implements Area {
     }
 
     public Element getElement() {
-        return e;
+        return element;
     }
 
 }

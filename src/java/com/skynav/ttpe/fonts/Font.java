@@ -30,9 +30,12 @@ import java.io.IOException;
 
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
+import org.apache.fontbox.ttf.NamingTable;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.OTFParser;
 
+import com.skynav.ttpe.geometry.Axis;
+import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.util.Characters;
 
 public class Font {
@@ -42,6 +45,7 @@ public class Font {
     private boolean otfLoadFailed;
     private OpenTypeFont otf;
     private CmapSubtable cmapSubtable;
+    private NamingTable nameTable;
     
     public Font(FontKey key, String source) {
         this.key = key;
@@ -56,6 +60,35 @@ public class Font {
         return source;
     }
 
+    public String getPreferredFamilyName() {
+        if (nameTable == null) {
+            try {
+                nameTable = otf.getNaming();
+            } catch (IOException e) {
+            }
+        }
+        if (nameTable != null)
+            return nameTable.getName(16, 1, 0, 0);
+        else
+            return key.family;
+    }
+
+    public FontStyle getStyle() {
+        return key.style;
+    }
+
+    public FontWeight getWeight() {
+        return key.weight;
+    }
+
+    public Axis getAxis() {
+        return key.axis;
+    }
+
+    public Extent getSize() {
+        return key.size;
+    }
+
     public double getAdvance(String text) {
         return getAdvance(text, Characters.UC_REPLACEMENT);
     }
@@ -63,7 +96,8 @@ public class Font {
     public double getAdvance(String text, int substitution) {
         double advance = 0;
         try {
-            if ((key.size > 0) && maybeLoad()) {
+            if (!key.size.isEmpty() && maybeLoad()) {
+                double size = key.size.getDimension(key.axis);
                 for (int i = 0, n = text.length(); i < n; ++i) {
                     int c = (int) text.charAt(i);
                     if ((c >= 0xD800) && (c < 0xE000)) {
@@ -84,7 +118,7 @@ public class Font {
                     advance += (double) a;
                 }
                 advance = advance / (double) otf.getUnitsPerEm();
-                advance *= key.size;
+                advance *= size;
             }
         } catch (IOException e) {
         }

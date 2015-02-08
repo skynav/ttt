@@ -36,7 +36,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.app.Namespace;
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.CanvasArea;
@@ -60,7 +59,6 @@ import com.skynav.ttv.util.Namespaces;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
-import com.skynav.xml.helpers.XML;
 
 public class XMLRenderProcessor extends RenderProcessor {
 
@@ -172,7 +170,7 @@ public class XMLRenderProcessor extends RenderProcessor {
         TransformMatrix ctm = a.getCTM();
         if (ctm != null)
             Documents.setAttribute(e, XMLDocumentFrame.ctmAttrName, ctm.toString());
-        if (!isRootReferenceArea(a)) {
+        if (!isRootReference(a)) {
             Point origin = a.getOrigin();
             if (origin != null)
                 Documents.setAttribute(e, XMLDocumentFrame.originAttrName, origin.toString());
@@ -186,7 +184,7 @@ public class XMLRenderProcessor extends RenderProcessor {
         return e;
     }
 
-    private boolean isRootReferenceArea(ReferenceArea a) {
+    private boolean isRootReference(AreaNode a) {
         for (AreaNode p = a.getParent(); p != null; p = p.getParent()) {
             if (p instanceof ReferenceArea)
                 return false;

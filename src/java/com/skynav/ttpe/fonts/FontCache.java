@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.skynav.ttpe.geometry.Axis;
+import com.skynav.ttpe.geometry.Extent;
 
 public class FontCache {
 
@@ -47,10 +48,12 @@ public class FontCache {
         this.instances = new java.util.HashMap<FontKey,Font>();
     }
     
-    public Font getDefaultFont(Axis axis, double fontSize) {
-        FontKey key = new FontKey((axis == Axis.VERTICAL) ? FontKey.DEFAULT_VERTICAL : FontKey.DEFAULT_HORIZONTAL);
-        key.size = fontSize;
-        return get(key);
+    public Font getDefaultFont(Axis axis, Extent size) {
+        return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.DEFAULT_VERTICAL : FontKey.DEFAULT_HORIZONTAL, size));
+    }
+
+    public Font mapFont(String family, FontStyle style, FontWeight weight, Axis axis, String language, Extent size) {
+        return get(new FontKey(family, style, weight, axis, language != null ? language : "", size));
     }
 
     public Font get(FontKey key) {
@@ -114,7 +117,3 @@ public class FontCache {
     }
 
 }
-
-
-
-

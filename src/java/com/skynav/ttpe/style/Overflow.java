@@ -23,10 +23,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.fonts;
+package com.skynav.ttpe.style;
 
-public enum FontStyle {
-    NORMAL,             // normal (regular) style
-    ITALIC,             // italic style
-    OBLIQUE;            // oblique style
+public enum Overflow {
+    VISIBLE,
+    HIDDEN;
+    public boolean clips() {
+        return this == HIDDEN;
+    }
 }

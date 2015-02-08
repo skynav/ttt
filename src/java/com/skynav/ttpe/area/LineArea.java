@@ -27,20 +27,34 @@ package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
 
 public class LineArea extends BlockArea {
 
     private InlineAlignment alignment;
+    private Color color;
+    private Font font;
     private double overflow;
 
-    public LineArea(Element e, double ipd, double bpd, InlineAlignment alignment) {
+    public LineArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font) {
         super(e, ipd, bpd);
         this.alignment = alignment;
+        this.color = color;
+        this.font = font;
     }
 
     public InlineAlignment getAlignment() {
         return alignment;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public Font getFont() {
+        return font;
     }
 
     public void setOverflow(double overflow) {

@@ -30,17 +30,30 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.area.ReferenceArea;
+import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontCache;
+import com.skynav.ttpe.fonts.FontStyle;
+import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.geometry.Point;
+import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.BlockAlignment;
+import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.InlineAlignment;
+import com.skynav.ttpe.style.Whitespace;
+import com.skynav.ttpe.style.Wrap;
 import com.skynav.ttpe.text.LineBreakIterator;
 
 public interface LayoutState {
+    // non-content derived state
     LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator);
     FontCache getFontCache();
     LineBreakIterator getBreakIterator();
     LineBreakIterator getCharacterIterator();
+    // area stack
     NonLeafAreaNode pushCanvas(Element e, double begin, double end);
     NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
     NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm);
@@ -49,7 +62,34 @@ public interface LayoutState {
     NonLeafAreaNode addLine(LineArea l);
     NonLeafAreaNode pop();
     NonLeafAreaNode peek();
+    // area stack derived state
     ReferenceArea getReferenceArea();
+    String getLanguage();
+    Whitespace getWhitespace();
     WritingMode getWritingMode();
     double getAvailable(Dimension dimension);
+    // external supplied styles
+    Extent getExternalExtent();
+    Point getExternalOrigin();
+    Overflow getExternalOverflow();
+    TransformMatrix getExternalTransform();
+    WritingMode getExternalWritingMode();
+    // element computed styles
+    void saveStyle(Element e);
+    BlockAlignment getDisplayAlign(Element e);
+    Color getColor(Element e);
+    Extent getExtent(Element e);
+    String getFontFamily(Element e);
+    Extent getFontSize(Element e);
+    FontStyle getFontStyle(Element e);
+    FontWeight getFontWeight(Element e);
+    String getLanguage(Element e);
+    double getLineHeight(Element e, Font font);
+    Point getOrigin(Element e);
+    Overflow getOverflow(Element e);
+    InlineAlignment getTextAlign(Element e);
+    TransformMatrix getTransform(Element e);
+    Whitespace getWhitespace(Element e);
+    Wrap getWrapOption(Element e);
+    WritingMode getWritingMode(Element e);
 }

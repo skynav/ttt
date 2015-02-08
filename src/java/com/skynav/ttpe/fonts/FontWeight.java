@@ -26,11 +26,6 @@
 package com.skynav.ttpe.fonts;
 
 public enum FontWeight {
-    EXTRA_LIGHT,
-    DEMI_LIGHT,
-    LIGHT,
-    MEDIUM,
-    BOLD,
-    DEMI_BOLD,
-    EXTRA_BOLD;
+    NORMAL,
+    BOLD;
 }

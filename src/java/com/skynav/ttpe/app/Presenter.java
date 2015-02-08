@@ -401,7 +401,7 @@ public class Presenter extends TimedTextTransformer {
             writeFrame(uri, f);
         if (outputArchive)
             archiveFrames(uri, frames, outputArchiveFile);
-        if (!outputRetainFrames)
+        if (outputArchive && !outputRetainFrames)
             removeFrameFiles(frames);
     }
 

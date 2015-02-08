@@ -28,7 +28,6 @@ package com.skynav.ttpe.render;
 import java.util.List;
 
 import com.skynav.ttpe.geometry.Extent;
-import com.skynav.ttpe.geometry.Point;
 
 public abstract class AbstractImageFrame extends AbstractFrame implements ImageFrame {
 

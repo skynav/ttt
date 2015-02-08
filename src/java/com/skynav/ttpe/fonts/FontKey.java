@@ -26,37 +26,38 @@
 package com.skynav.ttpe.fonts;
 
 import com.skynav.ttpe.geometry.Axis;
+import com.skynav.ttpe.geometry.Extent;
 
 public class FontKey {
 
     public static final String                  DEFAULT_FAMILY     = "Noto Sans";
-    public static final FontStyle               DEFAULT_STYLE      = FontStyle.REGULAR;
-    public static final FontWeight              DEFAULT_WEIGHT     = FontWeight.MEDIUM;
-    public static final double                  DEFAULT_SIZE       = 24;
+    public static final FontStyle               DEFAULT_STYLE      = FontStyle.NORMAL;
+    public static final FontWeight              DEFAULT_WEIGHT     = FontWeight.NORMAL;
+    public static final Extent                  DEFAULT_SIZE       = new Extent(24, 24);
     public static final String                  DEFAULT_LANGUAGE   = "";
     public static final FontKey                 DEFAULT_HORIZONTAL =
-        new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_SIZE, DEFAULT_LANGUAGE, Axis.HORIZONTAL);
+        new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, Axis.HORIZONTAL, DEFAULT_LANGUAGE, DEFAULT_SIZE);
     public static final FontKey                 DEFAULT_VERTICAL   =
-        new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_SIZE, DEFAULT_LANGUAGE, Axis.VERTICAL);
+        new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, Axis.VERTICAL, DEFAULT_LANGUAGE, DEFAULT_SIZE);
 
     public String family;
     public FontStyle style;
     public FontWeight weight;
-    public double size;
-    public String language;
     public Axis axis;
+    public String language;
+    public Extent size;
 
-    public FontKey(FontKey key) {
-        this(key.family, key.style, key.weight, key.size, key.language, key.axis);
+    public FontKey(FontKey key, Extent size) {
+        this(key.family, key.style, key.weight, key.axis, key.language, size);
     }
 
-    public FontKey(String family, FontStyle style, FontWeight weight, double size, String language, Axis axis) {
+    public FontKey(String family, FontStyle style, FontWeight weight, Axis axis, String language, Extent size) {
         this.family = family.toLowerCase();
         this.style = style;
         this.weight = weight;
-        this.size = size;
-        this.language = language.toLowerCase();
         this.axis = axis;
+        this.language = language.toLowerCase();
+        this.size = size;
     }
 
     @Override
@@ -65,9 +66,9 @@ public class FontKey {
         hc = hc * 31 + family.hashCode();
         hc = hc * 31 + style.hashCode();
         hc = hc * 31 + weight.hashCode();
-        hc = hc * 31 + Double.valueOf(size).hashCode();
-        hc = hc * 31 + language.hashCode();
         hc = hc * 31 + axis.hashCode();
+        hc = hc * 31 + language.hashCode();
+        hc = hc * 31 + size.hashCode();
         return hc;
     }
 
@@ -81,11 +82,11 @@ public class FontKey {
                 return false;
             else if (weight != other.weight)
                 return false;
-            else if (size != other.size)
+            else if (axis != other.axis)
                 return false;
             else if (!language.equals(other.language))
                 return false;
-            else if (axis != other.axis)
+            else if (!size.equals(other.size))
                 return false;
             else
                 return true;

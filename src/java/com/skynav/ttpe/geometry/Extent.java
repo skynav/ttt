@@ -35,7 +35,9 @@ public class Extent {
     private double height;
 
     public Extent(double width, double height) {
+        assert width >= 0;
         this.width = width;
+        assert height >= 0;
         this.height = height;
     }
 
@@ -47,9 +49,43 @@ public class Extent {
         return height;
     }
 
+    public double getDimension(Axis axis) {
+        if (axis == Axis.VERTICAL)
+            return getHeight();
+        else
+            return getWidth();
+    }
+
+    public boolean isEmpty() {
+        return (width == 0) || (height == 0);
+    }
+
     private static final MessageFormat extentFormatter = new MessageFormat("[{0,number,#.####},{1,number,#.####}]");
     @Override
     public String toString() {
         return extentFormatter.format(new Object[] {width, height});
     }
+
+    @Override
+    public int hashCode() {
+        int hc = 23;
+        hc = hc * 31 + Double.valueOf(width).hashCode();
+        hc = hc * 31 + Double.valueOf(height).hashCode();
+        return hc;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Extent) {
+            Extent other = (Extent) o;
+            if (width != other.width)
+                return false;
+            else if (height != other.height)
+                return false;
+            else
+                return true;
+        } else
+            return false;
+    }
+
 }

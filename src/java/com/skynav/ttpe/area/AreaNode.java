@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.Whitespace;
 
 public class AreaNode extends AbstractArea {
 
@@ -41,12 +42,45 @@ public class AreaNode extends AbstractArea {
     }
 
     @Override
-    public WritingMode getWritingMode() {
-        for (AreaNode p = getParent(); p != null; p = p.getParent()) {
-            if (p instanceof ReferenceArea)
-                return p.getWritingMode();
+    public String getLanguage() {
+        String language = super.getLanguage();
+        if (language != null) {
+            return language;
+        } else {
+            AreaNode p = getParent();
+            if (p != null)
+                return p.getLanguage();
+            else
+                return null;
         }
-        return super.getWritingMode();
+    }
+
+    @Override
+    public Whitespace getWhitespace() {
+        Whitespace space = super.getWhitespace();
+        if (space != null) {
+            return space;
+        } else {
+            AreaNode p = getParent();
+            if (p != null)
+                return p.getWhitespace();
+            else
+                return null;
+        }
+    }
+
+    @Override
+    public WritingMode getWritingMode() {
+        WritingMode wm = super.getWritingMode();
+        if (wm != null) {
+            return wm;
+        } else {
+            AreaNode p = getParent();
+            if (p != null)
+                return p.getWritingMode();
+            else
+                return null;
+        }
     }
 
     @Override

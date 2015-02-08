@@ -38,35 +38,28 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.fonts.FontCache;
+import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.text.LineBreaker;
 import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttpe.text.Paragraph;
 import com.skynav.ttpe.text.ParagraphCollector;
+
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttx.transformer.TransformerContext;
+
 import com.skynav.xml.helpers.Documents;
 
-import static com.skynav.ttv.model.ttml.TTML.Constants.*;
+import static com.skynav.ttpe.layout.Constants.*;
 
 public class BasicLayoutProcessor extends LayoutProcessor {
 
     public static final String PROCESSOR_NAME                   = "basic";
     public static final LayoutProcessor PROCESSOR               = new BasicLayoutProcessor();
-
-    public static QName isdSequenceElementName                  = new QName(NAMESPACE_TT_ISD, "sequence");
-    public static QName isdInstanceElementName                  = new QName(NAMESPACE_TT_ISD, "isd");
-    public static QName isdComputedStyleSetElementName          = new QName(NAMESPACE_TT_ISD, "css");
-    public static QName isdRegionElementName                    = new QName(NAMESPACE_TT_ISD, "region");
-
-    public static QName ttBodyElementName                       = new QName(NAMESPACE_TT, "body");
-    public static QName ttDivisionElementName                   = new QName(NAMESPACE_TT, "div");
-    public static QName ttParagraphElementName                  = new QName(NAMESPACE_TT, "p");
-    public static QName ttSpanElementName                       = new QName(NAMESPACE_TT, "span");
-    public static QName ttBreakElementName                      = new QName(NAMESPACE_TT, "br");
 
     public static final String defaultLineBreakerName           = "uax14";
 
@@ -170,7 +163,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         if (d != null) {
             Element root = d.getDocumentElement();
             if (root != null) {
-                LayoutState ls = makeLayoutState();
+                LayoutState ls = makeLayoutState(context);
                 if (isElement(root, isdSequenceElementName))
                     return layoutISDSequence(root, ls);
                 else if (isElement(root, isdInstanceElementName))
@@ -180,12 +173,12 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         return new java.util.ArrayList<Area>();
     }
 
-    protected LayoutState makeLayoutState() {
-        return initializeLayoutState(createLayoutState());
+    protected LayoutState makeLayoutState(TransformerContext context) {
+        return initializeLayoutState(createLayoutState(context));
     }
 
-    protected LayoutState createLayoutState() {
-        return new BasicLayoutState();
+    protected LayoutState createLayoutState(TransformerContext context) {
+        return new BasicLayoutState(context);
     }
 
     protected LayoutState initializeLayoutState(LayoutState ls) {
@@ -206,15 +199,20 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         try {
             double begin = Double.parseDouble(e.getAttribute("begin"));
             double end = Double.parseDouble(e.getAttribute("end"));
-            boolean clip = false;                                   // [TBD] TEMPORARY - INITIALIZE FROM CONTEXT STATE
-            double w = 1280;                                        // [TBD] TEMPORARY - INITIALIZE FROM CONTEXT STATE
-            double h = 720;                                         // [TBD] TEMPORARY - INITIALIZE FROM CONTEXT STATE
             ls.pushCanvas(e, begin, end);
+            Extent extent = ls.getExternalExtent();
+            double w = extent.getWidth();
+            double h = extent.getHeight();
+            boolean clip = ls.getExternalOverflow().clips();
             ls.pushViewport(e, w, h, clip);
-            ls.pushReference(e, 0, 0, w, h, null, TransformMatrix.IDENTITY);
+            WritingMode wm = ls.getExternalWritingMode();
+            TransformMatrix ctm = ls.getExternalTransform();
+            ls.pushReference(e, 0, 0, w, h, wm, ctm);
             for (Element c : getChildElements(e)) {
                 if (isElement(c, isdRegionElementName))
                     layoutRegion(c, ls);
+                else if (isElement(c, isdComputedStyleSetElementName))
+                    ls.saveStyle(c);
             }
             ls.pop();
             ls.pop();
@@ -225,14 +223,16 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutRegion(Element e, LayoutState ls) {
-        boolean clip = false;                                   // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
-        double x = 540;                                         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
-        double y = 630;                                         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
-        double w = 200;                                         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
-        double h = 60;                                          // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        Extent extent = ls.getExtent(e);
+        double w = extent.getWidth();
+        double h = extent.getHeight();
+        Point origin = ls.getOrigin(e);
+        double x = origin.getX();
+        double y = origin.getY();
+        boolean clip = ls.getOverflow(e).clips();
         ls.pushViewport(e, w, h, clip);
-        WritingMode wm = WritingMode.LRTB;                      // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
-        TransformMatrix ctm = TransformMatrix.IDENTITY;         // [TBD] TEMPORARY - INITIALIZE FROM ELEMENT STYLE
+        WritingMode wm = ls.getWritingMode(e);
+        TransformMatrix ctm = ls.getTransform(e);
         ls.pushReference(e, x, y, w, h, wm, ctm);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttBodyElementName))
@@ -281,11 +281,11 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         ls.pop();
     }
 
-    protected List<Element> getChildElements(Element e) {
+    protected static List<Element> getChildElements(Element e) {
         return Documents.getChildElements(e);
     }
 
-    protected boolean isElement(Element e, QName qn) {
+    protected static boolean isElement(Element e, QName qn) {
         return Documents.isElement(e, qn);
     }
 

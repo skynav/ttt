@@ -35,9 +35,14 @@ import com.skynav.ttpe.area.InlineFillerArea;
 import com.skynav.ttpe.area.LeafInlineArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.SpaceArea;
+import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.fonts.FontStyle;
+import com.skynav.ttpe.fonts.FontWeight;
+import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
+import com.skynav.ttpe.style.Wrap;
 import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttpe.text.Paragraph;
 import com.skynav.ttpe.util.Characters;
@@ -52,24 +57,37 @@ public class ParagraphLayout {
     // layout state
     private LayoutState state;
     // style related state
-    private Font font;
-    private double fontSize;
-    private double lineHeight;
+    private Color color;
+    private String fontFamily;
+    private Extent fontSize;
+    private FontStyle fontStyle;
+    private FontWeight fontWeight;
+    private String language;
     private InlineAlignment textAlign;
-    private boolean wrap;
+    private Wrap wrap;
     private WritingMode writingMode;
+    // derived style state
+    private Font font;
+    private double lineHeight;
 
     public ParagraphLayout(Paragraph paragraph, LayoutState state) {
         this.paragraph = paragraph;
         this.iterator = paragraph.getIterator();
         this.state = state;
+        this.language = state.getLanguage();
         this.writingMode = state.getWritingMode();
-        // [TBD] initialize following states from paragraph styles
-        this.fontSize = 24;
-        this.font = state.getFontCache().getDefaultFont(writingMode.getAxis(IPD), fontSize);
-        this.lineHeight = fontSize * 1.25;
-        this.textAlign = InlineAlignment.CENTER;
-        this.wrap = true;
+        // paragraph specified styles
+        org.w3c.dom.Element e = paragraph.getElement();
+        this.color = state.getColor(e);
+        this.fontFamily = state.getFontFamily(e);
+        this.fontSize = state.getFontSize(e);
+        this.fontStyle = state.getFontStyle(e);
+        this.fontWeight = state.getFontWeight(e);
+        this.textAlign = state.getTextAlign(e);
+        this.wrap = state.getWrapOption(e);
+        // derived styles
+        this.font = state.getFontCache().mapFont(fontFamily, fontStyle, fontWeight, writingMode.getAxis(IPD), language, fontSize);
+        this.lineHeight = state.getLineHeight(e, font);
     }
 
     public List<LineArea> layout() {
@@ -91,7 +109,7 @@ public class ParagraphLayout {
                     } else {
                         double advance = b.advance;
                         if ((consumed + advance) > available) {
-                            if (wrap) {
+                            if (wrap == Wrap.WRAP) {
                                 if (!breaks.isEmpty()) {
                                     lines.add(emit(available, consumed, breaks));
                                     consumed = 0;
@@ -153,7 +171,7 @@ public class ParagraphLayout {
     }
 
     private LineArea emit(double available, double consumed, List<InlineBreakOpportunity> breaks) {
-        LineArea l = new LineArea(paragraph.getElement(), available, lineHeight, textAlign);
+        LineArea l = new LineArea(paragraph.getElement(), available, lineHeight, textAlign, color, font);
         return alignTextAreas(addTextAreas(l, breaks));
     }
 

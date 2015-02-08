@@ -38,8 +38,15 @@ public class ReferenceArea extends BoundedBlockArea {
 
     public ReferenceArea(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
         super(e, x, y, width, height);
+        assert wm != null;
         this.wm = wm;
-        this.ctm = TransformMatrix.IDENTITY;
+        assert ctm != null;
+        this.ctm = ctm;
+    }
+
+    @Override
+    public ViewportArea getParent() {
+        return (ViewportArea) super.getParent();
     }
 
     @Override
