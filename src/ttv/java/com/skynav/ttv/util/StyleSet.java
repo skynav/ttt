@@ -32,22 +32,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> implements Comparable<StyleSet> {
 
+    public static StyleSet EMPTY = new StyleSet();
+
     private int generation;
+    private String id;
     private Map<ComparableQName, StyleSpecification> styles;
-    private String id = new String();
 
     public StyleSet() {
         this(-1);
     }
 
     public StyleSet(int generation) {
-        this(generation, null);
+        this(generation, "", null);
     }
 
     public StyleSet(int generation, StyleSet styles) {
+        this(generation, "", styles);
+    }
+
+    public StyleSet(String id) {
+        this(extractGeneration(id), id, null);
+    }
+
+    public StyleSet(String id, StyleSet styles) {
+        this(extractGeneration(id), id, styles);
+    }
+
+    public StyleSet(int generation, String id, StyleSet styles) {
         this.generation = generation;
+        assert id != null;
+        this.id = id;
         if (styles == null)
             this.styles = new java.util.TreeMap<ComparableQName,StyleSpecification>();
         else
@@ -88,6 +106,10 @@ public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> i
 
     public void remove(ComparableQName name) {
         styles.remove(name);
+    }
+
+    public StyleSpecification get(QName qn) {
+        return this.styles.get(qn instanceof ComparableQName ? qn : new ComparableQName(qn));
     }
 
     @Override
@@ -158,6 +180,16 @@ public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> i
                 return 0;
         }
     };
+
+    private static int extractGeneration(String id) {
+        for (int i = 0, n = id.length(); i < n; ++i) {
+            try {
+                return Integer.parseInt(id.substring(i));
+            } catch (NumberFormatException e) {
+            }
+        }
+        return -1;
+    }
 
     public static Comparator<StyleSet> getGenerationComparator() {
         return GENERATION_COMPARATOR;

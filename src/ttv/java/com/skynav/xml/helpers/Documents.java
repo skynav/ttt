@@ -26,12 +26,14 @@
 package com.skynav.xml.helpers;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -141,13 +143,45 @@ public class Documents {
         }
     }
 
+    public static Map<QName,String> getAttributes(Element e) {
+        Map<QName,String> attributes = new java.util.HashMap<QName,String>();
+        NamedNodeMap attrs = e.getAttributes();
+        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+            Node node = attrs.item(i);
+            if (node instanceof Attr) {
+                Attr a = (Attr) node;
+                String ns = a.getNamespaceURI();
+                String ln;
+                if ((ns == null) || (ns.length() == 0))
+                    ln = a.getName();
+                else
+                    ln = a.getLocalName();
+                attributes.put(new QName(ns != null ? ns : "", ln), a.getValue());
+            }
+        }
+        return attributes;
+    }
+
+    public static String getAttribute(Element e, QName qn, String defaultValue) {
+        String ns       = qn.getNamespaceURI();
+        String ln       = qn.getLocalPart();
+        String value;
+        if ((ns == null) || (ns.length() == 0))
+            value = e.getAttribute(ln);
+        else
+            value = e.getAttributeNS(ns, ln);
+        if (value == null)
+            value = defaultValue;
+        return value;
+    }
+
     public static void setAttribute(Element e, QName qn, String value) {
         String ns       = qn.getNamespaceURI();
         String ln       = qn.getLocalPart();
         if ((ns == null) || (ns.length() == 0))
             e.setAttribute(ln, value);
         else
-             e.setAttributeNS(ns, ln, value);
+            e.setAttributeNS(ns, ln, value);
     }
 
 }
