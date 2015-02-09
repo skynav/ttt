@@ -77,6 +77,8 @@
 <property name="fontbox.jar" value="${ext.lib.dir}/fontbox-2.0.0-SNAPSHOT.jar"/>
 <property name="commons.logging.jar" value="${ext.lib.dir}/commons-logging-1.0.4.jar"/>
 <property name="batik.jar" value="${ext.lib.dir}/batik-all-1.8pre.jar"/>
+<property name="xml-apis-ext.jar" value="${ext.lib.dir}/xml-apis-ext.jar"/>
+<property name="xmlgraphics-commons.jar" value="${ext.lib.dir}/xmlgraphics-commons-svn-trunk.jar"/>
 
 <property name="javac.debug" value="true"/>
 <property name="javac.deprecation" value="true"/>
@@ -171,6 +173,8 @@
   <path location="${fontbox.jar}"/>
   <path location="${commons.logging.jar}"/>
   <path location="${batik.jar}"/>
+  <path location="${xml-apis-ext.jar}"/>
+  <path location="${xmlgraphics-commons.jar}"/>
 </path>
 
 <target name="compile-ttpe">
@@ -244,6 +248,8 @@
     <zipfileset src="${fontbox.jar}"/>
     <zipfileset src="${commons.logging.jar}"/>
     <zipfileset src="${batik.jar}"/>
+    <zipfileset src="${xml-apis-ext.jar}"/>
+    <zipfileset src="${xmlgraphics-commons.jar}"/>
     <manifest>
       <attribute name="Implementation-Title" value="${ttpe.title}"/>
       <attribute name="Implementation-Version" value="${ttpe.version}"/>
@@ -401,23 +407,23 @@
     <java jar="${ttpe.target}" fork="true" failonerror="true">
       <jvmarg value="-ea"/>
       <sysproperty key="file.encoding" value="utf-8"/>
+      <sysproperty key="java.awt.headless" value="true"/>
       <arg value="@{verbose}"/>
-      <arg value="--debug-exceptions"/>
       <arg value="--external-duration"/>
       <arg value="3600s"/>
       <arg value="--external-extent"/>
       <arg value="1280px 720px"/>
       <arg value="--font-directory"/>
       <arg value="${ttpe.test.fonts.source.dir}"/>
-      <arg value="--output-format"/>
-      <arg value="svg"/>
       <arg value="--output-archive"/>
       <arg value="--output-clean"/>
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
+      <arg value="--output-format"/>
+      <arg value="png"/>
       <arg value="--output-indent"/>
       <arg value="--output-pattern"/>
-      <arg value="ttps{0,number,000000}.svg"/>
+      <arg value="ttpi{0,number,000000}.png"/>
       <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-001.xml"/>
     </java>
   </sequential>

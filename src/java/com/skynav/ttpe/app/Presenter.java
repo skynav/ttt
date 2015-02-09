@@ -54,7 +54,9 @@ import org.w3c.dom.Document;
 
 import com.skynav.ttpe.layout.LayoutProcessor;
 import com.skynav.ttpe.render.DocumentFrame;
+import com.skynav.ttpe.render.ImageFrame;
 import com.skynav.ttpe.render.Frame;
+import com.skynav.ttpe.render.FrameImage;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
@@ -426,6 +428,8 @@ public class Presenter extends TimedTextTransformer {
     private boolean writeFrame(URI uri, Frame f) {
         if (f instanceof DocumentFrame)
             return writeDocumentFrame(uri, (DocumentFrame) f);
+        else if (f instanceof ImageFrame)
+            return writeImageFrame(uri, (ImageFrame) f);
         else
             throw new UnsupportedOperationException();
     }
@@ -457,6 +461,39 @@ public class Presenter extends TimedTextTransformer {
             if (bw != null) {
                 try { bw.close(); } catch (IOException e) {}
             }
+            IOUtil.closeSafely(bos);
+        }
+        return !fail && (reporter.getResourceErrors() == 0);
+    }
+
+    private boolean writeImageFrame(URI uri, ImageFrame f) {
+        boolean fail = false;
+        Reporter reporter = getReporter();
+        if (f.hasImages()) {
+            for (FrameImage i : f.getImages()) {
+                if (!writeFrameImage(uri, i))
+                    fail = true;
+            }
+        }
+        return !fail && (reporter.getResourceErrors() == 0);
+    }
+
+    private boolean writeFrameImage(URI uri, FrameImage i) {
+        boolean fail = false;
+        Reporter reporter = getReporter();
+        BufferedOutputStream bos = null;
+        try {
+            byte[] data = i.getData();
+            File[] retOutputFile = new File[1];
+            if ((bos = getFrameOutputStream(uri, retOutputFile)) != null) {
+                bos.write(data);
+                File outputFile = retOutputFile[0];
+                reporter.logInfo(reporter.message("*KEY*", "Wrote TTPI ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+                i.setFile(outputFile);
+            }
+        } catch (Exception e) {
+            reporter.logError(e);
+        } finally {
             IOUtil.closeSafely(bos);
         }
         return !fail && (reporter.getResourceErrors() == 0);
@@ -512,13 +549,11 @@ public class Presenter extends TimedTextTransformer {
                 Date now = new Date();
                 writeManifestEntry(zos, now, frames);
                 for (Frame f : frames) {
-                    File fFile = f.getFile();
-                    if (fFile != null) {
-                        ZipEntry ze = new ZipEntry(fFile.getName());
-                        ze.setTime(now.getTime());
-                        zos.putNextEntry(ze);
-                        writeFrameEntry(zos, fFile);
-                        zos.closeEntry();
+                    if (f.hasImages()) {
+                        for (FrameImage i : f.getImages())
+                            archiveFrame(i.getFile(), now, zos);
+                    } else {
+                        archiveFrame(f.getFile(), now, zos);
                     }
                 }
             }
@@ -526,6 +561,16 @@ public class Presenter extends TimedTextTransformer {
         } finally {
             IOUtil.closeSafely(zos);
             IOUtil.closeSafely(bos);
+        }
+    }
+
+    private void archiveFrame(File f, Date now, ZipOutputStream zos) throws IOException {
+        if (f != null) {
+            ZipEntry ze = new ZipEntry(f.getName());
+            ze.setTime(now.getTime());
+            zos.putNextEntry(ze);
+            writeFrameEntry(zos, f);
+            zos.closeEntry();
         }
     }
 

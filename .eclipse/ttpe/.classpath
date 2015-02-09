@@ -8,5 +8,7 @@
 	<classpathentry kind="lib" path="externals/fontbox-2.0.0-SNAPSHOT.jar" sourcepath="externals/fontbox-2.0.0-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="externals/icu4j-54_1_1.jar" sourcepath="externals/icu4j-54_1_1-source.jar"/>
 	<classpathentry kind="lib" path="externals/ttx.jar" sourcepath="externals/ttx-source.jar"/>
+	<classpathentry kind="lib" path="externals/xml-apis-ext.jar"/>
+	<classpathentry kind="lib" path="externals/xmlgraphics-commons-svn-trunk.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

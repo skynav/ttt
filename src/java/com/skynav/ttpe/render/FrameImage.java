@@ -33,6 +33,7 @@ import com.skynav.ttpe.geometry.Point;
 public interface FrameImage {
     Extent getExtent();
     Point getOrigin();
+    byte[] getData();
     File getFile();
-    void setFile(File f);
+    void setFile(File file);
 }

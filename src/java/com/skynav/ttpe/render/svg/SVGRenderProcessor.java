@@ -112,7 +112,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         return frames;
     }
 
-    private Frame renderCanvas(CanvasArea a, TransformerContext context) {
+    protected Frame renderCanvas(CanvasArea a, TransformerContext context) {
         Reporter reporter = context.getReporter();
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
