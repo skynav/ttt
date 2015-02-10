@@ -71,6 +71,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     private static final String[][] longOptionSpecifications = new String[][] {
+        { "show-memory",                "",         "show memory statistics" },
         { "show-transformers",          "",         "show built-in transformers (use with --verbose to show more details)" },
         { "transformer",                "NAME",     "specify transformer name (default: " + defaultTransformer.getName() + ")" },
     };
@@ -93,6 +94,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     private TimedTextVerifier verifier;
 
     // options state
+    private boolean showMemory;
     private boolean showTransformers;
     private String transformerName;
 
@@ -108,11 +110,41 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         transformerOptions = new TransformerOptions[] { defaultTransformer };
     }
 
+    protected boolean showMemory() {
+        return showMemory;
+    }
+
+    protected void setShowMemory(boolean showMemory) {
+        this.showMemory = showMemory;
+    }
+
+    protected long getUsedMemory() {
+        return getUsedMemory(true);
+    }
+
+    protected long getUsedMemory(boolean gc) {
+        Runtime r = Runtime.getRuntime();
+        if (gc)
+            r.gc();
+        return r.totalMemory() - r.freeMemory();
+    }
+
     @Override
     public void processResult(String[] args, URI uri, Object root) {
+        Reporter reporter = getReporter();
         initializeResourceState(uri);
         if (transformer != null) {
+            long preTransformMemory = 0;
+            long postTransformMemory = 0;
+            if (showMemory) {
+                preTransformMemory = getUsedMemory();
+                reporter.logInfo(reporter.message("*KEY*", "Pre-transform memory usage: {0}", preTransformMemory));
+            }
             transformer.transform(args, root, this, null);
+            if (showMemory) {
+                postTransformMemory = getUsedMemory();
+                reporter.logInfo(reporter.message("*KEY*", "Post-transform memory usage: {0}, delta: {1}", postTransformMemory, postTransformMemory - preTransformMemory));
+            }
         }
     }
 
@@ -317,7 +349,9 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("show-transformers")) {
+        if (option.equals("show-memory")) {
+            showMemory = true;
+        } else if (option.equals("show-transformers")) {
             showTransformers = true;
         } else if (option.equals("transformer")) {
             if (index + 1 > args.length)
