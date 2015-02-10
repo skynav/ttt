@@ -30,9 +30,9 @@ import java.util.List;
 import org.w3c.dom.Document;
 
 import com.skynav.ttpe.area.Area;
-import com.skynav.ttx.transformer.TransformerContext;
 
-public interface DocumentLayout {
+public interface Layout {
     String getName();
-    List<Area> layout(Document d, TransformerContext context);
+    List<Area> layout(Document d);
+    void clear();
 }

@@ -39,6 +39,7 @@ import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
 
 import com.skynav.ttv.util.IOUtil;
+import com.skynav.ttv.util.Reporter;
 
 public class LineBreaker {
 
@@ -47,6 +48,7 @@ public class LineBreaker {
 
     private static String[][] rulesFileNames = new String[][] {
         { "uax14", "icu-brkiter-uax14" },
+        { "scalar", null },
     };
     private static Map<String,String> rulesFileNameMap;
     private static Map<String,LineBreaker> breakers;
@@ -69,29 +71,38 @@ public class LineBreaker {
         return name;
     }
 
-    public LineBreakIterator getIterator() {
-        return iterator;
+    public LineBreakIterator getIterator(Reporter reporter) {
+        return maybeLoad(reporter);
     }
 
-    private LineBreaker load() {
-        BreakIterator iterator = null;
-        InputStream is = null;
-        try {
-            URL rulesLocator = getRulesLocator(name, RULES_BINARY_EXT);
-            if (rulesLocator != null) {
-                is = rulesLocator.openStream();
-                iterator = RuleBasedBreakIterator.getInstanceFromCompiledRules(is);
+    public void clear() {
+        iterator = null;
+    }
+
+    private LineBreakIterator maybeLoad(Reporter reporter) {
+        LineBreakIterator iterator = this.iterator;
+        if (iterator != null)
+            return iterator;
+        else {
+            BreakIterator bi = null;
+            InputStream is = null;
+            try {
+                URL rulesLocator = getRulesLocator(name, RULES_BINARY_EXT);
+                if (rulesLocator != null) {
+                    is = rulesLocator.openStream();
+                    bi = RuleBasedBreakIterator.getInstanceFromCompiledRules(is);
+                    reporter.logInfo(reporter.message("*KEY*", "Loaded rules based break iterator ''{0}''", rulesLocator.toString()));
+                } else
+                    bi = BreakIterator.getCharacterInstance();
+            } catch (IOException e) {
+            } finally {
+                IOUtil.closeSafely(is);
+            }
+            if (bi != null) {
+                return this.iterator = new LineBreakIterator(bi);
             } else
-                iterator = BreakIterator.getCharacterInstance();
-        } catch (IOException e) {
-        } finally {
-            IOUtil.closeSafely(is);
+                return null;
         }
-        if (iterator != null) {
-            this.iterator = new LineBreakIterator(iterator);
-            return this;
-        } else
-            return null;
     }
 
     private URL getRulesLocator(String name, String extension) {
@@ -108,7 +119,7 @@ public class LineBreaker {
         LineBreaker lb = breakers.get(name);
         if (lb != null)
             return lb;
-        lb = new LineBreaker(name).load();
+        lb = new LineBreaker(name);
         breakers.put(name, lb);
         return lb;
     }

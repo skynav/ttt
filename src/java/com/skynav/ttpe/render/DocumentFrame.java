@@ -34,6 +34,7 @@ import org.w3c.dom.Document;
 
 public interface DocumentFrame extends Frame {
     Document getDocument();
+    void clearDocument();
     Map<String,String> getPrefixes();
     Set<QName> getStartExclusions();
     Set<QName> getEndExclusions();

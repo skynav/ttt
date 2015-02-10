@@ -55,20 +55,23 @@ import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.Color;
+import com.skynav.ttv.app.InvalidOptionUsageException;
+import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttv.util.Namespaces;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.util.Colors;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
 
 public class SVGRenderProcessor extends RenderProcessor {
 
-    public static final RenderProcessor PROCESSOR               = new SVGRenderProcessor();
-
-    private static final String PROCESSOR_NAME                  = "svg";
+    public static final String NAME                             = "svg";
 
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
+        { "svg-background",             "COLOR",    "paint background of specified color into root region (default: transparent)" },
+        { "svg-decorate-regions",       "",         "decorate regions with border, etc., for debugging purposes" },
     };
     private static final Map<String,OptionSpecification> longOptions;
     static {
@@ -82,16 +85,25 @@ public class SVGRenderProcessor extends RenderProcessor {
     public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
     public static final MessageFormat transformFormatter1      = new MessageFormat("translate({0,number,#.####},{1,number,#.####})");
 
+    // options state
+    @SuppressWarnings("unused")
+    private boolean decorateRegions;
+    private String backgroundOption;
+
+    // derived options state
+    private Color background;
+
     // render state
     private double xCurrent;
     private double yCurrent;
 
-    public SVGRenderProcessor() {
+    public SVGRenderProcessor(TransformerContext context) {
+        super(context);
     }
 
     @Override
     public String getName() {
-        return PROCESSOR_NAME;
+        return NAME;
     }
 
     @Override
@@ -100,11 +112,43 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     @Override
-    public List<Frame> render(List<Area> areas, TransformerContext context) {
+    public int parseLongOption(String args[], int index) {
+        String option = args[index];
+        assert option.length() > 2;
+        option = option.substring(2);
+        if (option.equals("svg-background")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            backgroundOption = args[++index];
+        } else if (option.equals("svg-decorate-regions")) {
+            decorateRegions = true;
+        } else {
+            return super.parseLongOption(args, index);
+        }
+        return index + 1;
+    }
+
+    @Override
+    public void processDerivedOptions() {
+        super.processDerivedOptions();
+        Color background;
+        if (backgroundOption != null) {
+            com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
+            if (Colors.isColor(backgroundOption, null, context, retColor)) {
+                background = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
+            } else
+                throw new InvalidOptionUsageException("svg-background", "invalid color: " + backgroundOption);
+        } else
+            background = null;
+        this.background = background;
+    }
+
+    @Override
+    public List<Frame> render(List<Area> areas) {
         List<Frame> frames = new java.util.ArrayList<Frame>();
         for (Area a : areas) {
             if (a instanceof CanvasArea) {
-                Frame f = renderCanvas((CanvasArea) a, context);
+                Frame f = renderCanvas((CanvasArea) a);
                 if (f != null)
                     frames.add(f);
             }
@@ -112,14 +156,14 @@ public class SVGRenderProcessor extends RenderProcessor {
         return frames;
     }
 
-    protected Frame renderCanvas(CanvasArea a, TransformerContext context) {
+    protected Frame renderCanvas(CanvasArea a) {
         Reporter reporter = context.getReporter();
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document d = db.newDocument();
-            d.appendChild(renderCanvas(null, a, d, context));
+            d.appendChild(renderCanvas(null, a, d));
             Namespaces.normalize(d, SVGDocumentFrame.prefixes);
             return new SVGDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d);
         } catch (Exception e) {
@@ -128,17 +172,17 @@ public class SVGRenderProcessor extends RenderProcessor {
         return null;
     }
 
-    private Element renderCanvas(Element parent, CanvasArea a, Document d, TransformerContext context) {
+    private Element renderCanvas(Element parent, CanvasArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgSVGEltName);
-        return renderChildren(e, a, d, context);
+        return renderChildren(e, a, d);
     }
 
-    private Element renderViewport(Element parent, ViewportArea a, Document d, TransformerContext context) {
+    private Element renderViewport(Element parent, ViewportArea a, Document d) {
         Element e = parent;
-        return renderChildren(e, a, d, context);
+        return renderChildren(e, a, d);
     }
 
-    private Element renderReference(Element parent, ReferenceArea a, Document d, TransformerContext context) {
+    private Element renderReference(Element parent, ReferenceArea a, Document d) {
         Element eSVG;
         boolean root = isRootReference(a);
         if (root)
@@ -151,20 +195,24 @@ public class SVGRenderProcessor extends RenderProcessor {
             Documents.setAttribute(eSVG, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
         }
         if (root)  {
-            Element eBackground = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
-            Documents.setAttribute(eBackground, SVGDocumentFrame.xAttrName, "0");
-            Documents.setAttribute(eBackground, SVGDocumentFrame.yAttrName, "0");
-            Documents.setAttribute(eBackground, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
-            Documents.setAttribute(eBackground, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
-            Documents.setAttribute(eBackground, SVGDocumentFrame.fillAttrName, "black");
-            eSVG.appendChild(eBackground);
-            return renderChildren(eSVG, a, d, context);
+            if (background != null) {
+                Element eBackground = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+                Documents.setAttribute(eBackground, SVGDocumentFrame.xAttrName, "0");
+                Documents.setAttribute(eBackground, SVGDocumentFrame.yAttrName, "0");
+                Documents.setAttribute(eBackground, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
+                Documents.setAttribute(eBackground, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
+                Documents.setAttribute(eBackground, SVGDocumentFrame.fillAttrName, background.toRGBString());
+                if (background.getAlpha() < 1)
+                    Documents.setAttribute(eBackground, SVGDocumentFrame.opacityAttrName, doubleFormatter.format(new Object[] {background.getAlpha()}));
+                eSVG.appendChild(eBackground);
+            }
+            return renderChildren(eSVG, a, d);
         } else {
             Element eGroup = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
             Point origin = a.getOrigin();
             if (origin != null)
                 Documents.setAttribute(eGroup, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Object[] {origin.getX(),origin.getY()}));
-            eGroup.appendChild(renderChildren(eSVG, a, d, context));
+            eGroup.appendChild(renderChildren(eSVG, a, d));
             return eGroup;
         }
     }
@@ -177,15 +225,15 @@ public class SVGRenderProcessor extends RenderProcessor {
         return true;
     }
 
-    private Element renderBlock(Element parent, BlockArea a, Document d, TransformerContext context) {
+    private Element renderBlock(Element parent, BlockArea a, Document d) {
         Element e = parent;
         double ySaved = yCurrent;
-        Element eBlockGroup = renderChildren(e, a, d, context);
+        Element eBlockGroup = renderChildren(e, a, d);
         yCurrent = ySaved;
         return eBlockGroup;
     }
 
-    private Element renderLine(Element parent, LineArea a, Document d, TransformerContext context) {
+    private Element renderLine(Element parent, LineArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         Color color = a.getColor();
         Documents.setAttribute(e, SVGDocumentFrame.fillAttrName, color.toRGBString());
@@ -202,13 +250,13 @@ public class SVGRenderProcessor extends RenderProcessor {
             Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
         Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Object[] {0, yCurrent + fontSize.getHeight()}));
         double xSaved = xCurrent;
-        e = renderChildren(e, a, d, context);
+        e = renderChildren(e, a, d);
         xCurrent = xSaved;
         yCurrent += a.getBPD();
         return e;
     }
 
-    private Element renderGlyph(Element parent, GlyphArea a, Document d, TransformerContext context) {
+    private Element renderGlyph(Element parent, GlyphArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
         Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {xCurrent}));
         xCurrent += a.getIPD();
@@ -216,20 +264,20 @@ public class SVGRenderProcessor extends RenderProcessor {
         return e;
     }
 
-    private Element renderSpace(Element parent, SpaceArea a, Document d, TransformerContext context) {
+    private Element renderSpace(Element parent, SpaceArea a, Document d) {
         xCurrent += a.getIPD();
         return null;
     }
 
-    private Element renderFiller(Element parent, InlineFillerArea a, Document d, TransformerContext context) {
+    private Element renderFiller(Element parent, InlineFillerArea a, Document d) {
         xCurrent += a.getIPD();
         return null;
     }
 
-    private Element renderChildren(Element parent, Area a, Document d, TransformerContext context) {
+    private Element renderChildren(Element parent, Area a, Document d) {
         if (a instanceof NonLeafAreaNode) {
             for (Area c : ((NonLeafAreaNode) a).getChildren()) {
-                Element e = renderArea(parent, c, d, context);
+                Element e = renderArea(parent, c, d);
                 if (e != null) {
                     if (e != parent) {
                         parent.appendChild(e);
@@ -240,21 +288,21 @@ public class SVGRenderProcessor extends RenderProcessor {
         return parent;
     }
 
-    private Element renderArea(Element parent, Area a, Document d, TransformerContext context) {
+    private Element renderArea(Element parent, Area a, Document d) {
         if (a instanceof GlyphArea)
-            return renderGlyph(parent, (GlyphArea) a, d, context);
+            return renderGlyph(parent, (GlyphArea) a, d);
         else if (a instanceof SpaceArea)
-            return renderSpace(parent, (SpaceArea) a, d, context);
+            return renderSpace(parent, (SpaceArea) a, d);
         else if (a instanceof InlineFillerArea)
-            return renderFiller(parent, (InlineFillerArea) a, d, context);
+            return renderFiller(parent, (InlineFillerArea) a, d);
         else if (a instanceof LineArea)
-            return renderLine(parent, (LineArea) a, d, context);
+            return renderLine(parent, (LineArea) a, d);
         else if (a instanceof ReferenceArea)
-            return renderReference(parent, (ReferenceArea) a, d, context);
+            return renderReference(parent, (ReferenceArea) a, d);
         else if (a instanceof ViewportArea)
-            return renderViewport(parent, (ViewportArea) a, d, context);
+            return renderViewport(parent, (ViewportArea) a, d);
         else if (a instanceof BlockArea)
-            return renderBlock(parent, (BlockArea) a, d, context);
+            return renderBlock(parent, (BlockArea) a, d);
         else
             throw new IllegalArgumentException();
     }

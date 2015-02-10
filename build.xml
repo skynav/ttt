@@ -409,6 +409,7 @@
       <sysproperty key="file.encoding" value="utf-8"/>
       <sysproperty key="java.awt.headless" value="true"/>
       <arg value="@{verbose}"/>
+      <arg value="--show-memory"/>
       <arg value="--external-duration"/>
       <arg value="3600s"/>
       <arg value="--external-extent"/>
@@ -424,6 +425,10 @@
       <arg value="--output-indent"/>
       <arg value="--output-pattern"/>
       <arg value="ttpi{0,number,000000}.png"/>
+      <arg value="--png-background"/>
+      <arg value="black"/>
+      <arg value="--png-pixel-density"/>
+      <arg value="96"/>
       <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-001.xml"/>
     </java>
   </sequential>

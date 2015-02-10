@@ -48,6 +48,10 @@ public abstract class AbstractDocumentFrame extends AbstractFrame implements Doc
         return document;
     }
 
+    public void clearDocument() {
+        document = null;
+    }
+
     public Map<String, String> getPrefixes() {
         return new java.util.HashMap<String,String>();
     }

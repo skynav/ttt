@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.layout;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,12 @@ import com.skynav.ttx.transformer.TransformerOptions;
 
 import com.skynav.ttpe.area.Area;
 
-public abstract class LayoutProcessor implements TransformerOptions, DocumentLayout {
+public abstract class LayoutProcessor implements TransformerOptions, Layout {
 
-    protected LayoutProcessor() {
+    protected TransformerContext context;
+
+    protected LayoutProcessor(TransformerContext context) {
+        this.context = context;
     }
 
     public Collection<OptionSpecification> getShortOptionSpecs() {
@@ -64,25 +68,40 @@ public abstract class LayoutProcessor implements TransformerOptions, DocumentLay
 
     public abstract String getName();
 
-    public abstract List<Area> layout(Document d, TransformerContext context);
+    public abstract List<Area> layout(Document d);
 
-    public static LayoutProcessor getDefaultProcessor() {
-        return BasicLayoutProcessor.PROCESSOR;
-    }
+    public abstract void clear();
 
-    private static Map<String,LayoutProcessor> processorMap;
+    private static Map<String,Class<? extends LayoutProcessor>> processorMap;
 
     static {
-        processorMap = new java.util.TreeMap<String,LayoutProcessor>();
-        processorMap.put(BasicLayoutProcessor.PROCESSOR.getName(), BasicLayoutProcessor.PROCESSOR);
+        processorMap = new java.util.TreeMap<String,Class<? extends LayoutProcessor>>();
+        processorMap.put(BasicLayoutProcessor.NAME, BasicLayoutProcessor.class);
     }
 
     public static Set<String> getProcessorNames() {
         return processorMap.keySet();
     }
 
-    public static LayoutProcessor getProcessor(String name) {
-        return processorMap.get(name);
+    public static LayoutProcessor getProcessor(String name, TransformerContext context) {
+        Class<? extends LayoutProcessor> cls = processorMap.get(name);
+        if (cls != null) {
+            try {
+                Constructor<? extends LayoutProcessor> constructor = cls.getDeclaredConstructor(new Class<?>[] { TransformerContext.class });
+                return constructor.newInstance(new Object[] { context });
+            } catch (Exception e) {
+                return null;
+            }
+        } else
+            return null;
+    }
+
+    public static String getDefaultName() {
+        return BasicLayoutProcessor.NAME;
+    }
+
+    public static LayoutProcessor getDefaultProcessor(TransformerContext context) {
+        return getProcessor(getDefaultName(), context);
     }
 
 }

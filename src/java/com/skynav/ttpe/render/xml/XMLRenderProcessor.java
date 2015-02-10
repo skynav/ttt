@@ -62,13 +62,11 @@ import com.skynav.xml.helpers.Documents;
 
 public class XMLRenderProcessor extends RenderProcessor {
 
-    public static final RenderProcessor PROCESSOR               = new XMLRenderProcessor();
-
-    private static final String PROCESSOR_NAME                  = "xml";
+    public static final String NAME                             = "xml";
 
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
-        { "include-isd-generator",      "",         "include ISD generator information in output, i.e., information about source ISD instance" },
+        { "xml-include-generator",      "",         "include ISD generator information in output, i.e., information about source ISD instance" },
     };
     private static final Map<String,OptionSpecification> longOptions;
     static {
@@ -82,14 +80,15 @@ public class XMLRenderProcessor extends RenderProcessor {
     public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
 
     // options state
-    private boolean includeISDGenerator;
+    private boolean includeGenerator;
 
-    public XMLRenderProcessor() {
+    public XMLRenderProcessor(TransformerContext context) {
+        super(context);
     }
 
     @Override
     public String getName() {
-        return PROCESSOR_NAME;
+        return NAME;
     }
 
     @Override
@@ -102,8 +101,8 @@ public class XMLRenderProcessor extends RenderProcessor {
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("include-isd-generator")) {
-            includeISDGenerator = true;
+        if (option.equals("xml-include-generator")) {
+            includeGenerator = true;
         } else {
             return super.parseLongOption(args, index);
         }
@@ -111,11 +110,11 @@ public class XMLRenderProcessor extends RenderProcessor {
     }
 
     @Override
-    public List<Frame> render(List<Area> areas, TransformerContext context) {
+    public List<Frame> render(List<Area> areas) {
         List<Frame> frames = new java.util.ArrayList<Frame>();
         for (Area a : areas) {
             if (a instanceof CanvasArea) {
-                Frame f = renderCanvas((CanvasArea) a, context);
+                Frame f = renderCanvas((CanvasArea) a);
                 if (f != null)
                     frames.add(f);
             }
@@ -123,14 +122,14 @@ public class XMLRenderProcessor extends RenderProcessor {
         return frames;
     }
 
-    private Frame renderCanvas(CanvasArea a, TransformerContext context) {
+    private Frame renderCanvas(CanvasArea a) {
         Reporter reporter = context.getReporter();
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document d = db.newDocument();
-            d.appendChild(renderCanvas(a, d, context));
+            d.appendChild(renderCanvas(a, d));
             Namespaces.normalize(d, XMLDocumentFrame.prefixes);
             return new XMLDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d);
         } catch (Exception e) {
@@ -139,31 +138,31 @@ public class XMLRenderProcessor extends RenderProcessor {
         return null;
     }
 
-    private Element renderCanvas(CanvasArea a, Document d, TransformerContext context) {
+    private Element renderCanvas(CanvasArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeCanvasEltName);
         for (Area c : a.getChildren()) {
-            e.appendChild(renderArea(c, d, context));
+            e.appendChild(renderArea(c, d));
         }
         return e;
     }
 
-    private Element renderViewport(ViewportArea a, Document d, TransformerContext context) {
+    private Element renderViewport(ViewportArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeViewportEltName);
-        renderCommonAreaAttributes(a, e, false, false, context);
+        renderCommonAreaAttributes(a, e, false, false);
         Extent extent = a.getExtent();
         if (extent != null)
             Documents.setAttribute(e, XMLDocumentFrame.extentAttrName, extent.toString());
         if (a.getClip())
             Documents.setAttribute(e, XMLDocumentFrame.clipAttrName, Boolean.valueOf(a.getClip()).toString().toLowerCase());
         for (Area c : a.getChildren()) {
-            e.appendChild(renderArea(c, d, context));
+            e.appendChild(renderArea(c, d));
         }
         return e;
     }
 
-    private Element renderReference(ReferenceArea a, Document d, TransformerContext context) {
+    private Element renderReference(ReferenceArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeReferenceEltName);
-        renderCommonAreaAttributes(a, e, false, false, context);
+        renderCommonAreaAttributes(a, e, false, false);
         Extent extent = a.getExtent();
         if (extent != null)
             Documents.setAttribute(e, XMLDocumentFrame.extentAttrName, extent.toString());
@@ -179,7 +178,7 @@ public class XMLRenderProcessor extends RenderProcessor {
                 Documents.setAttribute(e, XMLDocumentFrame.wmAttrName, wm.toString().toLowerCase());
         }
         for (Area c : a.getChildren()) {
-            e.appendChild(renderArea(c, d, context));
+            e.appendChild(renderArea(c, d));
         }
         return e;
     }
@@ -192,18 +191,18 @@ public class XMLRenderProcessor extends RenderProcessor {
         return true;
     }
 
-    private Element renderBlock(BlockArea a, Document d, TransformerContext context) {
+    private Element renderBlock(BlockArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeBlockEltName);
-        renderCommonBlockAreaAttributes(a, e, context);
+        renderCommonBlockAreaAttributes(a, e);
         for (Area c : a.getChildren()) {
-            e.appendChild(renderArea(c, d, context));
+            e.appendChild(renderArea(c, d));
         }
         return e;
     }
 
-    private Element renderLine(LineArea a, Document d, TransformerContext context) {
+    private Element renderLine(LineArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeLineEltName);
-        renderCommonBlockAreaAttributes(a, e, context);
+        renderCommonBlockAreaAttributes(a, e);
         if (isOverflowed(a)) {
             InlineAlignment alignment = a.getAlignment();
             String align;
@@ -218,7 +217,7 @@ public class XMLRenderProcessor extends RenderProcessor {
             Documents.setAttribute(e, XMLDocumentFrame.overflowAttrName, doubleFormatter.format(new Object[] {a.getOverflow()}));
         }
         for (Area c : a.getChildren()) {
-            e.appendChild(renderArea(c, d, context));
+            e.appendChild(renderArea(c, d));
         }
         return e;
     }
@@ -227,61 +226,61 @@ public class XMLRenderProcessor extends RenderProcessor {
         return a.getOverflow() > 0;
     }
 
-    private Element renderGlyph(GlyphArea a, Document d, TransformerContext context) {
+    private Element renderGlyph(GlyphArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeGlyphsEltName);
-        renderCommonInlineAreaAttributes(a, e, false, context);
+        renderCommonInlineAreaAttributes(a, e, false);
         Documents.setAttribute(e, XMLDocumentFrame.textAttrName, a.getText());
         return e;
     }
 
-    private Element renderSpace(SpaceArea a, Document d, TransformerContext context) {
+    private Element renderSpace(SpaceArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeSpaceEltName);
-        renderCommonInlineAreaAttributes(a, e, false, context);
+        renderCommonInlineAreaAttributes(a, e, false);
         Documents.setAttribute(e, XMLDocumentFrame.textAttrName, escapeWhitespace(a.getText()));
         return e;
     }
 
-    private Element renderFiller(InlineFillerArea a, Document d, TransformerContext context) {
+    private Element renderFiller(InlineFillerArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeFillEltName);
-        renderCommonInlineAreaAttributes(a, e, false, context);
+        renderCommonInlineAreaAttributes(a, e, false);
         return e;
     }
 
-    private Element renderArea(Area a, Document d, TransformerContext context) {
+    private Element renderArea(Area a, Document d) {
         if (a instanceof GlyphArea)
-            return renderGlyph((GlyphArea) a, d, context);
+            return renderGlyph((GlyphArea) a, d);
         else if (a instanceof SpaceArea)
-            return renderSpace((SpaceArea) a, d, context);
+            return renderSpace((SpaceArea) a, d);
         else if (a instanceof InlineFillerArea)
-            return renderFiller((InlineFillerArea) a, d, context);
+            return renderFiller((InlineFillerArea) a, d);
         else if (a instanceof LineArea)
-            return renderLine((LineArea) a, d, context);
+            return renderLine((LineArea) a, d);
         else if (a instanceof ReferenceArea)
-            return renderReference((ReferenceArea) a, d, context);
+            return renderReference((ReferenceArea) a, d);
         else if (a instanceof ViewportArea)
-            return renderViewport((ViewportArea) a, d, context);
+            return renderViewport((ViewportArea) a, d);
         else if (a instanceof BlockArea)
-            return renderBlock((BlockArea) a, d, context);
+            return renderBlock((BlockArea) a, d);
         else
             throw new IllegalArgumentException();
     }
 
-    private Element renderCommonInlineAreaAttributes(Area a, Element e, boolean bpdInclude, TransformerContext context) {
-        renderCommonAreaAttributes(a, e, bpdInclude, true, context);
+    private Element renderCommonInlineAreaAttributes(Area a, Element e, boolean bpdInclude) {
+        renderCommonAreaAttributes(a, e, bpdInclude, true);
         return e;
     }
 
-    private Element renderCommonBlockAreaAttributes(Area a, Element e, TransformerContext context) {
-        renderCommonAreaAttributes(a, e, true, true, context);
+    private Element renderCommonBlockAreaAttributes(Area a, Element e) {
+        renderCommonAreaAttributes(a, e, true, true);
         return e;
     }
 
-    private Element renderCommonAreaAttributes(Area a, Element e, boolean bpdInclude, boolean ipdInclude, TransformerContext context) {
+    private Element renderCommonAreaAttributes(Area a, Element e, boolean bpdInclude, boolean ipdInclude) {
         if (bpdInclude)
             Documents.setAttribute(e, XMLDocumentFrame.bpdAttrName, doubleFormatter.format(new Object[] {a.getBPD()}));
         if (ipdInclude)
             Documents.setAttribute(e, XMLDocumentFrame.ipdAttrName, doubleFormatter.format(new Object[] {a.getIPD()}));
-        if (includeISDGenerator) {
+        if (includeGenerator) {
             String ln = (a.getElement() != null) ? a.getElement().getLocalName() : null;
             if (ln != null)
                 Documents.setAttribute(e, XMLDocumentFrame.fromAttrName, ln);

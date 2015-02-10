@@ -37,19 +37,22 @@ import org.apache.fontbox.ttf.OTFParser;
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.util.Characters;
+import com.skynav.ttv.util.Reporter;
 
 public class Font {
 
     private FontKey key;
     private String source;
+    private Reporter reporter;
     private boolean otfLoadFailed;
     private OpenTypeFont otf;
     private CmapSubtable cmapSubtable;
     private NamingTable nameTable;
     
-    public Font(FontKey key, String source) {
+    public Font(FontKey key, String source, Reporter reporter) {
         this.key = key;
         this.source = source;
+        this.reporter = reporter;
     }
 
     public FontKey getKey() {
@@ -136,6 +139,7 @@ public class Font {
                     CmapTable cmap = otf.getCmap();
                     if (cmap != null)
                         cmapSubtable = cmap.getSubtable(CmapTable.PLATFORM_UNICODE, CmapTable.ENCODING_UNICODE_2_0_BMP);
+                    reporter.logInfo(reporter.message("*KEY*", "Loaded font instance ''{0}''", f.getAbsolutePath()));
                 }
             } catch (IOException e) {
             }

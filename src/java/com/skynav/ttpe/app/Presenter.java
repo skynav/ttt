@@ -67,13 +67,9 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.TextTransformer;
 import com.skynav.ttx.transformer.Transformers;
 import com.skynav.ttx.transformer.TransformerContext;
-import com.skynav.ttx.transformer.TransformerException;
 import com.skynav.ttx.transformer.TransformerOptions;
 
 public class Presenter extends TimedTextTransformer {
-
-    private static final LayoutProcessor defaultLayout = LayoutProcessor.getDefaultProcessor();
-    private static final RenderProcessor defaultRenderer = RenderProcessor.getDefaultProcessor();
 
     // banner text
     private static final String title = "Timed Text Presentation Engine (TTPE) [" + Version.CURRENT + "]";
@@ -104,18 +100,19 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private static final String[][] longOptionSpecifications = new String[][] {
-        { "layout",                     "NAME",     "specify layout name (default: " + defaultLayout.getName() + ")" },
+        { "layout",                     "NAME",     "specify layout name (default: " + LayoutProcessor.getDefaultName() + ")" },
         { "output-archive",             "",         "combine output frames into frames archive file" },
         { "output-archive-file",        "NAME",     "specify path of frames archive file" },
         { "output-clean",               "",         "clean (remove) all files matching output pattern in output directory prior to writing output" },
         { "output-directory",           "DIRECTORY","specify path to directory where output is to be written" },
         { "output-encoding",            "ENCODING", "specify character encoding of output (default: " + defaultOutputEncoding.name() + ")" },
-        { "output-format",              "NAME",     "specify output format name (default: " + defaultRenderer.getName() + ")" },
+        { "output-format",              "NAME",     "specify output format name (default: " + RenderProcessor.getDefaultName() + ")" },
         { "output-indent",              "",         "indent output (default: no indent)" },
         { "output-pattern",             "PATTERN",  "specify output file name pattern" },
         { "output-retain-frames",       "",         "retain individual frame files after archiving" },
         { "show-formats",               "",         "show output formats" },
         { "show-layouts",               "",         "show built-in layouts" },
+        { "show-memory",                "",         "show memory statistics" },
     };
     private static final Collection<OptionSpecification> longOptions;
     static {
@@ -131,8 +128,11 @@ public class Presenter extends TimedTextTransformer {
     private static final String uriStandardOutput               = uriFileDescriptorScheme + ":" + uriFileDescriptorStandardOut;
     private static final String uriFileScheme                   = "file";
 
+    // defaults state
+    private LayoutProcessor defaultLayout;
+    private RenderProcessor defaultRenderer;
+
     // options state
-    private String layoutName;
     private boolean outputArchive;
     private String outputArchiveFilePath;
     private boolean outputDirectoryClean;
@@ -141,9 +141,9 @@ public class Presenter extends TimedTextTransformer {
     private boolean outputIndent;
     private String outputPattern;
     private boolean outputRetainFrames;
-    private String rendererName;
     private boolean showLayouts;
     private boolean showRenderers;
+    private boolean showMemory;
 
     // derived option state
     private LayoutProcessor layout;
@@ -156,6 +156,8 @@ public class Presenter extends TimedTextTransformer {
     private int outputFileSequence;
 
     public Presenter() {
+        this.defaultLayout = LayoutProcessor.getDefaultProcessor(this);
+        this.defaultRenderer = RenderProcessor.getDefaultProcessor(this);
     }
 
     @Override
@@ -179,41 +181,45 @@ public class Presenter extends TimedTextTransformer {
             return super.getResourceState(key);
     }
 
-
     @Override
     public String[] preProcessOptions(String[] args, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
-        TransformerOptions layoutOptions = null;
-        TransformerOptions rendererOptions = null;
+        LayoutProcessor layout = null;
+        RenderProcessor renderer = null;
         for (int i = 0; i < args.length; ++i) {
             String arg = args[i];
             if (arg.indexOf("--") == 0) {
                 String option = arg.substring(2);
                 if (option.equals("layout")) {
-                    if (i + 1 <= args.length)
-                        layoutOptions = LayoutProcessor.getProcessor(args[++i]);
+                    if (i + 1 <= args.length) {
+                        String layoutName = args[++i];
+                        layout = LayoutProcessor.getProcessor(layoutName, this);
+                        if (layout == null)
+                            throw new InvalidOptionUsageException("layout", "unknown layout: " + layoutName);
+                    }
                 } else if (option.equals("output-format")) {
-                    if (i + 1 <= args.length)
-                        rendererOptions = RenderProcessor.getProcessor(args[++i]);
+                    if (i + 1 <= args.length) {
+                        String rendererName = args[++i];
+                        renderer = RenderProcessor.getProcessor(rendererName, this);
+                        if (renderer == null)
+                            throw new InvalidOptionUsageException("output-format", "unknown format: " + rendererName);
+                    }
                 }
             }
         }
-        if (layoutOptions == null)
-            layoutOptions = defaultLayout;
-        if (rendererOptions == null)
-            rendererOptions = defaultRenderer;
-        TransformerOptions[] transformerOptions = new TransformerOptions[] { layoutOptions, rendererOptions };
+        if (layout == null)
+            layout = defaultLayout;
+        if (renderer == null)
+            renderer = defaultRenderer;
+        this.layout = layout;
+        this.renderer = renderer;
+        TransformerOptions[] transformerOptions = new TransformerOptions[] { layout, renderer };
         populateMergedOptionsMaps(baseShortOptions, baseLongOptions, transformerOptions, shortOptions, longOptions);
         return args;
     }
 
     @Override
-    protected void showBanner(PrintWriter out, String banner) {
-        super.showBanner(out, Presenter.banner);
-    }
-
-    @Override
-    public void showUsage(PrintWriter out) {
-        super.showUsage(out);
+    public void showBanner(PrintWriter out) {
+        showBanner(out, banner);
     }
 
     @Override
@@ -230,11 +236,6 @@ public class Presenter extends TimedTextTransformer {
     }
 
     @Override
-    protected boolean hasLongOption(String option) {
-        return super.hasLongOption(option);
-    }
-
-    @Override
     protected int parseLongOption(String args[], int index) {
         String option = args[index];
         assert option.length() > 2;
@@ -242,7 +243,8 @@ public class Presenter extends TimedTextTransformer {
         if (option.equals("layout")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
-            layoutName = args[++index];
+            else // handled by preProcessOptions
+                ++index;
         } else if (option.equals("output-clean")) {
             outputDirectoryClean = true;
         } else if (option.equals("output-archive")) {
@@ -262,7 +264,8 @@ public class Presenter extends TimedTextTransformer {
         } else if (option.equals("output-format")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
-            rendererName = args[++index];
+            else // handled by preProcessOptions
+                ++index;
         } else if (option.equals("output-indent")) {
             outputIndent = true;
         } else if (option.equals("output-pattern")) {
@@ -275,6 +278,8 @@ public class Presenter extends TimedTextTransformer {
             showRenderers = true;
         } else if (option.equals("show-layouts")) {
             showLayouts = true;
+        } else if (option.equals("show-memory")) {
+            showMemory = true;
         } else {
             return super.parseLongOption(args, index);
         }
@@ -282,26 +287,9 @@ public class Presenter extends TimedTextTransformer {
     }
 
     @Override
-    protected boolean hasShortOption(String option) {
-        return super.hasShortOption(option);
-    }
-
-    @Override
-    protected int parseShortOption(String args[], int index) {
-        return super.parseShortOption(args, index);
-    }
-
-    @Override
     public void processDerivedOptions() {
         super.processDerivedOptions();
-        LayoutProcessor layout;
-        if (layoutName != null) {
-            layout = LayoutProcessor.getProcessor(layoutName);
-            if (layout == null)
-                throw new InvalidOptionUsageException("layout", "unknown layout: " + layoutName);
-        } else
-            layout = defaultLayout;
-        this.layout = layout;
+        assert layout != null;
         layout.processDerivedOptions();
         File outputArchiveFile;
         if (outputArchive && (outputArchiveFilePath != null)) {
@@ -339,16 +327,12 @@ public class Presenter extends TimedTextTransformer {
         if (outputPattern == null)
             outputPattern = defaultOutputFileNamePattern;
         this.outputPattern = outputPattern;
-        RenderProcessor renderer;
-        if (rendererName != null) {
-            renderer = RenderProcessor.getProcessor(rendererName);
-            if (renderer == null)
-                throw new InvalidOptionUsageException("output-format", "unknown format: " + rendererName);
-        } else
-            renderer = defaultRenderer;
-        this.renderer = renderer;
+        assert renderer != null;
         renderer.processDerivedOptions();
+        // propagate options to ttx as needed (since we have disabled ttx's directly handling of options)
+        setShowMemory(showMemory);
     }
+
 
     private void showLayouts(PrintWriter out) {
         String defaultLayoutName = defaultLayout.getName();
@@ -381,30 +365,65 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private void performPresentation(String[] args, URI uri, Object root, Object ttxOutput) {
-        assert this.layout != null;
-        assert this.renderer != null;
-        List<Frame> frames = new java.util.ArrayList<Frame>();
-        if (ttxOutput instanceof List<?>) {
-            List<?> documents = (List<?>) ttxOutput;
-            LayoutProcessor lp = this.layout;
-            RenderProcessor rp = this.renderer;
-            for (Object doc : documents)
-                if (doc instanceof Document)
-                    frames.addAll(rp.render(lp.layout((Document) doc, this), this));
+        Reporter reporter = getReporter();
+        long prePresentMemory = 0;
+        long postPresentMemory = 0;
+        if (showMemory) {
+            prePresentMemory = getUsedMemory();
+            reporter.logInfo(reporter.message("*KEY*", "Pre-presentation memory usage: {0}", prePresentMemory));
         }
-        processFrames(uri, frames);
-    }
-
-    private void processFrames(URI uri, List<Frame> frames) {
+        LayoutProcessor lp = this.layout;
+        assert lp != null;
+        RenderProcessor rp = this.renderer;
+        assert rp != null;
         if (outputDirectoryClean)
             cleanOutputDirectory(uri);
         this.outputFileSequence = 0;
-        for (Frame f : frames)
-            writeFrame(uri, f);
+        List<Frame> frames = new java.util.ArrayList<Frame>();
+        if (ttxOutput instanceof List<?>) {
+            List<?> documents = (List<?>) ttxOutput;
+            while (!documents.isEmpty()) {
+                Object doc = documents.remove(0);
+                if (doc instanceof Document) {
+                    long preRenderMemory = 0;
+                    long postRenderMemory = 0;
+                    if (showMemory) {
+                        preRenderMemory = getUsedMemory();
+                        reporter.logInfo(reporter.message("*KEY*", "Pre-render memory usage: {0}", preRenderMemory));
+                    }
+                    List<Frame> documentFrames = rp.render(lp.layout((Document) doc));
+                    if (showMemory) {
+                        postRenderMemory = getUsedMemory();
+                        reporter.logInfo(reporter.message("*KEY*", "Post-render memory usage: {0}, delta: {1}", postRenderMemory, postRenderMemory - preRenderMemory));
+                    }
+                    long preWriteMemory = 0;
+                    long postWriteMemory = 0;
+                    if (showMemory) {
+                        preWriteMemory = getUsedMemory();
+                        reporter.logInfo(reporter.message("*KEY*", "Pre-write memory usage: {0}", preWriteMemory));
+                    }
+                    while (!documentFrames.isEmpty()) {
+                        Frame f = documentFrames.remove(0);
+                        if (writeFrame(uri, f))
+                            frames.add(f);
+                    }
+                    if (showMemory) {
+                        postWriteMemory = getUsedMemory();
+                        reporter.logInfo(reporter.message("*KEY*", "Post-write memory usage: {0}, delta: {1}", postWriteMemory, postWriteMemory - preWriteMemory));
+                    }
+                }
+            }
+            rp.clear();
+            lp.clear();
+        }
         if (outputArchive)
             archiveFrames(uri, frames, outputArchiveFile);
         if (outputArchive && !outputRetainFrames)
             removeFrameFiles(frames);
+        if (showMemory) {
+            postPresentMemory = getUsedMemory();
+            reporter.logInfo(reporter.message("*KEY*", "Post-presentation memory usage: {0}, delta: {1}", postPresentMemory, postPresentMemory - prePresentMemory));
+        }
     }
 
     private void cleanOutputDirectory(URI uri) {
@@ -414,13 +433,11 @@ public class Presenter extends TimedTextTransformer {
         if (directory.exists()) {
             reporter.logInfo(reporter.message("*KEY*", "Cleaning TTPE artifacts from output directory ''{0}''...", directory.getPath()));
             for (File f : directory.listFiles()) {
-                String name = f.getName();
-                if (name.indexOf("ttpa") != 0)
-                    continue;
-                else if (name.indexOf(".xml") != (name.length() - 4))
-                    continue;
-                else if (!f.delete())
-                    throw new TransformerException("unable to clean output directory: can't delete: '" + name + "'");
+                String path = f.getAbsolutePath();
+                if (f.delete())
+                    reporter.logInfo(reporter.message("*KEY*", "Deleted TTPE artifact ''{0}''.", path));
+                else
+                    reporter.logWarning(reporter.message("*KEY*", "Failed to delete TTPE artifact ''{0}''.", path));
             }
         }
     }
@@ -462,6 +479,7 @@ public class Presenter extends TimedTextTransformer {
                 try { bw.close(); } catch (IOException e) {}
             }
             IOUtil.closeSafely(bos);
+            f.clearDocument(); // enable GC on frame's document
         }
         return !fail && (reporter.getResourceErrors() == 0);
     }
@@ -495,6 +513,7 @@ public class Presenter extends TimedTextTransformer {
             reporter.logError(e);
         } finally {
             IOUtil.closeSafely(bos);
+            i.clearData(); // enable GC on images's data
         }
         return !fail && (reporter.getResourceErrors() == 0);
     }
@@ -580,7 +599,7 @@ public class Presenter extends TimedTextTransformer {
             ZipEntry ze = new ZipEntry(manifest.getName());
             ze.setTime(now.getTime());
             zos.putNextEntry(ze);
-            manifest.write(zos, frames, rendererName, outputEncoding, outputIndent, this);
+            manifest.write(zos, frames, renderer.getName(), outputEncoding, outputIndent, this);
             zos.closeEntry();
         } catch (IOException e) {
         }

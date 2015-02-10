@@ -32,6 +32,7 @@ import java.util.Map;
 
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttv.util.Reporter;
 
 public class FontCache {
 
@@ -40,12 +41,14 @@ public class FontCache {
     private boolean loaded;
     private List<FontSpecification> fontSpecifications;
     private Map<FontKey,Font> instances;
+    private Reporter reporter;
 
-    public FontCache(File fontSpecificationDirectory, List<File> fontSpecificationFiles) {
+    public FontCache(File fontSpecificationDirectory, List<File> fontSpecificationFiles, Reporter reporter) {
         this.fontSpecificationDirectory = fontSpecificationDirectory;
         if (fontSpecificationFiles != null)
             this.fontSpecificationFiles = new java.util.ArrayList<File>(fontSpecificationFiles);
         this.instances = new java.util.HashMap<FontKey,Font>();
+        this.reporter = reporter;
     }
     
     public Font getDefaultFont(Axis axis, Extent size) {
@@ -66,7 +69,7 @@ public class FontCache {
     private Font create(FontKey key) {
         FontSpecification fs = findSpecification(key);
         if (fs != null)
-            return new Font(key, fs.source);
+            return new Font(key, fs.source, reporter);
         else
             return null;
     }
@@ -89,6 +92,10 @@ public class FontCache {
         return this;
     }
 
+    public void clear() {
+        instances.clear();
+    }
+
     private void load() {
         if (fontSpecificationDirectory != null) {
             assert fontSpecificationDirectory.exists();
@@ -105,7 +112,7 @@ public class FontCache {
             }
         }
         if (fontSpecificationFiles != null) {
-            fontSpecifications = FontLoader.load(fontSpecificationFiles);
+            fontSpecifications = FontLoader.load(fontSpecificationFiles, reporter);
         }
         loaded = true;
     }

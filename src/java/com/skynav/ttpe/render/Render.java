@@ -27,11 +27,10 @@ package com.skynav.ttpe.render;
 
 import java.util.List;
 
-import com.skynav.ttx.transformer.TransformerContext;
-
 import com.skynav.ttpe.area.Area;
 
 public interface Render {
     String getName();
-    List<Frame> render(List<Area> areas, TransformerContext context);
+    List<Frame> render(List<Area> areas);
+    void clear();
 }

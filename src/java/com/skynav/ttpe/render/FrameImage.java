@@ -34,6 +34,7 @@ public interface FrameImage {
     Extent getExtent();
     Point getOrigin();
     byte[] getData();
+    void clearData();
     File getFile();
     void setFile(File file);
 }

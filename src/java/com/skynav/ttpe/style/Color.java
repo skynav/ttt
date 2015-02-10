@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.style;
 
+import java.awt.Paint;
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -92,6 +93,10 @@ public class Color {
 
     public double getAlpha() {
         return alpha;
+    }
+
+    public Paint getPaint() {
+        return new java.awt.Color((float) red, (float) green, (float) blue, (float) alpha);
     }
 
     public String toRGBString() {

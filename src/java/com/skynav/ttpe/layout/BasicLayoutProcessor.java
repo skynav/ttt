@@ -50,6 +50,7 @@ import com.skynav.ttpe.text.ParagraphCollector;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttx.transformer.TransformerContext;
 
 import com.skynav.xml.helpers.Documents;
@@ -58,10 +59,10 @@ import static com.skynav.ttpe.layout.Constants.*;
 
 public class BasicLayoutProcessor extends LayoutProcessor {
 
-    public static final String PROCESSOR_NAME                   = "basic";
-    public static final LayoutProcessor PROCESSOR               = new BasicLayoutProcessor();
+    public static final String NAME                             = "basic";
 
     public static final String defaultLineBreakerName           = "uax14";
+    public static final String defaultCharacterBreakerName      = "scalar";
 
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
@@ -81,18 +82,20 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private String fontSpecificationDirectoryPath;
     private List<String> fontSpecificationFileNames;
     private String lineBreakerName;
+    private String charBreakerName;
 
     // derived state
     private FontCache fontCache;
-    private LineBreakIterator breakIterator;
-    private LineBreakIterator characterIterator;
+    private LineBreaker lineBreaker;
+    private LineBreaker charBreaker;
 
-    protected BasicLayoutProcessor() {
+    protected BasicLayoutProcessor(TransformerContext context) {
+        super(context);
     }
 
     @Override
     public String getName() {
-        return PROCESSOR_NAME;
+        return NAME;
     }
 
     @Override
@@ -149,21 +152,24 @@ public class BasicLayoutProcessor extends LayoutProcessor {
                 }
             }
         }
-        this.fontCache = new FontCache(fontSpecificationDirectory, fontSpecificationFiles);
+        Reporter reporter = context.getReporter();
+        this.fontCache = new FontCache(fontSpecificationDirectory, fontSpecificationFiles, reporter);
         if (lineBreakerName == null)
             lineBreakerName = defaultLineBreakerName;
         LineBreaker lb = LineBreaker.getInstance(lineBreakerName);
-        this.breakIterator = (lb != null) ? lb.getIterator() : null;
-        LineBreaker cb = LineBreaker.getInstance(null);
-        this.characterIterator = (cb != null) ? cb.getIterator() : null;
+        this.lineBreaker = lb;
+        if (charBreakerName == null)
+            charBreakerName = defaultCharacterBreakerName;
+        LineBreaker cb = LineBreaker.getInstance(charBreakerName);
+        this.charBreaker = cb;
     }
 
     @Override
-    public List<Area> layout(Document d, TransformerContext context) {
+    public List<Area> layout(Document d) {
         if (d != null) {
             Element root = d.getDocumentElement();
             if (root != null) {
-                LayoutState ls = makeLayoutState(context);
+                LayoutState ls = makeLayoutState();
                 if (isElement(root, isdSequenceElementName))
                     return layoutISDSequence(root, ls);
                 else if (isElement(root, isdInstanceElementName))
@@ -173,16 +179,37 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         return new java.util.ArrayList<Area>();
     }
 
-    protected LayoutState makeLayoutState(TransformerContext context) {
-        return initializeLayoutState(createLayoutState(context));
+    @Override
+    public void clear() {
+        if (fontCache != null)
+            fontCache.clear();
+        if (lineBreaker != null)
+            lineBreaker.clear();
+        if (charBreaker != null)
+             charBreaker.clear();
     }
 
-    protected LayoutState createLayoutState(TransformerContext context) {
+
+    protected LayoutState makeLayoutState() {
+        return initializeLayoutState(createLayoutState());
+    }
+
+    protected LayoutState createLayoutState() {
         return new BasicLayoutState(context);
     }
 
     protected LayoutState initializeLayoutState(LayoutState ls) {
-        return ls.initialize(fontCache, breakIterator, characterIterator);
+        return ls.initialize(fontCache, getLineBreakIterator(), getCharacterBreakIterator());
+    }
+
+    private LineBreakIterator getLineBreakIterator() {
+        LineBreaker lb = lineBreaker;
+        return (lb != null) ? lb.getIterator(context.getReporter()) : null;
+    }
+
+    private LineBreakIterator getCharacterBreakIterator() {
+        LineBreaker cb = charBreaker;
+        return (cb != null) ? cb.getIterator(context.getReporter()) : null;
     }
 
     protected List<Area> layoutISDSequence(Element e, LayoutState ls) {

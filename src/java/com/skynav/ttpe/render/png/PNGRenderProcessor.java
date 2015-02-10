@@ -43,20 +43,29 @@ import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.render.DocumentFrame;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.FrameImage;
-import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.render.svg.SVGRenderProcessor;
+import com.skynav.ttpe.style.Color;
+import com.skynav.ttv.app.InvalidOptionUsageException;
+import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.util.Colors;
 import com.skynav.ttx.transformer.TransformerContext;
 
 public class PNGRenderProcessor extends SVGRenderProcessor {
 
-    public static final RenderProcessor PROCESSOR               = new PNGRenderProcessor();
+    public static final String NAME                             = "png";
 
-    private static final String PROCESSOR_NAME                  = "png";
-
+    // static defaults
+    private static final GenerationMode defaultMode             = GenerationMode.ISD;
+    private static final double defaultDensity                  = 96;
+    
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
+        { "png-background",             "COLOR",    "paint background with specified color (default: transparent)" },
+        { "png-generation-mode",        "MODE",     "specify generation mode, where MODE is isd|region (default: " + defaultMode.name().toLowerCase() + ")" },
+        { "png-pixel-density",          "DENSITY",  "specify pixel density in pixels per inch (default: " +  defaultDensity + "ppi)" },
     };
     private static final Map<String,OptionSpecification> longOptions;
     static {
@@ -66,25 +75,104 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
         }
     }
 
-    public PNGRenderProcessor() {
+    enum GenerationMode {
+        ISD,
+        REGION;
+    }
+
+    // options state
+    private String backgroundOption;
+    private String modeOption;
+    private String pixelDensityOption;
+
+    // derived options state
+    private Color background;
+    @SuppressWarnings("unused")
+    private GenerationMode mode;
+    private double pixelDensity;
+
+    public PNGRenderProcessor(TransformerContext context) {
+        super(context);
     }
 
     @Override
     public String getName() {
-        return PROCESSOR_NAME;
+        return NAME;
     }
 
     @Override
     public Collection<OptionSpecification> getLongOptionSpecs() {
-        return longOptions.values();
+        Collection<OptionSpecification> options = new java.util.TreeSet<OptionSpecification>();
+        options.addAll(super.getLongOptionSpecs());
+        options.addAll(longOptions.values());
+        return options;
+    }
+
+
+    @Override
+    public int parseLongOption(String args[], int index) {
+        String option = args[index];
+        assert option.length() > 2;
+        option = option.substring(2);
+        if (option.equals("png-background")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            backgroundOption = args[++index];
+        } else if (option.equals("png-generation-mode")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            modeOption = args[++index];
+        } else if (option.equals("png-pixel-density")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            pixelDensityOption = args[++index];
+        } else {
+            return super.parseLongOption(args, index);
+        }
+        return index + 1;
     }
 
     @Override
-    protected Frame renderCanvas(CanvasArea a, TransformerContext context) {
-        return renderImage(super.renderCanvas(a, context), context);
+    public void processDerivedOptions() {
+        super.processDerivedOptions();
+        Color background;
+        if (backgroundOption != null) {
+            com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
+            if (Colors.isColor(backgroundOption, null, context, retColor)) {
+                background = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
+            } else
+                throw new InvalidOptionUsageException("png-background", "invalid color: " + backgroundOption);
+        } else
+            background = null;
+        this.background = background;
+        GenerationMode mode;
+        if (modeOption != null) {
+            try {
+                mode = GenerationMode.valueOf(modeOption);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidOptionUsageException("png-generation-mode", "invalid token: " + modeOption);
+            }
+        } else
+            mode = defaultMode;
+        this.mode = mode;
+        double pixelDensity;
+        if (pixelDensityOption != null) {
+            try {
+                pixelDensity = Double.valueOf(pixelDensityOption);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException("png-pixel-density", "invalid density: " + pixelDensityOption);
+            }
+        } else
+            pixelDensity = defaultDensity;
+        this.pixelDensity = pixelDensity;
     }
 
-    private Frame renderImage(Frame frame, TransformerContext context) {
+    @Override
+    protected Frame renderCanvas(CanvasArea a) {
+        return renderImage(super.renderCanvas(a));
+    }
+
+    private Frame renderImage(Frame frame) {
         if (frame instanceof DocumentFrame) {
             Reporter reporter = context.getReporter();
             ByteArrayOutputStream bas = null;
@@ -96,6 +184,10 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
                 bas = new ByteArrayOutputStream();
                 bos = new BufferedOutputStream(bas);
                 TranscoderOutput to = new TranscoderOutput(bos);
+                if (background != null) 
+                    t.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, background.getPaint());
+                if (pixelDensity != 0) 
+                    t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, Float.valueOf((float) (25.4 / pixelDensity)));
                 t.transcode(ti, to);
                 bos.flush();
                 bos.close();
@@ -105,6 +197,8 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
                 reporter.logError(e);
             } catch (TranscoderException e) {
                 reporter.logError(e);
+            } finally {
+                IOUtil.closeSafely(bos);
             }
         }
         return null;

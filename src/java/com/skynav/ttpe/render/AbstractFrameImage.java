@@ -57,6 +57,10 @@ public abstract class AbstractFrameImage implements FrameImage {
         return data;
     }
 
+    public void clearData() {
+        data = null;
+    }
+
     public File getFile() {
         return file;
     }

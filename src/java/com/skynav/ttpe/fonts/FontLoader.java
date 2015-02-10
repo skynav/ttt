@@ -42,35 +42,38 @@ import org.xml.sax.InputSource;
 import org.w3c.dom.Document;
 
 import com.skynav.ttv.util.IOUtil;
+import com.skynav.ttv.util.Reporter;
 
 public class FontLoader {
 
     private FontLoader() {
     }
 
-    public static List<FontSpecification> load(List<File> fontSpecificationFiles) {
+    public static List<FontSpecification> load(List<File> fontSpecificationFiles, Reporter reporter) {
         List<FontSpecification> fontSpecifications = new java.util.ArrayList<FontSpecification>();
         for (File f : fontSpecificationFiles) {
-            fontSpecifications.addAll(load(f));
+            fontSpecifications.addAll(load(f, reporter));
         }
         return fontSpecifications;
     }
 
     private static List<FontSpecification> noFontSpecifications = new java.util.ArrayList<FontSpecification>();
 
-    private static List<FontSpecification> load(File f) {
+    private static List<FontSpecification> load(File f, Reporter reporter) {
         try {
-            return fromFile(f);
+            return fromFile(f, reporter);
         } catch (IOException e) {
             return noFontSpecifications;
         }
     }
 
-    public static List<FontSpecification> fromFile(File f) throws IOException {
+    public static List<FontSpecification> fromFile(File f, Reporter reporter) throws IOException {
         InputStream is = null;
         try {
             is = new FileInputStream(f);
-            return fromStream(is, f.getParentFile().getAbsolutePath()); 
+            List<FontSpecification> specifications = fromStream(is, f.getParentFile().getAbsolutePath()); 
+            reporter.logInfo(reporter.message("*KEY*", "Loaded font specification ''{0}''", f.getAbsolutePath()));
+            return specifications;
         } catch (IOException e) {
             IOUtil.closeSafely(is);
             throw e;

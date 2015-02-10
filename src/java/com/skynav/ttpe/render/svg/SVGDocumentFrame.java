@@ -53,6 +53,7 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     public static final QName fontStyleAttrName                 = new QName("", "font-style");
     public static final QName fontWeightAttrName                = new QName("", "font-weight");
     public static final QName heightAttrName                    = new QName("", "height");
+    public static final QName opacityAttrName                   = new QName("", "opacity");
     public static final QName strokeAttrName                    = new QName("", "stroke");
     public static final QName strokeWidthAttrName               = new QName("", "stroke-width");
     public static final QName transformAttrName                 = new QName("", "transform");

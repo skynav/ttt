@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.render;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,10 @@ import com.skynav.ttx.transformer.TransformerOptions;
 
 public abstract class RenderProcessor implements TransformerOptions, Render {
 
-    protected RenderProcessor() {
+    protected TransformerContext context;
+
+    protected RenderProcessor(TransformerContext context) {
+        this.context = context;
     }
 
     public Collection<OptionSpecification> getShortOptionSpecs() {
@@ -64,27 +68,43 @@ public abstract class RenderProcessor implements TransformerOptions, Render {
 
     public abstract String getName();
 
-    public abstract List<Frame> render(List<Area> areas, TransformerContext context);
+    public abstract List<Frame> render(List<Area> areas);
 
-    public static RenderProcessor getDefaultProcessor() {
-        return XMLRenderProcessor.PROCESSOR;
+    public void clear() {
     }
 
-    private static Map<String,RenderProcessor> processorMap;
+    private static Map<String,Class<? extends RenderProcessor>> processorMap;
 
     static {
-        processorMap = new java.util.TreeMap<String,RenderProcessor>();
-        processorMap.put(PNGRenderProcessor.PROCESSOR.getName(), PNGRenderProcessor.PROCESSOR);
-        processorMap.put(SVGRenderProcessor.PROCESSOR.getName(), SVGRenderProcessor.PROCESSOR);
-        processorMap.put(XMLRenderProcessor.PROCESSOR.getName(), XMLRenderProcessor.PROCESSOR);
+        processorMap = new java.util.TreeMap<String,Class<? extends RenderProcessor>>();
+        processorMap.put(PNGRenderProcessor.NAME, PNGRenderProcessor.class);
+        processorMap.put(SVGRenderProcessor.NAME, SVGRenderProcessor.class);
+        processorMap.put(XMLRenderProcessor.NAME, XMLRenderProcessor.class);
     }
 
     public static Set<String> getProcessorNames() {
         return processorMap.keySet();
     }
 
-    public static RenderProcessor getProcessor(String name) {
-        return processorMap.get(name);
+    public static RenderProcessor getProcessor(String name, TransformerContext context) {
+        Class<? extends RenderProcessor> cls = processorMap.get(name);
+        if (cls != null) {
+            try {
+                Constructor<? extends RenderProcessor> constructor = cls.getDeclaredConstructor(new Class<?>[] { TransformerContext.class });
+                return constructor.newInstance(new Object[] { context });
+            } catch (Exception e) {
+                return null;
+            }
+        } else
+            return null;
+    }
+
+    public static String getDefaultName() {
+        return XMLRenderProcessor.NAME;
+    }
+
+    public static RenderProcessor getDefaultProcessor(TransformerContext context) {
+        return getProcessor(getDefaultName(), context);
     }
 
 }
