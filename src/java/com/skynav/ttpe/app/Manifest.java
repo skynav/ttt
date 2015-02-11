@@ -137,6 +137,8 @@ public class Manifest {
     private Element addImage(Document d, FrameImage i) {
         Element e = Documents.createElement(d, imageEltName);
         Documents.setAttribute(e, sourceAttrName, i.getFile().getName());
+        Documents.setAttribute(e, extentAttrName, i.getExtent().toString());
+        Documents.setAttribute(e, originAttrName, i.getOrigin().toString());
         return e;
     }
 

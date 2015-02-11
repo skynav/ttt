@@ -417,14 +417,13 @@
       <arg value="--font-directory"/>
       <arg value="${ttpe.test.fonts.source.dir}"/>
       <arg value="--output-archive"/>
-      <arg value="--output-clean"/>
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
       <arg value="--output-format"/>
       <arg value="png"/>
       <arg value="--output-indent"/>
-      <arg value="--output-pattern"/>
-      <arg value="ttpi{0,number,000000}.png"/>
+      <arg value="--png-generation-mode"/>
+      <arg value="region"/>
       <arg value="--png-background"/>
       <arg value="black"/>
       <arg value="--png-pixel-density"/>

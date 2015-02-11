@@ -32,17 +32,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Document;
+
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 
 import com.skynav.ttpe.area.CanvasArea;
-import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
-import com.skynav.ttpe.render.DocumentFrame;
+import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.FrameImage;
+import com.skynav.ttpe.render.svg.SVGDocumentFrame;
 import com.skynav.ttpe.render.svg.SVGRenderProcessor;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttv.app.InvalidOptionUsageException;
@@ -60,6 +62,7 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
     // static defaults
     private static final GenerationMode defaultMode             = GenerationMode.ISD;
     private static final double defaultDensity                  = 96;
+    private static final String defaultOutputFileNamePattern    = "ttpi{0,number,000000}.png";
     
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
@@ -83,11 +86,11 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
     // options state
     private String backgroundOption;
     private String modeOption;
+    private String outputPattern;
     private String pixelDensityOption;
 
     // derived options state
     private Color background;
-    @SuppressWarnings("unused")
     private GenerationMode mode;
     private double pixelDensity;
 
@@ -98,6 +101,11 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public String getOutputPattern() {
+        return outputPattern;
     }
 
     @Override
@@ -114,7 +122,11 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("png-background")) {
+        if (option.equals("output-pattern")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            outputPattern = args[++index];
+        } else if (option.equals("png-background")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             backgroundOption = args[++index];
@@ -135,6 +147,7 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
     @Override
     public void processDerivedOptions() {
         super.processDerivedOptions();
+        // background
         Color background;
         if (backgroundOption != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
@@ -145,16 +158,23 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
         } else
             background = null;
         this.background = background;
+        // (isd generation) mode
         GenerationMode mode;
         if (modeOption != null) {
             try {
-                mode = GenerationMode.valueOf(modeOption);
+                mode = GenerationMode.valueOf(modeOption.toUpperCase());
             } catch (IllegalArgumentException e) {
                 throw new InvalidOptionUsageException("png-generation-mode", "invalid token: " + modeOption);
             }
         } else
             mode = defaultMode;
         this.mode = mode;
+        // output pattern
+        String outputPattern = this.outputPattern;
+        if (outputPattern == null)
+            outputPattern = defaultOutputFileNamePattern;
+        this.outputPattern = outputPattern;
+        // pixel density
         double pixelDensity;
         if (pixelDensityOption != null) {
             try {
@@ -173,33 +193,59 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
     }
 
     private Frame renderImage(Frame frame) {
-        if (frame instanceof DocumentFrame) {
-            Reporter reporter = context.getReporter();
-            ByteArrayOutputStream bas = null;
-            BufferedOutputStream bos = null;
-            try {
-                List<FrameImage> images = new java.util.ArrayList<FrameImage>();
-                PNGTranscoder t = new PNGTranscoder();
-                TranscoderInput ti = new TranscoderInput(((DocumentFrame) frame).getDocument());
-                bas = new ByteArrayOutputStream();
-                bos = new BufferedOutputStream(bas);
-                TranscoderOutput to = new TranscoderOutput(bos);
-                if (background != null) 
-                    t.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, background.getPaint());
-                if (pixelDensity != 0) 
-                    t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, Float.valueOf((float) (25.4 / pixelDensity)));
-                t.transcode(ti, to);
-                bos.flush();
-                bos.close();
-                images.add(new PNGFrameImage(Extent.EMPTY, Point.ZERO, bas.toByteArray()));
-                return new PNGImageFrame(frame.getBegin(), frame.getEnd(), frame.getExtent(), images);
-            } catch (IOException e) {
-                reporter.logError(e);
-            } catch (TranscoderException e) {
-                reporter.logError(e);
-            } finally {
-                IOUtil.closeSafely(bos);
+        if (frame instanceof SVGDocumentFrame) {
+            SVGDocumentFrame frameSVG = (SVGDocumentFrame) frame;
+            Document d = frameSVG.getDocument();
+            Rectangle rectRoot = new Rectangle(Point.ZERO, frameSVG.getExtent());
+            List<Rectangle> regionRects = frameSVG.getRegions();
+            List<FrameImage> images = new java.util.ArrayList<FrameImage>();
+            if ((mode == GenerationMode.ISD) || regionRects.isEmpty()) {
+                FrameImage fi = renderFrameImage(d, rectRoot, null);
+                if (fi != null)
+                    images.add(fi);
+            } else {
+                for (Rectangle rectRegion : regionRects) {
+                    FrameImage fi = renderFrameImage(d, rectRoot, rectRegion);
+                    if (fi != null)
+                        images.add(fi);
+                }
             }
+            return new PNGImageFrame(frame.getBegin(), frame.getEnd(), frame.getExtent(), images);
+        }
+        return null;
+    }
+
+    private FrameImage renderFrameImage(Document d, Rectangle rectRoot, Rectangle rectRegion) {
+        Reporter reporter = context.getReporter();
+        ByteArrayOutputStream bas = null;
+        BufferedOutputStream bos = null;
+        try {
+            PNGTranscoder t = new PNGTranscoder();
+            TranscoderInput ti = new TranscoderInput(d);
+            bas = new ByteArrayOutputStream();
+            bos = new BufferedOutputStream(bas);
+            TranscoderOutput to = new TranscoderOutput(bos);
+            if (rectRegion == null)
+                rectRegion = rectRoot;
+            if (rectRegion != null) {
+                t.addTranscodingHint(PNGTranscoder.KEY_WIDTH, Float.valueOf((float) rectRegion.getWidth()));
+                t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, Float.valueOf((float) rectRegion.getHeight()));
+                t.addTranscodingHint(PNGTranscoder.KEY_AOI, rectRegion.getAWTRectangle());
+            }
+            if (background != null) 
+                t.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, background.getPaint());
+            if (pixelDensity != 0) 
+                t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, Float.valueOf((float) (25.4 / pixelDensity)));
+            t.transcode(ti, to);
+            bos.flush();
+            bos.close();
+            return new PNGFrameImage(rectRegion.getExtent(), rectRegion.getOrigin(), bas.toByteArray());
+        } catch (IOException e) {
+            reporter.logError(e);
+        } catch (TranscoderException e) {
+            reporter.logError(e);
+        } finally {
+            IOUtil.closeSafely(bos);
         }
         return null;
     }

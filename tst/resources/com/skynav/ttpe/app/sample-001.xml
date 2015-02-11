@@ -15,15 +15,14 @@
 <style xml:id="s3" tts:textEmphasis="circle"/>
 </styling>
 <layout>
-<region xml:id="横下" tts:displayAlign="after" tts:extent="768px 96px" tts:origin="256px 552px" tts:textAlign="center"/>
-<region xml:id="縦右"                          tts:extent="60px 432px" tts:origin="1092px 144px" tts:writingMode="tbrl"/>
-<region xml:id="縦左" tts:displayAlign="after" tts:extent="60px 432px" tts:origin="128px 144px" tts:writingMode="tbrl"/>
+<region xml:id="r0" tts:displayAlign="after" tts:extent="768px 90px" tts:origin="256px 352px" tts:textAlign="center"/>
+<region xml:id="r1" tts:displayAlign="after" tts:extent="768px 90px" tts:origin="256px 552px" tts:textAlign="center"/>
 </layout>
 </head>
-<body region="横下" tts:fontFamily="Noto Sans" tts:fontSize="36px" tts:lineHeight="45px">
+<body tts:fontFamily="Noto Sans" tts:fontSize="36px" tts:lineHeight="45px">
 <div>
-<p begin="00:00:21:11" end="00:00:23:13">The quick brown fox<br/>jumps over the lazy dog.</p>
-<p begin="00:01:55:16" end="00:02:00:14">速い茶色のキツネは<br/>のろまなイヌに飛びかかった</p>
+<p begin="00:00:21:11" end="00:00:23:13" region="r0">The quick brown fox<br/>jumps over the lazy dog.</p>
+<p begin="00:00:21:11" end="00:00:23:13" region="r1">速い茶色のキツネは<br/>のろまなイヌに飛びかかった</p>
 </div>
 </body>
 </tt>

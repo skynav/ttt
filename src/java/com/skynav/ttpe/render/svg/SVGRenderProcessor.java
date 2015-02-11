@@ -52,6 +52,7 @@ import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
+import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.Color;
@@ -68,6 +69,9 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     public static final String NAME                             = "svg";
 
+    // static defaults
+    private static final String defaultOutputFileNamePattern    = "ttps{0,number,000000}.svg";
+    
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
         { "svg-background",             "COLOR",    "paint background of specified color into root region (default: transparent)" },
@@ -89,6 +93,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     @SuppressWarnings("unused")
     private boolean decorateRegions;
     private String backgroundOption;
+    private String outputPattern;
 
     // derived options state
     private Color background;
@@ -96,6 +101,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     // render state
     private double xCurrent;
     private double yCurrent;
+    private List<Rectangle> regions;
 
     public SVGRenderProcessor(TransformerContext context) {
         super(context);
@@ -104,6 +110,11 @@ public class SVGRenderProcessor extends RenderProcessor {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public String getOutputPattern() {
+        return outputPattern;
     }
 
     @Override
@@ -116,7 +127,11 @@ public class SVGRenderProcessor extends RenderProcessor {
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("svg-background")) {
+        if (option.equals("output-pattern")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            outputPattern = args[++index];
+        } else if (option.equals("svg-background")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             backgroundOption = args[++index];
@@ -131,6 +146,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     @Override
     public void processDerivedOptions() {
         super.processDerivedOptions();
+        // background
         Color background;
         if (backgroundOption != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
@@ -141,6 +157,11 @@ public class SVGRenderProcessor extends RenderProcessor {
         } else
             background = null;
         this.background = background;
+        // output pattern
+        String outputPattern = this.outputPattern;
+        if (outputPattern == null)
+            outputPattern = defaultOutputFileNamePattern;
+        this.outputPattern = outputPattern;
     }
 
     @Override
@@ -165,7 +186,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             Document d = db.newDocument();
             d.appendChild(renderCanvas(null, a, d));
             Namespaces.normalize(d, SVGDocumentFrame.prefixes);
-            return new SVGDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d);
+            return new SVGDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d, regions);
         } catch (Exception e) {
             reporter.logError(e);
         }
@@ -210,8 +231,11 @@ public class SVGRenderProcessor extends RenderProcessor {
         } else {
             Element eGroup = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
             Point origin = a.getOrigin();
-            if (origin != null)
+            if (origin != null) {
                 Documents.setAttribute(eGroup, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Object[] {origin.getX(),origin.getY()}));
+                if (extent != null)
+                    addRegion(origin, extent);
+            }
             eGroup.appendChild(renderChildren(eSVG, a, d));
             return eGroup;
         }
@@ -223,6 +247,12 @@ public class SVGRenderProcessor extends RenderProcessor {
                 return false;
         }
         return true;
+    }
+
+    private void addRegion(Point origin, Extent extent) {
+        if (regions == null)
+            regions = new java.util.ArrayList<Rectangle>();
+        regions.add(new Rectangle(origin, extent));
     }
 
     private Element renderBlock(Element parent, BlockArea a, Document d) {

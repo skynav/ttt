@@ -89,7 +89,7 @@ public class Presenter extends TimedTextTransformer {
 
     private static final String DEFAULT_OUTPUT_ENCODING         = "utf-8";
     private static Charset defaultOutputEncoding;
-    private static final String defaultOutputFileNamePattern    = "ttpa-{0,number,0000}.xml";
+    private static final String defaultOutputFileNamePattern    = "ttpe-{0,number,0000}.dat";
 
     static {
         try {
@@ -103,7 +103,6 @@ public class Presenter extends TimedTextTransformer {
         { "layout",                     "NAME",     "specify layout name (default: " + LayoutProcessor.getDefaultName() + ")" },
         { "output-archive",             "",         "combine output frames into frames archive file" },
         { "output-archive-file",        "NAME",     "specify path of frames archive file" },
-        { "output-clean",               "",         "clean (remove) all files matching output pattern in output directory prior to writing output" },
         { "output-directory",           "DIRECTORY","specify path to directory where output is to be written" },
         { "output-encoding",            "ENCODING", "specify character encoding of output (default: " + defaultOutputEncoding.name() + ")" },
         { "output-format",              "NAME",     "specify output format name (default: " + RenderProcessor.getDefaultName() + ")" },
@@ -135,7 +134,6 @@ public class Presenter extends TimedTextTransformer {
     // options state
     private boolean outputArchive;
     private String outputArchiveFilePath;
-    private boolean outputDirectoryClean;
     private String outputDirectoryPath;
     private String outputEncodingName;
     private boolean outputIndent;
@@ -158,6 +156,10 @@ public class Presenter extends TimedTextTransformer {
     public Presenter() {
         this.defaultLayout = LayoutProcessor.getDefaultProcessor(this);
         this.defaultRenderer = RenderProcessor.getDefaultProcessor(this);
+    }
+
+    protected String getOutputPattern() {
+        return outputPattern;
     }
 
     @Override
@@ -245,8 +247,6 @@ public class Presenter extends TimedTextTransformer {
                 throw new MissingOptionArgumentException("--" + option);
             else // handled by preProcessOptions
                 ++index;
-        } else if (option.equals("output-clean")) {
-            outputDirectoryClean = true;
         } else if (option.equals("output-archive")) {
             outputArchive = true;
         } else if (option.equals("output-archive-file")) {
@@ -288,9 +288,13 @@ public class Presenter extends TimedTextTransformer {
 
     @Override
     public void processDerivedOptions() {
+        // first handle ttx derived options, then layout, then renderer
         super.processDerivedOptions();
         assert layout != null;
         layout.processDerivedOptions();
+        assert renderer != null;
+        renderer.processDerivedOptions();
+        // output archive file
         File outputArchiveFile;
         if (outputArchive && (outputArchiveFilePath != null)) {
             outputArchiveFile = new File(outputArchiveFilePath);
@@ -299,6 +303,7 @@ public class Presenter extends TimedTextTransformer {
         } else
             outputArchiveFile = null;
         this.outputArchiveFile = outputArchiveFile;
+        // output directory
         File outputDirectory;
         if (outputDirectoryPath != null) {
             outputDirectory = new File(outputDirectoryPath);
@@ -309,6 +314,7 @@ public class Presenter extends TimedTextTransformer {
         } else
             outputDirectory = new File(".");
         this.outputDirectory = outputDirectory;
+        // output encoding
         Charset outputEncoding;
         if (outputEncodingName != null) {
             try {
@@ -323,13 +329,14 @@ public class Presenter extends TimedTextTransformer {
         if (outputEncoding == null)
             outputEncoding = defaultOutputEncoding;
         this.outputEncoding = outputEncoding;
-        String outputPattern = this.outputPattern;
+        // output pattern
+        String outputPattern = renderer.getOutputPattern();
+        if (outputPattern == null)
+            outputPattern = this.outputPattern;
         if (outputPattern == null)
             outputPattern = defaultOutputFileNamePattern;
         this.outputPattern = outputPattern;
-        assert renderer != null;
-        renderer.processDerivedOptions();
-        // propagate options to ttx as needed (since we have disabled ttx's directly handling of options)
+        // show memory
         setShowMemory(showMemory);
     }
 
@@ -376,8 +383,6 @@ public class Presenter extends TimedTextTransformer {
         assert lp != null;
         RenderProcessor rp = this.renderer;
         assert rp != null;
-        if (outputDirectoryClean)
-            cleanOutputDirectory(uri);
         this.outputFileSequence = 0;
         List<Frame> frames = new java.util.ArrayList<Frame>();
         if (ttxOutput instanceof List<?>) {
@@ -426,22 +431,6 @@ public class Presenter extends TimedTextTransformer {
         }
     }
 
-    private void cleanOutputDirectory(URI uri) {
-        Reporter reporter = getReporter();
-        String resourceName = getResourceNameComponent(uri);
-        File directory = new File(outputDirectory, resourceName);
-        if (directory.exists()) {
-            reporter.logInfo(reporter.message("*KEY*", "Cleaning TTPE artifacts from output directory ''{0}''...", directory.getPath()));
-            for (File f : directory.listFiles()) {
-                String path = f.getAbsolutePath();
-                if (f.delete())
-                    reporter.logInfo(reporter.message("*KEY*", "Deleted TTPE artifact ''{0}''.", path));
-                else
-                    reporter.logWarning(reporter.message("*KEY*", "Failed to delete TTPE artifact ''{0}''.", path));
-            }
-        }
-    }
-
     private boolean writeFrame(URI uri, Frame f) {
         if (f instanceof DocumentFrame)
             return writeDocumentFrame(uri, (DocumentFrame) f);
@@ -469,7 +458,7 @@ public class Presenter extends TimedTextTransformer {
                 Transformer t = new TextTransformer(outputEncoding.name(), outputIndent, prefixes, startTagExclusions, endTagExclusions);
                 t.transform(source, result);
                 File outputFile = retOutputFile[0];
-                reporter.logInfo(reporter.message("*KEY*", "Wrote TTPA ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+                reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
                 f.setFile(outputFile);
             }
         } catch (Exception e) {
@@ -506,7 +495,7 @@ public class Presenter extends TimedTextTransformer {
             if ((bos = getFrameOutputStream(uri, retOutputFile)) != null) {
                 bos.write(data);
                 File outputFile = retOutputFile[0];
-                reporter.logInfo(reporter.message("*KEY*", "Wrote TTPI ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+                reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
                 i.setFile(outputFile);
             }
         } catch (Exception e) {
@@ -644,19 +633,40 @@ public class Presenter extends TimedTextTransformer {
         try {
             Map<String,File> directories = new java.util.HashMap<String,File>();
             for (Frame f : frames) {
-                File fFile = f.getFile();
-                if (fFile != null) {
-                    if (fFile.delete()) {
-                        File d = fFile.getParentFile();
-                        directories.put(d.getCanonicalPath(), d);
+                if (f instanceof DocumentFrame) {
+                    removeFrameFile(f.getFile(), directories);
+                } else if (f instanceof ImageFrame) {
+                    if (f.hasImages()) {
+                        for (FrameImage fi : f.getImages())
+                            removeFrameFile(fi.getFile(), directories);
                     }
                 }
             }
-            for (File fDirectory : directories.values()) {
-                if (fDirectory.list().length == 0)
-                    fDirectory.delete();
-            }
+            removeFrameDirectories(directories);
         } catch (IOException e) {
+            getReporter().logError(e);
+        }
+    }
+
+    private void removeFrameFile(File f, Map<String,File> directories) throws IOException {
+        Reporter reporter = getReporter();
+        if (f != null) {
+            if (f.delete()) {
+                reporter.logInfo(reporter.message("*KEY*", "Removed TTPE artifact ''{0}''.", f.getAbsolutePath()));
+                File d = f.getParentFile();
+                directories.put(d.getCanonicalPath(), d);
+            }
+        }
+    }
+
+    private void removeFrameDirectories(Map<String,File> directories) {
+        Reporter reporter = getReporter();
+        for (File d : directories.values()) {
+            if (d.list().length == 0) {
+                if (d.delete()) {
+                    reporter.logInfo(reporter.message("*KEY*", "Removed TTPE artifact directory ''{0}''.", d.getAbsolutePath()));
+                }
+            }
         }
     }
 

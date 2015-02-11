@@ -47,6 +47,11 @@ public abstract class RenderProcessor implements TransformerOptions, Render {
         this.context = context;
     }
 
+    public String getOutputPattern() {
+        return null;
+    }
+
+    @Override
     public Collection<OptionSpecification> getShortOptionSpecs() {
         return new java.util.ArrayList<OptionSpecification>();
     }
@@ -74,7 +79,6 @@ public abstract class RenderProcessor implements TransformerOptions, Render {
     }
 
     private static Map<String,Class<? extends RenderProcessor>> processorMap;
-
     static {
         processorMap = new java.util.TreeMap<String,Class<? extends RenderProcessor>>();
         processorMap.put(PNGRenderProcessor.NAME, PNGRenderProcessor.class);

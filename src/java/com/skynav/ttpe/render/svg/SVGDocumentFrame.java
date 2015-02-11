@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.render.svg;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.render.AbstractDocumentFrame;
 import com.skynav.xml.helpers.XML;
 
@@ -79,8 +81,15 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
         startTagIndentExclusions.add(svgTextEltName);
     }
 
-    public SVGDocumentFrame(double begin, double end, Extent extent, Document d) {
+    private List<Rectangle> regions;
+
+    public SVGDocumentFrame(double begin, double end, Extent extent, Document d, List<Rectangle> regions) {
         super(begin, end, extent, d);
+        this.regions = regions;
+    }
+
+    public List<Rectangle> getRegions() {
+        return regions;
     }
 
     @Override
