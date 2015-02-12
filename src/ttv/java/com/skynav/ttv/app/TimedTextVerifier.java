@@ -349,6 +349,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void resetReporter() {
+        reporter.flush();
         setReporter(Reporters.getDefaultReporter(), null, null, false, true);
     }
 
@@ -519,6 +520,13 @@ public class TimedTextVerifier implements VerifierContext {
             return resourceState.get(key);
         else
             return null;
+    }
+
+    @Override
+    public Object extractResourceState(String key) {
+        Object state = getResourceState(key);
+        setResourceState(key, null);
+        return state;
     }
 
     private int parseLongOption(String args[], int index, OptionProcessor optionProcessor) {

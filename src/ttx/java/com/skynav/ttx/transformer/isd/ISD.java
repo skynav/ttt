@@ -26,6 +26,8 @@
 package com.skynav.ttx.transformer.isd;
 
 import java.io.BufferedWriter;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,7 +50,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -67,6 +68,7 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.util.ComparableQName;
+import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Namespaces;
 import com.skynav.ttv.util.PostVisitor;
 import com.skynav.ttv.util.PreVisitor;
@@ -248,7 +250,7 @@ public class ISD {
             writeISDSequence(root, context, intervals, out);
         }
 
-        void populateContext(TransformerContext context) {
+        private void populateContext(TransformerContext context) {
             context.setResourceState(ResourceState.isdHelper.name(), TTMLHelper.makeInstance(context.getModel().getTTMLVersion()));
             context.setResourceState(ResourceState.isdParents.name(), new java.util.HashMap<Object, Object>());
             context.setResourceState(ResourceState.isdTimingStates.name(), new java.util.HashMap<Object, TimingState>());
@@ -386,34 +388,50 @@ public class ISD {
 
         private void writeISDSequence(Object root, TransformerContext context, Set<TimeInterval> intervals, OutputStream out) {
             Reporter reporter = context.getReporter();
+            boolean suppressOutput = (Boolean) context.getResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name());
+            if (!suppressOutput && outputDirectoryClean)
+                cleanOutputDirectory(outputDirectory, context);
             try {
                 Model model = context.getModel();
                 JAXBContext jc = JAXBContext.newInstance(model.getJAXBContextPath());
-                Marshaller m = jc.createMarshaller();
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 dbf.setNamespaceAware(true);
                 DocumentBuilder db = dbf.newDocumentBuilder();
-                List<Document> isdDocuments = new java.util.ArrayList<Document>();
+                Document doc = db.newDocument();
+                Marshaller m = jc.createMarshaller();
+                m.marshal(context.getBindingElement(context.getXMLNode(root)), doc);
+                List<Object> isdSequence = new java.util.ArrayList<Object>();
                 for (TimeInterval interval : intervals) {
-                    Document doc = db.newDocument();
-                    m.marshal(context.getBindingElement(context.getXMLNode(root)), doc);
-                    markIdAttributes(doc, context);
-                    pruneIntervals(doc, context, interval);
-                    pruneRegions(doc, context);
-                    pruneTimingAndRegionAttributes(doc, context);
-                    generateISDWrapper(doc, interval, context);
-                    pruneISDExclusions(doc, context);
-                    Namespaces.normalize(doc, model.getNormalizedPrefixes());
-                    if (hasUsableContent(doc, context)) {
-                        isdDocuments.add(doc);
+                    Document docCopy = copyDocument(doc, db);
+                    markIdAttributes(docCopy, context);
+                    pruneIntervals(docCopy, context, interval);
+                    pruneRegions(docCopy, context);
+                    pruneTimingAndRegionAttributes(docCopy, context);
+                    generateISDWrapper(docCopy, interval, context);
+                    pruneISDExclusions(docCopy, context);
+                    Namespaces.normalize(docCopy, model.getNormalizedPrefixes());
+                    if (hasUsableContent(docCopy, context)) {
+                        Object isd = writeISD(docCopy, isdSequence.size() + 1, suppressOutput, context);
+                        if (isd != null)
+                            isdSequence.add(isd);
                     }
                 }
-                writeISDSequence(isdDocuments, context, out);
+                if (suppressOutput) {
+                    reporter.logInfo(reporter.message("*KEY*", "Suppressing ''{0}'' transformer output serialization.", getName()));
+                    context.setResourceState(TransformerContext.ResourceState.ttxOutput.name(), isdSequence);
+                }
             } catch (JAXBException e) {
                 reporter.logError(e);
             } catch (ParserConfigurationException e) {
                 reporter.logError(e);
             }
+        }
+
+        private static Document copyDocument(Document doc, DocumentBuilder db) {
+            Document docCopy = db.newDocument();
+            Node rootCopy = doc.getDocumentElement().cloneNode(true);
+            docCopy.appendChild(docCopy.adoptNode(rootCopy));
+            return docCopy;
         }
 
         private static void markIdAttributes(Document doc, TransformerContext context) {
@@ -580,10 +598,12 @@ public class ISD {
             id = getRegionIdentifier(elt);
             if (id != null)
                 return id;
-            id = getNearestAncestorRegionIdentifier(elt);
+            // use descendant before ancestor since we are doing post-traversal visit
+            id = getNearestDescendantRegionIdentifier(elt);
             if (id != null)
                 return id;
-            id = getNearestDescendantRegionIdentifier(elt);
+            // use ancestor after descendant since we are doing post-traversal visit
+            id = getNearestAncestorRegionIdentifier(elt);
             if (id != null)
                 return id;
             return null;
@@ -1542,21 +1562,6 @@ public class ISD {
             return (root != null) && hasUsableContent(root, context);
         }
 
-        private void writeISDSequence(List<Document> isdDocuments, TransformerContext context, OutputStream out) {
-            boolean suppressOutput = (Boolean) context.getResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name());
-            if (!suppressOutput) {
-                if (outputDirectoryClean)
-                    cleanOutputDirectory(outputDirectory, context);
-                int isdSequenceIndex = 0;
-                for (Document d : isdDocuments)
-                    writeISD(d, isdSequenceIndex++, context);
-            } else {
-                Reporter reporter = context.getReporter();
-                reporter.logInfo(reporter.message("*KEY*", "Suppressing ''{0}'' transformer output serialization.", getName()));
-                context.setResourceState(TransformerContext.ResourceState.ttxOutput.name(), isdDocuments);
-            }
-        }
-
         private static void cleanOutputDirectory(File directory, TransformerContext context) {
             Reporter reporter = context.getReporter();
             reporter.logInfo(reporter.message("*KEY*", "Cleaning ISD artifacts from output directory ''{0}''...", directory.getPath()));
@@ -1571,31 +1576,70 @@ public class ISD {
             }
         }
 
-        private void writeISD(Document document, int sequenceIndex, TransformerContext context) {
+        private Object writeISD(Document document, int sequenceIndex, boolean suppressOutput, TransformerContext context) {
+            if (suppressOutput)
+                return writeISDAsByteArray(document, sequenceIndex, context);
+            else
+                return writeISDAsFile(document, sequenceIndex, context);
+        }
+
+        private Object writeISDAsFile(Document document, int sequenceIndex, TransformerContext context) {
            Reporter reporter = context.getReporter();
+           FileOutputStream fos = null;
+           BufferedOutputStream bos = null;
+           try {
+               String outputFileName = "isd" + TTMLHelper.pad(sequenceIndex, 5) + ".xml";
+               File outputFile = new File(outputDirectory, outputFileName);
+               fos = new FileOutputStream(outputFile);
+               bos = new BufferedOutputStream(fos);
+               writeISD(document, bos, context);
+               reporter.logInfo(reporter.message("*KEY*", "Wrote ISD ''{0}''.", outputFile.getAbsolutePath()));
+               return outputFile;
+           } catch (Exception e) {
+               reporter.logError(e);
+               return null;
+           } finally {
+               IOUtil.closeSafely(bos);
+               IOUtil.closeSafely(fos);
+           }
+        } 
+
+        private Object writeISDAsByteArray(Document document, int sequenceIndex, TransformerContext context) {
+           Reporter reporter = context.getReporter();
+           ByteArrayOutputStream bas = null;
+           BufferedOutputStream bos = null;
+           try {
+               bas = new ByteArrayOutputStream();
+               bos = new BufferedOutputStream(bas);
+               writeISD(document, bos, context);
+               return bas.toByteArray();
+           } catch (Exception e) {
+               reporter.logError(e);
+               return null;
+           } finally {
+               IOUtil.closeSafely(bos);
+               IOUtil.closeSafely(bas);
+           }
+        } 
+
+        private void writeISD(Document document, OutputStream os, TransformerContext context) throws TransformerException {
            BufferedWriter bw = null;
            try {
                TransformerFactory tf = TransformerFactory.newInstance();
                DOMSource source = new DOMSource(document);
-               String outputFileName = "isd" + TTMLHelper.pad(sequenceIndex, 5) + ".xml";
-               File outputFile = new File(outputDirectory, outputFileName);
-               bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), outputEncoding));
+               bw = new BufferedWriter(new OutputStreamWriter(os, outputEncoding));
                StreamResult result = new StreamResult(bw);
                javax.xml.transform.Transformer t = tf.newTransformer();
                t.setOutputProperty(OutputKeys.INDENT, outputIndent ? "yes" : "no");
                t.transform(source, result);
-               reporter.logInfo(reporter.message("*KEY*", "Wrote ISD ''{0}''.", outputFile.getAbsolutePath()));
-           } catch (TransformerFactoryConfigurationError e) {
-               reporter.logError(new Exception(e));
            } catch (Exception e) {
-               reporter.logError(e);
+               throw new RuntimeException(e);
            } finally {
                if (bw != null) {
                    try { bw.close(); } catch (IOException e) {}
                }
            }
-        } 
-
+        }
     }
 
 }

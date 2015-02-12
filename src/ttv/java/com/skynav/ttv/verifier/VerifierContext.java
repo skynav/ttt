@@ -103,4 +103,12 @@ public interface VerifierContext {
      */
     public Object getResourceState(String key);
 
+    /**
+     * Obtain value of per-resource context state variable then set
+     * value of variable to null.
+     * @param key name of state variable
+     * @return value of state variable or null if unknown key
+     */
+    public Object extractResourceState(String key);
+
 }

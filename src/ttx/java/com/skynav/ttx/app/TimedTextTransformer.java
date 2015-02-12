@@ -202,6 +202,11 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return verifier.getResourceState(key);
     }
 
+    @Override
+    public Object extractResourceState(String key) {
+        return verifier.extractResourceState(key);
+    }
+
     public String[] preProcessOptions(String[] args, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
         if (doMergeTransformerOptions()) {
             for (int i = 0; i < args.length; ++i) {

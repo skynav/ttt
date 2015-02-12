@@ -845,5 +845,16 @@
   <run-valid verbose="--verbose"/>
 </target>
 
+<target name="run-ttx-sample-no-build" description="Run simple ttx sample.">
+  <java jar="${ttx.target}" fork="true" failonerror="true">
+    <jvmarg value="-ea"/>
+    <jvmarg value="-Xmx100m"/>
+    <arg value="-v"/>
+    <arg value="--external-duration"/>
+    <arg value="24h"/>
+    <arg value="${basedir}/test.xml"/>
+  </java>
+</target>
+
 
 </project>
