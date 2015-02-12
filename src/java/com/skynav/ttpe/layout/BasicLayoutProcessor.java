@@ -180,13 +180,15 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     @Override
-    public void clear() {
-        if (fontCache != null)
-            fontCache.clear();
-        if (lineBreaker != null)
-            lineBreaker.clear();
-        if (charBreaker != null)
-             charBreaker.clear();
+    public void clear(boolean all) {
+        if (all) {
+            if (fontCache != null)
+                fontCache.clear();
+            if (lineBreaker != null)
+                lineBreaker.clear();
+            if (charBreaker != null)
+                 charBreaker.clear();
+        }
     }
 
 

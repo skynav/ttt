@@ -32,5 +32,5 @@ import com.skynav.ttpe.area.Area;
 public interface Render {
     String getName();
     List<Frame> render(List<Area> areas);
-    void clear();
+    void clear(boolean all);
 }

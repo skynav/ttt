@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.render.xml;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +35,7 @@ import org.w3c.dom.Document;
 
 import com.skynav.ttpe.app.Namespace;
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.render.AbstractDocumentFrame;
 import com.skynav.xml.helpers.XML;
 
@@ -81,8 +83,15 @@ public class XMLDocumentFrame extends AbstractDocumentFrame {
         startTagIndentExclusions.add(ttpeSpaceEltName);
     }
 
-    public XMLDocumentFrame(double begin, double end, Extent extent, Document d) {
+    private List<Rectangle> regions;
+
+    public XMLDocumentFrame(double begin, double end, Extent extent, Document d, List<Rectangle> regions) {
         super(begin, end, extent, d);
+        this.regions = regions;
+    }
+
+    public List<Rectangle> getRegions() {
+        return regions;
     }
 
     @Override

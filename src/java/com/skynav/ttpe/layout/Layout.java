@@ -34,5 +34,5 @@ import com.skynav.ttpe.area.Area;
 public interface Layout {
     String getName();
     List<Area> layout(Document d);
-    void clear();
+    void clear(boolean all);
 }

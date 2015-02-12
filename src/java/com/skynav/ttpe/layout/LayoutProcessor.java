@@ -70,7 +70,7 @@ public abstract class LayoutProcessor implements TransformerOptions, Layout {
 
     public abstract List<Area> layout(Document d);
 
-    public abstract void clear();
+    public abstract void clear(boolean all);
 
     private static Map<String,Class<? extends LayoutProcessor>> processorMap;
 

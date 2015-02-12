@@ -48,12 +48,14 @@ import com.skynav.ttpe.area.SpaceArea;
 import com.skynav.ttpe.area.ViewportArea;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
+import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.util.Characters;
+import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttv.util.Namespaces;
 import com.skynav.ttv.util.Reporter;
@@ -64,6 +66,9 @@ public class XMLRenderProcessor extends RenderProcessor {
 
     public static final String NAME                             = "xml";
 
+    // static defaults
+    private static final String defaultOutputFileNamePattern    = "ttpx{0,number,000000}.xml";
+    
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
         { "xml-include-generator",      "",         "include ISD generator information in output, i.e., information about source ISD instance" },
@@ -81,6 +86,10 @@ public class XMLRenderProcessor extends RenderProcessor {
 
     // options state
     private boolean includeGenerator;
+    private String outputPattern;
+
+    // render state
+    private List<Rectangle> regions;
 
     public XMLRenderProcessor(TransformerContext context) {
         super(context);
@@ -89,6 +98,11 @@ public class XMLRenderProcessor extends RenderProcessor {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public String getOutputPattern() {
+        return outputPattern;
     }
 
     @Override
@@ -101,12 +115,26 @@ public class XMLRenderProcessor extends RenderProcessor {
         String option = args[index];
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("xml-include-generator")) {
+        if (option.equals("output-pattern")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            outputPattern = args[++index];
+        } else if (option.equals("xml-include-generator")) {
             includeGenerator = true;
         } else {
             return super.parseLongOption(args, index);
         }
         return index + 1;
+    }
+
+    @Override
+    public void processDerivedOptions() {
+        super.processDerivedOptions();
+        // output pattern
+        String outputPattern = this.outputPattern;
+        if (outputPattern == null)
+            outputPattern = defaultOutputFileNamePattern;
+        this.outputPattern = outputPattern;
     }
 
     @Override
@@ -122,6 +150,11 @@ public class XMLRenderProcessor extends RenderProcessor {
         return frames;
     }
 
+    @Override
+    public void clear(boolean all) {
+        regions = null;
+    }
+
     private Frame renderCanvas(CanvasArea a) {
         Reporter reporter = context.getReporter();
         try {
@@ -131,7 +164,7 @@ public class XMLRenderProcessor extends RenderProcessor {
             Document d = db.newDocument();
             d.appendChild(renderCanvas(a, d));
             Namespaces.normalize(d, XMLDocumentFrame.prefixes);
-            return new XMLDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d);
+            return new XMLDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d, regions);
         } catch (Exception e) {
             reporter.logError(e);
         }
@@ -171,8 +204,11 @@ public class XMLRenderProcessor extends RenderProcessor {
             Documents.setAttribute(e, XMLDocumentFrame.ctmAttrName, ctm.toString());
         if (!isRootReference(a)) {
             Point origin = a.getOrigin();
-            if (origin != null)
+            if (origin != null) {
                 Documents.setAttribute(e, XMLDocumentFrame.originAttrName, origin.toString());
+                if (extent != null)
+                    addRegion(origin, extent);
+            }
             WritingMode wm = a.getWritingMode();
             if (wm != null)
                 Documents.setAttribute(e, XMLDocumentFrame.wmAttrName, wm.toString().toLowerCase());
@@ -189,6 +225,12 @@ public class XMLRenderProcessor extends RenderProcessor {
                 return false;
         }
         return true;
+    }
+
+    private void addRegion(Point origin, Extent extent) {
+        if (regions == null)
+            regions = new java.util.ArrayList<Rectangle>();
+        regions.add(new Rectangle(origin, extent));
     }
 
     private Element renderBlock(BlockArea a, Document d) {

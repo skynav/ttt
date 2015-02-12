@@ -409,9 +409,8 @@
       <sysproperty key="file.encoding" value="utf-8"/>
       <sysproperty key="java.awt.headless" value="true"/>
       <arg value="@{verbose}"/>
-      <arg value="--show-memory"/>
       <arg value="--external-duration"/>
-      <arg value="3600s"/>
+      <arg value="24h"/>
       <arg value="--external-extent"/>
       <arg value="1280px 720px"/>
       <arg value="--font-directory"/>

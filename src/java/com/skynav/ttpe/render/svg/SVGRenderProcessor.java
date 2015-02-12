@@ -177,6 +177,13 @@ public class SVGRenderProcessor extends RenderProcessor {
         return frames;
     }
 
+    @Override
+    public void clear(boolean all) {
+        xCurrent = 0;
+        yCurrent = 0;
+        regions = null;
+    }
+
     protected Frame renderCanvas(CanvasArea a) {
         Reporter reporter = context.getReporter();
         try {

@@ -40,10 +40,10 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 
-import org.xml.sax.InputSource;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import org.xml.sax.InputSource;
 
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.util.IOUtil;

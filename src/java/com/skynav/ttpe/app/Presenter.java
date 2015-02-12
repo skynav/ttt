@@ -28,10 +28,12 @@ package com.skynav.ttpe.app;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -47,10 +49,17 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
+
+import org.xml.sax.InputSource;
 
 import com.skynav.ttpe.layout.LayoutProcessor;
 import com.skynav.ttpe.render.DocumentFrame;
@@ -165,7 +174,7 @@ public class Presenter extends TimedTextTransformer {
     @Override
     public void processResult(String[] args, URI uri, Object root) {
         super.processResult(args, uri, root);
-        performPresentation(args, uri, root, getResourceState(TransformerContext.ResourceState.ttxOutput.name()));
+        performPresentation(args, uri, root, extractResourceState(TransformerContext.ResourceState.ttxOutput.name()));
     }
 
     @Override
@@ -386,10 +395,11 @@ public class Presenter extends TimedTextTransformer {
         this.outputFileSequence = 0;
         List<Frame> frames = new java.util.ArrayList<Frame>();
         if (ttxOutput instanceof List<?>) {
-            List<?> documents = (List<?>) ttxOutput;
-            while (!documents.isEmpty()) {
-                Object doc = documents.remove(0);
-                if (doc instanceof Document) {
+            List<?> isdSequence = (List<?>) ttxOutput;
+            while (!isdSequence.isEmpty()) {
+                Object isd = isdSequence.remove(0);
+                Document doc = readISD(isd);
+                if (doc != null) {
                     long preRenderMemory = 0;
                     long postRenderMemory = 0;
                     if (showMemory) {
@@ -417,9 +427,11 @@ public class Presenter extends TimedTextTransformer {
                         reporter.logInfo(reporter.message("*KEY*", "Post-write memory usage: {0}, delta: {1}", postWriteMemory, postWriteMemory - preWriteMemory));
                     }
                 }
+                rp.clear(false);
+                lp.clear(false);
             }
-            rp.clear();
-            lp.clear();
+            rp.clear(true);
+            lp.clear(true);
         }
         if (outputArchive)
             archiveFrames(uri, frames, outputArchiveFile);
@@ -430,6 +442,59 @@ public class Presenter extends TimedTextTransformer {
             reporter.logInfo(reporter.message("*KEY*", "Post-presentation memory usage: {0}, delta: {1}", postPresentMemory, postPresentMemory - prePresentMemory));
         }
     }
+
+    private Document readISD(Object isd) {
+        if (isd instanceof File)
+            return readISDAsFile((File) isd);
+        else if (isd instanceof byte[])
+            return readISDAsByteArray((byte[]) isd);
+        else
+            return null;
+    }
+
+    private Document readISDAsFile(File data) {
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        try {
+            fis = new FileInputStream(data);
+            bis = new BufferedInputStream(fis);
+            return readISDFromStream(bis);
+        } catch (IOException e) {
+            getReporter().logError(e);
+            return null;
+        } finally {
+            IOUtil.closeSafely(bis);
+            IOUtil.closeSafely(fis);
+        }
+    }
+
+    private Document readISDAsByteArray(byte[] data) {
+        ByteArrayInputStream bas = null;
+        BufferedInputStream bis = null;
+        try {
+            bas = new ByteArrayInputStream(data);
+            bis = new BufferedInputStream(bas);
+            return readISDFromStream(bis);
+        } finally {
+            IOUtil.closeSafely(bis);
+            IOUtil.closeSafely(bas);
+        }
+    }
+
+    private Document readISDFromStream(InputStream is) {
+        try {
+            SAXSource source = new SAXSource(new InputSource(is));
+            DOMResult result = new DOMResult();
+            TransformerFactory.newInstance().newTransformer().transform(source, result);
+            return (Document) result.getNode();
+        } catch (TransformerFactoryConfigurationError e) {
+            getReporter().logError(new Exception(e));
+        } catch (TransformerException e) {
+            getReporter().logError(e);
+        }
+        return null;
+    }
+
 
     private boolean writeFrame(URI uri, Frame f) {
         if (f instanceof DocumentFrame)
@@ -495,6 +560,7 @@ public class Presenter extends TimedTextTransformer {
             if ((bos = getFrameOutputStream(uri, retOutputFile)) != null) {
                 bos.write(data);
                 File outputFile = retOutputFile[0];
+                bos.close(); bos = null;
                 reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
                 i.setFile(outputFile);
             }
@@ -548,11 +614,13 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private void archiveFrames(URI uri, List<Frame> frames, File archiveFile) {
+        Reporter reporter = getReporter();
         BufferedOutputStream bos = null;
         ZipOutputStream zos = null;
         try {
             File[] retArchiveFile = new File[1];
             if ((bos = getArchiveOutputStream(uri, archiveFile, retArchiveFile)) != null) {
+                archiveFile = retArchiveFile[0];
                 zos = new ZipOutputStream(bos);
                 Date now = new Date();
                 writeManifestEntry(zos, now, frames);
@@ -565,6 +633,7 @@ public class Presenter extends TimedTextTransformer {
                     }
                 }
             }
+            reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE archive ''{0}''.", (archiveFile != null) ? archiveFile.getAbsolutePath() : uriStandardOutput));
         } catch (IOException e) {
         } finally {
             IOUtil.closeSafely(zos);

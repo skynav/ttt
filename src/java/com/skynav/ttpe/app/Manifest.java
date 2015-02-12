@@ -144,7 +144,7 @@ public class Manifest {
 
     private String formatTime(double time) {
         int hh = (int) (time / 3600);
-        int mm = (int) ((time - (hh * 60)) / 60);
+        int mm = (int) ((time - (hh * 3600)) / 60);
         double ss = time - ((hh * 60) + mm) * 60;
         return timeFormatter.format(new Object[] {hh, mm, ss});
     }

@@ -75,7 +75,7 @@ public abstract class RenderProcessor implements TransformerOptions, Render {
 
     public abstract List<Frame> render(List<Area> areas);
 
-    public void clear() {
+    public void clear(boolean all) {
     }
 
     private static Map<String,Class<? extends RenderProcessor>> processorMap;
