@@ -25,51 +25,9 @@
 
 package com.skynav.ttpe.geometry;
 
-import static com.skynav.ttpe.geometry.Axis.*;
-import static com.skynav.ttpe.geometry.Dimension.*;
-import static com.skynav.ttpe.geometry.Direction.*;
-
-public enum WritingMode {
-
-    LRTB,               // left to right inline, top to bottom lines
-    RLTB,               // right to left inline, top to bottom lines
-    TBRL,               // top to bottom inline, right to left lines
-    TBLR;               // top to bottom inline, left to right lines
-
-    public Axis getAxis(Dimension dimension) {
-        if (isHorizontal()) {
-            return dimension == IPD ? HORIZONTAL : VERTICAL;
-        } else {
-            return dimension == IPD ? VERTICAL : HORIZONTAL;
-        }
-    }
-
-    public boolean isHorizontal() {
-        return (this == LRTB) || (this == RLTB);
-    }
-
-    public boolean isVertical() {
-        return !isHorizontal();
-    }
-
-    public Direction getDirection(Dimension dimension) {
-        if (dimension == IPD) {
-            if (this == LRTB)
-                return LR;
-            else if (this == RLTB)
-                return RL;
-            else
-                return TB;
-        } else if (dimension == BPD) {
-            if (this == TBLR)
-                return LR;
-            else if (this == TBRL)
-                return RL;
-            else
-                return TB;
-        } else {
-            throw new IllegalStateException();
-        }
-    }
-
+public enum Direction {
+    LR,         // left to right
+    RL,         // right to left
+    TB,         // top to bottom
+    BT;         // bottom to top
 }

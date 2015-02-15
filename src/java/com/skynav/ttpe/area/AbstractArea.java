@@ -63,6 +63,11 @@ public abstract class AbstractArea implements Area {
         return null;
     }
 
+    public boolean isVertical() {
+        WritingMode wm = getWritingMode();
+        return (wm != null) && wm.isVertical();
+    }
+
     public double getIPD() {
         return getAvailable(Dimension.IPD);
     }

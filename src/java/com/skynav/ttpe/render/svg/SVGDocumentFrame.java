@@ -61,7 +61,7 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     public static final QName transformAttrName                 = new QName("", "transform");
     public static final QName viewBoxAttrName                   = new QName("", "viewBox");
     public static final QName widthAttrName                     = new QName("", "width");
-    public static final QName wmAttrName                        = new QName("", "writing-mode");
+    public static final QName writingModeAttrName               = new QName("", "writing-mode");
     public static final QName xAttrName                         = new QName("", "x");
     public static final QName yAttrName                         = new QName("", "y");
 

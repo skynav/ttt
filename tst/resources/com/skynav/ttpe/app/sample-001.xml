@@ -14,8 +14,8 @@
 </styling>
 <layout>
 <region xml:id="横下" tts:displayAlign="after" tts:extent="768px 90px" tts:origin="256px 610px"/>
-<region xml:id="縦右" tts:displayAlign="after" tts:extent="768px 90px" tts:origin="256px 410px"/>
-<region xml:id="縦左" tts:displayAlign="after" tts:extent="768px 90px" tts:origin="256px 210px"/>
+<region xml:id="縦右" tts:displayAlign="after" tts:extent="90px 432px" tts:origin="1062px 144px" tts:writingMode="tbrl"/>
+<region xml:id="縦左" tts:displayAlign="after" tts:extent="90px 432px" tts:origin="218px 144px" tts:writingMode="tbrl"/>
 <!--
 <region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>
 <region xml:id="縦右" tts:extent="15vw 80vh" tts:position="right 5vh center" tts:writingMode="tbrl"/>

@@ -50,9 +50,12 @@ import com.skynav.ttpe.area.ViewportArea;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
+import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.Rectangle;
+import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.Color;
@@ -64,6 +67,8 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.util.Colors;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
+
+import static com.skynav.ttpe.geometry.Direction.*;
 
 public class SVGRenderProcessor extends RenderProcessor {
 
@@ -243,6 +248,15 @@ public class SVGRenderProcessor extends RenderProcessor {
                 if (extent != null)
                     addRegion(origin, extent);
             }
+            xCurrent = yCurrent = 0;
+            WritingMode wm = a.getWritingMode();
+            if (wm.isVertical()) {
+                if (wm.getDirection(Dimension.BPD) == RL)
+                    xCurrent += extent.getWidth();
+            } else {
+                if (wm.getDirection(Dimension.IPD) == RL)
+                    xCurrent += extent.getWidth();
+            }
             eGroup.appendChild(renderChildren(eSVG, a, d));
             return eGroup;
         }
@@ -285,29 +299,58 @@ public class SVGRenderProcessor extends RenderProcessor {
         FontWeight fontWeight = font.getWeight();
         if (fontWeight != FontWeight.NORMAL)
             Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
-        Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Object[] {0, yCurrent + fontSize.getHeight()}));
-        double xSaved = xCurrent;
+        WritingMode wm = a.getWritingMode();
+        boolean vertical = wm.isVertical();
+        Direction bpdDirection = wm.getDirection(Dimension.BPD);
+        double bpd = a.getBPD();
+        Object[] origin = new Object[]{0,0};
+        if (vertical)
+            origin[0] = xCurrent + (bpd / 2) * ((bpdDirection == LR) ? 1 : -1);
+        else
+            origin[1] = yCurrent + fontSize.getHeight();
+        Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(origin));
+        double saved = vertical ? yCurrent : xCurrent;
         e = renderChildren(e, a, d);
-        xCurrent = xSaved;
-        yCurrent += a.getBPD();
+        if (vertical) {
+            xCurrent += bpd * ((bpdDirection == LR) ? 1 : -1);
+            yCurrent = saved;
+        } else {
+            yCurrent += bpd;
+            xCurrent = saved;
+        }
         return e;
     }
 
     private Element renderGlyph(Element parent, GlyphArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-        Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {xCurrent}));
-        xCurrent += a.getIPD();
+        double ipd = a.getIPD();
+        if (a.isVertical()) {
+            Documents.setAttribute(e, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {yCurrent}));
+            Documents.setAttribute(e, SVGDocumentFrame.writingModeAttrName, "tb");
+            yCurrent += ipd;
+        } else {
+            Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {xCurrent}));
+            xCurrent += ipd;
+        }
         e.appendChild(d.createTextNode(a.getText()));
         return e;
     }
 
     private Element renderSpace(Element parent, SpaceArea a, Document d) {
-        xCurrent += a.getIPD();
+        double ipd = a.getIPD();
+        if (a.isVertical())
+            yCurrent += ipd;
+        else
+            xCurrent += ipd;
         return null;
     }
 
     private Element renderFiller(Element parent, InlineFillerArea a, Document d) {
-        xCurrent += a.getIPD();
+        double ipd = a.getIPD();
+        if (a.isVertical())
+            yCurrent += ipd;
+        else
+            xCurrent += ipd;
         return null;
     }
 

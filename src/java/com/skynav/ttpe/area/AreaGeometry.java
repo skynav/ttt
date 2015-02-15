@@ -36,6 +36,11 @@ public interface AreaGeometry {
     WritingMode getWritingMode();
 
     /**
+     * Determine if writing mode of area is vertical.
+     */
+    boolean isVertical();
+
+    /**
      * Obtain IPD of area.
      */
     double getIPD();
