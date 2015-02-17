@@ -59,6 +59,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
@@ -546,9 +547,12 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isAnonymousSpanElement(elt)) {
-                            returnUsable[0] = true;
-                            return false;
+                        if (isParagraphElement(elt)) {
+                            if (hasUsableContentInParagraph(elt)) {
+                                returnUsable[0] = true;
+                                return false;
+                            } else
+                                return true;
                         } else
                             return true;
                     }
@@ -557,6 +561,15 @@ public class ISD {
                 context.getReporter().logError(e);
             }
             return returnUsable[0];
+        }
+
+        private static boolean hasUsableContentInParagraph(Element elt) {
+            String content = elt.getTextContent();
+            for (int i = 0, n = content.length(); i < n; ++i) {
+                if (!Character.isWhitespace(content.charAt(i)))
+                    return true;
+            }
+            return false;
         }
 
         private static void pruneUnselectedContent(final Element body, TransformerContext context, final Element region) {
@@ -850,6 +863,10 @@ public class ISD {
             }
         }
 
+        private static boolean isParagraphElement(Element elt) {
+            return isTimedTextElement(elt, "p");
+        }
+
         private static boolean isSpanElement(Element elt) {
             return isTimedTextElement(elt, "span");
         }
@@ -948,7 +965,7 @@ public class ISD {
             copyParameterAttributes(isd, root);
             generateISDComputedStyleSets(isd, root, context);
             generateISDRegions(isd, root, context);
-            unwrapRedundantAnonymousSpans(isd);
+            unwrapRedundantAnonymousSpans(isd, root, context);
             document.removeChild(root);
             document.appendChild(isd);
         }
@@ -1175,8 +1192,9 @@ public class ISD {
 
         private static StyleSet applicableStyles(StyleSet ss, Element elt, TransformerContext context) {
             boolean containsInapplicableStyle = false;
+            QName eltName = new QName(elt.getNamespaceURI(), elt.getLocalName());
             for (StyleSpecification s : ss.getStyles().values()) {
-                if (!doesStyleApply(elt, s.getName(), context)) {
+                if (!doesStyleApply(eltName, s.getName(), context)) {
                     containsInapplicableStyle = true;
                     break;
                 }
@@ -1186,7 +1204,7 @@ public class ISD {
             else {
                 StyleSet ssNew = new StyleSet(ss.getGeneration());
                 for (StyleSpecification s : ss.getStyles().values()) {
-                    if (doesStyleApply(elt, s.getName(), context)) {
+                    if (doesStyleApply(eltName, s.getName(), context)) {
                         ssNew.merge(s);
                     }
                 }
@@ -1195,13 +1213,19 @@ public class ISD {
         }
 
         private static boolean doesStyleApply(Element elt, QName styleName, TransformerContext context) {
-            return context.getModel().doesStyleApply(new QName(elt.getNamespaceURI(), elt.getLocalName()), styleName);
+            QName eltName = new QName(elt.getNamespaceURI(), elt.getLocalName());
+            return doesStyleApply(eltName, styleName, context);
+        }
+
+        private static boolean doesStyleApply(QName eltName, QName styleName, TransformerContext context) {
+            return context.getModel().doesStyleApply(eltName, styleName);
         }
 
         private static void elideInitialValues(StyleSet ss, Element elt, TransformerContext context) {
+            QName eltName = new QName(elt.getNamespaceURI(), elt.getLocalName());
             List<StyleSpecification> elisions = new java.util.ArrayList<StyleSpecification>();
             for (StyleSpecification s : ss.getStyles().values()) {
-                StyleSpecification initial = getInitialStyle(elt, s.getName(), context);
+                StyleSpecification initial = getInitialStyle(eltName, s.getName(), context);
                 if (initial != null) {
                     String value = initial.getValue();
                     if ((value != null) && value.equals(s.getValue()))
@@ -1214,7 +1238,12 @@ public class ISD {
         }
 
         private static StyleSpecification getInitialStyle(Element elt, QName styleName, TransformerContext context) {
-            String value = context.getModel().getInitialStyleValue(styleName);
+            QName eltName = new QName(elt.getNamespaceURI(), elt.getLocalName());
+            return getInitialStyle(eltName, styleName, context);
+        }
+
+        private static StyleSpecification getInitialStyle(QName eltName, QName styleName, TransformerContext context) {
+            String value = context.getModel().getInitialStyleValue(eltName, styleName);
             if (value != null)
                 return new StyleSpecification(new ComparableQName(styleName), value);
             else
@@ -1414,13 +1443,48 @@ public class ISD {
                 return null;
         }
 
-        // Unwrap and elide (redundant) anonymous spans that satisfy:
-        // 1. parent is a span
-        // 2. parent has exactly one child
-        // 3. parent's CSS is same as child's CSS
-        // To unwrap, replace single child of parent with children
-        // of anonymous span.
-        private static void unwrapRedundantAnonymousSpans(Element isd) {
+        private static void unwrapRedundantAnonymousSpans(final Element isd, Element root, TransformerContext context) {
+            try {
+                Traverse.traverseElements(isd, null, new PostVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isAnonymousSpanElement(elt)) {
+                            if (parent instanceof Element) {
+                                if (hasSameComputedStyleSet(elt, (Element) parent))
+                                    unwrapAnonymousSpan(elt, (Element) parent);
+                            }
+                        }
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+                context.getReporter().logError(e);
+            }
+        }
+
+        private static boolean hasSameComputedStyleSet(Element e1, Element e2) {
+            if (!e1.hasAttributeNS(TTMLHelper.NAMESPACE_ISD, "css"))
+                return false;
+            else if (!e2.hasAttributeNS(TTMLHelper.NAMESPACE_ISD, "css"))
+                return false;
+            else {
+                String s1 = e1.getAttributeNS(TTMLHelper.NAMESPACE_ISD, "css");
+                String s2 = e2.getAttributeNS(TTMLHelper.NAMESPACE_ISD, "css");
+                return s1.equals(s2);
+            }
+        }
+
+        private static void unwrapAnonymousSpan(Element elt, Element parent) {
+            Node fc = elt.getFirstChild();
+            assert fc != null;
+            Node lc = elt.getLastChild();
+            assert lc == fc;
+            if (fc instanceof Text) {
+                Text text = (Text) elt.removeChild(fc);
+                assert text != null;
+                parent.replaceChild(text, elt);
+            }
         }
 
         private static Element findChildElement(Element elt, String namespace, String name) {

@@ -25,15 +25,29 @@
  
 package com.skynav.ttv.verifier.netflix;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXSource;
+
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
@@ -48,6 +62,7 @@ import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Traverse;
@@ -93,7 +108,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         } else {
             QName rootName = context.getBindingElementName(root);
             Reporter reporter = context.getReporter();
-            reporter.logError(reporter.message(getLocator(root), "*KEY*", "Root element must be ''{0}'', got ''{1}''.", TTML1Model.ttElementName, rootName));
+            reporter.logError(reporter.message(getLocator(root), "*KEY*", "Root element must be ''{0}'', got ''{1}''.", TTML1Model.timedTextElementName, rootName));
             failed = true;
         }
         return !failed;
@@ -108,7 +123,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
             Reporter reporter = getContext().getReporter();
             if (((TimedText)tt).getProfile() == null) {
                 reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' must have a ''{1}'' attribute, but it is missing.",
-                    TTML1Model.ttElementName, TTML1ProfileVerifier.profileAttributeName));
+                    TTML1Model.timedTextElementName, TTML1ProfileVerifier.profileAttributeName));
                 failed = true;
             } else {
                 try {
@@ -117,7 +132,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
                     URI uri = new URI(value);
                     if (!designators.contains(uri)) {
                         reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' has a ''{1}'' attribute with value ''{2}'', but must have a value that matches one of following: {3}.",
-                            TTML1Model.ttElementName, TTML1ProfileVerifier.profileAttributeName, value, designators));
+                            TTML1Model.timedTextElementName, TTML1ProfileVerifier.profileAttributeName, value, designators));
                         failed = true;
                     }
                 } catch (URISyntaxException e) {
@@ -126,12 +141,12 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
             }
             if (((TimedText)tt).getHead() == null) {
                 reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' must have a ''{1}'' child element, but it is missing.",
-                    TTML1Model.ttElementName, TTML1Model.headElementName));
+                    TTML1Model.timedTextElementName, TTML1Model.headElementName));
                 failed = true;
             }
             if (((TimedText)tt).getBody() == null) {
                 reporter.logError(reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' must have a ''{1}'' child element, but it is missing.",
-                    TTML1Model.ttElementName, TTML1Model.bodyElementName));
+                    TTML1Model.timedTextElementName, TTML1Model.bodyElementName));
                 failed = true;
             }
             return !failed;
@@ -169,7 +184,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
                 Reporter reporter = getContext().getReporter();
                 for (Locator locator : usage) {
                     reporter.logError(reporter.message(locator, "*KEY*", "Uses ''c'' unit, but does not specify ''{0}'' attribute on ''{1}'' element.",
-                                                       cellResolutionName, TTML1Model.ttElementName));
+                                                       cellResolutionName, TTML1Model.timedTextElementName));
                 }
                 failed = true;
             }
@@ -187,7 +202,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
                 Reporter reporter = getContext().getReporter();
                 for (Locator locator : usage) {
                     reporter.logError(reporter.message(locator, "*KEY*", "Uses ''px'' unit, but does not specify ''{0}'' attribute on ''{1}'' element.",
-                                                       TTML1StyleVerifier.extentAttributeName, TTML1Model.ttElementName));
+                                                       TTML1StyleVerifier.extentAttributeName, TTML1Model.timedTextElementName));
                 }
                 failed = true;
             }
@@ -456,17 +471,72 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         boolean failed = false;
         if (contentTransformed != null) {
             if (contentTransformed instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Document> isdDocuments = (List<Document>) contentTransformed;
+                List<?> isdDocuments = (List<?>) contentTransformed;
                 Reporter reporter = context.getReporter();
                 reporter.logInfo(reporter.message("*KEY*", "Verifying post-transform semantics phase {0} using ''{1}'' model...", 5, getModel().getName()));
-                for (Document isd : isdDocuments) {
-                    if (!verifyPostTransform(root, isd, context))
-                        failed = true;
+                for (Object isd : isdDocuments) {
+                    Document doc = readISD(isd);
+                    if (doc != null) {
+                        if (!verifyPostTransform(root, doc, context))
+                            failed = true;
+                    }
                 }
             }
         }
         return !failed;
+    }
+
+    private Document readISD(Object isd) {
+        if (isd instanceof File)
+            return readISDAsFile((File) isd);
+        else if (isd instanceof byte[])
+            return readISDAsByteArray((byte[]) isd);
+        else
+            return null;
+    }
+
+    private Document readISDAsFile(File data) {
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        try {
+            fis = new FileInputStream(data);
+            bis = new BufferedInputStream(fis);
+            return readISDFromStream(bis);
+        } catch (IOException e) {
+            getContext().getReporter().logError(e);
+            return null;
+        } finally {
+            IOUtil.closeSafely(bis);
+            IOUtil.closeSafely(fis);
+        }
+    }
+
+    private Document readISDAsByteArray(byte[] data) {
+        ByteArrayInputStream bas = null;
+        BufferedInputStream bis = null;
+        try {
+            bas = new ByteArrayInputStream(data);
+            bis = new BufferedInputStream(bas);
+            return readISDFromStream(bis);
+        } finally {
+            IOUtil.closeSafely(bis);
+            IOUtil.closeSafely(bas);
+        }
+    }
+
+    private Document readISDFromStream(InputStream is) {
+        Reporter reporter = getContext().getReporter();
+        try {
+            SAXSource source = new SAXSource(new InputSource(is));
+            DOMResult result = new DOMResult();
+            TransformerFactory.newInstance().newTransformer().transform(source, result);
+            return (Document) result.getNode();
+        } catch (TransformerFactoryConfigurationError e) {
+            reporter.logError(new Exception(e));
+        } catch (TransformerException e) {
+            reporter.logError(e);
+        }
+        return null;
     }
 
     private boolean verifyPostTransform(Object root, Document isd, VerifierContext context) {

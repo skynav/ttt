@@ -178,7 +178,7 @@ public class AbstractModel implements Model {
         return false;
     }
 
-    public String getInitialStyleValue(QName styleName) {
+    public String getInitialStyleValue(QName eltName, QName styleName) {
         return null;
     }
 

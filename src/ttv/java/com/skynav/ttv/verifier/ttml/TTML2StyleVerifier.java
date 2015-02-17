@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml.TTML2.TTML2Model;
 import com.skynav.ttv.model.ttml2.tt.Animate;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
@@ -186,11 +187,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             ShowBackground.ALWAYS.value(),
         },
         {
-            new QName(NAMESPACE,"textAlign"),
+            textAlignAttributeName,
             "TextAlign",
             TextAlign.class,
             TextAlignVerifier.class,
-            Integer.valueOf(APPLIES_TO_P),
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.TRUE,
             TextAlign.START,
@@ -272,6 +273,14 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     protected void populateAccessors(Map<QName, StyleAccessor> accessors) {
         super.populateAccessors(accessors);
         populateAccessors(accessors, styleAccessorMap);
+    }
+
+    @Override
+    public String getInitialStyleValue(QName eltName, QName styleName) {
+        if (eltName.equals(TTML2Model.spanElementName) && styleName.equals(textAlignAttributeName))
+            return null;
+        else
+            return super.getInitialStyleValue(eltName, styleName);
     }
 
     @Override

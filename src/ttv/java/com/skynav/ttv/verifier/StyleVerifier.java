@@ -60,10 +60,11 @@ public interface StyleVerifier extends ItemVerifier {
 
     /**
      * Obtain initial value of named style.
+     * @param eltName name of element type
      * @param styleName name of style
      * @return a initial value of named style or null if none defined or unknown named style
      */
-    String getInitialStyleValue(QName styleName);
+    String getInitialStyleValue(QName eltName, QName styleName);
 
     /**
      * Determine if named style applies (semantically) to the named element type.

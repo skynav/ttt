@@ -42,7 +42,9 @@ import com.skynav.ttv.model.ttml1.tt.Division;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
 import com.skynav.ttv.model.ttml1.tt.Metadata;
+import com.skynav.ttv.model.ttml1.tt.Paragraph;
 import com.skynav.ttv.model.ttml1.tt.Region;
+import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.Style;
 import com.skynav.ttv.model.ttml1.tt.Styling;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
@@ -87,6 +89,18 @@ public class TTML1 {
     public static final int MODEL_VERSION = 1;
     public static final Model MODEL = new TTML1Model();
     public static class TTML1Model extends AbstractModel {
+        public static final QName agentElementName = new com.skynav.ttv.model.ttml1.ttm.ObjectFactory().createAgent(new Agent()).getName();
+        public static final QName bodyElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createBody(new Body()).getName();
+        public static final QName divisionElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createDiv(new Division()).getName();
+        public static final QName headElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createHead(new Head()).getName();
+        public static final QName layoutElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createLayout(new Layout()).getName();
+        public static final QName metadataElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createMetadata(new Metadata()).getName();
+        public static final QName paragraphElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createP(new Paragraph()).getName();
+        public static final QName regionElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createRegion(new Region()).getName();
+        public static final QName spanElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createSpan(new Span()).getName();
+        public static final QName styleElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createStyle(new Style()).getName();
+        public static final QName stylingElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createStyling(new Styling()).getName();
+        public static final QName timedTextElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createTt(new TimedText()).getName();
         private String[] schemaResourceNames;
         private URI[] namespaceURIs;
         private URI profileNamespaceUri;
@@ -238,9 +252,6 @@ public class TTML1 {
         public Map<Class<?>,String> getRootClasses() {
             return rootClasses;
         }
-        public static final QName agentElementName = new com.skynav.ttv.model.ttml1.ttm.ObjectFactory().createAgent(new Agent()).getName();
-        public static final QName regionElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createRegion(new Region()).getName();
-        public static final QName styleElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createStyle(new Style()).getName();
         public QName getIdReferenceTargetName(QName attributeName) {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
@@ -273,12 +284,6 @@ public class TTML1 {
             }
             return Object.class;
         }
-        public static final QName ttElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createTt(new TimedText()).getName();
-        public static final QName headElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createHead(new Head()).getName();
-        public static final QName metadataElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createMetadata(new Metadata()).getName();
-        public static final QName stylingElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createStyling(new Styling()).getName();
-        public static final QName layoutElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createLayout(new Layout()).getName();
-        public static final QName bodyElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createBody(new Body()).getName();
         public List<List<QName>> getIdReferencePermissibleAncestors(QName attributeName) {
             List<List<QName>> permissibleAncestors = new java.util.ArrayList<List<QName>>();
             String namespaceUri = attributeName.getNamespaceURI();
@@ -307,9 +312,8 @@ public class TTML1 {
         public static boolean isEmptyNamespace(String namespaceUri) {
             return (namespaceUri == null) || (namespaceUri.length() == 0);
         }
-        public static final QName divElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createDiv(new Division()).getName();
         protected boolean isTTDivElement(QName name) {
-            return name.equals(divElementName);
+            return name.equals(divisionElementName);
         }
         public Collection<QName> getDefinedStyleNames() {
             return getStyleVerifier().getDefinedStyleNames();
@@ -320,8 +324,8 @@ public class TTML1 {
         public boolean isInheritableStyle(QName styleName) {
             return getStyleVerifier().isInheritableStyle(styleName);
         }
-        public String getInitialStyleValue(QName styleName) {
-            return getStyleVerifier().getInitialStyleValue(styleName);
+        public String getInitialStyleValue(QName eltName, QName styleName) {
+            return getStyleVerifier().getInitialStyleValue(eltName, styleName);
         }
         public boolean doesStyleApply(QName eltName, QName styleName) {
             return getStyleVerifier().doesStyleApply(eltName, styleName);

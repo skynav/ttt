@@ -117,6 +117,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
 
     public static final QName extentAttributeName               = new QName(NAMESPACE,"extent");
     public static final QName originAttributeName               = new QName(NAMESPACE,"origin");
+    public static final QName textAlignAttributeName            = new QName(NAMESPACE,"textAlign");
     private static Object[][] styleAccessorMap                  = new Object[][] {
         {
             new QName(NAMESPACE,"backgroundColor"),             // attribute name
@@ -317,7 +318,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
             null,
         },
         {
-            new QName(NAMESPACE,"textAlign"),
+            textAlignAttributeName,
             "TextAlign",
             TextAlign.class,
             TextAlignVerifier.class,
@@ -443,7 +444,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
             return false;
     }
 
-    public String getInitialStyleValue(QName styleName) {
+    public String getInitialStyleValue(QName eltName, QName styleName) {
         if (accessors.containsKey(styleName))
             return accessors.get(styleName).initialValueAsString();
         else
