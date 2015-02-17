@@ -25,27 +25,24 @@
 
 package com.skynav.ttpe.layout;
 
+import java.util.Map;
+
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.area.ReferenceArea;
-import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontCache;
-import com.skynav.ttpe.fonts.FontStyle;
-import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
-import com.skynav.ttpe.style.BlockAlignment;
-import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.Whitespace;
-import com.skynav.ttpe.style.Wrap;
 import com.skynav.ttpe.text.LineBreakIterator;
+
+import com.skynav.ttv.util.StyleSet;
 
 public interface LayoutState {
     // non-content derived state
@@ -68,6 +65,8 @@ public interface LayoutState {
     Whitespace getWhitespace();
     WritingMode getWritingMode();
     double getAvailable(Dimension dimension);
+    Extent getReferenceExtent();
+    Extent getReferenceFontSize();
     // external supplied styles
     Extent getExternalExtent();
     Point getExternalOrigin();
@@ -75,21 +74,12 @@ public interface LayoutState {
     TransformMatrix getExternalTransform();
     WritingMode getExternalWritingMode();
     // element computed styles
-    void saveStyle(Element e);
-    BlockAlignment getDisplayAlign(Element e);
-    Color getColor(Element e);
+    void saveStyles(Element e);
+    Map<String,StyleSet> getStyles();
+    StyleSet getStyles(Element e);
     Extent getExtent(Element e);
-    String getFontFamily(Element e);
-    Extent getFontSize(Element e);
-    FontStyle getFontStyle(Element e);
-    FontWeight getFontWeight(Element e);
-    String getLanguage(Element e);
-    double getLineHeight(Element e, Font font);
     Point getOrigin(Element e);
     Overflow getOverflow(Element e);
-    InlineAlignment getTextAlign(Element e);
     TransformMatrix getTransform(Element e);
-    Whitespace getWhitespace(Element e);
-    Wrap getWrapOption(Element e);
     WritingMode getWritingMode(Element e);
 }

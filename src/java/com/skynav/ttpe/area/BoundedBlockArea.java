@@ -28,17 +28,14 @@ package com.skynav.ttpe.area;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Extent;
-import com.skynav.ttpe.geometry.Point;
 
 public class BoundedBlockArea extends BlockArea {
 
     private Extent extent;
-    private Point origin;
 
-    public BoundedBlockArea(Element e, double x, double y, double width, double height) {
+    public BoundedBlockArea(Element e, double width, double height) {
         super(e);
         this.extent = new Extent(width, height);
-        this.origin = new Point(x, y);
     }
 
     public Extent getExtent() {
@@ -51,18 +48,6 @@ public class BoundedBlockArea extends BlockArea {
 
     public double getHeight() {
         return extent.getHeight();
-    }
-
-    public Point getOrigin() {
-        return origin;
-    }
-
-    public double getX() {
-        return origin.getX();
-    }
-
-    public double getY() {
-        return origin.getY();
     }
 
 }

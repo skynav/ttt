@@ -45,6 +45,38 @@ public class LineArea extends BlockArea {
         this.font = font;
     }
 
+    @Override
+    public void addChild(AreaNode c, boolean expand) {
+        if (c instanceof Inline)
+            super.addChild(c, expand);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    @Override
+    public void insertChild(AreaNode c, AreaNode cBefore, boolean expand) {
+        if (c instanceof Inline)
+            super.insertChild(c, cBefore, expand);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    @Override
+    public void expand(double ipd, double bpd) {
+        // expand in Dimension.IPD to fit specified IPD
+        if (!Double.isNaN(ipd)) {
+            double ipdCurrent = getIPD();
+            if (Double.isNaN(ipdCurrent) || (ipdCurrent < ipd))
+                setIPD(ipd);
+        }
+        // expand in Dimension.BPD to fit specified BPD
+        if (!Double.isNaN(bpd)) {
+            double bpdCurrent = getBPD();
+            if (Double.isNaN(bpdCurrent) || (bpdCurrent < bpd))
+                setBPD(bpd);
+        }
+    }
+
     public InlineAlignment getAlignment() {
         return alignment;
     }

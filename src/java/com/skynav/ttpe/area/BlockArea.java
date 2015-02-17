@@ -35,7 +35,7 @@ public class BlockArea extends NonLeafAreaNode {
     private double ipd;
 
     public BlockArea(Element e) {
-        this(e, 0, 0);
+        this(e, Double.NaN, Double.NaN);
     }
 
     public BlockArea(Element e, double ipd, double bpd) {
@@ -50,6 +50,20 @@ public class BlockArea extends NonLeafAreaNode {
 
     public void setBPD(double bpd) {
         this.bpd = bpd;
+    }
+
+    public void expand(double ipd, double bpd) {
+        // expand in Dimension.IPD to fit specified IPD
+        if (!Double.isNaN(ipd)) {
+            if (Double.isNaN(this.ipd) || (this.ipd < ipd))
+                this.ipd = ipd;
+        }
+        // expand in Dimension.BPD to fit specified BPD plus existing BPD
+        if (!Double.isNaN(bpd)) {
+            if (Double.isNaN(this.bpd))
+                this.bpd = 0;
+            this.bpd += bpd;
+        }
     }
 
     @Override

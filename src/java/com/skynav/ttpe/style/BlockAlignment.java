@@ -28,7 +28,7 @@ package com.skynav.ttpe.style;
 // alignment in bpd (block) axis
 public enum BlockAlignment {
     BEFORE,
-    AFTER,
     CENTER,
+    AFTER,
     JUSTIFY;
 }

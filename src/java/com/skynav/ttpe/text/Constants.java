@@ -23,23 +23,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.layout;
+package com.skynav.ttpe.text;
 
 import javax.xml.namespace.QName;
-
-import com.skynav.ttpe.fonts.FontKey;
-import com.skynav.ttpe.fonts.FontStyle;
-import com.skynav.ttpe.fonts.FontWeight;
-import com.skynav.ttpe.geometry.Extent;
-import com.skynav.ttpe.geometry.Overflow;
-import com.skynav.ttpe.geometry.Point;
-import com.skynav.ttpe.geometry.TransformMatrix;
-import com.skynav.ttpe.geometry.WritingMode;
-import com.skynav.ttpe.style.BlockAlignment;
-import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.InlineAlignment;
-import com.skynav.ttpe.style.Whitespace;
-import com.skynav.ttpe.style.Wrap;
 
 import com.skynav.xml.helpers.XML;
 
@@ -69,9 +55,11 @@ public class Constants {
     public static final QName isdCSSAttrName                            = new QName(NAMESPACE_TT_ISD, "css");
 
     // TTML Style Attribute Names
+    public static final QName ttsBPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "bpd");
     public static final QName ttsColorAttrName                          = new QName(NAMESPACE_TT_STYLE, "color");
     public static final QName ttsDisplayAlignAttrName                   = new QName(NAMESPACE_TT_STYLE, "displayAlign");
     public static final QName ttsExtentAttrName                         = new QName(NAMESPACE_TT_STYLE, "extent");
+    public static final QName ttsIPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "ipd");
     public static final QName ttsOriginAttrName                         = new QName(NAMESPACE_TT_STYLE, "origin");
     public static final QName ttsFontFamilyAttrName                     = new QName(NAMESPACE_TT_STYLE, "fontFamily");
     public static final QName ttsFontSizeAttrName                       = new QName(NAMESPACE_TT_STYLE, "fontSize");
@@ -87,23 +75,5 @@ public class Constants {
     public static final QName xmlIdAttrName                             = new QName(XML.xmlNamespace, "id");
     public static final QName xmlLanguageAttrName                       = new QName(XML.xmlNamespace, "lang");
     public static final QName xmlSpaceAttrName                          = new QName(XML.xmlNamespace, "space");
-
-    // Default Style Values
-    public static final Color defaultColor                              = Color.YELLOW;
-    public static final BlockAlignment defaultDisplayAlign              = BlockAlignment.BEFORE;
-    public static final Extent defaultExtent                            = Extent.EMPTY;
-    public static final String defaultFontFamily                        = FontKey.DEFAULT_FAMILY;
-    public static final Extent defaultFontSize                          = FontKey.DEFAULT_SIZE;
-    public static final FontStyle defaultFontStyle                      = FontKey.DEFAULT_STYLE;
-    public static final FontWeight defaultFontWeight                    = FontKey.DEFAULT_WEIGHT;
-    public static final String defaultLanguage                          = FontKey.DEFAULT_LANGUAGE;
-    public static final double defaultLineHeight                        = defaultFontSize.getHeight() * 1.25;
-    public static final Point defaultOrigin                             = Point.ZERO;
-    public static final Overflow defaultOverflow                        = Overflow.HIDDEN;
-    public static final Whitespace defaultWhitespace                    = Whitespace.DEFAULT;
-    public static final InlineAlignment defaultTextAlign                = InlineAlignment.START;
-    public static final TransformMatrix defaultTransform                = TransformMatrix.IDENTITY;
-    public static final WritingMode defaultWritingMode                  = WritingMode.LRTB;
-    public static final Wrap defaultWrap                                = Wrap.WRAP;
 
 }

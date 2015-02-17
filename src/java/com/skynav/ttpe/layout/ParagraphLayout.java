@@ -31,10 +31,11 @@ import java.util.List;
 
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.GlyphArea;
+import com.skynav.ttpe.area.InlineBlockArea;
 import com.skynav.ttpe.area.InlineFillerArea;
-import com.skynav.ttpe.area.LeafInlineArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.SpaceArea;
+import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.fonts.Font;
@@ -42,6 +43,7 @@ import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
+import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.Wrap;
 import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttpe.text.Paragraph;
@@ -50,6 +52,27 @@ import com.skynav.ttpe.util.Characters;
 import static com.skynav.ttpe.geometry.Dimension.*;
 
 public class ParagraphLayout {
+
+    private enum Consume {
+        MIN,
+        FIT,
+        MAX;
+    }
+
+    private enum InlineBreak {
+        HARD,
+        SOFT_IDEOGRAPH,
+        SOFT_HYPHENATION_POINT,
+        SOFT_WHITESPACE,
+        UNKNOWN;
+        boolean isHard() {
+            return this == HARD;
+        }
+        @SuppressWarnings("unused")
+        boolean isSoft() {
+            return !isHard();
+        }
+    }
 
     // paragraph content
     private Paragraph paragraph;
@@ -77,22 +100,40 @@ public class ParagraphLayout {
         this.language = state.getLanguage();
         this.writingMode = state.getWritingMode();
         // paragraph specified styles
-        org.w3c.dom.Element e = paragraph.getElement();
-        this.color = state.getColor(e);
-        this.fontFamily = state.getFontFamily(e);
-        this.fontSize = state.getFontSize(e);
-        this.fontStyle = state.getFontStyle(e);
-        this.fontWeight = state.getFontWeight(e);
-        this.textAlign = state.getTextAlign(e);
-        this.wrap = state.getWrapOption(e);
+        this.color = paragraph.getColor(-1);
+        this.fontFamily = paragraph.getFontFamily(-1);
+        this.fontSize = paragraph.getFontSize(-1);
+        this.fontStyle = paragraph.getFontStyle(-1);
+        this.fontWeight = paragraph.getFontWeight(-1);
+        this.textAlign = relativizeAlignment(paragraph.getTextAlign(-1), this.writingMode);
+        this.wrap = paragraph.getWrapOption(-1);
         // derived styles
         this.font = state.getFontCache().mapFont(fontFamily, fontStyle, fontWeight, writingMode.getAxis(IPD), language, fontSize);
-        this.lineHeight = state.getLineHeight(e, font);
+        this.lineHeight = paragraph.getLineHeight(-1, font);
+    }
+
+    private static InlineAlignment relativizeAlignment(InlineAlignment alignment, WritingMode wm) {
+        Direction direction = wm.getDirection(IPD);
+        if (alignment == InlineAlignment.LEFT) {
+            if (direction == Direction.LR)
+                alignment = InlineAlignment.START;
+            else if (direction == Direction.RL)
+                alignment = InlineAlignment.END;
+        } else if (alignment == InlineAlignment.RIGHT) {
+            if (direction == Direction.RL)
+                alignment = InlineAlignment.START;
+            else if (direction == Direction.LR)
+                alignment = InlineAlignment.END;
+        }
+        return alignment;
     }
 
     public List<LineArea> layout() {
+        return layout(state.getAvailable(IPD), Consume.MAX);
+    }
+
+    public List<LineArea> layout(double available, Consume consume) {
         List<LineArea> lines = new java.util.ArrayList<LineArea>();
-        double available = state.getAvailable(IPD);
         if (available > 0) {
             double consumed = 0;
             List<InlineBreakOpportunity> breaks = new java.util.ArrayList<InlineBreakOpportunity>();
@@ -101,9 +142,9 @@ public class ParagraphLayout {
             LineBreakIterator bi;
             for (TextRun r = getNextTextRun(); r != null;) {
                 bi = updateIterator(lbi, r);
-                for (InlineBreakOpportunity b = getNextBreakOpportunity(bi, r); b != null; ) {
+                for (InlineBreakOpportunity b = getNextBreakOpportunity(bi, r, available - consumed); b != null; ) {
                     if (b.isHard()) {
-                        lines.add(emit(available, consumed, breaks));
+                        lines.add(emit(available, consumed, consume, breaks));
                         consumed = 0;
                         break;
                     } else {
@@ -111,34 +152,40 @@ public class ParagraphLayout {
                         if ((consumed + advance) > available) {
                             if (wrap == Wrap.WRAP) {
                                 if (!breaks.isEmpty()) {
-                                    lines.add(emit(available, consumed, breaks));
+                                    lines.add(emit(available, consumed, consume, breaks));
                                     consumed = 0;
                                 } else {
                                     if (bi != lci)
                                         bi = updateIterator(lci, b);
-                                    b = getNextBreakOpportunity(bi, r);
+                                    b = getNextBreakOpportunity(bi, r, available - consumed);
                                 }
                                 continue;
                             }
                         }
                         breaks.add(b);
                         consumed += advance;
-                        b = getNextBreakOpportunity(bi, r);
+                        b = getNextBreakOpportunity(bi, r, available - consumed);
                     }
                 }
                 r = getNextTextRun();
             }
             if (!breaks.isEmpty())
-                lines.add(emit(available, consumed, breaks));
+                lines.add(emit(available, consumed, consume, breaks));
         }
-        return lines;
+        return align(lines);
     }
 
+    private static final StyleAttribute[] embeddingAttr = new StyleAttribute[] { StyleAttribute.EMBEDDING };
     private TextRun getNextTextRun() {
         int s = iterator.getIndex();
         char c = iterator.current();
         if (c == CharacterIterator.DONE)
             return null;
+        else if (c == Characters.UC_OBJECT) {
+            Object embedding = iterator.getAttribute(embeddingAttr[0]);
+            iterator.setIndex(s + 1);
+            return new EmbeddingRun(s, s + 1, embedding);
+        }
         boolean inBreakingWhitespace = Characters.isBreakingWhitespace(c);
         while ((c = iterator.next()) != CharacterIterator.DONE) {
             if (inBreakingWhitespace ^ Characters.isBreakingWhitespace(c))
@@ -160,19 +207,19 @@ public class ParagraphLayout {
         return bi;
     }
 
-    private InlineBreakOpportunity getNextBreakOpportunity(LineBreakIterator bi, TextRun r) {
+    private InlineBreakOpportunity getNextBreakOpportunity(LineBreakIterator bi, TextRun r, double available) {
         if (bi != null) {
             int from = bi.current();
             int to = bi.next();
             if (to != LineBreakIterator.DONE)
-                return new InlineBreakOpportunity(r, r.getInlineBreak(to), from, to, r.getAdvance(from, to));
+                return new InlineBreakOpportunity(r, r.getInlineBreak(to), from, to, r.getAdvance(from, to, available));
         }
         return null;
     }
 
-    private LineArea emit(double available, double consumed, List<InlineBreakOpportunity> breaks) {
-        LineArea l = new LineArea(paragraph.getElement(), available, lineHeight, textAlign, color, font);
-        return alignTextAreas(addTextAreas(l, breaks));
+    private LineArea emit(double available, double consumed, Consume consume, List<InlineBreakOpportunity> breaks) {
+        LineArea l = new LineArea(paragraph.getElement(), consume == Consume.MAX ? available : consumed, lineHeight, textAlign, color, font);
+        return addTextAreas(l, breaks);
     }
 
     private LineArea addTextAreas(LineArea l, List<InlineBreakOpportunity> breaks) {
@@ -186,7 +233,7 @@ public class ParagraphLayout {
             for (InlineBreakOpportunity b : breaks) {
                 TextRun r = b.run;
                 if ((lastRun != null) && (r != lastRun)) {
-                    addTextArea(l, sb.toString(), font, advance, lineHeight, lastRun instanceof WhitespaceRun);
+                    addTextArea(l, sb.toString(), font, advance, lineHeight, lastRun);
                     sb.setLength(0);
                     advance = 0;
                 }
@@ -198,7 +245,7 @@ public class ParagraphLayout {
                 lastRun = r;
             }
             if (sb.length() > 0)
-                addTextArea(l, sb.toString(), font, advance, lineHeight, lastRun instanceof WhitespaceRun);
+                addTextArea(l, sb.toString(), font, advance, lineHeight, lastRun);
             iterator.setIndex(savedIndex);
             breaks.clear();
         }
@@ -227,17 +274,35 @@ public class ParagraphLayout {
         }
     }
 
-    private void addTextArea(LineArea l, String text, Font font, double advance, double lineHeight, boolean isWhitespace) {
-        LeafInlineArea a;
-        if (isWhitespace)
+    private void addTextArea(LineArea l, String text, Font font, double advance, double lineHeight, TextRun run) {
+        AreaNode a;
+        if (run instanceof WhitespaceRun)
             a = new SpaceArea(paragraph.getElement(), advance, lineHeight, text, font);
-        else
+        else if (run instanceof EmbeddingRun)
+            a = ((EmbeddingRun) run).getArea();
+        else if (run instanceof NonWhitespaceRun)
             a = new GlyphArea(paragraph.getElement(), advance, lineHeight, text, font);
-        l.addChild(a);
+        else
+            a = null;
+        if (a != null)
+            l.addChild(a, true);
     }
 
-    private LineArea alignTextAreas(LineArea l) {
-        double measure = l.getIPD();
+    private List<LineArea> align(List<LineArea> lines) {
+        double maxMeasure = 0;
+        for (LineArea l : lines) {
+            double measure = l.getIPD();
+            if (measure > maxMeasure)
+                maxMeasure = measure;
+        }
+        for (LineArea l : lines) {
+            alignTextAreas(l, maxMeasure);
+            l.setIPD(maxMeasure);
+        }
+        return lines;
+    }
+
+    private void alignTextAreas(LineArea l, double measure) {
         double consumed = 0;
         for (AreaNode c : l.getChildren())
             consumed += c.getIPD();
@@ -245,41 +310,26 @@ public class ParagraphLayout {
         if (available > 0) {
             if (textAlign == InlineAlignment.START) {
                 AreaNode a = new InlineFillerArea(l.getElement(), available, lineHeight);
-                l.addChild(a);
+                l.addChild(a, true);
             } else if (textAlign == InlineAlignment.END) {
                 AreaNode a = new InlineFillerArea(l.getElement(), available, lineHeight);
-                l.insertChild(a, l.firstChild());
+                l.insertChild(a, l.firstChild(), true);
             } else if (textAlign == InlineAlignment.CENTER) {
                 double half = available / 2;
                 AreaNode a1 = new InlineFillerArea(l.getElement(), half, lineHeight);
                 AreaNode a2 = new InlineFillerArea(l.getElement(), half, lineHeight);
-                l.insertChild(a1, l.firstChild());
-                l.insertChild(a2, null);
+                l.insertChild(a1, l.firstChild(), true);
+                l.insertChild(a2, null, true);
             } else if (textAlign == InlineAlignment.JUSTIFY) {
                 l = justifyTextAreas(l);
             }
-        } else
+        } else if (available < 0) {
             l.setOverflow(-available);
-        return l;
+        }
     }
 
     private LineArea justifyTextAreas(LineArea l) {
         return l;
-    }
-
-    private enum InlineBreak {
-        HARD,
-        SOFT_IDEOGRAPH,
-        SOFT_HYPHENATION_POINT,
-        SOFT_WHITESPACE,
-        UNKNOWN;
-        boolean isHard() {
-            return this == HARD;
-        }
-        @SuppressWarnings("unused")
-        boolean isSoft() {
-            return !isHard();
-        }
     }
 
     private static class InlineBreakOpportunity {
@@ -340,7 +390,7 @@ public class ParagraphLayout {
             return InlineBreak.UNKNOWN;
         }
         // obtain advance of text starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
-        double getAdvance(int from, int to) {
+        double getAdvance(int from, int to, double available) {
             return font.getAdvance(getText().substring(from, to));
         }
     }
@@ -354,6 +404,38 @@ public class ParagraphLayout {
     private class NonWhitespaceRun extends TextRun {
         NonWhitespaceRun(int start, int end) {
             super(start, end);
+        }
+    }
+
+    private class EmbeddingRun extends NonWhitespaceRun {
+        private Object embedding;
+        private InlineBlockArea area;
+        EmbeddingRun(int start, int end, Object embedding) {
+            super(start, end);
+            this.embedding = embedding;
+        }
+        double getAdvance(int from, int to, double available) {
+            // format embedding using available width
+            if (area == null)
+                area = layoutEmbedding(available);
+            if (area != null)
+                return area.getIPD();
+            else
+                return 0;
+        }
+        InlineBlockArea getArea() {
+            return area;
+        }
+        private InlineBlockArea layoutEmbedding(double available) {
+            if (embedding instanceof Paragraph)
+                return layoutEmbedding((Paragraph) embedding, available);
+            else
+                return null;
+        }
+        private InlineBlockArea layoutEmbedding(Paragraph embedding, double available) {
+            InlineBlockArea area = new InlineBlockArea(embedding.getElement());
+            area.addChildren(new ParagraphLayout(embedding, state).layout(available, Consume.FIT), true);
+            return area;
         }
     }
 

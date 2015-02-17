@@ -1,4 +1,3 @@
-
 <!--
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
  * 
@@ -23,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<project name="ttpe" basedir="." default="clean-test">
+<project name="ttpe" basedir="." default="run-samples">
 
 <property environment="env"/>
 <property file="build.properties"/>
@@ -419,14 +418,15 @@
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
       <arg value="--output-format"/>
-      <arg value="png"/>
+      <arg value="svg"/>
       <arg value="--output-indent"/>
       <arg value="--output-retain-frames"/>
-      <arg value="--png-background"/>
+      <arg value="--svg-background"/>
       <arg value="black"/>
-      <arg value="--png-generation-mode"/>
-      <arg value="region"/>
-      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-001.xml"/>
+      <arg value="--svg-decorate-all"/>
+      <arg value="--svg-decoration"/>
+      <arg value="white"/>
+      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-002.xml"/>
     </java>
   </sequential>
 </macrodef>

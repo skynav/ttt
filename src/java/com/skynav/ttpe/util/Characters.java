@@ -53,6 +53,7 @@ public class Characters {
     public static int   UC_NNBSP                                = '\u202F';             // narrow non-breaking space
     public static int   UC_MMSP                                 = '\u205F';             // medium mathematical space
     public static int   UC_IDSP                                 = '\u3000';             // ideographic space
+    public static int   UC_OBJECT                               = '\uFFFC';             // object replacement character
     public static int   UC_REPLACEMENT                          = '\uFFFD';             // replacement character
 
     public static boolean isBreakingWhitespace(int c) {

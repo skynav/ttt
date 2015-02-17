@@ -69,6 +69,7 @@ import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
 
 import static com.skynav.ttpe.geometry.Direction.*;
+import static com.skynav.ttpe.text.Constants.*;
 
 public class SVGRenderProcessor extends RenderProcessor {
 
@@ -80,7 +81,11 @@ public class SVGRenderProcessor extends RenderProcessor {
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
         { "svg-background",             "COLOR",    "paint background of specified color into root region (default: transparent)" },
-        { "svg-decorate-regions",       "",         "decorate regions with border, etc., for debugging purposes" },
+        { "svg-decorate-all",           "",         "decorate regions, lines, glyphs, etc., for debugging purposes" },
+        { "svg-decorate-glyphs",        "",         "decorate glyphs with bounding box, etc., for debugging purposes" },
+        { "svg-decorate-lines",         "",         "decorate lines with bounding box, etc., for debugging purposes" },
+        { "svg-decorate-regions",       "",         "decorate regions with bounding box, etc., for debugging purposes" },
+        { "svg-decoration",             "COLOR",    "paint decorations using specified color (default: color contrasting with specified background or black)" },
     };
     private static final Map<String,OptionSpecification> longOptions;
     static {
@@ -95,18 +100,24 @@ public class SVGRenderProcessor extends RenderProcessor {
     public static final MessageFormat transformFormatter1      = new MessageFormat("translate({0,number,#.####},{1,number,#.####})");
 
     // options state
-    @SuppressWarnings("unused")
-    private boolean decorateRegions;
     private String backgroundOption;
+    @SuppressWarnings("unused")
+    private boolean decorateGlyphs;
+    private boolean decorateLines;
+    private boolean decorateRegions;
+    private String decorationOption;
     private String outputPattern;
 
     // derived options state
     private Color background;
+    private Color decoration;
 
     // render state
     private double xCurrent;
     private double yCurrent;
     private List<Rectangle> regions;
+    private int paragraphGenerationIndex;
+    private int lineGenerationIndex;
 
     public SVGRenderProcessor(TransformerContext context) {
         super(context);
@@ -140,8 +151,20 @@ public class SVGRenderProcessor extends RenderProcessor {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             backgroundOption = args[++index];
+        } else if (option.equals("svg-decorate-all")) {
+            decorateGlyphs = true;
+            decorateLines = true;
+            decorateRegions = true;
+        } else if (option.equals("svg-decorate-glyphs")) {
+            decorateGlyphs = true;
+        } else if (option.equals("svg-decorate-lines")) {
+            decorateLines = true;
         } else if (option.equals("svg-decorate-regions")) {
             decorateRegions = true;
+        } else if (option.equals("svg-decoration")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            decorationOption = args[++index];
         } else {
             return super.parseLongOption(args, index);
         }
@@ -162,6 +185,17 @@ public class SVGRenderProcessor extends RenderProcessor {
         } else
             background = null;
         this.background = background;
+        // decoration
+        Color decoration;
+        if (decorationOption != null) {
+            com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
+            if (Colors.isColor(decorationOption, null, context, retColor)) {
+                decoration = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
+            } else
+                throw new InvalidOptionUsageException("svg-decoration", "invalid color: " + decorationOption);
+        } else
+            decoration = (background != null) ? background.contrast() : Color.BLACK;
+        this.decoration = decoration;
         // output pattern
         String outputPattern = this.outputPattern;
         if (outputPattern == null)
@@ -223,15 +257,15 @@ public class SVGRenderProcessor extends RenderProcessor {
         else
             eSVG = Documents.createElement(d, SVGDocumentFrame.svgSVGEltName);
         Extent extent = a.getExtent();
+        if (extent == null)
+            extent = Extent.EMPTY;
         if (extent != null) {
             Documents.setAttribute(eSVG, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
             Documents.setAttribute(eSVG, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
-        }
+        } 
         if (root)  {
             if (background != null) {
                 Element eBackground = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
-                Documents.setAttribute(eBackground, SVGDocumentFrame.xAttrName, "0");
-                Documents.setAttribute(eBackground, SVGDocumentFrame.yAttrName, "0");
                 Documents.setAttribute(eBackground, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
                 Documents.setAttribute(eBackground, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
                 Documents.setAttribute(eBackground, SVGDocumentFrame.fillAttrName, background.toRGBString());
@@ -257,7 +291,16 @@ public class SVGRenderProcessor extends RenderProcessor {
                 if (wm.getDirection(Dimension.IPD) == RL)
                     xCurrent += extent.getWidth();
             }
+            if (decorateRegions) {
+                Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+                Documents.setAttribute(eDecoration, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
+                Documents.setAttribute(eDecoration, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
+                Documents.setAttribute(eDecoration, SVGDocumentFrame.fillAttrName, "none");
+                Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decoration.toRGBString());
+                eSVG.appendChild(eDecoration);
+            }
             eGroup.appendChild(renderChildren(eSVG, a, d));
+            paragraphGenerationIndex = 0;
             return eGroup;
         }
     }
@@ -281,58 +324,145 @@ public class SVGRenderProcessor extends RenderProcessor {
         double ySaved = yCurrent;
         Element eBlockGroup = renderChildren(e, a, d);
         yCurrent = ySaved;
+        if (Documents.isElement(a.getElement(), ttParagraphElementName)) {
+            ++paragraphGenerationIndex;
+            lineGenerationIndex = 0;
+        }
         return eBlockGroup;
     }
 
     private Element renderLine(Element parent, LineArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-        Color color = a.getColor();
-        Documents.setAttribute(e, SVGDocumentFrame.fillAttrName, color.toRGBString());
-        Font font = a.getFont();
-        String fontFamily = font.getPreferredFamilyName();
-        Documents.setAttribute(e, SVGDocumentFrame.fontFamilyAttrName, fontFamily);
-        Extent fontSize = font.getSize();
-        Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontSize.getHeight()}));
-        FontStyle fontStyle = font.getStyle();
-        if (fontStyle != FontStyle.NORMAL)
-            Documents.setAttribute(e, SVGDocumentFrame.fontStyleAttrName, fontStyle.name().toLowerCase());
-        FontWeight fontWeight = font.getWeight();
-        if (fontWeight != FontWeight.NORMAL)
-            Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
+        if (hasGlyphChild(a)) {
+            Color color = a.getColor();
+            Documents.setAttribute(e, SVGDocumentFrame.fillAttrName, color.toRGBString());
+            Font font = a.getFont();
+            String fontFamily = font.getPreferredFamilyName();
+            Documents.setAttribute(e, SVGDocumentFrame.fontFamilyAttrName, fontFamily);
+            Extent fontSize = font.getSize();
+            Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontSize.getHeight()}));
+            FontStyle fontStyle = font.getStyle();
+            if (fontStyle != FontStyle.NORMAL)
+                Documents.setAttribute(e, SVGDocumentFrame.fontStyleAttrName, fontStyle.name().toLowerCase());
+            FontWeight fontWeight = font.getWeight();
+            if (fontWeight != FontWeight.NORMAL)
+                Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
+        }
+
+        double xSaved = xCurrent;
+        double ySaved = yCurrent;
         WritingMode wm = a.getWritingMode();
         boolean vertical = wm.isVertical();
+
+        if ((xCurrent != 0) || (yCurrent != 0))
+            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Double[] {xCurrent, yCurrent}));
+
+        xCurrent = 0;
+        yCurrent = 0;
+
         Direction bpdDirection = wm.getDirection(Dimension.BPD);
-        double bpd = a.getBPD();
-        Object[] origin = new Object[]{0,0};
-        if (vertical)
-            origin[0] = xCurrent + (bpd / 2) * ((bpdDirection == LR) ? 1 : -1);
-        else
-            origin[1] = yCurrent + fontSize.getHeight();
-        Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(origin));
-        double saved = vertical ? yCurrent : xCurrent;
+
+        if (decorateLines) {
+            double w, h;
+            if (vertical) {
+                h = a.getIPD();
+                w = a.getBPD();
+            } else {
+                h = a.getBPD();
+                w = a.getIPD();
+            }
+            double x, y;
+            if (vertical) {
+                if (bpdDirection == LR) {
+                    x = xCurrent;
+                    y = yCurrent;
+                } else {
+                    x = xCurrent - w;
+                    y = yCurrent;
+                }
+            } else {
+                x = xCurrent;
+                y = yCurrent;
+            }
+            // bounding box
+            Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+            Documents.setAttribute(eDecoration, SVGDocumentFrame.fillAttrName, "none");
+            Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decoration.toRGBString());
+            Documents.setAttribute(eDecoration, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Double[] {w}));
+            Documents.setAttribute(eDecoration, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Double[] {h}));
+            if (x != 0)
+                Documents.setAttribute(eDecoration, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x}));
+            if (y != 0)
+                Documents.setAttribute(eDecoration, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y}));
+            e.appendChild(eDecoration);
+            // crop marks
+            // label
+            Element eDecorationLabel = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fontFamilyAttrName, "sans-serif");
+            Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fontSizeAttrName, "6");
+            if (vertical) {
+                if (bpdDirection == LR) {
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x + 6}));
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 3}));
+                } else {
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x + w - 6}));
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 3}));
+                }
+            } else {
+                Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x + 2}));
+                Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 8}));
+            }
+            Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fillAttrName, decoration.toRGBString());
+            if (vertical)
+                Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.writingModeAttrName, "tb");
+            eDecorationLabel.appendChild(d.createTextNode("P" + (paragraphGenerationIndex + 1) + "L" + (lineGenerationIndex + 1)));
+            e.appendChild(eDecorationLabel);
+        }
+        ++lineGenerationIndex;
+
         e = renderChildren(e, a, d);
+
+        xCurrent = xSaved;
+        yCurrent = ySaved;
+
         if (vertical) {
-            xCurrent += bpd * ((bpdDirection == LR) ? 1 : -1);
-            yCurrent = saved;
+            if (bpdDirection == LR)
+                xCurrent += a.getBPD();
+            else
+                xCurrent -= a.getBPD();
         } else {
-            yCurrent += bpd;
-            xCurrent = saved;
+            yCurrent += a.getBPD();
         }
         return e;
+    }
+
+    private boolean hasGlyphChild(LineArea l) {
+        for (Area a : ((NonLeafAreaNode) l).getChildren()) {
+            if (a instanceof GlyphArea)
+                return true;
+        }
+        return false;
     }
 
     private Element renderGlyph(Element parent, GlyphArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
         double ipd = a.getIPD();
+        double bpd = a.getBPD();
         if (a.isVertical()) {
+            double baselineOffset = (bpd / 2) * ((a.getWritingMode().getDirection(Dimension.BPD) == LR) ? 1 : -1);
+            if (baselineOffset != 0)
+                Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {baselineOffset}));
             Documents.setAttribute(e, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {yCurrent}));
             Documents.setAttribute(e, SVGDocumentFrame.writingModeAttrName, "tb");
             yCurrent += ipd;
         } else {
+            double baselineOffset = a.getFont().getSize().getHeight();
+            if (baselineOffset != 0)
+                Documents.setAttribute(e, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {baselineOffset}));
             Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {xCurrent}));
             xCurrent += ipd;
         }
-        e.appendChild(d.createTextNode(a.getText()));
+         e.appendChild(d.createTextNode(a.getText()));
         return e;
     }
 

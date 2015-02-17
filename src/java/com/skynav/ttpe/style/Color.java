@@ -95,6 +95,52 @@ public class Color {
         return alpha;
     }
 
+    public double getLuminance() {
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+    }
+
+    public double getSaturation() {
+        return (max() - min())/max();
+    }
+
+    public double getHue() {
+        double a = (2 * red + green + blue) * 0.5000;
+        double b = (green - blue) * 0.8660;
+        return Math.toDegrees(Math.atan2(a, b));
+    }
+
+    private double max() {
+        double m1 = Math.max(red, green);
+        double m2 = Math.max(green, blue);
+        return Math.max(m1, m2);
+    }
+
+    private double min() {
+        double m1 = Math.min(red, green);
+        double m2 = Math.min(green, blue);
+        return Math.min(m1, m2);
+    }
+
+    public Color contrast() {
+        if (getSaturation() < 0.4)
+            return (getLuminance() > 0.5) ? BLACK : WHITE;
+        else {
+            double h = getHue();
+            if ((h >= 30) && (h < 90))
+                return YELLOW;
+            else if ((h >= 90) && (h < 150))
+                return LIME;
+            else if ((h >= 150) && (h < 210))
+                return AQUA;
+            else if ((h >= 210) && (h < 270))
+                return BLUE;
+            else if ((h >= 270) && (h < 330))
+                return MAGENTA;
+            else
+                return RED;
+        }
+    }
+
     public Paint getPaint() {
         return new java.awt.Color((float) red, (float) green, (float) blue, (float) alpha);
     }

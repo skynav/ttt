@@ -23,38 +23,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.text;
 
-import org.w3c.dom.Element;
+public class TextAttributeInterval {
 
-import com.skynav.ttpe.geometry.Dimension;
+    private TextAttribute attribute;
+    private Object value;
+    private int begin;
+    private int end;
 
-public class LeafInlineArea extends LeafAreaNode implements Inline {
-
-    private double bpd;
-    private double ipd;
-
-    public LeafInlineArea(Element e) {
-        this(e, 0, 0);
+    public TextAttributeInterval(TextAttribute attribute, Object value, int begin, int end) {
+        this.attribute = attribute;
+        this.value = value;
+        assert begin > -2;
+        this.begin = begin;
+        assert end > -2;
+        assert end >= begin;
+        this.end = end;
     }
 
-    public LeafInlineArea(Element e, double ipd, double bpd) {
-        super(e);
-        this.ipd = ipd;
-        this.bpd = bpd;
+    public TextAttribute getAttribute() {
+        return attribute;
     }
 
-    public void setIPD(double ipd) {
-        this.ipd = ipd;
+    public Object getValue() {
+        return value;
     }
 
-    public void setBPD(double bpd) {
-        this.bpd = bpd;
+    public int getBegin() {
+        return begin;
     }
 
-    @Override
-    public double getAvailable(Dimension dimension) {
-        return (dimension == Dimension.IPD) ? ipd : bpd;
+    public int getEnd() {
+        return end;
+    }
+
+    public int getLength() {
+        return end - begin;
+    }
+
+    public boolean isOuterScope() {
+        return begin < 0;
     }
 
 }

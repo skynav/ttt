@@ -37,6 +37,9 @@ public abstract class NonLeafAreaNode extends AreaNode {
         super(e);
     }
 
+    public void expand(double ipd, double bpd) {
+    }
+
     public AreaNode firstChild() {
         if ((children == null) || children.isEmpty())
             return null;
@@ -51,14 +54,33 @@ public abstract class NonLeafAreaNode extends AreaNode {
             return children.get(children.size() - 1);
     }
 
+    public void addChildren(List<? extends AreaNode> children) {
+        addChildren(children, false);
+    }
+
+    public void addChildren(List<? extends AreaNode> children, boolean expand) {
+        for (AreaNode c : children)
+            addChild(c, expand);
+    }
+
     public void addChild(AreaNode c) {
+        addChild(c, false);
+    }
+
+    public void addChild(AreaNode c, boolean expand) {
         c.setParent(this);
         if (children == null)
             children = new java.util.ArrayList<AreaNode>();
         children.add(c);
+        if (expand)
+            expand(c.getIPD(), c.getBPD());
     }
 
     public void insertChild(AreaNode c, AreaNode cBefore) {
+        insertChild(c, cBefore, false);
+    }
+
+    public void insertChild(AreaNode c, AreaNode cBefore, boolean expand) {
         c.setParent(this);
         if (children == null)
             children = new java.util.ArrayList<AreaNode>();
@@ -71,6 +93,8 @@ public abstract class NonLeafAreaNode extends AreaNode {
             else
                 children.add(i, c);
         }
+        if (expand)
+            expand(c.getIPD(), c.getBPD());
     }
 
     public List<AreaNode> getChildren() {

@@ -42,20 +42,19 @@ import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.StyleCollector;
 import com.skynav.ttpe.text.LineBreaker;
 import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttpe.text.Paragraph;
 import com.skynav.ttpe.text.ParagraphCollector;
-
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttx.transformer.TransformerContext;
-
 import com.skynav.xml.helpers.Documents;
 
-import static com.skynav.ttpe.layout.Constants.*;
+import static com.skynav.ttpe.text.Constants.*;
 
 public class BasicLayoutProcessor extends LayoutProcessor {
 
@@ -241,7 +240,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
                 if (isElement(c, isdRegionElementName))
                     layoutRegion(c, ls);
                 else if (isElement(c, isdComputedStyleSetElementName))
-                    ls.saveStyle(c);
+                    ls.saveStyles(c);
             }
             ls.pop();
             ls.pop();
@@ -293,7 +292,11 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutParagraph(Element e, LayoutState ls) {
-        layoutParagraphs(e, new ParagraphCollector().collect(e), ls);
+        layoutParagraphs(e, new ParagraphCollector(newStyleCollector(ls)).collect(e), ls);
+    }
+
+    private StyleCollector newStyleCollector(LayoutState ls) {
+        return new StyleCollector(context, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getReferenceFontSize(), ls.getWritingMode(), ls.getStyles());
     }
 
     protected void layoutParagraphs(Element e, List<Paragraph> paragraphs, LayoutState ls) {

@@ -27,34 +27,10 @@ package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.geometry.Dimension;
+public class InlineBlockArea extends BlockArea implements Inline {
 
-public class LeafInlineArea extends LeafAreaNode implements Inline {
-
-    private double bpd;
-    private double ipd;
-
-    public LeafInlineArea(Element e) {
-        this(e, 0, 0);
-    }
-
-    public LeafInlineArea(Element e, double ipd, double bpd) {
+    public InlineBlockArea(Element e) {
         super(e);
-        this.ipd = ipd;
-        this.bpd = bpd;
-    }
-
-    public void setIPD(double ipd) {
-        this.ipd = ipd;
-    }
-
-    public void setBPD(double bpd) {
-        this.bpd = bpd;
-    }
-
-    @Override
-    public double getAvailable(Dimension dimension) {
-        return (dimension == Dimension.IPD) ? ipd : bpd;
     }
 
 }

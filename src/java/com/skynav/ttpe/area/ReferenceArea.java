@@ -31,7 +31,7 @@ import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 
-public class ReferenceArea extends BoundedBlockArea {
+public class ReferenceArea extends PositionedBlockArea {
 
     private WritingMode wm;
     private TransformMatrix ctm;

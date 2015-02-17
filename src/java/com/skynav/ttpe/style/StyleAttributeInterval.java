@@ -23,14 +23,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.style;
 
-import org.w3c.dom.Element;
+public class StyleAttributeInterval {
 
-public class NonLeafInlineArea extends NonLeafAreaNode {
+    private StyleAttribute attribute;
+    private Object value;
+    private int begin;
+    private int end;
 
-    public NonLeafInlineArea(Element e) {
-        super(e);
+    public StyleAttributeInterval(StyleAttribute attribute, Object value, int begin, int end) {
+        this.attribute = attribute;
+        this.value = value;
+        assert begin > -2;
+        this.begin = begin;
+        assert end > -2;
+        assert end >= begin;
+        this.end = end;
+    }
+
+    public StyleAttribute getAttribute() {
+        return attribute;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public int getBegin() {
+        return begin;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public int getLength() {
+        return end - begin;
+    }
+
+    public boolean isOuterScope() {
+        return begin < 0;
     }
 
 }
