@@ -39,6 +39,7 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.CanvasArea;
+import com.skynav.ttpe.area.Inline;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.InlineFillerArea;
@@ -321,9 +322,28 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     private Element renderBlock(Element parent, BlockArea a, Document d) {
         Element e = parent;
+        double xSaved = xCurrent;
         double ySaved = yCurrent;
+        // render children
         Element eBlockGroup = renderChildren(e, a, d);
-        yCurrent = ySaved;
+        // update current position
+        WritingMode wm = a.getWritingMode();
+        if (a instanceof Inline) {
+            double ipd = a.getIPD();
+            if (a.isVertical())
+                yCurrent = ySaved + ipd;
+            else {
+                Direction ipdDirection = wm.getDirection(Dimension.IPD);
+                xCurrent = xSaved + ipd * ((ipdDirection == RL) ? -1 : 1);
+            }
+        }
+        double bpd = a.getBPD();
+        if (a.isVertical()) {
+            Direction bpdDirection = wm.getDirection(Dimension.BPD);
+            xCurrent = ySaved + bpd * ((bpdDirection == RL) ? -1 : 1);
+        } else
+            yCurrent = ySaved + bpd;
+        // update decoration indices
         if (Documents.isElement(a.getElement(), ttParagraphElementName)) {
             ++paragraphGenerationIndex;
             lineGenerationIndex = 0;

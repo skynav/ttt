@@ -23,21 +23,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.layout;
-
-import java.util.List;
+package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.area.Area;
+public class RubyBlockArea extends InlineBlockArea {
 
-public class InlineBlockLayout extends InlineLayout {
-
-    public InlineBlockLayout() {
+    public RubyBlockArea(Element e) {
+        super(e);
     }
 
-    public List<Area> layout(Element e) {
-        return null;
+    public void expand(AreaNode a) {
+        super.expand(a);
     }
 
 }

@@ -23,21 +23,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.layout;
-
-import java.util.List;
+package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.area.Area;
+import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.InlineAlignment;
 
-public class InlineLayout extends AbstractElementLayout {
+public class AnnotationLineArea extends LineArea {
 
-    public InlineLayout() {
-    }
-
-    public List<Area> layout(Element e) {
-        return null;
+    public AnnotationLineArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font) {
+        super(e, ipd, bpd, alignment, color, font);
     }
 
 }

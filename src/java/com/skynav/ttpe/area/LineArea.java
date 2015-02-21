@@ -62,7 +62,8 @@ public class LineArea extends BlockArea {
     }
 
     @Override
-    public void expand(double ipd, double bpd) {
+    public void expand(AreaNode a) {
+        double ipd = a.getIPD();
         // expand in Dimension.IPD to fit specified IPD
         if (!Double.isNaN(ipd)) {
             double ipdCurrent = getIPD();
@@ -70,6 +71,7 @@ public class LineArea extends BlockArea {
                 setIPD(ipd);
         }
         // expand in Dimension.BPD to fit specified BPD
+        double bpd = a.getBPD();
         if (!Double.isNaN(bpd)) {
             double bpdCurrent = getBPD();
             if (Double.isNaN(bpdCurrent) || (bpdCurrent < bpd))

@@ -44,6 +44,7 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   LANGUAGE               = new StyleAttribute("LANGUAGE");               // String
     public static final StyleAttribute   LETTER_SPACING         = new StyleAttribute("LETTER_SPACING");         // Double
     public static final StyleAttribute   LINE_HEIGHT            = new StyleAttribute("LINE_HEIGHT");            // Double
+    public static final StyleAttribute   RUBY                   = new StyleAttribute("RUBY");                   // com.skynav.ttpe.text.Phrase[]
     public static final StyleAttribute   WHITESPACE             = new StyleAttribute("WHITESPACE");             // com.skynav.ttpe.style.Whitespace
     public static final StyleAttribute   WRAP                   = new StyleAttribute("WRAP");                   // com.skynav.ttpe.style.Wrap
 

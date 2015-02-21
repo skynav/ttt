@@ -426,7 +426,7 @@
       <arg value="--svg-decorate-all"/>
       <arg value="--svg-decoration"/>
       <arg value="white"/>
-      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-002.xml"/>
+      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-004.xml"/>
     </java>
   </sequential>
 </macrodef>

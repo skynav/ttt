@@ -29,38 +29,38 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.style.BlockAlignment;
-import com.skynav.ttpe.style.InlineAlignment;
-import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
+import com.skynav.ttpe.util.Characters;
 
-import static com.skynav.ttpe.style.Constants.*;
+public class BreakPhrase extends Phrase {
 
-public class Paragraph extends Phrase {
+    public enum Break {
+        LINE,
+        PARAGRAPH;
+    };
 
-    public Paragraph(Element e, List<Phrase> phrases, List<StyleAttributeInterval> attributes) {
-        super(e, (String) null, attributes);
-        if (phrases != null) {
-            for (Phrase p : phrases)
-                append(p);
-        }
+    private Break type;
+
+    public BreakPhrase(Element e, Break type, List<StyleAttributeInterval> attributes) {
+        super(e, getBreakText(type), attributes);
+        this.type = type;
     }
 
-    public BlockAlignment getDisplayAlign(int index) {
-        return defaultDisplayAlign;
+    public boolean isLineBreak() {
+        return type == Break.LINE;
     }
 
-    private static final StyleAttribute[] textAlignAttr = new StyleAttribute[] { StyleAttribute.INLINE_ALIGNMENT };
-    public InlineAlignment getTextAlign(int index) {
-        Object v;
-        if (index < 0)
-            v = attributes.get(textAlignAttr[0]);
+    public boolean isParagraphBreak() {
+        return type == Break.PARAGRAPH;
+    }
+
+    private static String getBreakText(Break type) {
+        if (type == Break.LINE)
+            return new String(new char[] {(char) Characters.UC_LINE_SEPARATOR});
+        else if (type == Break.PARAGRAPH)
+            return new String(new char[] {(char) Characters.UC_PARA_SEPARATOR});
         else
-            v = content.getIterator(textAlignAttr, index, index + 1).getAttribute(textAlignAttr[0]);
-        if (v == null)
-            v = defaultTextAlign;
-        assert v instanceof InlineAlignment;
-        return (InlineAlignment) v;
+            throw new IllegalArgumentException();
     }
 
 }

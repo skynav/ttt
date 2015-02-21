@@ -23,44 +23,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.text;
+package com.skynav.ttpe.style;
 
-import java.util.List;
-
-import org.w3c.dom.Element;
-
-import com.skynav.ttpe.style.BlockAlignment;
-import com.skynav.ttpe.style.InlineAlignment;
-import com.skynav.ttpe.style.StyleAttribute;
-import com.skynav.ttpe.style.StyleAttributeInterval;
-
-import static com.skynav.ttpe.style.Constants.*;
-
-public class Paragraph extends Phrase {
-
-    public Paragraph(Element e, List<Phrase> phrases, List<StyleAttributeInterval> attributes) {
-        super(e, (String) null, attributes);
-        if (phrases != null) {
-            for (Phrase p : phrases)
-                append(p);
+public enum Ruby {
+    CONTAINER("container"),
+    BASE_CONTAINER("baseContainer"),
+    TEXT_CONTAINER("textContainer"),
+    BASE("base"),
+    TEXT("text"),
+    DELIMITER("delimiter");
+    private final String value;
+    Ruby(String v) {
+        value = v;
+    }
+    public String value() {
+        return value;
+    }
+    public static Ruby fromValue(String v) {
+        for (Ruby r: Ruby.values()) {
+            if (r.value.equals(v)) {
+                return r;
+            }
         }
-    }
-
-    public BlockAlignment getDisplayAlign(int index) {
-        return defaultDisplayAlign;
-    }
-
-    private static final StyleAttribute[] textAlignAttr = new StyleAttribute[] { StyleAttribute.INLINE_ALIGNMENT };
-    public InlineAlignment getTextAlign(int index) {
-        Object v;
-        if (index < 0)
-            v = attributes.get(textAlignAttr[0]);
-        else
-            v = content.getIterator(textAlignAttr, index, index + 1).getAttribute(textAlignAttr[0]);
-        if (v == null)
-            v = defaultTextAlign;
-        assert v instanceof InlineAlignment;
-        return (InlineAlignment) v;
+        throw new IllegalArgumentException(v);
     }
 
 }
+

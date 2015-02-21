@@ -37,7 +37,7 @@ public abstract class NonLeafAreaNode extends AreaNode {
         super(e);
     }
 
-    public void expand(double ipd, double bpd) {
+    public void expand(AreaNode a) {
     }
 
     public AreaNode firstChild() {
@@ -73,7 +73,7 @@ public abstract class NonLeafAreaNode extends AreaNode {
             children = new java.util.ArrayList<AreaNode>();
         children.add(c);
         if (expand)
-            expand(c.getIPD(), c.getBPD());
+            expand(c);
     }
 
     public void insertChild(AreaNode c, AreaNode cBefore) {
@@ -94,7 +94,7 @@ public abstract class NonLeafAreaNode extends AreaNode {
                 children.add(i, c);
         }
         if (expand)
-            expand(c.getIPD(), c.getBPD());
+            expand(c);
     }
 
     public List<AreaNode> getChildren() {

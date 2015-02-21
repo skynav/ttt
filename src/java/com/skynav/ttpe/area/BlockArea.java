@@ -52,13 +52,15 @@ public class BlockArea extends NonLeafAreaNode {
         this.bpd = bpd;
     }
 
-    public void expand(double ipd, double bpd) {
+    public void expand(AreaNode a) {
+        double ipd = a.getIPD();
         // expand in Dimension.IPD to fit specified IPD
         if (!Double.isNaN(ipd)) {
             if (Double.isNaN(this.ipd) || (this.ipd < ipd))
                 this.ipd = ipd;
         }
         // expand in Dimension.BPD to fit specified BPD plus existing BPD
+        double bpd = a.getBPD();
         if (!Double.isNaN(bpd)) {
             if (Double.isNaN(this.bpd))
                 this.bpd = 0;

@@ -29,38 +29,12 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.style.BlockAlignment;
-import com.skynav.ttpe.style.InlineAlignment;
-import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 
-import static com.skynav.ttpe.style.Constants.*;
+public class RubyPhrase extends Phrase {
 
-public class Paragraph extends Phrase {
-
-    public Paragraph(Element e, List<Phrase> phrases, List<StyleAttributeInterval> attributes) {
-        super(e, (String) null, attributes);
-        if (phrases != null) {
-            for (Phrase p : phrases)
-                append(p);
-        }
-    }
-
-    public BlockAlignment getDisplayAlign(int index) {
-        return defaultDisplayAlign;
-    }
-
-    private static final StyleAttribute[] textAlignAttr = new StyleAttribute[] { StyleAttribute.INLINE_ALIGNMENT };
-    public InlineAlignment getTextAlign(int index) {
-        Object v;
-        if (index < 0)
-            v = attributes.get(textAlignAttr[0]);
-        else
-            v = content.getIterator(textAlignAttr, index, index + 1).getAttribute(textAlignAttr[0]);
-        if (v == null)
-            v = defaultTextAlign;
-        assert v instanceof InlineAlignment;
-        return (InlineAlignment) v;
+    public RubyPhrase(Element e, List<Phrase> bases, List<StyleAttributeInterval> attributes) {
+        super(e, bases, attributes);
     }
 
 }

@@ -23,44 +23,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.text;
+package com.skynav.ttpe.util;
 
-import java.util.List;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 
-import org.w3c.dom.Element;
+public class AttributedStrings {
 
-import com.skynav.ttpe.style.BlockAlignment;
-import com.skynav.ttpe.style.InlineAlignment;
-import com.skynav.ttpe.style.StyleAttribute;
-import com.skynav.ttpe.style.StyleAttributeInterval;
+    private AttributedStrings() {}
 
-import static com.skynav.ttpe.style.Constants.*;
-
-public class Paragraph extends Phrase {
-
-    public Paragraph(Element e, List<Phrase> phrases, List<StyleAttributeInterval> attributes) {
-        super(e, (String) null, attributes);
-        if (phrases != null) {
-            for (Phrase p : phrases)
-                append(p);
+    public static AttributedString concat(AttributedCharacterIterator[] iterators) {
+        StringBuffer sb = new StringBuffer();
+        for (AttributedCharacterIterator aci : iterators) {
+            for (int i = aci.getBeginIndex(), e = aci.getEndIndex(); i < e; ++i) {
+                sb.append(aci.setIndex(i));
+            }
         }
-    }
-
-    public BlockAlignment getDisplayAlign(int index) {
-        return defaultDisplayAlign;
-    }
-
-    private static final StyleAttribute[] textAlignAttr = new StyleAttribute[] { StyleAttribute.INLINE_ALIGNMENT };
-    public InlineAlignment getTextAlign(int index) {
-        Object v;
-        if (index < 0)
-            v = attributes.get(textAlignAttr[0]);
-        else
-            v = content.getIterator(textAlignAttr, index, index + 1).getAttribute(textAlignAttr[0]);
-        if (v == null)
-            v = defaultTextAlign;
-        assert v instanceof InlineAlignment;
-        return (InlineAlignment) v;
+        AttributedString as = new AttributedString(sb.toString());
+        int offset = 0;
+        for (AttributedCharacterIterator aci : iterators) {
+            int b = aci.getBeginIndex();
+            int e = aci.getEndIndex();
+            for (AttributedCharacterIterator.Attribute a : aci.getAllAttributeKeys()) {
+                aci.setIndex(0);
+                while (aci.getIndex() < e) {
+                    int s = aci.getRunStart(a);
+                    int l = aci.getRunLimit(a);
+                    Object v = aci.getAttribute(a);
+                    if (v != null)
+                        as.addAttribute(a, v, offset + s, offset + l);
+                    aci.setIndex(l);
+                }
+            }
+            offset += e - b;
+        }
+        return as;
     }
 
 }

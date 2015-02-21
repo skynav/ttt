@@ -184,11 +184,13 @@ public class ParagraphLayout {
         else if (c == Characters.UC_OBJECT) {
             Object embedding = iterator.getAttribute(embeddingAttr[0]);
             iterator.setIndex(s + 1);
-            return new EmbeddingRun(s, s + 1, embedding);
+            return new EmbeddingRun(s, embedding);
         }
         boolean inBreakingWhitespace = Characters.isBreakingWhitespace(c);
         while ((c = iterator.next()) != CharacterIterator.DONE) {
-            if (inBreakingWhitespace ^ Characters.isBreakingWhitespace(c))
+            if (c == Characters.UC_OBJECT)
+                break;
+            else if (inBreakingWhitespace ^ Characters.isBreakingWhitespace(c))
                 break;
         }
         int e = iterator.getIndex();
@@ -218,13 +220,16 @@ public class ParagraphLayout {
     }
 
     private LineArea emit(double available, double consumed, Consume consume, List<InlineBreakOpportunity> breaks) {
-        LineArea l = new LineArea(paragraph.getElement(), consume == Consume.MAX ? available : consumed, lineHeight, textAlign, color, font);
-        return addTextAreas(l, breaks);
+        removeLeadingWhitespace(breaks);
+        removeTrailingWhitespace(breaks);
+        return addTextAreas(newLine(paragraph, consume == Consume.MAX ? available : consumed, lineHeight, false), breaks);
+    }
+
+    private LineArea newLine(Paragraph p, double ipd, double bpd, boolean isAnnotation) {
+        return new LineArea(p.getElement(), ipd, bpd, textAlign, color, font);
     }
 
     private LineArea addTextAreas(LineArea l, List<InlineBreakOpportunity> breaks) {
-        removeLeadingWhitespace(breaks);
-        removeTrailingWhitespace(breaks);
         if (!breaks.isEmpty()) {
             int savedIndex = iterator.getIndex();
             StringBuffer sb = new StringBuffer();
@@ -410,8 +415,8 @@ public class ParagraphLayout {
     private class EmbeddingRun extends NonWhitespaceRun {
         private Object embedding;
         private InlineBlockArea area;
-        EmbeddingRun(int start, int end, Object embedding) {
-            super(start, end);
+        EmbeddingRun(int index, Object embedding) {
+            super(index, index + 1);
             this.embedding = embedding;
         }
         double getAdvance(int from, int to, double available) {

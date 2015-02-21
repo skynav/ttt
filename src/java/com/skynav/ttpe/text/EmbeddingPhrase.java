@@ -25,45 +25,24 @@
 
 package com.skynav.ttpe.text;
 
-public class TextAttributeInterval {
+import java.util.List;
 
-    private TextAttribute attribute;
-    private Object value;
-    private int begin;
-    private int end;
+import org.w3c.dom.Element;
 
-    public TextAttributeInterval(TextAttribute attribute, Object value, int begin, int end) {
-        this.attribute = attribute;
-        this.value = value;
-        assert begin > -2;
-        this.begin = begin;
-        assert end > -2;
-        assert end >= begin;
-        this.end = end;
+import com.skynav.ttpe.style.StyleAttribute;
+import com.skynav.ttpe.style.StyleAttributeInterval;
+import com.skynav.ttpe.util.Characters;
+
+public class EmbeddingPhrase extends Phrase {
+
+    public EmbeddingPhrase(Element e, Object embedding, List<StyleAttributeInterval> attributes) {
+        super(e, getEmbeddingText(embedding), attributes);
+        add(StyleAttribute.EMBEDDING, embedding, 0, length());
     }
 
-    public TextAttribute getAttribute() {
-        return attribute;
+    private static String getEmbeddingText(Object embedding) {
+        return new String(new char[] {(char) Characters.UC_OBJECT});
     }
 
-    public Object getValue() {
-        return value;
-    }
-
-    public int getBegin() {
-        return begin;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    public int getLength() {
-        return end - begin;
-    }
-
-    public boolean isOuterScope() {
-        return begin < 0;
-    }
 
 }

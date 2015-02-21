@@ -49,6 +49,7 @@ import com.skynav.ttv.verifier.util.QuotedGenericFontFamilyTreatment;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
 
+import static com.skynav.ttpe.style.Constants.*;
 import static com.skynav.ttpe.text.Constants.*;
 
 public class StyleCollector {
@@ -79,19 +80,59 @@ public class StyleCollector {
             attributes.clear();
     }
 
-    public boolean generatesInlineBlock(Element e) {
+    public boolean generatesRubyBlock(Element e) {
+        if (!Documents.isElement(e, ttSpanElementName))
+            return false;
+        else {
+            Ruby r = getRuby(e);
+            return (r != null) && (r == Ruby.CONTAINER);
+        }
+    }
+
+    public Ruby getRuby(Element e) {
         StyleSet styles = getStyles(e);
-        if (styles.get(ttsTextAlignAttrName) != null)
-            return true;
-        if (styles.get(ttsIPDAttrName) != null)
-            return true;
-        if (styles.get(ttsBPDAttrName) != null)
-            return true;
-        return false;
+        StyleSpecification s = styles.get(ttsRubyAttrName);
+        if (s != null)
+            return Ruby.fromValue(s.getValue());
+        else
+            return null;
+    }
+
+    public boolean generatesInlineBlock(Element e) {
+        if (!Documents.isElement(e, ttSpanElementName))
+            return false;
+        else {
+            StyleSet styles = getStyles(e);
+            if (styles.get(ttsTextAlignAttrName) != null)
+                return true;
+            else if (styles.get(ttsIPDAttrName) != null)
+                return true;
+            else if (styles.get(ttsBPDAttrName) != null)
+                return true;
+            else
+                return false;
+        }
     }
 
     public void collectParagraphStyles(Element e) {
-        collectCommonStyles(e, -1, -1);
+        int begin = -1;
+        int end = -1;
+
+        // collect common styles
+        collectCommonStyles(e, begin, end);
+
+        // collect paragraph styles
+        StyleSet styles = getStyles(e);
+        StyleSpecification s;
+        Object v;
+
+        // BLOCK_ALIGNMENT
+        s = styles.get(ttsDisplayAlignAttrName);
+        v = null;
+        if (s != null)
+            v = BlockAlignment.valueOf(s.getValue().toUpperCase());
+        if (v != null)
+            addAttribute(StyleAttribute.BLOCK_ALIGNMENT, v, begin, end);
     }
 
     public void collectSpanStyles(Element e, int begin, int end) {
@@ -115,14 +156,6 @@ public class StyleCollector {
         Object v;
 
         // Non-Derived Styles
-
-        // BLOCK_ALIGNMENT
-        s = styles.get(ttsDisplayAlignAttrName);
-        v = null;
-        if (s != null)
-            v = BlockAlignment.valueOf(s.getValue().toUpperCase());
-        if (v != null)
-            addAttribute(StyleAttribute.BLOCK_ALIGNMENT, v, begin, end);
 
         // COLOR
         s = styles.get(ttsColorAttrName);

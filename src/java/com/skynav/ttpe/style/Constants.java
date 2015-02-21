@@ -25,6 +25,8 @@
 
 package com.skynav.ttpe.style;
 
+import javax.xml.namespace.QName;
+
 import com.skynav.ttpe.fonts.FontKey;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
@@ -39,7 +41,37 @@ import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.style.Wrap;
 
+import static com.skynav.ttv.model.ttml.TTML.Constants.*;
+
 public class Constants {
+
+    // Namespaces
+    public static final String ttsNamespace                             = NAMESPACE_TT_STYLE;
+
+    // ISD Style Attribute Names
+    public static final QName isdCSSAttrName                            = new QName(NAMESPACE_TT_ISD, "css");
+
+    // TTML Style Attribute Names
+    public static final QName ttsBPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "bpd");
+    public static final QName ttsColorAttrName                          = new QName(NAMESPACE_TT_STYLE, "color");
+    public static final QName ttsDisplayAlignAttrName                   = new QName(NAMESPACE_TT_STYLE, "displayAlign");
+    public static final QName ttsExtentAttrName                         = new QName(NAMESPACE_TT_STYLE, "extent");
+    public static final QName ttsIPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "ipd");
+    public static final QName ttsOriginAttrName                         = new QName(NAMESPACE_TT_STYLE, "origin");
+    public static final QName ttsFontFamilyAttrName                     = new QName(NAMESPACE_TT_STYLE, "fontFamily");
+    public static final QName ttsFontSizeAttrName                       = new QName(NAMESPACE_TT_STYLE, "fontSize");
+    public static final QName ttsFontStyleAttrName                      = new QName(NAMESPACE_TT_STYLE, "fontStyle");
+    public static final QName ttsFontWeightAttrName                     = new QName(NAMESPACE_TT_STYLE, "fontWeight");
+    public static final QName ttsLineHeightAttrName                     = new QName(NAMESPACE_TT_STYLE, "lineHeight");
+    public static final QName ttsOverflowAttrName                       = new QName(NAMESPACE_TT_STYLE, "overflow");
+    public static final QName ttsRubyAttrName                           = new QName(NAMESPACE_TT_STYLE, "ruby");
+    public static final QName ttsRubyAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "rubyAlign");
+    public static final QName ttsRubyOffsetAttrName                     = new QName(NAMESPACE_TT_STYLE, "rubyOffset");
+    public static final QName ttsRubyPositionAttrName                   = new QName(NAMESPACE_TT_STYLE, "rubyPosition");
+    public static final QName ttsTextAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "textAlign");
+    public static final QName ttsTextEmphasisAttrName                   = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
+    public static final QName ttsWrapOptionAttrName                     = new QName(NAMESPACE_TT_STYLE, "wrapOption");
+    public static final QName ttsWritingModeAttrName                    = new QName(NAMESPACE_TT_STYLE, "writingMode");
 
     // Default Style Values
     public static final Color defaultColor                              = Color.YELLOW;
