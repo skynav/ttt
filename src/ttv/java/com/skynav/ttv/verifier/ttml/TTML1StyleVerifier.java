@@ -437,7 +437,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
         return names;
     }
 
-    public boolean isInheritableStyle(QName styleName) {
+    public boolean isInheritableStyle(QName eltName, QName styleName) {
         if (accessors.containsKey(styleName))
             return accessors.get(styleName).isInheritable();
         else

@@ -174,7 +174,7 @@ public class AbstractModel implements Model {
         return new java.util.ArrayList<QName>();
     }
 
-    public boolean isInheritableStyle(QName styleName) {
+    public boolean isInheritableStyle(QName eltName, QName styleName) {
         return false;
     }
 

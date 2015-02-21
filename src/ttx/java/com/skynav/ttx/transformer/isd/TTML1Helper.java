@@ -190,8 +190,10 @@ public class TTML1Helper extends TTMLHelper {
                             contentChildren = ((Span) parent).getContent();
                         else
                             contentChildren = null;
-                        if (contentChildren != null)
-                            contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
+                        if (contentChildren != null) {
+                            if (!(parent instanceof Span) || (contentChildren.size() > 1))
+                                contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
+                        }
                     }
                     return true;
                 }

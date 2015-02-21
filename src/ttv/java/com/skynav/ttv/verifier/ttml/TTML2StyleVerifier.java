@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,9 @@ import com.skynav.ttv.model.ttml2.ttd.FontKerning;
 import com.skynav.ttv.model.ttml2.ttd.FontStyle;
 import com.skynav.ttv.model.ttml2.ttd.FontWeight;
 import com.skynav.ttv.model.ttml2.ttd.Overflow;
+import com.skynav.ttv.model.ttml2.ttd.Ruby;
+import com.skynav.ttv.model.ttml2.ttd.RubyAlign;
+import com.skynav.ttv.model.ttml2.ttd.RubyPosition;
 import com.skynav.ttv.model.ttml2.ttd.ShowBackground;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 import com.skynav.ttv.model.ttml2.ttd.TextDecoration;
@@ -64,6 +67,10 @@ import com.skynav.ttv.verifier.ttml.style.FontStyleVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
+import com.skynav.ttv.verifier.ttml.style.RubyVerifier;
+import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
+import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
+import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.ShowBackgroundVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextDecorationVerifier;
@@ -176,6 +183,50 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             null
         },
         {
+            new QName(NAMESPACE,"ruby"),
+            "Ruby",
+            Ruby.class,
+            RubyVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            Ruby.NONE,
+            Ruby.NONE.value()
+        },
+        {
+            new QName(NAMESPACE,"rubyAlign"),
+            "RubyAlign",
+            RubyAlign.class,
+            RubyAlignVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            RubyAlign.SPACE_AROUND,
+            RubyAlign.SPACE_AROUND.value()
+        },
+        {
+            new QName(NAMESPACE,"rubyOffset"),
+            "RubyOffset",
+            String.class,
+            RubyOffsetVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "auto",
+            null
+        },
+        {
+            new QName(NAMESPACE,"rubyPosition"),
+            "RubyPosition",
+            RubyPosition.class,
+            RubyPositionVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            RubyPosition.BEFORE,
+            RubyPosition.BEFORE.value()
+        },
+        {
             new QName(NAMESPACE,"showBackground"),
             "ShowBackground",
             ShowBackground.class,
@@ -273,6 +324,14 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     protected void populateAccessors(Map<QName, StyleAccessor> accessors) {
         super.populateAccessors(accessors);
         populateAccessors(accessors, styleAccessorMap);
+    }
+
+    @Override
+    public boolean isInheritableStyle(QName eltName, QName styleName) {
+        if (eltName.equals(TTML2Model.spanElementName) && styleName.equals(textAlignAttributeName))
+            return false;
+        else
+            return super.isInheritableStyle(eltName, styleName);
     }
 
     @Override

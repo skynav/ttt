@@ -53,10 +53,11 @@ public interface StyleVerifier extends ItemVerifier {
 
     /**
      * Determine if named style is inheritable.
+     * @param eltName name of element type
      * @param styleName name of style
      * @return true if named style is inheritable.
      */
-    boolean isInheritableStyle(QName styleName);
+    boolean isInheritableStyle(QName eltName, QName styleName);
 
     /**
      * Obtain initial value of named style.

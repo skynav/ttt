@@ -1272,7 +1272,7 @@ public class ISD {
                 for (QName name : getDefinedStyleNames(context)) {
                     if (!sss.containsKey(name)) {
                         StyleSpecification s;
-                        if (isInheritableStyle(name, context) && !isRootElement(elt))
+                        if (isInheritableStyle(elt, name, context) && !isRootElement(elt))
                             s = getNearestAncestorStyle(elt, name, specifiedStyleSets);
                         else
                             s = getInitialStyle(elt, name, context);
@@ -1354,8 +1354,13 @@ public class ISD {
             return context.getModel().getDefinedStyleNames();
         }
 
-        private static boolean isInheritableStyle(QName styleName, TransformerContext context) {
-            return context.getModel().isInheritableStyle(styleName);
+        private static boolean isInheritableStyle(Element elt, QName styleName, TransformerContext context) {
+            QName eltName = new QName(elt.getNamespaceURI(), elt.getLocalName());
+            return context.getModel().isInheritableStyle(eltName, styleName);
+        }
+
+        private static boolean isInheritableStyle(QName eltName, QName styleName, TransformerContext context) {
+            return context.getModel().isInheritableStyle(eltName, styleName);
         }
 
         private static StyleSpecification getNearestAncestorStyle(Element elt, QName styleName, Map<Element, StyleSet> specifiedStyleSets) {

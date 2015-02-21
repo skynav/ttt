@@ -321,8 +321,8 @@ public class TTML1 {
         public Collection<QName> getApplicableStyleNames(QName eltName) {
             return getStyleVerifier().getApplicableStyleNames(eltName);
         }
-        public boolean isInheritableStyle(QName styleName) {
-            return getStyleVerifier().isInheritableStyle(styleName);
+        public boolean isInheritableStyle(QName eltName, QName styleName) {
+            return getStyleVerifier().isInheritableStyle(eltName, styleName);
         }
         public String getInitialStyleValue(QName eltName, QName styleName) {
             return getStyleVerifier().getInitialStyleValue(eltName, styleName);
