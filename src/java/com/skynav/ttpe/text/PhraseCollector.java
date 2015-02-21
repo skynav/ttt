@@ -65,12 +65,14 @@ public class PhraseCollector {
 
     protected void collectParagraph(Element e) {
         collectChildren(e);
+        emit(e);
     }
 
     protected void collectSpan(Element e) {
         int begin = text.length();
         collectChildren(e);
         styleCollector.collectSpanStyles(e, begin, text.length());
+        emit(e);
     }
 
     protected void collectChildren(Element e) {
@@ -89,7 +91,7 @@ public class PhraseCollector {
                     text.append(t);
             } else if (n instanceof Element) {
                 Element c = (Element) n;
-                if (breakPhrase(e))
+                if (breakPhrase(c))
                     break;
                 else if (Documents.isElement(c, ttSpanElementName))
                     collectSpan(c);

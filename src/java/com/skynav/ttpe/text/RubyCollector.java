@@ -63,11 +63,11 @@ public class RubyCollector extends PhraseCollector {
                 if (annotations != null) {
                     List<Phrase> baseAnnotations = annotations.get(base);
                     if (baseAnnotations != null) {
-                        base.add(StyleAttribute.RUBY, baseAnnotations, 0, base.length());
+                        base.add(StyleAttribute.RUBY, baseAnnotations.toArray(new Phrase[baseAnnotations.size()]), 0, base.length());
                     }
                 }
             }
-            add(new RubyPhrase(e, bases.toArray(new Phrase[bases.size()]), styleCollector.extract()));
+            add(new RubyPhrase(e, bases, styleCollector.extract()));
         }
     }
 
