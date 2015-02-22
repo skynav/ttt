@@ -65,6 +65,7 @@ import com.skynav.ttv.verifier.ttml.style.FontKerningVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontShearVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontStyleVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
+import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyVerifier;
@@ -161,6 +162,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             FontWeight.NORMAL.value(),
         },
         {
+            new QName(NAMESPACE,"lineHeight"),
+            "LineHeight",
+            String.class,
+            LineHeightVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "normal",
+            null,
+        },
+        {
             new QName(NAMESPACE,"overflow"),
             "Overflow",
             Overflow.class,
@@ -223,8 +235,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.TRUE,
-            RubyPosition.BEFORE,
-            RubyPosition.BEFORE.value()
+            RubyPosition.AUTO,
+            RubyPosition.AUTO.value()
         },
         {
             new QName(NAMESPACE,"showBackground"),
