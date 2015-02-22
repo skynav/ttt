@@ -39,7 +39,7 @@
   </xs:simpleType>
   <xs:simpleType name="border">
     <xs:annotation>
-      <xs:documentation>[ borderWidth || borderStyle || borderColor ]</xs:documentation>
+      <xs:documentation>[ borderThickness || borderStyle || borderColor ]</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
@@ -100,6 +100,12 @@
       <xs:enumeration value="ltr"/>
       <xs:enumeration value="rtl"/>
     </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="disparity">
+    <xs:annotation>
+      <xs:documentation>length</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="display">
     <xs:restriction base="xs:token">
@@ -513,6 +519,7 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="start"/>
       <xs:enumeration value="center"/>
+      <xs:enumeration value="end"/>
       <xs:enumeration value="spaceBetween"/>
       <xs:enumeration value="spaceAround"/>
     </xs:restriction>
@@ -525,15 +532,24 @@
   </xs:simpleType>
   <xs:simpleType name="rubyPosition">
     <xs:restriction base="xs:token">
+      <xs:enumeration value="auto"/>
       <xs:enumeration value="before"/>
       <xs:enumeration value="after"/>
-      <xs:enumeration value="interCharacter"/>
+      <xs:enumeration value="outside"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="showBackground">
     <xs:restriction base="xs:token">
       <xs:enumeration value="always"/>
       <xs:enumeration value="whenActive"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="storageAspectRatio">
+    <xs:annotation>
+      <xs:documentation>positiveInteger:positiveInteger</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="subFrameRate">
