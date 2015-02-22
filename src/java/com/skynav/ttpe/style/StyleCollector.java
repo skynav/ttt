@@ -80,20 +80,20 @@ public class StyleCollector {
             attributes.clear();
     }
 
-    public boolean generatesRubyBlock(Element e) {
+    public boolean generatesAnnotationBlock(Element e) {
         if (!Documents.isElement(e, ttSpanElementName))
             return false;
         else {
-            Ruby r = getRuby(e);
-            return (r != null) && (r == Ruby.CONTAINER);
+            Annotation r = getAnnotation(e);
+            return (r != null) && (r == Annotation.CONTAINER);
         }
     }
 
-    public Ruby getRuby(Element e) {
+    public Annotation getAnnotation(Element e) {
         StyleSet styles = getStyles(e);
         StyleSpecification s = styles.get(ttsRubyAttrName);
         if (s != null)
-            return Ruby.fromValue(s.getValue());
+            return Annotation.fromValue(s.getValue());
         else
             return null;
     }
@@ -156,6 +156,41 @@ public class StyleCollector {
         Object v;
 
         // Non-Derived Styles
+
+        // ANNOTATION_ALIGN
+        s = styles.get(ttsRubyAlignAttrName);
+        v = null;
+        if (s != null)
+            v = InlineAlignment.fromValue(s.getValue());
+        if (v != null)
+            addAttribute(StyleAttribute.ANNOTATION_ALIGNMENT, v, begin, end);
+
+        // ANNOTATION_OFFSET
+        s = styles.get(ttsRubyOffsetAttrName);
+        v = null;
+        if (s != null) {
+            if (Keywords.isAuto(s.getValue())) {
+                v = Double.valueOf(0);
+            } else {
+                Integer[] minMax = new Integer[] { 1, 1 };
+                Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
+                List<Length> lengths = new java.util.ArrayList<Length>();
+                if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+                    assert lengths.size() == 1;
+                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, refFontSize));
+                }
+            }
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.ANNOTATION_OFFSET, v, begin, end);
+
+        // ANNOTATION_POSITION
+        s = styles.get(ttsRubyPositionAttrName);
+        v = null;
+        if (s != null)
+            v = AnnotationPosition.valueOf(s.getValue().toUpperCase());
+        if (v != null)
+            addAttribute(StyleAttribute.ANNOTATION_POSITION, v, begin, end);
 
         // COLOR
         s = styles.get(ttsColorAttrName);
@@ -225,7 +260,7 @@ public class StyleCollector {
         s = styles.get(ttsTextAlignAttrName);
         v = null;
         if (s != null)
-            v = InlineAlignment.valueOf(s.getValue().toUpperCase());
+            v = InlineAlignment.fromValue(s.getValue());
         if (v != null)
             addAttribute(StyleAttribute.INLINE_ALIGNMENT, v, begin, end);
 

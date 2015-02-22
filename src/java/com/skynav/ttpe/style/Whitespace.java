@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.style;
 
+// xml:space values
 public enum Whitespace {
     DEFAULT,
     PRESERVE;

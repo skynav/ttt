@@ -23,22 +23,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.text;
-
-import java.util.List;
+package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.style.StyleAttributeInterval;
+import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.AnnotationPosition;
+import com.skynav.ttpe.style.InlineAlignment;
 
-public class Paragraph extends Phrase {
+public class AnnotationArea extends LineArea implements Inline {
 
-    public Paragraph(Element e, List<Phrase> phrases, List<StyleAttributeInterval> attributes) {
-        super(e, (String) null, attributes);
-        if (phrases != null) {
-            for (Phrase p : phrases)
-                append(p);
-        }
+    private double offset;
+    private AnnotationPosition position;
+
+    public AnnotationArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font) {
+        super(e, ipd, bpd, alignment, color, font);
+    }
+
+    public void setOffset(double offset) {
+        this.offset = offset;
+    }
+
+    public double getOffset() {
+        return offset;
+    }
+
+    public void setPosition(AnnotationPosition position) {
+        this.position = position;
+    }
+
+    public AnnotationPosition getPosition() {
+        return position;
     }
 
 }

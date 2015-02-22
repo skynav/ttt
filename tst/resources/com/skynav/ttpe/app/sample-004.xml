@@ -10,21 +10,50 @@
 </head>
 <body tts:textAlign="center" tts:fontFamily="Noto Sans" tts:fontSize="36px" tts:lineHeight="45px">
 <div>
-<!--      <p region="r0" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center">利<span tts:ruby="container"><span tts:ruby="base">利用許諾</span><br/><span tts:ruby="text">ライセンス</span></span>諾</p> -->
 <p region="r0" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center">
-  A
+  利
   <span tts:ruby="container">
     <span tts:ruby="baseContainer">
-      <span tts:ruby="base">BCD</span>
+      <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer">
-      <span tts:ruby="text">bcd</span>
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="before" tts:rubyAlign="start">
+      <span tts:ruby="text">ライセンス</span>
     </span>
-    <span tts:ruby="textContainer">
-      <span tts:ruby="text">efg</span>
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="after" tts:rubyAlign="end">
+      <span tts:ruby="text">license</span>
     </span>
   </span>
-  Z
+  諾
+</p>
+<p region="r1" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center">
+  利
+  <span tts:ruby="container">
+    <span tts:ruby="baseContainer">
+      <span tts:ruby="base">利用許諾</span>
+    </span>
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="before" tts:rubyAlign="start">
+      <span tts:ruby="text">ライセンス</span>
+    </span>
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="after" tts:rubyAlign="end">
+      <span tts:ruby="text">license</span>
+    </span>
+  </span>
+  諾
+</p>
+<p region="r2" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center">
+  利
+  <span tts:ruby="container">
+    <span tts:ruby="baseContainer">
+      <span tts:ruby="base">利用許諾</span>
+    </span>
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="before" tts:rubyAlign="start">
+      <span tts:ruby="text">ライセンス</span>
+    </span>
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="after" tts:rubyAlign="end">
+      <span tts:ruby="text">license</span>
+    </span>
+  </span>
+  諾
 </p>
 </div>
 </body>

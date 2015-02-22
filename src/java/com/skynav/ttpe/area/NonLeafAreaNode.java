@@ -26,10 +26,32 @@
 package com.skynav.ttpe.area;
 
 import java.util.List;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 
 public abstract class NonLeafAreaNode extends AreaNode {
+
+    public enum Expansion {
+        ENCLOSE_IPD,
+        ENCLOSE_BPD,
+        EXPAND_IPD,
+        EXPAND_BPD;
+    };
+
+    public static final Set<Expansion> ENCLOSE_ALL;
+    public static final Set<Expansion> EXPAND_ALL;
+    public static final Set<Expansion> EXPAND_IPD;
+    static {
+        ENCLOSE_ALL = new java.util.HashSet<Expansion>();
+        ENCLOSE_ALL.add(Expansion.ENCLOSE_IPD);
+        ENCLOSE_ALL.add(Expansion.ENCLOSE_BPD);
+        EXPAND_ALL = new java.util.HashSet<Expansion>();
+        EXPAND_ALL.add(Expansion.EXPAND_IPD);
+        EXPAND_ALL.add(Expansion.EXPAND_BPD);
+        EXPAND_IPD = new java.util.HashSet<Expansion>();
+        EXPAND_IPD.add(Expansion.EXPAND_IPD);
+    }
 
     private List<AreaNode> children;
 
@@ -37,7 +59,7 @@ public abstract class NonLeafAreaNode extends AreaNode {
         super(e);
     }
 
-    public void expand(AreaNode a) {
+    public void expand(AreaNode a, Set<Expansion> expansions) {
     }
 
     public AreaNode firstChild() {
@@ -55,32 +77,32 @@ public abstract class NonLeafAreaNode extends AreaNode {
     }
 
     public void addChildren(List<? extends AreaNode> children) {
-        addChildren(children, false);
+        addChildren(children, null);
     }
 
-    public void addChildren(List<? extends AreaNode> children, boolean expand) {
+    public void addChildren(List<? extends AreaNode> children, Set<Expansion> expansions) {
         for (AreaNode c : children)
-            addChild(c, expand);
+            addChild(c, expansions);
     }
 
     public void addChild(AreaNode c) {
-        addChild(c, false);
+        addChild(c, null);
     }
 
-    public void addChild(AreaNode c, boolean expand) {
+    public void addChild(AreaNode c, Set<Expansion> expansions) {
         c.setParent(this);
         if (children == null)
             children = new java.util.ArrayList<AreaNode>();
         children.add(c);
-        if (expand)
-            expand(c);
+        if (expansions != null)
+            expand(c, expansions);
     }
 
     public void insertChild(AreaNode c, AreaNode cBefore) {
-        insertChild(c, cBefore, false);
+        insertChild(c, cBefore, null);
     }
 
-    public void insertChild(AreaNode c, AreaNode cBefore, boolean expand) {
+    public void insertChild(AreaNode c, AreaNode cBefore, Set<Expansion> expansions) {
         c.setParent(this);
         if (children == null)
             children = new java.util.ArrayList<AreaNode>();
@@ -93,8 +115,8 @@ public abstract class NonLeafAreaNode extends AreaNode {
             else
                 children.add(i, c);
         }
-        if (expand)
-            expand(c);
+        if (expansions != null)
+            expand(c, expansions);
     }
 
     public List<AreaNode> getChildren() {

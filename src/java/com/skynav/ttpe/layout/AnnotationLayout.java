@@ -23,18 +23,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.layout;
 
-import org.w3c.dom.Element;
+import java.util.List;
 
-public class RubyBlockArea extends InlineBlockArea {
+import com.skynav.ttpe.area.AnnotationArea;
+import com.skynav.ttpe.area.LineArea;
+import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.InlineAlignment;
+import com.skynav.ttpe.text.Phrase;
 
-    public RubyBlockArea(Element e) {
-        super(e);
+public class AnnotationLayout extends LineLayout {
+
+    public AnnotationLayout(Phrase content, LayoutState state) {
+        super(content, state);
     }
 
-    public void expand(AreaNode a) {
-        super.expand(a);
+    public List<AnnotationArea> layout() {
+        List<AnnotationArea> areas = new java.util.ArrayList<AnnotationArea>();
+        for (LineArea l : layout(Double.POSITIVE_INFINITY, Consume.FIT)) {
+            if (l instanceof AnnotationArea)
+                areas.add((AnnotationArea) l);
+        }
+        return areas;
     }
 
+    @Override
+    protected LineArea newLine(Phrase p, double ipd, double bpd, InlineAlignment textAlign, Color color, Font font) {
+        return new AnnotationArea(p.getElement(), ipd, bpd, textAlign, color, font);
+    }
 }
+

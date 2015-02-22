@@ -28,6 +28,10 @@ package com.skynav.ttpe.style;
 public class StyleAttribute extends java.text.AttributedCharacterIterator.Attribute {
 
     //                               ** name **                                                                 ** value type ** 
+    public static final StyleAttribute   ANNOTATION             = new StyleAttribute("ANNOTATION");             // com.skynav.ttpe.text.Phrase[]
+    public static final StyleAttribute   ANNOTATION_ALIGNMENT   = new StyleAttribute("ANNOTATION_ALIGNMENT");   // com.skynav.ttpe.style.InlineAlignment
+    public static final StyleAttribute   ANNOTATION_OFFSET      = new StyleAttribute("ANNOTATION_OFFSET");      // Double
+    public static final StyleAttribute   ANNOTATION_POSITION    = new StyleAttribute("ANNOTATION_POSITION");    // com.skynav.ttpe.style.AnnotationPosition
     public static final StyleAttribute   BLOCK_ALIGNMENT        = new StyleAttribute("BLOCK_ALIGNMENT");        // com.skynav.ttpe.style.BlockAlignment
     public static final StyleAttribute   BPD                    = new StyleAttribute("BPD");                    // Double
     public static final StyleAttribute   COLOR                  = new StyleAttribute("COLOR");                  // com.skynav.ttpe.style.Color
@@ -39,12 +43,11 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   FONT_SIZE              = new StyleAttribute("FONT_SIZE");              // com.skynav.ttpe.geometry.Extent
     public static final StyleAttribute   FONT_STYLE             = new StyleAttribute("FONT_STYLE");             // com.skynav.ttpe.fonts.FontStyle
     public static final StyleAttribute   FONT_WEIGHT            = new StyleAttribute("FONT_WEIGHT");            // com.skynav.ttpe.fonts.FontWeight
-    public static final StyleAttribute   INLINE_ALIGNMENT       = new StyleAttribute("INLINE_ALIGNMENT");       // com.skynav.ttpe.style.BlockAlignment
+    public static final StyleAttribute   INLINE_ALIGNMENT       = new StyleAttribute("INLINE_ALIGNMENT");       // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   IPD                    = new StyleAttribute("IPD");                    // Double
     public static final StyleAttribute   LANGUAGE               = new StyleAttribute("LANGUAGE");               // String
     public static final StyleAttribute   LETTER_SPACING         = new StyleAttribute("LETTER_SPACING");         // Double
     public static final StyleAttribute   LINE_HEIGHT            = new StyleAttribute("LINE_HEIGHT");            // Double
-    public static final StyleAttribute   RUBY                   = new StyleAttribute("RUBY");                   // com.skynav.ttpe.text.Phrase[]
     public static final StyleAttribute   WHITESPACE             = new StyleAttribute("WHITESPACE");             // com.skynav.ttpe.style.Whitespace
     public static final StyleAttribute   WRAP                   = new StyleAttribute("WRAP");                   // com.skynav.ttpe.style.Wrap
 

@@ -31,6 +31,7 @@ import java.io.IOException;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.NamingTable;
+import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.OTFParser;
 
@@ -46,8 +47,9 @@ public class Font {
     private Reporter reporter;
     private boolean otfLoadFailed;
     private OpenTypeFont otf;
-    private CmapSubtable cmapSubtable;
     private NamingTable nameTable;
+    private OS2WindowsMetricsTable os2Table;
+    private CmapSubtable cmapSubtable;
     
     public Font(FontKey key, String source, Reporter reporter) {
         this.key = key;
@@ -59,17 +61,15 @@ public class Font {
         return key;
     }
 
+    public FontSpecification getSpecification() {
+        return key.getSpecification();
+    }
+
     public String getSource() {
         return source;
     }
 
     public String getPreferredFamilyName() {
-        if (nameTable == null) {
-            try {
-                nameTable = otf.getNaming();
-            } catch (IOException e) {
-            }
-        }
         if (nameTable != null)
             return nameTable.getName(16, 1, 0, 0);
         else
@@ -92,6 +92,22 @@ public class Font {
         return key.size;
     }
 
+    public Double getDefaultLineHeight() {
+        return key.size.getDimension(key.axis) * 1.25;
+    }
+
+    public double getLeading() {
+        return scaleFontUnits(os2Table.getTypoLineGap());
+    }
+
+    public double getAscent() {
+        return scaleFontUnits(os2Table.getTypoAscender());
+    }
+
+    public double getDescent() {
+        return scaleFontUnits(os2Table.getTypoDescender());
+    }
+
     public double getAdvance(String text) {
         return getAdvance(text, Characters.UC_REPLACEMENT);
     }
@@ -100,7 +116,6 @@ public class Font {
         double advance = 0;
         try {
             if (!key.size.isEmpty() && maybeLoad()) {
-                double size = key.size.getDimension(key.axis);
                 for (int i = 0, n = text.length(); i < n; ++i) {
                     int c = (int) text.charAt(i);
                     if ((c >= 0xD800) && (c < 0xE000)) {
@@ -120,8 +135,7 @@ public class Font {
                     int a = Characters.isZeroWidthWhitespace(c) ? 0 : otf.getAdvanceWidth(cmapSubtable.getGlyphId(c));
                     advance += (double) a;
                 }
-                advance = advance / (double) otf.getUnitsPerEm();
-                advance *= size;
+                advance = scaleFontUnits(advance);
             }
         } catch (IOException e) {
         }
@@ -131,11 +145,15 @@ public class Font {
     private boolean maybeLoad() {
         if ((otf == null) && !otfLoadFailed) {
             OpenTypeFont otf = null;
+            NamingTable nameTable = null;
+            OS2WindowsMetricsTable os2Table = null;
             CmapSubtable cmapSubtable = null;
             try {
                 File f = new File(source);
                 if (f.exists()) {
                     otf = new OTFParser(false, true).parse(f);
+                    nameTable = otf.getNaming();
+                    os2Table = otf.getOS2Windows();
                     CmapTable cmap = otf.getCmap();
                     if (cmap != null)
                         cmapSubtable = cmap.getSubtable(CmapTable.PLATFORM_UNICODE, CmapTable.ENCODING_UNICODE_2_0_BMP);
@@ -143,13 +161,23 @@ public class Font {
                 }
             } catch (IOException e) {
             }
-            if (cmapSubtable != null) {
+            if ((nameTable != null) && (os2Table != null) && (cmapSubtable != null)) {
                 this.otf = otf;
+                this.nameTable = nameTable;
+                this.os2Table = os2Table;
                 this.cmapSubtable = cmapSubtable;
             } else
                 otfLoadFailed = true;
         }
         return !otfLoadFailed;
+    }
+
+    private double scaleFontUnits(double v) {
+        try {
+            return (v / (double) otf.getUnitsPerEm()) * key.size.getDimension(key.axis);
+        } catch (Exception e) {
+            return v;
+        }
     }
 
 }

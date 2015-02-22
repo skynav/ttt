@@ -25,6 +25,8 @@
 
 package com.skynav.ttpe.area;
 
+import java.util.Set;
+
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
@@ -52,19 +54,27 @@ public class BlockArea extends NonLeafAreaNode {
         this.bpd = bpd;
     }
 
-    public void expand(AreaNode a) {
+    @Override
+    public void expand(AreaNode a, Set<Expansion> expansions) {
         double ipd = a.getIPD();
-        // expand in Dimension.IPD to fit specified IPD
         if (!Double.isNaN(ipd)) {
-            if (Double.isNaN(this.ipd) || (this.ipd < ipd))
-                this.ipd = ipd;
+            double ipdCurrent = getIPD();
+            if (Double.isNaN(ipdCurrent))
+                ipdCurrent = 0;
+            if (expansions.contains(Expansion.EXPAND_IPD))
+                setIPD(ipdCurrent + ipd);
+            else if (expansions.contains(Expansion.ENCLOSE_IPD))
+                setIPD(ipdCurrent < ipd ? ipd : ipdCurrent);
         }
-        // expand in Dimension.BPD to fit specified BPD plus existing BPD
         double bpd = a.getBPD();
         if (!Double.isNaN(bpd)) {
-            if (Double.isNaN(this.bpd))
-                this.bpd = 0;
-            this.bpd += bpd;
+            double bpdCurrent = getBPD();
+            if (Double.isNaN(bpdCurrent))
+                bpdCurrent = 0;
+            if (expansions.contains(Expansion.EXPAND_BPD))
+                setBPD(bpdCurrent + bpd);
+            else if (expansions.contains(Expansion.ENCLOSE_BPD))
+                setBPD(bpdCurrent < bpd ? bpd : bpdCurrent);
         }
     }
 

@@ -23,22 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.text;
+package com.skynav.ttpe.style;
 
-import java.util.List;
-
-import org.w3c.dom.Element;
-
-import com.skynav.ttpe.style.StyleAttributeInterval;
-
-public class Paragraph extends Phrase {
-
-    public Paragraph(Element e, List<Phrase> phrases, List<StyleAttributeInterval> attributes) {
-        super(e, (String) null, attributes);
-        if (phrases != null) {
-            for (Phrase p : phrases)
-                append(p);
-        }
-    }
-
+public enum AnnotationPosition {
+    AUTO,
+    BEFORE,
+    AFTER,
+    OUTSIDE;
 }

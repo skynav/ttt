@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-import com.skynav.ttpe.style.Ruby;
+import com.skynav.ttpe.style.Annotation;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.StyleCollector;
@@ -40,20 +40,20 @@ import com.skynav.xml.helpers.Documents;
 
 import static com.skynav.ttpe.text.Constants.*;
 
-public class RubyCollector extends PhraseCollector {
+public class AnnotationCollector extends PhraseCollector {
 
     private List<Phrase> bases;                                 // base phrases
     private List<Integer> baseStarts;                           // indices into base phrases list of start of base containers
     private Map<Phrase,List<Phrase>> annotations;               // annotations expressed as map from bases to annotation lists
     private int currentBase;                                    // current index into bases when processing text container and text spans
 
-    public RubyCollector(StyleCollector styleCollector) {
+    public AnnotationCollector(StyleCollector styleCollector) {
         super(styleCollector);
         this.currentBase = -1;
     }
 
     public List<Phrase> collect(Element e) {
-        return collectRuby(e);
+        return collectAnnotation(e);
     }
 
     @Override
@@ -63,15 +63,15 @@ public class RubyCollector extends PhraseCollector {
                 if (annotations != null) {
                     List<Phrase> baseAnnotations = annotations.get(base);
                     if (baseAnnotations != null) {
-                        base.add(StyleAttribute.RUBY, baseAnnotations.toArray(new Phrase[baseAnnotations.size()]), 0, base.length());
+                        base.add(StyleAttribute.ANNOTATION, baseAnnotations.toArray(new Phrase[baseAnnotations.size()]), 0, base.length());
                     }
                 }
             }
-            add(new RubyPhrase(e, bases, styleCollector.extract()));
+            add(new AnnotationPhrase(e, bases, styleCollector.extract()));
         }
     }
 
-    private List<Phrase> collectRuby(Element e) {
+    private List<Phrase> collectAnnotation(Element e) {
         clear();
         for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Text) {
@@ -79,24 +79,24 @@ public class RubyCollector extends PhraseCollector {
             } else if (n instanceof Element) {
                 Element c = (Element) n;
                 if (Documents.isElement(c, ttSpanElementName)) {
-                    Ruby ruby = styleCollector.getRuby(c);
-                    if (ruby == null) {
-                        // ignore span children that do not specify tts:ruby
-                    } else if (ruby == Ruby.BASE_CONTAINER) {
+                    Annotation annotation = styleCollector.getAnnotation(c);
+                    if (annotation == null) {
+                        // ignore span children that do not specify tts:annotation
+                    } else if (annotation == Annotation.BASE_CONTAINER) {
                         addBaseStart();
                         collectBaseContainer(c);
-                    } else if (ruby == Ruby.TEXT_CONTAINER) {
+                    } else if (annotation == Annotation.TEXT_CONTAINER) {
                         if (baseStarts != null) {
                             collectTextContainer(c);
                         }
-                    } else if (ruby == Ruby.BASE) {
+                    } else if (annotation == Annotation.BASE) {
                         addBaseStart();
                         collectBase(c);
-                    } else if (ruby == Ruby.TEXT) {
+                    } else if (annotation == Annotation.TEXT) {
                         if (baseStarts != null) {
                             collectText(c);
                         }
-                    } else if (ruby == Ruby.DELIMITER) {
+                    } else if (annotation == Annotation.DELIMITER) {
                         collectDelimiter(c);
                     } else {
                         throw new IllegalStateException();
@@ -119,13 +119,13 @@ public class RubyCollector extends PhraseCollector {
             } else if (n instanceof Element) {
                 Element c = (Element) n;
                 if (Documents.isElement(c, ttSpanElementName)) {
-                    Ruby ruby = styleCollector.getRuby(c);
-                    if (ruby == null) {
-                        // ignore span children that do not specify tts:ruby
-                    } else if (ruby == Ruby.BASE) {
+                    Annotation annotation = styleCollector.getAnnotation(c);
+                    if (annotation == null) {
+                        // ignore span children that do not specify tts:annotation
+                    } else if (annotation == Annotation.BASE) {
                         collectBase(c);
                     } else {
-                        // ignore non-base ruby children
+                        // ignore non-base annotation children
                     }
                 } else {
                     // ignore non-span children
@@ -147,13 +147,13 @@ public class RubyCollector extends PhraseCollector {
             } else if (n instanceof Element) {
                 Element c = (Element) n;
                 if (Documents.isElement(c, ttSpanElementName)) {
-                    Ruby ruby = styleCollector.getRuby(c);
-                    if (ruby == null) {
-                        // ignore span children that do not specify tts:ruby
-                    } else if (ruby == Ruby.TEXT) {
+                    Annotation annotation = styleCollector.getAnnotation(c);
+                    if (annotation == null) {
+                        // ignore span children that do not specify tts:annotation
+                    } else if (annotation == Annotation.TEXT) {
                         collectText(c);
                     } else {
-                        // ignore non-text ruby children
+                        // ignore non-text annotation children
                     }
                 } else {
                     // ignore non-span children
@@ -175,7 +175,7 @@ public class RubyCollector extends PhraseCollector {
             }
         }
         StyleCollector sc = new StyleCollector(styleCollector);
-        sc.collectSpanStyles(e, 0, text.length());
+        sc.collectSpanStyles(e, -1, -1);
         addBase(e, text.toString(), sc.extract());
     }
 
@@ -198,7 +198,7 @@ public class RubyCollector extends PhraseCollector {
                 }
             }
             StyleCollector sc = new StyleCollector(styleCollector);
-            sc.collectSpanStyles(e, 0, text.length());
+            sc.collectSpanStyles(e, -1, -1);
             addAnnotation(e, text.toString(), sc.extract());
             ++currentBase;
         } else

@@ -25,9 +25,12 @@
 
 package com.skynav.ttpe.area;
 
+import java.util.Set;
+
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
 
@@ -37,6 +40,8 @@ public class LineArea extends BlockArea {
     private Color color;
     private Font font;
     private double overflow;
+    private double bpdAnnotationBefore;
+    private double bpdAnnotationAfter;
 
     public LineArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font) {
         super(e, ipd, bpd);
@@ -46,37 +51,33 @@ public class LineArea extends BlockArea {
     }
 
     @Override
-    public void addChild(AreaNode c, boolean expand) {
-        if (c instanceof Inline)
-            super.addChild(c, expand);
-        else
+    public void addChild(AreaNode c, Set<Expansion> expansions) {
+        if (c instanceof Inline) {
+            super.addChild(c, expansions);
+            maybeUpdateForAnnotation(c);
+        } else
             throw new IllegalArgumentException();
     }
 
     @Override
-    public void insertChild(AreaNode c, AreaNode cBefore, boolean expand) {
-        if (c instanceof Inline)
-            super.insertChild(c, cBefore, expand);
-        else
+    public void insertChild(AreaNode c, AreaNode cBefore, Set<Expansion> expansions) {
+        if (c instanceof Inline) {
+            super.insertChild(c, cBefore, expansions);
+            maybeUpdateForAnnotation(c);
+        } else
             throw new IllegalArgumentException();
     }
 
     @Override
-    public void expand(AreaNode a) {
-        double ipd = a.getIPD();
-        // expand in Dimension.IPD to fit specified IPD
-        if (!Double.isNaN(ipd)) {
-            double ipdCurrent = getIPD();
-            if (Double.isNaN(ipdCurrent) || (ipdCurrent < ipd))
-                setIPD(ipd);
-        }
-        // expand in Dimension.BPD to fit specified BPD
-        double bpd = a.getBPD();
-        if (!Double.isNaN(bpd)) {
-            double bpdCurrent = getBPD();
-            if (Double.isNaN(bpdCurrent) || (bpdCurrent < bpd))
-                setBPD(bpd);
-        }
+    public void expand(AreaNode a, Set<Expansion> expansions) {
+        if (a instanceof AnnotationArea)
+            return;
+        else
+            super.expand(a, expansions);
+    }
+
+    public void setAlignment(InlineAlignment alignment) {
+        this.alignment = alignment;
     }
 
     public InlineAlignment getAlignment() {
@@ -91,12 +92,52 @@ public class LineArea extends BlockArea {
         return font;
     }
 
+    public double getLeadingBefore() {
+        return font.getLeading() / 2;
+    }
+
+    public double getLeadingAfter() {
+        return font.getLeading() / 2;
+    }
+
+    public double getAscent() {
+        return font.getAscent();
+    }
+
+    public double getDescent() {
+        return font.getDescent();
+    }
+
     public void setOverflow(double overflow) {
         this.overflow = overflow;
     }
 
     public double getOverflow() {
         return overflow;
+    }
+
+    public double getAnnotationBPD(AnnotationPosition position) {
+        if (position == AnnotationPosition.BEFORE)
+            return bpdAnnotationBefore;
+        else if (position == AnnotationPosition.AFTER)
+            return bpdAnnotationAfter;
+        else
+            return 0;
+    }
+
+    private void maybeUpdateForAnnotation(AreaNode c) {
+        if (c instanceof AnnotationArea) {
+            AnnotationArea a = (AnnotationArea) c;
+            AnnotationPosition position = a.getPosition();
+            double bpdAnnotation = a.getBPD();
+            if (position == AnnotationPosition.BEFORE) {
+                if (bpdAnnotationBefore < bpdAnnotation)
+                    bpdAnnotationBefore = bpdAnnotation;
+            } else if (position == AnnotationPosition.AFTER) {
+                if (bpdAnnotationAfter < bpdAnnotation)
+                    bpdAnnotationAfter = bpdAnnotation;
+            }
+        }
     }
 
 }

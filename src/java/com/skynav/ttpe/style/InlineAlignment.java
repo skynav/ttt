@@ -27,10 +27,26 @@ package com.skynav.ttpe.style;
 
 // alignment in ipd (inline) axis
 public enum InlineAlignment {
-    LEFT,
-    CENTER,
-    RIGHT,
-    START,
-    END,
-    JUSTIFY;
+    LEFT("left"),
+    CENTER("center"),
+    RIGHT("right"),
+    START("start"),
+    END("end"),
+    SPACE_AROUND("spaceAround"),
+    SPACE_BETWEEN("spaceBetween");
+    private final String value;
+    InlineAlignment(String v) {
+        value = v;
+    }
+    public String value() {
+        return value;
+    }
+    public static InlineAlignment fromValue(String v) {
+        for (InlineAlignment a: InlineAlignment.values()) {
+            if (a.value.equals(v)) {
+                return a;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
 }

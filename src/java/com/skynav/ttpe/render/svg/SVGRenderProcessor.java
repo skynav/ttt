@@ -36,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.area.AnnotationArea;
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.CanvasArea;
@@ -59,6 +60,7 @@ import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
+import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
@@ -351,60 +353,132 @@ public class SVGRenderProcessor extends RenderProcessor {
         return eBlockGroup;
     }
 
+    private Element renderAnnotation(Element parent, AnnotationArea a, Document d) {
+        Element e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        double xSaved = xCurrent;
+        double ySaved = yCurrent;
+        LineArea l = getLine(a);
+        assert l != null;
+        WritingMode wm = l.getWritingMode();
+        boolean vertical = wm.isVertical();
+        Direction bpdDirection = wm.getDirection(Dimension.BPD);
+        AnnotationPosition position = a.getPosition();
+        if (position == AnnotationPosition.BEFORE) {
+            double bpdOffset = a.getBPD();
+            if (vertical) {
+                if (bpdDirection == LR)
+                    xCurrent -= bpdOffset;
+                else
+                    xCurrent += bpdOffset;
+            } else {
+               yCurrent -= bpdOffset;
+            }
+        } else if (position == AnnotationPosition.AFTER) {
+            double bpdOffset = l.getBPD() + a.getLeadingBefore();
+            if (vertical) {
+                if (bpdDirection == LR)
+                    xCurrent += bpdOffset;
+                else
+                    xCurrent -= bpdOffset;
+            } else {
+               yCurrent += bpdOffset;
+            }
+        }
+        if ((xCurrent != 0) || (yCurrent != 0))
+            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Double[] {xCurrent, yCurrent}));
+        xCurrent = 0;
+        yCurrent = 0;
+        if (decorateLines)
+            decorateLine(e, a, d, vertical, bpdDirection, true);
+        e = renderChildren(e, a, d);
+        xCurrent = xSaved;
+        yCurrent = ySaved;
+        if (vertical) {
+            if (bpdDirection == LR)
+                xCurrent += a.getBPD();
+            else
+                xCurrent -= a.getBPD();
+        } else {
+            yCurrent += a.getBPD();
+        }
+        maybeStyleLineGroup(e, a);
+        return e;
+    }
+
+    private LineArea getLine(AreaNode a) {
+        while (a != null) {
+            if (a instanceof LineArea)
+                return (LineArea) a;
+            else
+                a = a.getParent();
+        }
+        return null;
+    }
+
     private Element renderLine(Element parent, LineArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-        if (hasGlyphChild(a)) {
-            Color color = a.getColor();
-            Documents.setAttribute(e, SVGDocumentFrame.fillAttrName, color.toRGBString());
-            Font font = a.getFont();
-            String fontFamily = font.getPreferredFamilyName();
-            Documents.setAttribute(e, SVGDocumentFrame.fontFamilyAttrName, fontFamily);
-            Extent fontSize = font.getSize();
-            Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontSize.getHeight()}));
-            FontStyle fontStyle = font.getStyle();
-            if (fontStyle != FontStyle.NORMAL)
-                Documents.setAttribute(e, SVGDocumentFrame.fontStyleAttrName, fontStyle.name().toLowerCase());
-            FontWeight fontWeight = font.getWeight();
-            if (fontWeight != FontWeight.NORMAL)
-                Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
-        }
-
         double xSaved = xCurrent;
         double ySaved = yCurrent;
         WritingMode wm = a.getWritingMode();
         boolean vertical = wm.isVertical();
-
+        Direction bpdDirection = wm.getDirection(Dimension.BPD);
+        double bpdAnnotationBefore = a.getAnnotationBPD(AnnotationPosition.BEFORE);
+        if (vertical) {
+            if (bpdDirection == LR)
+                xCurrent += bpdAnnotationBefore;
+            else
+                xCurrent -= bpdAnnotationBefore;
+        } else {
+           yCurrent += bpdAnnotationBefore;
+        }
         if ((xCurrent != 0) || (yCurrent != 0))
             Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Double[] {xCurrent, yCurrent}));
-
         xCurrent = 0;
         yCurrent = 0;
+        if (decorateLines)
+            decorateLine(e, a, d, vertical, bpdDirection, false);
+        e = renderChildren(e, a, d);
+        xCurrent = xSaved;
+        yCurrent = ySaved;
+        if (vertical) {
+            if (bpdDirection == LR)
+                xCurrent += a.getBPD();
+            else
+                xCurrent -= a.getBPD();
+        } else {
+            yCurrent += a.getBPD();
+        }
+        maybeStyleLineGroup(e, a);
+        ++lineGenerationIndex;
+        return e;
+    }
 
-        Direction bpdDirection = wm.getDirection(Dimension.BPD);
-
-        if (decorateLines) {
-            double w, h;
-            if (vertical) {
-                h = a.getIPD();
-                w = a.getBPD();
-            } else {
-                h = a.getBPD();
-                w = a.getIPD();
-            }
-            double x, y;
-            if (vertical) {
-                if (bpdDirection == LR) {
-                    x = xCurrent;
-                    y = yCurrent;
-                } else {
-                    x = xCurrent - w;
-                    y = yCurrent;
-                }
-            } else {
+    private void decorateLine(Element e, LineArea a, Document d, boolean vertical, Direction bpdDirection, boolean annotation) {
+        boolean showBoundingBox = true;
+        boolean showLabel = !annotation;
+        double w, h;
+        if (vertical) {
+            h = a.getIPD();
+            w = a.getBPD();
+        } else {
+            h = a.getBPD();
+            w = a.getIPD();
+        }
+        double x, y;
+        if (vertical) {
+            if (bpdDirection == LR) {
                 x = xCurrent;
                 y = yCurrent;
+            } else {
+                x = xCurrent - w;
+                y = yCurrent;
             }
-            // bounding box
+        } else {
+            x = xCurrent;
+            y = yCurrent;
+        }
+        // bounding box
+        if (showBoundingBox) {
             Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
             Documents.setAttribute(eDecoration, SVGDocumentFrame.fillAttrName, "none");
             Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decoration.toRGBString());
@@ -415,8 +489,10 @@ public class SVGRenderProcessor extends RenderProcessor {
             if (y != 0)
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y}));
             e.appendChild(eDecoration);
-            // crop marks
-            // label
+        }
+        // crop marks
+        // label
+        if (showLabel) {
             Element eDecorationLabel = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
             Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fontFamilyAttrName, "sans-serif");
             Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fontSizeAttrName, "6");
@@ -438,22 +514,24 @@ public class SVGRenderProcessor extends RenderProcessor {
             eDecorationLabel.appendChild(d.createTextNode("P" + (paragraphGenerationIndex + 1) + "L" + (lineGenerationIndex + 1)));
             e.appendChild(eDecorationLabel);
         }
-        ++lineGenerationIndex;
+    }
 
-        e = renderChildren(e, a, d);
-
-        xCurrent = xSaved;
-        yCurrent = ySaved;
-
-        if (vertical) {
-            if (bpdDirection == LR)
-                xCurrent += a.getBPD();
-            else
-                xCurrent -= a.getBPD();
-        } else {
-            yCurrent += a.getBPD();
+    private void maybeStyleLineGroup(Element e, LineArea a) {
+        if (hasGlyphChild(a)) {
+            Color color = a.getColor();
+            Documents.setAttribute(e, SVGDocumentFrame.fillAttrName, color.toRGBString());
+            Font font = a.getFont();
+            String fontFamily = font.getPreferredFamilyName();
+            Documents.setAttribute(e, SVGDocumentFrame.fontFamilyAttrName, fontFamily);
+            Extent fontSize = font.getSize();
+            Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontSize.getHeight()}));
+            FontStyle fontStyle = font.getStyle();
+            if (fontStyle != FontStyle.NORMAL)
+                Documents.setAttribute(e, SVGDocumentFrame.fontStyleAttrName, fontStyle.name().toLowerCase());
+            FontWeight fontWeight = font.getWeight();
+            if (fontWeight != FontWeight.NORMAL)
+                Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
         }
-        return e;
     }
 
     private boolean hasGlyphChild(LineArea l) {
@@ -525,6 +603,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             return renderSpace(parent, (SpaceArea) a, d);
         else if (a instanceof InlineFillerArea)
             return renderFiller(parent, (InlineFillerArea) a, d);
+        else if (a instanceof AnnotationArea)
+            return renderAnnotation(parent, (AnnotationArea) a, d);
         else if (a instanceof LineArea)
             return renderLine(parent, (LineArea) a, d);
         else if (a instanceof ReferenceArea)

@@ -157,24 +157,30 @@ public class BasicLayoutState implements LayoutState {
     }
 
     public String getLanguage() {
+        String language = null;
         if (!areas.empty())
-            return areas.peek().getLanguage();
-        else
-            return defaultLanguage;
+            language = areas.peek().getLanguage();
+        if (language == null)
+            language = defaultLanguage;
+        return language;
     }
 
     public Whitespace getWhitespace() {
+        Whitespace ws = null;
         if (!areas.empty())
-            return areas.peek().getWhitespace();
-        else
-            return defaultWhitespace;
+            ws = areas.peek().getWhitespace();
+        if (ws == null)
+            ws = defaultWhitespace;
+        return ws;
     }
 
     public WritingMode getWritingMode() {
+        WritingMode wm = null;
         if (!areas.empty())
-            return areas.peek().getWritingMode();
-        else
-            return defaultWritingMode;
+            wm = areas.peek().getWritingMode();
+        if (wm == null)
+            wm = defaultWritingMode;
+        return wm;
     }
 
     public double getAvailable(Dimension dimension) {

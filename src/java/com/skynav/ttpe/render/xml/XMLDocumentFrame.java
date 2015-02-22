@@ -44,6 +44,7 @@ public class XMLDocumentFrame extends AbstractDocumentFrame {
     private static final String NAMESPACE                       = Namespace.NAMESPACE + "#areas";
 
     // element name constants
+    public static final QName ttpeAnnotationEltName             = new QName(NAMESPACE, "annotation");
     public static final QName ttpeBlockEltName                  = new QName(NAMESPACE, "block");
     public static final QName ttpeCanvasEltName                 = new QName(NAMESPACE, "canvas");
     public static final QName ttpeFillEltName                   = new QName(NAMESPACE, "fill");

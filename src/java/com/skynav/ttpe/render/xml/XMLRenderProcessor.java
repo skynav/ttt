@@ -36,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.area.AnnotationArea;
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.CanvasArea;
@@ -268,6 +269,15 @@ public class XMLRenderProcessor extends RenderProcessor {
         return a.getOverflow() > 0;
     }
 
+    private Element renderAnnotation(AnnotationArea a, Document d) {
+        Element e = Documents.createElement(d, XMLDocumentFrame.ttpeAnnotationEltName);
+        renderCommonInlineAreaAttributes(a, e, true);
+        for (Area c : a.getChildren()) {
+            e.appendChild(renderArea(c, d));
+        }
+        return e;
+    }
+
     private Element renderGlyph(GlyphArea a, Document d) {
         Element e = Documents.createElement(d, XMLDocumentFrame.ttpeGlyphsEltName);
         renderCommonInlineAreaAttributes(a, e, false);
@@ -295,6 +305,8 @@ public class XMLRenderProcessor extends RenderProcessor {
             return renderSpace((SpaceArea) a, d);
         else if (a instanceof InlineFillerArea)
             return renderFiller((InlineFillerArea) a, d);
+        else if (a instanceof AnnotationArea)
+            return renderAnnotation((AnnotationArea) a, d);
         else if (a instanceof LineArea)
             return renderLine((LineArea) a, d);
         else if (a instanceof ReferenceArea)

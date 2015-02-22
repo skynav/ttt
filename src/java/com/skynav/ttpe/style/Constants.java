@@ -25,6 +25,8 @@
 
 package com.skynav.ttpe.style;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import com.skynav.ttpe.fonts.FontKey;
@@ -74,10 +76,14 @@ public class Constants {
     public static final QName ttsWritingModeAttrName                    = new QName(NAMESPACE_TT_STYLE, "writingMode");
 
     // Default Style Values
+    public static final Annotation defaultAnnotation                    = null;
+    public static final InlineAlignment defaultAnnotationAlign          = InlineAlignment.CENTER;
+    public static final double defaultAnnotationOffset                  = 0;
+    public static final AnnotationPosition defaultAnnotationPosition    = AnnotationPosition.AUTO;
     public static final Color defaultColor                              = Color.YELLOW;
     public static final BlockAlignment defaultDisplayAlign              = BlockAlignment.BEFORE;
     public static final Extent defaultExtent                            = Extent.EMPTY;
-    public static final String defaultFontFamily                        = FontKey.DEFAULT_FAMILY;
+    public static final List<String> defaultFontFamily                  = FontKey.DEFAULT_FAMILIES;
     public static final Extent defaultFontSize                          = FontKey.DEFAULT_SIZE;
     public static final FontStyle defaultFontStyle                      = FontKey.DEFAULT_STYLE;
     public static final FontWeight defaultFontWeight                    = FontKey.DEFAULT_WEIGHT;

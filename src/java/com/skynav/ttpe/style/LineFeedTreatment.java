@@ -23,18 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.style;
 
-import org.w3c.dom.Element;
-
-import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.InlineAlignment;
-
-public class AnnotationLineArea extends LineArea {
-
-    public AnnotationLineArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font) {
-        super(e, ipd, bpd, alignment, color, font);
-    }
-
+public enum LineFeedTreatment {
+    IGNORE,
+    PRESERVE,
+    TREAT_AS_SPACE,
+    TREAT_AS_ZERO_WIDTH_SPACE;
 }

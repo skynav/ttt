@@ -102,8 +102,8 @@ public class ParagraphCollector {
 
         @Override
         protected void collectSpan(Element e) {
-            if (styleCollector.generatesRubyBlock(e))
-                collectAsRuby(e);
+            if (styleCollector.generatesAnnotationBlock(e))
+                collectAsAnnotation(e);
             else if ((outer == null) && styleCollector.generatesInlineBlock(e))
                 collectAsParagraph(e);
             else if (e == outer)
@@ -112,8 +112,8 @@ public class ParagraphCollector {
                 super.collectSpan(e);
         }
 
-        private void collectAsRuby(Element e) {
-            for (Phrase p : new RubyCollector(new StyleCollector(styleCollector)).collect(e))
+        private void collectAsAnnotation(Element e) {
+            for (Phrase p : new AnnotationCollector(new StyleCollector(styleCollector)).collect(e))
                 add(p);
         }
 

@@ -23,30 +23,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.style;
+package com.skynav.ttpe.text;
 
-public enum Ruby {
-    CONTAINER("container"),
-    BASE_CONTAINER("baseContainer"),
-    TEXT_CONTAINER("textContainer"),
-    BASE("base"),
-    TEXT("text"),
-    DELIMITER("delimiter");
-    private final String value;
-    Ruby(String v) {
-        value = v;
-    }
-    public String value() {
-        return value;
-    }
-    public static Ruby fromValue(String v) {
-        for (Ruby r: Ruby.values()) {
-            if (r.value.equals(v)) {
-                return r;
-            }
-        }
-        throw new IllegalArgumentException(v);
+import java.util.List;
+
+import org.w3c.dom.Element;
+
+import com.skynav.ttpe.style.StyleAttributeInterval;
+
+public class AnnotationPhrase extends Phrase {
+
+    public AnnotationPhrase(Element e, List<Phrase> bases, List<StyleAttributeInterval> attributes) {
+        super(e, bases, attributes);
     }
 
 }
-

@@ -55,8 +55,72 @@ public class FontCache {
         return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.DEFAULT_VERTICAL : FontKey.DEFAULT_HORIZONTAL, size));
     }
 
-    public Font mapFont(String family, FontStyle style, FontWeight weight, Axis axis, String language, Extent size) {
-        return get(new FontKey(family, style, weight, axis, language != null ? language : "", size));
+    public Font mapFont(List<String> families, FontStyle style, FontWeight weight, String language, Axis axis, Extent size) {
+        FontSpecification fs;
+        fs = findExactMatch(families, style, weight, language);
+        if (fs != null)
+            return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size));
+        fs = findBestMatch(families, style, weight, language, axis, size);
+        if (fs != null)
+            return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size));
+        return null;
+    }
+
+    private FontSpecification findExactMatch(List<String> families, FontStyle style, FontWeight weight, String language) {
+        for (String family : families) {
+            for (FontSpecification  fs : fontSpecifications) {
+                if (fs.family.compareToIgnoreCase(family) == 0) {
+                    if (fs.style != style)
+                        continue;
+                    if (fs.weight != weight)
+                        continue;
+                    if (fs.language != language)
+                        continue;
+                    return fs;
+                }
+            }
+        }
+        return null;
+    }
+
+    private FontSpecification findBestMatch(List<String> families, FontStyle style, FontWeight weight, String language, Axis axis, Extent size) {
+        List<FontSpecification> matchesFamily = new java.util.ArrayList<FontSpecification>();
+        for (FontSpecification  fs : fontSpecifications) {
+            for (String family : families) {
+                if (fs.family.compareToIgnoreCase(family) == 0)
+                    matchesFamily.add(fs);
+            }
+        }
+        List<FontSpecification> matchesLanguage = new java.util.ArrayList<FontSpecification>();
+        for (FontSpecification  fs : matchesFamily) {
+            if (language == null)
+                matchesLanguage.add(fs);
+            else if (fs.language.compareToIgnoreCase(language) == 0)
+                matchesLanguage.add(fs);
+        }
+        List<FontSpecification> matchesStyle = new java.util.ArrayList<FontSpecification>();
+        for (FontSpecification  fs : matchesLanguage) {
+            if (style == null)
+                matchesStyle.add(fs);
+            else if (fs.style == style)
+                matchesLanguage.add(fs);
+        }
+        List<FontSpecification> matchesWeight = new java.util.ArrayList<FontSpecification>();
+        for (FontSpecification  fs : matchesStyle) {
+            if (weight == null)
+                matchesWeight.add(fs);
+            else if (fs.weight == weight)
+                matchesWeight.add(fs);
+        }
+        if (!matchesWeight.isEmpty())
+            return matchesWeight.get(0);
+        if (!matchesStyle.isEmpty())
+            return matchesStyle.get(0);
+        if (!matchesLanguage.isEmpty())
+            return matchesLanguage.get(0);
+        if (!matchesFamily.isEmpty())
+            return matchesFamily.get(0);
+        return getDefaultFont(axis, size).getSpecification();
     }
 
     public Font get(FontKey key) {
