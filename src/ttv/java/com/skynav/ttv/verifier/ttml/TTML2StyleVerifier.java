@@ -65,6 +65,7 @@ import com.skynav.ttv.verifier.ttml.style.FontKerningVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontShearVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontStyleVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
+import com.skynav.ttv.verifier.ttml.style.FontVariantVerifier;
 import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
@@ -149,6 +150,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             FontStyle.NORMAL,
             FontStyle.NORMAL.value(),
+        },
+        {
+            new QName(NAMESPACE,"fontVariant"),
+            "FontVariant",
+            String.class,
+            FontVariantVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "normal",
+            null,
         },
         {
             new QName(NAMESPACE,"fontWeight"),

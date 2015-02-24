@@ -22,7 +22,7 @@
   <xs:attribute name="fontShear" type="ttd:fontShear"/>
   <xs:attribute name="fontSize" type="ttd:fontSize"/>
   <xs:attribute name="fontStyle" type="ttd:fontStyle"/>
-  <xs:attribute name="fontVariantPosition" type="ttd:fontVariantPosition"/>
+  <xs:attribute name="fontVariant" type="ttd:fontVariant"/>
   <xs:attribute name="fontWeight" type="ttd:fontWeight"/>
   <xs:attribute name="ipd" type="ttd:measure"/>
   <xs:attribute name="letterSpacing" type="ttd:letterSpacing"/>
@@ -67,7 +67,7 @@
     <xs:attribute ref="tts:fontShear"/>
     <xs:attribute ref="tts:fontSize"/>
     <xs:attribute ref="tts:fontStyle"/>
-    <xs:attribute ref="tts:fontVariantPosition"/>
+    <xs:attribute ref="tts:fontVariant"/>
     <xs:attribute ref="tts:fontWeight"/>
     <xs:attribute ref="tts:ipd"/>
     <xs:attribute ref="tts:letterSpacing"/>

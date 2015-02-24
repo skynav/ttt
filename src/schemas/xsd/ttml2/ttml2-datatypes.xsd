@@ -195,12 +195,11 @@
       <xs:enumeration value="oblique"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="fontVariantPosition">
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="normal"/>
-      <xs:enumeration value="sub"/>
-      <xs:enumeration value="super"/>
-    </xs:restriction>
+  <xs:simpleType name="fontVariant">
+    <xs:annotation>
+      <xs:documentation>normal | [ super | sub ] || [ full | half ] || ruby</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="fontWeight">
     <xs:restriction base="xs:token">

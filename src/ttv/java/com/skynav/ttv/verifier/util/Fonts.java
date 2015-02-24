@@ -26,10 +26,12 @@
 package com.skynav.ttv.verifier.util;
 
 import java.util.List;
+import java.util.Set;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.value.FontFamily;
+import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.GenericFontFamily;
 import com.skynav.ttv.model.value.impl.FontFamilyImpl;
 import com.skynav.ttv.util.Message;
@@ -214,6 +216,91 @@ public class Fonts {
             }
         }
         return items.toArray(new String[items.size()]);
+    }
+
+    public static boolean isFontVariant(String value, Locator locator, VerifierContext context, FontVariant[] outputVariant) {
+        String trimmedValue = value.trim();
+        if (trimmedValue.length() == 0)
+            return false;
+        else {
+            try {
+                FontVariant fv = FontVariant.fromValue(trimmedValue);
+                if (outputVariant != null)
+                    outputVariant[0] = fv;
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+        }
+    }
+
+    public static void badFontVariant(String value, Locator locator, VerifierContext context) {
+        String trimmedValue = value.trim();
+        Reporter reporter = context.getReporter();
+        if (trimmedValue.length() == 0) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad token of <font-variant> expression, value is empty or only XML space characters."));
+        } else {
+            try {
+                FontVariant.fromValue(trimmedValue);
+            } catch (IllegalArgumentException e) {
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad token of <font-variant> expression, unknown token ''{0}''.", trimmedValue));
+            }
+        }
+    }
+
+    public static boolean isFontVariants(String value, Locator locator, VerifierContext context, Set<FontVariant> outputVariants) {
+        Set<FontVariant> variants = new java.util.HashSet<FontVariant>();
+        String [] variantTokens = splitFontVariants(value);
+        for (String token : variantTokens) {
+            FontVariant[] variant = new FontVariant[1];
+            if (isFontVariant(token, locator, context, variant)) {
+                if (variants.contains(variant[0]))
+                    return false;
+                else
+                    variants.add(variant[0]);
+            }
+            else
+                return false;
+        }
+        if (variants.contains(FontVariant.NORMAL) && (variants.size() > 1)) {
+            return false;                       // if includes normal, then cannot include another token
+        } else if (variants.contains(FontVariant.SUPER) && variants.contains(FontVariant.SUB)) {
+            return false;                       // cannot include both super and sub
+        } else if (variants.contains(FontVariant.HALF) && variants.contains(FontVariant.FULL)) {
+            return false;                       // cannot include both half and full
+        }
+        if (outputVariants != null) {
+            outputVariants.clear();
+            outputVariants.addAll(variants);
+        }
+        return true;
+    }
+
+    public static void badFontVariants(String value, Locator locator, VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        Set<FontVariant> variants = new java.util.HashSet<FontVariant>();
+        String [] variantTokens = splitFontVariants(value);
+        for (String token : variantTokens) {
+            FontVariant[] variant = new FontVariant[1];
+            if (!isFontVariant(token, locator, context, variant))
+                badFontVariant(token, locator, context);
+            else if (variants.contains(variant[0])) {
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Duplicate token of <font-variant> expression ''{0}''.", token.trim()));
+            } else {
+                variants.add(variant[0]);
+            }
+        }
+        if (variants.contains(FontVariant.NORMAL) && (variants.size() > 1)) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <font-variant> expression ''{0}'', no other token permitted when ''normal'' is present.", value));
+        } else if (variants.contains(FontVariant.SUPER) && variants.contains(FontVariant.SUB)) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <font-variant> expression ''{0}'', cannot include both ''super'' and ''sub''.", value));
+        } else if (variants.contains(FontVariant.HALF) && variants.contains(FontVariant.FULL)) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <font-variant> expression ''{0}'', cannot include both ''halfWidth'' and ''fullWidth''.", value));
+        }
+    }
+
+    private static String[] splitFontVariants(String value) {
+        return value.split("\\s+");
     }
 
 }
