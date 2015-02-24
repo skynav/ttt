@@ -28,7 +28,7 @@ package com.skynav.ttpe.style;
 public class StyleAttribute extends java.text.AttributedCharacterIterator.Attribute {
 
     //                               ** name **                                                                 ** value type ** 
-    public static final StyleAttribute   ANNOTATION             = new StyleAttribute("ANNOTATION");             // com.skynav.ttpe.text.Phrase[]
+    public static final StyleAttribute   ANNOTATIONS            = new StyleAttribute("ANNOTATIONS");            // com.skynav.ttpe.text.Phrase[]
     public static final StyleAttribute   ANNOTATION_ALIGNMENT   = new StyleAttribute("ANNOTATION_ALIGNMENT");   // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   ANNOTATION_OFFSET      = new StyleAttribute("ANNOTATION_OFFSET");      // Double
     public static final StyleAttribute   ANNOTATION_POSITION    = new StyleAttribute("ANNOTATION_POSITION");    // com.skynav.ttpe.style.AnnotationPosition
@@ -37,12 +37,6 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   COLOR                  = new StyleAttribute("COLOR");                  // com.skynav.ttpe.style.Color
     public static final StyleAttribute   EMBEDDING              = new StyleAttribute("EMBEDDING");              // Object
     public static final StyleAttribute   FONT                   = new StyleAttribute("FONT");                   // com.skynav.ttpe.fonts.Font
-    public static final StyleAttribute   FONT_FAMILY            = new StyleAttribute("FONT_FAMILY");            // List<String>
-    public static final StyleAttribute   FONT_KERNING           = new StyleAttribute("FONT_KERNING");           // Boolean
-    public static final StyleAttribute   FONT_SHEAR             = new StyleAttribute("FONT_SHEAR");             // Double
-    public static final StyleAttribute   FONT_SIZE              = new StyleAttribute("FONT_SIZE");              // com.skynav.ttpe.geometry.Extent
-    public static final StyleAttribute   FONT_STYLE             = new StyleAttribute("FONT_STYLE");             // com.skynav.ttpe.fonts.FontStyle
-    public static final StyleAttribute   FONT_WEIGHT            = new StyleAttribute("FONT_WEIGHT");            // com.skynav.ttpe.fonts.FontWeight
     public static final StyleAttribute   INLINE_ALIGNMENT       = new StyleAttribute("INLINE_ALIGNMENT");       // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   IPD                    = new StyleAttribute("IPD");                    // Double
     public static final StyleAttribute   LANGUAGE               = new StyleAttribute("LANGUAGE");               // String

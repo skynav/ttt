@@ -23,68 +23,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.style;
+package com.skynav.ttpe.fonts;
 
-public class StyleAttributeInterval {
+import com.skynav.ttv.model.value.FontVariant;
 
-    private StyleAttribute attribute;
-    private Object value;
-    private int begin;
-    private int end;
-
-    public StyleAttributeInterval(StyleAttribute attribute, Object value, int begin, int end) {
-        this.attribute = attribute;
-        this.value = value;
-        assert begin > -2;
-        this.begin = begin;
-        assert end > -2;
-        assert end >= begin;
-        this.end = end;
+public class FontFeature {
+    private final String feature;
+    public FontFeature(String feature) {
+        this.feature = feature;
     }
-
-    public StyleAttribute getAttribute() {
-        return attribute;
+    public String getFeature() {
+        return feature;
     }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public int getBegin() {
-        return begin;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    public int getLength() {
-        return end - begin;
-    }
-
-    public boolean isOuterScope() {
-        return begin < 0;
-    }
-
-    public boolean intersects(int b, int e) {
-        if (b >= end)
-            return false;
-        else if (e <= begin)
-            return false;
+    public static FontFeature fromVariant(FontVariant variant) {
+        String feature;
+        if (variant == FontVariant.SUPER)
+            feature = "sups";
+        else if (variant == FontVariant.SUB)
+            feature = "subs";
+        else if (variant == FontVariant.HALF)
+            feature = "hwid";
+        else if (variant == FontVariant.FULL)
+            feature = "fwid";
+        else if (variant == FontVariant.RUBY)
+            feature = "ruby";
         else
-            return true;
+            feature = null;
+        return (feature != null) ? new FontFeature(feature) : null;
     }
-
-    public int[] intersection(int b, int e) {
-        if (intersects(b, e)) {
-            if (begin > b)
-                b = begin;
-            if (end < e)
-                e = end;
-            return new int[] { b, e };
-        } else {
-            return null;
-        }
-    }
-
 }

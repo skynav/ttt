@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
@@ -55,14 +56,14 @@ public class FontCache {
         return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.DEFAULT_VERTICAL : FontKey.DEFAULT_HORIZONTAL, size));
     }
 
-    public Font mapFont(List<String> families, FontStyle style, FontWeight weight, String language, Axis axis, Extent size) {
+    public Font mapFont(List<String> families, FontStyle style, FontWeight weight, String language, Axis axis, Extent size, Set<FontFeature> features) {
         FontSpecification fs;
         fs = findExactMatch(families, style, weight, language);
         if (fs != null)
-            return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size));
+            return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size, features));
         fs = findBestMatch(families, style, weight, language, axis, size);
         if (fs != null)
-            return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size));
+            return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size, features));
         return null;
     }
 

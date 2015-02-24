@@ -23,68 +23,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.style;
+package com.skynav.ttpe.util;
 
-public class StyleAttributeInterval {
+public class Strings {
 
-    private StyleAttribute attribute;
-    private Object value;
-    private int begin;
-    private int end;
-
-    public StyleAttributeInterval(StyleAttribute attribute, Object value, int begin, int end) {
-        this.attribute = attribute;
-        this.value = value;
-        assert begin > -2;
-        this.begin = begin;
-        assert end > -2;
-        assert end >= begin;
-        this.end = end;
-    }
-
-    public StyleAttribute getAttribute() {
-        return attribute;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public int getBegin() {
-        return begin;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    public int getLength() {
-        return end - begin;
-    }
-
-    public boolean isOuterScope() {
-        return begin < 0;
-    }
-
-    public boolean intersects(int b, int e) {
-        if (b >= end)
-            return false;
-        else if (e <= begin)
-            return false;
-        else
-            return true;
-    }
-
-    public int[] intersection(int b, int e) {
-        if (intersects(b, e)) {
-            if (begin > b)
-                b = begin;
-            if (end < e)
-                e = end;
-            return new int[] { b, e };
-        } else {
-            return null;
+    private Strings() {}
+    
+    public static String toHalfWidth(String s) {
+        boolean hasHalf = false;
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            if (Characters.hasHalfWidth(s.charAt(i))) {
+                hasHalf = true;
+                break;
+            }
         }
+        if (hasHalf) {
+            StringBuffer sb = new StringBuffer(s.length());
+            for (int i = 0, n = s.length(); i < n; ++i)
+                sb.append((char) Characters.toHalfWidth(s.charAt(i)));
+            return sb.toString();
+        } else
+            return s;
+    }
+
+    public static String toFullWidth(String s) {
+        boolean hasFull = false;
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            if (Characters.hasFullWidth(s.charAt(i))) {
+                hasFull = true;
+                break;
+            }
+        }
+        if (hasFull) {
+            StringBuffer sb = new StringBuffer(s.length());
+            for (int i = 0, n = s.length(); i < n; ++i)
+                sb.append((char) Characters.toFullWidth(s.charAt(i)));
+            return sb.toString();
+        } else
+            return s;
     }
 
 }

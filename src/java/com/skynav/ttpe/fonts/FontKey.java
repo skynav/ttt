@@ -26,6 +26,7 @@
 package com.skynav.ttpe.fonts;
 
 import java.util.List;
+import java.util.Set;
 
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
@@ -34,14 +35,15 @@ public class FontKey {
 
     public static final List<String>            DEFAULT_FAMILIES   = new java.util.ArrayList<String>();
     public static final String                  DEFAULT_FAMILY     = "Noto Sans";
+    public static final Set<FontFeature>        DEFAULT_FEATURES   = new java.util.HashSet<FontFeature>();
     public static final FontStyle               DEFAULT_STYLE      = FontStyle.NORMAL;
     public static final FontWeight              DEFAULT_WEIGHT     = FontWeight.NORMAL;
     public static final Extent                  DEFAULT_SIZE       = new Extent(24, 24);
     public static final String                  DEFAULT_LANGUAGE   = "";
     public static final FontKey                 DEFAULT_HORIZONTAL =
-        new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.HORIZONTAL, DEFAULT_SIZE);
+        new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.HORIZONTAL, DEFAULT_SIZE, DEFAULT_FEATURES);
     public static final FontKey                 DEFAULT_VERTICAL   =
-        new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.VERTICAL, DEFAULT_SIZE);
+        new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.VERTICAL, DEFAULT_SIZE, DEFAULT_FEATURES);
 
     static {
         DEFAULT_FAMILIES.add(DEFAULT_FAMILY);
@@ -53,18 +55,20 @@ public class FontKey {
     public String language;
     public Axis axis;
     public Extent size;
+    public Set<FontFeature> features;
 
     public FontKey(FontKey key, Extent size) {
-        this(key.family, key.style, key.weight, key.language, key.axis, size);
+        this(key.family, key.style, key.weight, key.language, key.axis, size, DEFAULT_FEATURES);
     }
 
-    public FontKey(String family, FontStyle style, FontWeight weight, String language, Axis axis, Extent size) {
+    public FontKey(String family, FontStyle style, FontWeight weight, String language, Axis axis, Extent size, Set<FontFeature> features) {
         this.family = family.toLowerCase();
         this.style = style;
         this.weight = weight;
         this.language = language.toLowerCase();
         this.axis = axis;
         this.size = size;
+        this.features = features;
     }
 
     public FontSpecification getSpecification() {
@@ -80,6 +84,7 @@ public class FontKey {
         hc = hc * 31 + language.hashCode();
         hc = hc * 31 + axis.hashCode();
         hc = hc * 31 + size.hashCode();
+        hc = hc * 31 + features.hashCode();
         return hc;
     }
 
@@ -98,6 +103,8 @@ public class FontKey {
             else if (axis != other.axis)
                 return false;
             else if (!size.equals(other.size))
+                return false;
+            else if (!features.equals(other.features))
                 return false;
             else
                 return true;

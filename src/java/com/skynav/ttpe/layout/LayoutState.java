@@ -32,6 +32,7 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.area.ReferenceArea;
+import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.Extent;
@@ -64,9 +65,9 @@ public interface LayoutState {
     String getLanguage();
     Whitespace getWhitespace();
     WritingMode getWritingMode();
+    Font getFont();
     double getAvailable(Dimension dimension);
     Extent getReferenceExtent();
-    Extent getReferenceFontSize();
     // external supplied styles
     Extent getExternalExtent();
     Point getExternalOrigin();

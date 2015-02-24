@@ -27,6 +27,7 @@ package com.skynav.ttpe.fonts;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
@@ -70,10 +71,13 @@ public class Font {
     }
 
     public String getPreferredFamilyName() {
-        if (nameTable != null)
-            return nameTable.getName(16, 1, 0, 0);
-        else
-            return key.family;
+        if (maybeLoad()) {
+            if (nameTable != null)
+                return nameTable.getName(16, 1, 0, 0);
+            else
+                return key.family;
+        } else
+            return "unknown";
     }
 
     public FontStyle getStyle() {
@@ -84,6 +88,14 @@ public class Font {
         return key.weight;
     }
 
+    private static final Set<FontFeature> emptyFeatures = new java.util.HashSet<FontFeature>();
+    public Set<FontFeature> getFeatures() {
+        if (key.features != null)
+            return key.features;
+        else
+            return emptyFeatures;
+    }
+
     public Axis getAxis() {
         return key.axis;
     }
@@ -92,20 +104,33 @@ public class Font {
         return key.size;
     }
 
+    public double getSize(Axis axis) {
+        return key.size.getDimension(axis);
+    }
+
     public Double getDefaultLineHeight() {
         return key.size.getDimension(key.axis) * 1.25;
     }
 
     public double getLeading() {
-        return scaleFontUnits(os2Table.getTypoLineGap());
+        if (maybeLoad())
+            return scaleFontUnits(os2Table.getTypoLineGap());
+        else
+            return 0;
     }
 
     public double getAscent() {
-        return scaleFontUnits(os2Table.getTypoAscender());
+        if (maybeLoad())
+            return scaleFontUnits(os2Table.getTypoAscender());
+        else
+            return 0;
     }
 
     public double getDescent() {
-        return scaleFontUnits(os2Table.getTypoDescender());
+        if (maybeLoad())
+            return scaleFontUnits(os2Table.getTypoDescender());
+        else
+            return 0;
     }
 
     public double getAdvance(String text) {

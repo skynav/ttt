@@ -27,12 +27,41 @@ package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.Whitespace;
+
 public interface Area extends AreaGeometry {
 
     /**
      * Obtain element that generated area.
      */
     Element getElement();
+
+    /**
+     * Obtain (xml) whitespace treatment of area, or null if none defined.
+     */
+    Whitespace getWhitespace();
+
+    /**
+     * Obtain (xml) language of area, or null if none defined.
+     */
+    String getLanguage();
+
+    /**
+     * Obtain writing mode of area, or null if none defined.
+     */
+    WritingMode getWritingMode();
+
+    /**
+     * Determine if writing mode of area is vertical; if no writing mode defined, then false.
+     */
+    boolean isVertical();
+
+    /**
+     * Obtain font of area, or null if none defined.
+     */
+    Font getFont();
 
 }
 

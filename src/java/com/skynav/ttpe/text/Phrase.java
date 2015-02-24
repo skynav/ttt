@@ -33,11 +33,7 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.fonts.FontStyle;
-import com.skynav.ttpe.fonts.FontWeight;
-import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.Annotation;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.StyleAttribute;
@@ -96,8 +92,8 @@ public class Phrase {
         return aci.getEndIndex() - aci.getBeginIndex();
     }
 
-    private static final StyleAttribute[] annotationAttr = new StyleAttribute[] { StyleAttribute.ANNOTATION };
-    public Annotation getAnnotation(int index) {
+    private static final StyleAttribute[] annotationAttr = new StyleAttribute[] { StyleAttribute.ANNOTATIONS };
+    public Phrase[] getAnnotations(int index) {
         Object v;
         if (index < 0)
             v = attributes.get(annotationAttr[0]);
@@ -105,8 +101,8 @@ public class Phrase {
             v = content.getIterator(annotationAttr, index, index + 1).getAttribute(annotationAttr[0]);
         if (v == null)
             v = defaultAnnotation;
-        if (v instanceof Annotation)
-            return (Annotation) v;
+        if (v instanceof Phrase[])
+            return (Phrase[]) v;
         else
             return null;
     }
@@ -171,63 +167,15 @@ public class Phrase {
             return null;
     }
 
-    private static final StyleAttribute[] fontFamilyAttr = new StyleAttribute[] { StyleAttribute.FONT_FAMILY };
-    @SuppressWarnings("unchecked")
-    public List<String> getFontFamily(int index) {
+    private static final StyleAttribute[] fontAttr = new StyleAttribute[] { StyleAttribute.FONT };
+    public Font getFont(int index) {
         Object v;
         if (index < 0)
-            v = attributes.get(fontFamilyAttr[0]);
+            v = attributes.get(fontAttr[0]);
         else
-            v = content.getIterator(fontFamilyAttr, index, index + 1).getAttribute(fontFamilyAttr[0]);
-        if (v == null)
-            v = defaultFontFamily;
-        if (v instanceof List) {
-            return (List<String>) v;
-        } else
-            return null;
-    }
-
-    private static final StyleAttribute[] fontSizeAttr = new StyleAttribute[] { StyleAttribute.FONT_SIZE };
-    public Extent getFontSize(int index) {
-        Object v;
-        if (index < 0)
-            v = attributes.get(fontSizeAttr[0]);
-        else
-            v = content.getIterator(fontSizeAttr, index, index + 1).getAttribute(fontSizeAttr[0]);
-        if (v == null)
-            v = defaultFontSize;
-        if (v instanceof Extent)
-            return (Extent) v;
-        else
-            return null;
-    }
-
-    private static final StyleAttribute[] fontStyleAttr = new StyleAttribute[] { StyleAttribute.FONT_STYLE };
-    public FontStyle getFontStyle(int index) {
-        Object v;
-        if (index < 0)
-            v = attributes.get(fontStyleAttr[0]);
-        else
-            v = content.getIterator(fontStyleAttr, index, index + 1).getAttribute(fontStyleAttr[0]);
-        if (v == null)
-            v = defaultFontStyle;
-        if (v instanceof FontStyle)
-            return (FontStyle) v;
-        else
-            return null;
-    }
-
-    private static final StyleAttribute[] fontWeightAttr = new StyleAttribute[] { StyleAttribute.FONT_WEIGHT };
-    public FontWeight getFontWeight(int index) {
-        Object v;
-        if (index < 0)
-            v = attributes.get(fontWeightAttr[0]);
-        else
-            v = content.getIterator(fontWeightAttr, index, index + 1).getAttribute(fontWeightAttr[0]);
-        if (v == null)
-            v = defaultFontWeight;
-        if (v instanceof FontWeight)
-            return (FontWeight) v;
+            v = content.getIterator(fontAttr, index, index + 1).getAttribute(fontAttr[0]);
+        if (v instanceof Font)
+            return (Font) v;
         else
             return null;
     }

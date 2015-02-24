@@ -23,68 +23,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.style;
+package com.skynav.ttpe.util;
 
-public class StyleAttributeInterval {
+import java.util.List;
 
-    private StyleAttribute attribute;
-    private Object value;
-    private int begin;
-    private int end;
+public class Integers {
 
-    public StyleAttributeInterval(StyleAttribute attribute, Object value, int begin, int end) {
-        this.attribute = attribute;
-        this.value = value;
-        assert begin > -2;
-        this.begin = begin;
-        assert end > -2;
-        assert end >= begin;
-        this.end = end;
-    }
-
-    public StyleAttribute getAttribute() {
-        return attribute;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public int getBegin() {
-        return begin;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    public int getLength() {
-        return end - begin;
-    }
-
-    public boolean isOuterScope() {
-        return begin < 0;
-    }
-
-    public boolean intersects(int b, int e) {
-        if (b >= end)
-            return false;
-        else if (e <= begin)
-            return false;
-        else
-            return true;
-    }
-
-    public int[] intersection(int b, int e) {
-        if (intersects(b, e)) {
-            if (begin > b)
-                b = begin;
-            if (end < e)
-                e = end;
-            return new int[] { b, e };
-        } else {
-            return null;
+    private Integers() {}
+    
+    public static int[] toArray(List<Integer> integers) {
+        int[] ia = new int[integers.size()];
+        for (int i = 0, n = ia.length; i < n; ++i) {
+            ia[i] = integers.get(i);
         }
+        return ia;
     }
 
 }

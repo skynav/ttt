@@ -27,15 +27,20 @@ package com.skynav.ttpe.style;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.fonts.FontCache;
+import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttv.model.value.FontFamily;
+import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
@@ -49,29 +54,35 @@ import com.skynav.ttv.verifier.util.QuotedGenericFontFamilyTreatment;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
 
+import static com.skynav.ttpe.geometry.Dimension.*;
 import static com.skynav.ttpe.style.Constants.*;
 import static com.skynav.ttpe.text.Constants.*;
 
 public class StyleCollector {
 
     private TransformerContext context;
+    private FontCache fontCache;
     private Extent extBounds;
     private Extent refBounds;
-    private Extent refFontSize;
     private WritingMode writingMode;
+    private String language;
+    private Font font;
     private Map<String,StyleSet> styles;
     private List<StyleAttributeInterval> attributes;
 
     public StyleCollector(StyleCollector sc) {
-        this(sc.context, sc.extBounds, sc.refBounds, sc.refFontSize, sc.writingMode, sc.styles);
+        this(sc.context, sc.fontCache, sc.extBounds, sc.refBounds, sc.writingMode, sc.language, sc.font, sc.styles);
     }
 
-    public StyleCollector(TransformerContext context, Extent extBounds, Extent refBounds, Extent refFontSize, WritingMode writingMode, Map<String,StyleSet> styles) {
+    public StyleCollector
+        (TransformerContext context, FontCache fontCache, Extent extBounds, Extent refBounds, WritingMode writingMode, String language, Font font, Map<String,StyleSet> styles) {
         this.context = context;
+        this.fontCache = fontCache;
         this.extBounds = extBounds;
         this.refBounds = refBounds;
-        this.refFontSize = refFontSize;
         this.writingMode = writingMode;
+        this.language = language;
+        this.font = font;
         this.styles = styles;
     }
 
@@ -155,8 +166,6 @@ public class StyleCollector {
         StyleSpecification s;
         Object v;
 
-        // Non-Derived Styles
-
         // ANNOTATION_ALIGN
         s = styles.get(ttsRubyAlignAttrName);
         v = null;
@@ -177,7 +186,7 @@ public class StyleCollector {
                 List<Length> lengths = new java.util.ArrayList<Length>();
                 if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
                     assert lengths.size() == 1;
-                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, refFontSize));
+                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize()));
                 }
             }
         }
@@ -203,58 +212,29 @@ public class StyleCollector {
         if (v != null)
             addAttribute(StyleAttribute.COLOR, v, begin, end);
 
-        // FONT_FAMILY
-        s = styles.get(ttsFontFamilyAttrName);
+        // FONT
+        v = getFontFromStyles(e);
+        if (v != null)
+            addAttribute(StyleAttribute.FONT, v, begin, end);
+
+        // LINE_HEIGHT
+        s = styles.get(ttsLineHeightAttrName);
         v = null;
         if (s != null) {
-            List<FontFamily> families = new java.util.ArrayList<FontFamily>();
-            Object[] treatments = new Object[] { QuotedGenericFontFamilyTreatment.Allow };
-            if (Fonts.isFontFamilies(s.getValue(), null, context, treatments, families)) {
-                if (!families.isEmpty()) {
-                    List<String> familyNames =  new java.util.ArrayList<String>();
-                    for (FontFamily family : families)
-                        familyNames.add(family.toString());
-                    v = familyNames;
+            if (Keywords.isNormal(s.getValue())) {
+                v = Double.valueOf(font.getSize(Axis.VERTICAL) * 1.25);
+            } else {
+                Integer[] minMax = new Integer[] { 1, 1 };
+                Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
+                List<Length> lengths = new java.util.ArrayList<Length>();
+                if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+                    assert lengths.size() == 1;
+                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize()));
                 }
             }
         }
         if (v != null)
-            addAttribute(StyleAttribute.FONT_FAMILY, v, begin, end);
-
-        // FONT_SIZE
-        s = styles.get(ttsFontSizeAttrName);
-        v = null;
-        if (s != null) {
-            Integer[] minMax = new Integer[] { 1, 2 };
-            Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
-            List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
-                assert lengths.size() > 0;
-                double h = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, extBounds, refBounds, refFontSize);
-                if (lengths.size() == 1)
-                    lengths.add(lengths.get(0));
-                double w = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, extBounds, refBounds, refFontSize);
-                v = new Extent(w, h);
-            }
-        }
-        if (v != null)
-            addAttribute(StyleAttribute.FONT_SIZE, v, begin, end);
-
-        // FONT_STYLE
-        s = styles.get(ttsFontStyleAttrName);
-        v = null;
-        if (s != null)
-            v = FontStyle.valueOf(s.getValue().toUpperCase());
-        if (v != null)
-            addAttribute(StyleAttribute.FONT_STYLE, v, begin, end);
-
-        // FONT_WEIGHT
-        s = styles.get(ttsFontWeightAttrName);
-        v = null;
-        if (s != null)
-            v = FontWeight.valueOf(s.getValue().toUpperCase());
-        if (v != null)
-            addAttribute(StyleAttribute.FONT_WEIGHT, v, begin, end);
+            addAttribute(StyleAttribute.LINE_HEIGHT, v, begin, end);
 
         // TEXT_ALIGN
         s = styles.get(ttsTextAlignAttrName);
@@ -272,29 +252,70 @@ public class StyleCollector {
         if (v != null)
             addAttribute(StyleAttribute.WRAP, v, begin, end);
 
-        // Derived Styles
+    }
 
-        // FONT
-
-        // LINE_HEIGHT
-        s = styles.get(ttsLineHeightAttrName);
-        v = null;
+    private Font getFontFromStyles(Element e) {
+        StyleSet styles = getStyles(e);
+        StyleSpecification s;
+        // families
+        List<String> fontFamilies = defaultFontFamilies;
+        s = styles.get(ttsFontFamilyAttrName);
         if (s != null) {
-            if (Keywords.isNormal(s.getValue())) {
-                v = Double.valueOf(refFontSize.getHeight() * 1.25);
-            } else {
-                Integer[] minMax = new Integer[] { 1, 1 };
-                Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
-                List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
-                    assert lengths.size() == 1;
-                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, refFontSize));
+            List<FontFamily> families = new java.util.ArrayList<FontFamily>();
+            Object[] treatments = new Object[] { QuotedGenericFontFamilyTreatment.Allow };
+            if (Fonts.isFontFamilies(s.getValue(), null, context, treatments, families)) {
+                if (!families.isEmpty()) {
+                    List<String> familyNames =  new java.util.ArrayList<String>();
+                    for (FontFamily family : families)
+                        familyNames.add(family.toString());
+                    fontFamilies = familyNames;
                 }
             }
         }
-        if (v != null)
-            addAttribute(StyleAttribute.LINE_HEIGHT, v, begin, end);
-
+        // style
+        FontStyle fontStyle = defaultFontStyle;
+        s = styles.get(ttsFontStyleAttrName);
+        if (s != null)
+            fontStyle = FontStyle.valueOf(s.getValue().toUpperCase());
+        // weight
+        FontWeight fontWeight = defaultFontWeight;
+        s = styles.get(ttsFontWeightAttrName);
+        if (s != null)
+            fontWeight = FontWeight.valueOf(s.getValue().toUpperCase());
+        // size
+        Extent fontSize = defaultFontSize;
+        s = styles.get(ttsFontSizeAttrName);
+        if (s != null) {
+            Integer[] minMax = new Integer[] { 1, 2 };
+            Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+                assert lengths.size() > 0;
+                double h = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, extBounds, refBounds, font.getSize());
+                if (lengths.size() == 1)
+                    lengths.add(lengths.get(0));
+                double w = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, extBounds, refBounds, font.getSize());
+                fontSize = new Extent(w, h);
+            }
+        }
+        // features
+        Set<FontFeature> fontFeatures = defaultFontFeatures;
+        s = styles.get(ttsFontVariantAttrName);
+        if (s != null) {
+            Set<FontVariant> variants = new java.util.HashSet<FontVariant>();
+            if (Fonts.isFontVariants(s.getValue(), null, context, variants)) {
+                if (!variants.isEmpty()) {
+                    Set<FontFeature> features = new java.util.HashSet<FontFeature>();
+                    for (FontVariant fv : variants) {
+                        FontFeature f = FontFeature.fromVariant(fv);
+                        if (f != null)
+                            features.add(f);
+                    }
+                    fontFeatures = features;
+                }
+            }
+        }
+        return fontCache.mapFont(fontFamilies, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
     }
 
     private StyleSet getStyles(Element e) {

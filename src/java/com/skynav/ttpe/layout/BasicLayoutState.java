@@ -39,6 +39,7 @@ import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.area.ReferenceArea;
 import com.skynav.ttpe.area.ViewportArea;
+import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Dimension;
@@ -183,6 +184,15 @@ public class BasicLayoutState implements LayoutState {
         return wm;
     }
 
+    public Font getFont() {
+        Font f = null;
+        if (!areas.empty())
+            f = areas.peek().getFont();
+        if (f == null)
+            f = fontCache.getDefaultFont(getWritingMode().getAxis(Dimension.BPD), defaultFontSize);
+        return f;
+    }
+
     public double getAvailable(Dimension dimension) {
         if (!areas.empty())
             return areas.peek().getAvailable(dimension);
@@ -192,10 +202,6 @@ public class BasicLayoutState implements LayoutState {
 
     public Extent getReferenceExtent() {
         return getReferenceArea().getExtent();
-    }
-
-    public Extent getReferenceFontSize() {
-        return defaultFontSize;                                 // [TBD] get from area stack context
     }
 
     public Extent getExternalExtent() {

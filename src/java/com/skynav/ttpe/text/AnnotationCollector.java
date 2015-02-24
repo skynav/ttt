@@ -63,7 +63,7 @@ public class AnnotationCollector extends PhraseCollector {
                 if (annotations != null) {
                     List<Phrase> baseAnnotations = annotations.get(base);
                     if (baseAnnotations != null) {
-                        base.add(StyleAttribute.ANNOTATION, baseAnnotations.toArray(new Phrase[baseAnnotations.size()]), 0, base.length());
+                        base.add(StyleAttribute.ANNOTATIONS, baseAnnotations.toArray(new Phrase[baseAnnotations.size()]), 0, base.length());
                     }
                 }
             }

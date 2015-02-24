@@ -37,16 +37,15 @@ import com.skynav.ttpe.area.InlineFillerArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.SpaceArea;
 import com.skynav.ttpe.geometry.Direction;
-import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.fonts.FontStyle;
-import com.skynav.ttpe.fonts.FontWeight;
+import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
 import com.skynav.ttpe.style.StyleAttribute;
+import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.SuppressAtLineBreakTreatment;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.style.WhitespaceTreatment;
@@ -55,6 +54,8 @@ import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttpe.text.Paragraph;
 import com.skynav.ttpe.text.Phrase;
 import com.skynav.ttpe.util.Characters;
+import com.skynav.ttpe.util.Integers;
+import com.skynav.ttpe.util.Strings;
 
 import static com.skynav.ttpe.geometry.Dimension.*;
 
@@ -84,11 +85,6 @@ public class LineLayout {
 
     // style related state
     private Color color;
-    private List<String> fontFamily;
-    private Extent fontSize;
-    private FontStyle fontStyle;
-    private FontWeight fontWeight;
-    private String language;
     private InlineAlignment textAlign;
     private Wrap wrap;
     private WritingMode writingMode;
@@ -104,18 +100,13 @@ public class LineLayout {
         this.iterator = content.getIterator();
         this.state = state;
         // area derived state
-        this.language = state.getLanguage();
         this.writingMode = state.getWritingMode();
         // paragraph specified styles
         this.color = content.getColor(-1);
-        this.fontFamily = content.getFontFamily(-1);
-        this.fontSize = content.getFontSize(-1);
-        this.fontStyle = content.getFontStyle(-1);
-        this.fontWeight = content.getFontWeight(-1);
         this.textAlign = relativizeAlignment(content.getTextAlign(-1), this.writingMode);
         this.wrap = content.getWrapOption(-1);
         // derived styles
-        this.font = state.getFontCache().mapFont(fontFamily, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize);
+        this.font = content.getFont(-1);
         this.lineHeight = content.getLineHeight(-1, font);
         this.whitespace = new WhitespaceState(state.getWhitespace());
     }
@@ -292,23 +283,32 @@ public class LineLayout {
     }
 
     private void addTextArea(LineArea l, String text, Font font, double advance, double lineHeight, TextRun run) {
-        AreaNode a;
         if (run instanceof WhitespaceRun)
-            a = new SpaceArea(content.getElement(), advance, lineHeight, text, font);
+            l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, text, font), LineArea.ENCLOSE_ALL);
         else if (run instanceof EmbeddingRun)
-            a = ((EmbeddingRun) run).getArea();
-        else if (run instanceof NonWhitespaceRun)
-            a = new GlyphArea(content.getElement(), advance, lineHeight, text, font);
-        else
-            a = null;
-        if (a != null)
-            l.addChild(a, LineArea.ENCLOSE_ALL);
+            l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL); 
+        else if (run instanceof NonWhitespaceRun) {
+            int start = run.start;
+            for (StyleAttributeInterval fai : run.getFontIntervals()) {
+                if (fai.isOuterScope()) {
+                    l.addChild(new GlyphArea(content.getElement(), advance, lineHeight, text, font), LineArea.ENCLOSE_ALL);
+                    break;
+                } else {
+                    int f = fai.getBegin() - start;
+                    int t = fai.getEnd() - start;
+                    Font fontSegment = (Font) fai.getValue();
+                    String segment = text.substring(f, t);
+                    double di = fontSegment.getAdvance(segment);
+                    l.addChild(new GlyphArea(content.getElement(), di, lineHeight, segment, fontSegment), LineArea.ENCLOSE_ALL);
+                }
+            }
+        }
     }
 
     private void maybeAddAnnotationAreas(LineArea l, int start, Font font, double advance, double lineHeight) {
         if (start >= 0) {
             iterator.setIndex(start);
-            Phrase[] annotations = (Phrase[]) iterator.getAttribute(StyleAttribute.ANNOTATION);
+            Phrase[] annotations = (Phrase[]) iterator.getAttribute(StyleAttribute.ANNOTATIONS);
             if (annotations != null)
                 addAnnotationAreas(l, annotations, font, advance, lineHeight);
         }
@@ -441,10 +441,16 @@ public class LineLayout {
     private class TextRun {
         int start;                                              // start index in outer iterator
         int end;                                                // end index in outer iterator
+        List<StyleAttributeInterval> fontIntervals;             // cached font sub-intervals over complete run interval
         String text;                                            // cached text over complete run interval
         TextRun(int start, int end) {
             this.start = start;
             this.end = end;
+            this.fontIntervals = getFontIntervals(0, end - start, font);
+        }
+        // obtain all font intervals associated with run
+        List<StyleAttributeInterval> getFontIntervals() {
+            return fontIntervals;
         }
         // obtain all of text associated with run
         String getText() {
@@ -472,7 +478,21 @@ public class LineLayout {
         }
         // obtain advance of text starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
         double getAdvance(int from, int to, double available) {
-            return font.getAdvance(getText().substring(from, to));
+            double advance = 0;
+            for (StyleAttributeInterval fai : fontIntervals) {
+                if (fai.isOuterScope()) {
+                    advance += ((Font) fai.getValue()).getAdvance(getText().substring(from, to));
+                    break;
+                } else {
+                    int[] intersection = fai.intersection(start + from, start + to);
+                    if (intersection != null) {
+                        int f = intersection[0] - start;
+                        int t = intersection[1] - start;
+                        advance += ((Font) fai.getValue()).getAdvance(getText().substring(f,t));
+                    }
+                }
+            }
+            return advance;
         }
         // determine if content associate with break is suppressed after line break
         boolean suppressAfterLineBreak() {
@@ -481,6 +501,48 @@ public class LineLayout {
         // determine if content associate with break is suppressed before line break
         boolean suppressBeforeLineBreak() {
             return false;
+        }
+        // obtain fonts for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getFontIntervals(int from, int to, Font defaultFont) {
+            StyleAttribute fontAttr = StyleAttribute.FONT;
+            List<StyleAttributeInterval> fonts = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, StyleAttribute.FONT);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                iterator.setIndex(s);
+                Object v = aci.getAttribute(fontAttr);
+                if (v != null)
+                    fonts.add(new StyleAttributeInterval(fontAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            if (fonts.isEmpty())
+                fonts.add(new StyleAttributeInterval(fontAttr, defaultFont, -1, -1));
+            return fonts;
+        }
+        // obtain intervals over [FROM,TO) for which ATTRIBUTE is defined
+        private int[] getAttributeIntervals(int from, int to, StyleAttribute attribute) {
+            List<Integer> indices = new java.util.ArrayList<Integer>();
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            int b = start;
+            int e = end;
+            aci.setIndex(b);
+            while (aci.getIndex() < e) {
+                int s = aci.getRunStart(attribute);
+                int l = aci.getRunLimit(attribute);
+                if (s < b)
+                    s = b;
+                indices.add(s - b);
+                aci.setIndex(l);
+                if (l > e)
+                    l = e;
+                indices.add(l - b);
+            }
+            aci.setIndex(savedIndex);
+            return Integers.toArray(indices);
         }
     }
 
@@ -570,6 +632,40 @@ public class LineLayout {
     private class NonWhitespaceRun extends TextRun {
         NonWhitespaceRun(int start, int end) {
             super(start, end);
+        }
+        @Override
+        String getText(int from, int to) {
+            String text = super.getText(from, to);
+            StringBuffer sb = new StringBuffer();
+            for (StyleAttributeInterval fai : fontIntervals) {
+                if (fai.isOuterScope()) {
+                    sb.append(processFeatures(text, (Font) fai.getValue()));
+                    break;
+                } else {
+                    int[] intersection = fai.intersection(start + from, start + to);
+                    if (intersection != null) {
+                        int f = intersection[0] - start - from;
+                        int t = intersection[1] - start - from;
+                        sb.append(processFeatures(text.substring(f,t), (Font) fai.getValue()));
+                    }
+                }
+            }
+            return sb.toString();
+        }
+        private String processFeatures(String t, Font font) {
+            for (FontFeature feature : font.getFeatures()) {
+                if (feature.getFeature().equals("hwid"))
+                    t = processHalfWidth(t);
+                else if (feature.getFeature().equals("fwid"))
+                    t = processFullWidth(t);
+            }
+            return t;
+        }
+        private String processHalfWidth(String t) {
+            return Strings.toHalfWidth(t);
+        }
+        private String processFullWidth(String t) {
+            return Strings.toFullWidth(t);
         }
     }
 

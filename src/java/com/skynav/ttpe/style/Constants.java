@@ -26,9 +26,11 @@
 package com.skynav.ttpe.style;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.fonts.FontKey;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
@@ -64,6 +66,7 @@ public class Constants {
     public static final QName ttsFontSizeAttrName                       = new QName(NAMESPACE_TT_STYLE, "fontSize");
     public static final QName ttsFontStyleAttrName                      = new QName(NAMESPACE_TT_STYLE, "fontStyle");
     public static final QName ttsFontWeightAttrName                     = new QName(NAMESPACE_TT_STYLE, "fontWeight");
+    public static final QName ttsFontVariantAttrName                    = new QName(NAMESPACE_TT_STYLE, "fontVariant");
     public static final QName ttsLineHeightAttrName                     = new QName(NAMESPACE_TT_STYLE, "lineHeight");
     public static final QName ttsOverflowAttrName                       = new QName(NAMESPACE_TT_STYLE, "overflow");
     public static final QName ttsRubyAttrName                           = new QName(NAMESPACE_TT_STYLE, "ruby");
@@ -83,7 +86,8 @@ public class Constants {
     public static final Color defaultColor                              = Color.YELLOW;
     public static final BlockAlignment defaultDisplayAlign              = BlockAlignment.BEFORE;
     public static final Extent defaultExtent                            = Extent.EMPTY;
-    public static final List<String> defaultFontFamily                  = FontKey.DEFAULT_FAMILIES;
+    public static final List<String> defaultFontFamilies                = FontKey.DEFAULT_FAMILIES;
+    public static final Set<FontFeature> defaultFontFeatures            = FontKey.DEFAULT_FEATURES;
     public static final Extent defaultFontSize                          = FontKey.DEFAULT_SIZE;
     public static final FontStyle defaultFontStyle                      = FontKey.DEFAULT_STYLE;
     public static final FontWeight defaultFontWeight                    = FontKey.DEFAULT_WEIGHT;

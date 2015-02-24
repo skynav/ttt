@@ -27,6 +27,7 @@ package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.Whitespace;
@@ -45,19 +46,7 @@ public abstract class AbstractArea implements Area {
         this.element = element;
     }
 
-    public String getLanguage() {
-        if (element.hasAttributeNS(XML.xmlNamespace, "lang"))
-            return element.getAttributeNS(XML.xmlNamespace, "lang");
-        else
-            return null;
-    }
-
-    public Whitespace getWhitespace() {
-        if (element.hasAttributeNS(XML.xmlNamespace, "space"))
-            return Whitespace.valueOf(element.getAttributeNS(XML.xmlNamespace, "space"));
-        else
-            return null;
-    }
+    // AreaGeometry interface
 
     public WritingMode getWritingMode() {
         return null;
@@ -68,7 +57,7 @@ public abstract class AbstractArea implements Area {
         return (wm != null) && wm.isVertical();
     }
 
-    public double getIPD() {
+   public double getIPD() {
         return getAvailable(Dimension.IPD);
     }
 
@@ -80,8 +69,28 @@ public abstract class AbstractArea implements Area {
         return 0;
     }
 
+    // Area interface
+
     public Element getElement() {
         return element;
+    }
+
+    public Whitespace getWhitespace() {
+        if (element.hasAttributeNS(XML.xmlNamespace, "space"))
+            return Whitespace.valueOf(element.getAttributeNS(XML.xmlNamespace, "space"));
+        else
+            return null;
+    }
+
+    public String getLanguage() {
+        if (element.hasAttributeNS(XML.xmlNamespace, "lang"))
+            return element.getAttributeNS(XML.xmlNamespace, "lang");
+        else
+            return null;
+    }
+
+    public Font getFont() {
+        return null;
     }
 
 }
