@@ -399,15 +399,15 @@
 
 <target name="clean-all-test" depends="clean-all, generate-code, build, test"/>
 
-<macrodef name="run-samples">
-  <attribute name="verbose"/>
+<macrodef name="run-sample">
+  <attribute name="sample"/>
   <sequential>
     <mkdir dir="${basedir}/run/out"/>
     <java jar="${ttpe.target}" fork="true" failonerror="true">
       <jvmarg value="-ea"/>
       <sysproperty key="file.encoding" value="utf-8"/>
       <sysproperty key="java.awt.headless" value="true"/>
-      <arg value="@{verbose}"/>
+      <arg value="-v"/>
       <arg value="--external-duration"/>
       <arg value="24h"/>
       <arg value="--external-extent"/>
@@ -418,25 +418,25 @@
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
       <arg value="--output-format"/>
-      <arg value="svg"/>
+      <arg value="png"/>
       <arg value="--output-indent"/>
-      <arg value="--output-retain-frames"/>
-      <arg value="--svg-background"/>
+      <arg value="--png-background"/>
       <arg value="black"/>
-      <arg value="--svg-decorate-all"/>
-      <arg value="--svg-decoration"/>
-      <arg value="white"/>
-      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-004.xml"/>
+      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/@{sample}.xml"/>
     </java>
   </sequential>
 </macrodef>
 
-<target name="run-samples" description="Run presenter with sample input test files" depends="build-ttpe">
-  <run-samples verbose="--verbose"/>
+<target name="run-samples" description="Run presenter with sample input test files" depends="clean-build">
+  <run-sample sample="sample-003"/>
+  <run-sample sample="sample-004"/>
+  <run-sample sample="sample-005"/>
 </target>
 
 <target name="run-samples-no-build" description="Run presenter with sample input test files">
-  <run-samples verbose="--verbose"/>
+  <run-sample sample="sample-003"/>
+  <run-sample sample="sample-004"/>
+  <run-sample sample="sample-005"/>
 </target>
 
 </project>
