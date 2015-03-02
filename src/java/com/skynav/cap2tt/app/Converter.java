@@ -27,13 +27,12 @@ package com.skynav.cap2tt.app;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -228,6 +227,7 @@ public class Converter implements ConverterContext {
         { "debug",                      "",         "enable debug output (may be specified multiple times to increase debug level)" },
         { "debug-exceptions",           "",         "enable stack traces on exceptions (implies --debug)" },
         { "debug-level",                "LEVEL",    "enable debug output at specified level (default: 0)" },
+        { "default-language",           "LANGUAGE", "specify default language (default: \"\")" },
         { "default-region",             "ID",       "specify identifier of default region (default: undefined)" },
         { "disable-warnings",           "",         "disable warnings (both hide and don't count warnings)" },
         { "expect-errors",              "COUNT",    "expect count errors or -1 meaning unspecified expectation (default: -1)" },
@@ -280,6 +280,11 @@ public class Converter implements ConverterContext {
     // default warnings
     private static final Object[][] defaultWarningSpecifications = new Object[][] {
         { "all",                                        Boolean.FALSE,  "all warnings" },
+        { "bad-header-drop-flags",                      Boolean.TRUE,   "bad header drop flags" },
+        { "bad-header-field-count",                     Boolean.TRUE,   "header line missing field(s)" },
+        { "bad-header-length",                          Boolean.TRUE,   "header line too short" },
+        { "bad-header-preamble",                        Boolean.TRUE,   "header line preamble missing or incorrect" },
+        { "bad-header-scene-standard",                  Boolean.TRUE,   "bad header scene standard" },
         { "out-time-precedes-in-time",                  Boolean.TRUE,   "out time precedes in time" }
     };
 
@@ -371,6 +376,7 @@ public class Converter implements ConverterContext {
     };
 
     // options state
+    private String defaultLanguage;
     private String defaultRegion;
     private String expectedErrors;
     private String expectedWarnings;
@@ -412,7 +418,7 @@ public class Converter implements ConverterContext {
     private Map<String,Object> resourceState;
     private URI resourceUri;
     private Charset resourceEncoding;
-    private ByteBuffer resourceBufferRaw;
+    private CharBuffer resourceBuffer;
     private int resourceExpectedErrors = -1;
     private int resourceExpectedWarnings = -1;
 
@@ -576,6 +582,10 @@ public class Converter implements ConverterContext {
             int debug = reporter.getDebugLevel();
             if (debugNew > debug)
                 reporter.setDebugLevel(debugNew);
+        } else if (option.equals("default-language")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultLanguage = args[++index];
         } else if (option.equals("default-region")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -1184,7 +1194,13 @@ public class Converter implements ConverterContext {
 
     static {
         permittedEncodings = new java.util.ArrayList<Charset>();
-        try { permittedEncodings.add(Charset.forName("SHIFT_JIS")); } catch (RuntimeException e) {}
+        try {
+            permittedEncodings.add(Charset.forName("SHIFT_JIS"));
+            permittedEncodings.add(Charset.forName("UTF-8"));
+            permittedEncodings.add(Charset.forName("UTF-16"));
+            permittedEncodings.add(Charset.forName("UTF-16BE"));
+            permittedEncodings.add(Charset.forName("UTF-16LE"));
+        } catch (RuntimeException e) {}
     }
 
     public static Charset[] getPermittedEncodings() {
@@ -1281,16 +1297,6 @@ public class Converter implements ConverterContext {
         return newBuffer;
     }
 
-    private static Charset asciiEncoding;
-
-    static {
-        try {
-            asciiEncoding = Charset.forName("US-ASCII");
-        } catch (RuntimeException e) {
-            asciiEncoding = null;
-        }
-    }
-
     private String[] parseLines(CharBuffer cb, Charset encoding) {
         List<String> lines = new java.util.ArrayList<String>();
         StringBuffer sb = new StringBuffer();
@@ -1323,7 +1329,7 @@ public class Converter implements ConverterContext {
         resourceUriString = null;
         resourceUri = null;
         resourceEncoding = null;
-        resourceBufferRaw = null;
+        resourceBuffer = null;
         resourceExpectedErrors = -1;
         resourceExpectedWarnings = -1;
         getReporter().resetResourceState();
@@ -1345,8 +1351,8 @@ public class Converter implements ConverterContext {
     private void setResourceBuffer(Charset encoding, CharBuffer buffer, ByteBuffer bufferRaw) {
         resourceEncoding = encoding;
         setResourceState("encoding", encoding);
-        resourceBufferRaw = bufferRaw;
-        setResourceState("bufferRaw", bufferRaw);
+        resourceBuffer = buffer;
+        setResourceState("buffer", buffer);
         if (expectedErrors != null) {
             resourceExpectedErrors = parseAnnotationAsInteger(expectedErrors, -1);
             setResourceState("resourceExpectedErrors", Integer.valueOf(resourceExpectedErrors));
@@ -1373,41 +1379,126 @@ public class Converter implements ConverterContext {
             if (bytesBuffer != null) {
                 Object[] sniffOutputParameters = new Object[] { Integer.valueOf(0) };
                 Charset encoding;
-                if (this.forceEncoding != null)
+                if (this.forceEncoding != null) {
                     encoding = this.forceEncoding;
-                else
-                    encoding = Sniffer.sniff(bytesBuffer, asciiEncoding, sniffOutputParameters);
-                if (isPermittedEncoding(encoding.name())) {
-                    int bomLength = (Integer) sniffOutputParameters[0];
-                    CharBuffer charsBuffer = decodeResource(bytesBuffer, encoding, bomLength);
-                    if (charsBuffer != null) {
-                        setResourceBuffer(encoding, charsBuffer, bytesBuffer);
-                        if (includeSource)
-                            reporter.setLines(parseLines(charsBuffer, encoding));
-                        if (this.forceEncoding != null)
-                            reporter.logInfo(reporter.message("*KEY*", "Resource encoding forced to {0}.", encoding.name()));
-                        else
-                            reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", encoding.name()));
-                        reporter.logInfo(reporter.message("*KEY*", "Resource length {0} bytes, decoded as {1} Java characters (char).",
-                            bytesBuffer.limit(), charsBuffer.limit()));
+                    Charset bomEncoding = Sniffer.checkForBOMCharset(bytesBuffer, sniffOutputParameters);
+                    if ((bomEncoding != null) && !encoding.equals(bomEncoding)) {
+                        reporter.logError(reporter.message("*KEY*", "Resource encoding forced to {0}, but BOM encoding is {1}.", encoding.name(), bomEncoding.name()));
+                    } else {
+                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding forced to {0}.", encoding.name()));
                     }
                 } else {
-                    reporter.logError(reporter.message("*KEY*", "Encoding {0} is not permitted", encoding.name()));
+                    encoding = sniff(bytesBuffer, null, sniffOutputParameters);
+                    if (encoding != null) {
+                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", encoding.name()));
+                    } else {
+                        encoding = defaultEncoding;
+                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding defaulted to {0}.", encoding.name()));
+                    }
+                }
+                if (reporter.getResourceErrors() == 0) {
+                    if (isPermittedEncoding(encoding.name())) {
+                        int bomLength = (Integer) sniffOutputParameters[0];
+                        CharBuffer charsBuffer = decodeResource(bytesBuffer, encoding, bomLength);
+                        if (charsBuffer != null) {
+                            setResourceBuffer(encoding, charsBuffer, bytesBuffer);
+                            if (includeSource)
+                                reporter.setLines(parseLines(charsBuffer, encoding));
+                            reporter.logInfo(reporter.message("*KEY*", "Resource length {0} bytes, decoded as {1} Java characters (char).",
+                                bytesBuffer.limit(), charsBuffer.limit()));
+                        }
+                    } else {
+                        reporter.logError(reporter.message("*KEY*", "Encoding {0} is not permitted", encoding.name()));
+                    }
                 }
             }
         }
         return reporter.getResourceErrors() == 0;
     }
 
-    private InputStream openStream(ByteBuffer bb) {
-        bb.rewind();
-        if (bb.hasArray()) {
-            return new ByteArrayInputStream(bb.array());
-        } else {
-            byte[] bytes = new byte[bb.limit()];
-            bb.get(bytes);
-            return new ByteArrayInputStream(bb.array());
+    private Charset sniff(ByteBuffer bb, Charset defaultCharset, Object[] outputParameters) {
+        Charset cs;
+        if ((cs = Sniffer.sniff(bb, null, outputParameters)) != null)
+            return cs;
+        else if ((cs = sniffShiftJIS(bb, outputParameters)) != null)
+            return cs;
+        else
+            return defaultCharset;
+    }
+
+    private static Charset sjisEncoding;
+    static {
+        try {
+            sjisEncoding = Charset.forName("SHIFT_JIS");
+        } catch (RuntimeException e) {
+            sjisEncoding = null;
         }
+    }
+
+    private static Charset sniffShiftJIS(ByteBuffer bb, Object[] outputParameters) {
+        int restore = bb.position();
+        int limit = bb.limit();
+        @SuppressWarnings("unused")
+        int na = 0; // number of {ascii,jisx201} characters
+        int nk = 0; // number of half width kana characters
+        int nd = 0; // number of double byte characters
+        int b1Bad = 0;
+        int b2Bad = 0;
+        while (bb.position() < limit) {
+            int b1 = bb.get() & 0xFF;
+            if (b1 < 0x80) {
+                ++na;
+            } else if (b1 == 0x80) {
+                ++b1Bad;
+            } else if (b1 < 0xA0) {
+                int b2 = (bb.position() < limit) ? bb.get() & 0xFF : -1;
+                if (isShiftJISByte2(b2))
+                    ++nd;
+                else
+                    ++b2Bad;
+            } else if (b1 == 0xA0) {
+                ++b1Bad;
+            } else if (b1 < 0xE0) {
+                ++nk;
+            } else if (b1 < 0xF0) {
+                int b2 = (bb.position() < limit) ? bb.get() & 0xFF : -1;
+                if (isShiftJISByte2(b2))
+                    ++nd;
+                else
+                    ++b2Bad;
+            } else {
+                ++b1Bad;
+            }
+        }
+        bb.position(restore);
+        if ((b1Bad > 0) || (b2Bad > 0)) {
+            // if any bad bytes, fail
+            return null;
+        } else if (nd > 0) {
+            // if any double byte characters, succeed
+            return sjisEncoding;
+        } else if (nk > 0) {
+            // if any half width kana characters, succeed
+            return sjisEncoding;
+        } else {
+            // otherwise, this could be ascii, so fail
+            return null;
+        }
+    }
+
+    private static boolean isShiftJISByte2(int b) {
+        if (b < 0)
+            return false;
+        else if (b < 0x40)
+            return false;
+        else if (b < 0x7F)
+            return true;
+        else if (b == 0x7F)
+            return false;
+        else if (b < 0xFD)
+            return true;
+        else
+            return false;
     }
 
     private boolean parseResource() {
@@ -1415,8 +1506,7 @@ public class Converter implements ConverterContext {
         Reporter reporter = getReporter();
         reporter.logInfo(reporter.message("*KEY*", "Parsing resource ..."));
         try {
-            Charset encoding = getEncoding();
-            BufferedReader r = new BufferedReader(new InputStreamReader(openStream(resourceBufferRaw), encoding));
+            BufferedReader r = new BufferedReader(new CharArrayReader(getCharArray(resourceBuffer)));
             String line;
             int lineNumber = 0;
             LocatorImpl locator = new LocatorImpl();
@@ -1442,68 +1532,119 @@ public class Converter implements ConverterContext {
         return !fail && (reporter.getResourceErrors() == 0);
     }
 
+    private char[] getCharArray(CharBuffer cb) {
+        cb.rewind();
+        if (cb.hasArray()) {
+            return cb.array();
+        } else {
+            char[] chars = new char[cb.limit()];
+            cb.get(chars);
+            return chars;
+        }
+    }
+
     private boolean parseHeaderLine(String line, LocatorImpl locator) {
         boolean fail = false;
         int lineLength = line.length();
         final int minHeaderLength = 10;
         if (lineLength < minHeaderLength) {
-            reporter.logError(reporter.message(locator, "*KEY*", "Header too short, got length {0}, expected {1}.", lineLength, minHeaderLength));
-            fail = true;
-        }
-        if (!fail) {
-            String[] fields = line.split("\\t+");
-            final int minFieldCount = 3;
-            if (fields.length != minFieldCount) {
-                Message message = reporter.message(locator, "*KEY*", "Header bad field count, got {0}, expected {1}.", fields.length, minFieldCount);
-                reporter.logError(message);
-                fail = true;
-            }
-            final String preambleExpected = "Lambda字幕V4";
-            if (!fail) {
-                String preamble = fields[0];
-                if (!preamble.equals(preambleExpected)) {
-                    Message message = reporter.message(locator, "*KEY*", "Header preamble field invalid, got ''{0}'', expected ''{1}''.", preamble, preambleExpected);
-                    reporter.logError(message);
-                    reporter.logDebug(reporter.message("*KEY*", "''{0}'' != ''{1}''", dump(preamble), dump(preambleExpected)));
+            if (reporter.isWarningEnabled("bad-header-length")) {
+                if (reporter.logWarning(reporter.message(locator, "*KEY*", "Header too short, got length {0}, expected {1}.", lineLength, minHeaderLength)))
                     fail = true;
+            }
+        }
+        if (fail)
+            return !fail;
+        String[] fields = line.split("\\t+");
+        final int minFieldCount = 3;
+        if (fields.length != minFieldCount) {
+            Message message = reporter.message(locator, "*KEY*", "Header bad field count, got {0}, expected {1}.", fields.length, minFieldCount);
+            if (reporter.isWarningEnabled("bad-header-field-count")) {
+                if (reporter.logWarning(message))
+                    fail = true;
+            }
+        }
+        if (fail)
+            return !fail;
+        if (fields.length < 1) {
+            Message message = reporter.message(locator, "*KEY*", "Header preamble field missing.");
+            if (reporter.isWarningEnabled("bad-header-preamble")) {
+                if (reporter.logWarning(message))
+                    fail = true;
+            }
+        }
+        if (fail)
+            return !fail;
+        if (fields.length > 0) {
+            final String preambleExpected = "Lambda字幕V4";
+            String preamble = fields[0];
+            if (!preamble.equals(preambleExpected)) {
+                Message message = reporter.message(locator, "*KEY*", "Header preamble field invalid, got ''{0}'', expected ''{1}''.", preamble, preambleExpected);
+                reporter.logDebug(reporter.message("*KEY*", "''{0}'' != ''{1}''", dump(preamble), dump(preambleExpected)));
+                if (reporter.isWarningEnabled("bad-header-preamble")) {
+                    if (reporter.logWarning(message))
+                        fail = true;
                 }
             }
+        }
+        if (fail)
+            return !fail;
+        if (fields.length < 2) {
+            Message message = reporter.message(locator, "*KEY*", "Drop flags field missing.");
+            if (reporter.isWarningEnabled("bad-header-drop-flags")) {
+                if (reporter.logWarning(message))
+                    fail = true;
+            }
+        }
+        if (fail)
+            return !fail;
+        if (fields.length > 1) {
             final String dropFlagsTemplate = "DF0+0";
             final int minDropFlagsLength = dropFlagsTemplate.length();
             final String dropFlagsPrefixExpected = dropFlagsTemplate.substring(0, 2);
-            if (!fail) {
-                String dropFlags = fields[1];
-                int dropFlagsLength = dropFlags.length();
-                if (dropFlagsLength < minDropFlagsLength) {
-                    Message message =
-                        reporter.message(locator, "*KEY*", "Header drop flags field too short, got ''{0}'', expected ''{1}''.", dropFlagsLength, minDropFlagsLength);
-                    reporter.logError(message);
-                    fail = true;
+            String dropFlags = fields[1];
+            int dropFlagsLength = dropFlags.length();
+            if (dropFlagsLength < minDropFlagsLength) {
+                Message message =
+                    reporter.message(locator, "*KEY*", "Header drop flags field too short, got ''{0}'', expected ''{1}''.", dropFlagsLength, minDropFlagsLength);
+                if (reporter.isWarningEnabled("bad-header-drop-flags")) {
+                    if (reporter.logWarning(message))
+                        fail = true;
                 }
             }
-            if (!fail) {
-                String dropFlags = fields[1];
-                if (!dropFlags.startsWith(dropFlagsPrefixExpected)) {
-                    Message message =
-                        reporter.message(locator, "*KEY*", "Header drop flags field invalid, got ''{0}'', should start with ''{1}''.", dropFlags, dropFlagsPrefixExpected);
-                    reporter.logError(message);
-                    reporter.logDebug(reporter.message("*KEY*", "prefix(''{0}'') != ''{1}''", dump(dropFlags), dump(dropFlagsPrefixExpected)));
-                    fail = true;
+            if (fail)
+                return !fail;
+            if (!dropFlags.startsWith(dropFlagsPrefixExpected)) {
+                Message message =
+                    reporter.message(locator, "*KEY*", "Header drop flags field invalid, got ''{0}'', should start with ''{1}''.", dropFlags, dropFlagsPrefixExpected);
+                reporter.logDebug(reporter.message("*KEY*", "prefix(''{0}'') != ''{1}''", dump(dropFlags), dump(dropFlagsPrefixExpected)));
+                if (reporter.isWarningEnabled("bad-header-drop-flags")) {
+                    if (reporter.logWarning(message))
+                        fail = true;
                 }
             }
-            if (!fail) {
-                String dropFlags = fields[1];
-                String dropFlagsArgument = dropFlags.substring(2, 3);
-                if (!dropFlagsArgument.equals("0") && !dropFlagsArgument.equals("1")) {
-                    Message message =
-                        reporter.message(locator, "*KEY*", "Header drop flags field argument invalid, got ''{0}'', expected ''0'' or ''1''.", dropFlagsArgument);
-                    reporter.logError(message);
-                    reporter.logDebug(reporter.message("*KEY*", "argument(''{0}'') == ''{1}''", dump(dropFlags), dump(dropFlagsArgument)));
-                    fail = true;
+            if (fail)
+                return !fail;
+            String dropFlagsArgument = dropFlags.substring(2, 3);
+            if (!dropFlagsArgument.equals("0") && !dropFlagsArgument.equals("1")) {
+                Message message =
+                    reporter.message(locator, "*KEY*", "Header drop flags field argument invalid, got ''{0}'', expected ''0'' or ''1''.", dropFlagsArgument);
+                reporter.logDebug(reporter.message("*KEY*", "argument(''{0}'') == ''{1}''", dump(dropFlags), dump(dropFlagsArgument)));
+                if (reporter.isWarningEnabled("bad-header-drop-flags")) {
+                    if (reporter.logWarning(message))
+                        fail = true;
                 }
             }
-
         }
+        if (fields.length < 3) {
+            Message message = reporter.message(locator, "*KEY*", "Scene standard field missing.");
+            if (reporter.isWarningEnabled("bad-header-scene-standard")) {
+                if (reporter.logWarning(message))
+                    fail = true;
+            }
+        }
+        if (fail)
+            return !fail;
         return !fail;
     }
 
@@ -2179,6 +2320,8 @@ public class Converter implements ConverterContext {
             state.populate(head);
             // populate root (tt)
             TimedText tt = ttmlFactory.createTimedText();
+            if (defaultLanguage != null)
+                tt.setLang(defaultLanguage);
             if ((head.getStyling() != null) || (head.getLayout() != null))
                 tt.setHead(head);
             if (!body.getDiv().isEmpty())
@@ -2334,7 +2477,7 @@ public class Converter implements ConverterContext {
         Map<QName,String> initials = new java.util.HashMap<QName,String>();
         // get initials from model
         for (QName qn : model.getDefinedStyleNames()) {
-            initials.put(qn, model.getInitialStyleValue(qn));
+            initials.put(qn, model.getInitialStyleValue(null, qn));
         }
         // get initials from model augmentation (temporary until we add TTML2 model)
         initials = augmentInitials(initials);

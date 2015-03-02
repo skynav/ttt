@@ -360,8 +360,6 @@
       <arg value="@{verbose}"/>
       <arg value="--warn-on"/>
       <arg value="all"/>
-      <arg value="--force-encoding"/>
-      <arg value="Shift_JIS"/>
       <arg value="--hide-resource-path"/>
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
@@ -373,6 +371,61 @@
 
 <target name="run-samples" description="Run converter with sample input test files" depends="build-cap2tt">
   <run-samples verbose="--verbose"/>
+</target>
+
+<target name="run-test-auto">
+  <java jar="${cap2tt.target}" fork="true" failonerror="true">
+    <jvmarg value="-ea"/>
+    <sysproperty key="file.encoding" value="utf-8"/>
+    <arg value="-d"/>
+    <arg value="--debug-exceptions"/>
+    <arg value="-v"/>
+    <arg value="--warn-on"/>
+    <arg value="all"/>
+    <arg value="--hide-resource-path"/>
+    <arg value="--output-directory"/>
+    <arg value="${basedir}/run/out"/>
+    <arg value="--output-indent"/>
+    <arg value="test.cap"/>
+  </java>
+</target>
+
+<target name="run-test-sjis">
+  <java jar="${cap2tt.target}" fork="true" failonerror="true">
+    <jvmarg value="-ea"/>
+    <sysproperty key="file.encoding" value="utf-8"/>
+    <arg value="-d"/>
+    <arg value="--debug-exceptions"/>
+    <arg value="-v"/>
+    <arg value="--warn-on"/>
+    <arg value="all"/>
+    <arg value="--force-encoding"/>
+    <arg value="Shift_JIS"/>
+    <arg value="--hide-resource-path"/>
+    <arg value="--output-directory"/>
+    <arg value="${basedir}/run/out"/>
+    <arg value="--output-indent"/>
+    <arg value="test.cap"/>
+  </java>
+</target>
+
+<target name="run-test-utf8">
+  <java jar="${cap2tt.target}" fork="true" failonerror="true">
+    <jvmarg value="-ea"/>
+    <sysproperty key="file.encoding" value="utf-8"/>
+    <arg value="-d"/>
+    <arg value="--debug-exceptions"/>
+    <arg value="-v"/>
+    <arg value="--warn-on"/>
+    <arg value="all"/>
+    <arg value="--force-encoding"/>
+    <arg value="utf-8"/>
+    <arg value="--hide-resource-path"/>
+    <arg value="--output-directory"/>
+    <arg value="${basedir}/run/out"/>
+    <arg value="--output-indent"/>
+    <arg value="test.cap"/>
+  </java>
 </target>
 
 </project>

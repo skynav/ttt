@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cap2tt version="1" xmlns="http://skynav.com/ns/cap2tt">
 <option name="add-creation-metadata">true</option>
+<option name="default-language">jp</option>
 <option name="default-region">横下</option>
 <option name="merge-styles">true</option>
 <option name="style-id-pattern">s{0}</option>

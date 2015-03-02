@@ -18,12 +18,17 @@
 		<link>
 			<name>cap2tt</name>
 			<type>2</type>
-			<location>/Users/glenn/work/cap2tt/src/java</location>
+			<locationURI>PARENT-2-PROJECT_LOC/src/java</locationURI>
 		</link>
 		<link>
 			<name>cap2tt-resources</name>
 			<type>2</type>
-			<location>/Users/glenn/work/cap2tt/src/resources</location>
+			<locationURI>PARENT-2-PROJECT_LOC/src/resources</locationURI>
+		</link>
+		<link>
+			<name>externals</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/ext/lib</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
