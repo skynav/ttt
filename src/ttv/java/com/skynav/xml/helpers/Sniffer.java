@@ -37,6 +37,10 @@ public class Sniffer {
     private Sniffer() {
     }
 
+    public static Charset sniff(ByteBuffer bb, Charset defaultCharset) {
+        return sniff(bb, defaultCharset, null);
+    }
+
     public static Charset sniff(ByteBuffer bb, Charset defaultCharset, Object[] outputParameters) {
         int restore = bb.position();
         Charset sniffedCharset;
@@ -60,10 +64,6 @@ public class Sniffer {
         return sniffedCharset;
     }
 
-    public static Charset sniff(ByteBuffer bb, Charset defaultCharset) {
-        return sniff(bb, defaultCharset, null);
-    }
-
     private static List<Object[]> bomList;
 
     static {
@@ -75,7 +75,7 @@ public class Sniffer {
         try { bomList.add(new Object[] { new int[] { 0xFF, 0xFE }, Charset.forName("UTF-16LE") }); } catch (RuntimeException e) {}
     }
 
-    private static Charset checkForBOMCharset(ByteBuffer bb, Object[] outputParameters) {
+    public static Charset checkForBOMCharset(ByteBuffer bb, Object[] outputParameters) {
         for (Object[] bomEntry : bomList) {
             int[] bom = (int[]) bomEntry[0];
             if (bom.length > bb.limit())
