@@ -418,25 +418,33 @@
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
       <arg value="--output-format"/>
-      <arg value="png"/>
+      <arg value="svg"/>
       <arg value="--output-indent"/>
-      <arg value="--png-background"/>
+      <arg value="--output-retain-frames"/>
+      <arg value="--svg-background"/>
       <arg value="black"/>
-      <arg value="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/@{sample}.xml"/>
+      <arg value="--svg-decorate-all"/>
+      <arg value="--svg-decoration"/>
+      <arg value="white"/>
+      <arg value="@{sample}"/>
     </java>
   </sequential>
 </macrodef>
 
 <target name="run-samples" description="Run presenter with sample input test files" depends="clean-build">
-  <run-sample sample="sample-003"/>
-  <run-sample sample="sample-004"/>
-  <run-sample sample="sample-005"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-003.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-004.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-005.xml"/>
 </target>
 
 <target name="run-samples-no-build" description="Run presenter with sample input test files">
-  <run-sample sample="sample-003"/>
-  <run-sample sample="sample-004"/>
-  <run-sample sample="sample-005"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-003.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-004.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-005.xml"/>
+</target>
+
+<target name="run-test">
+  <run-sample sample="${basedir}/test.xml"/>
 </target>
 
 </project>

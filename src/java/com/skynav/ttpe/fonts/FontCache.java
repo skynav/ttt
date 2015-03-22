@@ -94,7 +94,7 @@ public class FontCache {
         }
         List<FontSpecification> matchesLanguage = new java.util.ArrayList<FontSpecification>();
         for (FontSpecification  fs : matchesFamily) {
-            if (language == null)
+            if ((language == null) || language.isEmpty())
                 matchesLanguage.add(fs);
             else if (fs.language.compareToIgnoreCase(language) == 0)
                 matchesLanguage.add(fs);
@@ -104,7 +104,7 @@ public class FontCache {
             if (style == null)
                 matchesStyle.add(fs);
             else if (fs.style == style)
-                matchesLanguage.add(fs);
+                matchesStyle.add(fs);
         }
         List<FontSpecification> matchesWeight = new java.util.ArrayList<FontSpecification>();
         for (FontSpecification  fs : matchesStyle) {

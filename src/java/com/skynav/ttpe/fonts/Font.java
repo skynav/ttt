@@ -58,6 +58,14 @@ public class Font {
         this.reporter = reporter;
     }
 
+    @Override
+    public String toString() {
+        if (key != null)
+            return key.toString();
+        else
+            return super.toString();
+    }
+
     public FontKey getKey() {
         return key;
     }

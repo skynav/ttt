@@ -28,6 +28,5 @@ package com.skynav.ttpe.style;
 public enum AnnotationPosition {
     AUTO,
     BEFORE,
-    AFTER,
-    OUTSIDE;
+    AFTER;
 }

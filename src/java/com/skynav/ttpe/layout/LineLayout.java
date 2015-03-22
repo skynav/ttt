@@ -28,6 +28,7 @@ package com.skynav.ttpe.layout;
 import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
 import java.util.List;
+import java.util.Set;
 
 import com.skynav.ttpe.area.AnnotationArea;
 import com.skynav.ttpe.area.AreaNode;
@@ -82,6 +83,7 @@ public class LineLayout {
 
     // layout state
     private LayoutState state;
+    private int lineNumber;
 
     // style related state
     private Color color;
@@ -189,9 +191,31 @@ public class LineLayout {
                 break;
             else if (inBreakingWhitespace ^ Characters.isBreakingWhitespace(c))
                 break;
+            else if (hasBreakingAttribute(iterator))
+                break;
         }
         int e = iterator.getIndex();
         return inBreakingWhitespace ? new WhitespaceRun(s, e, whitespace) : new NonWhitespaceRun(s, e);
+    }
+
+    private static boolean hasBreakingAttribute(AttributedCharacterIterator iterator) {
+        return hasBreakingAttribute(iterator, iterator.getIndex());
+    }
+
+    private static Set<StyleAttribute> breakingAttributes;
+    static {
+        breakingAttributes = new java.util.HashSet<StyleAttribute>();
+        breakingAttributes.add(StyleAttribute.ANNOTATIONS);
+    }
+
+    private static boolean hasBreakingAttribute(AttributedCharacterIterator iterator, int index) {
+        int s = iterator.getIndex();
+        if (index != s)
+            iterator.setIndex(index);
+        int k = iterator.getRunStart(breakingAttributes);
+        if (index != s)
+            iterator.setIndex(s);
+        return k == index;
     }
 
     private LineBreakIterator updateIterator(LineBreakIterator bi, TextRun r) {
@@ -223,7 +247,11 @@ public class LineLayout {
     }
 
     protected LineArea newLine(Phrase p, double ipd, double bpd, InlineAlignment textAlign, Color color, Font font) {
-        return new LineArea(p.getElement(), ipd, bpd, textAlign, color, font);
+        return new LineArea(p.getElement(), ipd, bpd, textAlign, color, font, ++lineNumber);
+    }
+
+    protected int getNextLineNumber() {
+        return ++lineNumber;
     }
 
     private LineArea addTextAreas(LineArea l, List<InlineBreakOpportunity> breaks) {
@@ -295,7 +323,12 @@ public class LineLayout {
                     break;
                 } else {
                     int f = fai.getBegin() - start;
+                    assert f >= 0;
+                    assert f < text.length();
                     int t = fai.getEnd() - start;
+                    assert t >= 0;
+                    assert t >= f;
+                    assert t <= text.length();
                     Font fontSegment = (Font) fai.getValue();
                     String segment = text.substring(f, t);
                     double di = fontSegment.getAdvance(segment);
@@ -420,6 +453,19 @@ public class LineLayout {
             this.index = index;
             this.advance = advance;
         }
+        @Override
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append(run);
+            sb.append('[');
+            sb.append(start);
+            sb.append(',');
+            sb.append(index);
+            sb.append(',');
+            sb.append(Double.toString(advance));
+            sb.append(']');
+            return sb.toString();
+        }
         boolean isHard() {
             if (type.isHard())
                 return true;
@@ -447,6 +493,12 @@ public class LineLayout {
             this.start = start;
             this.end = end;
             this.fontIntervals = getFontIntervals(0, end - start, font);
+        }
+        @Override
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append(getText());
+            return sb.toString();
         }
         // obtain all font intervals associated with run
         List<StyleAttributeInterval> getFontIntervals() {
@@ -514,8 +566,9 @@ public class LineLayout {
                 int e = start + intervals[i*2 + 1];
                 iterator.setIndex(s);
                 Object v = aci.getAttribute(fontAttr);
-                if (v != null)
-                    fonts.add(new StyleAttributeInterval(fontAttr, v, s, e));
+                if (v == null)
+                    v = defaultFont;
+                fonts.add(new StyleAttributeInterval(fontAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
             if (fonts.isEmpty())

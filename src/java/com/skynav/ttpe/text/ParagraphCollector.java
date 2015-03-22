@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.style.AnnotationStyleCollector;
 import com.skynav.ttpe.style.StyleCollector;
 
 public class ParagraphCollector {
@@ -113,7 +114,7 @@ public class ParagraphCollector {
         }
 
         private void collectAsAnnotation(Element e) {
-            for (Phrase p : new AnnotationCollector(new StyleCollector(styleCollector)).collect(e))
+            for (Phrase p : new AnnotationCollector(new AnnotationStyleCollector(styleCollector, null)).collect(e))
                 add(p);
         }
 

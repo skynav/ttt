@@ -33,6 +33,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 import com.skynav.ttpe.style.Annotation;
+import com.skynav.ttpe.style.AnnotationStyleCollector;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.StyleCollector;
@@ -47,7 +48,7 @@ public class AnnotationCollector extends PhraseCollector {
     private Map<Phrase,List<Phrase>> annotations;               // annotations expressed as map from bases to annotation lists
     private int currentBase;                                    // current index into bases when processing text container and text spans
 
-    public AnnotationCollector(StyleCollector styleCollector) {
+    public AnnotationCollector(AnnotationStyleCollector styleCollector) {
         super(styleCollector);
         this.currentBase = -1;
     }
@@ -81,7 +82,7 @@ public class AnnotationCollector extends PhraseCollector {
                 if (Documents.isElement(c, ttSpanElementName)) {
                     Annotation annotation = styleCollector.getAnnotation(c);
                     if (annotation == null) {
-                        // ignore span children that do not specify tts:annotation
+                        // ignore span children that do not specify tts:ruby
                     } else if (annotation == Annotation.BASE_CONTAINER) {
                         addBaseStart();
                         collectBaseContainer(c);
@@ -121,7 +122,7 @@ public class AnnotationCollector extends PhraseCollector {
                 if (Documents.isElement(c, ttSpanElementName)) {
                     Annotation annotation = styleCollector.getAnnotation(c);
                     if (annotation == null) {
-                        // ignore span children that do not specify tts:annotation
+                        // ignore span children that do not specify tts:ruby
                     } else if (annotation == Annotation.BASE) {
                         collectBase(c);
                     } else {
@@ -149,7 +150,7 @@ public class AnnotationCollector extends PhraseCollector {
                 if (Documents.isElement(c, ttSpanElementName)) {
                     Annotation annotation = styleCollector.getAnnotation(c);
                     if (annotation == null) {
-                        // ignore span children that do not specify tts:annotation
+                        // ignore span children that do not specify tts:ruby
                     } else if (annotation == Annotation.TEXT) {
                         collectText(c);
                     } else {
@@ -174,7 +175,7 @@ public class AnnotationCollector extends PhraseCollector {
                 // ignore non-text children (for now)
             }
         }
-        StyleCollector sc = new StyleCollector(styleCollector);
+        StyleCollector sc = new AnnotationStyleCollector(styleCollector, null);
         sc.collectSpanStyles(e, -1, -1);
         addBase(e, text.toString(), sc.extract());
     }
@@ -197,7 +198,7 @@ public class AnnotationCollector extends PhraseCollector {
                     // ignore non-text children (for now)
                 }
             }
-            StyleCollector sc = new StyleCollector(styleCollector);
+            StyleCollector sc = new AnnotationStyleCollector(styleCollector, (currentBase < 0) ? null : bases.get(currentBase).getElement());
             sc.collectSpanStyles(e, -1, -1);
             addAnnotation(e, text.toString(), sc.extract());
             ++currentBase;

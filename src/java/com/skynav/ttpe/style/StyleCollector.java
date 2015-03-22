@@ -60,13 +60,13 @@ import static com.skynav.ttpe.text.Constants.*;
 
 public class StyleCollector {
 
-    private TransformerContext context;
-    private FontCache fontCache;
-    private Extent extBounds;
-    private Extent refBounds;
-    private WritingMode writingMode;
-    private String language;
-    private Font font;
+    protected TransformerContext context;
+    protected FontCache fontCache;
+    protected Extent extBounds;
+    protected Extent refBounds;
+    protected WritingMode writingMode;
+    protected String language;
+    protected Font font;
     private Map<String,StyleSet> styles;
     private List<StyleAttributeInterval> attributes;
 
@@ -86,18 +86,21 @@ public class StyleCollector {
         this.styles = styles;
     }
 
+    protected void setFont(Font font) {
+        this.font = font;
+    }
+
     public void clear() {
         if (attributes != null)
             attributes.clear();
     }
 
     public boolean generatesAnnotationBlock(Element e) {
-        if (!Documents.isElement(e, ttSpanElementName))
-            return false;
-        else {
+        if (Documents.isElement(e, ttSpanElementName)) {
             Annotation r = getAnnotation(e);
             return (r != null) && (r == Annotation.CONTAINER);
-        }
+        } else
+            return false;
     }
 
     public Annotation getAnnotation(Element e) {
@@ -126,14 +129,14 @@ public class StyleCollector {
     }
 
     public void collectParagraphStyles(Element e) {
+        StyleSet styles = getStyles(e);
         int begin = -1;
         int end = -1;
 
         // collect common styles
-        collectCommonStyles(e, begin, end);
+        collectCommonStyles(e, begin, end, styles);
 
         // collect paragraph styles
-        StyleSet styles = getStyles(e);
         StyleSpecification s;
         Object v;
 
@@ -160,46 +163,14 @@ public class StyleCollector {
         return attributes;
     }
 
-    private void collectCommonStyles(Element e, int begin, int end) {
+    protected void collectCommonStyles(Element e, int begin, int end) {
+        collectCommonStyles(e, begin, end, getStyles(e));
+    }
 
-        StyleSet styles = getStyles(e);
+    protected void collectCommonStyles(Element e, int begin, int end, StyleSet styles) {
+
         StyleSpecification s;
         Object v;
-
-        // ANNOTATION_ALIGN
-        s = styles.get(ttsRubyAlignAttrName);
-        v = null;
-        if (s != null)
-            v = InlineAlignment.fromValue(s.getValue());
-        if (v != null)
-            addAttribute(StyleAttribute.ANNOTATION_ALIGNMENT, v, begin, end);
-
-        // ANNOTATION_OFFSET
-        s = styles.get(ttsRubyOffsetAttrName);
-        v = null;
-        if (s != null) {
-            if (Keywords.isAuto(s.getValue())) {
-                v = Double.valueOf(0);
-            } else {
-                Integer[] minMax = new Integer[] { 1, 1 };
-                Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
-                List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
-                    assert lengths.size() == 1;
-                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize()));
-                }
-            }
-        }
-        if (v != null)
-            addAttribute(StyleAttribute.ANNOTATION_OFFSET, v, begin, end);
-
-        // ANNOTATION_POSITION
-        s = styles.get(ttsRubyPositionAttrName);
-        v = null;
-        if (s != null)
-            v = AnnotationPosition.valueOf(s.getValue().toUpperCase());
-        if (v != null)
-            addAttribute(StyleAttribute.ANNOTATION_POSITION, v, begin, end);
 
         // COLOR
         s = styles.get(ttsColorAttrName);
@@ -213,28 +184,7 @@ public class StyleCollector {
             addAttribute(StyleAttribute.COLOR, v, begin, end);
 
         // FONT
-        v = getFontFromStyles(e);
-        if (v != null)
-            addAttribute(StyleAttribute.FONT, v, begin, end);
-
-        // LINE_HEIGHT
-        s = styles.get(ttsLineHeightAttrName);
-        v = null;
-        if (s != null) {
-            if (Keywords.isNormal(s.getValue())) {
-                v = Double.valueOf(font.getSize(Axis.VERTICAL) * 1.25);
-            } else {
-                Integer[] minMax = new Integer[] { 1, 1 };
-                Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
-                List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
-                    assert lengths.size() == 1;
-                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize()));
-                }
-            }
-        }
-        if (v != null)
-            addAttribute(StyleAttribute.LINE_HEIGHT, v, begin, end);
+        collectCommonFontStyles(e, begin, end, styles);
 
         // TEXT_ALIGN
         s = styles.get(ttsTextAlignAttrName);
@@ -254,11 +204,44 @@ public class StyleCollector {
 
     }
 
-    private Font getFontFromStyles(Element e) {
-        StyleSet styles = getStyles(e);
+    protected void collectCommonFontStyles(Element e, int begin, int end, StyleSet styles) {
+        collectFontStyle(e, begin, end, styles);
+        collectLineHeightStyle(e, begin, end, styles);
+    }
+
+    protected void collectFontStyle(Element e, int begin, int end, StyleSet styles) {
+        Object v = getFontFromStyles(e, styles);
+        if (v != null) {
+            addAttribute(StyleAttribute.FONT, v, begin, end);
+            if (v instanceof Font)
+                setFont((Font) v);
+        }
+    }
+
+    protected void collectLineHeightStyle(Element e, int begin, int end, StyleSet styles) {
+        StyleSpecification s = styles.get(ttsLineHeightAttrName);
+        Object v = null;
+        if (s != null) {
+            if (Keywords.isNormal(s.getValue())) {
+                v = Double.valueOf(font.getSize(Axis.VERTICAL) * 1.25);
+            } else {
+                Integer[] minMax = new Integer[] { 1, 1 };
+                Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
+                List<Length> lengths = new java.util.ArrayList<Length>();
+                if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+                    assert lengths.size() == 1;
+                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize()));
+                }
+            }
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.LINE_HEIGHT, v, begin, end);
+    }
+
+    private Font getFontFromStyles(Element e, StyleSet styles) {
         StyleSpecification s;
         // families
-        List<String> fontFamilies = defaultFontFamilies;
+        List<String> fontFamilies = null;
         s = styles.get(ttsFontFamilyAttrName);
         if (s != null) {
             List<FontFamily> families = new java.util.ArrayList<FontFamily>();
@@ -272,34 +255,34 @@ public class StyleCollector {
                 }
             }
         }
+        if (fontFamilies == null)
+            fontFamilies = getDefaultFontFamilies(e, styles);
         // style
-        FontStyle fontStyle = defaultFontStyle;
+        FontStyle fontStyle = null;
         s = styles.get(ttsFontStyleAttrName);
         if (s != null)
             fontStyle = FontStyle.valueOf(s.getValue().toUpperCase());
+        if (fontStyle == null)
+            fontStyle = getDefaultFontStyle(e, styles);
         // weight
-        FontWeight fontWeight = defaultFontWeight;
+        FontWeight fontWeight = null;
         s = styles.get(ttsFontWeightAttrName);
         if (s != null)
             fontWeight = FontWeight.valueOf(s.getValue().toUpperCase());
+        if (fontWeight == null)
+            fontWeight = getDefaultFontWeight(e, styles);
         // size
-        Extent fontSize = defaultFontSize;
+        Extent fontSize = null;
         s = styles.get(ttsFontSizeAttrName);
         if (s != null) {
-            Integer[] minMax = new Integer[] { 1, 2 };
-            Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
-            List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
-                assert lengths.size() > 0;
-                double h = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, extBounds, refBounds, font.getSize());
-                if (lengths.size() == 1)
-                    lengths.add(lengths.get(0));
-                double w = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, extBounds, refBounds, font.getSize());
-                fontSize = new Extent(w, h);
-            }
+            Extent fs = parseFontSize(e, s);
+            if (fs != null)
+                fontSize = fs;
         }
+        if (fontSize == null)
+            fontSize = getDefaultFontSize(e, styles);
         // features
-        Set<FontFeature> fontFeatures = defaultFontFeatures;
+        Set<FontFeature> fontFeatures = null;
         s = styles.get(ttsFontVariantAttrName);
         if (s != null) {
             Set<FontVariant> variants = new java.util.HashSet<FontVariant>();
@@ -315,10 +298,12 @@ public class StyleCollector {
                 }
             }
         }
+        if (fontFeatures == null)
+            fontFeatures = getDefaultFontFeatures(e, styles);
         return fontCache.mapFont(fontFamilies, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
     }
 
-    private StyleSet getStyles(Element e) {
+    protected StyleSet getStyles(Element e) {
         String style = Documents.getAttribute(e, isdCSSAttrName, null);
         if (style != null) {
             StyleSet styles = this.styles.get(style);
@@ -330,10 +315,45 @@ public class StyleCollector {
             return StyleSet.EMPTY;
     }
 
-    private void addAttribute(StyleAttribute attribute, Object value, int begin, int end) {
+    protected void addAttribute(StyleAttribute attribute, Object value, int begin, int end) {
         if (attributes == null)
             attributes = new java.util.ArrayList<StyleAttributeInterval>();
         attributes.add(new StyleAttributeInterval(attribute, value, begin, end));
+    }
+
+    protected List<String> getDefaultFontFamilies(Element e, StyleSet styles) {
+        return defaultFontFamilies;
+    }
+
+    protected FontStyle getDefaultFontStyle(Element e, StyleSet styles) {
+        return defaultFontStyle;
+    }
+
+    protected FontWeight getDefaultFontWeight(Element e, StyleSet styles) {
+        return defaultFontWeight;
+    }
+
+    protected Extent getDefaultFontSize(Element e, StyleSet styles) {
+        return defaultFontSize;
+    }
+
+    protected Set<FontFeature> getDefaultFontFeatures(Element e, StyleSet styles) {
+        return defaultFontFeatures;
+    }
+
+    protected Extent parseFontSize(Element e, StyleSpecification s) {
+        Integer[] minMax = new Integer[] { 1, 2 };
+        Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
+        List<Length> lengths = new java.util.ArrayList<Length>();
+        if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+            assert lengths.size() > 0;
+            double h = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, extBounds, refBounds, font.getSize());
+            if (lengths.size() == 1)
+                lengths.add(lengths.get(0));
+            double w = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, extBounds, refBounds, font.getSize());
+            return new Extent(w, h);
+        } else
+            return null;
     }
 
 }

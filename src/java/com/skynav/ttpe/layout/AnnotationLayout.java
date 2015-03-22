@@ -51,7 +51,11 @@ public class AnnotationLayout extends LineLayout {
 
     @Override
     protected LineArea newLine(Phrase p, double ipd, double bpd, InlineAlignment textAlign, Color color, Font font) {
-        return new AnnotationArea(p.getElement(), ipd, bpd, textAlign, color, font);
+        return new AnnotationArea(p.getElement(), ipd, bpd, textAlign, color, font, getNextAnnotationNumber());
+    }
+
+    private int getNextAnnotationNumber() {
+        return getNextLineNumber();
     }
 }
 

@@ -39,15 +39,17 @@ public class LineArea extends BlockArea {
     private InlineAlignment alignment;
     private Color color;
     private Font font;
+    private int lineNumber;                     // 1 is first line of containing area
     private double overflow;
     private double bpdAnnotationBefore;
     private double bpdAnnotationAfter;
 
-    public LineArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font) {
+    public LineArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font, int lineNumber) {
         super(e, ipd, bpd);
         this.alignment = alignment;
         this.color = color;
         this.font = font;
+        this.lineNumber = lineNumber;
     }
 
     @Override
@@ -92,6 +94,14 @@ public class LineArea extends BlockArea {
         return font;
     }
 
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public boolean isFirstLine() {
+        return lineNumber == 1;
+    }
+
     public double getLeadingBefore() {
         return font.getLeading() / 2;
     }
@@ -129,6 +139,10 @@ public class LineArea extends BlockArea {
         if (c instanceof AnnotationArea) {
             AnnotationArea a = (AnnotationArea) c;
             AnnotationPosition position = a.getPosition();
+            if (position == AnnotationPosition.AUTO) {
+                position = isFirstLine() ? AnnotationPosition.BEFORE : AnnotationPosition.AFTER;
+                a.setPosition(position);
+            }
             double bpdAnnotation = a.getBPD();
             if (position == AnnotationPosition.BEFORE) {
                 if (bpdAnnotationBefore < bpdAnnotation)

@@ -71,6 +71,27 @@ public class FontKey {
         this.features = features;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('[');
+        sb.append(family.toUpperCase());
+        sb.append(',');
+        sb.append(style);
+        sb.append(',');
+        sb.append(weight);
+        sb.append(',');
+        sb.append(size);
+        sb.append(',');
+        sb.append(language.toUpperCase());
+        sb.append(',');
+        sb.append(axis);
+        sb.append(',');
+        sb.append(features);
+        sb.append(']');
+        return sb.toString();
+    }
+
     public FontSpecification getSpecification() {
         return new FontSpecification(family, style, weight, language, null);
     }
