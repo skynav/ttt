@@ -80,24 +80,25 @@ import com.skynav.ttv.app.ShowUsageException;
 import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.app.UsageException;
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml.TTML1;
-import com.skynav.ttv.model.ttml1.tt.Body;
-import com.skynav.ttv.model.ttml1.tt.Division;
-import com.skynav.ttv.model.ttml1.tt.Head;
-import com.skynav.ttv.model.ttml1.tt.Layout;
-import com.skynav.ttv.model.ttml1.tt.ObjectFactory;
-import com.skynav.ttv.model.ttml1.tt.Paragraph;
-import com.skynav.ttv.model.ttml1.tt.Region;
-import com.skynav.ttv.model.ttml1.tt.Span;
-import com.skynav.ttv.model.ttml1.tt.Styling;
-import com.skynav.ttv.model.ttml1.tt.TimedText;
-import com.skynav.ttv.model.ttml1.ttd.FontStyle;
-import com.skynav.ttv.model.ttml1.ttd.TextAlign;
+import com.skynav.ttv.model.ttml.TTML2;
+import com.skynav.ttv.model.ttml2.tt.Body;
+import com.skynav.ttv.model.ttml2.tt.Division;
+import com.skynav.ttv.model.ttml2.tt.Head;
+import com.skynav.ttv.model.ttml2.tt.Layout;
+import com.skynav.ttv.model.ttml2.tt.ObjectFactory;
+import com.skynav.ttv.model.ttml2.tt.Paragraph;
+import com.skynav.ttv.model.ttml2.tt.Region;
+import com.skynav.ttv.model.ttml2.tt.Span;
+import com.skynav.ttv.model.ttml2.tt.Styling;
+import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.FontStyle;
+import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
+import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.util.ComparableQName;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
@@ -128,7 +129,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.LocatorImpl;
 
-import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
+import static com.skynav.ttv.model.ttml.TTML2.Constants.*;
 
 public class Converter implements ConverterContext {
 
@@ -194,7 +195,10 @@ public class Converter implements ConverterContext {
     private static final QName ttsFontKerningAttrName = new QName(NAMESPACE_TT_STYLE, "fontKerning");
     private static final QName ttsFontShearAttrName = new QName(NAMESPACE_TT_STYLE, "fontShear");
     private static final QName ttsRubyAttrName = new QName(NAMESPACE_TT_STYLE, "ruby");
-    private static final QName ttsTextEmphasisStyleAttrName = new QName(NAMESPACE_TT_STYLE, "textEmphasisStyle");
+    private static final QName ttsTextEmphasisAttrName = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
+
+    // ttv annotation names
+    private static final QName ttvaModelAttrName = new QName(Annotations.getNamespace(), "model");
 
     // banner text
     private static final String title = "CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
@@ -2320,6 +2324,8 @@ public class Converter implements ConverterContext {
             state.populate(head);
             // populate root (tt)
             TimedText tt = ttmlFactory.createTimedText();
+            tt.setVersion(java.math.BigInteger.valueOf(2));
+            tt.getOtherAttributes().put(ttvaModelAttrName, TTML2.MODEL.getName());
             if (defaultLanguage != null)
                 tt.setLang(defaultLanguage);
             if ((head.getStyling() != null) || (head.getLayout() != null))
@@ -2338,7 +2344,7 @@ public class Converter implements ConverterContext {
     private boolean convertResource(TimedText tt) {
         boolean fail = false;
         try {
-            Model model = TTML1.MODEL;
+            Model model = TTML2.MODEL;
             JAXBContext jc = JAXBContext.newInstance(model.getJAXBContextPath());
             Marshaller m = jc.createMarshaller();
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -2479,8 +2485,6 @@ public class Converter implements ConverterContext {
         for (QName qn : model.getDefinedStyleNames()) {
             initials.put(qn, model.getInitialStyleValue(null, qn));
         }
-        // get initials from model augmentation (temporary until we add TTML2 model)
-        initials = augmentInitials(initials);
         // get initials from document
         for (Element e : Documents.findElementsByName(d, ttInitialEltName)) {
             NamedNodeMap attrs = e.getAttributes();
@@ -2497,14 +2501,6 @@ public class Converter implements ConverterContext {
                 }
             }
         }
-        return initials;
-    }
-
-    private Map<QName,String> augmentInitials(Map<QName,String> initials) {
-        initials.put(ttsFontKerningAttrName, "normal");
-        initials.put(ttsFontShearAttrName, "0%");
-        initials.put(ttsRubyAttrName, "none");
-        initials.put(ttsTextEmphasisStyleAttrName, "none");
         return initials;
     }
 
@@ -3451,7 +3447,7 @@ public class Converter implements ConverterContext {
             return !styles.isEmpty();
         }
         private boolean hasParagraph() {
-            return !division.getBlockClass().isEmpty();
+            return !division.getBlockOrEmbeddedClass().isEmpty();
         }
         private void process(Screen s) {
             Paragraph p = this.paragraph;
@@ -3500,7 +3496,7 @@ public class Converter implements ConverterContext {
         private Paragraph populate(Division d, Paragraph p) {
             if ((p != null) && (p.getContent().size() > 0)) {
                 maybeAddRegion(p.getOtherAttributes().get(regionAttrName));
-                d.getBlockClass().add(p);
+                d.getBlockOrEmbeddedClass().add(p);
             }
             return ttmlFactory.createParagraph();
         }
@@ -3549,7 +3545,7 @@ public class Converter implements ConverterContext {
         }
         private Span createEmphasis(String text, Attribute a) {
             Span s = ttmlFactory.createSpan();
-            s.getOtherAttributes().put(ttsTextEmphasisStyleAttrName, "circle");
+            s.getOtherAttributes().put(ttsTextEmphasisAttrName, "circle");
             s.getContent().add(text);
             return s;
         }
@@ -3561,7 +3557,7 @@ public class Converter implements ConverterContext {
             sText.getOtherAttributes().put(ttsRubyAttrName, "text");
             sText.getContent().add(a.annotation);
             Span sCont = ttmlFactory.createSpan();
-            sText.getOtherAttributes().put(ttsRubyAttrName, "container");
+            sCont.getOtherAttributes().put(ttsRubyAttrName, "container");
             sCont.getContent().add(ttmlFactory.createSpan(sBase));
             sCont.getContent().add(ttmlFactory.createSpan(sText));
             return sCont;
