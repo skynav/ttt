@@ -25,8 +25,6 @@
  
 package com.skynav.ttv.verifier.ttml.style;
 
-import java.util.Set;
-
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;

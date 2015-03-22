@@ -27,8 +27,13 @@ package com.skynav.ttx.transformer.isd;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.skynav.ttv.model.ttml2.tt.Animate;
 import com.skynav.ttv.model.ttml2.tt.Body;
@@ -43,7 +48,10 @@ import com.skynav.ttv.model.ttml2.tt.Set;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.TimeContainer;
+import com.skynav.ttv.verifier.ttml.TTML2StyleVerifier;
 import com.skynav.ttv.util.PreVisitor;
+import com.skynav.ttv.util.StyleSet;
+import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttx.transformer.TransformerContext;
 
@@ -289,7 +297,7 @@ public class TTML2Helper extends TTMLHelper {
     }
 
     @Override
-    public boolean isTimedElement(Object content) {
+    public boolean isTimed(Object content) {
         if (content instanceof TimedText)
             return true;
         else if (content instanceof Head)
@@ -317,7 +325,7 @@ public class TTML2Helper extends TTMLHelper {
     }
 
     @Override
-    public boolean isTimedContainerElement(Object content) {
+    public boolean isTimedContainer(Object content) {
         if (content instanceof TimedText)
             return true;
         else if (content instanceof Head)
@@ -343,7 +351,7 @@ public class TTML2Helper extends TTMLHelper {
     }
 
     private TimeContainer getTimeContainer(Object content) {
-        if (isTimedContainerElement(content)) {
+        if (isTimedContainer(content)) {
             TimeContainer container = null;
             if (content instanceof TimedText)
                 container = TimeContainer.PAR;
@@ -385,6 +393,91 @@ public class TTML2Helper extends TTMLHelper {
             }
         }
         return cls;
+    }
+
+    @Override
+    public boolean specialStyleInheritance(Element elt, QName styleName, StyleSet sss, TransformerContext context) {
+        if (hasSpecialInheritance(styleName)) {
+            if (isRubyTextContainer(elt, sss) || isRubyText(elt, sss))
+                return true;
+        }
+        return false;
+    }
+
+    private static boolean hasSpecialInheritance(QName styleName) {
+        if (styleName.equals(TTML2StyleVerifier.fontSizeAttributeName))
+            return true;
+        else if (styleName.equals(TTML2StyleVerifier.lineHeightAttributeName))
+            return true;
+        else
+            return false;
+    }
+    
+    private static boolean isRubyTextContainer(Element elt, StyleSet sss) {
+        return isRuby(elt, sss, "textContainer");
+    }
+
+    private static boolean isRubyText(Element elt, StyleSet sss) {
+        return isRuby(elt, sss, "text");
+    }
+
+    private static boolean isRuby(Element elt, StyleSet sss, String ruby) {
+        if (isSpanElement(elt)) {
+            String r = null;
+            if (elt.hasAttributeNS(TTMLHelper.NAMESPACE_TT_STYLE, "ruby"))
+                r = elt.getAttributeNS(TTMLHelper.NAMESPACE_TT_STYLE, "ruby");
+            if (r == null)
+                r = getStyleValue(sss, TTML2StyleVerifier.rubyAttributeName);
+            if (r != null) {
+                if (r.equals(ruby))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isSpanElement(Element elt) {
+        return isTimedTextElement(elt, "span");
+    }
+
+    private static boolean isTimedTextElement(Element elt, String localName) {
+        if (elt != null) {
+            String nsUri = elt.getNamespaceURI();
+            if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT) && elt.getLocalName().equals(localName))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public StyleSpecification getSpecialInheritedStyle(Element elt, QName styleName, StyleSet sss, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
+        if (isRubyText(elt, sss)) {
+            Node n = elt.getParentNode();
+            if (n instanceof Element) {
+                Element p = (Element) n;
+                sss = specifiedStyleSets.get(p);
+                if (sss != null) {
+                    if (isRubyTextContainer(p, sss))
+                        return getStyle(sss, styleName);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String getStyleValue(StyleSet sss, QName styleName) {
+        StyleSpecification s = getStyle(sss, styleName);
+        if (s != null)
+            return s.getValue();
+        else
+            return null;
+    }
+
+    private static StyleSpecification getStyle(StyleSet sss, QName styleName) {
+        if (sss.containsKey(styleName))
+            return sss.get(styleName);
+        else
+            return null;
     }
 
 }

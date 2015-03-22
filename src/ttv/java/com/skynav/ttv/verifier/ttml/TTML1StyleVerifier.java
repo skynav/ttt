@@ -116,6 +116,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
     public static final int APPLIES_TO_REGION                   = 0x00010000;
 
     public static final QName extentAttributeName               = new QName(NAMESPACE,"extent");
+    public static final QName fontSizeAttributeName             = new QName(NAMESPACE,"fontSize");
+    public static final QName lineHeightAttributeName           = new QName(NAMESPACE,"lineHeight");
     public static final QName originAttributeName               = new QName(NAMESPACE,"origin");
     public static final QName textAlignAttributeName            = new QName(NAMESPACE,"textAlign");
     private static Object[][] styleAccessorMap                  = new Object[][] {
@@ -197,7 +199,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
             null,
         },
         {
-            new QName(NAMESPACE,"fontSize"),
+            fontSizeAttributeName,
             "FontSize",
             String.class,
             FontSizeVerifier.class,
@@ -230,7 +232,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
             FontWeight.NORMAL.value(),
         },
         {
-            new QName(NAMESPACE,"lineHeight"),
+            lineHeightAttributeName,
             "LineHeight",
             String.class,
             LineHeightVerifier.class,

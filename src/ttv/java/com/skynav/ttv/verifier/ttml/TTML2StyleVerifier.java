@@ -84,7 +84,8 @@ import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
-    private static Object[][] styleAccessorMap = new Object[][] {
+    public static final QName rubyAttributeName                 = new QName(NAMESPACE,"ruby");
+    private static Object[][] styleAccessorMap                  = new Object[][] {
         {
             new QName(NAMESPACE,"direction"),
             "Direction",
@@ -174,7 +175,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             FontWeight.NORMAL.value(),
         },
         {
-            new QName(NAMESPACE,"lineHeight"),
+            lineHeightAttributeName,
             "LineHeight",
             String.class,
             LineHeightVerifier.class,
@@ -207,7 +208,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             null
         },
         {
-            new QName(NAMESPACE,"ruby"),
+            rubyAttributeName,
             "Ruby",
             Ruby.class,
             RubyVerifier.class,
@@ -360,7 +361,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
     @Override
     public String getInitialStyleValue(QName eltName, QName styleName) {
-        if (eltName.equals(TTML2Model.spanElementName) && styleName.equals(textAlignAttributeName))
+        if ((eltName != null) && eltName.equals(TTML2Model.spanElementName) && styleName.equals(textAlignAttributeName))
             return null;
         else
             return super.getInitialStyleValue(eltName, styleName);

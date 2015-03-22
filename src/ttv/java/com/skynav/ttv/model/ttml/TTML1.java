@@ -171,20 +171,20 @@ public class TTML1 {
         public URI getExtensionNamespaceUri() {
             return getTTExtensionNamespaceUri();
         }
-        static private Map<String,String> normalizedPrefixes = new java.util.HashMap<String,String>();
+        static protected Map<String,String> normalizedPrefixes1 = new java.util.HashMap<String,String>();
         static {
-            normalizedPrefixes.put(XML.xmlNamespace, "xml");
-            normalizedPrefixes.put(XML.xmlnsNamespace, "xmlns");
-            normalizedPrefixes.put(XML.xsiNamespace, "xsi");
-            normalizedPrefixes.put(Constants.NAMESPACE_TT, "");
-            normalizedPrefixes.put(Constants.NAMESPACE_TT_METADATA, "ttm");
-            normalizedPrefixes.put(Constants.NAMESPACE_TT_PARAMETER, "ttp");
-            normalizedPrefixes.put(Constants.NAMESPACE_TT_STYLE, "tts");
-            normalizedPrefixes.put(Constants.NAMESPACE_TT_ISD, "isd");
-            normalizedPrefixes.put(Annotations.getNamespace(), Annotations.getNamespacePrefix());
+            normalizedPrefixes1.put(XML.xmlNamespace, "xml");
+            normalizedPrefixes1.put(XML.xmlnsNamespace, "xmlns");
+            normalizedPrefixes1.put(XML.xsiNamespace, "xsi");
+            normalizedPrefixes1.put(Constants.NAMESPACE_TT, "");
+            normalizedPrefixes1.put(Constants.NAMESPACE_TT_METADATA, "ttm");
+            normalizedPrefixes1.put(Constants.NAMESPACE_TT_PARAMETER, "ttp");
+            normalizedPrefixes1.put(Constants.NAMESPACE_TT_STYLE, "tts");
+            normalizedPrefixes1.put(Constants.NAMESPACE_TT_ISD, "isd");
+            normalizedPrefixes1.put(Annotations.getNamespace(), Annotations.getNamespacePrefix());
         }
         public Map<String,String> getNormalizedPrefixes() {
-            return normalizedPrefixes;
+            return normalizedPrefixes1;
         }
         private static Map<URI,Class<?>> profileSpecificationClasses;
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {

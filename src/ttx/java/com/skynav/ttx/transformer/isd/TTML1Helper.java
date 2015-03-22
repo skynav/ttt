@@ -273,7 +273,7 @@ public class TTML1Helper extends TTMLHelper {
     }
 
     @Override
-    public boolean isTimedElement(Object content) {
+    public boolean isTimed(Object content) {
         if (content instanceof TimedText)
             return true;
         else if (content instanceof Head)
@@ -299,7 +299,7 @@ public class TTML1Helper extends TTMLHelper {
     }
 
     @Override
-    public boolean isTimedContainerElement(Object content) {
+    public boolean isTimedContainer(Object content) {
         if (content instanceof TimedText)
             return true;
         else if (content instanceof Head)
@@ -325,7 +325,7 @@ public class TTML1Helper extends TTMLHelper {
     }
 
     private TimeContainer getTimeContainer(Object content) {
-        if (isTimedContainerElement(content)) {
+        if (isTimedContainer(content)) {
             TimeContainer container = null;
             if (content instanceof TimedText)
                 container = TimeContainer.PAR;

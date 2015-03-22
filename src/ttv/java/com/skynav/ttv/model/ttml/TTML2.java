@@ -61,6 +61,8 @@ public class TTML2 {
         public static final String PROFILE_TTML2_PRESENTATION_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TTML2_PRESENTATION;
         public static final String PROFILE_TTML2_TRANSFORMATION_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TTML2_TRANSFORMATION;
         public static final String PROFILE_TTML2_FULL_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TTML2_FULL;
+
+        public static final String NAMESPACE_XLINK = "http://www.w3.org/1999/xlink";
     }
     public static final String MODEL_NAME = "ttml2";
     public static final int MODEL_VERSION = 2;
@@ -89,6 +91,13 @@ public class TTML2 {
         }
         public String[] getTTSchemaResourceNames() {
             return schemaResourceNames;
+        }
+        static protected Map<String,String> normalizedPrefixes2 = new java.util.HashMap<String,String>(normalizedPrefixes1);
+        static {
+            normalizedPrefixes2.put(Constants.NAMESPACE_XLINK, "xlink");
+        }
+        public Map<String,String> getNormalizedPrefixes() {
+            return normalizedPrefixes2;
         }
         private static Map<URI,Class<?>> profileSpecificationClasses;
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {

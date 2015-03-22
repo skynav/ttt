@@ -32,7 +32,11 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Element;
+
 import com.skynav.ttv.model.ttml.TTML;
+import com.skynav.ttv.util.StyleSet;
+import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttx.transformer.TransformerContext;
 
@@ -96,11 +100,11 @@ public abstract class TTMLHelper {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isTimedElement(Object content) {
+    public boolean isTimed(Object content) {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isTimedContainerElement(Object content) {
+    public boolean isTimedContainer(Object content) {
         throw new UnsupportedOperationException();
     }
 
@@ -110,6 +114,14 @@ public abstract class TTMLHelper {
 
     public String getClassString(Object content) {
         throw new UnsupportedOperationException();
+    }
+
+    public boolean specialStyleInheritance(Element elt, QName styleName, StyleSet sss, TransformerContext context) {
+        return false;
+    }
+
+    public StyleSpecification getSpecialInheritedStyle(Element elt, QName styleName, StyleSet sss, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
+        return null;
     }
 
     public static String getStringValuedAttribute(Object content, String attributeName) {

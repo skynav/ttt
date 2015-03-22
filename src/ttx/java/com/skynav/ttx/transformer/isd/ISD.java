@@ -313,7 +313,7 @@ public class ISD {
                 final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(root, context.getExternalParameters()).getTimeParameters();
                 getHelper(context).traverse(root, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (getHelper(context).isTimedElement(content)) {
+                        if (getHelper(context).isTimed(content)) {
                             TimingState ts = getTimingState(content, context, timeParameters);
                             ts.resolveExplicit();
                         }
@@ -330,7 +330,7 @@ public class ISD {
                 final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(root, context.getExternalParameters()).getTimeParameters();
                 getHelper(context).traverse(root, new PostVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (getHelper(context).isTimedElement(content)) {
+                        if (getHelper(context).isTimed(content)) {
                             TimingState ts = getTimingState(content, context, timeParameters);
                             ts.resolveImplicit();
                         }
@@ -347,7 +347,7 @@ public class ISD {
                 final TimeParameters timeParameters = TimingVerificationParameters.makeInstance(root, context.getExternalParameters()).getTimeParameters();
                 getHelper(context).traverse(root, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (getHelper(context).isTimedElement(content)) {
+                        if (getHelper(context).isTimed(content)) {
                             TimingState ts = getTimingState(content, context, timeParameters);
                             ts.resolveActive();
                         }
@@ -365,7 +365,7 @@ public class ISD {
             try {
                 getHelper(context).traverse(root, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        if (getHelper(context).isTimedElement(content)) {
+                        if (getHelper(context).isTimed(content)) {
                             TimingState ts = getTimingState(content,context, timeParameters);
                             ts.extractActiveInterval(intervals);
                         }
@@ -761,16 +761,10 @@ public class ISD {
         private static boolean isTimedTextElement(Element elt, String localName) {
             if (elt != null) {
                 String nsUri = elt.getNamespaceURI();
-                if ((nsUri == null) || !nsUri.equals(TTMLHelper.NAMESPACE_TT))
-                    return false;
-                else {
-                    if (elt.getLocalName().equals(localName))
-                        return true;
-                    else
-                        return false;
-                }
-            } else
-                return false;
+                if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT) && elt.getLocalName().equals(localName))
+                    return true;
+            }
+            return false;
         }
 
         private static boolean isRootElement(Element elt) {
@@ -1272,10 +1266,12 @@ public class ISD {
                 for (QName name : getDefinedStyleNames(context)) {
                     if (!sss.containsKey(name)) {
                         StyleSpecification s;
-                        if (isInheritableStyle(elt, name, context) && !isRootElement(elt))
-                            s = getNearestAncestorStyle(elt, name, specifiedStyleSets);
-                        else
+                        if (!isInheritableStyle(elt, name, context) || isRootElement(elt))
                             s = getInitialStyle(elt, name, context);
+                        else if (specialStyleInheritance(elt, name, sss, context))
+                            s = getSpecialInheritedStyle(elt, name, sss, specifiedStyleSets, context);
+                        else
+                            s = getNearestAncestorStyle(elt, name, specifiedStyleSets);
                         if ((s != null) && doesStyleApply(elt, name, context))
                             sss.merge(s);
                     }
@@ -1355,12 +1351,19 @@ public class ISD {
         }
 
         private static boolean isInheritableStyle(Element elt, QName styleName, TransformerContext context) {
-            QName eltName = new QName(elt.getNamespaceURI(), elt.getLocalName());
-            return context.getModel().isInheritableStyle(eltName, styleName);
+            return isInheritableStyle(new QName(elt.getNamespaceURI(), elt.getLocalName()), styleName, context);
         }
 
         private static boolean isInheritableStyle(QName eltName, QName styleName, TransformerContext context) {
             return context.getModel().isInheritableStyle(eltName, styleName);
+        }
+
+        private static boolean specialStyleInheritance(Element elt, QName styleName, StyleSet sss, TransformerContext context) {
+            return getHelper(context).specialStyleInheritance(elt, styleName, sss, context);
+        }
+
+        private static StyleSpecification getSpecialInheritedStyle(Element elt, QName styleName, StyleSet sss, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
+            return getHelper(context).getSpecialInheritedStyle(elt, styleName, sss, specifiedStyleSets, context);
         }
 
         private static StyleSpecification getNearestAncestorStyle(Element elt, QName styleName, Map<Element, StyleSet> specifiedStyleSets) {
