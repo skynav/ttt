@@ -54,6 +54,7 @@ import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
+import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.util.Characters;
 import com.skynav.ttv.app.MissingOptionArgumentException;
@@ -204,6 +205,11 @@ public class XMLRenderProcessor extends RenderProcessor {
         if (ctm != null)
             Documents.setAttribute(e, XMLDocumentFrame.ctmAttrName, ctm.toString());
         if (!isRootReference(a)) {
+            BlockAlignment align = a.getBlockAlignment();
+            if (align == BlockAlignment.BEFORE)
+                align = null;
+            if (align != null)
+                Documents.setAttribute(e, XMLDocumentFrame.blockAlignAttrName, align.toString().toLowerCase());
             Point origin = a.getOrigin();
             if (origin != null) {
                 Documents.setAttribute(e, XMLDocumentFrame.originAttrName, origin.toString());
@@ -256,7 +262,7 @@ public class XMLRenderProcessor extends RenderProcessor {
             else
                 align = "center";
             if (align != null)
-                Documents.setAttribute(e, XMLDocumentFrame.alignAttrName, align);
+                Documents.setAttribute(e, XMLDocumentFrame.inlineAlignAttrName, align);
             Documents.setAttribute(e, XMLDocumentFrame.overflowAttrName, doubleFormatter.format(new Object[] {a.getOverflow()}));
         }
         for (Area c : a.getChildren()) {

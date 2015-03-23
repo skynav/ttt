@@ -30,18 +30,20 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.BlockAlignment;
 
 public class ReferenceArea extends PositionedBlockArea {
 
     private WritingMode wm;
     private TransformMatrix ctm;
 
-    public ReferenceArea(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
+    public ReferenceArea(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, BlockAlignment alignment) {
         super(e, x, y, width, height);
         assert wm != null;
         this.wm = wm;
         assert ctm != null;
         this.ctm = ctm;
+        setBlockAlignment(alignment);
     }
 
     @Override

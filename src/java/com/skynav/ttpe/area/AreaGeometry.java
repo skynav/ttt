@@ -41,9 +41,19 @@ public interface AreaGeometry {
     boolean isVertical();
 
     /**
+     * Set IPD of area.
+     */
+    void setIPD(double ipd);
+
+    /**
      * Obtain IPD of area.
      */
     double getIPD();
+
+    /**
+     * Set BPD of area.
+     */
+    void setBPD(double bpd);
 
     /**
      * Obtain BPD of area.

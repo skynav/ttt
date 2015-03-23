@@ -57,8 +57,14 @@ public abstract class AbstractArea implements Area {
         return (wm != null) && wm.isVertical();
     }
 
-   public double getIPD() {
+    public void setIPD(double ipd) {
+    }
+
+    public double getIPD() {
         return getAvailable(Dimension.IPD);
+    }
+
+    public void setBPD(double bpd) {
     }
 
     public double getBPD() {

@@ -42,6 +42,7 @@ import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.StyleCollector;
 import com.skynav.ttpe.text.LineBreaker;
 import com.skynav.ttpe.text.LineBreakIterator;
@@ -235,7 +236,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             ls.pushViewport(e, w, h, clip);
             WritingMode wm = ls.getExternalWritingMode();
             TransformMatrix ctm = ls.getExternalTransform();
-            ls.pushReference(e, 0, 0, w, h, wm, ctm);
+            ls.pushReference(e, 0, 0, w, h, wm, ctm, null);
             for (Element c : getChildElements(e)) {
                 if (isElement(c, isdRegionElementName))
                     layoutRegion(c, ls);
@@ -261,7 +262,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         ls.pushViewport(e, w, h, clip);
         WritingMode wm = ls.getWritingMode(e);
         TransformMatrix ctm = ls.getTransform(e);
-        ls.pushReference(e, x, y, w, h, wm, ctm);
+        BlockAlignment alignment = ls.getDisplayAlign(e);
+        ls.pushReference(e, x, y, w, h, wm, ctm, alignment);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttBodyElementName))
                 layoutBody(c, ls);

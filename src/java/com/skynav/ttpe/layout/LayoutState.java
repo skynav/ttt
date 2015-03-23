@@ -40,6 +40,7 @@ import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
@@ -54,7 +55,7 @@ public interface LayoutState {
     // area stack
     NonLeafAreaNode pushCanvas(Element e, double begin, double end);
     NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
-    NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm);
+    NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, BlockAlignment alignment);
     NonLeafAreaNode pushBlock(Element e);
     NonLeafAreaNode push(NonLeafAreaNode a);
     NonLeafAreaNode addLine(LineArea l);
@@ -78,6 +79,7 @@ public interface LayoutState {
     void saveStyles(Element e);
     Map<String,StyleSet> getStyles();
     StyleSet getStyles(Element e);
+    BlockAlignment getDisplayAlign(Element e);
     Extent getExtent(Element e);
     Point getOrigin(Element e);
     Overflow getOverflow(Element e);

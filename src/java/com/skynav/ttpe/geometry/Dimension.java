@@ -27,5 +27,6 @@ package com.skynav.ttpe.geometry;
 
 public enum Dimension {
     BPD,                // block progression dimension
-    IPD;                // inline progression dimension
+    IPD,                // inline progression dimensions
+    BOTH;               // both dimensions
 }

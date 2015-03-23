@@ -33,6 +33,7 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.CanvasArea;
@@ -49,6 +50,7 @@ import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.Helpers;
+import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
@@ -109,8 +111,8 @@ public class BasicLayoutState implements LayoutState {
         return push(new ViewportArea(e, width, height, clip));
     }
 
-    public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
-        return push(new ReferenceArea(e, x, y, width, height, wm, ctm));
+    public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, BlockAlignment alignment) {
+        return push(new ReferenceArea(e, x, y, width, height, wm, ctm, alignment));
     }
 
     public NonLeafAreaNode pushBlock(Element e) {
@@ -138,7 +140,14 @@ public class BasicLayoutState implements LayoutState {
     }
 
     public NonLeafAreaNode pop() {
-        return areas.pop();
+        return pop(true);
+    }
+
+    public NonLeafAreaNode pop(boolean collapse) {
+        NonLeafAreaNode a = areas.pop();
+        if (collapse)
+            collapse(a, Dimension.BPD);
+        return a;
     }
 
     public NonLeafAreaNode peek() {
@@ -248,6 +257,15 @@ public class BasicLayoutState implements LayoutState {
             return StyleSet.EMPTY;
     }
 
+    public BlockAlignment getDisplayAlign(Element e) {
+        StyleSpecification s = getStyles(e).get(ttsDisplayAlignAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            return BlockAlignment.valueOf(v.toUpperCase());
+        } else
+            return defaultDisplayAlign;
+    }
+
     public Extent getExtent(Element e) {
         StyleSpecification s = getStyles(e).get(ttsExtentAttrName);
         if (s != null) {
@@ -332,6 +350,32 @@ public class BasicLayoutState implements LayoutState {
             }
         }
         return styles;
+    }
+
+    private void collapse(NonLeafAreaNode a, Dimension dimension) {
+        if ((dimension == Dimension.BOTH) || (dimension == Dimension.BPD))
+            collapseBPD(a);
+        if ((dimension == Dimension.BOTH) || (dimension == Dimension.IPD))
+            collapseIPD(a);
+    }
+
+    private void collapseIPD(NonLeafAreaNode a) {
+        a.setIPD(computeConsumed(a, Dimension.IPD));
+    }
+
+    private void collapseBPD(NonLeafAreaNode a) {
+        a.setBPD(computeConsumed(a, Dimension.BPD));
+    }
+
+    private double computeConsumed(NonLeafAreaNode a, Dimension dimension) {
+        double consumed = 0;
+        for (AreaNode c : a.getChildren()) {
+            if (dimension == Dimension.IPD)
+                consumed += c.getIPD();
+            else if (dimension == Dimension.BPD)
+                consumed += c.getBPD();
+        }
+        return consumed;
     }
 
 }

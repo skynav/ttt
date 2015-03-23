@@ -55,7 +55,8 @@ public class XMLDocumentFrame extends AbstractDocumentFrame {
     public static final QName ttpeViewportEltName               = new QName(NAMESPACE, "viewport");
 
     // attribute name constants
-    public static final QName alignAttrName                     = new QName("", "align");
+    public static final QName inlineAlignAttrName               = new QName("", "ia");
+    public static final QName blockAlignAttrName                = new QName("", "ba");
     public static final QName bpdAttrName                       = new QName("", "bpd");
     public static final QName clipAttrName                      = new QName("", "clip");
     public static final QName ctmAttrName                       = new QName("", "ctm");

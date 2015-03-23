@@ -61,6 +61,7 @@ import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.AnnotationPosition;
+import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
@@ -293,6 +294,33 @@ public class SVGRenderProcessor extends RenderProcessor {
             } else {
                 if (wm.getDirection(Dimension.IPD) == RL)
                     xCurrent += extent.getWidth();
+            }
+            BlockAlignment align = a.getBlockAlignment();
+            if (align != null) {
+                double available = a.getBPD();
+                double consumed = computeChildrenBPD(a);
+                double free = available - consumed;
+                double adjust = 0;
+                if (free < 0)
+                    free = 0;
+                if (align == BlockAlignment.BEFORE) {
+                    // no-op
+                } else if (align == BlockAlignment.AFTER) {
+                    adjust = free;
+                } else if (align == BlockAlignment.CENTER) {
+                    adjust = free / 2;
+                } else if (align == BlockAlignment.JUSTIFY) {
+                    // [TBD] - IMPLEMENT ME
+                }
+                if (adjust > 0) {
+                    if (wm.isVertical()) {
+                        if (wm.getDirection(Dimension.BPD) == RL)
+                            adjust *= -1;
+                        xCurrent += adjust;
+                    } else {
+                        yCurrent += adjust;
+                    }
+                }
             }
             if (decorateRegions) {
                 Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
@@ -615,6 +643,18 @@ public class SVGRenderProcessor extends RenderProcessor {
             return renderBlock(parent, (BlockArea) a, d);
         else
             throw new IllegalArgumentException();
+    }
+
+    private double computeChildrenBPD(Area a) {
+        double bpd = 0;
+        if (a instanceof NonLeafAreaNode) {
+            for (Area c : ((NonLeafAreaNode) a).getChildren()) {
+                if (c instanceof BlockArea) {
+                    bpd += ((BlockArea) c).getBPD();
+                }
+            }
+        }
+        return bpd;
     }
 
 }
