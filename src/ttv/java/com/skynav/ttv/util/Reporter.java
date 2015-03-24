@@ -39,6 +39,7 @@ public interface Reporter {
         Debug;
     };
     public String getName();
+    public boolean isOpen();
     public void open(Object... arguments) throws IOException;
     public void close() throws IOException;
     public void resetResourceState();

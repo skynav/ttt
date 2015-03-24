@@ -35,6 +35,7 @@ public class NullReporter implements Reporter {
     public static final Reporter REPORTER = new NullReporter();
     private PrintWriter out = new PrintWriter(System.out);
     public String getName() { return "null"; }
+    public boolean isOpen() { return true; }
     public void open(Object... arguments) throws IOException {}
     public void close() throws IOException {}
     public void resetResourceState() {}
@@ -62,7 +63,7 @@ public class NullReporter implements Reporter {
     public Message message(Locator locator, String key, String format, Object... arguments) { return new LocatedMessage(locator, key, format, arguments); }
     public void logError(Message message) {}
     public void logError(Exception e) {}
-    public boolean hasDefaultWarning(String token) { return false; }
+    public boolean hasDefaultWarning(String token) { return true; }
     public void setTreatWarningAsError(boolean treatWarningAsError) {}
     public boolean isTreatingWarningAsError() { return false; }
     public boolean isWarningEnabled(String token) { return false; }

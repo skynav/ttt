@@ -74,6 +74,10 @@ public class TextReporter implements Reporter {
         return "text";
     }
 
+    public boolean isOpen() {
+        return output != null;
+    }
+
     public void open(Object... arguments) throws IOException {
         Object[][] defaultWarningSpecifications;
         if ((arguments.length > 0) && (arguments[0] instanceof Object[][]))
@@ -103,6 +107,7 @@ public class TextReporter implements Reporter {
         PrintWriter output = getOutput();
         if ((output != null) && !outputDefaulted)
             output.close();
+        output = null;
     }
 
     public void resetResourceState() {
