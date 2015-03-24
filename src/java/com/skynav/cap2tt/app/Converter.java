@@ -61,8 +61,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -104,6 +107,7 @@ import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Namespaces;
+import com.skynav.ttv.util.NullReporter;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Reporters;
@@ -247,6 +251,7 @@ public class Converter implements ConverterContext {
         { "no-warn-on",                 "TOKEN",    "disable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
         { "no-verbose",                 "",         "disable verbose output (resets verbosity level to 0)" },
         { "output-directory",           "DIRECTORY","specify path to directory where TTML output is to be written" },
+        { "output-disable",             "[BOOLEAN]","disable output (default: false)" },
         { "output-encoding",            "ENCODING", "specify character encoding of TTML output (default: " + defaultOutputEncoding.name() + ")" },
         { "output-pattern",             "PATTERN",  "specify TTML output file name pattern" },
         { "output-indent",              "",         "indent TTML output (default: no indent)" },
@@ -392,6 +397,7 @@ public class Converter implements ConverterContext {
     private boolean mergeStyles;
     private boolean metadataCreation;
     private String outputDirectoryPath;
+    private boolean outputDisabled;
     private String outputEncodingName;
     private String outputPattern;
     private boolean outputIndent;
@@ -425,6 +431,7 @@ public class Converter implements ConverterContext {
     private CharBuffer resourceBuffer;
     private int resourceExpectedErrors = -1;
     private int resourceExpectedWarnings = -1;
+    private Document outputDocument;
 
     // per-resource parsing state
     private List<Screen> screens;
@@ -464,7 +471,8 @@ public class Converter implements ConverterContext {
             }
         }
         try {
-            reporter.open(defaultWarningSpecifications, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
+            if (!reporter.isOpen())
+                reporter.open(defaultWarningSpecifications, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
             this.reporter = reporter;
             this.includeSource = reporterIncludeSource;
         } catch (Throwable e) {
@@ -647,6 +655,12 @@ public class Converter implements ConverterContext {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             outputDirectoryPath = args[++index];
+        } else if (option.equals("output-disable")) {
+            Boolean b = Boolean.TRUE;
+            if ((index + 1 < args.length) && isBoolean(args[index + 1])) {
+                b = parseBoolean(args[++index]);
+            }
+            outputDisabled = b.booleanValue();
         } else if (option.equals("output-encoding")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -699,6 +713,10 @@ public class Converter implements ConverterContext {
         } else
             throw new UnknownOptionException("--" + option);
         return index + 1;
+    }
+
+    private void disableOutput(boolean disable) {
+        outputDisabled = disable;
     }
 
     private static boolean isBoolean(String s) {
@@ -1336,6 +1354,7 @@ public class Converter implements ConverterContext {
         resourceBuffer = null;
         resourceExpectedErrors = -1;
         resourceExpectedWarnings = -1;
+        outputDocument = null;
         getReporter().resetResourceState();
         // parsing state
         screens = new java.util.ArrayList<Screen>();
@@ -2360,8 +2379,10 @@ public class Converter implements ConverterContext {
                 addCreationMetadata(d);
             Map<String, String> prefixes = model.getNormalizedPrefixes();
             Namespaces.normalize(d, prefixes);
-            if (!writeDocument(d, prefixes))
+            if (!outputDisabled && !writeDocument(d, prefixes))
                 fail = true;
+            if (outputDisabled)
+                outputDocument = d;
         } catch (Exception e) {
             reporter.logError(e);
         }
@@ -2950,6 +2971,46 @@ public class Converter implements ConverterContext {
         resetReporter();
         getShowOutput().flush();
         return rv;
+    }
+
+    public TimedText convert(String[] args, File input, Reporter reporter) {
+        assert args != null;
+        assert input != null;
+        if (reporter == null)
+            reporter = NullReporter.REPORTER;
+        if (!reporter.isOpen()) {
+            String pwEncoding = defaultReporterFileEncoding;
+            try {
+                PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.err, pwEncoding)));
+                setReporter(reporter, pw, pwEncoding, false, true);
+            } catch (Throwable e) {
+            }
+        } else {
+            setReporter(reporter, null, null, false, false);
+        }
+        parseArgs(processConfigurationOptions(args), null);
+        disableOutput(true);
+        convert(null, input.toURI().toString());
+        return (outputDocument != null) ? unmarshall(outputDocument) : null;
+    }
+
+    private TimedText unmarshall(Document d) {
+        try {
+            Model model = TTML2.MODEL;
+            JAXBContext context = JAXBContext.newInstance(model.getJAXBContextPath());
+            Binder<Node> binder = context.createBinder();
+            Object unmarshalled = binder.unmarshal(d);
+            if (unmarshalled instanceof JAXBElement<?>) {
+                Object content = ((JAXBElement<?>) unmarshalled).getValue();
+                if (content instanceof TimedText)
+                    return (TimedText) content;
+            }
+        } catch (UnmarshalException e) {
+            reporter.logError(e);
+        } catch (Exception e) {
+            reporter.logError(e);
+        }
+        return null;
     }
 
     public Map<String,Results> getResults() {

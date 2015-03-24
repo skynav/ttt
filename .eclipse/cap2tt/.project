@@ -26,6 +26,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/src/resources</locationURI>
 		</link>
 		<link>
+			<name>cap2tt-test</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/tst/java</locationURI>
+		</link>
+		<link>
+			<name>cap2tt-test-resources</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOCtst/resources</locationURI>
+		</link>
+		<link>
 			<name>externals</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/ext/lib</locationURI>
