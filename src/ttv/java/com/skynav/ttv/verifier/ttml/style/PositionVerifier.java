@@ -30,14 +30,24 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Positions;
 
 public class PositionVerifier implements StyleValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        // [TBD] - IMPLEMENT ME
-        return true;
+        Reporter reporter = context.getReporter();
+        boolean failed = false;
+        assert valueObject instanceof String;
+        String value = (String) valueObject;
+        String [] components = value.split("[ \t\r\n]+");
+        if (!Positions.isPosition(components, locator, context)) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <position> expression ''{0}''.", value));
+            failed = true;
+        }
+        return !failed;
     }
 
 }
