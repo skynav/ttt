@@ -25,19 +25,44 @@
  
 package com.skynav.ttv.verifier.ttml.style;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class FontShearVerifier implements StyleValueVerifier {
 
+    private static Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
+
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        // [TBD] - IMPLEMENT ME
-        return true;
+        Reporter reporter = context.getReporter();
+        boolean failed = false;
+        assert valueObject instanceof String;
+        String value = (String) valueObject;
+        Integer[] minMax = new Integer[] { 1, 1 };
+        List<Length> outputLengths = new java.util.ArrayList<Length>();
+        if (Lengths.isLengths(value, locator, context, minMax, treatments, outputLengths)) {
+            assert outputLengths.size() == 1;
+            Length length = outputLengths.get(0);
+            if (length.getUnits() != Length.Unit.Percentage) {
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <percentage> expression ''{0}''.", value));
+                failed = true;
+            }
+        } else {
+            Lengths.badLengths(value, locator, context, minMax, treatments);
+            failed = true;
+        }
+        return !failed;
     }
 
 }

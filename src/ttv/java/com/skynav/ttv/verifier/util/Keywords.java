@@ -29,12 +29,20 @@ import java.util.regex.Pattern;
 
 public class Keywords {
 
+    public static final String AUTO             = "auto";
+    public static final String NONE             = "none";
+    public static final String NORMAL           = "normal";
+
     public static boolean isAuto(String value) {
-        return value.equals("auto");
+        return value.equals(AUTO);
+    }
+
+    public static boolean isNone(String value) {
+        return value.equals(NONE);
     }
 
     public static boolean isNormal(String value) {
-        return value.equals("normal");
+        return value.equals(NORMAL);
     }
 
     private static final Pattern tokenPattern = Pattern.compile("\\p{Alpha}+");
