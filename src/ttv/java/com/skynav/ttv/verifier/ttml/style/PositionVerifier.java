@@ -43,7 +43,7 @@ public class PositionVerifier implements StyleValueVerifier {
         assert valueObject instanceof String;
         String value = (String) valueObject;
         String [] components = value.split("[ \t\r\n]+");
-        if (!Positions.isPosition(components, locator, context)) {
+        if (!Positions.isPosition(components, locator, context, null)) {
             reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <position> expression ''{0}''.", value));
             failed = true;
         }

@@ -28,6 +28,8 @@ package com.skynav.ttv.model.value.impl;
 import com.skynav.ttv.model.value.Length;
 
 public class LengthImpl implements Length {
+    public static final Length PXL_0 = new LengthImpl(0, Length.Unit.Pixel);
+    public static final Length PCT_0 = new LengthImpl(0, Length.Unit.Percentage);
     private double value;
     private Length.Unit units;
     public LengthImpl(double value, Length.Unit units) {
@@ -42,6 +44,9 @@ public class LengthImpl implements Length {
     }
     public Length.Unit getUnits() {
         return units;
+    }
+    public Length negate() {
+        return (value == 0) ? this : new LengthImpl(-value, units);
     }
     @Override
     public String toString() {

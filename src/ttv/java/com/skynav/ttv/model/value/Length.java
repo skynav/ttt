@@ -89,4 +89,5 @@ public interface Length {
     }
     double getValue();
     Unit getUnits();
+    Length negate();
 }
