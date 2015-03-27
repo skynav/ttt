@@ -408,6 +408,7 @@
       <sysproperty key="file.encoding" value="utf-8"/>
       <sysproperty key="java.awt.headless" value="true"/>
       <arg value="-v"/>
+      <arg value="--debug-exceptions"/>
       <arg value="--external-duration"/>
       <arg value="24h"/>
       <arg value="--external-extent"/>

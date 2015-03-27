@@ -29,8 +29,10 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.geometry.Point;
 
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.impl.LengthImpl;
 
 import com.skynav.xml.helpers.Documents;
 
@@ -40,8 +42,62 @@ public class Helpers {
 
     private Helpers() {}
 
+    public static Point resolvePosition(Element e, Length[] lengths, Extent external, Extent reference) {
+
+        assert external != null;
+        assert reference != null;
+        assert lengths != null;
+        assert lengths.length >= 4;
+
+        Extent referencePercent = new Extent(external.getWidth() - reference.getWidth(), external.getHeight() - reference.getHeight());
+
+        Length lx = lengths[0];
+        if (lx == null)
+            lx = LengthImpl.PCT_0;
+        double x;
+        if (lx.getUnits() == Length.Unit.Percentage)
+            x = (lx.getValue() / 100) * referencePercent.getWidth();
+        else
+            x = resolveLength(e, lx, Axis.HORIZONTAL, external, reference, null);
+
+        Length ly = lengths[1];
+        if (ly == null)
+            ly = LengthImpl.PCT_0;
+        double y;
+        if (ly.getUnits() == Length.Unit.Percentage)
+            y = (ly.getValue() / 100) * referencePercent.getHeight();
+        else
+            y = resolveLength(e, ly, Axis.VERTICAL, external, reference, null);
+
+        Length ox = lengths[2];
+        if (ox == null)
+            ox = LengthImpl.PCT_0;
+        double xOffset;
+        if (ox.getUnits() == Length.Unit.Percentage)
+            xOffset = (ox.getValue() / 100) * referencePercent.getWidth();
+        else
+            xOffset = resolveLength(e, ox, Axis.HORIZONTAL, external, reference, null);
+
+        Length oy = lengths[3];
+        if (oy == null)
+            oy = LengthImpl.PCT_0;
+        double yOffset;
+        if (oy.getUnits() == Length.Unit.Percentage)
+            yOffset = (oy.getValue() / 100) * referencePercent.getHeight();
+        else
+            yOffset = resolveLength(e, oy, Axis.VERTICAL, external, reference, null);
+
+        x -= xOffset;
+        y -= yOffset;
+        
+        if ((x == 0) && (y == 0))
+            return Point.ZERO;
+        else
+            return new Point(x, y);
+    }
+
     public static double resolveLength(Element e, Length l, Axis axis, Extent external, Extent reference, Extent font) {
-        return l.getValue() * getLengthReference(e, l.getUnits(), axis, external, reference, font);
+        return (l != null) ? l.getValue() * getLengthReference(e, l.getUnits(), axis, external, reference, font) : 0;
     }
 
     private static double getLengthReference(Element e, Length.Unit units, Axis axis, Extent external, Extent reference, Extent font) {
@@ -54,16 +110,16 @@ public class Helpers {
         else if (units == Length.Unit.Cell)
             return getCellSizeReference(axis, external);
         else if (units == Length.Unit.ViewportHeight)
-            return getReference(axis, external);
+            return getViewportReference(axis, external);
         else if (units == Length.Unit.ViewportWidth)
-            return getReference(axis, external);
+            return getViewportReference(axis, external);
         else
             return 1;
     }
 
     private static double getPercentageReference(Element e, Axis axis, Extent external, Extent reference) {
         if (Documents.isElement(e, isdRegionElementName)) {
-            return getReference(axis, external) * 0.01;
+            return getReference(axis, external) / 100;
         } else {
             return 0.01;                                        // [TBD] FIX ME - use element specific definition
         }
@@ -81,6 +137,10 @@ public class Helpers {
             return getReference(axis, reference) / 15;          // [TBD] FIX ME - use ttp:cellResolution
         else
             return getReference(axis, reference) / 32;          // [TBD] FIX ME - use ttp:cellResolution
+    }
+
+    private static double getViewportReference(Axis axis, Extent reference) {
+        return getReference(axis, reference) / 100;
     }
 
     private static double getReference(Axis axis, Extent reference) {

@@ -34,6 +34,7 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.fonts.FontFeature;
+import com.skynav.ttpe.fonts.FontKerning;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.geometry.Axis;
@@ -44,7 +45,6 @@ import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
-import com.skynav.ttv.verifier.util.Colors;
 import com.skynav.ttv.verifier.util.Fonts;
 import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Lengths;
@@ -177,7 +177,7 @@ public class StyleCollector {
         v = null;
         if (s != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
-            if (Colors.isColor(s.getValue(), null, null, retColor))
+            if (com.skynav.ttv.verifier.util.Colors.isColor(s.getValue(), null, null, retColor))
                 v = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
         }
         if (v != null)
@@ -193,6 +193,20 @@ public class StyleCollector {
             v = InlineAlignment.fromValue(s.getValue());
         if (v != null)
             addAttribute(StyleAttribute.INLINE_ALIGNMENT, v, begin, end);
+
+        // TEXT_EMPHASIS
+        s = styles.get(ttsTextEmphasisAttrName);
+        v = null;
+        if (s != null) {
+            com.skynav.ttv.model.value.TextEmphasis[] retEmphasis = new com.skynav.ttv.model.value.TextEmphasis[1];
+            if (com.skynav.ttv.verifier.util.Emphasis.isEmphasis(s.getValue(), null, null, retEmphasis)) {
+                com.skynav.ttv.model.value.TextEmphasis te = retEmphasis[0];
+                com.skynav.ttv.model.value.Color c = te.getColor();
+                v = new Emphasis(te.getStyle().name(), te.getText(), te.getPosition().name(), new Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()));
+            }
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.EMPHASIS, v, begin, end);
 
         // WRAP
         s = styles.get(ttsWrapOptionAttrName);
@@ -282,23 +296,42 @@ public class StyleCollector {
         if (fontSize == null)
             fontSize = getDefaultFontSize(e, styles);
         // features
-        Set<FontFeature> fontFeatures = null;
+        Set<FontFeature> fontFeatures = new java.util.HashSet<FontFeature>();
+        // variant features
         s = styles.get(ttsFontVariantAttrName);
         if (s != null) {
             Set<FontVariant> variants = new java.util.HashSet<FontVariant>();
             if (Fonts.isFontVariants(s.getValue(), null, context, variants)) {
                 if (!variants.isEmpty()) {
-                    Set<FontFeature> features = new java.util.HashSet<FontFeature>();
                     for (FontVariant fv : variants) {
                         FontFeature f = FontFeature.fromVariant(fv);
                         if (f != null)
-                            features.add(f);
+                            fontFeatures.add(f);
                     }
-                    fontFeatures = features;
                 }
             }
         }
-        if (fontFeatures == null)
+        // shear feature
+        s = styles.get(ttsFontShearAttrName);
+        if (s != null) {
+            Integer[] minMax = new Integer[] { 1, 1 };
+            Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+                assert lengths.size() == 1;
+                Length length = lengths.get(0);
+                if (length.getUnits() == Length.Unit.Percentage)
+                    fontFeatures.add(new FontFeature("oblq", new Object[]{Double.valueOf(length.getValue() / 100.0)}));
+            }
+
+        }
+        // kerning feature
+        s = styles.get(ttsFontKerningAttrName);
+        if (s != null) {
+            FontKerning k = FontKerning.valueOf(s.getValue().toUpperCase());
+            fontFeatures.add(new FontFeature("kern", new Object[]{k}));
+        }
+        if ((fontFeatures == null) || fontFeatures.isEmpty())
             fontFeatures = getDefaultFontFeatures(e, styles);
         return fontCache.mapFont(fontFamilies, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
     }

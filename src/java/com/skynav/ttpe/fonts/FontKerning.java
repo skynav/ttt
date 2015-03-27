@@ -25,38 +25,7 @@
 
 package com.skynav.ttpe.fonts;
 
-import com.skynav.ttv.model.value.FontVariant;
-
-public class FontFeature {
-    private final String feature;
-    private final Object[] arguments;
-    public FontFeature(String feature) {
-        this(feature, null);
-    }
-    public FontFeature(String feature, Object[] arguments) {
-        this.feature = feature;
-        this.arguments = arguments;
-    }
-    public String getFeature() {
-        return feature;
-    }
-    public Object[] getArguments() {
-        return arguments;
-    }
-    public static FontFeature fromVariant(FontVariant variant) {
-        String feature;
-        if (variant == FontVariant.SUPER)
-            feature = "sups";
-        else if (variant == FontVariant.SUB)
-            feature = "subs";
-        else if (variant == FontVariant.HALF)
-            feature = "hwid";
-        else if (variant == FontVariant.FULL)
-            feature = "fwid";
-        else if (variant == FontVariant.RUBY)
-            feature = "ruby";
-        else
-            feature = null;
-        return (feature != null) ? new FontFeature(feature) : null;
-    }
+public enum FontKerning {
+    NORMAL,             // if kerning available, then perform kerning
+    NONE;               // don't perform kerning, whether or not available
 }

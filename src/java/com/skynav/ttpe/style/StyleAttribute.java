@@ -36,6 +36,7 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   BPD                    = new StyleAttribute("BPD");                    // Double
     public static final StyleAttribute   COLOR                  = new StyleAttribute("COLOR");                  // com.skynav.ttpe.style.Color
     public static final StyleAttribute   EMBEDDING              = new StyleAttribute("EMBEDDING");              // Object
+    public static final StyleAttribute   EMPHASIS               = new StyleAttribute("EMPHASIS");               // com.skynav.ttpe.style.Emphasis
     public static final StyleAttribute   FONT                   = new StyleAttribute("FONT");                   // com.skynav.ttpe.fonts.Font
     public static final StyleAttribute   INLINE_ALIGNMENT       = new StyleAttribute("INLINE_ALIGNMENT");       // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   IPD                    = new StyleAttribute("IPD");                    // Double

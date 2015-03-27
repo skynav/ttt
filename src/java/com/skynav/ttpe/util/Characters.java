@@ -31,32 +31,32 @@ public class Characters {
 
     private Characters() {}
 
-    public static int   UC_HT                                   = '\u0009';             // horizontal tab
-    public static int   UC_LF                                   = '\n';                 // line feed
-    public static int   UC_VT                                   = '\u000B';             // vertical tab
-    public static int   UC_FF                                   = '\u000C';             // form feed
-    public static int   UC_CR                                   = '\r';                 // carriage return
-    public static int   UC_SPACE                                = '\u0020';             // space
-    public static int   UC_NBSP                                 = '\u00A0';             // non-breaking space
-    public static int   UC_SPACE_EN_QUAD                        = '\u2000';             // en quad
-    public static int   UC_SPACE_EM_QUAD                        = '\u2001';             // em quad
-    public static int   UC_SPACE_EN                             = '\u2002';             // en space
-    public static int   UC_SPACE_EM                             = '\u2003';             // em space
-    public static int   UC_SPACE_3_PER_EM                       = '\u2004';             // 3-per-em space
-    public static int   UC_SPACE_4_PER_EM                       = '\u2005';             // 4-per-em space
-    public static int   UC_SPACE_6_PER_EM                       = '\u2006';             // 6-per-em space
-    public static int   UC_SPACE_FIGURE                         = '\u2007';             // figure space
-    public static int   UC_SPACE_PUNCTUATION                    = '\u2008';             // punctuation space
-    public static int   UC_SPACE_THIN                           = '\u2009';             // thin space
-    public static int   UC_SPACE_HAIR                           = '\u200A';             // hair space
-    public static int   UC_SPACE_ZWSP                           = '\u200B';             // zero-width space
-    public static int   UC_LINE_SEPARATOR                       = '\u2028';             // line separator
-    public static int   UC_PARA_SEPARATOR                       = '\u2029';             // paragraph separator
-    public static int   UC_NNBSP                                = '\u202F';             // narrow non-breaking space
-    public static int   UC_MMSP                                 = '\u205F';             // medium mathematical space
-    public static int   UC_IDSP                                 = '\u3000';             // ideographic space
-    public static int   UC_OBJECT                               = '\uFFFC';             // object replacement character
-    public static int   UC_REPLACEMENT                          = '\uFFFD';             // replacement character
+    public static final int   UC_HT                             = '\u0009';             // horizontal tab
+    public static final int   UC_LF                             = '\n';                 // line feed
+    public static final int   UC_VT                             = '\u000B';             // vertical tab
+    public static final int   UC_FF                             = '\u000C';             // form feed
+    public static final int   UC_CR                             = '\r';                 // carriage return
+    public static final int   UC_SPACE                          = '\u0020';             // space
+    public static final int   UC_NBSP                           = '\u00A0';             // non-breaking space
+    public static final int   UC_SPACE_EN_QUAD                  = '\u2000';             // en quad
+    public static final int   UC_SPACE_EM_QUAD                  = '\u2001';             // em quad
+    public static final int   UC_SPACE_EN                       = '\u2002';             // en space
+    public static final int   UC_SPACE_EM                       = '\u2003';             // em space
+    public static final int   UC_SPACE_3_PER_EM                 = '\u2004';             // 3-per-em space
+    public static final int   UC_SPACE_4_PER_EM                 = '\u2005';             // 4-per-em space
+    public static final int   UC_SPACE_6_PER_EM                 = '\u2006';             // 6-per-em space
+    public static final int   UC_SPACE_FIGURE                   = '\u2007';             // figure space
+    public static final int   UC_SPACE_PUNCTUATION              = '\u2008';             // punctuation space
+    public static final int   UC_SPACE_THIN                     = '\u2009';             // thin space
+    public static final int   UC_SPACE_HAIR                     = '\u200A';             // hair space
+    public static final int   UC_SPACE_ZWSP                     = '\u200B';             // zero-width space
+    public static final int   UC_LINE_SEPARATOR                 = '\u2028';             // line separator
+    public static final int   UC_PARA_SEPARATOR                 = '\u2029';             // paragraph separator
+    public static final int   UC_NNBSP                          = '\u202F';             // narrow non-breaking space
+    public static final int   UC_MMSP                           = '\u205F';             // medium mathematical space
+    public static final int   UC_IDSP                           = '\u3000';             // ideographic space
+    public static final int   UC_OBJECT                         = '\uFFFC';             // object replacement character
+    public static final int   UC_REPLACEMENT                    = '\uFFFD';             // replacement character
 
     public static boolean isBreakingWhitespace(int c) {
         if (c == UC_HT)

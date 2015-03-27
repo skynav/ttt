@@ -82,6 +82,7 @@ public interface LayoutState {
     BlockAlignment getDisplayAlign(Element e);
     Extent getExtent(Element e);
     Point getOrigin(Element e);
+    Point getPosition(Element e, Extent extent);
     Overflow getOverflow(Element e);
     TransformMatrix getTransform(Element e);
     WritingMode getWritingMode(Element e);

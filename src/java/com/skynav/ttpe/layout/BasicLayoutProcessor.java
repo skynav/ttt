@@ -255,7 +255,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         Extent extent = ls.getExtent(e);
         double w = extent.getWidth();
         double h = extent.getHeight();
-        Point origin = ls.getOrigin(e);
+        Point origin = ls.getPosition(e, extent);
         double x = origin.getX();
         double y = origin.getY();
         boolean clip = ls.getOverflow(e).clips();

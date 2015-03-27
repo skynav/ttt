@@ -61,6 +61,7 @@ import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.Positions;
 import com.skynav.ttx.transformer.TransformerContext;
 
 import com.skynav.xml.helpers.Documents;
@@ -251,10 +252,8 @@ public class BasicLayoutState implements LayoutState {
             StyleSet styles = this.styles.get(style);
             if (styles != null)
                 return styles;
-            else
-                return StyleSet.EMPTY;
-        } else
-            return StyleSet.EMPTY;
+        }
+        return StyleSet.EMPTY;
     }
 
     public BlockAlignment getDisplayAlign(Element e) {
@@ -284,11 +283,10 @@ public class BasicLayoutState implements LayoutState {
                     double w = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, externalExtent, referenceExtent, fontSize);
                     double h = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, externalExtent, referenceExtent, fontSize);
                     return new Extent(w, h);
-                } else
-                    return defaultExtent;
+                }
             }
-        } else
-            return defaultExtent;
+        }
+        return defaultExtent;
     }
 
     public Point getOrigin(Element e) {
@@ -309,12 +307,24 @@ public class BasicLayoutState implements LayoutState {
                     double x = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, externalExtent, referenceExtent, fontSize);
                     double y = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, externalExtent, referenceExtent, fontSize);
                     return new Point(x, y);
-                } else
-                    return defaultOrigin;
+                }
             }
-        } else
-            return defaultOrigin;
+        }
+        return defaultOrigin;
     }
+
+    public Point getPosition(Element e, Extent extent) {
+        StyleSpecification s = getStyles(e).get(ttsPositionAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            String [] components = v.split("[ \t\r\n]+");
+            Length[] lengths = new Length[4];
+            if (Positions.isPosition(components, null, context, lengths))
+                return Helpers.resolvePosition(e, lengths, getExternalExtent(), extent);
+        }
+        return getOrigin(e);
+    }
+
 
     public Overflow getOverflow(Element e) {
         StyleSpecification s = getStyles(e).get(ttsOverflowAttrName);

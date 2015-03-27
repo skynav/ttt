@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2015 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,40 +23,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.fonts;
+package com.skynav.ttpe.style;
 
-import com.skynav.ttv.model.value.FontVariant;
+public class Emphasis {
 
-public class FontFeature {
-    private final String feature;
-    private final Object[] arguments;
-    public FontFeature(String feature) {
-        this(feature, null);
+    public enum Style {
+        NONE,
+        AUTO,
+        TEXT;
+    };
+
+    public enum Position {
+        BEFORE,
+        AFTER,
+        OUTSIDE;
+    };
+
+    private Style style;
+    private String text;
+    private Position position;
+    private Color color;
+
+    public Emphasis(String style, String text, String position, Color color) {
+        this.style = Style.valueOf(style);
+        this.text = text;
+        this.position = Position.valueOf(position);
+        this.color = color;
     }
-    public FontFeature(String feature, Object[] arguments) {
-        this.feature = feature;
-        this.arguments = arguments;
+
+    public Style getStyle() {
+        return style;
     }
-    public String getFeature() {
-        return feature;
+
+    public String getText() {
+        return text;
     }
-    public Object[] getArguments() {
-        return arguments;
+
+    public Position getPosition() {
+        return position;
     }
-    public static FontFeature fromVariant(FontVariant variant) {
-        String feature;
-        if (variant == FontVariant.SUPER)
-            feature = "sups";
-        else if (variant == FontVariant.SUB)
-            feature = "subs";
-        else if (variant == FontVariant.HALF)
-            feature = "hwid";
-        else if (variant == FontVariant.FULL)
-            feature = "fwid";
-        else if (variant == FontVariant.RUBY)
-            feature = "ruby";
-        else
-            feature = null;
-        return (feature != null) ? new FontFeature(feature) : null;
+
+    public Color getColor() {
+        return color;
     }
+
 }
