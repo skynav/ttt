@@ -409,8 +409,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
         },
     };
 
-    private Model model;
-    private Map<QName, StyleAccessor> accessors;
+    protected Model model;
+    protected Map<QName, StyleAccessor> accessors;
 
     public TTML1StyleVerifier(Model model) {
         populate(model);
@@ -469,6 +469,13 @@ public class TTML1StyleVerifier implements StyleVerifier {
             return verifyOtherAttributes(content, locator, context);
         else
             throw new IllegalArgumentException();
+    }
+
+    public void addInitialOverrides(Object initial, VerifierContext context) {
+    }
+
+    public Object getInitialOverride(QName styleName, VerifierContext context) {
+        return null;
     }
 
     protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
@@ -564,6 +571,10 @@ public class TTML1StyleVerifier implements StyleVerifier {
             return false;
     }
 
+    protected boolean isInitial(Object content) {
+        return false;
+    }
+
     protected boolean isRegion(Object content) {
         return content instanceof Region;
     }
@@ -614,10 +625,14 @@ public class TTML1StyleVerifier implements StyleVerifier {
         }
     }
 
-    protected void setStyleInitialValue(Object content, StyleAccessor sa, Object initialValue) {
+    protected void setStyleInitialValue(Object content, StyleAccessor sa, Object initialValue, VerifierContext context) {
         if (isRegion(content)) {
-            if (initialValue != null)
+            if (initialValue != null) {
+                Object initialOverride = getInitialOverride(sa.styleName, context);
+                if (initialOverride != null)
+                    initialValue = initialOverride;
                 setStyleValue(content, sa.setterName, sa.valueClass, initialValue);
+            }
         }
     }
 
@@ -659,6 +674,19 @@ public class TTML1StyleVerifier implements StyleVerifier {
             populate(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
         }
 
+        @Override
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append('[');
+            sb.append(styleName);
+            sb.append(',');
+            sb.append(initialValue.toString());
+            sb.append(',');
+            sb.append(inheritable);
+            sb.append(']');
+            return sb.toString();
+        }
+
         public boolean doesStyleApply(QName eltName) {
             String nsUri = eltName.getNamespaceURI();
             if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT)) {
@@ -688,12 +716,6 @@ public class TTML1StyleVerifier implements StyleVerifier {
             return inheritable;
         }
 
-        /*
-        public Object initialValue() {
-            return initialValue;
-        }
-        */
-
         public String initialValueAsString() {
             return initialValueAsString;
         }
@@ -706,8 +728,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
                     success = verify(model, content, (String) value, locator, context);
                 else
                     success = verifier.verify(model, content, styleName, value, locator, context);
-            } else
-                setStyleInitialValue(content);
+            } else if (!isInitial(content))
+                setStyleInitialValue(content, context);
             if (!success) {
                 if (value != null) {
                     if (styleName.equals(styleAttributeName)) {
@@ -761,7 +783,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
             this.initialValueAsString = initialValueAsString;
         }
 
-        private Object getStyleValue(Object content) {
+        protected Object getStyleValue(Object content) {
             try {
                 Class<?> contentClass = content.getClass();
                 Method m = contentClass.getMethod(getterName, new Class<?>[]{});
@@ -779,8 +801,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
             }
         }
 
-        private void setStyleInitialValue(Object content) {
-            TTML1StyleVerifier.this.setStyleInitialValue(content, this, initialValue);
+        private void setStyleInitialValue(Object content, VerifierContext context) {
+            TTML1StyleVerifier.this.setStyleInitialValue(content, this, initialValue, context);
         }
 
         private Object convertType(Object value, Class<?> targetClass) {

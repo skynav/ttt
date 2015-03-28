@@ -792,19 +792,19 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return ((Head) head).getParametersClass();
     }
 
-    private boolean verifyParameterAttributes(Object content) {
+    protected boolean verifyParameterAttributes(Object content) {
         return this.parameterVerifier.verify(content, getLocator(content), this.context, ItemType.Attributes);
     }
 
-    private boolean verifyStyleAttributes(Object content) {
+    protected boolean verifyStyleAttributes(Object content) {
         return this.styleVerifier.verify(content, getLocator(content), this.context, ItemType.Attributes);
     }
 
-    private boolean verifyStyledItem(Object content) {
+    protected boolean verifyStyledItem(Object content) {
         return this.styleVerifier.verify(content, getLocator(content), this.context, ItemType.Element);
     }
 
-    private boolean verifyTimingAttributes(Object content) {
+    protected boolean verifyTimingAttributes(Object content) {
         return this.timingVerifier.verify(content, getLocator(content), this.context, ItemType.Attributes);
     }
 

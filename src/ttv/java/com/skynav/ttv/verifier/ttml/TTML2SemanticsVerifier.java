@@ -38,6 +38,7 @@ import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Division;
 import com.skynav.ttv.model.ttml2.tt.Head;
+import com.skynav.ttv.model.ttml2.tt.Initial;
 import com.skynav.ttv.model.ttml2.tt.Layout;
 import com.skynav.ttv.model.ttml2.tt.Metadata;
 import com.skynav.ttv.model.ttml2.tt.Paragraph;
@@ -73,6 +74,42 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return verifyProfile(root);
         else
             return unexpectedContent(root);
+    }
+
+    @Override
+    protected boolean verifyStyling(Object styling) {
+        boolean failed = false;
+        if (super.verifyStyling(styling)) {
+            for (Object i : getStylingInitials(styling)) {
+                if (i instanceof Initial) {
+                    Initial initial = (Initial) i;
+                    if (verifyInitial(initial))
+                        addInitialOverrides(initial);
+                    else
+                        failed = true;
+                }
+            }
+        } else
+            failed = true;
+        return !failed;
+    }
+
+    protected Collection<? extends Object> getStylingInitials(Object styling) {
+        assert styling instanceof Styling;
+        return ((Styling) styling).getInitial();
+    }
+
+    protected boolean verifyInitial(Initial initial) {
+        boolean failed = false;
+        if (!verifyStyleAttributes(initial))
+            failed = true;
+        if (!verifyOtherAttributes(initial))
+            failed = true;
+        return !failed;
+    }
+
+    private void addInitialOverrides(Object initial) {
+        this.styleVerifier.addInitialOverrides(initial, getContext());
     }
 
     @Override

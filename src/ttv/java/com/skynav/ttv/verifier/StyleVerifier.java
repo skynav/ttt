@@ -32,6 +32,21 @@ import javax.xml.namespace.QName;
 public interface StyleVerifier extends ItemVerifier {
 
     /**
+     * Add initial style overrides from styling element initial.
+     * @param initial styling element
+     * @param context verifier context instance
+     */
+    void addInitialOverrides(Object initial, VerifierContext context);
+
+    /**
+     * Get initial style override.
+     * @param styleName style name
+     * @param context verifier context instance
+     * @return a style value object or null if no override
+     */
+    Object getInitialOverride(QName styleName, VerifierContext context);
+
+    /**
      * Obtain qualified name for style attribute given a unique, unqualified style property name.
      * @param propertyName non-empty local name for style property
      * @return a qualified name or null if unknown style property

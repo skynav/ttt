@@ -35,6 +35,7 @@ import com.skynav.ttv.model.ttml2.tt.Animate;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Division;
+import com.skynav.ttv.model.ttml2.tt.Initial;
 import com.skynav.ttv.model.ttml2.tt.Paragraph;
 import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.Set;
@@ -58,6 +59,7 @@ import com.skynav.ttv.model.ttml2.ttd.UnicodeBidi;
 import com.skynav.ttv.model.ttml2.ttd.Visibility;
 import com.skynav.ttv.model.ttml2.ttd.WrapOption;
 import com.skynav.ttv.model.ttml2.ttd.WritingMode;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.style.DirectionVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisplayAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisplayVerifier;
@@ -352,6 +354,34 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public void addInitialOverrides(Object initial, VerifierContext context) {
+        Map<QName,Object> initials = (Map<QName,Object>) context.getResourceState("initials");
+        if (initials == null) {
+            initials = new java.util.HashMap<QName,Object>();
+            context.setResourceState("initials", initials);
+        }
+        for (QName name : accessors.keySet()) {
+            if (isStyleAttribute(name)) {
+                StyleAccessor sa = accessors.get(name);
+                Object value = sa.getStyleValue(initial);
+                if (value != null)
+                    initials.put(name, value);
+            }
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object getInitialOverride(QName styleName, VerifierContext context) {
+        Map<QName,Object> initials = (Map<QName,Object>) context.getResourceState("initials");
+        if (initials != null)
+            return initials.get(styleName);
+        else
+            return null;
+    }
+
+    @Override
     public boolean isInheritableStyle(QName eltName, QName styleName) {
         if (eltName.equals(TTML2Model.spanElementName) && styleName.equals(textAlignAttributeName))
             return false;
@@ -365,6 +395,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             return null;
         else
             return super.getInitialStyleValue(eltName, styleName);
+    }
+
+    @Override
+    protected boolean isInitial(Object content) {
+        return content instanceof Initial;
     }
 
     @Override
@@ -389,6 +424,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
         else if (content instanceof Body)
             return true;
         else if (content instanceof Division)
+            return true;
+        else if (content instanceof Initial)
             return true;
         else if (content instanceof Paragraph)
             return true;

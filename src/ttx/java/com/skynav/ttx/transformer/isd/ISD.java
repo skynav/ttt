@@ -1043,8 +1043,11 @@ public class ISD {
         }
 
         private static Map<Element, StyleSet> resolveComputedStyles(Element root, TransformerContext context) {
+            // compute initial value overrides
+            StyleSet overrides = computeInitialStyleOverrides(root.getOwnerDocument(), context);
+
             // resolve specified style sets
-            Map<Element, StyleSet> specifiedStyleSets = resolveSpecifiedStyles(root, context);
+            Map<Element, StyleSet> specifiedStyleSets = resolveSpecifiedStyles(root, context, overrides);
 
             // derive {CSS(E)} from {SSS(E)}
             Map<Element, StyleSet> computedStyleSets = new java.util.HashMap<Element, StyleSet>();
@@ -1091,11 +1094,41 @@ public class ISD {
             return computedStyleSets;
         }
 
-        private static Map<Element, StyleSet> resolveSpecifiedStyles(Element root, TransformerContext context) {
+        private static StyleSet computeInitialStyleOverrides(Document doc, TransformerContext context) {
+            StyleSet overrides = new StyleSet();
+            for (Element initial : getInitialElements(doc, context)) {
+                overrides.merge(getInlineStyles(initial));
+            }
+            return overrides;
+        }
+
+        private static List<Element> getInitialElements(Document doc, TransformerContext context) {
+            final List<Element> initials = new java.util.ArrayList<Element>();
+            try {
+                Traverse.traverseElements(doc, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isInitialElement(elt))
+                            initials.add(elt);
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+                context.getReporter().logError(e);
+            }
+            return initials;
+        }
+
+        private static boolean isInitialElement(Element elt) {
+            return isTimedTextElement(elt, "initial");
+        }
+
+        private static Map<Element, StyleSet> resolveSpecifiedStyles(Element root, TransformerContext context, StyleSet overrides) {
             Map<Element, StyleSet> specifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
-            specifiedStyleSets = resolveSpecifiedStyles(getStyleElements(root, context), specifiedStyleSets, context);
-            specifiedStyleSets = resolveSpecifiedStyles(getAnimationElements(root, context), specifiedStyleSets, context);
-            specifiedStyleSets = resolveSpecifiedStyles(getRegionOrContentElements(root, context), specifiedStyleSets, context);
+            specifiedStyleSets = resolveSpecifiedStyles(getStyleElements(root, context), specifiedStyleSets, context, overrides);
+            specifiedStyleSets = resolveSpecifiedStyles(getAnimationElements(root, context), specifiedStyleSets, context, overrides);
+            specifiedStyleSets = resolveSpecifiedStyles(getRegionOrContentElements(root, context), specifiedStyleSets, context, overrides);
             return specifiedStyleSets;
         }
 
@@ -1176,10 +1209,10 @@ public class ISD {
             return elts;
         }
 
-        private static Map<Element, StyleSet> resolveSpecifiedStyles(Collection<Element> elts, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
+        private static Map<Element, StyleSet> resolveSpecifiedStyles(Collection<Element> elts, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context, StyleSet overrides) {
             for (Element elt : elts) {
                 assert !specifiedStyleSets.containsKey(elt);
-                specifiedStyleSets.put(elt, computeSpecifiedStyleSet(elt, specifiedStyleSets, context));
+                specifiedStyleSets.put(elt, computeSpecifiedStyleSet(elt, specifiedStyleSets, context, overrides));
             }
             return specifiedStyleSets;
         }
@@ -1219,7 +1252,7 @@ public class ISD {
             QName eltName = new QName(elt.getNamespaceURI(), elt.getLocalName());
             List<StyleSpecification> elisions = new java.util.ArrayList<StyleSpecification>();
             for (StyleSpecification s : ss.getStyles().values()) {
-                StyleSpecification initial = getInitialStyle(eltName, s.getName(), context);
+                StyleSpecification initial = getInitialStyle(eltName, s.getName(), context, null);
                 if (initial != null) {
                     String value = initial.getValue();
                     if ((value != null) && value.equals(s.getValue()))
@@ -1231,20 +1264,25 @@ public class ISD {
             }
         }
 
-        private static StyleSpecification getInitialStyle(Element elt, QName styleName, TransformerContext context) {
+        private static StyleSpecification getInitialStyle(Element elt, QName styleName, TransformerContext context, StyleSet overrides) {
             QName eltName = new QName(elt.getNamespaceURI(), elt.getLocalName());
-            return getInitialStyle(eltName, styleName, context);
+            return getInitialStyle(eltName, styleName, context, overrides);
         }
 
-        private static StyleSpecification getInitialStyle(QName eltName, QName styleName, TransformerContext context) {
+        private static StyleSpecification getInitialStyle(QName eltName, QName styleName, TransformerContext context, StyleSet overrides) {
             String value = context.getModel().getInitialStyleValue(eltName, styleName);
-            if (value != null)
+            if (value != null) {
+                if (overrides != null) {
+                    StyleSpecification override = overrides.get(styleName);
+                    if (override != null)
+                        value = override.getValue();
+                }
                 return new StyleSpecification(new ComparableQName(styleName), value);
-            else
+            } else
                 return null;
         }
 
-        private static StyleSet computeSpecifiedStyleSet(Element elt, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
+        private static StyleSet computeSpecifiedStyleSet(Element elt, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context, StyleSet overrides) {
             // See TTML2, Section 8.4.4.2
             // 1. initialization
             StyleSet sss = new StyleSet(getHelper(context).generateStyleSetIndex(context));
@@ -1267,7 +1305,7 @@ public class ISD {
                     if (!sss.containsKey(name)) {
                         StyleSpecification s;
                         if (!isInheritableStyle(elt, name, context) || isRootElement(elt))
-                            s = getInitialStyle(elt, name, context);
+                            s = getInitialStyle(elt, name, context, overrides);
                         else if (specialStyleInheritance(elt, name, sss, context))
                             s = getSpecialInheritedStyle(elt, name, sss, specifiedStyleSets, context);
                         else
