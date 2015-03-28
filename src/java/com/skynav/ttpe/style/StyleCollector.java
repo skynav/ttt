@@ -380,10 +380,10 @@ public class StyleCollector {
         List<Length> lengths = new java.util.ArrayList<Length>();
         if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
-            double h = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, extBounds, refBounds, font.getSize());
+            double h = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize());
             if (lengths.size() == 1)
                 lengths.add(lengths.get(0));
-            double w = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, extBounds, refBounds, font.getSize());
+            double w = Helpers.resolveLength(e, lengths.get(1), Axis.HORIZONTAL, extBounds, refBounds, font.getSize());
             return new Extent(w, h);
         } else
             return null;

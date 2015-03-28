@@ -110,9 +110,9 @@ public class Helpers {
         else if (units == Length.Unit.Cell)
             return getCellSizeReference(axis, external);
         else if (units == Length.Unit.ViewportHeight)
-            return getViewportReference(axis, external);
+            return getViewportReference(Axis.VERTICAL, external);
         else if (units == Length.Unit.ViewportWidth)
-            return getViewportReference(axis, external);
+            return getViewportReference(Axis.HORIZONTAL, external);
         else
             return 1;
     }
