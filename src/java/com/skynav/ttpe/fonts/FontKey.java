@@ -25,7 +25,9 @@
  
 package com.skynav.ttpe.fonts;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.skynav.ttpe.geometry.Axis;
@@ -55,7 +57,7 @@ public class FontKey {
     public String language;
     public Axis axis;
     public Extent size;
-    public Set<FontFeature> features;
+    public Map<String,FontFeature> features;
 
     public FontKey(FontKey key, Extent size) {
         this(key.family, key.style, key.weight, key.language, key.axis, size, DEFAULT_FEATURES);
@@ -68,7 +70,7 @@ public class FontKey {
         this.language = language.toLowerCase();
         this.axis = axis;
         this.size = size;
-        this.features = features;
+        populateFeatures(features);
     }
 
     @Override
@@ -87,13 +89,21 @@ public class FontKey {
         sb.append(',');
         sb.append(axis);
         sb.append(',');
-        sb.append(features);
+        sb.append(features.values());
         sb.append(']');
         return sb.toString();
     }
 
     public FontSpecification getSpecification() {
         return new FontSpecification(family, style, weight, language, null);
+    }
+
+    public Collection<FontFeature> getFeatures() {
+        return features.values();
+    }
+
+    public FontFeature getFeature(String feature) {
+        return features.get(feature);
     }
 
     @Override
@@ -105,7 +115,7 @@ public class FontKey {
         hc = hc * 31 + language.hashCode();
         hc = hc * 31 + axis.hashCode();
         hc = hc * 31 + size.hashCode();
-        hc = hc * 31 + features.hashCode();
+        hc = hc * 31 + features.values().hashCode();
         return hc;
     }
 
@@ -125,12 +135,19 @@ public class FontKey {
                 return false;
             else if (!size.equals(other.size))
                 return false;
-            else if (!features.equals(other.features))
+            else if (!features.values().equals(other.features.values()))
                 return false;
             else
                 return true;
         } else
             return false;
+    }
+
+    private void populateFeatures(Set<FontFeature> features) {
+        Map<String,FontFeature> m = new java.util.HashMap<String,FontFeature>();
+        for (FontFeature f : features)
+            m.put(f.getFeature(), f);
+        this.features = m;
     }
 
 }

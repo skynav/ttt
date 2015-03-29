@@ -27,10 +27,12 @@ package com.skynav.ttpe.fonts;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.Collection;
 
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
+import org.apache.fontbox.ttf.KerningSubtable;
+import org.apache.fontbox.ttf.KerningTable;
 import org.apache.fontbox.ttf.NamingTable;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.OpenTypeFont;
@@ -51,6 +53,7 @@ public class Font {
     private NamingTable nameTable;
     private OS2WindowsMetricsTable os2Table;
     private CmapSubtable cmapSubtable;
+    private KerningSubtable kerningSubtable;
     
     public Font(FontKey key, String source, Reporter reporter) {
         this.key = key;
@@ -80,9 +83,12 @@ public class Font {
 
     public String getPreferredFamilyName() {
         if (maybeLoad()) {
-            if (nameTable != null)
-                return nameTable.getName(16, 1, 0, 0);
-            else
+            if (nameTable != null) {
+                String name = nameTable.getName(16, 1, 0, 0);
+                if (name == null)
+                    name = nameTable.getFontFamily();
+                return name;
+            } else
                 return key.family;
         } else
             return "unknown";
@@ -96,12 +102,22 @@ public class Font {
         return key.weight;
     }
 
-    private static final Set<FontFeature> emptyFeatures = new java.util.HashSet<FontFeature>();
-    public Set<FontFeature> getFeatures() {
-        if (key.features != null)
-            return key.features;
-        else
-            return emptyFeatures;
+    public Collection<FontFeature> getFeatures() {
+        return key.getFeatures();
+    }
+
+    public FontFeature getFeature(String feature) {
+        return key.getFeature(feature);
+    }
+
+    public boolean isKerningEnabled() {
+        FontFeature f = getFeature("kern");
+        if (f != null) {
+            Object arg = f.getArgument(0);
+            if ((arg instanceof FontKerning) && (arg == FontKerning.NONE))
+                return false;
+        }
+        return true;
     }
 
     public Axis getAxis() {
@@ -168,11 +184,47 @@ public class Font {
                     int a = Characters.isZeroWidthWhitespace(c) ? 0 : otf.getAdvanceWidth(cmapSubtable.getGlyphId(c));
                     advance += (double) a;
                 }
-                advance = scaleFontUnits(advance);
+                advance = scaleFontUnits(advance) + getKerningAdvance(text);
             }
         } catch (IOException e) {
         }
         return advance;
+    }
+
+    public double getKerningAdvance(String text) {
+        double[] kerning = getKerning(text);
+        if (kerning != null) {
+            double advance = 0;
+            for (double k : kerning)
+                advance += k;
+            return advance;
+        } else
+            return 0;
+    }
+
+    public double[] getKerning(String text) {
+        if (maybeLoad()) {
+            if (kerningSubtable != null) {
+                int[] glyphs = new int[text.length()];
+                for (int i = 0; i < glyphs.length; ++i) {
+                    // [TBD] - FIXME - non-BMP
+                    glyphs[i] = cmapSubtable.getGlyphId(text.charAt(i));
+                }
+                int[] kerning = kerningSubtable.getKerning(glyphs);
+                assert kerning.length == glyphs.length;
+                double[] kerningScaled = new double[kerning.length];
+                boolean hasNonZeroKerning = false;
+                for (int i = 0; i < kerning.length; ++i) {
+                    double k = scaleFontUnits((double) kerning[i]);
+                    if (k != 0) {
+                        kerningScaled[i] = k;
+                        hasNonZeroKerning = true;
+                    }
+                }
+                return hasNonZeroKerning ? kerningScaled : null;
+            }
+        }
+        return null;
     }
 
     private boolean maybeLoad() {
@@ -181,6 +233,7 @@ public class Font {
             NamingTable nameTable = null;
             OS2WindowsMetricsTable os2Table = null;
             CmapSubtable cmapSubtable = null;
+            KerningSubtable kerningSubtable = null;
             try {
                 File f = new File(source);
                 if (f.exists()) {
@@ -190,6 +243,11 @@ public class Font {
                     CmapTable cmap = otf.getCmap();
                     if (cmap != null)
                         cmapSubtable = cmap.getSubtable(CmapTable.PLATFORM_UNICODE, CmapTable.ENCODING_UNICODE_2_0_BMP);
+                    if (isKerningEnabled()) {
+                        KerningTable kerning = otf.getKerning();
+                        if (kerning != null)
+                            kerningSubtable = kerning.getHorizontalKerningSubtable();
+                    }
                     reporter.logInfo(reporter.message("*KEY*", "Loaded font instance ''{0}''", f.getAbsolutePath()));
                 }
             } catch (IOException e) {
@@ -199,6 +257,7 @@ public class Font {
                 this.nameTable = nameTable;
                 this.os2Table = os2Table;
                 this.cmapSubtable = cmapSubtable;
+                this.kerningSubtable = kerningSubtable;
             } else
                 otfLoadFailed = true;
         }

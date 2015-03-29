@@ -49,6 +49,8 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     public static final QName svgTextEltName                    = new QName(NAMESPACE, "text");
 
     // attribute name constants
+    public static final QName dxAttrName                        = new QName("", "dx");
+    public static final QName dyAttrName                        = new QName("", "dy");
     public static final QName fillAttrName                      = new QName("", "fill");
     public static final QName fontFamilyAttrName                = new QName("", "font-family");
     public static final QName fontSizeAttrName                  = new QName("", "font-size");

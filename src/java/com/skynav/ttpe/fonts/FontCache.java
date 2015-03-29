@@ -58,10 +58,8 @@ public class FontCache {
 
     public Font mapFont(List<String> families, FontStyle style, FontWeight weight, String language, Axis axis, Extent size, Set<FontFeature> features) {
         FontSpecification fs;
-        fs = findExactMatch(families, style, weight, language);
-        if (fs != null)
-            return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size, features));
-        fs = findBestMatch(families, style, weight, language, axis, size);
+        if ((fs = findExactMatch(families, style, weight, language)) == null)
+            fs = findBestMatch(families, style, weight, language, axis, size);
         if (fs != null)
             return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size, features));
         return null;

@@ -43,6 +43,12 @@ public class FontFeature {
     public Object[] getArguments() {
         return arguments;
     }
+    public Object getArgument(int index) {
+        if ((arguments != null) && (arguments.length > index))
+            return arguments[index];
+        else
+            return null;
+    }
     public static FontFeature fromVariant(FontVariant variant) {
         String feature;
         if (variant == FontVariant.SUPER)

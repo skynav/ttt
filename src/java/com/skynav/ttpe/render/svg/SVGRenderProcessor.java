@@ -418,6 +418,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         yCurrent = 0;
         if (decorateLines)
             decorateLine(e, a, d, vertical, bpdDirection, true);
+        maybeStyleLineGroup(e, a);
         e = renderChildren(e, a, d);
         xCurrent = xSaved;
         yCurrent = ySaved;
@@ -429,7 +430,6 @@ public class SVGRenderProcessor extends RenderProcessor {
         } else {
             yCurrent += a.getBPD();
         }
-        maybeStyleLineGroup(e, a);
         return e;
     }
 
@@ -465,6 +465,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         yCurrent = 0;
         if (decorateLines)
             decorateLine(e, a, d, vertical, bpdDirection, false);
+        maybeStyleLineGroup(e, a);
         e = renderChildren(e, a, d);
         xCurrent = xSaved;
         yCurrent = ySaved;
@@ -476,7 +477,6 @@ public class SVGRenderProcessor extends RenderProcessor {
         } else {
             yCurrent += a.getBPD();
         }
-        maybeStyleLineGroup(e, a);
         ++lineGenerationIndex;
         return e;
     }
@@ -574,6 +574,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
         double ipd = a.getIPD();
         double bpd = a.getBPD();
+        String text = a.getText();
         if (a.isVertical()) {
             double baselineOffset = (bpd / 2) * ((a.getWritingMode().getDirection(Dimension.BPD) == LR) ? 1 : -1);
             if (baselineOffset != 0)
@@ -582,13 +583,26 @@ public class SVGRenderProcessor extends RenderProcessor {
             Documents.setAttribute(e, SVGDocumentFrame.writingModeAttrName, "tb");
             yCurrent += ipd;
         } else {
-            double baselineOffset = a.getFont().getSize().getHeight();
+            Font f = a.getFont();
+            double baselineOffset = f.getSize().getHeight();
             if (baselineOffset != 0)
                 Documents.setAttribute(e, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {baselineOffset}));
             Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {xCurrent}));
+            if (f.isKerningEnabled()) {
+                double[] kerning = f.getKerning(text);
+                if (kerning != null) {
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("0");
+                    for (int i = 0; i < kerning.length - 1; ++i) {
+                        sb.append(',');
+                        sb.append(doubleFormatter.format(new Object[] {kerning[i]}));
+                    }
+                    Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
+                }
+            }
             xCurrent += ipd;
         }
-         e.appendChild(d.createTextNode(a.getText()));
+         e.appendChild(d.createTextNode(text));
         return e;
     }
 
