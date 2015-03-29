@@ -40,6 +40,7 @@ import org.apache.fontbox.ttf.OTFParser;
 
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.util.Characters;
 import com.skynav.ttv.util.Reporter;
 
@@ -120,6 +121,29 @@ public class Font {
         return true;
     }
 
+    public boolean isSheared() {
+        FontFeature f = getFeature("oblq");
+        if (f != null) {
+            Object arg = f.getArgument(0);
+            if (arg instanceof Double) {
+                double shear = (Double) arg;
+                if (shear != 0)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public double getShear() {
+        FontFeature f = getFeature("oblq");
+        if (f != null) {
+            Object arg = f.getArgument(0);
+            if (arg instanceof Double)
+                return (Double) arg;
+        }
+        return 0;
+    }
+
     public Axis getAxis() {
         return key.axis;
     }
@@ -130,6 +154,10 @@ public class Font {
 
     public double getSize(Axis axis) {
         return key.size.getDimension(axis);
+    }
+
+    public boolean isAnamorphic() {
+        return getSize(Axis.HORIZONTAL) != getSize(Axis.VERTICAL);
     }
 
     public Double getDefaultLineHeight() {
@@ -225,6 +253,31 @@ public class Font {
             }
         }
         return null;
+    }
+
+    public TransformMatrix getTransform() {
+        TransformMatrix t = TransformMatrix.IDENTITY;
+        if (isSheared())
+            t = applyShear(t, getShear());
+        if (isAnamorphic())
+            t = applyAnamorphic(t, getSize());
+        return !t.isIdentity() ? t : null;
+    }
+
+    private TransformMatrix applyShear(TransformMatrix t0, double shear) {
+        TransformMatrix t = (TransformMatrix) t0.clone();
+        double sx = -Math.tan(Math.toRadians(shear * 90));
+        double sy = 0;
+        t.shear(sx, sy);
+        return t;
+    }
+
+    private TransformMatrix applyAnamorphic(TransformMatrix t0, Extent size) {
+        TransformMatrix t = (TransformMatrix) t0.clone();
+        double sx = size.getDimension(Axis.HORIZONTAL) / size.getDimension(Axis.VERTICAL);
+        double sy = 1;
+        t.scale(sx, sy);
+        return t;
     }
 
     private boolean maybeLoad() {

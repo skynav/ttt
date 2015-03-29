@@ -57,6 +57,7 @@ import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.Rectangle;
+import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
@@ -101,7 +102,8 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     // miscellaneous statics
     public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
-    public static final MessageFormat transformFormatter1      = new MessageFormat("translate({0,number,#.####},{1,number,#.####})");
+    public static final MessageFormat matrixFormatter          = new MessageFormat("matrix({0})");
+    public static final MessageFormat translateFormatter       = new MessageFormat("translate({0,number,#.####},{1,number,#.####})");
 
     // options state
     private String backgroundOption;
@@ -282,7 +284,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             Element eGroup = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
             Point origin = a.getOrigin();
             if (origin != null) {
-                Documents.setAttribute(eGroup, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Object[] {origin.getX(),origin.getY()}));
+                Documents.setAttribute(eGroup, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {origin.getX(),origin.getY()}));
                 if (extent != null)
                     addRegion(origin, extent);
             }
@@ -413,7 +415,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             }
         }
         if ((xCurrent != 0) || (yCurrent != 0))
-            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Double[] {xCurrent, yCurrent}));
+            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
         xCurrent = 0;
         yCurrent = 0;
         if (decorateLines)
@@ -460,7 +462,7 @@ public class SVGRenderProcessor extends RenderProcessor {
            yCurrent += bpdAnnotationBefore;
         }
         if ((xCurrent != 0) || (yCurrent != 0))
-            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, transformFormatter1.format(new Double[] {xCurrent, yCurrent}));
+            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
         xCurrent = 0;
         yCurrent = 0;
         if (decorateLines)
@@ -559,6 +561,9 @@ public class SVGRenderProcessor extends RenderProcessor {
             FontWeight fontWeight = font.getWeight();
             if (fontWeight != FontWeight.NORMAL)
                 Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
+            TransformMatrix fontMatrix = font.getTransform();
+            if (fontMatrix != null)
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
         }
     }
 
@@ -571,39 +576,51 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     private Element renderGlyph(Element parent, GlyphArea a, Document d) {
-        Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
         double ipd = a.getIPD();
         double bpd = a.getBPD();
         String text = a.getText();
+        Font font = a.getFont();
+        TransformMatrix fontMatrix = font.getTransform();
+        double[] kerning = font.getKerning(text);
+        Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+        Element g = (fontMatrix != null) ? Documents.createElement(d, SVGDocumentFrame.svgGroupEltName) : e;
         if (a.isVertical()) {
             double baselineOffset = (bpd / 2) * ((a.getWritingMode().getDirection(Dimension.BPD) == LR) ? 1 : -1);
-            if (baselineOffset != 0)
-                Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {baselineOffset}));
-            Documents.setAttribute(e, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {yCurrent}));
+            if (g != e) {
+                Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {baselineOffset, yCurrent}));
+            } else {
+                if (baselineOffset != 0)
+                    Documents.setAttribute(g, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {baselineOffset}));
+                Documents.setAttribute(g, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {yCurrent}));
+            }
             Documents.setAttribute(e, SVGDocumentFrame.writingModeAttrName, "tb");
             yCurrent += ipd;
         } else {
-            Font f = a.getFont();
-            double baselineOffset = f.getSize().getHeight();
-            if (baselineOffset != 0)
-                Documents.setAttribute(e, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {baselineOffset}));
-            Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {xCurrent}));
-            if (f.isKerningEnabled()) {
-                double[] kerning = f.getKerning(text);
-                if (kerning != null) {
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("0");
-                    for (int i = 0; i < kerning.length - 1; ++i) {
-                        sb.append(',');
-                        sb.append(doubleFormatter.format(new Object[] {kerning[i]}));
-                    }
-                    Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
+            double baselineOffset = font.getSize().getHeight();
+            if (g != e) {
+                Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {xCurrent, baselineOffset}));
+            } else {
+                if (baselineOffset != 0)
+                    Documents.setAttribute(g, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {baselineOffset}));
+                Documents.setAttribute(g, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {xCurrent}));
+            }
+            if (kerning != null) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("0");
+                for (int i = 0; i < kerning.length - 1; ++i) {
+                    sb.append(',');
+                    sb.append(doubleFormatter.format(new Object[] {kerning[i]}));
                 }
+                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
             }
             xCurrent += ipd;
         }
-         e.appendChild(d.createTextNode(text));
-        return e;
+        if (fontMatrix != null)
+            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+        e.appendChild(d.createTextNode(text));
+        if (g != e)
+            g.appendChild(e);
+        return g;
     }
 
     private Element renderSpace(Element parent, SpaceArea a, Document d) {

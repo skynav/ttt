@@ -25,29 +25,22 @@
 
 package com.skynav.ttpe.geometry;
 
+import java.awt.geom.AffineTransform;
 import java.text.MessageFormat;
 
-public class TransformMatrix {
+public class TransformMatrix extends AffineTransform {
     
-    public static final TransformMatrix IDENTITY = new TransformMatrix(1,0,0,1,0,0);
+    private static final long serialVersionUID = -7806424349785688446L;
 
-    private double[] m;
-
-    public TransformMatrix(double m00, double m10, double m01, double m11, double m02, double m12) {
-        this(new double[] { m00, m10, m01, m11, m02, m12 });
-    }
-
-    public TransformMatrix(double[] m) {
-        if ((m == null) || (m.length != 6))
-            throw new IllegalArgumentException();
-        this.m = m;
-    }
+    public static final TransformMatrix IDENTITY = new TransformMatrix();
 
     private static final MessageFormat transformMatrixFormatter =
-        new MessageFormat("[{0,number,#.####},{1,number,#.####},{2,number,#.####},{3,number,#.####},{4,number,#.####},{5,number,#.####}]");
+        new MessageFormat("{0,number,#.####},{1,number,#.####},{2,number,#.####},{3,number,#.####},{4,number,#.####},{5,number,#.####}");
 
     @Override
     public String toString() {
+        double[] m = new double[6];
+        getMatrix(m);
         return transformMatrixFormatter.format(new Object[] {m[0], m[1], m[2], m[3], m[4], m[5]});
     }
 }
