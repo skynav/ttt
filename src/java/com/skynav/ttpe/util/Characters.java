@@ -57,6 +57,7 @@ public class Characters {
     public static final int   UC_IDSP                           = '\u3000';             // ideographic space
     public static final int   UC_OBJECT                         = '\uFFFC';             // object replacement character
     public static final int   UC_REPLACEMENT                    = '\uFFFD';             // replacement character
+    public static final int   UC_NOT_A_CHARACTER                = '\uFFFF';             // not a character
 
     public static boolean isBreakingWhitespace(int c) {
         if (c == UC_HT)

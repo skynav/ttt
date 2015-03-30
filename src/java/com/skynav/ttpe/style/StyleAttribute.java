@@ -25,7 +25,7 @@
 
 package com.skynav.ttpe.style;
 
-public class StyleAttribute extends java.text.AttributedCharacterIterator.Attribute {
+public class StyleAttribute extends java.text.AttributedCharacterIterator.Attribute implements Comparable<StyleAttribute> {
 
     //                               ** name **                                                                 ** value type ** 
     public static final StyleAttribute   ANNOTATIONS            = new StyleAttribute("ANNOTATIONS");            // com.skynav.ttpe.text.Phrase[]
@@ -50,6 +50,10 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
 
     private StyleAttribute(String name) {
         super(name);
+    }
+
+    public int compareTo(StyleAttribute other) {
+        return getName().compareTo(other.getName());
     }
 
 }

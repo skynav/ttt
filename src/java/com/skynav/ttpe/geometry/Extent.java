@@ -64,6 +64,14 @@ public class Extent {
         return (width == 0) || (height == 0);
     }
 
+    public Extent scale(double s) {
+        return scale(s, s);
+    }
+
+    public Extent scale(double sx, double sy) {
+        return new Extent(width * sx, height * sy);
+    }
+
     private static final MessageFormat extentFormatter = new MessageFormat("[{0,number,#.####},{1,number,#.####}]");
     @Override
     public String toString() {

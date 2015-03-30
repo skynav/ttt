@@ -29,6 +29,15 @@ public class Strings {
 
     private Strings() {}
     
+    public static boolean isWhitespace(String s) {
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            char c = s.charAt(i);
+            if (!Characters.isWhitespace(c))
+                return false;
+        }
+        return true;
+    }
+
     public static String toHalfWidth(String s) {
         boolean hasHalf = false;
         for (int i = 0, n = s.length(); i < n; ++i) {

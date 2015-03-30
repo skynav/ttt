@@ -25,96 +25,79 @@
 
 package com.skynav.ttpe.style;
 
-public class StyleAttributeInterval implements Comparable<StyleAttributeInterval> {
+public class Decoration {
 
-    private StyleAttribute attribute;
-    private Object value;
-    private int begin;
-    private int end;
-
-    public StyleAttributeInterval(StyleAttribute attribute, Object value, int begin, int end) {
-        this.attribute = attribute;
-        this.value = value;
-        assert begin > -2;
-        this.begin = begin;
-        assert end > -2;
-        assert end >= begin;
-        this.end = end;
+    public enum Type {
+        COLOR,
+        EMPHASIS,
+        HIGHLIGHT,
+        LINING;
     }
 
-    public StyleAttribute getAttribute() {
-        return attribute;
+    private int begin;
+    private int end;
+    private Type type;
+    private Object value;
+
+    public Decoration(int begin, int end, Type type, Object value) {
+        this.begin = begin;
+        this.end = end;
+        this.type = type;
+        this.value = value;
+    }
+
+    public int[] getInterval() {
+        return new int[]{begin, end};
+    }
+    
+    public int getBegin() {
+        return begin;
+    }
+    
+    public int getEnd() {
+        return end;
+    }
+    
+    public Type getType() {
+        return type;
+    }
+    
+    public boolean isColor() {
+        return getType() == Type.COLOR;
+    }
+
+    public Color getColor() {
+        return isColor() ? (Color) getValue() : null;
+    }
+
+    public boolean isEmphasis() {
+        return getType() == Type.EMPHASIS;
+    }
+
+    public Emphasis getEmphasis() {
+        return isEmphasis() ? (Emphasis) getValue() : null;
+    }
+
+    public boolean isHighlight() {
+        return getType() == Type.HIGHLIGHT;
+    }
+
+    public boolean isLining() {
+        return getType() == Type.LINING;
     }
 
     public Object getValue() {
         return value;
     }
 
-    public int getBegin() {
-        return begin;
-    }
-
-    public int getEnd() {
-        return end;
-    }
-
-    public int getLength() {
-        return end - begin;
-    }
-
-    public boolean isOuterScope() {
-        return begin < 0;
-    }
-
-    public boolean intersects(int b, int e) {
-        if (b >= end)
+    public boolean intersects(int from, int to) {
+        if (this.end <= from)
             return false;
-        else if (e <= begin)
+        else if (this.begin >= to)
             return false;
         else
             return true;
     }
-
-    public int[] intersection(int b, int e) {
-        if (intersects(b, e)) {
-            if (begin > b)
-                b = begin;
-            if (end < e)
-                e = end;
-            return new int[] { b, e };
-        } else {
-            return null;
-        }
-    }
-
-    public int compareTo(StyleAttributeInterval other) {
-        int b1 = begin;
-        int b2 = other.begin;
-        if (b1 < b2)
-            return -1;
-        else if (b1 > b2)
-            return 1;
-        int e1 = end;
-        int e2 = other.end;
-        if (e1 < e2)
-            return -1;
-        else if (e1 > e2)
-            return 1;
-        int d = attribute.compareTo(other.attribute);
-        if ((d < 0) || (d > 0))
-            return d;
-        int h1 = value.hashCode();
-        int h2 = other.value.hashCode();
-        if (h1 < h2)
-            return -1;
-        else if (h1 > h2)
-            return 1;
-        if (value == other.value)
-            return 0;
-        else
-            return -1;
-    }
-
 
     @Override
     public String toString() {
@@ -126,11 +109,11 @@ public class StyleAttributeInterval implements Comparable<StyleAttributeInterval
         sb.append(end);
         sb.append(']');
         sb.append(',');
-        sb.append(attribute);
+        sb.append(type);
         sb.append(',');
         sb.append(value);
         sb.append(']');
         return sb.toString();
     }
-
+    
 }

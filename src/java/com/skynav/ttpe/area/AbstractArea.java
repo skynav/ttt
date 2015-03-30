@@ -82,15 +82,17 @@ public abstract class AbstractArea implements Area {
     }
 
     public Whitespace getWhitespace() {
-        if (element.hasAttributeNS(XML.xmlNamespace, "space"))
-            return Whitespace.valueOf(element.getAttributeNS(XML.xmlNamespace, "space"));
+        Element e = getElement();
+        if ((e != null) && e.hasAttributeNS(XML.xmlNamespace, "space"))
+            return Whitespace.valueOf(e.getAttributeNS(XML.xmlNamespace, "space"));
         else
             return null;
     }
 
     public String getLanguage() {
-        if (element.hasAttributeNS(XML.xmlNamespace, "lang"))
-            return element.getAttributeNS(XML.xmlNamespace, "lang");
+        Element e = getElement();
+        if ((e != null) && e.hasAttributeNS(XML.xmlNamespace, "lang"))
+            return e.getAttributeNS(XML.xmlNamespace, "lang");
         else
             return null;
     }

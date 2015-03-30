@@ -43,6 +43,8 @@ import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.Decoration;
+import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
 import com.skynav.ttpe.style.StyleAttribute;
@@ -258,6 +260,7 @@ public class LineLayout {
         if (!breaks.isEmpty()) {
             int savedIndex = iterator.getIndex();
             StringBuffer sb = new StringBuffer();
+            List<Decoration> decorations = new java.util.ArrayList<Decoration>();
             TextRun lastRun = null;
             int lastRunStart = -1;
             double advance = 0;
@@ -265,18 +268,20 @@ public class LineLayout {
                 TextRun r = b.run;
                 if ((lastRun != null) && (r != lastRun)) {
                     maybeAddAnnotationAreas(l, lastRunStart, font, advance, lineHeight);
-                    addTextArea(l, sb.toString(), font, advance, lineHeight, lastRun);
+                    addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun);
                     sb.setLength(0);
+                    decorations.clear();
                     advance = 0;
                 }
                 sb.append(r.getText(b.start, b.index));
+                decorations.addAll(r.getDecorations(b.start, b.index));
                 advance += b.advance;
                 lastRun = r;
                 lastRunStart = r.start + b.start;
             }
             if (sb.length() > 0) {
                 maybeAddAnnotationAreas(l, lastRunStart, font, advance, lineHeight);
-                addTextArea(l, sb.toString(), font, advance, lineHeight, lastRun);
+                addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun);
             }
             iterator.setIndex(savedIndex);
             breaks.clear();
@@ -310,7 +315,7 @@ public class LineLayout {
         return consumed;
     }
 
-    private void addTextArea(LineArea l, String text, Font font, double advance, double lineHeight, TextRun run) {
+    private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, TextRun run) {
         if (run instanceof WhitespaceRun)
             l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, text, font), LineArea.ENCLOSE_ALL);
         else if (run instanceof EmbeddingRun)
@@ -319,7 +324,7 @@ public class LineLayout {
             int start = run.start;
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
                 if (fai.isOuterScope()) {
-                    l.addChild(new GlyphArea(content.getElement(), advance, lineHeight, text, font), LineArea.ENCLOSE_ALL);
+                    l.addChild(new GlyphArea(content.getElement(), advance, lineHeight, text, decorations, font), LineArea.ENCLOSE_ALL);
                     break;
                 } else {
                     int f = fai.getBegin() - start;
@@ -329,13 +334,23 @@ public class LineLayout {
                     assert t >= 0;
                     assert t >= f;
                     assert t <= text.length();
-                    Font fontSegment = (Font) fai.getValue();
-                    String segment = text.substring(f, t);
-                    double di = fontSegment.getAdvance(segment);
-                    l.addChild(new GlyphArea(content.getElement(), di, lineHeight, segment, fontSegment), LineArea.ENCLOSE_ALL);
+                    String segText = text.substring(f, t);
+                    Font segFont = (Font) fai.getValue();
+                    double segAdvance = segFont.getAdvance(segText);
+                    List<Decoration> segDecorations = getSegmentDecorations(decorations, f, t);
+                    l.addChild(new GlyphArea(content.getElement(), segAdvance, lineHeight, segText, segDecorations, segFont), LineArea.ENCLOSE_ALL);
                 }
             }
         }
+    }
+
+    private List<Decoration> getSegmentDecorations(List<Decoration> decorations, int from, int to) {
+        List<Decoration> sd = new java.util.ArrayList<Decoration>();
+        for (Decoration d : decorations) {
+            if (d.intersects(from, to))
+                sd.add(d);
+        }
+        return sd;
     }
 
     private void maybeAddAnnotationAreas(LineArea l, int start, Font font, double advance, double lineHeight) {
@@ -524,6 +539,27 @@ public class LineLayout {
             iterator.setIndex(savedIndex);
             return sb.toString();
         }
+        // obtain decorations starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
+        List<Decoration> getDecorations(int from, int to) {
+            Set<StyleAttributeInterval> intervals = new java.util.TreeSet<StyleAttributeInterval>();
+            intervals.addAll(getColorIntervals(from, to));
+            intervals.addAll(getEmphasisIntervals(from, to));
+            List<Decoration> decorations = new java.util.ArrayList<Decoration>();
+            for (StyleAttributeInterval i : intervals) {
+                Decoration.Type t;
+                Object v = i.getValue();
+                if (v != null) {
+                    if (v instanceof Color)
+                        t = Decoration.Type.COLOR;
+                    else if (v instanceof Emphasis)
+                        t = Decoration.Type.EMPHASIS;
+                    else
+                        t = null;
+                    decorations.add(new Decoration(i.getBegin() - start, i.getEnd() - start, t, v));
+                }
+            }
+            return decorations;
+        }
         // obtain inline break type at INDEX of run, where INDEX is index into run, not outer iterator
         InlineBreak getInlineBreak(int index) {
             return InlineBreak.UNKNOWN;
@@ -558,7 +594,7 @@ public class LineLayout {
         private List<StyleAttributeInterval> getFontIntervals(int from, int to, Font defaultFont) {
             StyleAttribute fontAttr = StyleAttribute.FONT;
             List<StyleAttributeInterval> fonts = new java.util.ArrayList<StyleAttributeInterval>();
-            int[] intervals = getAttributeIntervals(from, to, StyleAttribute.FONT);
+            int[] intervals = getAttributeIntervals(from, to, fontAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
             for (int i = 0, n = intervals.length / 2; i < n; ++i) {
@@ -574,6 +610,42 @@ public class LineLayout {
             if (fonts.isEmpty())
                 fonts.add(new StyleAttributeInterval(fontAttr, defaultFont, -1, -1));
             return fonts;
+        }
+        // obtain colors for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getColorIntervals(int from, int to) {
+            StyleAttribute colorAttr = StyleAttribute.COLOR;
+            List<StyleAttributeInterval> colors = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, colorAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                iterator.setIndex(s);
+                Object v = aci.getAttribute(colorAttr);
+                if (v != null)
+                    colors.add(new StyleAttributeInterval(colorAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            return colors;
+        }
+        // obtain emphasis for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getEmphasisIntervals(int from, int to) {
+            StyleAttribute emphasisAttr = StyleAttribute.EMPHASIS;
+            List<StyleAttributeInterval> emphasis = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, emphasisAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                iterator.setIndex(s);
+                Object v = aci.getAttribute(emphasisAttr);
+                if (v != null)
+                    emphasis.add(new StyleAttributeInterval(emphasisAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            return emphasis;
         }
         // obtain intervals over [FROM,TO) for which ATTRIBUTE is defined
         private int[] getAttributeIntervals(int from, int to, StyleAttribute attribute) {

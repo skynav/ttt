@@ -173,12 +173,13 @@ public class StyleCollector {
         Object v;
 
         // COLOR
+        Color color = null;
         s = styles.get(ttsColorAttrName);
         v = null;
         if (s != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
             if (com.skynav.ttv.verifier.util.Colors.isColor(s.getValue(), null, null, retColor))
-                v = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
+                v = color = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
         }
         if (v != null)
             addAttribute(StyleAttribute.COLOR, v, begin, end);
@@ -201,8 +202,9 @@ public class StyleCollector {
             com.skynav.ttv.model.value.TextEmphasis[] retEmphasis = new com.skynav.ttv.model.value.TextEmphasis[1];
             if (com.skynav.ttv.verifier.util.Emphasis.isEmphasis(s.getValue(), null, null, retEmphasis)) {
                 com.skynav.ttv.model.value.TextEmphasis te = retEmphasis[0];
-                com.skynav.ttv.model.value.Color c = te.getColor();
-                v = new Emphasis(te.getStyle().name(), te.getText(), te.getPosition().name(), new Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()));
+                com.skynav.ttv.model.value.Color teColor = te.getColor();
+                Color c = (teColor != null) ? new Color(teColor.getRed(), teColor.getGreen(), teColor.getBlue(), teColor.getAlpha()) : color;
+                v = new Emphasis(te.getStyle().name(), te.getText(), te.getPosition().name(), c);
             }
         }
         if (v != null)

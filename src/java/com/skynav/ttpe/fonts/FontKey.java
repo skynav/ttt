@@ -63,7 +63,11 @@ public class FontKey {
         this(key.family, key.style, key.weight, key.language, key.axis, size, DEFAULT_FEATURES);
     }
 
-    public FontKey(String family, FontStyle style, FontWeight weight, String language, Axis axis, Extent size, Set<FontFeature> features) {
+    public FontKey(FontKey key, double s) {
+        this(key.family, key.style, key.weight, key.language, key.axis, key.size.scale(s), (key.features != null) ? key.features.values() : null);
+    }
+
+    public FontKey(String family, FontStyle style, FontWeight weight, String language, Axis axis, Extent size, Collection<FontFeature> features) {
         this.family = family.toLowerCase();
         this.style = style;
         this.weight = weight;
@@ -71,6 +75,10 @@ public class FontKey {
         this.axis = axis;
         this.size = size;
         populateFeatures(features);
+    }
+
+    public FontKey getScaled(double scale) {
+        return new FontKey(this, scale);
     }
 
     @Override
@@ -143,7 +151,7 @@ public class FontKey {
             return false;
     }
 
-    private void populateFeatures(Set<FontFeature> features) {
+    private void populateFeatures(Collection<FontFeature> features) {
         Map<String,FontFeature> m = new java.util.HashMap<String,FontFeature>();
         for (FontFeature f : features)
             m.put(f.getFeature(), f);

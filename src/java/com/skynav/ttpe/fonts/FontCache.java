@@ -129,10 +129,14 @@ public class FontCache {
         return f;
     }
 
+    public Font getScaledFont(Font font, double scale) {
+        return get(font.getKey().getScaled(scale));
+    }
+
     private Font create(FontKey key) {
         FontSpecification fs = findSpecification(key);
         if (fs != null)
-            return new Font(key, fs.source, reporter);
+            return new Font(this, key, fs.source, reporter);
         else
             return null;
     }

@@ -38,6 +38,10 @@ public class BlockArea extends NonLeafAreaNode {
     private double ipd;
     private BlockAlignment blockAlignment;
 
+    public BlockArea() {
+        this(null);
+    }
+
     public BlockArea(Element e) {
         this(e, Double.NaN, Double.NaN);
     }
@@ -62,6 +66,15 @@ public class BlockArea extends NonLeafAreaNode {
 
     public BlockAlignment getBlockAlignment() {
         return blockAlignment;
+    }
+
+    public int getLineCount() {
+        int numLines = 0;
+        for (AreaNode a : getChildren()) {
+            if (a instanceof LineArea)
+                ++numLines;
+        }
+        return numLines;
     }
 
     @Override

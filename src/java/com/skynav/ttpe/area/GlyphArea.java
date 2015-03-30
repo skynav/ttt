@@ -25,18 +25,23 @@
 
 package com.skynav.ttpe.area;
 
+import java.util.List;
+
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.Decoration;
 
 public class GlyphArea extends LeafInlineArea {
 
     private String text;
+    private List<Decoration> decorations;
     private Font font;
 
-    public GlyphArea(Element e, double ipd, double bpd, String text, Font font) {
+    public GlyphArea(Element e, double ipd, double bpd, String text, List<Decoration> decorations, Font font) {
         super(e, ipd, bpd);
         this.text = text;
+        this.decorations = decorations;
         this.font = font;
     }
 
@@ -44,8 +49,27 @@ public class GlyphArea extends LeafInlineArea {
         return text;
     }
 
+    public List<Decoration> getDecorations() {
+        return decorations;
+    }
+
     public Font getFont() {
         return font;
+    }
+
+    public LineArea getLine() {
+        AreaNode p = getParent();
+        while (p != null) {
+            if (p instanceof LineArea)
+                return (LineArea) p;
+            else
+                p = p.getParent();
+        }
+        return new LineArea();
+    }
+
+    public BlockArea getContainingBlock() {
+        return getLine().getContainingBlock();
     }
 
 }

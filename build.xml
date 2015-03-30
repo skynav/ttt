@@ -439,6 +439,9 @@
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-007.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-008.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-009.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-010.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-011.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-012.xml"/>
 </target>
 
 <target name="run-samples-no-build" description="Run presenter with sample input test files">
@@ -448,6 +451,9 @@
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-006.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-007.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-009.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-010.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-011.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-012.xml"/>
 </target>
 
 <target name="run-test">

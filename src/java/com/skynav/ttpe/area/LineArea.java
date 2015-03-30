@@ -44,6 +44,10 @@ public class LineArea extends BlockArea {
     private double bpdAnnotationBefore;
     private double bpdAnnotationAfter;
 
+    public LineArea() {
+        this(null, 0, 0, null, null, null, 0);
+    }
+
     public LineArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font, int lineNumber) {
         super(e, ipd, bpd);
         this.alignment = alignment;
@@ -76,6 +80,17 @@ public class LineArea extends BlockArea {
             return;
         else
             super.expand(a, expansions);
+    }
+
+    public BlockArea getContainingBlock() {
+        AreaNode p = getParent();
+        while (p != null) {
+            if ((p instanceof BlockArea) && !(p instanceof Inline))
+                return (BlockArea) p;
+            else
+                p = p.getParent();
+        }
+        return new BlockArea();
     }
 
     public void setAlignment(InlineAlignment alignment) {
