@@ -35,6 +35,8 @@ public class Emphasis {
 
     public static boolean isEmphasis(String value, Locator locator, VerifierContext context, TextEmphasis[] outputEmphasis) {
         String[] components = splitComponents(value);
+        if (components.length < 1)
+            return false;
         TextEmphasis.Style[] style = new TextEmphasis.Style[1];
         String[] text = new String[1];
         TextEmphasis.Position[] position = new TextEmphasis.Position[1];
@@ -101,12 +103,12 @@ public class Emphasis {
         String c2 = (index < components.length) ? components[index] : null;
         if (c2 != null) {
             if (isStyleKeyword(c2)) {
-                if (s != null) {
+                if (s == null) {
                     s = c2;
                     ++index;
                 }
             } else if (isFillKeyword(c2)) {
-                if (f != null) {
+                if (f == null) {
                     f = c2;
                     ++index;
                 }
@@ -114,12 +116,10 @@ public class Emphasis {
         }
         if ((s == null) && (f == null))
             return -1;
-        else if (!Keywords.isNone(s)) {
-            if (s == null)
-                s = "circle";
-            else if (f == null)
-                f = "filled";
-        }
+        if (s == null)
+            s = "circle";
+        if (!Keywords.isNone(s) && (f == null))
+            f = "filled";
         return isStyleContinuation(s, f, index, outputStyle, outputText);
     }
 

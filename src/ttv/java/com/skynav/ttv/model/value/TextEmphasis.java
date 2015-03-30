@@ -62,8 +62,12 @@ public class TextEmphasis {
     private Color color;
 
     public TextEmphasis(Style style, String text, Position position, Color color) {
+        if (style == null)
+            style = Style.AUTO;
         this.style = style;
         this.text = text;
+        if (position == null)
+            position = Position.AUTO;
         this.position = position;
         this.color = color;
     }
