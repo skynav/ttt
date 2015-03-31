@@ -417,10 +417,10 @@
       <arg value="--output-archive"/>
       <arg value="--output-directory"/>
       <arg value="${basedir}/run/out"/>
-      <arg value="--output-format"/>
-      <arg value="svg"/>
       <arg value="--output-indent"/>
       <arg value="--output-retain-frames"/>
+      <arg value="--output-format"/>
+      <arg value="svg"/>
       <arg value="--svg-background"/>
       <arg value="black"/>
       <arg value="--svg-decorate-all"/>
@@ -452,6 +452,7 @@
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-005.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-006.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-007.xml"/>
+  <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-008.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-009.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-010.xml"/>
   <run-sample sample="${ttpe.test.resources.source.dir}/com/skynav/ttpe/app/sample-011.xml"/>
