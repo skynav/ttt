@@ -402,8 +402,11 @@ public class Font {
                     nameTable = otf.getNaming();
                     os2Table = otf.getOS2Windows();
                     CmapTable cmap = otf.getCmap();
-                    if (cmap != null)
+                    if (cmap != null) {
                         cmapSubtable = cmap.getSubtable(CmapTable.PLATFORM_UNICODE, CmapTable.ENCODING_UNICODE_2_0_BMP);
+                        if (cmapSubtable == null)
+                            cmapSubtable = cmap.getSubtable(CmapTable.PLATFORM_WINDOWS, CmapTable.ENCODING_WIN_UNICODE_BMP);
+                    }
                     if (isKerningEnabled()) {
                         KerningTable kerning = otf.getKerning();
                         if (kerning != null)

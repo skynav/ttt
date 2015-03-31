@@ -91,6 +91,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     private static final String[][] longOptionSpecifications = new String[][] {
         { "svg-background",             "COLOR",    "paint background of specified color into root region (default: transparent)" },
         { "svg-decorate-all",           "",         "decorate regions, lines, glyphs, etc., for debugging purposes" },
+        { "svg-decorate-emphasis",      "",         "decorate emphasis features for debugging purposes" },
         { "svg-decorate-glyphs",        "",         "decorate glyphs with bounding box, etc., for debugging purposes" },
         { "svg-decorate-lines",         "",         "decorate lines with bounding box, etc., for debugging purposes" },
         { "svg-decorate-regions",       "",         "decorate regions with bounding box, etc., for debugging purposes" },
@@ -111,7 +112,7 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     // options state
     private String backgroundOption;
-    @SuppressWarnings("unused")
+    private boolean decorateEmphasis;
     private boolean decorateGlyphs;
     private boolean decorateLines;
     private boolean decorateRegions;
@@ -119,8 +120,8 @@ public class SVGRenderProcessor extends RenderProcessor {
     private String outputPattern;
 
     // derived options state
-    private Color background;
-    private Color decoration;
+    private Color backgroundColor;
+    private Color decorationColor;
 
     // render state
     private double xCurrent;
@@ -165,6 +166,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             decorateGlyphs = true;
             decorateLines = true;
             decorateRegions = true;
+        } else if (option.equals("svg-decorate-emphasis")) {
+            decorateEmphasis = true;
         } else if (option.equals("svg-decorate-glyphs")) {
             decorateGlyphs = true;
         } else if (option.equals("svg-decorate-lines")) {
@@ -184,28 +187,28 @@ public class SVGRenderProcessor extends RenderProcessor {
     @Override
     public void processDerivedOptions() {
         super.processDerivedOptions();
-        // background
+        // backgroundColor
         Color background;
         if (backgroundOption != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
             if (Colors.isColor(backgroundOption, null, context, retColor)) {
-                background = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
+                backgroundColor = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
             } else
                 throw new InvalidOptionUsageException("svg-background", "invalid color: " + backgroundOption);
         } else
-            background = null;
-        this.background = background;
+            backgroundColor = null;
+        this.backgroundColor = backgroundColor;
         // decoration
-        Color decoration;
+        Color decorationColor;
         if (decorationOption != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
             if (Colors.isColor(decorationOption, null, context, retColor)) {
-                decoration = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
+                decorationColor = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
             } else
                 throw new InvalidOptionUsageException("svg-decoration", "invalid color: " + decorationOption);
         } else
-            decoration = (background != null) ? background.contrast() : Color.BLACK;
-        this.decoration = decoration;
+            decorationColor = (backgroundColor != null) ? backgroundColor.contrast() : Color.BLACK;
+        this.decorationColor = decorationColor;
         // output pattern
         String outputPattern = this.outputPattern;
         if (outputPattern == null)
@@ -274,13 +277,13 @@ public class SVGRenderProcessor extends RenderProcessor {
             Documents.setAttribute(eSVG, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
         } 
         if (root)  {
-            if (background != null) {
+            if (backgroundColor != null) {
                 Element eBackground = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
                 Documents.setAttribute(eBackground, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
                 Documents.setAttribute(eBackground, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
-                Documents.setAttribute(eBackground, SVGDocumentFrame.fillAttrName, background.toRGBString());
-                if (background.getAlpha() < 1)
-                    Documents.setAttribute(eBackground, SVGDocumentFrame.opacityAttrName, doubleFormatter.format(new Object[] {background.getAlpha()}));
+                Documents.setAttribute(eBackground, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
+                if (backgroundColor.getAlpha() < 1)
+                    Documents.setAttribute(eBackground, SVGDocumentFrame.opacityAttrName, doubleFormatter.format(new Object[] {backgroundColor.getAlpha()}));
                 eSVG.appendChild(eBackground);
             }
             return renderChildren(eSVG, a, d);
@@ -333,7 +336,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.fillAttrName, "none");
-                Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decoration.toRGBString());
+                Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decorationColor.toRGBString());
                 eSVG.appendChild(eDecoration);
             }
             eGroup.appendChild(renderChildren(eSVG, a, d));
@@ -515,7 +518,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         if (showBoundingBox) {
             Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
             Documents.setAttribute(eDecoration, SVGDocumentFrame.fillAttrName, "none");
-            Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decoration.toRGBString());
+            Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decorationColor.toRGBString());
             Documents.setAttribute(eDecoration, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Double[] {w}));
             Documents.setAttribute(eDecoration, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Double[] {h}));
             if (x != 0)
@@ -542,7 +545,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x + 2}));
                 Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 8}));
             }
-            Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fillAttrName, decoration.toRGBString());
+            Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fillAttrName, decorationColor.toRGBString());
             if (vertical)
                 Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.writingModeAttrName, "tb");
             eDecorationLabel.appendChild(d.createTextNode("P" + (paragraphGenerationIndex + 1) + "L" + (lineGenerationIndex + 1)));
@@ -651,8 +654,10 @@ public class SVGRenderProcessor extends RenderProcessor {
             String text = a.getText();
             int numLines = a.getContainingBlock().getLineCount();
             boolean firstLine = a.getLine().isFirstLine();
-            Element eBefore = renderGlyphEmphasis(parent, a, d, getEmphasisText(a, text, emphases, Emphasis.Position.BEFORE, numLines, firstLine), Emphasis.Position.BEFORE);
-            Element eAfter = renderGlyphEmphasis(parent, a, d, getEmphasisText(a, text, emphases, Emphasis.Position.AFTER, numLines,firstLine), Emphasis.Position.AFTER);
+            String eTextBefore = getEmphasisText(a, text, emphases, Emphasis.Position.BEFORE, numLines, firstLine);
+            Element eBefore = renderGlyphEmphasis(parent, a, d, eTextBefore, Emphasis.Position.BEFORE);
+            String eTextAfter = getEmphasisText(a, text, emphases, Emphasis.Position.AFTER, numLines, firstLine);
+            Element eAfter = renderGlyphEmphasis(parent, a, d, eTextAfter, Emphasis.Position.AFTER);
             if ((eBefore == null) && (eAfter == null))
                 return null;
             else if ((eBefore != null) && (eAfter == null))
@@ -701,7 +706,8 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     private Element renderGlyphEmphasis(Element parent, GlyphArea a, Document d, String emphasis, Emphasis.Position position) {
         String text = a.getText();
-        if ((text == null) || text.isEmpty() || Strings.isWhitespace(text))
+        boolean vertical = a.isVertical();
+        if ((text == null) || text.isEmpty() || Strings.isWhitespace(emphasis))
             return null;
         if ((emphasis == null) || emphasis.isEmpty())
             return null;
@@ -715,27 +721,101 @@ public class SVGRenderProcessor extends RenderProcessor {
         Font fontEmphasis = font.getScaledFont(0.5);
         double[] advancesEmphasis = fontEmphasis.getAdvances(emphasis);
         Rectangle[] boundsEmphasis = fontEmphasis.getGlyphBounds(emphasis);
+        double xLast;
+        double yLast;
+        if (vertical) {
+            xLast = 0;
+            yLast = 0;
+        } else {
+            xLast = 0;
+            yLast = 0;
+        }
         double dxLast = 0;
+        double dyLast = 0;
+        double beHeightMax = 0;
         StringBuffer sb = new StringBuffer();
+        List<Element> glyphBoxes = new java.util.ArrayList<Element>();
         for (int i = 0, n = glyphs.length; i < n; ++i) {
             Rectangle bt = bounds[i];
-            double ct = bt.getX() + bt.getWidth()/2;
             Rectangle be = boundsEmphasis[i];
-            double ce = be.getX() + be.getWidth()/2;
+            double beHeight = be.getHeight();
+            if (beHeight > beHeightMax)
+                beHeightMax = beHeight;
+            double ct, ce;
+            if (vertical) {
+                ct = bt.getY() + bt.getHeight()/2;
+                ce = be.getY() + be.getHeight()/2;
+            } else {
+                ct = bt.getX() + bt.getWidth()/2;
+                ce = be.getX() + be.getWidth()/2;
+            }
             double dc = ct - ce;
+            if (decorateEmphasis)
+                glyphBoxes.add(renderGlyphBoundingBox(parent, a, d, xLast, yLast, bt));
             if (sb.length() > 0)
                 sb.append(',');
-            sb.append(doubleFormatter.format(new Object[] {dxLast + dc}));
-            dxLast = advances[i] - advancesEmphasis[i] - dc;
+            if (vertical) {
+                sb.append(doubleFormatter.format(new Object[] {dxLast + dc}));
+                dxLast = advances[i] - advancesEmphasis[i] - dc;
+                yLast += advances[i];
+            } else {
+                sb.append(doubleFormatter.format(new Object[] {dyLast + dc}));
+                dyLast = advances[i] - advancesEmphasis[i] - dc;
+                xLast += advances[i];
+            }
         }
-        if (sb.length() > 0)
-            Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
-        if (position == Emphasis.Position.AFTER)
-            Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {fontEmphasis.getHeight() + fontEmphasis.getLeading()/2}));
-        else
-            Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {-font.getHeight()}));
+        double bpd = a.getBPD();
+        if (vertical) {
+            if (sb.length() > 0)
+                Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, sb.toString());
+            double xo = bpd / 2;
+            if (position == Emphasis.Position.AFTER)
+                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, doubleFormatter.format(new Object[] {-xo}));
+            else
+                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, doubleFormatter.format(new Object[] {+xo}));
+        } else {
+            if (sb.length() > 0)
+                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
+            if (position == Emphasis.Position.AFTER)
+                Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {-font.getHeight() + bpd + fontEmphasis.getAscent()}));
+            else
+                Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {-font.getHeight() - fontEmphasis.getLeading()/2}));
+        }
         Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontEmphasis.getHeight()}));
+        if (vertical)
+            Documents.setAttribute(e, SVGDocumentFrame.writingModeAttrName, "tb");
         e.appendChild(d.createTextNode(emphasis));
+        if (!glyphBoxes.isEmpty()) {
+            Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+            g.appendChild(e);
+            for (Element b : glyphBoxes)
+                g.appendChild(b);
+            return g;
+        } else
+            return e;
+    }
+
+    private Element renderGlyphBoundingBox(Element parent, GlyphArea a, Document d, double xLast, double yLast, Rectangle bounds) {
+        Element e = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+        double w = bounds.getWidth();
+        double h = bounds.getHeight();
+        double x, y;
+        if (a.isVertical()) {
+            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                x = xLast - w/2;
+            else
+                x = xLast + w/2;
+            y = yLast + h/2 - bounds.getY();
+        } else {
+            x = xLast + bounds.getX();;
+            y = yLast - h;
+        }
+        Documents.setAttribute(e, SVGDocumentFrame.fillAttrName, "none");
+        Documents.setAttribute(e, SVGDocumentFrame.strokeAttrName, decorationColor.toRGBString());
+        Documents.setAttribute(e, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Double[] {w}));
+        Documents.setAttribute(e, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Double[] {h}));
+        Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x}));
+        Documents.setAttribute(e, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y}));
         return e;
     }
 
