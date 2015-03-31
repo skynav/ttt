@@ -412,6 +412,10 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return (verifier = new TimedTextVerifier()).run(args, this);
     }
 
+    public TimedTextVerifier.Results getResults(String uri) {
+        return verifier.getResults(uri);
+    }
+
     public int getResultCode(String uri) {
         return verifier.getResultCode(uri);
     }
