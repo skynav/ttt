@@ -90,6 +90,7 @@ public class Constants {
     public static final Color defaultColor                              = Color.YELLOW;
     public static final BlockAlignment defaultDisplayAlign              = BlockAlignment.BEFORE;
     public static final Extent defaultExtent                            = Extent.EMPTY;
+    public static final Extent defaultExternalExtent                    = new Extent(1280, 720);
     public static final List<String> defaultFontFamilies                = FontKey.DEFAULT_FAMILIES;
     public static final Set<FontFeature> defaultFontFeatures            = FontKey.DEFAULT_FEATURES;
     public static final FontKerning defaultFontKerning                  = FontKerning.NORMAL;

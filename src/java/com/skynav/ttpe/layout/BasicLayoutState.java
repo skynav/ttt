@@ -215,7 +215,12 @@ public class BasicLayoutState implements LayoutState {
     }
 
     public Extent getExternalExtent() {
-        return new Extent(1280, 720);                           // [TBD] get from context
+        Object value = context.getExternalParameters().getParameter("externalExtent");
+        if (value instanceof double[]) {
+            double[] parsedExternalExtent = (double[]) value;
+            return new Extent(parsedExternalExtent[0], parsedExternalExtent[1]);
+        } else
+            return defaultExternalExtent;
     }
 
     public Point getExternalOrigin() {
