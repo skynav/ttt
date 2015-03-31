@@ -27,8 +27,25 @@ package com.skynav.ttpe.style;
 
 // alignment in bpd (block) axis
 public enum BlockAlignment {
-    BEFORE,
-    CENTER,
-    AFTER,
-    JUSTIFY;
+    BEFORE("before"),
+    CENTER("center"),
+    AFTER("after"),
+    JUSTIFY("justify"),
+    SPACE_AROUND("spaceAround"),
+    SPACE_BETWEEN("spaceBetween");
+    private final String value;
+    BlockAlignment(String v) {
+        value = v;
+    }
+    public String value() {
+        return value;
+    }
+    public static BlockAlignment fromValue(String v) {
+        for (BlockAlignment a: BlockAlignment.values()) {
+            if (a.value.equals(v)) {
+                return a;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
 }

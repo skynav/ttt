@@ -112,8 +112,8 @@ public class BasicLayoutState implements LayoutState {
         return push(new ViewportArea(e, width, height, clip));
     }
 
-    public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, BlockAlignment alignment) {
-        return push(new ReferenceArea(e, x, y, width, height, wm, ctm, alignment));
+    public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
+        return push(new ReferenceArea(e, x, y, width, height, wm, ctm));
     }
 
     public NonLeafAreaNode pushBlock(Element e) {
@@ -212,6 +212,10 @@ public class BasicLayoutState implements LayoutState {
 
     public Extent getReferenceExtent() {
         return getReferenceArea().getExtent();
+    }
+
+    public BlockAlignment getReferenceAlignment() {
+        return getDisplayAlign(getReferenceArea().getElement());
     }
 
     public Extent getExternalExtent() {
@@ -387,8 +391,11 @@ public class BasicLayoutState implements LayoutState {
         for (AreaNode c : a.getChildren()) {
             if (dimension == Dimension.IPD)
                 consumed += c.getIPD();
-            else if (dimension == Dimension.BPD)
+            else if (dimension == Dimension.BPD) {
                 consumed += c.getBPD();
+                if (c instanceof LineArea)
+                    consumed += ((LineArea) c).getAnnotationBPD();
+            }
         }
         return consumed;
     }

@@ -42,6 +42,7 @@ public abstract class NonLeafAreaNode extends AreaNode {
     public static final Set<Expansion> ENCLOSE_ALL;
     public static final Set<Expansion> EXPAND_ALL;
     public static final Set<Expansion> EXPAND_IPD;
+    public static final Set<Expansion> EXPAND_BPD;
     static {
         ENCLOSE_ALL = new java.util.HashSet<Expansion>();
         ENCLOSE_ALL.add(Expansion.ENCLOSE_IPD);
@@ -51,6 +52,8 @@ public abstract class NonLeafAreaNode extends AreaNode {
         EXPAND_ALL.add(Expansion.EXPAND_BPD);
         EXPAND_IPD = new java.util.HashSet<Expansion>();
         EXPAND_IPD.add(Expansion.EXPAND_IPD);
+        EXPAND_BPD = new java.util.HashSet<Expansion>();
+        EXPAND_BPD.add(Expansion.EXPAND_BPD);
     }
 
     private List<AreaNode> children;
@@ -123,6 +126,10 @@ public abstract class NonLeafAreaNode extends AreaNode {
         if (children == null)
             children = new java.util.ArrayList<AreaNode>();
         return children;
+    }
+
+    public int getChildCount() {
+        return (children != null) ? children.size() : 0;
     }
 
 }

@@ -30,13 +30,12 @@ import java.util.Set;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
-import com.skynav.ttpe.style.BlockAlignment;
 
-public class BlockArea extends NonLeafAreaNode {
+public class BlockArea extends NonLeafAreaNode implements Block {
 
     private double bpd;
     private double ipd;
-    private BlockAlignment blockAlignment;
+    private double overflow;
 
     public BlockArea() {
         this(null);
@@ -60,14 +59,6 @@ public class BlockArea extends NonLeafAreaNode {
         this.bpd = bpd;
     }
 
-    public void setBlockAlignment(BlockAlignment alignment) {
-        this.blockAlignment = alignment;
-    }
-
-    public BlockAlignment getBlockAlignment() {
-        return blockAlignment;
-    }
-
     public int getLineCount() {
         int numLines = 0;
         for (AreaNode a : getChildren()) {
@@ -75,6 +66,14 @@ public class BlockArea extends NonLeafAreaNode {
                 ++numLines;
         }
         return numLines;
+    }
+
+    public void setOverflow(double overflow) {
+        this.overflow = overflow;
+    }
+
+    public double getOverflow() {
+        return overflow;
     }
 
     @Override

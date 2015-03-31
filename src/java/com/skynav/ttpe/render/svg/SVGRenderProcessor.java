@@ -42,6 +42,7 @@ import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.area.Inline;
 import com.skynav.ttpe.area.BlockArea;
+import com.skynav.ttpe.area.BlockFillerArea;
 import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.InlineFillerArea;
 import com.skynav.ttpe.area.LineArea;
@@ -62,7 +63,6 @@ import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.AnnotationPosition;
-import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Emphasis;
@@ -113,6 +113,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     // options state
     private String backgroundOption;
     private boolean decorateEmphasis;
+    @SuppressWarnings("unused")
     private boolean decorateGlyphs;
     private boolean decorateLines;
     private boolean decorateRegions;
@@ -188,7 +189,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     public void processDerivedOptions() {
         super.processDerivedOptions();
         // backgroundColor
-        Color background;
+        Color backgroundColor;
         if (backgroundOption != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
             if (Colors.isColor(backgroundOption, null, context, retColor)) {
@@ -304,22 +305,24 @@ public class SVGRenderProcessor extends RenderProcessor {
                 if (wm.getDirection(Dimension.IPD) == RL)
                     xCurrent += extent.getWidth();
             }
-            BlockAlignment align = a.getBlockAlignment();
-            if (align != null) {
+            /*
+            BlockAlignment alignment = a.getBlockAlignment();
+            if (alignment != null) {
                 double available = a.getBPD();
                 double consumed = computeChildrenBPD(a);
                 double free = available - consumed;
                 double adjust = 0;
                 if (free < 0)
                     free = 0;
-                if (align == BlockAlignment.BEFORE) {
-                    // no-op
-                } else if (align == BlockAlignment.AFTER) {
+                if (alignment == BlockAlignment.BEFORE) {
+                    adjust = 0;
+                } else if (alignment == BlockAlignment.AFTER) {
                     adjust = free;
-                } else if (align == BlockAlignment.CENTER) {
+                } else if (alignment == BlockAlignment.CENTER) {
                     adjust = free / 2;
-                } else if (align == BlockAlignment.JUSTIFY) {
-                    // [TBD] - IMPLEMENT ME
+                } else if (alignment == BlockAlignment.JUSTIFY) {
+                    int nc = a.getChildCount();
+                    adjust = free / (a.getChildCount() - 1);
                 }
                 if (adjust > 0) {
                     if (wm.isVertical()) {
@@ -331,6 +334,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                     }
                 }
             }
+            */
             if (decorateRegions) {
                 Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
@@ -388,6 +392,17 @@ public class SVGRenderProcessor extends RenderProcessor {
             lineGenerationIndex = 0;
         }
         return eBlockGroup;
+    }
+
+    private Element renderFiller(Element parent, BlockFillerArea a, Document d) {
+        double bpd = a.getBPD();
+        if (a.isVertical()) {
+            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                bpd = -bpd;
+            xCurrent += bpd;
+        } else
+            yCurrent += bpd;
+        return null;
     }
 
     private Element renderAnnotation(Element parent, AnnotationArea a, Document d) {
@@ -866,22 +881,27 @@ public class SVGRenderProcessor extends RenderProcessor {
             return renderReference(parent, (ReferenceArea) a, d);
         else if (a instanceof ViewportArea)
             return renderViewport(parent, (ViewportArea) a, d);
+        else if (a instanceof BlockFillerArea)
+            return renderFiller(parent, (BlockFillerArea) a, d);
         else if (a instanceof BlockArea)
             return renderBlock(parent, (BlockArea) a, d);
         else
             throw new IllegalArgumentException();
     }
 
+    /*
     private double computeChildrenBPD(Area a) {
         double bpd = 0;
         if (a instanceof NonLeafAreaNode) {
             for (Area c : ((NonLeafAreaNode) a).getChildren()) {
-                if (c instanceof BlockArea) {
+                if (c instanceof BlockArea)
                     bpd += ((BlockArea) c).getBPD();
-                }
+                if (c instanceof LineArea)
+                    bpd += ((LineArea) c).getAnnotationBPD();
             }
         }
         return bpd;
     }
+    */
 
 }

@@ -36,7 +36,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.area.Area;
+import com.skynav.ttpe.area.AreaNode;
+import com.skynav.ttpe.area.BlockArea;
+import com.skynav.ttpe.area.BlockFillerArea;
 import com.skynav.ttpe.area.LineArea;
+import com.skynav.ttpe.area.ReferenceArea;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
@@ -236,7 +240,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             ls.pushViewport(e, w, h, clip);
             WritingMode wm = ls.getExternalWritingMode();
             TransformMatrix ctm = ls.getExternalTransform();
-            ls.pushReference(e, 0, 0, w, h, wm, ctm, null);
+            ls.pushReference(e, 0, 0, w, h, wm, ctm);
             for (Element c : getChildElements(e)) {
                 if (isElement(c, isdRegionElementName))
                     layoutRegion(c, ls);
@@ -263,11 +267,14 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         WritingMode wm = ls.getWritingMode(e);
         TransformMatrix ctm = ls.getTransform(e);
         BlockAlignment alignment = ls.getDisplayAlign(e);
-        ls.pushReference(e, x, y, w, h, wm, ctm, alignment);
+        ls.pushReference(e, x, y, w, h, wm, ctm);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttBodyElementName))
                 layoutBody(c, ls);
         }
+        AreaNode r = ls.peek();
+        if (r instanceof ReferenceArea)
+            alignBlockAreas((ReferenceArea) r, ls.getReferenceAlignment());
         ls.pop();
         ls.pop();
     }
@@ -312,6 +319,9 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         for (LineArea l : new ParagraphLayout(p, ls).layout()) {
             ls.addLine(l);
         }
+        AreaNode b = ls.peek();
+        if (b instanceof BlockArea)
+            alignLineAreas((BlockArea) b, ls);
         ls.pop();
     }
 
@@ -321,6 +331,95 @@ public class BasicLayoutProcessor extends LayoutProcessor {
 
     protected static boolean isElement(Element e, QName qn) {
         return Documents.isElement(e, qn);
+    }
+
+    private void alignBlockAreas(ReferenceArea r, BlockAlignment alignment) {
+        double measure = r.isVertical() ? r.getWidth() : r.getHeight();
+        double consumed = 0;
+        int numChildren = 0;
+        for (AreaNode c : r.getChildren()) {
+            consumed += c.getBPD();
+            ++numChildren;
+        }
+        double available = measure - consumed;
+        if (available > 0) {
+            if (alignment == BlockAlignment.BEFORE) {
+                AreaNode a = new BlockFillerArea(r.getElement(), 0, available);
+                r.addChild(a, null);
+            } else if (alignment == BlockAlignment.AFTER) {
+                AreaNode a = new BlockFillerArea(r.getElement(), 0, available);
+                r.insertChild(a, r.firstChild(), null);
+            } else if (alignment == BlockAlignment.CENTER) {
+                double half = available / 2;
+                AreaNode a1 = new BlockFillerArea(r.getElement(), 0, half);
+                AreaNode a2 = new BlockFillerArea(r.getElement(), 0, half);
+                r.insertChild(a1, r.firstChild(), null);
+                r.insertChild(a2, null, null);
+            } else {
+                // no-op
+            }
+        } else if (available < 0) {
+            r.setOverflow(-available);
+        }
+    }
+
+    private void alignLineAreas(BlockArea b, LayoutState ls) {
+        BlockAlignment alignment = ls.getReferenceAlignment();
+        ReferenceArea r = ls.getReferenceArea();
+        double measure = r.isVertical() ? r.getWidth() : r.getHeight();
+        double consumed = 0;
+        int numChildren = 0;
+        for (AreaNode c : b.getChildren()) {
+            consumed += c.getBPD();
+            ++numChildren;
+        }
+        double available = measure - consumed;
+        if (available > 0) {
+            if (alignment == BlockAlignment.BEFORE) {
+                // no-op
+            } else if (alignment == BlockAlignment.AFTER) {
+                // no-op
+            } else if (alignment == BlockAlignment.CENTER) {
+                // no-op
+            } else {
+                b = justifyLineAreas(b, measure, consumed, numChildren, alignment);
+            }
+        } else if (available < 0) {
+            b.setOverflow(-available);
+        }
+    }
+
+    private BlockArea justifyLineAreas(BlockArea b, double measure, double consumed, int numChildren, BlockAlignment alignment) {
+        double available = measure - consumed;
+        if (alignment == BlockAlignment.JUSTIFY)
+            alignment = BlockAlignment.SPACE_BETWEEN;
+        int numFillers;
+        if (alignment == BlockAlignment.SPACE_AROUND) {
+            numFillers = numChildren + 1;
+        } else if (alignment == BlockAlignment.SPACE_BETWEEN) {
+            numFillers = numChildren - 1;
+        } else
+            numFillers = 0;
+        double fill;
+        if (numFillers > 0)
+            fill = available / numFillers;
+        else
+            fill = 0;
+        if (fill > 0) {
+            List<AreaNode> children = new java.util.ArrayList<AreaNode>(b.getChildren());
+            for (AreaNode c : children) {
+                AreaNode f = new BlockFillerArea(b.getElement(), 0, fill);
+                if ((c == children.get(0)) && (alignment == BlockAlignment.SPACE_BETWEEN))
+                    continue;
+                else
+                    b.insertChild(f, c, null);
+            }
+            if (alignment == BlockAlignment.SPACE_AROUND) {
+                AreaNode f = new BlockFillerArea(b.getElement(), 0, fill);
+                b.insertChild(f, null, null);
+            }
+        }
+        return b;
     }
 
 }

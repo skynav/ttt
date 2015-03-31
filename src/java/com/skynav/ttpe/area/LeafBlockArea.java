@@ -28,53 +28,33 @@ package com.skynav.ttpe.area;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
-import com.skynav.ttpe.geometry.TransformMatrix;
-import com.skynav.ttpe.geometry.WritingMode;
 
-public class ReferenceArea extends PositionedBlockArea {
+public class LeafBlockArea extends LeafAreaNode implements Block {
 
-    private WritingMode wm;
-    private TransformMatrix ctm;
-    private double overflow;
+    private double bpd;
+    private double ipd;
 
-    public ReferenceArea(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
-        super(e, x, y, width, height);
-        assert wm != null;
-        this.wm = wm;
-        assert ctm != null;
-        this.ctm = ctm;
+    public LeafBlockArea(Element e) {
+        this(e, 0, 0);
     }
 
-    @Override
-    public ViewportArea getParent() {
-        return (ViewportArea) super.getParent();
+    public LeafBlockArea(Element e, double ipd, double bpd) {
+        super(e);
+        this.ipd = ipd;
+        this.bpd = bpd;
+    }
+
+    public void setIPD(double ipd) {
+        this.ipd = ipd;
+    }
+
+    public void setBPD(double bpd) {
+        this.bpd = bpd;
     }
 
     @Override
     public double getAvailable(Dimension dimension) {
-        WritingMode wm = this.wm;
-        if (wm == null)
-            wm = WritingMode.LRTB;
-        if (wm.isHorizontal())
-            return (dimension == Dimension.IPD) ? getWidth() : getHeight();
-        else
-            return (dimension == Dimension.IPD) ? getHeight() : getWidth();
-    }
-
-    public WritingMode getWritingMode() {
-        return wm;
-    }
-
-    public TransformMatrix getCTM() {
-        return ctm;
-    }
-
-    public void setOverflow(double overflow) {
-        this.overflow = overflow;
-    }
-
-    public double getOverflow() {
-        return overflow;
+        return (dimension == Dimension.IPD) ? ipd : bpd;
     }
 
 }

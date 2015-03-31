@@ -40,7 +40,6 @@ public class LineArea extends BlockArea {
     private Color color;
     private Font font;
     private int lineNumber;                     // 1 is first line of containing area
-    private double overflow;
     private double bpdAnnotationBefore;
     private double bpdAnnotationAfter;
 
@@ -133,12 +132,8 @@ public class LineArea extends BlockArea {
         return font.getDescent();
     }
 
-    public void setOverflow(double overflow) {
-        this.overflow = overflow;
-    }
-
-    public double getOverflow() {
-        return overflow;
+    public double getAnnotationBPD() {
+        return getAnnotationBPD(AnnotationPosition.BEFORE) + getAnnotationBPD(AnnotationPosition.AFTER);
     }
 
     public double getAnnotationBPD(AnnotationPosition position) {

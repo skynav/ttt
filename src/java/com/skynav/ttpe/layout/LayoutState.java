@@ -55,7 +55,7 @@ public interface LayoutState {
     // area stack
     NonLeafAreaNode pushCanvas(Element e, double begin, double end);
     NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
-    NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, BlockAlignment alignment);
+    NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm);
     NonLeafAreaNode pushBlock(Element e);
     NonLeafAreaNode push(NonLeafAreaNode a);
     NonLeafAreaNode addLine(LineArea l);
@@ -69,6 +69,7 @@ public interface LayoutState {
     Font getFont();
     double getAvailable(Dimension dimension);
     Extent getReferenceExtent();
+    BlockAlignment getReferenceAlignment();
     // external supplied styles
     Extent getExternalExtent();
     Point getExternalOrigin();
