@@ -393,11 +393,14 @@ public class LineLayout {
 
     private void alignTextAreas(LineArea l, double measure, InlineAlignment alignment) {
         double consumed = 0;
+        int numNonAnnotationChildren = 0;
         for (AreaNode c : l.getChildren()) {
             if (c instanceof AnnotationArea)
                 continue;
-            else
+            else {
                 consumed += c.getIPD();
+                ++numNonAnnotationChildren;
+            }
         }
         double available = measure - consumed;
         if (available > 0) {
@@ -414,14 +417,43 @@ public class LineLayout {
                 l.insertChild(a1, l.firstChild(), LineArea.EXPAND_IPD);
                 l.insertChild(a2, null, LineArea.EXPAND_IPD);
             } else {
-                l = justifyTextAreas(l, measure, alignment);
+                l = justifyTextAreas(l, measure, consumed, numNonAnnotationChildren, alignment);
             }
         } else if (available < 0) {
             l.setOverflow(-available);
         }
     }
 
-    private LineArea justifyTextAreas(LineArea l, double measure, InlineAlignment alignment) {
+    private LineArea justifyTextAreas(LineArea l, double measure, double consumed, int numNonAnnotationChildren, InlineAlignment alignment) {
+        double available = measure - consumed;
+        if (alignment == InlineAlignment.JUSTIFY)
+            alignment = InlineAlignment.SPACE_BETWEEN;
+        int numFillers;
+        if (alignment == InlineAlignment.SPACE_AROUND) {
+            numFillers = numNonAnnotationChildren + 1;
+        } else if (alignment == InlineAlignment.SPACE_BETWEEN) {
+            numFillers = numNonAnnotationChildren - 1;
+        } else
+            numFillers = 0;
+        double fill;
+        if (numFillers > 0)
+            fill = available / numFillers;
+        else
+            fill = 0;
+        if (fill > 0) {
+            List<AreaNode> children = new java.util.ArrayList<AreaNode>(l.getChildren());
+            for (AreaNode c : children) {
+                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0);
+                if ((c == children.get(0)) && (alignment == InlineAlignment.SPACE_BETWEEN))
+                    continue;
+                else
+                    l.insertChild(f, c, LineArea.EXPAND_IPD);
+            }
+            if (alignment == InlineAlignment.SPACE_AROUND) {
+                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0);
+                l.insertChild(f, null, LineArea.EXPAND_IPD);
+            }
+        }
         return l;
     }
 

@@ -32,6 +32,7 @@ public enum InlineAlignment {
     RIGHT("right"),
     START("start"),
     END("end"),
+    JUSTIFY("justify"),
     SPACE_AROUND("spaceAround"),
     SPACE_BETWEEN("spaceBetween");
     private final String value;
