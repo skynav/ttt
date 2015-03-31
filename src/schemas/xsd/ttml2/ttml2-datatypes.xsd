@@ -118,6 +118,7 @@
       <xs:enumeration value="before"/>
       <xs:enumeration value="center"/>
       <xs:enumeration value="after"/>
+      <xs:enumeration value="justify"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="dropMode">
@@ -561,6 +562,7 @@
       <xs:enumeration value="right"/>
       <xs:enumeration value="start"/>
       <xs:enumeration value="end"/>
+      <xs:enumeration value="justify"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="textCombine">
