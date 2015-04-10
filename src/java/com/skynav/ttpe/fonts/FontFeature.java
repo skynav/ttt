@@ -28,27 +28,35 @@ package com.skynav.ttpe.fonts;
 import com.skynav.ttv.model.value.FontVariant;
 
 public class FontFeature {
+
     private final String feature;
     private final Object[] arguments;
+
     public FontFeature(String feature) {
         this(feature, null);
     }
+
     public FontFeature(String feature, Object[] arguments) {
+        assert (feature != null) && !feature.isEmpty();
         this.feature = feature;
         this.arguments = arguments;
     }
+
     public String getFeature() {
         return feature;
     }
+
     public Object[] getArguments() {
         return arguments;
     }
+
     public Object getArgument(int index) {
         if ((arguments != null) && (arguments.length > index))
             return arguments[index];
         else
             return null;
     }
+
     public static FontFeature fromVariant(FontVariant variant) {
         String feature;
         if (variant == FontVariant.SUPER)
@@ -65,4 +73,66 @@ public class FontFeature {
             feature = null;
         return (feature != null) ? new FontFeature(feature) : null;
     }
+
+    @Override
+    public int hashCode() {
+        int hc = 23;
+        hc = hc * 31 + feature.hashCode();
+        hc = hc * 31 + hashCode(arguments);
+        return hc;
+    }
+
+    private int hashCode(Object[] arguments) {
+        int hc = 23;
+        if (arguments != null) {
+            for (int i = 0, n = arguments.length; i < n; ++i) {
+                Object a = arguments[i];
+                if (a != null)
+                    hc = hc * 31 + a.hashCode();
+            }
+        }
+        return hc;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof FontFeature) {
+            FontFeature other = (FontFeature) o;
+            if (!feature.equals(other.feature))
+                return false;
+            else if (!equals(arguments, other.arguments))
+                return false;
+            else
+                return true;
+        } else
+            return false;
+    }
+
+    private boolean equals(Object[] aa1, Object[] aa2) {
+        if ((aa1 == null) && (aa2 == null))
+            return true;
+        else if ((aa1 == null) && (aa2 != null))
+            return false;
+        else if ((aa1 != null) && (aa2 == null))
+            return false;
+        else if (aa1.length != aa2.length)
+            return false;
+        else {
+            assert aa1.length == aa2.length;
+            for (int i = 0, n = aa1.length; i < n; ++i) {
+                Object a1 = aa1[i];
+                Object a2 = aa2[i];
+                if ((a1 == null) && (a2 == null))
+                    continue;
+                else if ((a1 == null) && (a2 != null))
+                    return false;
+                else if ((a1 != null) && (a2 == null))
+                    return false;
+                else if (!a1.equals(a2))
+                    return false;
+            }
+            return true;
+        }
+    }
+
 }

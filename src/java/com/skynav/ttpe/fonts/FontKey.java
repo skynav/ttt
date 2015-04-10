@@ -97,7 +97,10 @@ public class FontKey {
         sb.append(',');
         sb.append(axis);
         sb.append(',');
-        sb.append(features.values());
+        if (features != null)
+            sb.append(features.values());
+        else
+            sb.append("[]");
         sb.append(']');
         return sb.toString();
     }
@@ -107,11 +110,44 @@ public class FontKey {
     }
 
     public Collection<FontFeature> getFeatures() {
-        return features.values();
+        return (features != null) ? features.values() : null;
     }
 
     public FontFeature getFeature(String feature) {
-        return features.get(feature);
+        return (features != null) ? features.get(feature) : null;
+    }
+
+    public boolean isKerningEnabled() {
+        FontFeature f = getFeature("kern");
+        if (f != null) {
+            Object arg = f.getArgument(0);
+            if ((arg instanceof FontKerning) && (arg == FontKerning.NONE))
+                return false;
+        }
+        return true;
+    }
+
+    public boolean isSheared() {
+        FontFeature f = getFeature("oblq");
+        if (f != null) {
+            Object arg = f.getArgument(0);
+            if (arg instanceof Double) {
+                double shear = (Double) arg;
+                if (shear != 0)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public double getShear() {
+        FontFeature f = getFeature("oblq");
+        if (f != null) {
+            Object arg = f.getArgument(0);
+            if (arg instanceof Double)
+                return (Double) arg;
+        }
+        return 0;
     }
 
     @Override
@@ -123,7 +159,16 @@ public class FontKey {
         hc = hc * 31 + language.hashCode();
         hc = hc * 31 + axis.hashCode();
         hc = hc * 31 + size.hashCode();
-        hc = hc * 31 + features.values().hashCode();
+        hc = hc * 31 + hashCode(features);
+        return hc;
+    }
+
+    private int hashCode(Map<String,FontFeature> features) {
+        int hc = 23;
+        if (features != null) {
+            for (FontFeature f : features.values())
+                hc = hc * 31 + f.hashCode();
+        }
         return hc;
     }
 
@@ -143,7 +188,7 @@ public class FontKey {
                 return false;
             else if (!size.equals(other.size))
                 return false;
-            else if (!features.values().equals(other.features.values()))
+            else if (!equals(features, other.features))
                 return false;
             else
                 return true;
@@ -151,10 +196,41 @@ public class FontKey {
             return false;
     }
 
+    private boolean equals(Map<String,FontFeature> fm1, Map<String,FontFeature> fm2) {
+        if ((fm1 == null) && (fm2 == null))
+            return true;
+        else if ((fm1 == null) && (fm2 != null))
+            return false;
+        else if ((fm1 != null) && (fm2 == null))
+            return false;
+        else if (fm1.size() != fm2.size())
+            return false;
+        else {
+            assert fm1 instanceof java.util.SortedMap;
+            FontFeature[] fa1 = fm1.values().toArray(new FontFeature[fm1.size()]);
+            assert fm2 instanceof java.util.SortedMap;
+            FontFeature[] fa2 = fm2.values().toArray(new FontFeature[fm2.size()]);
+            assert fa1.length == fa2.length;
+            for (int i = 0, n = fa1.length; i < n; ++i) {
+                FontFeature f1 = fa1[i];
+                assert f1 != null;
+                FontFeature f2 = fa2[i];
+                assert f2 != null;
+                if (!f1.equals(f2))
+                    return false;
+            }
+            return true;
+        }
+    }
+
     private void populateFeatures(Collection<FontFeature> features) {
-        Map<String,FontFeature> m = new java.util.HashMap<String,FontFeature>();
-        for (FontFeature f : features)
-            m.put(f.getFeature(), f);
+        Map<String,FontFeature> m;
+        if ((features != null) && !features.isEmpty()) {
+            m = new java.util.TreeMap<String,FontFeature>();
+            for (FontFeature f : features)
+                m.put(f.getFeature(), f);
+        } else
+            m = null;
         this.features = m;
     }
 

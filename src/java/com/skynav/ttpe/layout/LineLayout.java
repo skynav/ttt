@@ -27,6 +27,7 @@ package com.skynav.ttpe.layout;
 
 import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -810,11 +811,14 @@ public class LineLayout {
             return sb.toString();
         }
         private String processFeatures(String t, Font font) {
-            for (FontFeature feature : font.getFeatures()) {
-                if (feature.getFeature().equals("hwid"))
-                    t = processHalfWidth(t);
-                else if (feature.getFeature().equals("fwid"))
-                    t = processFullWidth(t);
+            Collection<FontFeature> features = font.getFeatures();
+            if (features != null) {
+                for (FontFeature feature : features) {
+                    if (feature.getFeature().equals("hwid"))
+                        t = processHalfWidth(t);
+                    else if (feature.getFeature().equals("fwid"))
+                        t = processFullWidth(t);
+                }
             }
             return t;
         }

@@ -42,6 +42,7 @@ public class FontCache {
     private boolean loaded;
     private List<FontSpecification> fontSpecifications;
     private Map<FontKey,Font> instances;
+    private Map<String,FontState> loadedState;
     private Reporter reporter;
 
     public FontCache(File fontSpecificationDirectory, List<File> fontSpecificationFiles, Reporter reporter) {
@@ -63,6 +64,41 @@ public class FontCache {
         if (fs != null)
             return get(new FontKey(fs.family, fs.style, fs.weight, fs.language, axis, size, features));
         return null;
+    }
+
+    public Font get(FontKey key) {
+        Font f = instances.get(key);
+        if (f == null)
+            put(f = create(key));
+        return f;
+    }
+
+    public Font getScaledFont(Font font, double scale) {
+        return get(font.getKey().getScaled(scale));
+    }
+
+    public void put(Font f) {
+        instances.put(f.getKey(), f);
+    }
+
+    public FontCache maybeLoad() {
+        if (!loaded)
+            load();
+        return this;
+    }
+
+    public void clear() {
+        instances.clear();
+        loadedState.clear();
+    }
+
+    public FontState getLoadedState(String source, Reporter reporter) {
+        FontState fs;
+        if (loadedState == null)
+            loadedState = new java.util.HashMap<String,FontState>();
+        if ((fs = loadedState.get(source)) == null)
+            fs = createLoadedState(source, reporter);
+        return fs;
     }
 
     private FontSpecification findExactMatch(List<String> families, FontStyle style, FontWeight weight, String language) {
@@ -122,17 +158,6 @@ public class FontCache {
         return getDefaultFont(axis, size).getSpecification();
     }
 
-    public Font get(FontKey key) {
-        Font f = instances.get(key);
-        if (f == null)
-            put(f = create(key));
-        return f;
-    }
-
-    public Font getScaledFont(Font font, double scale) {
-        return get(font.getKey().getScaled(scale));
-    }
-
     private Font create(FontKey key) {
         FontSpecification fs = findSpecification(key);
         if (fs != null)
@@ -147,20 +172,6 @@ public class FontCache {
                 return fs;
         }
         return null;
-    }
-
-    public void put(Font f) {
-        instances.put(f.getKey(), f);
-    }
-
-    public FontCache maybeLoad() {
-        if (!loaded)
-            load();
-        return this;
-    }
-
-    public void clear() {
-        instances.clear();
     }
 
     private void load() {
@@ -188,6 +199,14 @@ public class FontCache {
         assert f != null;
         String n = f.getName();
         return (n != null) && n.endsWith(".xml");
+    }
+
+    public FontState createLoadedState(String source, Reporter reporter) {
+        FontState fs = new FontState(source, reporter);
+        assert loadedState != null;
+        assert !loadedState.containsKey(source);
+        loadedState.put(source, fs);
+        return fs;
     }
 
 }
