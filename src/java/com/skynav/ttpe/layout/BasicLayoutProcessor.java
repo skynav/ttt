@@ -266,7 +266,6 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         ls.pushViewport(e, w, h, clip);
         WritingMode wm = ls.getWritingMode(e);
         TransformMatrix ctm = ls.getTransform(e);
-        BlockAlignment alignment = ls.getDisplayAlign(e);
         ls.pushReference(e, x, y, w, h, wm, ctm);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttBodyElementName))
@@ -336,10 +335,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private void alignBlockAreas(ReferenceArea r, BlockAlignment alignment) {
         double measure = r.isVertical() ? r.getWidth() : r.getHeight();
         double consumed = 0;
-        int numChildren = 0;
         for (AreaNode c : r.getChildren()) {
             consumed += c.getBPD();
-            ++numChildren;
         }
         double available = measure - consumed;
         if (available > 0) {

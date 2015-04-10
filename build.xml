@@ -75,7 +75,7 @@
 <property name="icu.jar" value="${ext.lib.dir}/icu4j-54_1_1.jar"/>
 <property name="fontbox.jar" value="${ext.lib.dir}/fontbox-2.0.0-SNAPSHOT.jar"/>
 <property name="commons.logging.jar" value="${ext.lib.dir}/commons-logging-1.0.4.jar"/>
-<property name="batik.jar" value="${ext.lib.dir}/batik-all-1.8pre.jar"/>
+<property name="batik.jar" value="${ext.lib.dir}/batik-all-svn-trunk.jar"/>
 <property name="xml-apis-ext.jar" value="${ext.lib.dir}/xml-apis-ext.jar"/>
 <property name="xmlgraphics-commons.jar" value="${ext.lib.dir}/xmlgraphics-commons-svn-trunk.jar"/>
 
@@ -420,12 +420,9 @@
       <arg value="--output-indent"/>
       <arg value="--output-retain-frames"/>
       <arg value="--output-format"/>
-      <arg value="svg"/>
-      <arg value="--svg-background"/>
+      <arg value="png"/>
+      <arg value="--png-background"/>
       <arg value="black"/>
-      <arg value="--svg-decorate-all"/>
-      <arg value="--svg-decoration"/>
-      <arg value="white"/>
       <arg value="@{sample}"/>
     </java>
   </sequential>
