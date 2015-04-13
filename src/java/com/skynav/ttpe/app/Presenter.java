@@ -95,6 +95,8 @@ public class Presenter extends TimedTextTransformer {
             shortOptions.add(new OptionSpecification(spec[0], spec[1]));
         }
     }
+    private static final String usageCommand =
+        "java -jar ttpe.jar [options] URL*";
 
     private static final String DEFAULT_OUTPUT_ENCODING         = "utf-8";
     private static Charset defaultOutputEncoding;
@@ -178,9 +180,9 @@ public class Presenter extends TimedTextTransformer {
         this.defaultRenderer = RenderProcessor.getDefaultProcessor(this);
     }
 
-    protected String getOutputPattern() {
-        return outputPattern;
-    }
+    public String getShowUsageCommand() {
+        return usageCommand;
+    } 
 
     @Override
     public void processResult(String[] args, URI uri, Object root) {
