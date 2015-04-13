@@ -121,6 +121,7 @@ public class Presenter extends TimedTextTransformer {
         { "output-pattern-isd",         "PATTERN",  "specify output ISD file name pattern" },
         { "output-retain-frames",       "",         "retain individual frame files after archiving" },
         { "output-retain-isd",          "",         "retain ISD documents" },
+        { "output-retain-manifest",     "",         "retain manifest document" },
         { "show-formats",               "",         "show output formats" },
         { "show-layouts",               "",         "show built-in layouts" },
         { "show-memory",                "",         "show memory statistics" },
@@ -153,6 +154,7 @@ public class Presenter extends TimedTextTransformer {
     private String outputPatternISD;
     private boolean outputRetainFrames;
     private boolean outputRetainISD;
+    private boolean outputRetainManifest;
     private boolean showLayouts;
     private boolean showRenderers;
     private boolean showMemory;
@@ -295,6 +297,8 @@ public class Presenter extends TimedTextTransformer {
             outputRetainFrames = true;
         } else if (option.equals("output-retain-isd")) {
             outputRetainISD = true;
+        } else if (option.equals("output-retain-manifest")) {
+            outputRetainManifest = true;
         } else if (option.equals("show-formats")) {
             showRenderers = true;
         } else if (option.equals("show-layouts")) {
@@ -454,6 +458,8 @@ public class Presenter extends TimedTextTransformer {
         }
         if (outputArchive)
             archiveFrames(uri, frames, outputArchiveFile);
+        if (outputRetainManifest)
+            writeManifest(uri, frames);
         if (outputArchive && !outputRetainFrames)
             removeFrameFiles(frames);
         if (showMemory) {
@@ -781,6 +787,41 @@ public class Presenter extends TimedTextTransformer {
             if (retArchiveFile != null)
                 retArchiveFile[0] = archiveFile;
             return new BufferedOutputStream(new FileOutputStream(archiveFile));
+        } else
+            return null;
+    }
+
+    private void writeManifest(URI uri, List<Frame> frames) {
+        Reporter reporter = getReporter();
+        BufferedOutputStream bos = null;
+        try {
+            Manifest manifest = new Manifest();
+            File[] retOutputFile = new File[1];
+            if ((bos = getManifestOutputStream(uri, manifest, retOutputFile)) != null) {
+                File outputFile = retOutputFile[0];
+                manifest.write(bos, frames, renderer.getName(), outputEncoding, outputIndent, this);
+                bos.close(); bos = null;
+                reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+            }
+        } catch (Exception e) {
+            reporter.logError(e);
+        } finally {
+            IOUtil.closeSafely(bos);
+        }
+    }
+
+    private BufferedOutputStream getManifestOutputStream(URI uri, Manifest manifest, File[] retOutputFile) throws IOException {
+        String resourceName = getResourceNameComponent(uri);
+        File d = new File(outputDirectory, resourceName);
+        if (!d.exists())
+            d.mkdir();
+        if (d.exists()) {
+            String outputFileName = manifest.getName();
+            File outputFile = new File(d, outputFileName).getCanonicalFile();
+            if (retOutputFile != null)
+                retOutputFile[0] = outputFile;
+            return new BufferedOutputStream(new FileOutputStream(outputFile));
+            
         } else
             return null;
     }

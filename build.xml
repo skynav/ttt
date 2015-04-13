@@ -420,6 +420,7 @@
       <arg value="--output-indent"/>
       <arg value="--output-retain-frames"/>
       <arg value="--output-retain-isd"/>
+      <arg value="--output-retain-manifest"/>
       <arg value="--output-format"/>
       <arg value="svg"/>
       <arg value="--svg-background"/>
