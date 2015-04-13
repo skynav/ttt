@@ -98,7 +98,8 @@ public class Presenter extends TimedTextTransformer {
 
     private static final String DEFAULT_OUTPUT_ENCODING         = "utf-8";
     private static Charset defaultOutputEncoding;
-    private static final String defaultOutputFileNamePattern    = "ttpe-{0,number,0000}.dat";
+    private static final String defaultOutputFileNamePattern    = "ttpe{0,number,000000}.dat";
+    private static final String defaultOutputFileNamePatternISD = "isdi{0,number,000000}.xml";
 
     static {
         try {
@@ -117,7 +118,9 @@ public class Presenter extends TimedTextTransformer {
         { "output-format",              "NAME",     "specify output format name (default: " + RenderProcessor.getDefaultName() + ")" },
         { "output-indent",              "",         "indent output (default: no indent)" },
         { "output-pattern",             "PATTERN",  "specify output file name pattern" },
+        { "output-pattern-isd",         "PATTERN",  "specify output ISD file name pattern" },
         { "output-retain-frames",       "",         "retain individual frame files after archiving" },
+        { "output-retain-isd",          "",         "retain ISD documents" },
         { "show-formats",               "",         "show output formats" },
         { "show-layouts",               "",         "show built-in layouts" },
         { "show-memory",                "",         "show memory statistics" },
@@ -147,7 +150,9 @@ public class Presenter extends TimedTextTransformer {
     private String outputEncodingName;
     private boolean outputIndent;
     private String outputPattern;
+    private String outputPatternISD;
     private boolean outputRetainFrames;
+    private boolean outputRetainISD;
     private boolean showLayouts;
     private boolean showRenderers;
     private boolean showMemory;
@@ -161,6 +166,7 @@ public class Presenter extends TimedTextTransformer {
 
     // processing state
     private int outputFileSequence;
+    private int outputFileSequenceISD;
 
     public Presenter() {
         this.defaultLayout = LayoutProcessor.getDefaultProcessor(this);
@@ -281,8 +287,14 @@ public class Presenter extends TimedTextTransformer {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             outputPattern = args[++index];
+        } else if (option.equals("output-pattern-isd")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            outputPatternISD = args[++index];
         } else if (option.equals("output-retain-frames")) {
             outputRetainFrames = true;
+        } else if (option.equals("output-retain-isd")) {
+            outputRetainISD = true;
         } else if (option.equals("show-formats")) {
             showRenderers = true;
         } else if (option.equals("show-layouts")) {
@@ -345,6 +357,11 @@ public class Presenter extends TimedTextTransformer {
         if (outputPattern == null)
             outputPattern = defaultOutputFileNamePattern;
         this.outputPattern = outputPattern;
+        // output pattern for isd
+        String outputPatternISD = null;
+        if (outputPatternISD == null)
+            outputPatternISD = defaultOutputFileNamePatternISD;
+        this.outputPatternISD = outputPatternISD;
         // show memory
         setShowMemory(showMemory);
     }
@@ -426,6 +443,8 @@ public class Presenter extends TimedTextTransformer {
                         postWriteMemory = getUsedMemory();
                         reporter.logInfo(reporter.message("*KEY*", "Post-write memory usage: {0}, delta: {1}", postWriteMemory, postWriteMemory - preWriteMemory));
                     }
+                    if (outputRetainISD)
+                        writeISD(uri, isd);
                 }
                 rp.clear(false);
                 lp.clear(false);
@@ -495,6 +514,74 @@ public class Presenter extends TimedTextTransformer {
         return null;
     }
 
+    private void writeISD(URI uri, Object isd) {
+        if (isd instanceof File)
+            writeISDFromFile(uri, (File) isd);
+        else if (isd instanceof byte[])
+            writeISDFromByteArray(uri, (byte[]) isd);
+    }
+
+    private void writeISDFromFile(URI uri, File data) {
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        try {
+            fis = new FileInputStream(data);
+            bis = new BufferedInputStream(fis);
+            writeISDFromStream(uri, bis);
+        } catch (IOException e) {
+            getReporter().logError(e);
+        } finally {
+            IOUtil.closeSafely(bis);
+            IOUtil.closeSafely(fis);
+        }
+    }
+
+    private void writeISDFromByteArray(URI uri, byte[] data) {
+        ByteArrayInputStream bas = null;
+        BufferedInputStream bis = null;
+        try {
+            bas = new ByteArrayInputStream(data);
+            bis = new BufferedInputStream(bas);
+            writeISDFromStream(uri, bis);
+        } finally {
+            IOUtil.closeSafely(bis);
+            IOUtil.closeSafely(bas);
+        }
+    }
+
+    private void writeISDFromStream(URI uri, InputStream is) {
+        Reporter reporter = getReporter();
+        BufferedOutputStream bos = null;
+        try {
+            File[] retOutputFile = new File[1];
+            if ((bos = getISDOutputStream(uri, retOutputFile)) != null) {
+                File outputFile = retOutputFile[0];
+                IOUtil.write(is, bos);
+                bos.close(); bos = null;
+                reporter.logInfo(reporter.message("*KEY*", "Wrote ISD artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+            }
+        } catch (Exception e) {
+            reporter.logError(e);
+        } finally {
+            IOUtil.closeSafely(bos);
+        }
+    }
+
+    private BufferedOutputStream getISDOutputStream(URI uri, File[] retOutputFile) throws IOException {
+        String resourceName = getResourceNameComponent(uri);
+        File d = new File(outputDirectory, resourceName);
+        if (!d.exists())
+            d.mkdir();
+        if (d.exists()) {
+            String outputFileName = MessageFormat.format(outputPatternISD, ++outputFileSequenceISD);
+            File outputFile = new File(d, outputFileName).getCanonicalFile();
+            if (retOutputFile != null)
+                retOutputFile[0] = outputFile;
+            return new BufferedOutputStream(new FileOutputStream(outputFile));
+            
+        } else
+            return null;
+    }
 
     private boolean writeFrame(URI uri, Frame f) {
         if (f instanceof DocumentFrame)

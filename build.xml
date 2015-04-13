@@ -419,10 +419,14 @@
       <arg value="${basedir}/run/out"/>
       <arg value="--output-indent"/>
       <arg value="--output-retain-frames"/>
+      <arg value="--output-retain-isd"/>
       <arg value="--output-format"/>
-      <arg value="png"/>
-      <arg value="--png-background"/>
+      <arg value="svg"/>
+      <arg value="--svg-background"/>
       <arg value="black"/>
+      <arg value="--svg-decorate-all"/>
+      <arg value="--svg-decoration"/>
+      <arg value="white"/>
       <arg value="@{sample}"/>
     </java>
   </sequential>
