@@ -26,6 +26,7 @@
 package com.skynav.ttv.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -52,6 +53,17 @@ public class IOUtil {
             if (file != null)
                 file.delete();
         } catch (Throwable e) {
+        }
+    }
+
+    public static void write(InputStream is, OutputStream os) throws IOException {
+        byte[] buf = new byte[4096];
+        int nb;
+        while ((nb = is.read(buf)) >= 0) {
+            if (nb > 0)
+                os.write(buf, 0, nb);
+            else
+                Thread.currentThread().yield();
         }
     }
 
