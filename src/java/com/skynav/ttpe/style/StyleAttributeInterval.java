@@ -115,6 +115,24 @@ public class StyleAttributeInterval implements Comparable<StyleAttributeInterval
             return -1;
     }
 
+    @Override
+    public int hashCode() {
+        int hc = 23;
+        hc = hc * 31 + attribute.hashCode();
+        hc = hc * 31 + value.hashCode();
+        hc = hc * 31 + Integer.valueOf(begin).hashCode();
+        hc = hc * 31 + Integer.valueOf(end).hashCode();
+        return hc;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof StyleAttributeInterval) {
+            StyleAttributeInterval other = (StyleAttributeInterval) o;
+            return compareTo(other) == 0;
+        } else
+            return false;
+    }
 
     @Override
     public String toString() {

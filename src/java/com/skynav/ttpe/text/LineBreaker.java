@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import com.ibm.icu.text.BreakIterator;
@@ -43,6 +44,16 @@ import com.skynav.ttv.util.Reporter;
 
 public class LineBreaker {
 
+    private static final String DEFAULT_INPUT_ENCODING = "utf-8";
+    private static Charset defaultInputEncoding;
+
+    static {
+        try {
+            defaultInputEncoding = Charset.forName(DEFAULT_INPUT_ENCODING);
+        } catch (RuntimeException e) {
+            defaultInputEncoding = Charset.defaultCharset();
+        }
+    }
     public static final String RULES_SOURCE_EXT = "txt";
     public static final String RULES_BINARY_EXT = "dat";
 
@@ -134,7 +145,7 @@ public class LineBreaker {
             try {
                 is = new FileInputStream(inputFilePath);
                 os = new FileOutputStream(outputFilePath);
-                r = new BufferedReader(new InputStreamReader(is));
+                r = new BufferedReader(new InputStreamReader(is, defaultInputEncoding));
                 StringBuffer rules = new StringBuffer();
                 String line;
                 while ((line = r.readLine()) != null) {
@@ -144,7 +155,7 @@ public class LineBreaker {
                 RuleBasedBreakIterator.compileRules(rules.toString(), os);
             } catch (IOException e) {
             } finally {
-                if (r != null) { try { r.close(); } catch (Exception e) {} }
+                IOUtil.closeSafely(r);
                 IOUtil.closeSafely(os);
                 IOUtil.closeSafely(is);
             }

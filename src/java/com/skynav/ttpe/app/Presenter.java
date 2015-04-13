@@ -199,7 +199,7 @@ public class Presenter extends TimedTextTransformer {
 
     @Override
     public Object getResourceState(String key) {
-        if (key == TransformerContext.ResourceState.ttxTransformer.name())
+        if (key.equals(TransformerContext.ResourceState.ttxTransformer.name()))
             return Transformers.getTransformer("isd");
         else
             return super.getResourceState(key);
@@ -609,8 +609,10 @@ public class Presenter extends TimedTextTransformer {
 
     private BufferedOutputStream getISDOutputStream(URI uri, File[] retOutputFile) throws IOException {
         File d = getOutputDirectoryRetained(uri);
-        if (!d.exists())
-            d.mkdir();
+        if (!d.exists()) {
+            if (!d.mkdir())
+                return null;
+        }
         if (d.exists()) {
             String outputFileName = MessageFormat.format(outputPatternISD, ++outputFileSequenceISD);
             File outputFile = new File(d, outputFileName).getCanonicalFile();
@@ -701,8 +703,10 @@ public class Presenter extends TimedTextTransformer {
 
     private BufferedOutputStream getFrameOutputStream(URI uri, File[] retOutputFile) throws IOException {
         File d = getOutputDirectoryRetained(uri);
-        if (!d.exists())
-            d.mkdir();
+        if (!d.exists()) {
+            if (!d.mkdir())
+                return null;
+        }
         if (d.exists()) {
             String outputFileName = MessageFormat.format(outputPattern, ++outputFileSequence);
             File outputFile = new File(d, outputFileName).getCanonicalFile();
@@ -844,8 +848,10 @@ public class Presenter extends TimedTextTransformer {
 
     private BufferedOutputStream getManifestOutputStream(URI uri, Manifest manifest, File[] retOutputFile) throws IOException {
         File d = getOutputDirectoryRetained(uri);
-        if (!d.exists())
-            d.mkdir();
+        if (!d.exists()) {
+            if (!d.mkdir())
+                return null;
+        }
         if (d.exists()) {
             String outputFileName = manifest.getName();
             File outputFile = new File(d, outputFileName).getCanonicalFile();
@@ -890,9 +896,12 @@ public class Presenter extends TimedTextTransformer {
     private void removeFrameDirectories(Map<String,File> directories) {
         Reporter reporter = getReporter();
         for (File d : directories.values()) {
-            if (d.list().length == 0) {
-                if (d.delete()) {
-                    reporter.logInfo(reporter.message("*KEY*", "Removed TTPE artifact directory ''{0}''.", d.getAbsolutePath()));
+            String[] entries = d.list();
+            if (entries != null) {
+                if (entries.length == 0) {
+                    if (d.delete()) {
+                        reporter.logInfo(reporter.message("*KEY*", "Removed TTPE artifact directory ''{0}''.", d.getAbsolutePath()));
+                    }
                 }
             }
         }

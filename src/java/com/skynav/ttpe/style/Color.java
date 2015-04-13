@@ -153,7 +153,7 @@ public class Color {
         if (abbreviate && (alpha == 0))
             return String.format(rgbFormat, (int) (red * 255), (int) (green * 255), (int) (blue * 255));
         else
-            return String.format(rgbFormat, (int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255));
+            return String.format(rgbaFormat, (int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255));
     }
 
     @Override

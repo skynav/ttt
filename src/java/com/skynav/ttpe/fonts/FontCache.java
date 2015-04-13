@@ -109,7 +109,7 @@ public class FontCache {
                         continue;
                     if (fs.weight != weight)
                         continue;
-                    if (fs.language != language)
+                    if ((language != null) && (fs.language != null) && !fs.language.equals(language))
                         continue;
                     return fs;
                 }
@@ -183,10 +183,13 @@ public class FontCache {
                     return maybeFontSpecificationFile(f);
                 }
             };
-            for (File f : fontSpecificationDirectory.listFiles(filter)) {
-                if (fontSpecificationFiles == null)
-                    fontSpecificationFiles = new java.util.ArrayList<File>();
-                fontSpecificationFiles.add(f);
+            File[] files = fontSpecificationDirectory.listFiles(filter);
+            if (files != null) {
+                for (File f : files) {
+                    if (fontSpecificationFiles == null)
+                        fontSpecificationFiles = new java.util.ArrayList<File>();
+                    fontSpecificationFiles.add(f);
+                }
             }
         }
         if (fontSpecificationFiles != null) {

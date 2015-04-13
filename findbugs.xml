@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FindBugsFilter>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttpe.render.AbstractFrameImage"/>
+        <Method name="getData"/>
+      </And>
+    </Or>
+  </Match>
+</FindBugsFilter>

@@ -69,7 +69,7 @@ public class XMLDocumentFrame extends AbstractDocumentFrame {
     public static final QName wmAttrName                        = new QName("", "wm");
 
     // namespace prefixes
-    public static Map<String, String> prefixes;
+    static final Map<String, String> prefixes;
     static {
         prefixes = new java.util.HashMap<String,String>();
         prefixes.put(XML.xmlNamespace, "xml");

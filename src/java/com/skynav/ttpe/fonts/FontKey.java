@@ -26,6 +26,7 @@
 package com.skynav.ttpe.fonts;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,9 +36,9 @@ import com.skynav.ttpe.geometry.Extent;
 
 public class FontKey {
 
-    public static final List<String>            DEFAULT_FAMILIES   = new java.util.ArrayList<String>();
+    public static final List<String>            DEFAULT_FAMILIES;
     public static final String                  DEFAULT_FAMILY     = "Noto Sans";
-    public static final Set<FontFeature>        DEFAULT_FEATURES   = new java.util.HashSet<FontFeature>();
+    public static final Set<FontFeature>        DEFAULT_FEATURES   = Collections.unmodifiableSet(new java.util.HashSet<FontFeature>());
     public static final FontStyle               DEFAULT_STYLE      = FontStyle.NORMAL;
     public static final FontWeight              DEFAULT_WEIGHT     = FontWeight.NORMAL;
     public static final Extent                  DEFAULT_SIZE       = new Extent(24, 24);
@@ -48,7 +49,9 @@ public class FontKey {
         new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.VERTICAL, DEFAULT_SIZE, DEFAULT_FEATURES);
 
     static {
-        DEFAULT_FAMILIES.add(DEFAULT_FAMILY);
+        List<String> l = new java.util.ArrayList<String>();
+        l.add(DEFAULT_FAMILY);
+        DEFAULT_FAMILIES = Collections.unmodifiableList(l);
     }
 
     public String family;
@@ -197,15 +200,13 @@ public class FontKey {
     }
 
     private boolean equals(Map<String,FontFeature> fm1, Map<String,FontFeature> fm2) {
-        if ((fm1 == null) && (fm2 == null))
-            return true;
-        else if ((fm1 == null) && (fm2 != null))
+        if (fm1 == null) {
+            return fm2 == null;
+        } else if (fm2 == null) {
             return false;
-        else if ((fm1 != null) && (fm2 == null))
+        } else if (fm1.size() != fm2.size()) {
             return false;
-        else if (fm1.size() != fm2.size())
-            return false;
-        else {
+        } else {
             assert fm1 instanceof java.util.SortedMap;
             FontFeature[] fa1 = fm1.values().toArray(new FontFeature[fm1.size()]);
             assert fm2 instanceof java.util.SortedMap;

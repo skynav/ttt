@@ -227,11 +227,9 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
             TranscoderOutput to = new TranscoderOutput(bos);
             if (rectRegion == null)
                 rectRegion = rectRoot;
-            if (rectRegion != null) {
-                t.addTranscodingHint(PNGTranscoder.KEY_WIDTH, Float.valueOf((float) rectRegion.getWidth()));
-                t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, Float.valueOf((float) rectRegion.getHeight()));
-                t.addTranscodingHint(PNGTranscoder.KEY_AOI, rectRegion.getAWTRectangle());
-            }
+            t.addTranscodingHint(PNGTranscoder.KEY_WIDTH, Float.valueOf((float) rectRegion.getWidth()));
+            t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, Float.valueOf((float) rectRegion.getHeight()));
+            t.addTranscodingHint(PNGTranscoder.KEY_AOI, rectRegion.getAWTRectangle());
             if (background != null) 
                 t.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, background.getPaint());
             if (pixelDensity != 0) 

@@ -226,11 +226,10 @@ public class StyleCollector {
     }
 
     protected void collectFontStyle(Element e, int begin, int end, StyleSet styles) {
-        Object v = getFontFromStyles(e, styles);
-        if (v != null) {
-            addAttribute(StyleAttribute.FONT, v, begin, end);
-            if (v instanceof Font)
-                setFont((Font) v);
+        Font f = getFontFromStyles(e, styles);
+        if (f != null) {
+            addAttribute(StyleAttribute.FONT, f, begin, end);
+            setFont(f);
         }
     }
 

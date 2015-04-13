@@ -379,14 +379,14 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             } else if (alignment == BlockAlignment.CENTER) {
                 // no-op
             } else {
-                b = justifyLineAreas(b, measure, consumed, numChildren, alignment);
+                justifyLineAreas(b, measure, consumed, numChildren, alignment);
             }
         } else if (available < 0) {
             b.setOverflow(-available);
         }
     }
 
-    private BlockArea justifyLineAreas(BlockArea b, double measure, double consumed, int numChildren, BlockAlignment alignment) {
+    private void justifyLineAreas(BlockArea b, double measure, double consumed, int numChildren, BlockAlignment alignment) {
         double available = measure - consumed;
         if (alignment == BlockAlignment.JUSTIFY)
             alignment = BlockAlignment.SPACE_BETWEEN;
@@ -416,7 +416,6 @@ public class BasicLayoutProcessor extends LayoutProcessor {
                 b.insertChild(f, null, null);
             }
         }
-        return b;
     }
 
 }

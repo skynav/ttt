@@ -77,7 +77,7 @@ public class Manifest {
     public static final QName versionAttrName                   = new QName("", "version");
 
     // namespace prefixes
-    public static Map<String, String> prefixes;
+    static final Map<String, String> prefixes;
     static {
         prefixes = new java.util.HashMap<String,String>();
         prefixes.put(XML.xmlNamespace, "xml");

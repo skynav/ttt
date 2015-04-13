@@ -31,7 +31,7 @@ public class FontFeature {
 
     private final String feature;
     private final Object[] arguments;
-
+ 
     public FontFeature(String feature) {
         this(feature, null);
     }
@@ -39,15 +39,17 @@ public class FontFeature {
     public FontFeature(String feature, Object[] arguments) {
         assert (feature != null) && !feature.isEmpty();
         this.feature = feature;
-        this.arguments = arguments;
+        if (arguments != null) {
+            int na = arguments.length;
+            Object[] a = new Object[na];
+            System.arraycopy(arguments, 0, a, 0, na);
+            this.arguments = a;
+        } else
+            this.arguments = null;
     }
 
     public String getFeature() {
         return feature;
-    }
-
-    public Object[] getArguments() {
-        return arguments;
     }
 
     public Object getArgument(int index) {
@@ -109,26 +111,23 @@ public class FontFeature {
     }
 
     private boolean equals(Object[] aa1, Object[] aa2) {
-        if ((aa1 == null) && (aa2 == null))
-            return true;
-        else if ((aa1 == null) && (aa2 != null))
+        if (aa1 == null) {
+            return aa2 == null;
+        } else if (aa2 == null) {
             return false;
-        else if ((aa1 != null) && (aa2 == null))
+        } else if (aa1.length != aa2.length) {
             return false;
-        else if (aa1.length != aa2.length)
-            return false;
-        else {
+        } else {
             assert aa1.length == aa2.length;
             for (int i = 0, n = aa1.length; i < n; ++i) {
                 Object a1 = aa1[i];
                 Object a2 = aa2[i];
-                if ((a1 == null) && (a2 == null))
-                    continue;
-                else if ((a1 == null) && (a2 != null))
+                if (a1 == null) {
+                    if (a2 != null)
+                        return false;
+                } else if (a2 == null) {
                     return false;
-                else if ((a1 != null) && (a2 == null))
-                    return false;
-                else if (!a1.equals(a2))
+                } else if (!a1.equals(a2))
                     return false;
             }
             return true;

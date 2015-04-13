@@ -722,9 +722,9 @@ public class SVGRenderProcessor extends RenderProcessor {
     private Element renderGlyphEmphasis(Element parent, GlyphArea a, Document d, String emphasis, Emphasis.Position position) {
         String text = a.getText();
         boolean vertical = a.isVertical();
-        if ((text == null) || text.isEmpty() || Strings.isWhitespace(emphasis))
+        if ((text == null) || text.isEmpty() || Strings.isWhitespace(text))
             return null;
-        if ((emphasis == null) || emphasis.isEmpty())
+        if ((emphasis == null) || emphasis.isEmpty() || Strings.isWhitespace(emphasis))
             return null;
         Font font = a.getFont();
         Rectangle[] bounds = font.getGlyphBounds(text);
@@ -736,15 +736,8 @@ public class SVGRenderProcessor extends RenderProcessor {
         Font fontEmphasis = font.getScaledFont(0.5);
         double[] advancesEmphasis = fontEmphasis.getAdvances(emphasis);
         Rectangle[] boundsEmphasis = fontEmphasis.getGlyphBounds(emphasis);
-        double xLast;
-        double yLast;
-        if (vertical) {
-            xLast = 0;
-            yLast = 0;
-        } else {
-            xLast = 0;
-            yLast = 0;
-        }
+        double xLast = 0;
+        double yLast = 0;
         double dxLast = 0;
         double dyLast = 0;
         double beHeightMax = 0;

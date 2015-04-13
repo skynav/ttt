@@ -68,7 +68,7 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     public static final QName yAttrName                         = new QName("", "y");
 
     // namespace prefixes
-    public static Map<String, String> prefixes;
+    static final Map<String, String> prefixes;
     static {
         prefixes = new java.util.HashMap<String,String>();
         prefixes.put(XML.xmlNamespace, "xml");

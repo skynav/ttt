@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.area;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -44,16 +45,21 @@ public abstract class NonLeafAreaNode extends AreaNode {
     public static final Set<Expansion> EXPAND_IPD;
     public static final Set<Expansion> EXPAND_BPD;
     static {
-        ENCLOSE_ALL = new java.util.HashSet<Expansion>();
-        ENCLOSE_ALL.add(Expansion.ENCLOSE_IPD);
-        ENCLOSE_ALL.add(Expansion.ENCLOSE_BPD);
-        EXPAND_ALL = new java.util.HashSet<Expansion>();
-        EXPAND_ALL.add(Expansion.EXPAND_IPD);
-        EXPAND_ALL.add(Expansion.EXPAND_BPD);
-        EXPAND_IPD = new java.util.HashSet<Expansion>();
-        EXPAND_IPD.add(Expansion.EXPAND_IPD);
-        EXPAND_BPD = new java.util.HashSet<Expansion>();
-        EXPAND_BPD.add(Expansion.EXPAND_BPD);
+        Set<Expansion> s;
+        s = new java.util.HashSet<Expansion>();
+        s.add(Expansion.ENCLOSE_IPD);
+        s.add(Expansion.ENCLOSE_BPD);
+        ENCLOSE_ALL = Collections.unmodifiableSet(s);
+        s = new java.util.HashSet<Expansion>();
+        s.add(Expansion.EXPAND_IPD);
+        s.add(Expansion.EXPAND_BPD);
+        EXPAND_ALL = Collections.unmodifiableSet(s);
+        s = new java.util.HashSet<Expansion>();
+        s.add(Expansion.EXPAND_IPD);
+        EXPAND_IPD = Collections.unmodifiableSet(s);
+        s = new java.util.HashSet<Expansion>();
+        s.add(Expansion.EXPAND_BPD);
+        EXPAND_BPD = Collections.unmodifiableSet(s);
     }
 
     private List<AreaNode> children;

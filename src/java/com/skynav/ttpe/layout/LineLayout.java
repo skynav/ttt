@@ -418,14 +418,14 @@ public class LineLayout {
                 l.insertChild(a1, l.firstChild(), LineArea.EXPAND_IPD);
                 l.insertChild(a2, null, LineArea.EXPAND_IPD);
             } else {
-                l = justifyTextAreas(l, measure, consumed, numNonAnnotationChildren, alignment);
+                justifyTextAreas(l, measure, consumed, numNonAnnotationChildren, alignment);
             }
         } else if (available < 0) {
             l.setOverflow(-available);
         }
     }
 
-    private LineArea justifyTextAreas(LineArea l, double measure, double consumed, int numNonAnnotationChildren, InlineAlignment alignment) {
+    private void justifyTextAreas(LineArea l, double measure, double consumed, int numNonAnnotationChildren, InlineAlignment alignment) {
         double available = measure - consumed;
         if (alignment == InlineAlignment.JUSTIFY)
             alignment = InlineAlignment.SPACE_BETWEEN;
@@ -455,14 +455,12 @@ public class LineLayout {
                 l.insertChild(f, null, LineArea.EXPAND_IPD);
             }
         }
-        return l;
     }
 
     private static class WhitespaceState {
         LineFeedTreatment lineFeedTreatment;
         SuppressAtLineBreakTreatment suppressAtLineBreakTreatment;
         boolean whitespaceCollapse;
-        @SuppressWarnings("unused")
         WhitespaceTreatment whitespaceTreatment;
         WhitespaceState(Whitespace whitespace) {
             LineFeedTreatment lineFeedTreatment;
@@ -715,6 +713,7 @@ public class LineLayout {
             String t = super.getText(from, to);
             t = processLineFeedTreatment(t, whitespace.lineFeedTreatment);
             t = processWhitespaceCollapse(t, whitespace.whitespaceCollapse);
+            t = processWhitespaceTreatment(t, whitespace.whitespaceTreatment);
             return t;
         }
         @Override
@@ -765,6 +764,9 @@ public class LineLayout {
                     sb.append((char) Characters.UC_SPACE);
                 return sb.toString();
             }
+        }
+        private String processWhitespaceTreatment(String t, WhitespaceTreatment treatment) {
+            return t;
         }
         private boolean suppressAtLineBreak(SuppressAtLineBreakTreatment suppressAtLineBreakTreatment, boolean before) {
             if (suppressAtLineBreakTreatment == SuppressAtLineBreakTreatment.RETAIN)
