@@ -114,6 +114,7 @@ public class Presenter extends TimedTextTransformer {
         { "output-archive",             "",         "combine output frames into frames archive file" },
         { "output-archive-file",        "NAME",     "specify path of frames archive file" },
         { "output-directory",           "DIRECTORY","specify path to directory where output is to be written" },
+        { "output-directory-retained",  "DIRECTORY","specify path to directory where retained output is to be written, in which case only single input URI may be specified" },
         { "output-encoding",            "ENCODING", "specify character encoding of output (default: " + defaultOutputEncoding.name() + ")" },
         { "output-format",              "NAME",     "specify output format name (default: " + RenderProcessor.getDefaultName() + ")" },
         { "output-indent",              "",         "indent output (default: no indent)" },
@@ -148,6 +149,7 @@ public class Presenter extends TimedTextTransformer {
     private boolean outputArchive;
     private String outputArchiveFilePath;
     private String outputDirectoryPath;
+    private String outputDirectoryRetainedPath;
     private String outputEncodingName;
     private boolean outputIndent;
     private String outputPattern;
@@ -163,6 +165,7 @@ public class Presenter extends TimedTextTransformer {
     private LayoutProcessor layout;
     private File outputArchiveFile;
     private File outputDirectory;
+    private File outputDirectoryRetained;
     private Charset outputEncoding;
     private RenderProcessor renderer;
 
@@ -274,6 +277,10 @@ public class Presenter extends TimedTextTransformer {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             outputDirectoryPath = args[++index];
+        } else if (option.equals("output-directory-retained")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            outputDirectoryRetainedPath = args[++index];
         } else if (option.equals("output-encoding")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -339,6 +346,17 @@ public class Presenter extends TimedTextTransformer {
         } else
             outputDirectory = new File(".");
         this.outputDirectory = outputDirectory;
+        // output directory retained
+        File outputDirectoryRetained;
+        if (outputDirectoryRetainedPath != null) {
+            outputDirectoryRetained = new File(outputDirectoryRetainedPath);
+            if (!outputDirectoryRetained.exists())
+                throw new InvalidOptionUsageException("output-directory-retained", "directory does not exist: " + outputDirectoryRetainedPath);
+            else if (!outputDirectoryRetained.isDirectory())
+                throw new InvalidOptionUsageException("output-directory-retained", "not a directory: " + outputDirectoryRetainedPath);
+        } else
+            outputDirectoryRetained = null;
+        this.outputDirectoryRetained = outputDirectoryRetained;
         // output encoding
         Charset outputEncoding;
         if (outputEncodingName != null) {
@@ -370,6 +388,20 @@ public class Presenter extends TimedTextTransformer {
         setShowMemory(showMemory);
     }
 
+    @Override
+    public List<String> processNonOptionArguments(List<String> nonOptionArgs) {
+        if ((outputDirectoryRetained != null) && (nonOptionArgs.size() > 1)) {
+            throw new InvalidOptionUsageException("output-directory-retained", "must not be used when multiple URL arguments are specified");
+        }
+        return nonOptionArgs;
+    }
+
+    private File getOutputDirectoryRetained(URI uri) {
+        if (outputDirectoryRetained != null)
+            return outputDirectoryRetained;
+        else
+            return new File(outputDirectory, getResourceNameComponent(uri));
+    }
 
     private void showLayouts(PrintWriter out) {
         String defaultLayoutName = defaultLayout.getName();
@@ -574,8 +606,7 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private BufferedOutputStream getISDOutputStream(URI uri, File[] retOutputFile) throws IOException {
-        String resourceName = getResourceNameComponent(uri);
-        File d = new File(outputDirectory, resourceName);
+        File d = getOutputDirectoryRetained(uri);
         if (!d.exists())
             d.mkdir();
         if (d.exists()) {
@@ -667,8 +698,7 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private BufferedOutputStream getFrameOutputStream(URI uri, File[] retOutputFile) throws IOException {
-        String resourceName = getResourceNameComponent(uri);
-        File d = new File(outputDirectory, resourceName);
+        File d = getOutputDirectoryRetained(uri);
         if (!d.exists())
             d.mkdir();
         if (d.exists()) {
@@ -811,8 +841,7 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private BufferedOutputStream getManifestOutputStream(URI uri, Manifest manifest, File[] retOutputFile) throws IOException {
-        String resourceName = getResourceNameComponent(uri);
-        File d = new File(outputDirectory, resourceName);
+        File d = getOutputDirectoryRetained(uri);
         if (!d.exists())
             d.mkdir();
         if (d.exists()) {
