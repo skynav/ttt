@@ -72,6 +72,15 @@ public class Extent {
         return new Extent(width * sx, height * sy);
     }
 
+    public String toStringAsPixels() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(Integer.toString((int) Math.ceil(width)));
+        sb.append("px ");
+        sb.append(Integer.toString((int) Math.ceil(height)));
+        sb.append("px");
+        return sb.toString();
+    }
+
     private static final MessageFormat extentFormatter = new MessageFormat("[{0,number,#.####},{1,number,#.####}]");
     @Override
     public String toString() {

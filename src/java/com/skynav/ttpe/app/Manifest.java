@@ -124,7 +124,7 @@ public class Manifest {
         Element e = Documents.createElement(d, frameEltName);
         Documents.setAttribute(e, beginAttrName, formatTime(f.getBegin()));
         Documents.setAttribute(e, endAttrName, formatTime(f.getEnd()));
-        Documents.setAttribute(e, extentAttrName, f.getExtent().toString());
+        Documents.setAttribute(e, extentAttrName, f.getExtent().toStringAsPixels());
         if (f.hasImages()) {
             for (FrameImage i : f.getImages())
                 e.appendChild(addImage(d, i));
@@ -137,8 +137,8 @@ public class Manifest {
     private Element addImage(Document d, FrameImage i) {
         Element e = Documents.createElement(d, imageEltName);
         Documents.setAttribute(e, sourceAttrName, i.getFile().getName());
-        Documents.setAttribute(e, extentAttrName, i.getExtent().toString());
-        Documents.setAttribute(e, originAttrName, i.getOrigin().toString());
+        Documents.setAttribute(e, extentAttrName, i.getExtent().toStringAsPixels());
+        Documents.setAttribute(e, originAttrName, i.getOrigin().toStringAsPixels());
         return e;
     }
 

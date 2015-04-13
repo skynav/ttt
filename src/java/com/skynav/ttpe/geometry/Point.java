@@ -51,8 +51,16 @@ public class Point {
         return y;
     }
 
-    private static final MessageFormat originFormatter = new MessageFormat("[{0,number,#.####},{1,number,#.####}]");
+    public String toStringAsPixels() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(Integer.toString((int) Math.ceil(x)));
+        sb.append("px ");
+        sb.append(Integer.toString((int) Math.ceil(y)));
+        sb.append("px");
+        return sb.toString();
+    }
 
+    private static final MessageFormat originFormatter = new MessageFormat("[{0,number,#.####},{1,number,#.####}]");
     @Override
     public String toString() {
         return originFormatter.format(new Object[] {x, y});
