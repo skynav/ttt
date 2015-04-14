@@ -372,7 +372,7 @@ public class TimedTextVerifier implements VerifierContext {
             }
         }
         try {
-            reporter.open(defaultWarningSpecifications, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
+            reporter.open(defaultWarningSpecifications, reporterOutput, null, reporterOutputEncoding, reporterIncludeSource);
             this.reporter = reporter;
             this.includeSource = reporterIncludeSource;
         } catch (Throwable e) {
