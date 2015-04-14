@@ -26,6 +26,7 @@
 package com.skynav.ttv.util;
 
 import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,21 +49,27 @@ public class Message {
         return arguments;
     }
     public String toText() {
-        return MessageFormat.format(this.format, this.arguments);
+        return toText(null, false, false);
     }
-    public String toText(boolean hideLocation, boolean hidePath) {
-        return toText();
+    public String toText(ResourceBundle bundle) {
+        return toText(bundle, false, false);
+    }
+    public String toText(ResourceBundle bundle, boolean hideLocation, boolean hidePath) {
+        String format = (bundle != null) ? bundle.getString(this.key) : null;
+        if (format == null)
+            format = this.format;
+        return MessageFormat.format(format, this.arguments);
     }
     public String toXML() {
+        return toXML(null, false, false, false);
+    }
+    public String toXML(ResourceBundle bundle, boolean hideLocation, boolean hidePath, boolean showSource) {
         StringBuffer sb = new StringBuffer();
         sb.append("<message>\n");
         sb.append(toXMLKey());
-        sb.append(toXMLText());
+        sb.append(toXMLText(bundle));
         sb.append("</message>\n");
         return sb.toString();
-    }
-    public String toXML(boolean hideLocation, boolean hidePath, boolean showSource) {
-        return toXML();
     }
     private static final String placeholderKey = "*KEY*";
     private static final String placeholderNoKey = "*NOKEY*";
@@ -78,9 +85,9 @@ public class Message {
         }
         return sb.toString();
     }
-    public String toXMLText() {
+    public String toXMLText(ResourceBundle bundle) {
         StringBuffer sb = new StringBuffer();
-        String text = toText();
+        String text = toText(bundle);
         if ((text != null) && (text.length() > 0)) {
             StringBuffer sbText = new StringBuffer(text);
             String reference = extractReference(sbText, true);

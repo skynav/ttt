@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.util;
 
+import java.util.ResourceBundle;
+
 import org.xml.sax.Locator;
 
 import com.skynav.xml.helpers.XML;
@@ -74,8 +76,8 @@ public class LocatedMessage extends Message {
         this.linesRowOffset = firstLineOffset + 1;
     }
     @Override
-    public String toText(boolean hideLocation, boolean hidePath) {
-        String text = super.toText();
+    public String toText(ResourceBundle bundle, boolean hideLocation, boolean hidePath) {
+        String text = super.toText(bundle, false, false);
         if (uri != null) {
             StringBuffer sb = new StringBuffer();
             if (!hideLocation) {
@@ -104,12 +106,12 @@ public class LocatedMessage extends Message {
         }
         return text;
     }
-    public String toXML(boolean hideLocation, boolean hidePath, boolean showSource) {
+    public String toXML(ResourceBundle bundle, boolean hideLocation, boolean hidePath, boolean showSource) {
         StringBuffer sb = new StringBuffer();
         sb.append("<message>\n");
         sb.append(toXMLLocation(hideLocation, hidePath));
         sb.append(toXMLKey());
-        sb.append(toXMLText());
+        sb.append(toXMLText(bundle));
         if (showSource)
             sb.append(toXMLSource());
         sb.append("</message>\n");

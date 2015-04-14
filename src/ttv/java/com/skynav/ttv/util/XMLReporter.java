@@ -47,12 +47,12 @@ public class XMLReporter extends TextReporter {
     public void open(Object... arguments) throws IOException {
         super.open(arguments);
         String reporterOutputEncoding;
-        if ((arguments.length > 1) && (arguments[2] instanceof String))
-            reporterOutputEncoding = (String) arguments[2];
+        if ((arguments.length > 2) && (arguments[3] instanceof String))
+            reporterOutputEncoding = (String) arguments[3];
         else
             reporterOutputEncoding = DEFAULT_ENCODING;
-        if ((arguments.length > 2) && (arguments[3] instanceof Boolean))
-            showSource = (Boolean) arguments[3];
+        if ((arguments.length > 3) && (arguments[4] instanceof Boolean))
+            showSource = (Boolean) arguments[4];
         out("<?xml version=\"1.0\" encoding=\"" + reporterOutputEncoding.toLowerCase() + "\"?>\n");
         out("<report xmlns=\"" + getNamespace() + "\">\n");
     }
@@ -86,7 +86,7 @@ public class XMLReporter extends TextReporter {
         sb.append(type);
         sb.append('>');
         sb.append('\n');
-        sb.append(message.toXML(isHidingLocation(), isHidingPath(), showSource));
+        sb.append(message.toXML(getBundle(), isHidingLocation(), isHidingPath(), showSource));
         sb.append('<');
         sb.append('/');
         sb.append(type);

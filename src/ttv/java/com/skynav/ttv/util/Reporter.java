@@ -28,6 +28,7 @@ package com.skynav.ttv.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.util.ResourceBundle;
 
 import org.xml.sax.Locator;
 
@@ -57,6 +58,8 @@ public interface Reporter {
     public void setOutput(PrintWriter output);
     public PrintWriter getOutput();
     public void flush();
+    public void setBundle(ResourceBundle bundle);
+    public ResourceBundle getBundle();
     public void setVerbosityLevel(int level);
     public void incrementVerbosityLevel();
     public int getVerbosityLevel();

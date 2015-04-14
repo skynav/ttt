@@ -72,7 +72,7 @@ public class IOUtil {
             if (nb > 0)
                 os.write(buf, 0, nb);
             else
-                Thread.currentThread().yield();
+                Thread.yield();
         }
     }
 

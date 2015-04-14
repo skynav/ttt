@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.xml.bind.UnmarshalException;
@@ -48,6 +49,7 @@ public class TextReporter implements Reporter {
     private Map<String,Boolean> defaultWarnings;
     private PrintWriter output;
     private boolean outputDefaulted;
+    private ResourceBundle bundle;
     /* options state */
     private int debug;
     private boolean disableWarnings;
@@ -89,6 +91,11 @@ public class TextReporter implements Reporter {
             output = (PrintWriter) arguments[1];
         else
             output = null;
+        ResourceBundle bundle;
+        if ((arguments.length > 2) & (arguments[2] instanceof ResourceBundle))
+            bundle = (ResourceBundle) arguments[1];
+        else
+            bundle = null;
         Map<String,Boolean> defaultWarnings = new java.util.HashMap<String,Boolean>();
         if (defaultWarningSpecifications != null) {
             for (Object[] spec : defaultWarningSpecifications) {
@@ -101,6 +108,7 @@ public class TextReporter implements Reporter {
         this.hideLocation = false;
         this.hidePath = false;
         setOutput(output);
+        setBundle(bundle);
     }
 
     public void close() throws IOException {
@@ -174,6 +182,14 @@ public class TextReporter implements Reporter {
         return output;
     }
 
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+    }
+
+    public ResourceBundle getBundle() {
+        return bundle;
+    }
+
     protected void out(String message) {
         getOutput().print(message);
     }
@@ -201,7 +217,7 @@ public class TextReporter implements Reporter {
     }
 
     protected void out(ReportType type, Message message) {
-        out(type, message.toText(isHidingLocation(), isHidingPath()));
+        out(type, message.toText(bundle, isHidingLocation(), isHidingPath()));
     }
 
     public void flush() {

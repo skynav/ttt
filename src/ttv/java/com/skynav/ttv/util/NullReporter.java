@@ -28,6 +28,7 @@ package com.skynav.ttv.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.util.ResourceBundle;
 
 import org.xml.sax.Locator;
 
@@ -53,6 +54,8 @@ public class NullReporter implements Reporter {
     public void setOutput(PrintWriter out) { this.out = out; }
     public PrintWriter getOutput() { return out; }
     public void flush() { if (out != null) out.flush(); }
+    public void setBundle(ResourceBundle bundle) {}
+    public ResourceBundle getBundle() { return null; }
     public void setVerbosityLevel(int level) {}
     public void incrementVerbosityLevel() {}
     public int getVerbosityLevel() { return 0; }
