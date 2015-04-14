@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 
 public class IOUtil {
 
@@ -44,6 +45,14 @@ public class IOUtil {
         try {
             if (os != null)
                 os.close();
+        } catch (Throwable e) {
+        }
+    }
+
+    public static void closeSafely(Reader r) {
+        try {
+            if (r != null)
+                r.close();
         } catch (Throwable e) {
         }
     }

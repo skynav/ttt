@@ -335,11 +335,15 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     public void showUsage(PrintWriter out) {
-        out.print("Usage: " + usageCommand + "\n");
+        out.print("Usage: " + getShowUsageCommand() + "\n");
         TimedTextVerifier.showOptions(out, "Short Options", mergedShortOptionsMap.values());
         TimedTextVerifier.showOptions(out, "Long Options", mergedLongOptionsMap.values());
         TimedTextVerifier.showOptions(out, "Non-Option Arguments", nonOptions);
     }
+
+    public String getShowUsageCommand() {
+        return usageCommand;
+    } 
 
     public void runOptions(PrintWriter out) {
         if (showTransformers)

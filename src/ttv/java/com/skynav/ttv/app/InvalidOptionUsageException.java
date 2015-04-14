@@ -25,10 +25,15 @@
  
 package com.skynav.ttv.app;
 
+import com.skynav.ttv.util.Message;
+
 public class InvalidOptionUsageException extends UsageException {
     static final long serialVersionUID = 0;
     public InvalidOptionUsageException(String option, String details) {
         super("invalid option argument: " + option + ": " + details);
+    }
+    public InvalidOptionUsageException(String option, Message message) {
+        this(option, message.toText());
     }
 }
 

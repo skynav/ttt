@@ -39,6 +39,7 @@ public interface OptionProcessor {
     List<String> processNonOptionArguments(List<String> nonOptionArgs);
     void showBanner(PrintWriter out);
     void showUsage(PrintWriter out);
+    String getShowUsageCommand();
     void runOptions(PrintWriter out);
 
 }
