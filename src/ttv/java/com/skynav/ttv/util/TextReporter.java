@@ -93,7 +93,7 @@ public class TextReporter implements Reporter {
             output = null;
         ResourceBundle bundle;
         if ((arguments.length > 2) & (arguments[2] instanceof ResourceBundle))
-            bundle = (ResourceBundle) arguments[1];
+            bundle = (ResourceBundle) arguments[2];
         else
             bundle = null;
         Map<String,Boolean> defaultWarnings = new java.util.HashMap<String,Boolean>();
