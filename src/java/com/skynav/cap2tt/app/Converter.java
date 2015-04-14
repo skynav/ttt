@@ -416,6 +416,7 @@ public class Converter implements ConverterContext {
     private double[] parsedExternalExtent;
 
     // global processing state
+    private SimpleDateFormat gmtDateTimeFormat;
     private PrintWriter showOutput;
     private ExternalParametersStore externalParameters = new ExternalParametersStore();
     private Reporter reporter;
@@ -442,6 +443,9 @@ public class Converter implements ConverterContext {
     }
 
     public Converter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, PrintWriter showOutput) {
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        f.setTimeZone(java.util.TimeZone.getTimeZone("GMT+0000"));
+        this.gmtDateTimeFormat = f;
         if (reporter == null)
             reporter = Reporters.getDefaultReporter();
         setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
@@ -1007,7 +1011,7 @@ public class Converter implements ConverterContext {
 
     private PrintWriter getShowOutput() {
         if (showOutput == null)
-            showOutput = new PrintWriter(System.err);
+            showOutput = new PrintWriter(new OutputStreamWriter(System.err, defaultOutputEncoding));
         return showOutput;
     }
 
@@ -1132,14 +1136,9 @@ public class Converter implements ConverterContext {
             URI uri = new URI(uriString);
             if (!uri.isAbsolute()) {
                 URI uriCurrentDirectory = getCWDAsURI();
-                if (uriCurrentDirectory != null) {
-                    URI uriAbsolute = uriCurrentDirectory.resolve(uri);
-                    if (uriAbsolute != null)
-                        uri = uriAbsolute;
-                } else {
-                    reporter.logError(reporter.message("*KEY*", "Unable to resolve relative URI: '{'{0}'}'", uriString));
-                    uri = null;
-                }
+                URI uriAbsolute = uriCurrentDirectory.resolve(uri);
+                if (uriAbsolute != null)
+                    uri = uriAbsolute;
             }
             return uri;
         } catch (URISyntaxException e) {
@@ -1163,8 +1162,7 @@ public class Converter implements ConverterContext {
             reporter.logError(e);
             os = null;
         } finally {
-            if (is != null)
-                try { is.close(); } catch (Exception e) {}
+            IOUtil.closeSafely(is);
         }
         return (os != null) ? ByteBuffer.wrap(os.toByteArray()) : null;
     }
@@ -1449,11 +1447,14 @@ public class Converter implements ConverterContext {
             return defaultCharset;
     }
 
+    private static Charset asciiEncoding;
     private static Charset sjisEncoding;
     static {
         try {
+            asciiEncoding = Charset.forName("US_ASCII");
             sjisEncoding = Charset.forName("SHIFT_JIS");
         } catch (RuntimeException e) {
+            asciiEncoding = null;
             sjisEncoding = null;
         }
     }
@@ -1461,7 +1462,6 @@ public class Converter implements ConverterContext {
     private static Charset sniffShiftJIS(ByteBuffer bb, Object[] outputParameters) {
         int restore = bb.position();
         int limit = bb.limit();
-        @SuppressWarnings("unused")
         int na = 0; // number of {ascii,jisx201} characters
         int nk = 0; // number of half width kana characters
         int nd = 0; // number of double byte characters
@@ -1503,8 +1503,9 @@ public class Converter implements ConverterContext {
         } else if (nk > 0) {
             // if any half width kana characters, succeed
             return sjisEncoding;
+        } else if (na > 0) {
+            return asciiEncoding;
         } else {
-            // otherwise, this could be ascii, so fail
             return null;
         }
     }
@@ -2448,12 +2449,7 @@ public class Converter implements ConverterContext {
         return e;
     }
 
-    private static SimpleDateFormat gmtDateTimeFormat;
-    static {
-        gmtDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        gmtDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT+0000"));
-    }
-    private static String getXSDDateString(Date date) {
+    private String getXSDDateString(Date date) {
         return gmtDateTimeFormat.format(date);
     }
 
@@ -3047,15 +3043,12 @@ public class Converter implements ConverterContext {
         Runtime.getRuntime().exit(new Converter().run(args));
     }
 
-    private static class AttributeSpecification {
-        public String name;
-        public AttrContext context;
-        @SuppressWarnings("unused")
-        public AttrCount count;
-        @SuppressWarnings("unused")
-        public int minCount;
-        @SuppressWarnings("unused")
-        public int maxCount;
+    public static class AttributeSpecification {
+        private String name;
+        private AttrContext context;
+        private AttrCount count;
+        private int minCount;
+        private int maxCount;
         public AttributeSpecification(String name, AttrContext context, AttrCount count, int minCount, int maxCount) {
             this.name = name;
             this.context = context;
@@ -3063,15 +3056,29 @@ public class Converter implements ConverterContext {
             this.minCount = minCount;
             this.maxCount = maxCount;
         }
+        public String getName() {
+            return name;
+        }
+        public AttrContext getContext() {
+            return context;
+        }
+        public AttrCount getCount() {
+            return count;
+        }
+        public int getMinCount() {
+            return minCount;
+        }
+        public int getMaxCount() {
+            return maxCount;
+        }
     }
 
-    private static class Attribute {
-        public AttributeSpecification specification;
-        public int count;
-        @SuppressWarnings("unused")
-        public boolean retain;
-        public String text;
-        public String annotation;
+    public static class Attribute {
+        private AttributeSpecification specification;
+        private int count;
+        private boolean retain;
+        private String text;
+        private String annotation;
         public Attribute(AttributeSpecification specification, int count, boolean retain, String text, String annotation) {
             assert specification != null;
             this.specification = specification;
@@ -3079,6 +3086,21 @@ public class Converter implements ConverterContext {
             this.retain = retain;
             this.text = text;
             this.annotation = annotation;
+        }
+        public AttributeSpecification getSpecification() {
+            return specification;
+        }
+        public int getCount() {
+            return count;
+        }
+        public boolean getRetain() {
+            return retain;
+        }
+        public String getText() {
+            return text;
+        }
+        public String getAnnotation() {
+            return annotation;
         }
         @Override
         public int hashCode() {
@@ -3410,17 +3432,34 @@ public class Converter implements ConverterContext {
         public static final TextAttribute ANNOTATION = new TextAttribute("ANNOTATION");
     }
 
-    private static class Screen {
-        @SuppressWarnings("unused")
-        public Locator locator;
-        public int number;
-        public char letter;
-        public ClockTime in;
-        public ClockTime out;
-        public List<Attribute> attributes;
-        public AttributedString text;
+    public static class Screen {
+        private Locator locator;
+        private int number;
+        private char letter;
+        private ClockTime in;
+        private ClockTime out;
+        private List<Attribute> attributes;
+        private AttributedString text;
         public Screen(Locator locator) {
             this.locator = locator;
+        }
+        public Locator getLocator() {
+            return locator;
+        }
+        public int getNumber() {
+            return number;
+        }
+        public int getLetter() {
+            return letter;
+        }
+        public ClockTime getInTime() {
+            return in;
+        }
+        public ClockTime getOutTime() {
+            return out;
+        }
+        public AttributedString getText() {
+            return text;
         }
         public boolean empty() {
             if (hasInOutCodes())
@@ -3459,8 +3498,7 @@ public class Converter implements ConverterContext {
     }
 
     private static final ObjectFactory ttmlFactory = new ObjectFactory();
-    private static class State {
-        @SuppressWarnings("unused")
+    public static class State {
         private Configuration configuration;
         private Division division;
         private Paragraph paragraph;
@@ -3468,9 +3506,13 @@ public class Converter implements ConverterContext {
         private Map<String,Region> regions;
         private Set<QName> styles;
         public State(Configuration configuration) {
+            this.configuration = configuration;
             this.division = ttmlFactory.createDivision();
             this.regions = new java.util.TreeMap<String,Region>();
             this.styles = new java.util.HashSet<QName>();
+        }
+        public Configuration getConfiguration() {
+            return configuration;
         }
         public void process(List<Screen> screens) {
             for (Screen s: screens)
@@ -3646,15 +3688,15 @@ public class Converter implements ConverterContext {
     public static class Results {
         private static final String NOURI = "*URI NOT AVAILABLE*";
         private static final String NOENCODING = "*ENCODING NOT AVAILABLE*";
-        public String uriString;
-        public boolean succeeded;
-        public int code;
-        public int flags;
-        public int errorsExpected;
-        public int errors;
-        public int warningsExpected;
-        public int warnings;
-        public String encodingName;
+        private String uriString;
+        private boolean succeeded;
+        private int code;
+        private int flags;
+        private int errorsExpected;
+        private int errors;
+        private int warningsExpected;
+        private int warnings;
+        private String encodingName;
         public Results() {
             this.uriString = NOURI;
             this.succeeded = false;
@@ -3674,7 +3716,34 @@ public class Converter implements ConverterContext {
                 this.encodingName = encoding.name();
             else
                 this.encodingName = "unknown";
-       }
+        }
+        public String getURIString() {
+            return uriString;
+        }
+        public boolean getSucceeded() {
+            return succeeded;
+        }
+        public int getCode() {
+            return code;
+        }
+        public int getFlags() {
+            return flags;
+        }
+        public int getErrorsExpected() {
+            return errorsExpected;
+        }
+        public int getErrors() {
+            return errors;
+        }
+        public int getWarningsExpected() {
+            return warningsExpected;
+        }
+        public int getWarnings() {
+            return warnings;
+        }
+        public String getEncodingName() {
+            return encodingName;
+        }
     }
 
     public static class ExternalParametersStore implements ExternalParameters {
