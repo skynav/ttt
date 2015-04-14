@@ -56,7 +56,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -460,44 +463,20 @@ public class Converter implements ConverterContext {
         setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource, false);
     }
 
-    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, boolean closeOldReporter) {
-        if (reporter == this.reporter)
-            return;
-        if (this.reporter != null)
-            this.reporter.flush();
-        if (closeOldReporter) {
-            try {
-                if (this.reporter != null)
-                    this.reporter.close();
-            } catch (IOException e) {
-            } finally {
-                this.reporter = null;
-            }
-        }
-        try {
-            if (!reporter.isOpen())
-                reporter.open(defaultWarningSpecifications, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
-            this.reporter = reporter;
-            this.includeSource = reporterIncludeSource;
-        } catch (Throwable e) {
-            this.reporter = null;
-        }
-    }
-
     private void setReporter(String reporterName, String reporterFileName, String reporterFileEncoding, boolean reporterFileAppend, boolean reporterIncludeSource) {
         assert reporterName != null;
         Reporter reporter = Reporters.getReporter(reporterName);
         if (reporter == null)
-            throw new InvalidOptionUsageException("reporter", "unknown reporter: " + reporterName);
+            throw new InvalidOptionUsageException("reporter", getReporter().message("x.001", "unknown reporter: {0}", reporterName));
         if (reporterFileName != null) {
             if (reporterFileEncoding == null)
                 reporterFileEncoding = defaultReporterFileEncoding;
             try {
                 Charset.forName(reporterFileEncoding);
             } catch (IllegalCharsetNameException e) {
-                throw new InvalidOptionUsageException("reporter-file-encoding", "illegal encoding name: " + reporterFileEncoding);
+                throw new InvalidOptionUsageException("reporter-file-encoding", getReporter().message("x.002", "illegal encoding name: {0}", reporterFileEncoding));
             } catch (UnsupportedCharsetException e) {
-                throw new InvalidOptionUsageException("reporter-file-encoding", "unsupported encoding: " + reporterFileEncoding);
+                throw new InvalidOptionUsageException("reporter-file-encoding", getReporter().message("x.003", "unsupported encoding: {1}", reporterFileEncoding));
             }
         }
 
@@ -526,6 +505,38 @@ public class Converter implements ConverterContext {
                 if (createdReporterFile)
                     IOUtil.deleteSafely(reporterFile);
             }
+        }
+    }
+
+    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, boolean closeOldReporter) {
+        if (reporter == this.reporter)
+            return;
+        if (this.reporter != null)
+            this.reporter.flush();
+        if (closeOldReporter) {
+            try {
+                if (this.reporter != null)
+                    this.reporter.close();
+            } catch (IOException e) {
+            } finally {
+                this.reporter = null;
+            }
+        }
+        try {
+            if (!reporter.isOpen())
+                reporter.open(defaultWarningSpecifications, reporterOutput, getReporterBundle(), reporterOutputEncoding, reporterIncludeSource);
+            this.reporter = reporter;
+            this.includeSource = reporterIncludeSource;
+        } catch (Throwable e) {
+            this.reporter = null;
+        }
+    }
+
+    private ResourceBundle getReporterBundle() {
+        try {
+            return ResourceBundle.getBundle("com/skynav/cap2tt/app/messages", Locale.getDefault());
+        } catch (MissingResourceException e) {
+            return null;
         }
     }
 
@@ -593,7 +604,7 @@ public class Converter implements ConverterContext {
             try {
                 debugNew = Integer.parseInt(level);
             } catch (NumberFormatException e) {
-                throw new InvalidOptionUsageException("debug-level", "bad syntax: " + level);
+                throw new InvalidOptionUsageException("debug-level", reporter.message("x.004", "bad debug level syntax: {0}", level));
             }
             int debug = reporter.getDebugLevel();
             if (debugNew > debug)
@@ -651,7 +662,7 @@ public class Converter implements ConverterContext {
                 throw new MissingOptionArgumentException("--" + option);
             String token = args[++index];
             if (!reporter.hasDefaultWarning(token))
-                throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
+                throw new InvalidOptionUsageException("--" + option, reporter.message("x.005", "token ''{0}'' is not a recognized warning token", token));
             reporter.disableWarning(token);
         } else if (option.equals("no-verbose")) {
             reporter.setVerbosityLevel(0);
@@ -699,7 +710,7 @@ public class Converter implements ConverterContext {
                     throw new NumberFormatException();
                 styleIdSequenceStart = number;
             } catch (NumberFormatException e) {
-                throw new InvalidOptionUsageException("--" + option, "number '" + optionArgument + "' is not a non-negative integer");
+                throw new InvalidOptionUsageException("--" + option, reporter.message("x.006", "number ''{0}'' is not a non-negative integer", optionArgument));
             }
         } else if (option.equals("treat-warning-as-error")) {
             reporter.setTreatWarningAsError(true);
@@ -710,7 +721,7 @@ public class Converter implements ConverterContext {
                 throw new MissingOptionArgumentException("--" + option);
             String token = args[++index];
             if (!reporter.hasDefaultWarning(token))
-                throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
+                throw new InvalidOptionUsageException("--" + option, reporter.message("x.005", "token ''{0}'' is not a recognized warning token", token));
             reporter.enableWarning(token);
         } else if ((optionProcessor != null) && optionProcessor.hasOption(args[index])) {
             return optionProcessor.parseOption(args, index);
@@ -789,22 +800,22 @@ public class Converter implements ConverterContext {
                 parsedExternalFrameRate = Double.parseDouble(externalFrameRate);
                 getExternalParameters().setParameter("externalFrameRate", Double.valueOf(parsedExternalFrameRate));
             } catch (NumberFormatException e) {
-                throw new InvalidOptionUsageException("external-frame-rate", "invalid syntax, must be a double: " + externalFrameRate);
+                throw new InvalidOptionUsageException("external-frame-rate", reporter.message("x.007", "invalid syntax, must be a double: {0}", externalFrameRate));
             }
         } else {
             parsedExternalFrameRate = 30.0;
-            reporter.logInfo(reporter.message("*KEY*", "Defaulting external frame rate to " + parsedExternalFrameRate + "fps."));
+            reporter.logInfo(reporter.message("i.001", "Defaulting external frame rate to {0} fps.", parsedExternalFrameRate));
         }
         if (externalDuration != null) {
             Time[] duration = new Time[1];
             TimeParameters timeParameters = new TimeParameters(parsedExternalFrameRate);
             if (Timing.isDuration(externalDuration, null, null, timeParameters, duration)) {
                 if (duration[0].getType() != Time.Type.Offset)
-                    throw new InvalidOptionUsageException("external-duration", "must use offset time syntax only: " + externalDuration);
+                    throw new InvalidOptionUsageException("external-duration", reporter.message("x.008", "must use offset time syntax only: {0}", externalDuration));
                 parsedExternalDuration = duration[0].getTime(timeParameters);
                 getExternalParameters().setParameter("externalDuration", Double.valueOf(parsedExternalDuration));
             } else
-                throw new InvalidOptionUsageException("external-duration", "invalid syntax: " + externalDuration);
+                throw new InvalidOptionUsageException("external-duration", reporter.message("x.009", "invalid syntax: {0}", externalDuration));
         }
         if (externalExtent != null) {
             Integer[] minMax = new Integer[] { 2, 2 };
@@ -813,12 +824,12 @@ public class Converter implements ConverterContext {
             if (Lengths.isLengths(externalExtent, null, null, minMax, treatments, lengths)) {
                 for (Length l : lengths) {
                     if (l.getUnits() != Length.Unit.Pixel)
-                        throw new InvalidOptionUsageException("external-extent", "must use pixel (px) unit only: " + externalExtent);
+                        throw new InvalidOptionUsageException("external-extent", reporter.message("x.010", "must use pixel (px) unit only: {0}", externalExtent));
                 }
                 parsedExternalExtent = new double[] { lengths.get(0).getValue(), lengths.get(1).getValue() };
                 getExternalParameters().setParameter("externalExtent", parsedExternalExtent);
             } else
-                throw new InvalidOptionUsageException("external-extent", "invalid syntax: " + externalExtent);
+                throw new InvalidOptionUsageException("external-extent", reporter.message("x.011", "invalid syntax: {0}", externalExtent));
         }
         Charset forceEncoding;
         if (forceEncodingName != null) {
@@ -828,7 +839,7 @@ public class Converter implements ConverterContext {
                 forceEncoding = null;
             }
             if (forceEncoding == null)
-                throw new InvalidOptionUsageException("force-encoding", "unknown encoding: " + forceEncodingName);
+                throw new InvalidOptionUsageException("force-encoding", reporter.message("x.012", "unknown encoding: {0}", forceEncodingName));
         } else
             forceEncoding = null;
         this.forceEncoding = forceEncoding;
@@ -836,9 +847,9 @@ public class Converter implements ConverterContext {
         if (outputDirectoryPath != null) {
             outputDirectory = new File(outputDirectoryPath);
             if (!outputDirectory.exists())
-                throw new InvalidOptionUsageException("output-directory", "directory does not exist: " + outputDirectoryPath);
+                throw new InvalidOptionUsageException("output-directory", reporter.message("x.013", "directory does not exist: {0}", outputDirectoryPath));
             else if (!outputDirectory.isDirectory())
-                throw new InvalidOptionUsageException("output-directory", "not a directory: " + outputDirectoryPath);
+                throw new InvalidOptionUsageException("output-directory", reporter.message("x.014", "not a directory: {0}", outputDirectoryPath));
         } else
             outputDirectory = new File(".");
         this.outputDirectory = outputDirectory;
@@ -850,7 +861,7 @@ public class Converter implements ConverterContext {
                 outputEncoding = null;
             }
             if (outputEncoding == null)
-                throw new InvalidOptionUsageException("output-encoding", "unknown encoding: " + outputEncodingName);
+                throw new InvalidOptionUsageException("output-encoding", reporter.message("x.015", "unknown encoding: {0}", outputEncodingName));
         } else
             outputEncoding = null;
         if (outputEncoding == null)
@@ -948,9 +959,9 @@ public class Converter implements ConverterContext {
         if (configFilePath != null) {
             configFile = new File(configFilePath);
             if (!configFile.exists())
-                throw new InvalidOptionUsageException("config", "configuration does not exist: " + configFilePath);
+                throw new InvalidOptionUsageException("config", reporter.message("x.016", "configuration does not exist: {0}", configFilePath));
             else if (!configFile.isFile())
-                throw new InvalidOptionUsageException("config", "not a file: " + configFilePath);
+                throw new InvalidOptionUsageException("config", reporter.message("x.017", "not a file: {0}", configFilePath));
         } else
             configFile = null;
         return loadConfiguration(configFile);
@@ -1080,11 +1091,11 @@ public class Converter implements ConverterContext {
         Reporter reporter = getReporter();
         if (reporter.getVerbosityLevel() >  0) {
             if (reporter.isTreatingWarningAsError())
-                reporter.logInfo(reporter.message("*KEY*", "Warnings are treated as errors."));
+                reporter.logInfo(reporter.message("i.002", "Warnings are treated as errors."));
             else if (reporter.areWarningsDisabled())
-                reporter.logInfo(reporter.message("*KEY*", "Warnings are disabled."));
+                reporter.logInfo(reporter.message("i.003", "Warnings are disabled."));
             else if (reporter.areWarningsHidden())
-                reporter.logInfo(reporter.message("*KEY*", "Warnings are hidden."));
+                reporter.logInfo(reporter.message("i.004", "Warnings are hidden."));
         }
     }
 
@@ -1142,7 +1153,7 @@ public class Converter implements ConverterContext {
             }
             return uri;
         } catch (URISyntaxException e) {
-            reporter.logError(reporter.message("*KEY*", "Bad URI syntax: '{'{0}'}'", uriString));
+            reporter.logError(reporter.message("e.001", "Bad URI syntax: '{'{0}'}'", uriString));
             return null;
         }
     }
@@ -1213,14 +1224,16 @@ public class Converter implements ConverterContext {
     private static final List<Charset> permittedEncodings;
 
     static {
-        permittedEncodings = new java.util.ArrayList<Charset>();
+        List<Charset> l = new java.util.ArrayList<Charset>();
         try {
-            permittedEncodings.add(Charset.forName("SHIFT_JIS"));
-            permittedEncodings.add(Charset.forName("UTF-8"));
-            permittedEncodings.add(Charset.forName("UTF-16"));
-            permittedEncodings.add(Charset.forName("UTF-16BE"));
-            permittedEncodings.add(Charset.forName("UTF-16LE"));
+            l.add(Charset.forName("US-ASCII"));
+            l.add(Charset.forName("UTF-8"));
+            l.add(Charset.forName("UTF-16"));
+            l.add(Charset.forName("UTF-16BE"));
+            l.add(Charset.forName("UTF-16LE"));
+            l.add(Charset.forName("SHIFT_JIS"));
         } catch (RuntimeException e) {}
+        permittedEncodings = Collections.unmodifiableList(l);
     }
 
     public static Charset[] getPermittedEncodings() {
@@ -1276,19 +1289,19 @@ public class Converter implements ConverterContext {
                             endOfInput = true;
                         }
                     } else if (r.isMalformed()) {
-                        Message message = reporter.message("*KEY*",
+                        Message message = reporter.message("e.002",
                             "Malformed {0} at byte offset {1}{2,choice,0# of zero bytes|1# of one byte|1< of {2,number,integer} bytes}.",
                             encoding.name(), bb.position(), r.length());
                         reporter.logError(message);
                         return null;
                     } else if (r.isUnmappable()) {
-                        Message message = reporter.message("*KEY*",
+                        Message message = reporter.message("e.003",
                             "Unmappable {0} at byte offset {1}{2,choice,0# of zero bytes|1# of one byte|1< of {2,number,integer} bytes}.",
                             encoding.name(), bb.position(), r.length());
                         reporter.logError(message);
                         return null;
                     } else if (r.isError()) {
-                        Message message = reporter.message("*KEY*",
+                        Message message = reporter.message("e.004",
                             "Can't decode as {0} at byte offset {1}{2,choice,0# of zero bytes|1# of one byte|1< of {2,number,integer} bytes}.",
                             encoding.name(), bb.position(), r.length());
                         reporter.logError(message);
@@ -1392,7 +1405,7 @@ public class Converter implements ConverterContext {
 
     private boolean readResource() {
         Reporter reporter = getReporter();
-        reporter.logInfo(reporter.message("*KEY*", "Verifying resource presence and encoding ..."));
+        reporter.logInfo(reporter.message("i.005", "Verifying resource presence and encoding ..."));
         URI uri = resolve(resourceUriString);
         if (uri != null) {
             setResourceURI(uri);
@@ -1404,17 +1417,17 @@ public class Converter implements ConverterContext {
                     encoding = this.forceEncoding;
                     Charset bomEncoding = Sniffer.checkForBOMCharset(bytesBuffer, sniffOutputParameters);
                     if ((bomEncoding != null) && !encoding.equals(bomEncoding)) {
-                        reporter.logError(reporter.message("*KEY*", "Resource encoding forced to {0}, but BOM encoding is {1}.", encoding.name(), bomEncoding.name()));
+                        reporter.logError(reporter.message("e.005", "Resource encoding forced to {0}, but BOM encoding is {1}.", encoding.name(), bomEncoding.name()));
                     } else {
-                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding forced to {0}.", encoding.name()));
+                        reporter.logInfo(reporter.message("i.006", "Resource encoding forced to {0}.", encoding.name()));
                     }
                 } else {
                     encoding = sniff(bytesBuffer, null, sniffOutputParameters);
                     if (encoding != null) {
-                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding sniffed as {0}.", encoding.name()));
+                        reporter.logInfo(reporter.message("i.007", "Resource encoding sniffed as {0}.", encoding.name()));
                     } else {
                         encoding = defaultEncoding;
-                        reporter.logInfo(reporter.message("*KEY*", "Resource encoding defaulted to {0}.", encoding.name()));
+                        reporter.logInfo(reporter.message("i.008", "Resource encoding defaulted to {0}.", encoding.name()));
                     }
                 }
                 if (reporter.getResourceErrors() == 0) {
@@ -1425,11 +1438,11 @@ public class Converter implements ConverterContext {
                             setResourceBuffer(encoding, charsBuffer, bytesBuffer);
                             if (includeSource)
                                 reporter.setLines(parseLines(charsBuffer, encoding));
-                            reporter.logInfo(reporter.message("*KEY*", "Resource length {0} bytes, decoded as {1} Java characters (char).",
+                            reporter.logInfo(reporter.message("i.009", "Resource length {0} bytes, decoded as {1} Java characters (char).",
                                 bytesBuffer.limit(), charsBuffer.limit()));
                         }
                     } else {
-                        reporter.logError(reporter.message("*KEY*", "Encoding {0} is not permitted", encoding.name()));
+                        reporter.logError(reporter.message("i.010", "Encoding {0} is not permitted.", encoding.name()));
                     }
                 }
             }
@@ -1451,7 +1464,7 @@ public class Converter implements ConverterContext {
     private static Charset sjisEncoding;
     static {
         try {
-            asciiEncoding = Charset.forName("US_ASCII");
+            asciiEncoding = Charset.forName("US-ASCII");
             sjisEncoding = Charset.forName("SHIFT_JIS");
         } catch (RuntimeException e) {
             asciiEncoding = null;
@@ -1528,7 +1541,7 @@ public class Converter implements ConverterContext {
     private boolean parseResource() {
         boolean fail = false;
         Reporter reporter = getReporter();
-        reporter.logInfo(reporter.message("*KEY*", "Parsing resource ..."));
+        reporter.logInfo(reporter.message("i.011", "Parsing resource ..."));
         try {
             BufferedReader r = new BufferedReader(new CharArrayReader(getCharArray(resourceBuffer)));
             String line;
@@ -1539,7 +1552,7 @@ public class Converter implements ConverterContext {
                 locator.setLineNumber(++lineNumber);
                 if (lineNumber == 1) {
                     if (!parseHeaderLine(line, locator)) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*", "Skipping remainder of resource due to bad header."));
+                        reporter.logInfo(reporter.message(locator, "i.012", "Skipping remainder of resource due to bad header."));
                         fail = true;
                         break;
                     }
@@ -1549,7 +1562,7 @@ public class Converter implements ConverterContext {
                     }
                 }
             }
-            reporter.logInfo(reporter.message("*KEY*", "Read {0} lines.", lineNumber));
+            reporter.logInfo(reporter.message("i.013", "Read {0} lines.", lineNumber));
         } catch (Exception e) {
             reporter.logError(e);
         }
@@ -1573,7 +1586,7 @@ public class Converter implements ConverterContext {
         final int minHeaderLength = 10;
         if (lineLength < minHeaderLength) {
             if (reporter.isWarningEnabled("bad-header-length")) {
-                if (reporter.logWarning(reporter.message(locator, "*KEY*", "Header too short, got length {0}, expected {1}.", lineLength, minHeaderLength)))
+                if (reporter.logWarning(reporter.message(locator, "w.001", "Header too short, got length {0}, expected {1}.", lineLength, minHeaderLength)))
                     fail = true;
             }
         }
@@ -1582,7 +1595,7 @@ public class Converter implements ConverterContext {
         String[] fields = line.split("\\t+");
         final int minFieldCount = 3;
         if (fields.length != minFieldCount) {
-            Message message = reporter.message(locator, "*KEY*", "Header bad field count, got {0}, expected {1}.", fields.length, minFieldCount);
+            Message message = reporter.message(locator, "w.002", "Header bad field count, got {0}, expected {1}.", fields.length, minFieldCount);
             if (reporter.isWarningEnabled("bad-header-field-count")) {
                 if (reporter.logWarning(message))
                     fail = true;
@@ -1591,8 +1604,8 @@ public class Converter implements ConverterContext {
         if (fail)
             return !fail;
         if (fields.length < 1) {
-            Message message = reporter.message(locator, "*KEY*", "Header preamble field missing.");
             if (reporter.isWarningEnabled("bad-header-preamble")) {
+                Message message = reporter.message(locator, "w.003", "Header preamble field missing.");
                 if (reporter.logWarning(message))
                     fail = true;
             }
@@ -1603,9 +1616,9 @@ public class Converter implements ConverterContext {
             final String preambleExpected = "Lambda字幕V4";
             String preamble = fields[0];
             if (!preamble.equals(preambleExpected)) {
-                Message message = reporter.message(locator, "*KEY*", "Header preamble field invalid, got ''{0}'', expected ''{1}''.", preamble, preambleExpected);
-                reporter.logDebug(reporter.message("*KEY*", "''{0}'' != ''{1}''", dump(preamble), dump(preambleExpected)));
+                reporter.logDebug(reporter.message("d.001", "''{0}'' != ''{1}''", dump(preamble), dump(preambleExpected)));
                 if (reporter.isWarningEnabled("bad-header-preamble")) {
+                    Message message = reporter.message(locator, "w.004", "Header preamble field invalid, got ''{0}'', expected ''{1}''.", preamble, preambleExpected);
                     if (reporter.logWarning(message))
                         fail = true;
                 }
@@ -1614,8 +1627,8 @@ public class Converter implements ConverterContext {
         if (fail)
             return !fail;
         if (fields.length < 2) {
-            Message message = reporter.message(locator, "*KEY*", "Drop flags field missing.");
             if (reporter.isWarningEnabled("bad-header-drop-flags")) {
+                Message message = reporter.message(locator, "w.005", "Drop flags field missing.");
                 if (reporter.logWarning(message))
                     fail = true;
             }
@@ -1629,9 +1642,9 @@ public class Converter implements ConverterContext {
             String dropFlags = fields[1];
             int dropFlagsLength = dropFlags.length();
             if (dropFlagsLength < minDropFlagsLength) {
-                Message message =
-                    reporter.message(locator, "*KEY*", "Header drop flags field too short, got ''{0}'', expected ''{1}''.", dropFlagsLength, minDropFlagsLength);
                 if (reporter.isWarningEnabled("bad-header-drop-flags")) {
+                    Message message =
+                        reporter.message(locator, "w.006", "Header drop flags field too short, got ''{0}'', expected ''{1}''.", dropFlagsLength, minDropFlagsLength);
                     if (reporter.logWarning(message))
                         fail = true;
                 }
@@ -1639,10 +1652,10 @@ public class Converter implements ConverterContext {
             if (fail)
                 return !fail;
             if (!dropFlags.startsWith(dropFlagsPrefixExpected)) {
-                Message message =
-                    reporter.message(locator, "*KEY*", "Header drop flags field invalid, got ''{0}'', should start with ''{1}''.", dropFlags, dropFlagsPrefixExpected);
-                reporter.logDebug(reporter.message("*KEY*", "prefix(''{0}'') != ''{1}''", dump(dropFlags), dump(dropFlagsPrefixExpected)));
+                reporter.logDebug(reporter.message("d.002", "prefix(''{0}'') != ''{1}''", dump(dropFlags), dump(dropFlagsPrefixExpected)));
                 if (reporter.isWarningEnabled("bad-header-drop-flags")) {
+                    Message message =
+                        reporter.message(locator, "w.007", "Header drop flags field invalid, got ''{0}'', should start with ''{1}''.", dropFlags, dropFlagsPrefixExpected);
                     if (reporter.logWarning(message))
                         fail = true;
                 }
@@ -1651,18 +1664,18 @@ public class Converter implements ConverterContext {
                 return !fail;
             String dropFlagsArgument = dropFlags.substring(2, 3);
             if (!dropFlagsArgument.equals("0") && !dropFlagsArgument.equals("1")) {
-                Message message =
-                    reporter.message(locator, "*KEY*", "Header drop flags field argument invalid, got ''{0}'', expected ''0'' or ''1''.", dropFlagsArgument);
-                reporter.logDebug(reporter.message("*KEY*", "argument(''{0}'') == ''{1}''", dump(dropFlags), dump(dropFlagsArgument)));
+                reporter.logDebug(reporter.message("d.003", "argument(''{0}'') == ''{1}''", dump(dropFlags), dump(dropFlagsArgument)));
                 if (reporter.isWarningEnabled("bad-header-drop-flags")) {
+                    Message message =
+                        reporter.message(locator, "w.008", "Header drop flags field argument invalid, got ''{0}'', expected ''0'' or ''1''.", dropFlagsArgument);
                     if (reporter.logWarning(message))
                         fail = true;
                 }
             }
         }
         if (fields.length < 3) {
-            Message message = reporter.message(locator, "*KEY*", "Scene standard field missing.");
             if (reporter.isWarningEnabled("bad-header-scene-standard")) {
+                Message message = reporter.message(locator, "w.009", "Scene standard field missing.");
                 if (reporter.logWarning(message))
                     fail = true;
             }
@@ -2331,7 +2344,7 @@ public class Converter implements ConverterContext {
     private boolean convertResource() {
         boolean fail = false;
         Reporter reporter = getReporter();
-        reporter.logInfo(reporter.message("*KEY*", "Converting resource ..."));
+        reporter.logInfo(reporter.message("i.014", "Converting resource ..."));
         try {
             //  convert screens to a div of paragraphs
             State state = new State(configuration);
@@ -2729,7 +2742,7 @@ public class Converter implements ConverterContext {
             Transformer t = new TextTransformer(outputEncoding.name(), outputIndent, prefixes, startTagIndentExclusions, endTagIndentExclusions);
             t.transform(source, result);
             File outputFile = retOutputFile[0];
-            reporter.logInfo(reporter.message("*KEY*", "Wrote TTML ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+            reporter.logInfo(reporter.message("i.015", "Wrote TTML ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
         } catch (Exception e) {
             reporter.logError(e);
         } finally {
@@ -2772,7 +2785,7 @@ public class Converter implements ConverterContext {
     private int convert(String[] args, String uri) {
         Reporter reporter = getReporter();
         if (!reporter.isHidingLocation())
-            reporter.logInfo(reporter.message("*KEY*", "Converting '{'{0}'}'.", uri));
+            reporter.logInfo(reporter.message("i.016", "Converting '{'{0}'}'.", uri));
         do {
             resetResourceState();
             setResourceURI(uri);
@@ -2785,7 +2798,7 @@ public class Converter implements ConverterContext {
                 break;
         } while (false);
         int rv = rvValue();
-        reporter.logInfo(reporter.message("*KEY*", "Conversion {0}{1}.", rvSucceeded(rv) ? "Succeeded" : "Failed", resultDetails()));
+        reporter.logInfo(reporter.message("i.017", "Conversion {0,choice,0#Failed|1#Succeeded}{1}.", rvSucceeded(rv) ? 1 : 0, resultDetails()));
         reporter.flush();
         Results results = new Results(uri, rv,
             resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), getEncoding());
@@ -2919,16 +2932,14 @@ public class Converter implements ConverterContext {
             Message message;
             if (numSuccess > 0) {
                 if (numFailure > 0) {
-                    message = reporter.message("*KEY*",
+                    message = reporter.message("i.018",
                         "Succeeded {0} {0,choice,0#resources|1#resource|1<resources}, Failed {1} {1,choice,0#resources|1#resource|1<resources}.", numSuccess, numFailure);
                 } else {
-                    message = reporter.message("*KEY*",
-                        "Succeeded {0} {0,choice,0#resources|1#resource|1<resources}.", numSuccess);
+                    message = reporter.message("i.019", "Succeeded {0} {0,choice,0#resources|1#resource|1<resources}.", numSuccess);
                 }
             } else {
                 if (numFailure > 0) {
-                    message = reporter.message("*KEY*",
-                        "Failed {0} {0,choice,0#resources|1#resource|1<resources}.", numFailure);
+                    message = reporter.message("i.020", "Failed {0} {0,choice,0#resources|1#resource|1<resources}.", numFailure);
                 } else {
                     message = null;
                 }
