@@ -203,6 +203,7 @@ public class Converter implements ConverterContext {
     private static final QName ttsFontShearAttrName = new QName(NAMESPACE_TT_STYLE, "fontShear");
     private static final QName ttsRubyAttrName = new QName(NAMESPACE_TT_STYLE, "ruby");
     private static final QName ttsTextEmphasisAttrName = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
+    private static final QName ttsTextCombineAttrName = new QName(NAMESPACE_TT_STYLE, "textCombine");
 
     // ttv annotation names
     private static final QName ttvaModelAttrName = new QName(Annotations.getNamespace(), "model");
@@ -368,6 +369,8 @@ public class Converter implements ConverterContext {
         { "太明",               AttrContext.Attribute,    AttrCount.None               }, // futa min
         { "太明朝",             AttrContext.Attribute,    AttrCount.None               }, // futa mincho
         { "シネマ",             AttrContext.Attribute,    AttrCount.None               }, // cinema
+        // extensions
+        { "組",                 AttrContext.Text,         AttrCount.None               }, // tate-chu-yoko
     };
     private static final Map<String, AttributeSpecification> knownAttributes;
     static {
@@ -1358,8 +1361,8 @@ public class Converter implements ConverterContext {
 
     private void resetResourceState() {
         // processing state
-        resourceState = new java.util.HashMap<String,Object>();
         resourceUriString = null;
+        resourceState = new java.util.HashMap<String,Object>();
         resourceUri = null;
         resourceEncoding = null;
         resourceBuffer = null;
@@ -1556,7 +1559,7 @@ public class Converter implements ConverterContext {
                         fail = true;
                         break;
                     }
-                } else {
+                } else if (!line.isEmpty()) {
                     if (!parseContentLine(line, locator)) {
                         fail = true;
                     }
@@ -2471,28 +2474,29 @@ public class Converter implements ConverterContext {
             final Map<Element,StyleSet> styleSets = getUniqueSpecifiedStyles(d, indices, styleIdPattern, styleIdSequenceStart);
             final Set<String> styleIds = new java.util.HashSet<String>();
             final Element styling = Documents.findElementByName(d, ttStylingEltName);
-            assert styling != null;
-            Traverse.traverseElements(d, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element e = (Element) content;
-                    if (styleSets.containsKey(e)) {
-                        StyleSet ss = styleSets.get(e);
-                        String id = ss.getId();
-                        if (!id.isEmpty()) {
-                            e.setAttribute("style", id);
-                            if (!styleIds.contains(id)) {
-                                Element ttStyle = d.createElementNS(NAMESPACE_TT, "style");
-                                generateAttributes(ss, ttStyle);
-                                styling.appendChild(ttStyle);
-                                styleIds.add(id);
+            if (styling != null) {
+                Traverse.traverseElements(d, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element e = (Element) content;
+                        if (styleSets.containsKey(e)) {
+                            StyleSet ss = styleSets.get(e);
+                            String id = ss.getId();
+                            if (!id.isEmpty()) {
+                                e.setAttribute("style", id);
+                                if (!styleIds.contains(id)) {
+                                    Element ttStyle = d.createElementNS(NAMESPACE_TT, "style");
+                                    generateAttributes(ss, ttStyle);
+                                    styling.appendChild(ttStyle);
+                                    styleIds.add(id);
+                                }
                             }
+                            pruneStyles(e);
                         }
-                        pruneStyles(e);
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            }
         } catch (Exception e) {
             getReporter().logError(e);
         }
@@ -3131,6 +3135,9 @@ public class Converter implements ConverterContext {
         public boolean isEmphasis() {
             return specification.name.startsWith("ルビ") && isEmphasisAnnotation();
         }
+        public boolean isCombine() {
+            return specification.name.equals("組");
+        }
         public boolean isEmphasisAnnotation() {
             if (annotation != null) {
                 int i = 0;
@@ -3531,16 +3538,14 @@ public class Converter implements ConverterContext {
             finish();
         }
         public void populate(Head head) {
-            if (hasStyle()) {
-                Styling styling = ttmlFactory.createStyling();
-                head.setStyling(styling);
-            }
-            if (hasRegion()) {
-                Layout layout = ttmlFactory.createLayout();
-                for (Region r : regions.values())
-                    layout.getRegion().add(r);
-                head.setLayout(layout);
-            }
+            // styling
+            Styling styling = ttmlFactory.createStyling();
+            head.setStyling(styling);
+            // layout
+            Layout layout = ttmlFactory.createLayout();
+            for (Region r : regions.values())
+                layout.getRegion().add(r);
+            head.setLayout(layout);
         }
         public void populate(Body body, String defaultRegion) {
             if (hasParagraph()) {
@@ -3553,12 +3558,6 @@ public class Converter implements ConverterContext {
         }
         private void finish() {
             process((Screen) null);
-        }
-        private boolean hasRegion() {
-            return !regions.isEmpty();
-        }
-        private boolean hasStyle() {
-            return !styles.isEmpty();
         }
         private boolean hasParagraph() {
             return !division.getBlockOrEmbeddedClass().isEmpty();
@@ -3654,6 +3653,8 @@ public class Converter implements ConverterContext {
                 return createEmphasis(text, a);
             else if (a.isRuby())
                 return createRuby(text, a);
+            else if (a.isCombine())
+                return createCombine(text, a);
             else
                 return createStyledSpan(text, a);
         }
@@ -3675,6 +3676,12 @@ public class Converter implements ConverterContext {
             sCont.getContent().add(ttmlFactory.createSpan(sBase));
             sCont.getContent().add(ttmlFactory.createSpan(sText));
             return sCont;
+        }
+        private Span createCombine(String text, Attribute a) {
+            Span s = ttmlFactory.createSpan();
+            s.getOtherAttributes().put(ttsTextCombineAttrName, "all");
+            s.getContent().add(text);
+            return s;
         }
         private Span createStyledSpan(String text, Attribute a) {
             Span s = ttmlFactory.createSpan();

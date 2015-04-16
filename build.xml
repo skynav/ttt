@@ -365,6 +365,9 @@
       <arg value="${basedir}/run/out"/>
       <arg value="--output-indent"/>
       <arg value="${cap2tt.test.resources.source.dir}/com/skynav/cap2tt/samples/sample-001.cap"/>
+      <arg value="${cap2tt.test.resources.source.dir}/com/skynav/cap2tt/samples/sample-002.cap"/>
+      <arg value="${cap2tt.test.resources.source.dir}/com/skynav/cap2tt/samples/sample-003.cap"/>
+      <arg value="${cap2tt.test.resources.source.dir}/com/skynav/cap2tt/samples/sample-004.cap"/>
     </java>
   </sequential>
 </macrodef>
