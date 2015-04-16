@@ -55,7 +55,7 @@ public class Message {
         return toText(bundle, false, false);
     }
     public String toText(ResourceBundle bundle, boolean hideLocation, boolean hidePath) {
-        String format = (bundle != null) ? bundle.getString(this.key) : null;
+        String format = ((bundle != null) && (this.key != null)) ? bundle.getString(this.key) : null;
         if (format == null)
             format = this.format;
         return MessageFormat.format(format, this.arguments);
