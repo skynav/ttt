@@ -254,9 +254,10 @@ public class Converter implements ConverterContext {
         { "merge-styles",               "[BOOLEAN]","merge styles (default: see configuration)" },
         { "no-warn-on",                 "TOKEN",    "disable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
         { "no-verbose",                 "",         "disable verbose output (resets verbosity level to 0)" },
-        { "output-directory",           "DIRECTORY","specify path to directory where TTML output is to be written" },
+        { "output-directory",           "DIRECTORY","specify path to directory where TTML output is to be written; ignored if --output-file is specified" },
         { "output-disable",             "[BOOLEAN]","disable output (default: false)" },
         { "output-encoding",            "ENCODING", "specify character encoding of TTML output (default: " + defaultOutputEncoding.name() + ")" },
+        { "output-file",                "FILE",     "specify path to TTML output file, in which case only single input URI may be specified" },
         { "output-pattern",             "PATTERN",  "specify TTML output file name pattern" },
         { "output-indent",              "",         "indent TTML output (default: no indent)" },
         { "quiet",                      "",         "don't show banner" },
@@ -405,6 +406,7 @@ public class Converter implements ConverterContext {
     private String outputDirectoryPath;
     private boolean outputDisabled;
     private String outputEncodingName;
+    private String outputFilePath;
     private String outputPattern;
     private boolean outputIndent;
     private boolean quiet;
@@ -417,6 +419,7 @@ public class Converter implements ConverterContext {
     private Charset forceEncoding;
     private File outputDirectory;
     private Charset outputEncoding;
+    private File outputFile;
     private double parsedExternalFrameRate;
     private double parsedExternalDuration;
     private double[] parsedExternalExtent;
@@ -683,6 +686,10 @@ public class Converter implements ConverterContext {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
             outputEncodingName = args[++index];
+        } else if (option.equals("output-file")) {
+            if (index + 1 > args.length)
+                throw new MissingOptionArgumentException("--" + option);
+            outputFilePath = args[++index];
         } else if (option.equals("output-pattern")) {
             if (index + 1 > args.length)
                 throw new MissingOptionArgumentException("--" + option);
@@ -846,15 +853,33 @@ public class Converter implements ConverterContext {
         } else
             forceEncoding = null;
         this.forceEncoding = forceEncoding;
+        // output file
+        File outputFile;
+        if (outputFilePath != null) {
+            outputFile = new File(outputFilePath);
+            if (!outputFile.isAbsolute())
+                outputFile = new File(".", outputFilePath);
+            File outputFileDirectory = IOUtil.getDirectory(outputFile);
+            if ((outputFileDirectory == null) || !outputFileDirectory.exists())
+                throw new InvalidOptionUsageException("output-file", reporter.message("x.018", "directory does not exist: {0}", outputFile.getPath()));
+        } else
+            outputFile = null;
+        this.outputFile = outputFile;
+        // output directory
         File outputDirectory;
         if (outputDirectoryPath != null) {
-            outputDirectory = new File(outputDirectoryPath);
-            if (!outputDirectory.exists())
-                throw new InvalidOptionUsageException("output-directory", reporter.message("x.013", "directory does not exist: {0}", outputDirectoryPath));
-            else if (!outputDirectory.isDirectory())
-                throw new InvalidOptionUsageException("output-directory", reporter.message("x.014", "not a directory: {0}", outputDirectoryPath));
+            if (outputFilePath == null) {
+                outputDirectory = new File(outputDirectoryPath);
+                if (!outputDirectory.exists())
+                    throw new InvalidOptionUsageException("output-directory", reporter.message("x.013", "directory does not exist: {0}", outputDirectoryPath));
+                else if (!outputDirectory.isDirectory())
+                    throw new InvalidOptionUsageException("output-directory", reporter.message("x.014", "not a directory: {0}", outputDirectoryPath));
+            } else {
+                reporter.logInfo(reporter.message("i.021", "The ''{0}'' option will be ignored due to explicit use of ''{1}'' option.", "output-directory", "output-file"));
+                outputDirectory = null;
+            }
         } else
-            outputDirectory = new File(".");
+            outputDirectory = (outputFile == null) ? new File(".") : null;
         this.outputDirectory = outputDirectory;
         Charset outputEncoding;
         if (outputEncodingName != null) {
@@ -881,6 +906,13 @@ public class Converter implements ConverterContext {
     private List<String> processOptionsAndArgs(List<String> nonOptionArgs, OptionProcessor optionProcessor) {
         processConfigurationOptions(configuration.getOptions(), optionProcessor);
         processDerivedOptions(optionProcessor);
+        return processNonOptionArguments(nonOptionArgs, optionProcessor);
+    }
+
+    private List<String> processNonOptionArguments(List<String> nonOptionArgs, OptionProcessor optionProcessor) {
+        if ((outputFile != null) && (nonOptionArgs.size() > 1)) {
+            throw new InvalidOptionUsageException("output-file", getReporter().message("x.019", "must not be used when multiple URL arguments are specified"));
+        }
         if (optionProcessor != null)
             nonOptionArgs = optionProcessor.processNonOptionArguments(nonOptionArgs);
         return nonOptionArgs;
@@ -2779,10 +2811,10 @@ public class Converter implements ConverterContext {
         if (isStandardOutput(outputFileName))
             return System.out;
         else {
-            File outputFile = new File(outputDirectory, outputFileName).getCanonicalFile();
+            File f = (outputFile != null) ? outputFile : new File(outputDirectory, outputFileName).getCanonicalFile();
             if (retOutputFile != null)
-                retOutputFile[0] = outputFile;
-            return new FileOutputStream(outputFile);
+                retOutputFile[0] = f;
+            return new FileOutputStream(f);
         }
     }
 
