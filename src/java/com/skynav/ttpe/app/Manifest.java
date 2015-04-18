@@ -39,7 +39,9 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -105,7 +107,7 @@ public class Manifest {
             d.appendChild(addFrames(d, frames, format));
             Namespaces.normalize(d, prefixes);
             write(os, d, encoding, indent, context);
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
             reporter.logError(e);
         }
     }
@@ -165,7 +167,7 @@ public class Manifest {
             bw.close();
             byte[] bytes = bas.toByteArray();
             os.write(bytes, 0, bytes.length);
-        } catch (Exception e) {
+        } catch (TransformerException e) {
             reporter.logError(e);
         } finally {
             if (bw != null) {

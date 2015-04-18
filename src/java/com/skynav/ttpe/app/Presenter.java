@@ -382,7 +382,7 @@ public class Presenter extends TimedTextTransformer {
             outputPattern = defaultOutputFileNamePattern;
         this.outputPattern = outputPattern;
         // output pattern for isd
-        String outputPatternISD = null;
+        String outputPatternISD = this.outputPatternISD;
         if (outputPatternISD == null)
             outputPatternISD = defaultOutputFileNamePatternISD;
         this.outputPatternISD = outputPatternISD;
@@ -654,7 +654,9 @@ public class Presenter extends TimedTextTransformer {
                 reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
                 f.setFile(outputFile);
             }
-        } catch (Exception e) {
+        } catch (TransformerException e) {
+            reporter.logError(e);
+        } catch (IOException e) {
             reporter.logError(e);
         } finally {
             if (bw != null) {

@@ -33,6 +33,7 @@ public class ViewportArea extends BoundedBlockArea {
 
     public ViewportArea(Element e, double width, double height, boolean clip) {
         super(e, width, height);
+        this.clip = clip;
     }
 
     public boolean getClip() {

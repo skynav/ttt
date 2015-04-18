@@ -26,6 +26,7 @@
 package com.skynav.ttpe.layout;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,13 @@ public abstract class LayoutProcessor implements TransformerOptions, Layout {
             try {
                 Constructor<? extends LayoutProcessor> constructor = cls.getDeclaredConstructor(new Class<?>[] { TransformerContext.class });
                 return constructor.newInstance(new Object[] { context });
-            } catch (Exception e) {
+            } catch (NoSuchMethodException e) {
+                return null;
+            } catch (IllegalAccessException e) {
+                return null;
+            } catch (InvocationTargetException e) {
+                return null;
+            } catch (InstantiationException e) {
                 return null;
             }
         } else
