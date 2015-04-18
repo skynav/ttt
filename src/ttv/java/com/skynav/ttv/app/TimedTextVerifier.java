@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -47,6 +48,7 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -235,6 +237,44 @@ public class TimedTextVerifier implements VerifierContext {
         { "xsi-no-namespace-schema-location",           Boolean.TRUE,   "'xsi:noNamespaceSchemaLocation' attribute used"},
         { "xsi-other-attribute",                        Boolean.FALSE,  "'xsi:nil' or 'xsi:type' attribute used"},
     };
+
+    // encodings
+    private static final Charset defaultEncoding;
+    private static final Charset defaultOutputEncoding;
+    private static final Charset asciiEncoding;
+    static {
+        Charset de, ae;
+        try {
+            de = Charset.forName(DEFAULT_ENCODING);
+            ae = Charset.forName("US-ASCII");
+        } catch (RuntimeException e) {
+            de = Charset.defaultCharset();
+            ae = null;
+        }
+        defaultEncoding = de;
+        defaultOutputEncoding = defaultEncoding;
+        asciiEncoding = ae;
+    }
+    private static final List<Charset> permittedEncodings;
+    static {
+        List<Charset> l = new java.util.ArrayList<Charset>();
+        try {
+            l.add(Charset.forName("US-ASCII"));
+            l.add(Charset.forName("ISO-8859-1"));
+            l.add(Charset.forName("UTF-8"));
+            l.add(Charset.forName("UTF-16LE"));
+            l.add(Charset.forName("UTF-16BE"));
+            l.add(Charset.forName("UTF-16"));
+            l.add(Charset.forName("UTF-32LE"));
+            l.add(Charset.forName("UTF-32BE"));
+            l.add(Charset.forName("UTF-32"));
+        } catch (RuntimeException e) {
+        }
+        permittedEncodings = Collections.unmodifiableList(l);
+    }
+
+    // miscellaneous statics
+    private static final QName emptyName = new QName("", "");
 
     // options state
     private String expectedErrors;
@@ -445,16 +485,6 @@ public class TimedTextVerifier implements VerifierContext {
             return this.model;
     }
 
-    private static Charset defaultEncoding;
-
-    static {
-        try {
-            defaultEncoding = Charset.forName(DEFAULT_ENCODING);
-        } catch (RuntimeException e) {
-            defaultEncoding = Charset.defaultCharset();
-        }
-    }
-
     public Charset getEncoding() {
         if (this.forceEncoding != null)
             return this.forceEncoding;
@@ -464,8 +494,6 @@ public class TimedTextVerifier implements VerifierContext {
             return defaultEncoding;
     }
 
-    private static final QName qnEmpty = new QName("", "");
-
     @Override
     public QName getBindingElementName(Object value) {
         Node xmlNode = binder.getXMLNode(value);
@@ -473,12 +501,12 @@ public class TimedTextVerifier implements VerifierContext {
             Object jaxbBinding = binder.getJAXBNode(xmlNode);
             if (jaxbBinding instanceof JAXBElement<?>) {
                 JAXBElement<?> jaxbNode = (JAXBElement<?>) jaxbBinding;
-                if (jaxbNode != null)
-                    return jaxbNode.getName();
+                assert jaxbNode != null;
+                return jaxbNode.getName();
             } else
                 return new QName(xmlNode.getNamespaceURI(), xmlNode.getLocalName());
         }
-        return qnEmpty;
+        return emptyName;
     }
 
     @Override
@@ -866,7 +894,7 @@ public class TimedTextVerifier implements VerifierContext {
 
     private PrintWriter getShowOutput() {
         if (showOutput == null)
-            showOutput = new PrintWriter(System.err);
+            showOutput = new PrintWriter(new OutputStreamWriter(System.err, defaultOutputEncoding));
         return showOutput;
     }
 
@@ -1022,14 +1050,9 @@ public class TimedTextVerifier implements VerifierContext {
             URI uri = new URI(uriString);
             if (!uri.isAbsolute()) {
                 URI uriCurrentDirectory = getCWDAsURI();
-                if (uriCurrentDirectory != null) {
-                    URI uriAbsolute = uriCurrentDirectory.resolve(uri);
-                    if (uriAbsolute != null)
-                        uri = uriAbsolute;
-                } else {
-                    reporter.logError(reporter.message("*KEY*", "Unable to resolve relative URI: '{'{0}'}'", uriString));
-                    uri = null;
-                }
+                URI uriAbsolute = uriCurrentDirectory.resolve(uri);
+                if (uriAbsolute != null)
+                    uri = uriAbsolute;
             }
             return uri;
         } catch (URISyntaxException e) {
@@ -1053,25 +1076,9 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.logError(e);
             os = null;
         } finally {
-            if (is != null)
-                try { is.close(); } catch (Exception e) {}
+            IOUtil.closeSafely(is);
         }
         return (os != null) ? ByteBuffer.wrap(os.toByteArray()) : null;
-    }
-
-    private static final List<Charset> permittedEncodings;
-
-    static {
-        permittedEncodings = new java.util.ArrayList<Charset>();
-        try { permittedEncodings.add(Charset.forName("US-ASCII")); } catch (RuntimeException e) {}
-        try { permittedEncodings.add(Charset.forName("ISO-8859-1")); } catch (RuntimeException e) {}
-        try { permittedEncodings.add(Charset.forName("UTF-8")); } catch (RuntimeException e) {}
-        try { permittedEncodings.add(Charset.forName("UTF-16LE")); } catch (RuntimeException e) {}
-        try { permittedEncodings.add(Charset.forName("UTF-16BE")); } catch (RuntimeException e) {}
-        try { permittedEncodings.add(Charset.forName("UTF-16")); } catch (RuntimeException e) {}
-        try { permittedEncodings.add(Charset.forName("UTF-32LE")); } catch (RuntimeException e) {}
-        try { permittedEncodings.add(Charset.forName("UTF-32BE")); } catch (RuntimeException e) {}
-        try { permittedEncodings.add(Charset.forName("UTF-32")); } catch (RuntimeException e) {}
     }
 
     public static Charset[] getPermittedEncodings() {
@@ -1166,16 +1173,6 @@ public class TimedTextVerifier implements VerifierContext {
         }
         newBuffer.flip();
         return newBuffer;
-    }
-
-    private static Charset asciiEncoding;
-
-    static {
-        try {
-            asciiEncoding = Charset.forName("US-ASCII");
-        } catch (RuntimeException e) {
-            asciiEncoding = null;
-        }
     }
 
     private String[] parseLines(CharBuffer cb, Charset encoding) {
@@ -1678,7 +1675,9 @@ public class TimedTextVerifier implements VerifierContext {
                     if (pv != null)
                         sb.append("SAX property: {" + ppn + "}: " + pv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
+                    continue;
                 } catch (SAXNotSupportedException e) {
+                    continue;
                 }
             }
             for (String fn : saxFeatureNames) {
@@ -1688,7 +1687,9 @@ public class TimedTextVerifier implements VerifierContext {
                     if (pv != null)
                         sb.append("SAX feature: {" + pfn + "}: " + pv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
+                    continue;
                 } catch (SAXNotSupportedException e) {
+                    continue;
                 }
             }
             for (String pn : jaxpPropertyNames) {
@@ -1698,7 +1699,9 @@ public class TimedTextVerifier implements VerifierContext {
                     if (pv != null)
                         sb.append("JAXP property: {" + ppn + "}: " + pv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
+                    continue;
                 } catch (SAXNotSupportedException e) {
+                    continue;
                 }
             }
             for (String fn : jaxpFeatureNames) {
@@ -1708,7 +1711,9 @@ public class TimedTextVerifier implements VerifierContext {
                     if (fv != null)
                         sb.append("JAXP feature: {" + pfn + "}: " + fv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
+                    continue;
                 } catch (SAXNotSupportedException e) {
+                    continue;
                 }
             }
             for (String pn : xercesPropertyNames) {
@@ -1718,7 +1723,9 @@ public class TimedTextVerifier implements VerifierContext {
                     if (pv != null)
                         sb.append("XERCES property: {" + ppn + "}: " + pv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
+                    continue;
                 } catch (SAXNotSupportedException e) {
+                    continue;
                 }
             }
             for (String fn : xercesFeatureNames) {
@@ -1728,7 +1735,9 @@ public class TimedTextVerifier implements VerifierContext {
                     if (fv != null)
                         sb.append("XERCES feature: {" + pfn + "}: " + fv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
+                    continue;
                 } catch (SAXNotSupportedException e) {
+                    continue;
                 }
             }
         }
@@ -1739,19 +1748,28 @@ public class TimedTextVerifier implements VerifierContext {
         try {
             Class<?> ofc = jaxbClass.getClassLoader().loadClass(jaxbClass.getPackage().getName() + ".ObjectFactory");
             return ((JAXBElement<?>) ofc.getDeclaredMethod(creatorMethod, jaxbClass).invoke(ofc.newInstance(), new Object[] { null } )).getName();
-        } catch (Exception e) {
-            return new QName("", "");
+        } catch (ClassNotFoundException e) {
+            return emptyName;
+        } catch (IllegalAccessException e) {
+            return emptyName;
+        } catch (InstantiationException e) {
+            return emptyName;
+        } catch (InvocationTargetException e) {
+            return emptyName;
+        } catch (NoSuchMethodException e) {
+            return emptyName;
         }
     }
 
     private String getContentClassNames(Map<Class<?>,String> contentClasses) {
         StringBuffer sb = new StringBuffer();
         sb.append('{');
-        for (Class<?> contentClass : contentClasses.keySet()) {
+        for (Map.Entry<Class<?>,String> e : contentClasses.entrySet()) {
+            Class<?> contentClass = e.getKey();
             if (sb.length() > 0)
                 sb.append(",");
             sb.append('<');
-            sb.append(getXmlElementDecl(contentClass, contentClasses.get(contentClass)));
+            sb.append(getXmlElementDecl(contentClass, e.getValue()));
             sb.append('>');
         }
         sb.append('}');
@@ -2323,7 +2341,7 @@ public class TimedTextVerifier implements VerifierContext {
         }
     }
 
-    private class LocationAnnotatingFilter extends XMLFilterImpl {
+    private static class LocationAnnotatingFilter extends XMLFilterImpl {
 
         private Locator currentLocator;
 
@@ -2369,30 +2387,34 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     public static class Results {
+
         private static final String NOURI = "*URI NOT AVAILABLE*";
         private static final String NOENCODING = "*ENCODING NOT AVAILABLE*";
         private static final String NOMODEL = "*MODEL NOT AVAILABLE*";
-        public String uriString;
-        public boolean passed;
-        public int code;
-        public int flags;
-        public int errorsExpected;
-        public int errors;
-        public int warningsExpected;
-        public int warnings;
-        public String modelName;
-        public String encodingName;
-        public QName root;
+
+        private String uriString;
+        private boolean succeeded;
+        private int code;
+        private int flags;
+        private int errorsExpected;
+        private int errors;
+        private int warningsExpected;
+        private int warnings;
+        private String modelName;
+        private String encodingName;
+        private QName root;
+
         public Results() {
             this.uriString = NOURI;
-            this.passed = false;
+            this.succeeded = false;
             this.code = RV_USAGE;
             this.modelName = NOMODEL;
             this.encodingName = NOENCODING;
         }
-        Results(String uriString, int rv, int errorsExpected, int errors, int warningsExpected, int warnings, Model model, Charset encoding, QName root) {
+
+        public Results(String uriString, int rv, int errorsExpected, int errors, int warningsExpected, int warnings, Model model, Charset encoding, QName root) {
             this.uriString = uriString;
-            this.passed = rvPassed(rv);
+            this.succeeded = rvPassed(rv);
             this.code = rvCode(rv);
             this.flags = rvFlags(rv);
             this.errorsExpected = errorsExpected;
@@ -2408,17 +2430,66 @@ public class TimedTextVerifier implements VerifierContext {
             else
                 this.encodingName = "unknown";
             this.root = root;
-       }
+        }
+
+        public String getURIString() {
+            return uriString;
+        }
+
+        public boolean getSucceeded() {
+            return succeeded;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public int getFlags() {
+            return flags;
+        }
+
+        public int getErrorsExpected() {
+            return errorsExpected;
+        }
+
+        public int getErrors() {
+            return errors;
+        }
+
+        public int getWarningsExpected() {
+            return warningsExpected;
+        }
+
+        public int getWarnings() {
+            return warnings;
+        }
+
+        public String getModelName() {
+            return modelName;
+        }
+
+        public String getEncodingName() {
+            return encodingName;
+        }
+
+        public QName getRoot() {
+            return root;
+        }
+
     }
 
     public static class ExternalParametersStore implements ExternalParameters {
+
         private Map<String, Object> parameters = new java.util.HashMap<String, Object>();
+
         public Object getParameter(String name) {
             return parameters.get(name);
         }
+
         public Object setParameter(String name, Object value) {
             return parameters.put(name, value);
         }
+
     }
 
 }

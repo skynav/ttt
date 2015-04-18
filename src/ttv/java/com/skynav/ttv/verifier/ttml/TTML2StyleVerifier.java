@@ -361,9 +361,10 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             initials = new java.util.HashMap<QName,Object>();
             context.setResourceState("initials", initials);
         }
-        for (QName name : accessors.keySet()) {
+        for (Map.Entry<QName,StyleAccessor> e : accessors.entrySet()) {
+            QName name = e.getKey();
             if (isStyleAttribute(name)) {
-                StyleAccessor sa = accessors.get(name);
+                StyleAccessor sa = e.getValue();
                 Object value = sa.getStyleValue(initial);
                 if (value != null)
                     initials.put(name, value);

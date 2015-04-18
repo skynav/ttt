@@ -168,8 +168,8 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
     private boolean verifyDuplicate(Object information, Locator locator, VerifierContext context) {
         boolean failed = false;
         String key = getModel().getName() + ".informationAlreadyPresent";
-        Object informationAlreadyPresent = context.getResourceState(key);
-        if (informationAlreadyPresent == Boolean.TRUE) {
+        Boolean informationAlreadyPresent = (Boolean) context.getResourceState(key);
+        if ((informationAlreadyPresent != null) && informationAlreadyPresent) {
             QName name = context.getBindingElementName(information);
             Reporter reporter = context.getReporter();
             reporter.logError(reporter.message(locator, "*KEY*", "SMPTE element '" + name + "' is already present, only one instance allowed.", name));

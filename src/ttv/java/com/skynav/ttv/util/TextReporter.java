@@ -26,8 +26,10 @@
 package com.skynav.ttv.util;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.net.URI;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -135,7 +137,9 @@ public class TextReporter implements Reporter {
     }
 
     public void setLines(String[] lines) {
-        resourceLines = lines;
+        String[] sa = new String[lines.length];
+        System.arraycopy(lines, 0, sa, 0, sa.length);
+        resourceLines = sa;
     }
 
     public void hidePath() {
@@ -176,7 +180,13 @@ public class TextReporter implements Reporter {
 
     public PrintWriter getOutput() {
         if (output == null) {
-            output = new PrintWriter(System.out);
+            Charset defaultEncoding;
+            try {
+                defaultEncoding = Charset.forName(DEFAULT_ENCODING);
+            } catch (RuntimeException e) {
+                defaultEncoding = Charset.defaultCharset();
+            }
+            output = new PrintWriter(new OutputStreamWriter(System.err, defaultEncoding));
             outputDefaulted = true;
         }
         return output;

@@ -63,21 +63,30 @@ public class NFLXTT {
     public static final Model MODEL = new NFLXTTModel();
 
     public static class NFLXTTModel extends ST20522010Model {
+
         private String[] schemaResourceNames;
         private URI[] namespaceURIs;
         private URI profileNamespaceUri;
+        private Map<URI,Class<?>> profileSpecificationClasses;
+        private SemanticsVerifier semanticsVerifier;
+        private ParameterVerifier parameterVerifier;
+        private StyleVerifier styleVerifier;
+
         NFLXTTModel() {
             populate();
         }
+
         private void populate() {
             populateSchemaResourceNames();
             populateNamespaceURIs();
         }
+
         private void populateSchemaResourceNames() {
             List<String> resourceNames = new java.util.ArrayList<String>();
             resourceNames.addAll(Arrays.asList(super.getST20522010SchemaResourceNames()));
             this.schemaResourceNames = resourceNames.toArray(new String[resourceNames.size()]);
         }
+
         private void populateNamespaceURIs() {
             List<URI> namespaceURIs = new java.util.ArrayList<URI>();
             namespaceURIs.addAll(Arrays.asList(super.getST20522010NamespaceURIs()));
@@ -88,22 +97,27 @@ public class NFLXTT {
                 throw new RuntimeException(e);
             }
         }
+
         public String getName() {
             return MODEL_NAME;
         }
+
         public String[] getSchemaResourceNames() {
             return this.schemaResourceNames;
         }
+
         public URI[] getNamespaceURIs() {
             return this.namespaceURIs;
         }
+
         public URI getProfileNamespaceUri() {
             return this.profileNamespaceUri;
         }
+
         public URI getExtensionNamespaceUri() {
             return super.getExtensionNamespaceUri();
         }
-        private static Map<URI,Class<?>> profileSpecificationClasses;
+
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {
             if (profileSpecificationClasses == null) {
                 profileSpecificationClasses = new java.util.HashMap<URI,Class<?>>();
@@ -112,6 +126,7 @@ public class NFLXTT {
             }
             return profileSpecificationClasses;
         }
+
         public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
             if (!super.isGlobalAttributePermitted(attributeName, elementName))
                 return false;
@@ -128,32 +143,28 @@ public class NFLXTT {
             }
             return true;
         }
-        private SemanticsVerifier semanticsVerifier;
+
         public SemanticsVerifier getSemanticsVerifier() {
-            synchronized (this) {
-                if (semanticsVerifier == null) {
-                    semanticsVerifier = new NFLXTTSemanticsVerifier(this);
-                }
+            if (semanticsVerifier == null) {
+                semanticsVerifier = new NFLXTTSemanticsVerifier(this);
             }
             return semanticsVerifier;
         }
-        private ParameterVerifier parameterVerifier;
+
         public ParameterVerifier getParameterVerifier() {
-            synchronized (this) {
-                if (parameterVerifier == null) {
-                    parameterVerifier = new NFLXTTParameterVerifier(this);
-                }
+            if (parameterVerifier == null) {
+                parameterVerifier = new NFLXTTParameterVerifier(this);
             }
             return parameterVerifier;
         }
-        private StyleVerifier styleVerifier;
+
         public StyleVerifier getStyleVerifier() {
-            synchronized (this) {
-                if (styleVerifier == null) {
-                    styleVerifier = new NFLXTTStyleVerifier(this);
-                }
+            if (styleVerifier == null) {
+                styleVerifier = new NFLXTTStyleVerifier(this);
             }
             return styleVerifier;
         }
+
     }
+
 }

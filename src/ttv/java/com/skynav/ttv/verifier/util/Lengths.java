@@ -68,7 +68,7 @@ public class Lengths {
 
     private static Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*.\\d+|\\d+))(\\w+|%)?");
     public static boolean isLength(String value, Locator locator, VerifierContext context, Object[] treatments, Length[] outputLength) {
-        Reporter reporter = (context != null) ? context.getReporter() : null;
+        Reporter reporter = context.getReporter();
         Matcher m = lengthPattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() > 0;
@@ -125,7 +125,7 @@ public class Lengths {
                 return false;
             if (outputLength != null)
                 outputLength[0] = new LengthImpl(numberValue, unitsValue);
-            if ((context != null) && (locator != null))
+            if (locator != null)
                 updateUsage(context, locator, unitsValue);
             return true;
         } else
@@ -390,8 +390,8 @@ public class Lengths {
         List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
+        Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0], treatments[1] } : null;
         for (String component : lengthComponents) {
-            Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0], treatments[1] } : treatments;
             Length[] length = new Length[1];
             if (isLength(component, locator, context, treatmentsInner, length))
                 lengths.add(length[0]);

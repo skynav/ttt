@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.app;
 
+import java.util.Arrays;
+
 public class OptionSpecification implements Comparable<OptionSpecification> {
 
     public static final int OPTION_FIELD_LENGTH = 36;
@@ -55,23 +57,22 @@ public class OptionSpecification implements Comparable<OptionSpecification> {
 
     public int compareTo(OptionSpecification os) {
         int d = name.compareTo(os.name);
-        if (d < 0)
+        if (d < 0) {
             return d;
-        else if (d > 0)
+        } else if (d > 0) {
             return d;
-        else if ((parameters == null) && (os.parameters == null))
-            return 0;
-        else if ((parameters == null) && (os.parameters != null))
-            return -1;
-        else if ((parameters != null) && (os.parameters == null))
+        } else if (parameters == null) {
+            if (os.parameters == null)
+                return 0;
+            else
+                return -1;
+        } else if (os.parameters == null) {
             return 1;
-        else if (parameters.equals(os.parameters))
-            return 0;
-        else if (parameters.length < os.parameters.length)
+        } else if (parameters.length < os.parameters.length) {
             return -1;
-        else if (parameters.length > os.parameters.length)
+        } else if (parameters.length > os.parameters.length) {
             return 1;
-        else {
+        } else {
             assert parameters.length == os.parameters.length;
             for (int i = 0, n = parameters.length; i < n; ++i) {
                 String p1 = parameters[i];
@@ -90,7 +91,7 @@ public class OptionSpecification implements Comparable<OptionSpecification> {
     public int hashCode() {
         int hc = 23;
         hc = hc * 31 + name.hashCode();
-        hc = hc * 31 + ((parameters != null) ? parameters.hashCode() : 0);
+        hc = hc * 31 + ((parameters != null) ? Arrays.hashCode(parameters) : 0);
         return hc;
     }
 
@@ -98,14 +99,7 @@ public class OptionSpecification implements Comparable<OptionSpecification> {
     public boolean equals(Object o) {
         if (o instanceof OptionSpecification) {
             OptionSpecification os = (OptionSpecification) o;
-            if (!name.equals(os.name))
-                return false;
-            else if ((parameters != null) ^ (os.parameters != null))
-                return false;
-            else if ((parameters != null) && (os.parameters != null))
-                return parameters.equals(os.parameters);
-            else
-                return true;
+            return compareTo(os) == 0;
         } else
             return false;
     }

@@ -26,58 +26,180 @@
 package com.skynav.ttv.util;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ResourceBundle;
 
 import org.xml.sax.Locator;
 
 public class NullReporter implements Reporter {
+
     public static final Reporter REPORTER = new NullReporter();
-    private PrintWriter out = new PrintWriter(System.out);
-    public String getName() { return "null"; }
-    public boolean isOpen() { return true; }
-    public void open(Object... arguments) throws IOException {}
-    public void close() throws IOException {}
-    public void resetResourceState() {}
-    public void setResourceURI(String uri) {}
-    public void setResourceURI(URI uri) {}
-    public void setLines(String[] lines) {}
-    public void hidePath() {}
-    public void showPath() {}
-    public boolean isHidingPath() { return false; }
-    public void hideLocation() {}
-    public void showLocation() {}
-    public boolean isHidingLocation() { return false; }
-    public int getResourceErrors() { return 0; }
-    public int getResourceWarnings() { return 0; }
-    public void setOutput(PrintWriter out) { this.out = out; }
-    public PrintWriter getOutput() { return out; }
-    public void flush() { if (out != null) out.flush(); }
-    public void setBundle(ResourceBundle bundle) {}
-    public ResourceBundle getBundle() { return null; }
-    public void setVerbosityLevel(int level) {}
-    public void incrementVerbosityLevel() {}
-    public int getVerbosityLevel() { return 0; }
-    public void setDebugLevel(int level) {}
-    public void incrementDebugLevel() {}
-    public int getDebugLevel() { return 0; }
-    public Message message(String key, String format, Object... arguments) { return new Message(key, format, arguments); }
-    public Message message(Locator locator, String key, String format, Object... arguments) { return new LocatedMessage(locator, key, format, arguments); }
-    public void logError(Message message) {}
-    public void logError(Exception e) {}
-    public boolean hasDefaultWarning(String token) { return true; }
-    public void setTreatWarningAsError(boolean treatWarningAsError) {}
-    public boolean isTreatingWarningAsError() { return false; }
-    public boolean isWarningEnabled(String token) { return false; }
-    public void enableWarning(String token) {}
-    public void disableWarning(String token) {}
-    public void disableWarnings() {}
-    public boolean areWarningsDisabled() { return false; }
-    public void hideWarnings() {}
-    public boolean  areWarningsHidden() { return false; }
-    public boolean logWarning(Message message) { return false; }
-    public boolean logWarning(Exception e) { return false; }
-    public void logInfo(Message message) {}
-    public void logDebug(Message message) {}
+
+    private PrintWriter out;
+
+    public NullReporter() {
+    }
+
+    public String getName() {
+        return "null";
+    }
+
+    public boolean isOpen() {
+        return true;
+    }
+
+    public void open(Object... arguments) throws IOException {
+    }
+
+    public void close() throws IOException {
+    }
+
+    public void resetResourceState() {
+    }
+
+    public void setResourceURI(String uri) {
+    }
+
+    public void setResourceURI(URI uri) {
+    }
+
+    public void setLines(String[] lines) {
+    }
+
+    public void hidePath() {
+    }
+
+    public void showPath() {
+    }
+
+    public boolean isHidingPath() {
+        return false;
+    }
+
+    public void hideLocation() {
+    }
+
+    public void showLocation() {
+    }
+
+    public boolean isHidingLocation() {
+        return false;
+    }
+
+    public int getResourceErrors() {
+        return 0;
+    }
+
+    public int getResourceWarnings() {
+        return 0;
+    }
+
+    public void setOutput(PrintWriter out) {
+        this.out = out;
+    }
+
+    public PrintWriter getOutput() {
+        if (out == null) {
+            out = new PrintWriter(new OutputStreamWriter(System.err, Charset.defaultCharset()));
+        }
+        return out;
+    }
+
+    public void flush() {
+        if (out != null) out.flush();
+    }
+
+    public void setBundle(ResourceBundle bundle) {
+    }
+
+    public ResourceBundle getBundle() {
+        return null;
+    }
+
+    public void setVerbosityLevel(int level) {
+    }
+
+    public void incrementVerbosityLevel() {
+    }
+
+    public int getVerbosityLevel() {
+        return 0;
+    }
+
+    public void setDebugLevel(int level) {
+    }
+
+    public void incrementDebugLevel() {
+    }
+
+    public int getDebugLevel() {
+        return 0;
+    }
+
+    public Message message(String key, String format, Object... arguments) {
+        return new Message(key, format, arguments);
+    }
+
+    public Message message(Locator locator, String key, String format, Object... arguments) {
+        return new LocatedMessage(locator, key, format, arguments);
+    }
+
+    public void logError(Message message) {
+    }
+
+    public void logError(Exception e) {
+    }
+
+    public boolean hasDefaultWarning(String token) {
+        return true;
+    }
+
+    public void setTreatWarningAsError(boolean treatWarningAsError) {
+    }
+
+    public boolean isTreatingWarningAsError() {
+        return false;
+    }
+
+    public boolean isWarningEnabled(String token) {
+        return false;
+    }
+
+    public void enableWarning(String token) {
+    }
+
+    public void disableWarning(String token) {
+    }
+
+    public void disableWarnings() {
+    }
+
+    public boolean areWarningsDisabled() {
+        return false;
+    }
+
+    public void hideWarnings() {
+    }
+
+    public boolean  areWarningsHidden() {
+        return false;
+    }
+
+    public boolean logWarning(Message message) {
+        return false;
+    }
+
+    public boolean logWarning(Exception e) {
+        return false;
+    }
+
+    public void logInfo(Message message) {
+    }
+
+    public void logDebug(Message message) {
+    }
+
 }

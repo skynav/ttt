@@ -67,29 +67,27 @@ public class ExtentVerifier implements StyleValueVerifier {
         boolean failed = false;
         assert valueObject instanceof String;
         String value = (String) valueObject;
-        if (value != null) {
-            List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths(value, locator, context, null, null, lengths)) {
-                if (lengths.size() == 2) {
-                    Reporter reporter = context.getReporter();
-                    QName styleName = name;
-                    Length w = lengths.get(0);
-                    Length.Unit wUnits = w.getUnits();
-                    Length h = lengths.get(1);
-                    Length.Unit hUnits = h.getUnits();
-                    Length.Unit pxUnits = Length.Unit.Pixel;
-                    if (w.getUnits() != pxUnits) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*",
-                            "Bad units on {0} width on root element, got ''{1}'', expected ''{2}''.",
-                            styleName, wUnits.shorthand(), pxUnits.shorthand()));
-                        failed = true;
-                    }
-                    if (h.getUnits() != pxUnits) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*",
-                            "Bad units on {0} height on root element, got ''{1}'', expected ''{2}''.",
-                            styleName, hUnits.shorthand(), pxUnits.shorthand()));
-                        failed = true;
-                    }
+        List<Length> lengths = new java.util.ArrayList<Length>();
+        if (Lengths.isLengths(value, locator, context, null, null, lengths)) {
+            if (lengths.size() == 2) {
+                Reporter reporter = context.getReporter();
+                QName styleName = name;
+                Length w = lengths.get(0);
+                Length.Unit wUnits = w.getUnits();
+                Length h = lengths.get(1);
+                Length.Unit hUnits = h.getUnits();
+                Length.Unit pxUnits = Length.Unit.Pixel;
+                if (w.getUnits() != pxUnits) {
+                    reporter.logInfo(reporter.message(locator, "*KEY*",
+                        "Bad units on {0} width on root element, got ''{1}'', expected ''{2}''.",
+                        styleName, wUnits.shorthand(), pxUnits.shorthand()));
+                    failed = true;
+                }
+                if (h.getUnits() != pxUnits) {
+                    reporter.logInfo(reporter.message(locator, "*KEY*",
+                        "Bad units on {0} height on root element, got ''{1}'', expected ''{2}''.",
+                        styleName, hUnits.shorthand(), pxUnits.shorthand()));
+                    failed = true;
                 }
             }
         }

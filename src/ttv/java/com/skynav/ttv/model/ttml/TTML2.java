@@ -51,6 +51,7 @@ import com.skynav.ttv.verifier.ttml.TTML2TimingVerifier;
 
 
 public class TTML2 {
+
     public static class Constants extends TTML1.Constants {
         public static final String XSD_TTML2 = "xsd/ttml2/ttml2.xsd";
 
@@ -64,42 +65,63 @@ public class TTML2 {
 
         public static final String NAMESPACE_XLINK = "http://www.w3.org/1999/xlink";
     }
+
     public static final String MODEL_NAME = "ttml2";
     public static final int MODEL_VERSION = 2;
     public static final Model MODEL = new TTML2Model();
+
     public static class TTML2Model extends TTML1.TTML1Model {
+
         private String[] schemaResourceNames;
+        private Map<String,String> normalizedPrefixes2;
+        private Map<URI,Class<?>> profileSpecificationClasses;
+        private Profile.StandardDesignations standardDesignations;
+        private Map<Class<?>,String> rootClasses;
+        private SemanticsVerifier semanticsVerifier;
+        private ParameterVerifier parameterVerifier;
+        private ProfileVerifier profileVerifier;
+        private StyleVerifier styleVerifier;
+        private TimingVerifier timingVerifier;
+        private MetadataVerifier metadataVerifier;
+
         protected TTML2Model() {
             populate();
         }
+
         private void populate() {
             populateSchemaResourceNames();
         }
+
         private void populateSchemaResourceNames() {
             List<String> resourceNames = new java.util.ArrayList<String>();
             resourceNames.add(Constants.XSD_TTML2);
             this.schemaResourceNames = resourceNames.toArray(new String[resourceNames.size()]);
         }
+
         public String getName() {
             return MODEL_NAME;
         }
+
         public int getTTMLVersion() {
             return MODEL_VERSION;
         }
+
         public boolean isTTMLVersion(int version) {
             return getTTMLVersion() == MODEL_VERSION;
         }
+
         public String[] getTTSchemaResourceNames() {
             return schemaResourceNames;
         }
-        static protected Map<String,String> normalizedPrefixes2 = new java.util.HashMap<String,String>(normalizedPrefixes1);
-        static {
-            normalizedPrefixes2.put(Constants.NAMESPACE_XLINK, "xlink");
-        }
+
         public Map<String,String> getNormalizedPrefixes() {
+            if (normalizedPrefixes2 == null) {
+                normalizedPrefixes2 = new java.util.HashMap<String,String>(super.getNormalizedPrefixes());
+                normalizedPrefixes2.put(Constants.NAMESPACE_XLINK, "xlink");
+            }
             return normalizedPrefixes2;
         }
-        private static Map<URI,Class<?>> profileSpecificationClasses;
+
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {
             if (profileSpecificationClasses == null) {
                 profileSpecificationClasses = new java.util.HashMap<URI,Class<?>>(super.getProfileSpecificationClasses());
@@ -109,7 +131,7 @@ public class TTML2 {
             }
             return profileSpecificationClasses;
         }
-        Profile.StandardDesignations standardDesignations;
+
         public Profile.StandardDesignations getStandardDesignations() {
             if (standardDesignations == null)
                 standardDesignations = TTML2StandardDesignations.getInstance();
@@ -119,15 +141,16 @@ public class TTML2 {
         public String getJAXBContextPath() {
             return "com.skynav.ttv.model.ttml2.tt:com.skynav.ttv.model.ttml2.ttm:com.skynav.ttv.model.ttml2.ttp";
         }
-        private static final Map<Class<?>,String> rootClasses;
-        static {
-            rootClasses = new java.util.HashMap<Class<?>,String>();
-            rootClasses.put(com.skynav.ttv.model.ttml2.tt.TimedText.class, "createTt");
-            rootClasses.put(com.skynav.ttv.model.ttml2.ttp.Profile.class, "createProfile");
-        }
+
         public Map<Class<?>,String> getRootClasses() {
+            if (rootClasses == null) {
+                rootClasses = new java.util.HashMap<Class<?>,String>();
+                rootClasses.put(com.skynav.ttv.model.ttml2.tt.TimedText.class, "createTt");
+                rootClasses.put(com.skynav.ttv.model.ttml2.ttp.Profile.class, "createProfile");
+            }
             return rootClasses;
         }
+
         public Class<?> getIdReferenceTargetClass(QName attributeName) {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
@@ -144,59 +167,49 @@ public class TTML2 {
             }
             return Object.class;
         }
-        private SemanticsVerifier semanticsVerifier;
+
         public SemanticsVerifier getSemanticsVerifier() {
-            synchronized (this) {
-                if (semanticsVerifier == null) {
-                    semanticsVerifier = new TTML2SemanticsVerifier(this);
-                }
+            if (semanticsVerifier == null) {
+                semanticsVerifier = new TTML2SemanticsVerifier(this);
             }
             return semanticsVerifier;
         }
-        private ParameterVerifier parameterVerifier;
+
         public ParameterVerifier getParameterVerifier() {
-            synchronized (this) {
-                if (parameterVerifier == null) {
-                    parameterVerifier = new TTML2ParameterVerifier(this);
-                }
+            if (parameterVerifier == null) {
+                parameterVerifier = new TTML2ParameterVerifier(this);
             }
             return parameterVerifier;
         }
-        private ProfileVerifier profileVerifier;
+
         public ProfileVerifier getProfileVerifier() {
-            synchronized (this) {
-                if (profileVerifier == null) {
-                    profileVerifier = new TTML2ProfileVerifier(this);
-                }
+            if (profileVerifier == null) {
+                profileVerifier = new TTML2ProfileVerifier(this);
             }
             return profileVerifier;
         }
-        private StyleVerifier styleVerifier;
+
         public StyleVerifier getStyleVerifier() {
-            synchronized (this) {
-                if (styleVerifier == null) {
-                    styleVerifier = new TTML2StyleVerifier(this);
-                }
+            if (styleVerifier == null) {
+                styleVerifier = new TTML2StyleVerifier(this);
             }
             return styleVerifier;
         }
-        private TimingVerifier timingVerifier;
+
         public TimingVerifier getTimingVerifier() {
-            synchronized (this) {
-                if (timingVerifier == null) {
-                    timingVerifier = new TTML2TimingVerifier(this);
-                }
+            if (timingVerifier == null) {
+                timingVerifier = new TTML2TimingVerifier(this);
             }
             return timingVerifier;
         }
-        private MetadataVerifier metadataVerifier;
+
         public MetadataVerifier getMetadataVerifier() {
-            synchronized (this) {
-                if (metadataVerifier == null) {
-                    metadataVerifier = new TTML2MetadataVerifier(this);
-                }
+            if (metadataVerifier == null) {
+                metadataVerifier = new TTML2MetadataVerifier(this);
             }
             return metadataVerifier;
         }
+
     }
+
 }

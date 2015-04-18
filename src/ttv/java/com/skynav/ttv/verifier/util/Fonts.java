@@ -175,8 +175,8 @@ public class Fonts {
 
     public static void badFontFamilies(String value, Locator locator, VerifierContext context, Object[] treatments) {
         String [] familyItems = splitFontFamilies(value);
+        Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0] } : null;
         for (String item : familyItems) {
-            Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0] } : treatments;
             if (!isFontFamily(item, locator, context, treatmentsInner, null))
                 badFontFamily(item, locator, context, treatmentsInner);
         }

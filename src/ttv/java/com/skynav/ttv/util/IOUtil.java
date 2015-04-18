@@ -57,12 +57,14 @@ public class IOUtil {
         }
     }
 
-    public static void deleteSafely(File file) {
+    public static boolean deleteSafely(File file) {
+        boolean deleted = false;
         try {
             if (file != null)
-                file.delete();
+                deleted = file.delete();
         } catch (Throwable e) {
         }
+        return deleted;
     }
 
     public static void write(InputStream is, OutputStream os) throws IOException {

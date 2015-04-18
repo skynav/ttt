@@ -480,8 +480,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
 
     protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        for (QName name : accessors.keySet()) {
-            StyleAccessor sa = accessors.get(name);
+        for (StyleAccessor sa : accessors.values()) {
             if (!sa.verify(model, content, locator, context))
                 failed = true;
         }

@@ -94,17 +94,27 @@ public class ST20522010 {
     }
 
     public static class ST20522010Model extends TTML1Model {
+
+        private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createInformation(new Information()).getName();
+        private static final String[] contextPaths = new String[] { "com.skynav.ttv.model.smpte.tt.rel2010" };
+
         private String[] schemaResourceNames;
         private URI[] namespaceURIs;
         private URI profileNamespaceUri;
         private URI extensionNamespaceUri;
+        private Map<URI,Class<?>> profileSpecificationClasses;
+        private Profile.StandardDesignations standardDesignations;
+        private SemanticsVerifier semanticsVerifier;
+
         protected ST20522010Model() {
             populate();
         }
+
         private void populate() {
             populateSchemaResourceNames();
             populateNamespaceURIs();
         }
+
         private void populateSchemaResourceNames() {
             List<String> resourceNames = new java.util.ArrayList<String>();
             resourceNames.addAll(Arrays.asList(super.getTTSchemaResourceNames()));
@@ -112,6 +122,7 @@ public class ST20522010 {
             resourceNames.add(Constants.XSD_2010_CEA608);
             this.schemaResourceNames = resourceNames.toArray(new String[resourceNames.size()]);
         }
+
         private void populateNamespaceURIs() {
             List<URI> namespaceURIs = new java.util.ArrayList<URI>();
             namespaceURIs.addAll(Arrays.asList(super.getTTNamespaceURIs()));
@@ -125,28 +136,35 @@ public class ST20522010 {
                 throw new RuntimeException(e);
             }
         }
+
         public String getName() {
             return MODEL_NAME;
         }
+
         public String[] getST20522010SchemaResourceNames() {
             return this.schemaResourceNames;
         }
+
         public String[] getSchemaResourceNames() {
             return getST20522010SchemaResourceNames();
         }
+
         public URI[] getST20522010NamespaceURIs() {
             return this.namespaceURIs;
         }
+
         public URI[] getNamespaceURIs() {
             return getST20522010NamespaceURIs();
         }
+
         public URI getProfileNamespaceUri() {
             return this.profileNamespaceUri;
         }
+
         public URI getExtensionNamespaceUri() {
             return this.extensionNamespaceUri;
         }
-        private static Map<URI,Class<?>> profileSpecificationClasses;
+
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {
             if (profileSpecificationClasses == null) {
                 profileSpecificationClasses = new java.util.HashMap<URI,Class<?>>(super.getProfileSpecificationClasses());
@@ -154,13 +172,14 @@ public class ST20522010 {
             }
             return profileSpecificationClasses;
         }
-        Profile.StandardDesignations standardDesignations;
+
         public Profile.StandardDesignations getStandardDesignations() {
             if (standardDesignations == null) {
                 standardDesignations = ST20522010StandardDesignations.getInstance();
             }
             return standardDesignations;
         }
+
         public boolean isGlobalAttribute(QName name) {
             if (super.isGlobalAttribute(name))
                 return true;
@@ -195,10 +214,11 @@ public class ST20522010 {
             }
             return false;
         }
-        private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createInformation(new Information()).getName();
+
         public boolean isSMPTEInformationElement(QName name) {
             return name.equals(informationElementName);
         }
+
         public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
             if (super.isGlobalAttributePermitted(attributeName, elementName))
                 return true;
@@ -237,6 +257,7 @@ public class ST20522010 {
             }
             return false;
         }
+
         public boolean isElement(QName name) {
             if (super.isElement(name))
                 return true;
@@ -253,9 +274,7 @@ public class ST20522010 {
             }
             return false;
         }
-        private static final String[] contextPaths = new String[] {
-            "com.skynav.ttv.model.smpte.tt.rel2010"
-        };
+
         public String getJAXBContextPath() {
             StringBuffer sb = new StringBuffer(super.getJAXBContextPath());
             for (String path: contextPaths) {
@@ -264,6 +283,7 @@ public class ST20522010 {
             }
             return sb.toString();
         }
+
         public List<List<QName>> getElementPermissibleAncestors(QName elementName) {
             List<List<QName>> permissibleAncestors = super.getElementPermissibleAncestors(elementName);
             if (permissibleAncestors == null) {
@@ -283,14 +303,13 @@ public class ST20522010 {
             return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
         }
 
-        private SemanticsVerifier semanticsVerifier;
         public SemanticsVerifier getSemanticsVerifier() {
-            synchronized (this) {
-                if (semanticsVerifier == null) {
-                    semanticsVerifier = new ST20522010SemanticsVerifier(this);
-                }
+            if (semanticsVerifier == null) {
+                semanticsVerifier = new ST20522010SemanticsVerifier(this);
             }
             return semanticsVerifier;
         }
+
     }
+
 }

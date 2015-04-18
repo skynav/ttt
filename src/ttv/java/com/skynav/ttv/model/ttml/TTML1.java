@@ -88,7 +88,9 @@ public class TTML1 {
     public static final String MODEL_NAME = "ttml1";
     public static final int MODEL_VERSION = 1;
     public static final Model MODEL = new TTML1Model();
+
     public static class TTML1Model extends AbstractModel {
+
         public static final QName agentElementName = new com.skynav.ttv.model.ttml1.ttm.ObjectFactory().createAgent(new Agent()).getName();
         public static final QName bodyElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createBody(new Body()).getName();
         public static final QName divisionElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createDiv(new Division()).getName();
@@ -101,23 +103,42 @@ public class TTML1 {
         public static final QName styleElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createStyle(new Style()).getName();
         public static final QName stylingElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createStyling(new Styling()).getName();
         public static final QName timedTextElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createTt(new TimedText()).getName();
+
+        private static final Class<?>[] profileSpecificationConstructorParameterTypes = new Class<?>[] { URI.class };
+
         private String[] schemaResourceNames;
         private URI[] namespaceURIs;
         private URI profileNamespaceUri;
         private URI featureNamespaceUri;
         private URI extensionNamespaceUri;
+        private Map<String,String> normalizedPrefixes1;
+        private Map<URI,Class<?>> profileSpecificationClasses;
+        private Map<URI,Profile.Specification> profileSpecifications;
+        private Profile.StandardDesignations standardDesignations;
+        private List<QName> idAttributes;
+        private Map<Class<?>,String> rootClasses;
+        private SemanticsVerifier semanticsVerifier;
+        private ParameterVerifier parameterVerifier;
+        private ProfileVerifier profileVerifier;
+        private StyleVerifier styleVerifier;
+        private TimingVerifier timingVerifier;
+        private MetadataVerifier metadataVerifier;
+
         protected TTML1Model() {
             populate();
         }
+
         private void populate() {
             populateSchemaResourceNames();
             populateNamespaceURIs();
         }
+
         private void populateSchemaResourceNames() {
             List<String> resourceNames = new java.util.ArrayList<String>();
             resourceNames.add(Constants.XSD_TTML1);
             this.schemaResourceNames = resourceNames.toArray(new String[resourceNames.size()]);
         }
+
         private void populateNamespaceURIs() {
             List<URI> namespaceURIs = new java.util.ArrayList<URI>();
             try {
@@ -130,63 +151,78 @@ public class TTML1 {
                 this.featureNamespaceUri = new URI(Constants.NAMESPACE_TT_FEATURE);
                 this.extensionNamespaceUri = new URI(Constants.NAMESPACE_TT_EXTENSION);
             } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
             }
         }
+
         public String getName() {
             return MODEL_NAME;
         }
+
         public int getTTMLVersion() {
             return MODEL_VERSION;
         }
+
         public boolean isTTMLVersion(int version) {
             return getTTMLVersion() == MODEL_VERSION;
         }
+
         public String[] getTTSchemaResourceNames() {
             return schemaResourceNames;
         }
+
         public String[] getSchemaResourceNames() {
             return getTTSchemaResourceNames();
         }
+
         public URI[] getTTNamespaceURIs() {
             return namespaceURIs;
         }
+
         public URI[] getNamespaceURIs() {
             return getTTNamespaceURIs();
         }
+
         public final URI getTTProfileNamespaceUri() {
             return profileNamespaceUri;
         }
+
         public URI getProfileNamespaceUri() {
             return getTTProfileNamespaceUri();
         }
+
         public final URI getTTFeatureNamespaceUri() {
             return featureNamespaceUri;
         }
+
         public URI getFeatureNamespaceUri() {
             return getTTFeatureNamespaceUri();
         }
+
         public final URI getTTExtensionNamespaceUri() {
             return extensionNamespaceUri;
         }
+
         public URI getExtensionNamespaceUri() {
             return getTTExtensionNamespaceUri();
         }
-        static protected Map<String,String> normalizedPrefixes1 = new java.util.HashMap<String,String>();
-        static {
-            normalizedPrefixes1.put(XML.xmlNamespace, "xml");
-            normalizedPrefixes1.put(XML.xmlnsNamespace, "xmlns");
-            normalizedPrefixes1.put(XML.xsiNamespace, "xsi");
-            normalizedPrefixes1.put(Constants.NAMESPACE_TT, "");
-            normalizedPrefixes1.put(Constants.NAMESPACE_TT_METADATA, "ttm");
-            normalizedPrefixes1.put(Constants.NAMESPACE_TT_PARAMETER, "ttp");
-            normalizedPrefixes1.put(Constants.NAMESPACE_TT_STYLE, "tts");
-            normalizedPrefixes1.put(Constants.NAMESPACE_TT_ISD, "isd");
-            normalizedPrefixes1.put(Annotations.getNamespace(), Annotations.getNamespacePrefix());
-        }
+
         public Map<String,String> getNormalizedPrefixes() {
+            if (normalizedPrefixes1 == null) {
+                normalizedPrefixes1 = new java.util.HashMap<String,String>();
+                normalizedPrefixes1.put(XML.xmlNamespace, "xml");
+                normalizedPrefixes1.put(XML.xmlnsNamespace, "xmlns");
+                normalizedPrefixes1.put(XML.xsiNamespace, "xsi");
+                normalizedPrefixes1.put(Constants.NAMESPACE_TT, "");
+                normalizedPrefixes1.put(Constants.NAMESPACE_TT_METADATA, "ttm");
+                normalizedPrefixes1.put(Constants.NAMESPACE_TT_PARAMETER, "ttp");
+                normalizedPrefixes1.put(Constants.NAMESPACE_TT_STYLE, "tts");
+                normalizedPrefixes1.put(Constants.NAMESPACE_TT_ISD, "isd");
+                normalizedPrefixes1.put(Annotations.getNamespace(), Annotations.getNamespacePrefix());
+            }
             return normalizedPrefixes1;
         }
-        private static Map<URI,Class<?>> profileSpecificationClasses;
+
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {
             if (profileSpecificationClasses == null) {
                 profileSpecificationClasses = new java.util.HashMap<URI,Class<?>>();
@@ -196,22 +232,25 @@ public class TTML1 {
             }
             return profileSpecificationClasses;
         }
+
         public Set<URI> getProfileDesignators() {
             return getProfileSpecificationClasses().keySet();
         }
-        private static final Map<URI,Profile.Specification> profileSpecifications = new java.util.HashMap<URI,Profile.Specification>();
+
         public Profile.Specification getProfileSpecification(URI uri) {
-            if (profileSpecifications.containsKey(uri))
+            if ((profileSpecifications != null) && profileSpecifications.containsKey(uri))
                 return profileSpecifications.get(uri);
             else if (!getProfileSpecificationClasses().containsKey(uri))
                 return null;
             else {
                 Profile.Specification ps = createProfileSpecification(getProfileSpecificationClasses().get(uri), uri);
+                if (profileSpecifications == null)
+                    profileSpecifications = new java.util.HashMap<URI,Profile.Specification>();
                 profileSpecifications.put(uri, ps);
                 return ps;
             }
         }
-        private static final Class<?>[] profileSpecificationConstructorParameterTypes = new Class<?>[] { URI.class };
+
         protected Profile.Specification createProfileSpecification(Class<?> psc, URI uri) {
             try {
                 Object[] parameters = new Object[] { uri };
@@ -220,38 +259,42 @@ public class TTML1 {
                 throw new RuntimeException(e);
             }
         }
-        Profile.StandardDesignations standardDesignations;
+
         public Profile.StandardDesignations getStandardDesignations() {
             if (standardDesignations == null)
                 standardDesignations = TTML1StandardDesignations.getInstance();
             return standardDesignations;
         }
+
         public boolean isStandardFeatureDesignation(URI uri) {
             return getStandardDesignations().isStandardFeatureDesignation(uri);
         }
+
         public boolean isStandardExtensionDesignation(URI uri) {
             return getStandardDesignations().isStandardExtensionDesignation(uri);
         }
+
         public String getJAXBContextPath() {
             return "com.skynav.ttv.model.ttml1.tt:com.skynav.ttv.model.ttml1.ttm:com.skynav.ttv.model.ttml1.ttp";
         }
-        private static final List<QName> idAttributes;
-        static {
-            idAttributes = new java.util.ArrayList<QName>();
-            idAttributes.add(XML.getIdAttributeName());
-        }
+
         public List<QName> getIdAttributes() {
+            if (idAttributes == null) {
+                idAttributes = new java.util.ArrayList<QName>();
+                idAttributes.add(XML.getIdAttributeName());
+            }
             return idAttributes;
         }
-        private static final Map<Class<?>,String> rootClasses;
-        static {
-            rootClasses = new java.util.HashMap<Class<?>,String>();
-            rootClasses.put(com.skynav.ttv.model.ttml1.tt.TimedText.class, "createTt");
-            rootClasses.put(com.skynav.ttv.model.ttml1.ttp.Profile.class, "createProfile");
-        }
+
         public Map<Class<?>,String> getRootClasses() {
+            if (rootClasses == null) {
+                rootClasses = new java.util.HashMap<Class<?>,String>();
+                rootClasses.put(com.skynav.ttv.model.ttml1.tt.TimedText.class, "createTt");
+                rootClasses.put(com.skynav.ttv.model.ttml1.ttp.Profile.class, "createProfile");
+            }
             return rootClasses;
         }
+
         public QName getIdReferenceTargetName(QName attributeName) {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
@@ -268,6 +311,7 @@ public class TTML1 {
             }
             return null;
         }
+
         public Class<?> getIdReferenceTargetClass(QName attributeName) {
             String namespaceUri = attributeName.getNamespaceURI();
             String localName = attributeName.getLocalPart();
@@ -284,6 +328,7 @@ public class TTML1 {
             }
             return Object.class;
         }
+
         public List<List<QName>> getIdReferencePermissibleAncestors(QName attributeName) {
             List<List<QName>> permissibleAncestors = new java.util.ArrayList<List<QName>>();
             String namespaceUri = attributeName.getNamespaceURI();
@@ -309,80 +354,77 @@ public class TTML1 {
             }
             return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
         }
+
         public static boolean isEmptyNamespace(String namespaceUri) {
             return (namespaceUri == null) || (namespaceUri.length() == 0);
         }
+
         protected boolean isTTDivElement(QName name) {
             return name.equals(divisionElementName);
         }
+
         public Collection<QName> getDefinedStyleNames() {
             return getStyleVerifier().getDefinedStyleNames();
         }
+
         public Collection<QName> getApplicableStyleNames(QName eltName) {
             return getStyleVerifier().getApplicableStyleNames(eltName);
         }
+
         public boolean isInheritableStyle(QName eltName, QName styleName) {
             return getStyleVerifier().isInheritableStyle(eltName, styleName);
         }
+
         public String getInitialStyleValue(QName eltName, QName styleName) {
             return getStyleVerifier().getInitialStyleValue(eltName, styleName);
         }
+
         public boolean doesStyleApply(QName eltName, QName styleName) {
             return getStyleVerifier().doesStyleApply(eltName, styleName);
         }
-        private SemanticsVerifier semanticsVerifier;
+
         public SemanticsVerifier getSemanticsVerifier() {
-            synchronized (this) {
-                if (semanticsVerifier == null) {
-                    semanticsVerifier = new TTML1SemanticsVerifier(this);
-                }
+            if (semanticsVerifier == null) {
+                semanticsVerifier = new TTML1SemanticsVerifier(this);
             }
             return semanticsVerifier;
         }
-        private ParameterVerifier parameterVerifier;
+
         public ParameterVerifier getParameterVerifier() {
-            synchronized (this) {
-                if (parameterVerifier == null) {
-                    parameterVerifier = new TTML1ParameterVerifier(this);
-                }
+            if (parameterVerifier == null) {
+                parameterVerifier = new TTML1ParameterVerifier(this);
             }
             return parameterVerifier;
         }
-        private ProfileVerifier profileVerifier;
+
         public ProfileVerifier getProfileVerifier() {
-            synchronized (this) {
-                if (profileVerifier == null) {
-                    profileVerifier = new TTML1ProfileVerifier(this);
-                }
+            if (profileVerifier == null) {
+                profileVerifier = new TTML1ProfileVerifier(this);
             }
             return profileVerifier;
         }
-        private StyleVerifier styleVerifier;
+
         public StyleVerifier getStyleVerifier() {
-            synchronized (this) {
-                if (styleVerifier == null) {
-                    styleVerifier = new TTML1StyleVerifier(this);
-                }
+            if (styleVerifier == null) {
+                styleVerifier = new TTML1StyleVerifier(this);
             }
             return styleVerifier;
         }
-        private TimingVerifier timingVerifier;
+
         public TimingVerifier getTimingVerifier() {
-            synchronized (this) {
-                if (timingVerifier == null) {
-                    timingVerifier = new TTML1TimingVerifier(this);
-                }
+            if (timingVerifier == null) {
+                timingVerifier = new TTML1TimingVerifier(this);
             }
             return timingVerifier;
         }
-        private MetadataVerifier metadataVerifier;
+
         public MetadataVerifier getMetadataVerifier() {
-            synchronized (this) {
-                if (metadataVerifier == null) {
-                    metadataVerifier = new TTML1MetadataVerifier(this);
-                }
+            if (metadataVerifier == null) {
+                metadataVerifier = new TTML1MetadataVerifier(this);
             }
             return metadataVerifier;
         }
+
     }
+
 }

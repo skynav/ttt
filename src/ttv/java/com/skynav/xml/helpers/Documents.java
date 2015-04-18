@@ -166,12 +166,17 @@ public class Documents {
         String ns       = qn.getNamespaceURI();
         String ln       = qn.getLocalPart();
         String value;
-        if ((ns == null) || (ns.length() == 0))
-            value = e.getAttribute(ln);
-        else
-            value = e.getAttributeNS(ns, ln);
-        if (value == null)
-            value = defaultValue;
+        if ((ns == null) || (ns.length() == 0)) {
+            if (e.hasAttribute(ln))
+                value = e.getAttribute(ln);
+            else
+                value = defaultValue;
+        } else {
+            if (e.hasAttributeNS(ns, ln))
+                value = e.getAttributeNS(ns, ln);
+            else
+                value = defaultValue;
+        }
         return value;
     }
 

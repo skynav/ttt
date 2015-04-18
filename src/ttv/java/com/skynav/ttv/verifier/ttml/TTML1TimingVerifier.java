@@ -101,9 +101,8 @@ public class TTML1TimingVerifier implements TimingVerifier {
         if (isTimedText(content)) {
             verificationParameters = makeTimingVerificationParameters(content, context);
         } else {
-            for (QName name : accessors.keySet()) {
-                TimingAccessor sa = accessors.get(name);
-                if (!sa.verify(model, content, locator, context))
+            for (TimingAccessor ta : accessors.values()) {
+                if (!ta.verify(model, content, locator, context))
                     failed = true;
             }
         }

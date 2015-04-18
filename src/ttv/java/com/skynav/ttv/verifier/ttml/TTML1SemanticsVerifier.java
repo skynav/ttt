@@ -1144,7 +1144,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
 
     protected Object findAnimationBindingElement(Object animation, Node node) {
         if (animation instanceof Set)
-            return findAnimationBindingElement(animation, node);
+            return findSetBindingElement(animation, node);
         else
             return null;
     }

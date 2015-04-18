@@ -230,15 +230,11 @@ public class Integers {
 
     public static void badIntegers(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments) {
         Reporter reporter = context.getReporter();
-        List<Integer> integers = new java.util.ArrayList<Integer>();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
+        Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0], treatments[1] } : null;
         for (String component : integerComponents) {
-            Integer[] integer = new Integer[1];
-            Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0], treatments[1] } : treatments;
-            if (isInteger(component, locator, context, treatmentsInner, integer))
-                integers.add(integer[0]);
-            else
+            if (!isInteger(component, locator, context, treatmentsInner, null))
                 badInteger(component, locator, context, treatmentsInner);
         }
         if (minMax != null) {

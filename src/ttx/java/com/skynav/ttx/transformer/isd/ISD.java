@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -98,6 +99,7 @@ public class ISD {
     private static final String DEFAULT_OUTPUT_ENCODING         = AbstractTransformer.DEFAULT_OUTPUT_ENCODING;
 
     private static Charset defaultOutputEncoding;
+    private static final String defaultOutputFileNamePattern     = "isdi{0,number,000000}.xml";
 
     static {
         try {
@@ -144,7 +146,6 @@ public class ISD {
         private String outputDirectoryPath;
         private String outputEncodingName;
         private boolean outputIndent;
-        @SuppressWarnings("unused")
         private String outputPattern;
 
         // derived option state
@@ -204,6 +205,7 @@ public class ISD {
 
         @Override
         public void processDerivedOptions() {
+            // output directory
             File outputDirectory;
             if (outputDirectoryPath != null) {
                 outputDirectory = new File(outputDirectoryPath);
@@ -214,6 +216,7 @@ public class ISD {
             } else
                 outputDirectory = new File(".");
             this.outputDirectory = outputDirectory;
+            // output encoding
             Charset outputEncoding;
             if (outputEncodingName != null) {
                 try {
@@ -228,6 +231,11 @@ public class ISD {
             if (outputEncoding == null)
                 outputEncoding = defaultOutputEncoding;
             this.outputEncoding = outputEncoding;
+            // output pattern
+            String outputPattern = this.outputPattern;
+            if (outputPattern == null)
+                outputPattern = defaultOutputFileNamePattern;
+            this.outputPattern = outputPattern;
         }
 
         @Override
@@ -583,8 +591,9 @@ public class ISD {
                                 assert parent instanceof Element;
                                 Element eltParent = (Element) parent;
                                 pruneElement(elt, eltParent);
-                            } else if (elt != body)
-                                assert parent != null;
+                            } else if (elt != body) {
+                                assert false;
+                            }
                         }
                         return true;
                     }
@@ -1675,14 +1684,17 @@ public class ISD {
         private static void cleanOutputDirectory(File directory, TransformerContext context) {
             Reporter reporter = context.getReporter();
             reporter.logInfo(reporter.message("*KEY*", "Cleaning ISD artifacts from output directory ''{0}''...", directory.getPath()));
-            for (File f : directory.listFiles()) {
-                String name = f.getName();
-                if (name.indexOf("isd") != 0)
-                    continue;
-                else if (name.indexOf(".xml") != (name.length() - 4))
-                    continue;
-                else if (!f.delete())
-                    throw new TransformerException("unable to clean output directory: can't delete: '" + name + "'");
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    String name = f.getName();
+                    if (name.indexOf("isd") != 0)
+                        continue;
+                    else if (name.indexOf(".xml") != (name.length() - 4))
+                        continue;
+                    else if (!f.delete())
+                        throw new TransformerException("unable to clean output directory: can't delete: '" + name + "'");
+                }
             }
         }
 
@@ -1698,7 +1710,7 @@ public class ISD {
            FileOutputStream fos = null;
            BufferedOutputStream bos = null;
            try {
-               String outputFileName = "isd" + TTMLHelper.pad(sequenceIndex, 5) + ".xml";
+               String outputFileName = MessageFormat.format(outputPattern, sequenceIndex);
                File outputFile = new File(outputDirectory, outputFileName);
                fos = new FileOutputStream(outputFile);
                bos = new BufferedOutputStream(fos);

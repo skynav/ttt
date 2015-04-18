@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FindBugsFilter>
+  <!-- approved findbugs warning exclusions -->
+  <Match>
+    <Bug pattern="DM_GC"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttx.app.TimedTextTransformer"/>
+        <Method name="getUsedMemory"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttv.model.netflix.NFLXTT$NFLXTTModel"/>
+        <Method name="getNamespaceURIs"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.netflix.NFLXTT$NFLXTTModel"/>
+        <Method name="getSchemaResourceNames"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.smpte.ST20522010$ST20522010Model"/>
+        <Method name="getST20522010NamespaceURIs"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.smpte.ST20522010$ST20522010Model"/>
+        <Method name="getST20522010SchemaResourceNames"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.smpte.ST20522013$ST20522013Model"/>
+        <Method name="getNamespaceURIs"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.smpte.ST20522013$ST20522013Model"/>
+        <Method name="getSchemaResourceNames"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.ttml.TTML1$TTML1Model"/>
+        <Method name="getTTNamespaceURIs"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.ttml.TTML1$TTML1Model"/>
+        <Method name="getTTSchemaResourceNames"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.ttml.TTML2$TTML2Model"/>
+        <Method name="getTTSchemaResourceNames"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.util.Message"/>
+        <Method name="getArguments"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="URF_UNREAD_FIELD"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttv.verifier.ttml.TTML1MetadataVerifier$MetadataAccessor"/>
+        <Field name="setterName"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier"/>
+        <Field name="model"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.verifier.ttml.TTML1TimingVerifier$TimingAccessor"/>
+        <Field name="setterName"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.verifier.ttml.profile.ComputedProfileFactory"/>
+        <Field name="model"/>
+      </And>
+    </Or>
+  </Match>
+</FindBugsFilter>

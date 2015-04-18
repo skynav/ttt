@@ -122,9 +122,8 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
 
     protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        for (QName name : accessors.keySet()) {
-            MetadataAccessor sa = accessors.get(name);
-            if (!sa.verify(model, content, locator, context))
+        for (MetadataAccessor ma : accessors.values()) {
+            if (!ma.verify(model, content, locator, context))
                 failed = true;
         }
         return !failed;
@@ -266,7 +265,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         this.accessors = accessors;
     }
 
-    private class MetadataAccessor {
+    private static class MetadataAccessor {
 
         private QName metadataName;
         private String getterName;

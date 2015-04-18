@@ -219,9 +219,8 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
 
     protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        for (QName name : accessors.keySet()) {
-            ParameterAccessor sa = accessors.get(name);
-            if (!sa.verify(model, content, locator, context))
+        for (ParameterAccessor pa : accessors.values()) {
+            if (!pa.verify(model, content, locator, context))
                 failed = true;
         }
         return !failed;
