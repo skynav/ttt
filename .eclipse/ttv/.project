@@ -10,11 +10,22 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>ch.acanda.eclipse.pmd.builder.PMDBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>ch.acanda.eclipse.pmd.builder.PMDNature</nature>
 	</natures>
 	<linkedResources>
+		<link>
+			<name>externals-pmd</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/ext/pmd</locationURI>
+		</link>
 		<link>
 			<name>schemas</name>
 			<type>2</type>

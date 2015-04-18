@@ -104,19 +104,17 @@ public class TimingVerificationParameters implements VerificationParameters {
     protected void populate(Object content, ExternalParameters externalParameters) {
     }
 
-    private static final BigDecimal zero = new BigDecimal(0D);
-    private static final BigDecimal one = new BigDecimal(1D);
     protected BigDecimal parseFrameRateMultiplier(String value) {
         String[] components = value.split("\\s+");
         if (components.length == 2) {
             BigDecimal n = new BigDecimal(components[0]);
             BigDecimal d = new BigDecimal(components[1]);
-            if (!d.equals(zero))
+            if (!d.equals(BigDecimal.ZERO))
                 return n.divide(d, RoundingMode.DOWN);
             else
-                return one;
+                return BigDecimal.ONE;
         } else
-            return new BigDecimal(1);
+            return BigDecimal.ONE;
     }
 
 }
