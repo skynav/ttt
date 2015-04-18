@@ -241,6 +241,68 @@
 
 <target name="build" description="Build All" depends="build-cap2tt"/>
 
+<property name="findbugs.output.dir" value="${build.dir}/findbugs"/>
+<property name="findbugs.exclusions" value="${ext.dir}/findbugs/exclusions.xml"/>
+
+<target name="findbugs-maybe-describe-install" unless="findbugs.present">
+  <echo message="Please download FINDBUGS from http://findbugs.sf.net/ and set property findbugs.home.dir"/>
+  <echo message="in build-local.properties to the top-level directory of the binary distribution."/>
+</target>
+
+<target name="findbugs-avail">
+  <condition property="findbugs.present">
+    <and>
+      <isset property="findbugs.home.dir"/>
+      <available file="${findbugs.home.dir}" type="dir"/>
+    </and>
+  </condition>
+  <condition property="findbugs.message" value="FINDBUGS Support PRESENT">
+    <equals arg1="${findbugs.present}" arg2="true"/>
+  </condition>
+  <condition property="findbugs.message" value="FINDBUGS Support NOT Present">
+    <not>
+      <equals arg1="${findbugs.present}" arg2="true"/>
+    </not>
+  </condition>
+  <echo message="${findbugs.message}"/>
+  <antcall target="findbugs-maybe-describe-install"/>
+</target>
+
+<target name="findbugs-exec" depends="build-cap2tt" if="findbugs.present">
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+    <classpath>
+      <fileset dir="${findbugs.home.dir}/lib">
+        <include name="*.jar"/>
+      </fileset>
+    </classpath>
+  </taskdef>
+  <mkdir dir="${findbugs.output.dir}"/>
+  <findbugs home="${findbugs.home.dir}" output="${findbugs.output.format}" reportLevel="low" effort="max"
+            outputFile="${findbugs.output.dir}/findbugs.${findbugs.output.extension}" excludeFilter="${findbugs.exclusions}">
+    <sourcePath>
+      <path location="${cap2tt.source.dir}"/>
+    </sourcePath>
+    <class location="${cap2tt.min.target}"/>
+    <auxClassPath>
+      <path location="${ttv.jar}"/>
+    </auxClassPath>
+  </findbugs>
+</target>
+
+<target name="findbugs-xml" depends="findbugs-avail" if="findbugs.present" description="Runs findbugs for a code quality report in XML">
+  <property name="findbugs.output.format" value="xml"/>
+  <property name="findbugs.output.extension" value="xml"/>
+  <antcall target="findbugs-exec"/> 
+</target>
+
+<target name="findbugs-html" depends="findbugs-avail" if="findbugs.present" description="Runs findbugs for a code quality report in HTML">
+  <property name="findbugs.output.format" value="html"/>
+  <property name="findbugs.output.extension" value="html"/>
+  <antcall target="findbugs-exec"/> 
+</target>
+
+<target name="findbugs" depends="findbugs-html" description="Runs findbugs for a code quality report in HTML"/>
+
 <target name="test-converter" description="Run CAP2TT conversion test suite">
   <junit-run testsuite="com.skynav.cap2tt.app.ConverterTestSuite" outfile="TEST-apps-converter"/>
 </target>

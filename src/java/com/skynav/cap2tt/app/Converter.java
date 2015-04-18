@@ -67,12 +67,15 @@ import java.util.regex.Pattern;
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -497,11 +500,9 @@ public class Converter implements ConverterContext {
                 os = new FileOutputStream(reporterFile,  reporterFileAppend);
                 reporterOutput = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, reporterFileEncoding)));
             } catch (Throwable e) {
-                if (reporterOutput == null) {
-                    IOUtil.closeSafely(os);
-                    if (createdReporterFile)
-                        IOUtil.deleteSafely(reporterFile);
-                }
+                IOUtil.closeSafely(os);
+                if (createdReporterFile)
+                    IOUtil.deleteSafely(reporterFile);
             }
         }
         setReporter(reporter, reporterOutput, reporterFileEncoding, reporterIncludeSource);
@@ -2432,7 +2433,9 @@ public class Converter implements ConverterContext {
                 fail = true;
             if (outputDisabled)
                 outputDocument = d;
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
+            reporter.logError(e);
+        } catch (JAXBException e) {
             reporter.logError(e);
         }
         return !fail && (reporter.getResourceErrors() == 0);
@@ -2779,7 +2782,9 @@ public class Converter implements ConverterContext {
             t.transform(source, result);
             File outputFile = retOutputFile[0];
             reporter.logInfo(reporter.message("i.015", "Wrote TTML ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
-        } catch (Exception e) {
+        } catch (IOException e) {
+            reporter.logError(e);
+        } catch (TransformerException e) {
             reporter.logError(e);
         } finally {
             if (bw != null) {
@@ -2988,12 +2993,11 @@ public class Converter implements ConverterContext {
 
     public int run(String[] args) {
         int rv = 0;
-        OptionProcessor optionProcessor = (OptionProcessor) null;
         try {
-            String[] argsPreProcessed = preProcessOptions(args, optionProcessor);
-            showBanner(getShowOutput(), optionProcessor);
+            String[] argsPreProcessed = preProcessOptions(args, null);
+            showBanner(getShowOutput(), (OptionProcessor) null);
             getShowOutput().flush();
-            List<String> nonOptionArgs = parseArgs(argsPreProcessed, optionProcessor);
+            List<String> nonOptionArgs = parseArgs(argsPreProcessed, null);
             if (showRepository)
                 showRepository();
             if (showWarningTokens)
@@ -3005,7 +3009,7 @@ public class Converter implements ConverterContext {
             } else
                 rv = RV_SUCCESS;
         } catch (ShowUsageException e) {
-            showUsage(getShowOutput(), optionProcessor);
+            showUsage(getShowOutput(), null);
             rv = RV_USAGE;
         } catch (UsageException e) {
             getShowOutput().println("Usage: " + e.getMessage());
