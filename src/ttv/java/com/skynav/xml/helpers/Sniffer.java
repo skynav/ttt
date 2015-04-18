@@ -30,9 +30,25 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Collections;
 import java.util.List;
 
 public class Sniffer {
+
+    private static final List<Object[]> bomList;
+
+    static {
+        List<Object[]> l = new java.util.ArrayList<Object[]>();
+        try {
+            l.add(new Object[] { new int[] { 0x00, 0x00, 0xFE, 0xFF }, Charset.forName("UTF-32BE") });
+            l.add(new Object[] { new int[] { 0xFF, 0xFE, 0x00, 0x00 }, Charset.forName("UTF-32LE") });
+            l.add(new Object[] { new int[] { 0xEF, 0xBB, 0xBF }, Charset.forName("UTF-8") });
+            l.add(new Object[] { new int[] { 0xFE, 0xFF }, Charset.forName("UTF-16BE") });
+            l.add(new Object[] { new int[] { 0xFF, 0xFE }, Charset.forName("UTF-16LE") });
+        } catch (RuntimeException e) {
+        }
+        bomList = Collections.unmodifiableList(l);
+    }
 
     private Sniffer() {
     }
@@ -62,17 +78,6 @@ public class Sniffer {
         }
         bb.position(restore);
         return sniffedCharset;
-    }
-
-    private static List<Object[]> bomList;
-
-    static {
-        bomList = new java.util.ArrayList<Object[]>();
-        try { bomList.add(new Object[] { new int[] { 0x00, 0x00, 0xFE, 0xFF }, Charset.forName("UTF-32BE") }); } catch (RuntimeException e) {}
-        try { bomList.add(new Object[] { new int[] { 0xFF, 0xFE, 0x00, 0x00 }, Charset.forName("UTF-32LE") }); } catch (RuntimeException e) {}
-        try { bomList.add(new Object[] { new int[] { 0xEF, 0xBB, 0xBF }, Charset.forName("UTF-8") }); } catch (RuntimeException e) {}
-        try { bomList.add(new Object[] { new int[] { 0xFE, 0xFF }, Charset.forName("UTF-16BE") }); } catch (RuntimeException e) {}
-        try { bomList.add(new Object[] { new int[] { 0xFF, 0xFE }, Charset.forName("UTF-16LE") }); } catch (RuntimeException e) {}
     }
 
     public static Charset checkForBOMCharset(ByteBuffer bb, Object[] outputParameters) {

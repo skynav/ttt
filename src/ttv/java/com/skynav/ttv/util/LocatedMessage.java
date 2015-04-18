@@ -82,7 +82,7 @@ public class LocatedMessage extends Message {
             StringBuffer sb = new StringBuffer();
             if (!hideLocation) {
                 sb.append('{');
-                String uriString = uri.toString();
+                String uriString = uri;
                 if (hidePath)
                     uriString = hidePath(uriString);
                 sb.append(uriString);
@@ -123,7 +123,7 @@ public class LocatedMessage extends Message {
             sb.append("<location>\n");
             if (!hideLocation) {
                 sb.append("<url>");
-                String uriString = uri.toString();
+                String uriString = uri;
                 if (hidePath)
                     uriString = hidePath(uriString);
                 sb.append(escapeText(uriString));

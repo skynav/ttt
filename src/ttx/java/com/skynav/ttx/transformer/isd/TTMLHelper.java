@@ -170,7 +170,7 @@ public abstract class TTMLHelper {
         }
     }
 
-    private static String digits = "0123456789";
+    private static final String digits = "0123456789";
     public static String pad(int value, int width) {
         assert value >= 0;
         StringBuffer sb = new StringBuffer(width);
@@ -201,6 +201,5 @@ public abstract class TTMLHelper {
         }
         return sb.toString();
     }
-
 
 }

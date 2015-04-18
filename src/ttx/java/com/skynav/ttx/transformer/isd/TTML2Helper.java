@@ -57,6 +57,8 @@ import com.skynav.ttx.transformer.TransformerContext;
 
 public class TTML2Helper extends TTMLHelper {
 
+    private static final ObjectFactory spanFactory = new ObjectFactory();
+
     @Override
     public void traverse(Object root, Visitor v) throws Exception {
         assert root instanceof TimedText;
@@ -223,10 +225,10 @@ public class TTML2Helper extends TTMLHelper {
                 }
             });
         } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private static final ObjectFactory spanFactory = new ObjectFactory();
     private JAXBElement<Span> wrapInAnonymousSpan(Object content, TransformerContext context) {
         assert content instanceof String;
         Span span = spanFactory.createSpan();

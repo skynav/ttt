@@ -2,13 +2,8 @@
 <FindBugsFilter>
   <!-- approved findbugs warning exclusions -->
   <Match>
-    <Or>
-      <Bug pattern="DM_GC"/>
-      <Bug pattern="EI_EXPOSE_REP"/>
-      <Bug pattern="URF_UNREAD_FIELD"/>
-    </Or>
+    <Bug pattern="DM_CONVERT_CASE"/>
   </Match>
-  <!--
   <Match>
     <Bug pattern="DM_GC"/>
     <Or>
@@ -64,6 +59,26 @@
     </Or>
   </Match>
   <Match>
+    <Bug pattern="FE_FLOATING_POINT_EQUALITY"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttv.verifier.util.Numbers"/>
+        <Method name="normalize"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
+  </Match>
+  <Match>
+    <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
+    <Or>
+      <Class name="com.skynav.ttv.util.TextTransformer$1"/>
+      <Class name="com.skynav.ttx.transformer.isd.ISD$ISDTransformer$1"/>
+      <Class name="com.skynav.ttx.transformer.isd.ISD$ISDTransformer$22"/>
+    </Or>
+  </Match>
+  <Match>
     <Bug pattern="URF_UNREAD_FIELD"/>
     <Or>
       <And>
@@ -84,5 +99,4 @@
       </And>
     </Or>
   </Match>
-  -->
 </FindBugsFilter>

@@ -60,12 +60,15 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
@@ -449,11 +452,9 @@ public class TimedTextVerifier implements VerifierContext {
                 os = new FileOutputStream(reporterFile,  reporterFileAppend);
                 reporterOutput = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, reporterFileEncoding)));
             } catch (Throwable e) {
-                if (reporterOutput == null) {
-                    IOUtil.closeSafely(os);
-                    if (createdReporterFile)
-                        IOUtil.deleteSafely(reporterFile);
-                }
+                IOUtil.closeSafely(os);
+                if (createdReporterFile)
+                    IOUtil.deleteSafely(reporterFile);
             }
         }
         setReporter(reporter, reporterOutput, reporterFileEncoding, reporterIncludeSource);
@@ -502,7 +503,6 @@ public class TimedTextVerifier implements VerifierContext {
             Object jaxbBinding = binder.getJAXBNode(xmlNode);
             if (jaxbBinding instanceof JAXBElement<?>) {
                 JAXBElement<?> jaxbNode = (JAXBElement<?>) jaxbBinding;
-                assert jaxbNode != null;
                 return jaxbNode.getName();
             } else
                 return new QName(xmlNode.getNamespaceURI(), xmlNode.getLocalName());
@@ -1434,7 +1434,8 @@ public class TimedTextVerifier implements VerifierContext {
             // attempt to enable non-pool grammars, i.e., use of xsi:schemaLocation pool extensions
             sf.setFeature("http://apache.org/xml/features/internal/validation/schema/use-grammar-pool-only", false);
             nonPoolGrammarSupported = true;
-        } catch (Exception e) {
+        } catch (SAXException e) {
+            nonPoolGrammarSupported = false;
         }
         try {
             reporter.logDebug(reporter.message("*KEY*", "Loading (and validating) schema components at '{'{0}'}'...", components));
@@ -1850,7 +1851,15 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.logError(e);
         } catch (TransformerFactoryConfigurationError e) {
             reporter.logError(new Exception(e));
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
+            reporter.logError(e);
+        } catch (TransformerConfigurationException e) {
+            reporter.logError(e);
+        } catch (TransformerException e) {
+            reporter.logError(e);
+        } catch (JAXBException e) {
+            reporter.logError(e);
+        } catch (SAXException e) {
             reporter.logError(e);
         }
         return reporter.getResourceErrors() == 0;

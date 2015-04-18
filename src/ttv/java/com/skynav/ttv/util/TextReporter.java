@@ -116,7 +116,7 @@ public class TextReporter implements Reporter {
         PrintWriter output = getOutput();
         if ((output != null) && !outputDefaulted)
             output.close();
-        output = null;
+        this.output = null;
     }
 
     public void resetResourceState() {

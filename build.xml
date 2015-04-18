@@ -546,6 +546,72 @@
 
 <target name="build" description="Build All" depends="build-ttv, build-ttx, build-ttxv"/>
 
+<property name="findbugs.output.dir" value="${build.dir}/findbugs"/>
+<property name="findbugs.exclusions" value="${ext.dir}/findbugs/exclusions.xml"/>
+
+<target name="findbugs-maybe-describe-install" unless="findbugs.present">
+  <echo message="Please download FINDBUGS from http://findbugs.sf.net/ and set property findbugs.home.dir"/>
+  <echo message="in build-local.properties to the top-level directory of the binary distribution."/>
+</target>
+
+<target name="findbugs-avail">
+  <condition property="findbugs.present">
+    <and>
+      <isset property="findbugs.home.dir"/>
+      <available file="${findbugs.home.dir}" type="dir"/>
+    </and>
+  </condition>
+  <condition property="findbugs.message" value="FINDBUGS Support PRESENT">
+    <equals arg1="${findbugs.present}" arg2="true"/>
+  </condition>
+  <condition property="findbugs.message" value="FINDBUGS Support NOT Present">
+    <not>
+      <equals arg1="${findbugs.present}" arg2="true"/>
+    </not>
+  </condition>
+  <echo message="${findbugs.message}"/>
+  <antcall target="findbugs-maybe-describe-install"/>
+</target>
+
+<target name="findbugs-exec" depends="build-ttv" if="findbugs.present">
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+    <classpath>
+      <fileset dir="${findbugs.home.dir}/lib">
+        <include name="*.jar"/>
+      </fileset>
+    </classpath>
+  </taskdef>
+  <mkdir dir="${findbugs.output.dir}"/>
+  <findbugs home="${findbugs.home.dir}" output="${findbugs.output.format}" reportLevel="low" effort="max"
+            outputFile="${findbugs.output.dir}/findbugs.${findbugs.output.extension}" excludeFilter="${findbugs.exclusions}">
+    <sourcePath>
+      <path location="${ttv.source.dir}"/>
+      <path location="${ttv.generated.dir}"/>
+      <path location="${ttx.source.dir}"/>
+      <path location="${ttx.generated.dir}"/>
+      <path location="${ttxv.source.dir}"/>
+      <path location="${ttxv.generated.dir}"/>
+    </sourcePath>
+    <class location="${ttv.target}"/>
+    <class location="${ttx.target}"/>
+    <class location="${ttxv.target}"/>
+  </findbugs>
+</target>
+
+<target name="findbugs-xml" depends="findbugs-avail" if="findbugs.present" description="Runs findbugs for a code quality report in XML">
+  <property name="findbugs.output.format" value="xml"/>
+  <property name="findbugs.output.extension" value="xml"/>
+  <antcall target="findbugs-exec"/> 
+</target>
+
+<target name="findbugs-html" depends="findbugs-avail" if="findbugs.present" description="Runs findbugs for a code quality report in HTML">
+  <property name="findbugs.output.format" value="html"/>
+  <property name="findbugs.output.extension" value="html"/>
+  <antcall target="findbugs-exec"/> 
+</target>
+
+<target name="findbugs" depends="findbugs-html" description="Runs findbugs for a code quality report in HTML"/>
+
 <target name="test-xml" description="Run XML tests">
   <junit-run testsuite="com.skynav.xml.helpers.HelpersTestSuite" outfile="TEST-xml-helpers"/>
 </target>

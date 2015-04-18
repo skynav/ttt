@@ -22,11 +22,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>externals-findbugs</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/ext/findbugs</locationURI>
-		</link>
-		<link>
 			<name>externals-pmd</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC/ext/pmd</locationURI>

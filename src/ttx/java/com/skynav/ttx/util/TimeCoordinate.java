@@ -50,7 +50,7 @@ public class TimeCoordinate implements Comparable<TimeCoordinate> {
         this(Type.Definite, value);
     }
     public TimeCoordinate(Type type, double value) {
-        assert (type == Type.Definite) | (value == 0);
+        assert (type == Type.Definite) || (value == 0);
         this.type = type;
         this.value = value;
     }

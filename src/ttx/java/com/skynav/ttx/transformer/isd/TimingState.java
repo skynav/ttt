@@ -41,6 +41,9 @@ import com.skynav.ttx.util.TimeInterval;
 
 public class TimingState {
 
+    public static final QName beginAttributeName = new QName(TTMLHelper.NAMESPACE_ISD,"begin");
+    public static final QName endAttributeName = new QName(TTMLHelper.NAMESPACE_ISD,"end");
+
     // contextual state
     private TransformerContext context;                 // transformer context object
     private TTMLHelper helper;                          // ttml helper
@@ -203,12 +206,6 @@ public class TimingState {
     private void resolveImplicitDuration() {
         TimeCoordinate durImplicit = this.durImplicit;
         if (helper.isAnonymousSpan(content)) {
-            /*
-            if (isSequenceContainer(nearestExplicitTimedContainerAncestor(content)))
-                durImplicit = TimeCoordinate.ZERO;
-            else
-                durImplicit = TimeCoordinate.INDEFINITE;
-            */
             if (helper.isSequenceContainer(getParent(content)))
                 durImplicit = TimeCoordinate.ZERO;
             else
@@ -252,9 +249,6 @@ public class TimingState {
         this.durImplicit = durImplicit;
         debug(2, "Resolve implicit duration", durImplicit.toString());
     }
-
-    public static final QName beginAttributeName = new QName(TTMLHelper.NAMESPACE_ISD,"begin");
-    public static final QName endAttributeName = new QName(TTMLHelper.NAMESPACE_ISD,"end");
 
     public void resolveActive() {
         TimeCoordinate b = getBegin();
@@ -325,16 +319,6 @@ public class TimingState {
         }
         return null;
     }
-
-    /*
-    private Object nearestExplicitTimedContainerAncestor(Object content) {
-        for (Object p = getParent(content); p != null; p = getParent(p)) {
-            if (isExplicitTimedContainer(p))
-                return p;
-        }
-        return null;
-    }
-    */
 
     private TimingState getTimingState(Object content, TimeParameters timeParameters) {
         if (content == null)

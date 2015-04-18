@@ -25,6 +25,7 @@
  
 package com.skynav.ttx.transformer;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,15 +33,19 @@ import com.skynav.ttx.transformer.isd.ISD;
 
 public class Transformers {
 
-    public static Transformer getDefaultTransformer() {
-        return ISD.TRANSFORMER;
+    private static Map<String,Class<? extends Transformer>> transformerMap;
+    static {
+        Map<String,Class<? extends Transformer>> m = new java.util.TreeMap<String,Class<? extends Transformer>>();
+        m.put(ISD.TRANSFORMER_NAME, ISD.ISDTransformer.class);
+        transformerMap = Collections.unmodifiableMap(m);
     }
 
-    private static Map<String,Transformer> transformerMap;
+    public static Transformer getDefaultTransformer() {
+        return getTransformer(getDefaultTransformerName());
+    }
 
-    static {
-        transformerMap = new java.util.TreeMap<String,Transformer>();
-        transformerMap.put(ISD.TRANSFORMER.getName(), ISD.TRANSFORMER);
+    public static String getDefaultTransformerName() {
+        return ISD.TRANSFORMER_NAME;
     }
 
     public static Set<String> getTransformerNames() {
@@ -48,7 +53,17 @@ public class Transformers {
     }
 
     public static Transformer getTransformer(String name) {
-        return transformerMap.get(name);
+        Class<? extends Transformer> transformerClass = transformerMap.get(name);
+        if (transformerClass != null) {
+            try {
+                return transformerClass.newInstance();
+            } catch (IllegalAccessException e) {
+                return null;
+            } catch (InstantiationException e) {
+                return null;
+            }
+        } else
+            return null;
     }
 
 }

@@ -105,8 +105,6 @@ public class Namespaces {
         String nsUri = attr.getValue();
         String normalizedPrefix = normalizedPrefixes.get(nsUri);
         if (normalizedPrefix != null) {
-            if (normalizedPrefix.length() == 0)
-                normalizedPrefix = null;
             elt.removeAttributeNode(attr);
         }
     }

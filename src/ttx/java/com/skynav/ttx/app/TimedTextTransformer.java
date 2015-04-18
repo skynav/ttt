@@ -28,8 +28,10 @@ package com.skynav.ttx.app;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -52,8 +54,6 @@ import com.skynav.ttx.transformer.Transformers;
 
 public class TimedTextTransformer implements ResultProcessor, TransformerContext {
 
-    private static final Transformer defaultTransformer = Transformers.getDefaultTransformer();
-
     // banner text
     private static final String title = "Timed Text Transformer (TTX) [" + Version.CURRENT + "]";
     private static final String copyright = "Copyright 2013-14 Skynav, Inc.";
@@ -64,23 +64,25 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     };
     private static final Collection<OptionSpecification> shortOptions;
     static {
-        shortOptions = new java.util.TreeSet<OptionSpecification>();
+        Set<OptionSpecification> s = new java.util.TreeSet<OptionSpecification>();
         for (String[] spec : shortOptionSpecifications) {
-            shortOptions.add(new OptionSpecification(spec[0], spec[1]));
+            s.add(new OptionSpecification(spec[0], spec[1]));
         }
+        shortOptions = Collections.unmodifiableSet(s);
     }
 
     private static final String[][] longOptionSpecifications = new String[][] {
         { "show-memory",                "",         "show memory statistics" },
         { "show-transformers",          "",         "show built-in transformers (use with --verbose to show more details)" },
-        { "transformer",                "NAME",     "specify transformer name (default: " + defaultTransformer.getName() + ")" },
+        { "transformer",                "NAME",     "specify transformer name (default: " + Transformers.getDefaultTransformerName() + ")" },
     };
     private static final Collection<OptionSpecification> longOptions;
     static {
-        longOptions = new java.util.TreeSet<OptionSpecification>();
+        Set<OptionSpecification> s = new java.util.TreeSet<OptionSpecification>();
         for (String[] spec : longOptionSpecifications) {
-            longOptions.add(new OptionSpecification(spec[0], spec[1], spec[2]));
+            s.add(new OptionSpecification(spec[0], spec[1], spec[2]));
         }
+        longOptions = Collections.unmodifiableSet(s);
     }
 
     private static final String usageCommand =
@@ -107,7 +109,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     private Transformer transformer;
 
     public TimedTextTransformer() {
-        transformerOptions = new TransformerOptions[] { defaultTransformer };
+        transformerOptions = new TransformerOptions[] { Transformers.getDefaultTransformer() };
     }
 
     protected boolean showMemory() {

@@ -42,28 +42,7 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
     private static final String copyright = "Copyright 2013-14 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
-    // option and usage info
-    private static final String[][] shortOptionSpecifications = new String[][] {
-    };
-    private static final Collection<OptionSpecification> shortOptions;
-    static {
-        shortOptions = new java.util.TreeSet<OptionSpecification>();
-        for (String[] spec : shortOptionSpecifications) {
-            shortOptions.add(new OptionSpecification(spec[0], spec[1]));
-        }
-    }
-
-    private static final String[][] longOptionSpecifications = new String[][] {
-    };
-    private static final Collection<OptionSpecification> longOptions;
-    static {
-        longOptions = new java.util.TreeSet<OptionSpecification>();
-        for (String[] spec : longOptionSpecifications) {
-            longOptions.add(new OptionSpecification(spec[0], spec[1], spec[2]));
-        }
-    }
-
-    private static final String DEFAULT_TRANSFORMER = "isd";
+    private static final String DEFAULT_TRANSFORMER = Transformers.getDefaultTransformerName();
 
     public TimedTextTransformingVerifier() {
     }
@@ -79,7 +58,6 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
         super.initializeResourceState(uri);
         setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), Transformers.getTransformer(DEFAULT_TRANSFORMER));
         setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.TRUE);
-        // setResourceState(TransformerContext.ResourceState.ttxRetainMetadata.name(), Boolean.TRUE);
         setResourceState(TransformerContext.ResourceState.ttxRetainLocations.name(), Boolean.TRUE);
     }
 

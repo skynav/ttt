@@ -29,6 +29,7 @@ import java.io.BufferedWriter;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -50,6 +51,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -82,7 +84,6 @@ import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 
 import com.skynav.ttx.transformer.AbstractTransformer;
-import com.skynav.ttx.transformer.Transformer;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.ttx.transformer.TransformerException;
 import com.skynav.ttx.util.DirectedGraph;
@@ -95,34 +96,36 @@ import com.skynav.xml.helpers.XML;
 public class ISD {
 
     public static final String TRANSFORMER_NAME                 = "isd";
-    public static final Transformer TRANSFORMER                 = new ISDTransformer();
-    private static final String DEFAULT_OUTPUT_ENCODING         = AbstractTransformer.DEFAULT_OUTPUT_ENCODING;
 
-    private static Charset defaultOutputEncoding;
-    private static final String defaultOutputFileNamePattern     = "isdi{0,number,000000}.xml";
+    private static final String DEFAULT_OUTPUT_ENCODING         = AbstractTransformer.DEFAULT_OUTPUT_ENCODING;
+    private static final Charset defaultOutputEncoding;
+    private static final String defaultOutputFileNamePattern    = "isdi{0,number,000000}.xml";
 
     static {
+        Charset de;
         try {
-            defaultOutputEncoding = Charset.forName(DEFAULT_OUTPUT_ENCODING);
+            de = Charset.forName(DEFAULT_OUTPUT_ENCODING);
         } catch (RuntimeException e) {
-            defaultOutputEncoding = Charset.defaultCharset();
+            de = Charset.defaultCharset();
         }
+        defaultOutputEncoding = de;
     }
 
     // option and usage info
-    private static final String[][] longOptionSpecifications = new String[][] {
+    private static final String[][] longOptionSpecifications    = new String[][] {
         { "isd-output-clean",           "",         "clean (remove) all files in output directory prior to writing ISD output" },
         { "isd-output-directory",       "DIRECTORY","specify path to directory where ISD output is to be written" },
         { "isd-output-encoding",        "ENCODING", "specify character encoding of ISD output (default: " + defaultOutputEncoding.name() + ")" },
         { "isd-output-indent",          "",         "indent ISD output (default: no indent)" },
         { "isd-output-pattern",         "PATTERN",  "specify ISD output file name pattern (default: 'isd00000')" },
     };
-    private static final Map<String,OptionSpecification> longOptions;
+    private static final Collection<OptionSpecification> longOptions;
     static {
-        longOptions = new java.util.TreeMap<String,OptionSpecification>();
+        Set<OptionSpecification> s = new java.util.TreeSet<OptionSpecification>();
         for (String[] spec : longOptionSpecifications) {
-            longOptions.put(spec[0], new OptionSpecification(spec[0], spec[1], spec[2]));
+            s.add(new OptionSpecification(spec[0], spec[1], spec[2]));
         }
+        longOptions = Collections.unmodifiableSet(s);
     }
 
     public static TTMLHelper getHelper(TransformerContext context) {
@@ -152,7 +155,7 @@ public class ISD {
         private File outputDirectory;
         private Charset outputEncoding;
 
-        protected ISDTransformer() {
+        public ISDTransformer() {
         }
 
         public String getName() {
@@ -166,7 +169,7 @@ public class ISD {
 
         @Override
         public Collection<OptionSpecification> getLongOptionSpecs() {
-            return longOptions.values();
+            return longOptions;
         }
 
         @Override
@@ -890,21 +893,6 @@ public class ISD {
         private static boolean isAnimationElement(Element elt) {
             return isTimedTextElement(elt, "set");
         }
-
-        /*
-        private static boolean isStyledElement(Element elt) {
-            if (isRootElement(elt))
-                return true;
-            else if (isStyleElement(elt))
-                return true;
-            else if (isAnimationElement(elt))
-                return true;
-            else if (isContentElement(elt))
-                return true;
-            else
-                return false;
-        }
-        */
 
         private static boolean isContentElement(Element elt) {
             String nsUri = elt.getNamespaceURI();
@@ -1717,7 +1705,7 @@ public class ISD {
                writeISD(document, bos, context);
                reporter.logInfo(reporter.message("*KEY*", "Wrote ISD ''{0}''.", outputFile.getAbsolutePath()));
                return outputFile;
-           } catch (Exception e) {
+           } catch (FileNotFoundException e) {
                reporter.logError(e);
                return null;
            } finally {
@@ -1754,7 +1742,9 @@ public class ISD {
                javax.xml.transform.Transformer t = tf.newTransformer();
                t.setOutputProperty(OutputKeys.INDENT, outputIndent ? "yes" : "no");
                t.transform(source, result);
-           } catch (Exception e) {
+           } catch (TransformerConfigurationException e) {
+               throw new RuntimeException(e);
+           } catch (javax.xml.transform.TransformerException e) {
                throw new RuntimeException(e);
            } finally {
                if (bw != null) {
