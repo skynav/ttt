@@ -27,11 +27,8 @@ package com.skynav.ttv.model.ttml;
 
 public class TTML2StandardDesignations extends TTML1StandardDesignations {
     
-    private static TTML2StandardDesignations instance;
     public static TTML2StandardDesignations getInstance() {
-        if (instance == null)
-            instance = new TTML2StandardDesignations();
-        return instance;
+        return new TTML2StandardDesignations();
     }
 
 }

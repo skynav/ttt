@@ -57,7 +57,7 @@ public class Locators {
             return getLocatorAttributeAsLocator(content);
     }
 
-    private static Pattern locPattern = Pattern.compile("\\{([^\\}]*)\\}:([-]?\\d+):([-]?\\d+)");
+    private static final Pattern locPattern = Pattern.compile("\\{([^\\}]*)\\}:([-]?\\d+):([-]?\\d+)");
     private static Locator getLocatorAttributeAsLocator(Object content) {
         String locatorAttribute = getLocatorAttribute(content);
         if (locatorAttribute != null) {

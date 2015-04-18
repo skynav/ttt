@@ -67,13 +67,14 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
 
     public static final String NAMESPACE = NAMESPACE_TT_METADATA;
 
-    public static final String getMetadataNamespaceUri() {
-        return NAMESPACE;
-    }
-
+    public static final QName actorAgentAttributeName = new QName("", "agent");
+    public static final QName actorElementName = new QName(NAMESPACE, "actor");
     public static final QName agentAttributeName = new QName(NAMESPACE,"agent");
+    public static final QName agentElementName = new QName(NAMESPACE, "agent");
+    public static final QName nameElementName = new QName(NAMESPACE, "name");
     public static final QName roleAttributeName = new QName(NAMESPACE,"role");
-    private static Object[][] metadataAccessorMap = new Object[][] {
+
+    private static final Object[][] metadataAccessorMap = new Object[][] {
         {
             agentAttributeName,                                 // attribute name
             "Agent",                                            // accessor method name suffix
@@ -198,7 +199,6 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
-    public static final QName actorAgentAttributeName = new QName("", "agent");
     protected boolean verify(Actor content, Locator locator, VerifierContext context) {
         QName name = actorAgentAttributeName;
         QName targetName = model.getIdReferenceTargetName(name);
@@ -214,9 +214,6 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         }
     }
 
-    public static final QName actorElementName = new QName(NAMESPACE, "actor");
-    public static final QName agentElementName = new QName(NAMESPACE, "agent");
-    public static final QName nameElementName = new QName(NAMESPACE, "name");
     protected boolean verify(Agent content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();
@@ -381,6 +378,10 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
                 return null;
         }
 
+    }
+
+    public static final String getMetadataNamespaceUri() {
+        return NAMESPACE;
     }
 
 }

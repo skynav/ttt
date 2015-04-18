@@ -48,13 +48,9 @@ import com.skynav.ttv.verifier.util.Strings;
 
 public class TTML1TimingVerifier implements TimingVerifier {
 
-    private static final String timingNamespace = "";
+    private static final String timingNamespace                 = "";
 
-    public static final String getTimingNamespaceUri() {
-        return timingNamespace;
-    }
-
-    private static Object[][] timingAccessorMap = new Object[][] {
+    private static final Object[][] timingAccessorMap           = new Object[][] {
         {
             new QName(timingNamespace,"begin"),                 // attribute name
             "Begin",                                            // accessor method name suffix
@@ -232,6 +228,10 @@ public class TTML1TimingVerifier implements TimingVerifier {
                 return null;
         }
 
+    }
+
+    public static final String getTimingNamespaceUri() {
+        return timingNamespace;
     }
 
 }

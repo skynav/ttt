@@ -35,7 +35,6 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.AbstractModel;
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Division;
@@ -87,7 +86,6 @@ public class TTML1 {
 
     public static final String MODEL_NAME = "ttml1";
     public static final int MODEL_VERSION = 1;
-    public static final Model MODEL = new TTML1Model();
 
     public static class TTML1Model extends AbstractModel {
 
@@ -124,7 +122,7 @@ public class TTML1 {
         private TimingVerifier timingVerifier;
         private MetadataVerifier metadataVerifier;
 
-        protected TTML1Model() {
+        public TTML1Model() {
             populate();
         }
 

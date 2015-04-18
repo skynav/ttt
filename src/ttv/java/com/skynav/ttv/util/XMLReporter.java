@@ -29,7 +29,7 @@ import java.io.IOException;
 
 public class XMLReporter extends TextReporter {
 
-    public static final Reporter REPORTER = new XMLReporter();
+    public static final String NAME = "xml";
 
     private boolean showSource;
 
@@ -41,7 +41,7 @@ public class XMLReporter extends TextReporter {
     }
 
     public String getName() {
-        return "xml";
+        return NAME;
     }
 
     public void open(Object... arguments) throws IOException {

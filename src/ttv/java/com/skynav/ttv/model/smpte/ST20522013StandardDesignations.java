@@ -58,11 +58,8 @@ public class ST20522013StandardDesignations extends TTML1StandardDesignations {
         }
     }
     
-    private static ST20522013StandardDesignations instance;
     public static ST20522013StandardDesignations getInstance() {
-        if (instance == null)
-            instance = new ST20522013StandardDesignations();
-        return instance;
+        return new ST20522013StandardDesignations();
     }
 
     @Override

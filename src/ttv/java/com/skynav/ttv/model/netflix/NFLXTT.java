@@ -33,7 +33,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.smpte.ST20522010;
 import com.skynav.ttv.model.smpte.ST20522010.ST20522010Model;
 import com.skynav.ttv.verifier.ParameterVerifier;
@@ -60,7 +59,6 @@ public class NFLXTT {
     }
 
     public static final String MODEL_NAME = "nflxtt";
-    public static final Model MODEL = new NFLXTTModel();
 
     public static class NFLXTTModel extends ST20522010Model {
 
@@ -72,7 +70,7 @@ public class NFLXTT {
         private ParameterVerifier parameterVerifier;
         private StyleVerifier styleVerifier;
 
-        NFLXTTModel() {
+        public NFLXTTModel() {
             populate();
         }
 

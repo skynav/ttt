@@ -31,7 +31,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.Style;
@@ -68,7 +67,6 @@ public class TTML2 {
 
     public static final String MODEL_NAME = "ttml2";
     public static final int MODEL_VERSION = 2;
-    public static final Model MODEL = new TTML2Model();
 
     public static class TTML2Model extends TTML1.TTML1Model {
 
@@ -84,7 +82,7 @@ public class TTML2 {
         private TimingVerifier timingVerifier;
         private MetadataVerifier metadataVerifier;
 
-        protected TTML2Model() {
+        public TTML2Model() {
             populate();
         }
 

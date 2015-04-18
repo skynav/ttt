@@ -102,10 +102,6 @@ public class TTML1StyleVerifier implements StyleVerifier {
 
     public static final String NAMESPACE = NAMESPACE_TT_STYLE;
 
-    public static final String getStyleNamespaceUri() {
-        return NAMESPACE;
-    }
-
     public static final int APPLIES_TO_TT                       = 0x00000001;
     public static final int APPLIES_TO_BODY                     = 0x00000002;
     public static final int APPLIES_TO_DIV                      = 0x00000004;
@@ -119,8 +115,11 @@ public class TTML1StyleVerifier implements StyleVerifier {
     public static final QName fontSizeAttributeName             = new QName(NAMESPACE,"fontSize");
     public static final QName lineHeightAttributeName           = new QName(NAMESPACE,"lineHeight");
     public static final QName originAttributeName               = new QName(NAMESPACE,"origin");
+    public static final QName regionAttributeName               = new QName("", "region");
+    public static final QName styleAttributeName                = new QName("", "style");
     public static final QName textAlignAttributeName            = new QName(NAMESPACE,"textAlign");
-    private static Object[][] styleAccessorMap                  = new Object[][] {
+
+    private static final Object[][] styleAccessorMap            = new Object[][] {
         {
             new QName(NAMESPACE,"backgroundColor"),             // attribute name
             "BackgroundColor",                                  // accessor method name suffix
@@ -653,8 +652,6 @@ public class TTML1StyleVerifier implements StyleVerifier {
         }
     }
 
-    public static final QName styleAttributeName = new QName("", "style");
-    public static final QName regionAttributeName = new QName("", "region");
     protected class StyleAccessor {
 
         QName styleName;
@@ -832,6 +829,10 @@ public class TTML1StyleVerifier implements StyleVerifier {
                 return null;
         }
 
+    }
+
+    public static final String getStyleNamespaceUri() {
+        return NAMESPACE;
     }
 
 }

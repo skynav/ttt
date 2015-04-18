@@ -34,7 +34,7 @@ import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
 
 public class TTML1FullProfileSpecification extends Specification {
     
-    private static Object[][] featureMapEntries = new Object[][] {
+    private static final Object[][] featureMapEntries = new Object[][] {
         { "#animation", Usage.REQUIRED },
         { "#backgroundColor-block", Usage.REQUIRED },
         { "#backgroundColor-inline", Usage.REQUIRED },
@@ -151,7 +151,7 @@ public class TTML1FullProfileSpecification extends Specification {
         { "#zIndex", Usage.REQUIRED },
     };
 
-    private static Object[][] extensionMapEntries = new Object[][] {
+    private static final Object[][] extensionMapEntries = new Object[][] {
     };
 
     public TTML1FullProfileSpecification(URI profileUri) {

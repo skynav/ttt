@@ -35,7 +35,7 @@ import static com.skynav.ttv.model.smpte.ST20522010.Constants.NAMESPACE_2010_EXT
 
 public class ST20522010FullProfileSpecification extends Specification {
     
-    private static Object[][] extensionMapEntries = new Object[][] {
+    private static final Object[][] extensionMapEntries = new Object[][] {
         { "#data", Usage.REQUIRED },
         { "#image", Usage.REQUIRED },
         { "#information", Usage.REQUIRED },

@@ -186,11 +186,8 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
         }
     }
     
-    private static TTML1StandardDesignations instance;
     public static TTML1StandardDesignations getInstance() {
-        if (instance == null)
-            instance = new TTML1StandardDesignations();
-        return instance;
+        return new TTML1StandardDesignations();
     }
 
     @Override

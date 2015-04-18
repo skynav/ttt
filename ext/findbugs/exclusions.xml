@@ -2,6 +2,14 @@
 <FindBugsFilter>
   <!-- approved findbugs warning exclusions -->
   <Match>
+    <Or>
+      <Bug pattern="DM_GC"/>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="URF_UNREAD_FIELD"/>
+    </Or>
+  </Match>
+  <!--
+  <Match>
     <Bug pattern="DM_GC"/>
     <Or>
       <And>
@@ -76,4 +84,5 @@
       </And>
     </Or>
   </Match>
+  -->
 </FindBugsFilter>

@@ -43,9 +43,8 @@ import org.xml.sax.helpers.LocatorImpl;
 
 public class TextReporter implements Reporter {
 
+    public static final String NAME = "text";
     public static final String DEFAULT_ENCODING = "UTF-8";
-
-    public static final Reporter REPORTER = new TextReporter();
 
     /* general state */
     private Map<String,Boolean> defaultWarnings;
@@ -75,7 +74,7 @@ public class TextReporter implements Reporter {
     }
 
     public String getName() {
-        return "text";
+        return NAME;
     }
 
     public boolean isOpen() {

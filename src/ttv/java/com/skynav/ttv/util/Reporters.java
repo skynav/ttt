@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.util;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,25 +35,25 @@ import com.skynav.ttv.util.XMLReporter;
 
 public class Reporters {
 
+    private static final Map<String,Class<? extends Reporter>> reporterMap;
+    static {
+        Map<String,Class<? extends Reporter>> m = new java.util.TreeMap<String,Class<? extends Reporter>>();
+        m.put(NullReporter.NAME, NullReporter.class);
+        m.put(TextReporter.NAME, TextReporter.class);
+        m.put(XMLReporter.NAME, XMLReporter.class);
+        reporterMap = Collections.unmodifiableMap(m);
+    }
+
     public static String getDefaultEncoding() {
         return TextReporter.DEFAULT_ENCODING;
     }
 
     public static Reporter getDefaultReporter() {
-        return TextReporter.REPORTER;
+        return getReporter(getDefaultReporterName());
     }
 
     public static String getDefaultReporterName() {
-        return getDefaultReporter().getName();
-    }
-
-    private static Map<String,Reporter> reporterMap;
-
-    static {
-        reporterMap = new java.util.TreeMap<String,Reporter>();
-        reporterMap.put(NullReporter.REPORTER.getName(), NullReporter.REPORTER);
-        reporterMap.put(TextReporter.REPORTER.getName(), TextReporter.REPORTER);
-        reporterMap.put(XMLReporter.REPORTER.getName(), XMLReporter.REPORTER);
+        return TextReporter.NAME;
     }
 
     public static Set<String> getReporterNames() {
@@ -70,7 +71,17 @@ public class Reporters {
     }
 
     public static Reporter getReporter(String name) {
-        return reporterMap.get(name);
+        Class<? extends Reporter> reporterClass = reporterMap.get(name);
+        if (reporterClass != null) {
+            try {
+                return reporterClass.newInstance();
+            } catch (IllegalAccessException e) {
+                return null;
+            } catch (InstantiationException e) {
+                return null;
+            }
+        } else
+            return null;
     }
 
 }

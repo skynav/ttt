@@ -36,7 +36,7 @@ import org.xml.sax.Locator;
 
 public class NullReporter implements Reporter {
 
-    public static final Reporter REPORTER = new NullReporter();
+    public static final String NAME = "null";
 
     private PrintWriter out;
 
@@ -44,7 +44,7 @@ public class NullReporter implements Reporter {
     }
 
     public String getName() {
-        return "null";
+        return NAME;
     }
 
     public boolean isOpen() {

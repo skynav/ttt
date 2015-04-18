@@ -72,13 +72,9 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
 
     public static final String NAMESPACE = NAMESPACE_TT_PARAMETER;
 
-    public static final String getParameterNamespaceUri() {
-        return NAMESPACE;
-    }
-
     public static final QName cellResolutionAttributeName = new QName(getParameterNamespaceUri(), "cellResolution");
 
-    private static Object[][] parameterAccessorMap = new Object[][] {
+    private static final Object[][] parameterAccessorMap = new Object[][] {
         {
             new QName(NAMESPACE,"cellResolution"),              // attribute name
             "CellResolution",                                   // accessor method name suffix
@@ -446,6 +442,10 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
                 return null;
         }
 
+    }
+
+    public static final String getParameterNamespaceUri() {
+        return NAMESPACE;
     }
 
 }

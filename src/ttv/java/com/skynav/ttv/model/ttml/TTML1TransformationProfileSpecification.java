@@ -34,7 +34,7 @@ import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
 
 public class TTML1TransformationProfileSpecification extends Specification {
     
-    private static Object[][] featureMapEntries = new Object[][] {
+    private static final Object[][] featureMapEntries = new Object[][] {
         { "#content", Usage.REQUIRED },
         { "#core", Usage.REQUIRED },
         { "#profile", Usage.REQUIRED },
@@ -151,7 +151,7 @@ public class TTML1TransformationProfileSpecification extends Specification {
         { "#zIndex", Usage.OPTIONAL },
     };
 
-    private static Object[][] extensionMapEntries = new Object[][] {
+    private static final Object[][] extensionMapEntries = new Object[][] {
     };
 
     public TTML1TransformationProfileSpecification(URI profileUri) {

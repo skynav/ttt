@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.model;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,23 +37,23 @@ import com.skynav.ttv.model.netflix.NFLXTT;
 
 public class Models {
 
+    private static Map<String,Class<? extends Model>> modelMap;
+    static {
+        Map<String,Class<? extends Model>> m = new java.util.TreeMap<String,Class<? extends Model>>();
+        m.put(TTML1.MODEL_NAME, TTML1.TTML1Model.class);
+        m.put(TTML2.MODEL_NAME, TTML2.TTML2Model.class);
+        m.put(ST20522010.MODEL_NAME, ST20522010.ST20522010Model.class);
+        m.put(ST20522013.MODEL_NAME, ST20522013.ST20522013Model.class);
+        m.put(NFLXTT.MODEL_NAME, NFLXTT.NFLXTTModel.class);
+        modelMap = Collections.unmodifiableMap(m);
+    }
+
     public static Model getDefaultModel() {
-        return TTML1.MODEL;
+        return getModel(getDefaultModelName());
     }
 
     public static String getDefaultModelName() {
-        return getDefaultModel().getName();
-    }
-
-    private static Map<String,Model> modelMap;
-
-    static {
-        modelMap = new java.util.TreeMap<String,Model>();
-        modelMap.put(TTML1.MODEL.getName(), TTML1.MODEL);
-        modelMap.put(TTML2.MODEL.getName(), TTML2.MODEL);
-        modelMap.put(ST20522010.MODEL.getName(), ST20522010.MODEL);
-        modelMap.put(ST20522013.MODEL.getName(), ST20522013.MODEL);
-        modelMap.put(NFLXTT.MODEL.getName(), NFLXTT.MODEL);
+        return TTML1.MODEL_NAME;
     }
 
     public static Set<String> getModelNames() {
@@ -60,7 +61,17 @@ public class Models {
     }
 
     public static Model getModel(String name) {
-        return modelMap.get(name);
+        Class<? extends Model> modelClass = modelMap.get(name);
+        if (modelClass != null) {
+            try {
+                return modelClass.newInstance();
+            } catch (IllegalAccessException e) {
+                return null;
+            } catch (InstantiationException e) {
+                return null;
+            }
+        } else
+            return null;
     }
 
 }

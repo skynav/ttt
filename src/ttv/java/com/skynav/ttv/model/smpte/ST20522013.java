@@ -33,7 +33,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.smpte.tt.rel2013.Information;
 import com.skynav.ttv.model.smpte.tt.rel2013.m708.Service;
@@ -73,7 +72,6 @@ public class ST20522013 {
     }
 
     public static final String MODEL_NAME = "st2052-2013";
-    public static final Model MODEL = new ST20522013Model();
 
     public static boolean inSMPTEPrimaryNamespace(QName name) {
         String nsUri = name.getNamespaceURI();
@@ -103,7 +101,7 @@ public class ST20522013 {
         private Profile.StandardDesignations standardDesignations;
         private SemanticsVerifier semanticsVerifier;
 
-        ST20522013Model() {
+        public ST20522013Model() {
             populate();
         }
 

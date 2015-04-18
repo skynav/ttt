@@ -48,7 +48,7 @@ import com.skynav.xml.helpers.XML;
 
 public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
 
-    private static Object[][] parameterAccessorMap = new Object[][] {
+    private static final Object[][] parameterAccessorMap        = new Object[][] {
         {
             new QName(NAMESPACE,"clockMode"),
             "ClockMode",

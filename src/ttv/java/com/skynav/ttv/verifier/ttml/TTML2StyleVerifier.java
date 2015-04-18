@@ -87,7 +87,8 @@ import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
     public static final QName rubyAttributeName                 = new QName(NAMESPACE,"ruby");
-    private static Object[][] styleAccessorMap                  = new Object[][] {
+
+    private static final Object[][] styleAccessorMap            = new Object[][] {
         {
             new QName(NAMESPACE,"direction"),
             "Direction",

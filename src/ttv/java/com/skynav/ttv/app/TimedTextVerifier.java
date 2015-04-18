@@ -127,7 +127,6 @@ public class TimedTextVerifier implements VerifierContext {
     public static final String DEFAULT_ENCODING                 = "UTF-8";
 
     // miscelaneous defaults
-    private static final Model defaultModel = Models.getDefaultModel();
     private static final String defaultReporterFileEncoding = Reporters.getDefaultEncoding();
 
     // banner text
@@ -150,10 +149,11 @@ public class TimedTextVerifier implements VerifierContext {
     };
     private static final Collection<OptionSpecification> shortOptions;
     static {
-        shortOptions = new java.util.TreeSet<OptionSpecification>();
+        Set<OptionSpecification> s = new java.util.TreeSet<OptionSpecification>();
         for (String[] spec : shortOptionSpecifications) {
-            shortOptions.add(new OptionSpecification(spec[0], spec[1]));
+            s.add(new OptionSpecification(spec[0], spec[1]));
         }
+        shortOptions = Collections.unmodifiableSet(s);
     }
 
     private static final String[][] longOptionSpecifications = new String[][] {
@@ -173,7 +173,7 @@ public class TimedTextVerifier implements VerifierContext {
         { "hide-warnings",              "",         "hide warnings (but count them)" },
         { "hide-resource-location",     "",         "hide resource location (default: show)" },
         { "hide-resource-path",         "",         "hide resource path (default: show)" },
-        { "model",                      "NAME",     "specify model name (default: " + defaultModel.getName() + ")" },
+        { "model",                      "NAME",     "specify model name (default: " + Models.getDefaultModelName() + ")" },
         { "no-warn-on",                 "TOKEN",    "disable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
         { "no-verbose",                 "",         "disable verbose output (resets verbosity level to 0)" },
         { "quiet",                      "",         "don't show banner" },
@@ -200,10 +200,11 @@ public class TimedTextVerifier implements VerifierContext {
     };
     private static final Collection<OptionSpecification> longOptions;
     static {
-        longOptions = new java.util.TreeSet<OptionSpecification>();
+        Set<OptionSpecification> s = new java.util.TreeSet<OptionSpecification>();
         for (String[] spec : longOptionSpecifications) {
-            longOptions.add(new OptionSpecification(spec[0], spec[1], spec[2]));
+            s.add(new OptionSpecification(spec[0], spec[1], spec[2]));
         }
+        longOptions = Collections.unmodifiableSet(s);
     }
 
     private static final String usageCommand =
@@ -973,7 +974,7 @@ public class TimedTextVerifier implements VerifierContext {
 
     private void showModels() {
         Reporter reporter = getReporter();
-        String defaultModelName = Models.getDefaultModel().getName();
+        String defaultModelName = Models.getDefaultModelName();
         StringBuffer sb = new StringBuffer();
         sb.append("Verification Models:\n");
         for (String modelName : Models.getModelNames()) {
@@ -1398,10 +1399,8 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private SchemaFactory getSchemaFactory() {
-        synchronized (this) {
-            if (schemaFactory == null) {
-                schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
-            }
+        if (schemaFactory == null) {
+            schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
         }
         return schemaFactory;
     }
@@ -1447,10 +1446,8 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private Schema getSchema(List<URL> components) throws SchemaValidationErrorException {
-        synchronized (this) {
-            if (!schemas.containsKey(components)) {
-                schemas.put(components, loadSchema(components));
-            }
+        if (!schemas.containsKey(components)) {
+            schemas.put(components, loadSchema(components));
         }
         return schemas.get(components);
     }
@@ -2148,7 +2145,6 @@ public class TimedTextVerifier implements VerifierContext {
         private Set<String> standardNamespaces;
         private Set<String> extensionNamespaces;
         private ForeignTreatment foreignTreatment;
-
         private Stack<QName> nameStack = new Stack<QName>();
         private boolean inForeign;
         private Locator currentLocator;

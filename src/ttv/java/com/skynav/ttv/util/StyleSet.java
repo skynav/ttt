@@ -36,7 +36,7 @@ import javax.xml.namespace.QName;
 
 public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> implements Comparable<StyleSet> {
 
-    public static StyleSet EMPTY = new StyleSet();
+    public static final StyleSet EMPTY = new StyleSet();
 
     private int generation;
     private String id;
