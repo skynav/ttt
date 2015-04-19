@@ -89,6 +89,7 @@ import com.skynav.ttv.app.ShowUsageException;
 import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.app.UsageException;
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.Models;
 import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Division;
@@ -431,6 +432,7 @@ public class Converter implements ConverterContext {
     private SimpleDateFormat gmtDateTimeFormat;
     private PrintWriter showOutput;
     private ExternalParametersStore externalParameters = new ExternalParametersStore();
+    private Model model;
     private Reporter reporter;
     private Map<String,Results> results = new java.util.HashMap<String,Results>();
     private Configuration configuration;
@@ -462,6 +464,7 @@ public class Converter implements ConverterContext {
             reporter = Reporters.getDefaultReporter();
         setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
         setShowOutput(showOutput);
+        this.model = Models.getModel("ttml2");
     }
 
     private void resetReporter() {
@@ -2394,7 +2397,7 @@ public class Converter implements ConverterContext {
             // populate root (tt)
             TimedText tt = ttmlFactory.createTimedText();
             tt.setVersion(java.math.BigInteger.valueOf(2));
-            tt.getOtherAttributes().put(ttvaModelAttrName, TTML2.MODEL.getName());
+            tt.getOtherAttributes().put(ttvaModelAttrName, model.getName());
             if (defaultLanguage != null)
                 tt.setLang(defaultLanguage);
             if ((head.getStyling() != null) || (head.getLayout() != null))
@@ -2413,7 +2416,6 @@ public class Converter implements ConverterContext {
     private boolean convertResource(TimedText tt) {
         boolean fail = false;
         try {
-            Model model = TTML2.MODEL;
             JAXBContext jc = JAXBContext.newInstance(model.getJAXBContextPath());
             Marshaller m = jc.createMarshaller();
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -3024,7 +3026,7 @@ public class Converter implements ConverterContext {
         assert args != null;
         assert input != null;
         if (reporter == null)
-            reporter = NullReporter.REPORTER;
+            reporter = new NullReporter();
         if (!reporter.isOpen()) {
             String pwEncoding = defaultReporterFileEncoding;
             try {
@@ -3043,7 +3045,6 @@ public class Converter implements ConverterContext {
 
     private TimedText unmarshall(Document d) {
         try {
-            Model model = TTML2.MODEL;
             JAXBContext context = JAXBContext.newInstance(model.getJAXBContextPath());
             Binder<Node> binder = context.createBinder();
             Object unmarshalled = binder.unmarshal(d);
