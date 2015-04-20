@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.skynav.ttt</groupId>
+  <artifactId>cap2tt</artifactId>
+  <version>1.1-SNAPSHOT</version>
+  <name>Lambda CAP to TTML Converter</name>
+  <url>.</url>
+
+  <parent>
+    <groupId>com.skynav.ttt</groupId>
+    <artifactId>ttt</artifactId>
+    <version>1.1-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.skynav.ttt</groupId>
+      <artifactId>ttv</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire.version}</version>
+          <configuration>
+            <includes>
+              <include>**/*TestCase.java</include>
+              <include>**/*TestCases.java</include>
+            </includes>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          </configuration>
+        </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <excludeFilterFile>src/tools/resources/findbugs/exclusions.xml</excludeFilterFile>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>
