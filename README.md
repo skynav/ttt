@@ -1,5 +1,4 @@
-# ttt
-Timed Text Toolkit
+# Timed Text Toolkit (ttt)
 
 A collection of related tools that provide support for or make use of the W3C Timed Text Markup Language (TTML).
 
