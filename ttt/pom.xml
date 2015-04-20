@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.skynav.ttt</groupId>
+  <artifactId>ttt</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>Timed Text Toolkit</description>
+  <inceptionYear>2013</inceptionYear>
+  <url>https://github.com/skynav/ttt</url>
+  <parent>
+    <groupId>com.skynav</groupId>
+    <artifactId>skynav</artifactId>
+    <version>1.0</version>
+    <relativePath/>
+  </parent>
+  <scm>
+    <connection>scm:git:https://github.com/skynav/ttt.git</connection>
+    <url>scm:git:https://github.com/skynav/ttt.git</url>
+    <developerConnection>scm:git:https://github.com/skynav/ttt.git</developerConnection>
+  </scm>
+  <properties>
+    <java.version>1.7</java.version>
+    <surefire.version>2.18.1</surefire.version>
+    <project.info.reports.version>2.8</project.info.reports.version>
+  </properties>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>${project.info.reports.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
