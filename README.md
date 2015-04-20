@@ -13,7 +13,7 @@ A collection of related tools that provide support for or make use of the W3C Ti
 
 This repository is intended to organize top level information about these related tools and provide a home for site, deployment, and repository metadata.
 
-## Maven Metadata
+## Maven Coordinates
 
 <pre>
   &lt;groupId&gt;com.skynav.ttt&lt;/groupId&gt;
