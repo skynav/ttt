@@ -12,3 +12,14 @@ A collection of related tools that provide support for or make use of the W3C Ti
 - [Lambda CAP to TTML Converter](https://github.com/skynavga/cap2tt)
 
 This repository is intended to organize top level information about these related tools and provide a home for site, deployment, and repository metadata.
+
+## Maven Metadata
+
+<pre>
+  &lt;groupId&gt;com.skynav.ttt&lt;/groupId&gt;
+  &lt;artifactId&gt;ttt&lt;/artifactId&gt;
+  &lt;packaging&gt;pom&lt;/packaging&gt;
+  &lt;name&gt;Timed Text Toolkit&lt;/name&gt;
+</pre>
+
+
