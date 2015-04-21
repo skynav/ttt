@@ -1,12 +1,9 @@
 # build related
-bld
-build.properties*
 
 # eclipse related
 .eclipse/.metadata
 .eclipse/RemoteSystemsTempFiles
 .eclipse/Servers
-.eclipse/ttv/bin
 
 # other
 .DS_Store

@@ -7,8 +7,9 @@
   
   <parent>
     <groupId>com.skynav.ttt</groupId>
-    <artifactId>ttt-core</artifactId>
+    <artifactId>ttt</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <relativePath>../ttt</relativePath>
   </parent>
 
   <dependencies>

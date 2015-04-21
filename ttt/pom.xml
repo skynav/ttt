@@ -13,7 +13,6 @@
     <groupId>com.skynav</groupId>
     <artifactId>skynav</artifactId>
     <version>1.0</version>
-    <relativePath/>
   </parent>
   <scm>
     <connection>scm:git:https://github.com/skynav/ttt.git</connection>

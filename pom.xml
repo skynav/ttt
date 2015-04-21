@@ -3,8 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.skynav.ttt</groupId>
-  <artifactId>ttt-core</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>ttt-modules</artifactId>
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
 
@@ -12,16 +11,13 @@
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <relativePath>./ttt</relativePath>
   </parent>
 
-  <properties>
-    <junit.version>4.11</junit.version>
-  </properties>
-
   <modules>
-    <module>ttv</module>
-    <module>ttx</module>
-    <module>ttxv</module>
+    <module>ttt-ttv</module>
+    <module>ttt-ttx</module>
+    <module>ttt-ttxv</module>
   </modules>
 
   <distributionManagement>
