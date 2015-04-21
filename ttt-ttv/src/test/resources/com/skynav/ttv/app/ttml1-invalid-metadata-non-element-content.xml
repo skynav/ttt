@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - metadata with non-element, #PCDATA content -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml">
+  <head>
+    <metadata>Illegal Text</metadata>
+  </head>
+  <body/>
+</tt>

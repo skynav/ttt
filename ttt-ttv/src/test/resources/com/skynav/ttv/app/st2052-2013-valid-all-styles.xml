@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - all defined smpte (2013) style properties and enumerable values -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.smpte-ra.org/schemas/2052-1/2013/profiles/smpte-tt-full"
+    xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="st2052-2013">
+  <head>
+    <metadata>
+      <smpte:image xml:id="image1" imageType="PNG" encoding="Base64">abcd</smpte:image>
+    </metadata>
+  </head>
+  <body>
+    <div smpte:backgroundImage="#image1"/>
+    <div smpte:backgroundImageHorizontal="left"/>
+    <div smpte:backgroundImageHorizontal="center"/>
+    <div smpte:backgroundImageHorizontal="right"/>
+    <div smpte:backgroundImageHorizontal="0%"/>
+    <div smpte:backgroundImageHorizontal="100%"/>
+    <div smpte:backgroundImageHorizontal="0px"/>
+    <div smpte:backgroundImageHorizontal="0em"/>
+    <div smpte:backgroundImageHorizontal="0c"/>
+    <div smpte:backgroundImageHorizontal="640px"/>
+    <div smpte:backgroundImageHorizontal="32em"/>
+    <div smpte:backgroundImageHorizontal="32c"/>
+    <div smpte:backgroundImageVertical="top"/>
+    <div smpte:backgroundImageVertical="center"/>
+    <div smpte:backgroundImageVertical="bottom"/>
+    <div smpte:backgroundImageVertical="0%"/>
+    <div smpte:backgroundImageVertical="100%"/>
+    <div smpte:backgroundImageVertical="0px"/>
+    <div smpte:backgroundImageVertical="0em"/>
+    <div smpte:backgroundImageVertical="0c"/>
+    <div smpte:backgroundImageVertical="480px"/>
+    <div smpte:backgroundImageVertical="15em"/>
+    <div smpte:backgroundImageVertical="15c"/>
+  </body>
+</tt>

@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>ttt-ttv</artifactId>
+  <name>${project.groupId}:${project.artifactId}</name>
+  
+  <parent>
+    <groupId>com.skynav.ttt</groupId>
+    <artifactId>ttt-core</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.12.3</version>
+        <executions>
+          <execution>
+            <id>xjc-ttml1</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <specVersion>2.1</specVersion>
+              <schemaDirectory>src/main/resources/xsd/ttml1</schemaDirectory>
+              <generateDirectory>target/generated-sources/xjc-ttml1</generateDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc-ttml2</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <specVersion>2.1</specVersion>
+              <schemaDirectory>src/main/resources/xsd/ttml2</schemaDirectory>
+              <generateDirectory>target/generated-sources/xjc-ttml2</generateDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc-smpte-2010</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <specVersion>2.1</specVersion>
+              <schemaDirectory>src/main/resources/xsd/smpte/2010</schemaDirectory>
+              <generateDirectory>target/generated-sources/xjc-smpte-2010</generateDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc-smpte-2013</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <specVersion>2.1</specVersion>
+              <schemaDirectory>src/main/resources/xsd/smpte/2013</schemaDirectory>
+              <generateDirectory>target/generated-sources/xjc-smpte-2013</generateDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire.version}</version>
+          <configuration>
+            <includes>
+              <include>**/*TestCase.java</include>
+              <include>**/*TestCases.java</include>
+            </includes>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          </configuration>
+        </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <excludeFilterFile>src/tools/resources/findbugs/exclusions.xml</excludeFilterFile>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>

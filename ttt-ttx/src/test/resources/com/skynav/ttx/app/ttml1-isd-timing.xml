@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - simple content with timing -->
+<tt xml:lang=""
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:frameRate="9999"
+    ttp:subFrameRate="9999"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0">
+  <head/>
+  <body>
+    <div>
+      <p timeContainer="seq" tts:color="black"><span dur="1s">Foo</span><span dur="1s">Bar</span>Baz</p>
+    </div>
+  </body>
+</tt>

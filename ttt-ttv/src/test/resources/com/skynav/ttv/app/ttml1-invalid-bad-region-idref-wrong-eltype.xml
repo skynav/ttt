@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad region - idref references non-region eltype -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml">
+  <head>
+    <styling>
+      <style xml:id="s1"/>
+    </styling>
+  </head>
+  <body region="s1"/>
+</tt>

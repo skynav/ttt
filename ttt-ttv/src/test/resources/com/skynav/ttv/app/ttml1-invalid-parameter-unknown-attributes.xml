@@ -1,0 +1,2 @@
+<!-- invalid - unknown parameter attributes in TT Parameter namespace - should produce 2 errors -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:framerate="30" ttp:foo="bar"/>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad tts:color value - all space -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <head/>
+  <body tts:color="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+</tt>

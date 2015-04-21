@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - non-unique id -->
+<tt xml:id="id1" xml:lang="" xmlns="http://www.w3.org/ns/ttml">
+  <head xml:id="id1"/>
+  <body xml:id="id1"/>
+</tt>

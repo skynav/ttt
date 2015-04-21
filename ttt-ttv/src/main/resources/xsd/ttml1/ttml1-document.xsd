@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <xs:import namespace="http://www.w3.org/ns/ttml#metadata"
+    schemaLocation="ttml1-metadata-items.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#parameter"
+    schemaLocation="ttml1-parameter-items.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#styling"
+    schemaLocation="ttml1-styling-attribs.xsd"/>
+  <xs:include schemaLocation="ttml1-core-attribs.xsd"/>
+  <xs:include schemaLocation="ttml1-timing-attribs.xsd"/>
+  <xs:include schemaLocation="ttml1-head.xsd"/>
+  <xs:include schemaLocation="ttml1-content.xsd"/>
+  <xs:attributeGroup name="tt.attlist">
+    <xs:attributeGroup ref="tt:Core.required.attrib.class"/>
+    <xs:attributeGroup ref="ttp:Parameter.attrib.class"/>
+    <xs:attribute ref="tts:extent"/>
+  </xs:attributeGroup>
+  <xs:complexType name="tt.eltype">
+    <xs:sequence>
+      <xs:element ref="tt:head" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="tt:body" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="tt:tt.attlist"/>
+  </xs:complexType>
+  <xs:element name="tt" type="tt:tt.eltype"/>
+</xs:schema>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad style - idref references style that is not significant, i.e., not descendant of styling element -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml">
+  <head>
+    <layout>
+      <region>
+        <style xml:id="s1"/>
+      </region>
+    </layout>
+  </head>
+  <body style="s1"/>
+</tt>

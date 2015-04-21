@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad profile element use attribute - unknown absolute designator -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <ttp:profile use="http://www.w3.org/ns/ttml/profile/bar"/>
+  </head>
+</tt>

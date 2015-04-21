@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad datatype attribute -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.smpte-ra.org/schemas/2052-1/2010/profiles/smpte-tt-full"
+    xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="4" ttva:expectedWarnings="0" ttva:model="st2052-2010">
+  <head>
+    <metadata>
+      <!-- good datatypes --> 
+      <smpte:data datatype="x-private" encoding="Base64">abcd</smpte:data>
+      <smpte:data datatype="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt#cea608" encoding="Base64">abcd</smpte:data>
+      <!-- bad datatypes --> 
+      <smpte:data datatype="" encoding="Base64">abcd</smpte:data>
+      <smpte:data datatype="&#x0009;&#x000A;&#x000D;&#x0020;" encoding="Base64">abcd</smpte:data>
+      <smpte:data datatype=" x-private" encoding="Base64">abcd</smpte:data>
+      <smpte:data datatype="private" encoding="Base64">abcd</smpte:data>
+    </metadata>
+  </head>
+  <body/>
+</tt>

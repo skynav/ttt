@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.smpte-ra.org/schemas/2052-1/2013/profiles/smpte-tt-full"
+    xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt"
+    xmlns:m608="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="st2052-2013">
+  <head>
+    <ttm:title>CEAv1.2zeroTT-CC1</ttm:title>
+    <ttm:desc>Translation example of 608 CC1 from CEAv1.2zero.trp</ttm:desc>
+    <ttm:copyright>Copyright 2004-2012 CEA, SMPTE</ttm:copyright>
+    <metadata>
+      <ttm:agent type="person"/>
+      <smpte:information mode="Preserved" origin="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608" m608:channel="CC1"/> 
+      <smpte:data encoding="Base64" datatype="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608">
+	gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==
+      </smpte:data>
+    </metadata>    
+    <styling>
+      <style xml:id='basic' tts:color='white' tts:backgroundColor="black" tts:fontFamily='monospace' tts:fontSize='100%' tts:fontWeight='bold' />
+    </styling>
+    <layout>
+      <region xml:id="pop1" tts:origin="9c 13c" tts:showBackground="whenActive"/>
+    </layout>
+  </head>
+  <body>
+    <div region="pop1" style="basic" xml:space="preserve">
+      <metadata>
+	<smpte:data encoding="Base64" datatype="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608">
+	  gIAVLJQsnSAcIJ0sHCyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	  gICAgICAgICAgICAgICAgIAVIJQgE/QT9Jehl6FU5VTlc/Rz9CBDIENhcGFw9On06e9u725zgHOA
+	  lNCU0Jehl6HEVMRU1iDWIMHjwePj5ePlc3NzcyDQINDy7/Lv6uXq5eP04/QsICwgV8dXx8LIwsit
+	  zq3OQ8FDwc2AzYCUcJRwlyOXI6jyqPJ1bnVubulu6W5nbmcg9CD06W3pbeW65bogNCA0IG0gbelu
+	  6W6uIK4gMbUxtSBzIHPl4+XjrimuKRUslCwVL5QvgIA=
+	</smpte:data>
+      </metadata>
+      <!-- EOC on picture 176 -->
+      <p  begin="00:00:05.87" end="00:00:12.98">Test Captions<br/> DTV Access Project, WGBH-NCAM<br/>   (running time: 4min. 15 sec.)</p>
+    </div>
+    <div region="pop1" style="basic" xml:space="preserve">
+      <metadata>
+	<smpte:data encoding="Base64" datatype="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608">
+	  gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	  gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJ0gHCAc0BzQqEOoQ0M0QzIpICkg
+	  VGhUaOlz6XMgZCBkYfRh9GEgYSDpc+lzHHAccOlu6W4gQyBDYXBhcPTp9Onvbu9uIEMgQ2hhaGFu
+	  bm5u5ezl7CA0IDKdLBwsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICdLBwsnS8cL4CA
+	  gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA
+	  gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgBUglCATcBNw
+	  qEOoQ0OzQzEpRilGQ0NDQyC5ILkxrTGtMTExMbmAuYCU0JTQVGFUYWLsYuzlIOUg7+bv5iDTINP0
+	  YfRhbmRuZGHyYfJkIGQgQ2hDaGHyYfJh42Hj9OX05fJz8nO6gLqAlHCUcCChIKGiI6IjpCWkJSan
+	  JqeoKagpKqsqqyytLK2uL64vsDGwMTKzMrMktTS1tje2Nzi5OLm6O7o7vD28PT6/Pr8VLJQsgICA
+	  gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAFSyULBUvlC+AgA==
+	</smpte:data>
+      </metadata>
+      <!-- EOC on picture 442 -->
+      <p  begin="00:00:14.75" end="00:00:24.76">(CC1)FCC 91-119<br/>Table of Standard Characters:<br/>!&quot;#$%&amp;'()'á+,-./0123456789:;&lt;=&gt;?</p>
+    </div>
+  </body>
+</tt>

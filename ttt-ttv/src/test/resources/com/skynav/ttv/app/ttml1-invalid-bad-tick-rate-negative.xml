@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad ttp:tickRate value - negative -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:tickRate="-1">
+  <head/>
+  <body/>
+</tt>

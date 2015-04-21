@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad style - unresolvable idref -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml">
+  <head/>
+  <body style="s1"/>
+</tt>

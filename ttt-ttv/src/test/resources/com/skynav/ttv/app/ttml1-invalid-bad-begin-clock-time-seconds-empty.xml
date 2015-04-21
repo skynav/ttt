@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - begin - clock time - seconds - empty -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml">
+  <head/>
+  <body begin="00:00:"/>
+</tt>

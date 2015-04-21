@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad image element base64 content -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.smpte-ra.org/schemas/2052-1/2010/profiles/smpte-tt-full"
+    xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="13" ttva:expectedWarnings="0" ttva:model="st2052-2010">
+  <head>
+    <metadata>
+      <!-- underflow by 3 -->
+      <smpte:image imageType="PNG" encoding="Base64">x</smpte:image>
+      <!-- underflow by 2 -->
+      <smpte:image imageType="PNG" encoding="Base64">xy</smpte:image>
+      <!-- underflow by 1 -->
+      <smpte:image imageType="PNG" encoding="Base64">xyz</smpte:image>
+      <!-- padding in second position -->
+      <smpte:image imageType="PNG" encoding="Base64">x===</smpte:image>
+      <!-- padding in first position -->
+      <smpte:image imageType="PNG" encoding="Base64">====</smpte:image>
+      <!-- non-alphabet character in first position -->
+      <smpte:image imageType="PNG" encoding="Base64">.abc</smpte:image>
+      <!-- non-alphabet character in second position -->
+      <smpte:image imageType="PNG" encoding="Base64">a.bc</smpte:image>
+      <!-- non-alphabet character in third position -->
+      <smpte:image imageType="PNG" encoding="Base64">ab.c</smpte:image>
+      <!-- non-alphabet character in fourth position -->
+      <smpte:image imageType="PNG" encoding="Base64">abc.</smpte:image>
+      <!-- non-alphabet character in after good group -->
+      <smpte:image imageType="PNG" encoding="Base64">abcd .</smpte:image>
+      <!-- non-alphabet character in after good group - ASCII DEL -->
+      <smpte:image imageType="PNG" encoding="Base64">abcd &#x007f;</smpte:image>
+      <!-- non-alphabet character in after good group - ASCII C1 -->
+      <smpte:image imageType="PNG" encoding="Base64">abcd &#x0080;</smpte:image>
+      <!-- non-alphabet character in after good group - U+FFFD REPLACEMENT CHARACTER -->
+      <smpte:image imageType="PNG" encoding="Base64">abcd &#xFFFD;</smpte:image>
+    </metadata>
+  </head>
+  <body/>
+</tt>

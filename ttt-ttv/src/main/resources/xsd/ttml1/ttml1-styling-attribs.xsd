@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#styling" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
+    schemaLocation="ttml1-datatypes.xsd"/>
+  <xs:attribute name="backgroundColor" type="ttd:color"/>
+  <xs:attribute name="color" type="ttd:color"/>
+  <xs:attribute name="direction" type="ttd:direction"/>
+  <xs:attribute name="display" type="ttd:display"/>
+  <xs:attribute name="displayAlign" type="ttd:displayAlign"/>
+  <xs:attribute name="extent" type="ttd:extent"/>
+  <xs:attribute name="fontFamily" type="ttd:fontFamily"/>
+  <xs:attribute name="fontSize" type="ttd:fontSize"/>
+  <xs:attribute name="fontStyle" type="ttd:fontStyle"/>
+  <xs:attribute name="fontWeight" type="ttd:fontWeight"/>
+  <xs:attribute name="lineHeight" type="ttd:lineHeight"/>
+  <xs:attribute name="opacity" type="ttd:opacity"/>
+  <xs:attribute name="origin" type="ttd:origin"/>
+  <xs:attribute name="overflow" type="ttd:overflow"/>
+  <xs:attribute name="padding" type="ttd:padding"/>
+  <xs:attribute name="showBackground" type="ttd:showBackground"/>
+  <xs:attribute name="textAlign" type="ttd:textAlign"/>
+  <xs:attribute name="textDecoration" type="ttd:textDecoration"/>
+  <xs:attribute name="textOutline" type="ttd:textOutline"/>
+  <xs:attribute name="unicodeBidi" type="ttd:unicodeBidi"/>
+  <xs:attribute name="visibility" type="ttd:visibility"/>
+  <xs:attribute name="wrapOption" type="ttd:wrapOption"/>
+  <xs:attribute name="writingMode" type="ttd:writingMode"/>
+  <xs:attribute name="zIndex" type="ttd:zIndex"/>
+  <xs:attributeGroup name="Styling.attrib.class">
+    <xs:attribute ref="tts:backgroundColor"/>
+    <xs:attribute ref="tts:color"/>
+    <xs:attribute ref="tts:direction"/>
+    <xs:attribute ref="tts:display"/>
+    <xs:attribute ref="tts:displayAlign"/>
+    <xs:attribute ref="tts:extent"/>
+    <xs:attribute ref="tts:fontFamily"/>
+    <xs:attribute ref="tts:fontSize"/>
+    <xs:attribute ref="tts:fontStyle"/>
+    <xs:attribute ref="tts:fontWeight"/>
+    <xs:attribute ref="tts:lineHeight"/>
+    <xs:attribute ref="tts:opacity"/>
+    <xs:attribute ref="tts:origin"/>
+    <xs:attribute ref="tts:overflow"/>
+    <xs:attribute ref="tts:padding"/>
+    <xs:attribute ref="tts:showBackground"/>
+    <xs:attribute ref="tts:textAlign"/>
+    <xs:attribute ref="tts:textDecoration"/>
+    <xs:attribute ref="tts:textOutline"/>
+    <xs:attribute ref="tts:unicodeBidi"/>
+    <xs:attribute ref="tts:visibility"/>
+    <xs:attribute ref="tts:wrapOption"/>
+    <xs:attribute ref="tts:writingMode"/>
+    <xs:attribute ref="tts:zIndex"/>
+  </xs:attributeGroup>
+</xs:schema>
+

@@ -1,0 +1,15 @@
+<!-- valid - all defined ttml profile vocabulary - should produce 3 warnings with warn-on all -->
+<tt:tt xml:lang="en" xmlns:tt="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="3">
+  <tt:head>
+    <ttp:profile xml:id="profile" use="dfxp-presentation">
+      <ttp:features xml:id="f1set" xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature xml:id="f1" value="required">#fontStyle-italic</ttp:feature>
+      </ttp:features>
+      <ttp:extensions xml:id="e1set" xml:base="http://example.com/ns/ttml/extension/">
+        <ttp:extension xml:id="e1" value="required">#image</ttp:extension>
+      </ttp:extensions>
+    </ttp:profile>
+  </tt:head>
+  <tt:body/>
+</tt:tt>

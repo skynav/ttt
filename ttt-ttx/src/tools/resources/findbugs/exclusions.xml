@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FindBugsFilter>
+  <!-- approved findbugs warning exclusions -->
+  <Match>
+    <Bug pattern="DM_CONVERT_CASE"/>
+  </Match>
+  <Match>
+    <Bug pattern="DM_GC"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttx.app.TimedTextTransformer"/>
+        <Method name="getUsedMemory"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
+  </Match>
+  <Match>
+    <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
+    <Or>
+      <Class name="com.skynav.ttx.transformer.isd.ISD$ISDTransformer$1"/>
+      <Class name="com.skynav.ttx.transformer.isd.ISD$ISDTransformer$22"/>
+    </Or>
+  </Match>
+</FindBugsFilter>

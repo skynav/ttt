@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad features - base - non-absolute -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <ttp:profile>
+      <ttp:features xml:base="foo"/>
+    </ttp:profile>
+  </head>
+</tt>

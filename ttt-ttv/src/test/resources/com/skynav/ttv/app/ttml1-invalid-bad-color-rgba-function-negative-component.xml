@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad tts:color value - rgba function negative component -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <head/>
+  <body tts:color="rgba(0,0,0,-1)"/>
+</tt>
