@@ -2,33 +2,29 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.skynav.ttt</groupId>
-  <artifactId>ttpe</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Timed Text Presentation Engine</name>
-  <url>.</url>
+  <artifactId>ttt-ttpe</artifactId>
+  <name>${project.groupId}:${project.artifactId}</name>
 
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <project.version>1.0-SNAPSHOT</project.version>
     <icu4j.version>54.1.1</icu4j.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.skynav.ttt</groupId>
-      <artifactId>ttv</artifactId>
-      <version>1.1-SNAPSHOT</version>
+      <artifactId>ttt-ttv</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.skynav.ttt</groupId>
-      <artifactId>ttx</artifactId>
-      <version>1.1-SNAPSHOT</version>
+      <artifactId>ttt-ttx</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
@@ -37,8 +33,8 @@
     </dependency>
     <dependency>
       <groupId>com.skynav.ttt</groupId>
-      <artifactId>batik</artifactId>
-      <version>svn-trunk</version>
+      <artifactId>ttt-batik</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -52,13 +48,13 @@
     </dependency>
     <dependency>
       <groupId>com.skynav.ttt</groupId>
-      <artifactId>xmlgraphics-commons</artifactId>
-      <version>svn-trunk</version>
+      <artifactId>ttt-xmlgraphics-commons</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.skynav.ttt</groupId>
-      <artifactId>fontbox</artifactId>
-      <version>2.0.0-SNAPSHOT</version>
+      <artifactId>ttt-fontbox</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
