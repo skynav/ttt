@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/ttpe/ttpe/com/skynav/ttpe/app/Presenter.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.skynav.ttpe.app.Presenter"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-v --external-duration 24h --external-extent &quot;1280px 720px&quot; --font-directory tst/fonts --output-archive --output-directory run/out --output-format png --output-indent --png-background black tst/resources/com/skynav/ttpe/app/sample-001.xml"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ttpe"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:ttpe}/../.."/>
+</launchConfiguration>

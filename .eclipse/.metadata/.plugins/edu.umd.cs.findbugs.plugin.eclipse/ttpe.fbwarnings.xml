@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="3.0.1-dev-20150306-5afe4d1" sequence="1" timestamp="1429284577456" analysisTimestamp="1429284563770" release="">
+  <Project projectName="ttpe">
+    <Jar>/Users/glenn/work/ttpe/.eclipse/ttpe/bin</Jar>
+    <AuxClasspathEntry>/Users/glenn/work/ttpe/.eclipse/ttpe/bin</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/glenn/work/ttpe/ext/lib/commons-logging-1.0.4.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/glenn/work/ttpe/ext/lib/fontbox-2.0.0-SNAPSHOT.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/glenn/work/ttpe/ext/lib/icu4j-54_1_1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/glenn/work/ttpe/ext/lib/ttx.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/glenn/work/ttpe/ext/lib/xml-apis-ext.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/glenn/work/ttpe/ext/lib/xmlgraphics-commons-svn-trunk.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/glenn/work/ttpe/ext/lib/batik-all-svn-trunk.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.7.0_65.jdk/Contents/Home/jre/lib/rt.jar</AuxClasspathEntry>
+    <SrcDir>/Users/glenn/work/ttpe/src/java</SrcDir>
+    <SrcDir>/Users/glenn/work/ttpe/src/resources</SrcDir>
+    <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud" online="false"></Cloud>
+  </Project>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Fri, 17 Apr 2015 09:29:02 -0600" total_classes="129" referenced_classes="308" total_bugs="0" total_size="7556" num_packages="13" java_version="1.7.0_75" vm_version="24.75-b04" cpu_seconds="41.56" clock_seconds="13.69" peak_mbytes="297.54" alloc_mbytes="455.00" gc_seconds="0.80">
+    <PackageStats package="com.skynav.ttpe.app" total_bugs="0" total_types="6" total_size="863">
+      <ClassStats class="com.skynav.ttpe.app.Configuration" sourceFile="Configuration.java" interface="false" size="84" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.app.ConfigurationDefaults" sourceFile="ConfigurationDefaults.java" interface="false" size="23" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.app.Manifest" sourceFile="Manifest.java" interface="false" size="100" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.app.Namespace" sourceFile="Namespace.java" interface="false" size="9" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.app.Presenter" sourceFile="Presenter.java" interface="false" size="638" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.app.Version" sourceFile="Version.java" interface="false" size="9" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.area" total_bugs="0" total_types="24" total_size="519">
+      <ClassStats class="com.skynav.ttpe.area.AbstractArea" sourceFile="AbstractArea.java" interface="false" size="38" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.AnnotationArea" sourceFile="AnnotationArea.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.Area" sourceFile="Area.java" interface="true" size="7" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.AreaGeometry" sourceFile="AreaGeometry.java" interface="true" size="8" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.AreaNode" sourceFile="AreaNode.java" interface="false" size="39" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.Block" sourceFile="Block.java" interface="true" size="1" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.BlockArea" sourceFile="BlockArea.java" interface="false" size="54" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.BlockFillerArea" sourceFile="BlockFillerArea.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.BoundedBlockArea" sourceFile="BoundedBlockArea.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.CanvasArea" sourceFile="CanvasArea.java" interface="false" size="21" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.GlyphArea" sourceFile="GlyphArea.java" interface="false" size="25" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.Inline" sourceFile="Inline.java" interface="true" size="1" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.InlineBlockArea" sourceFile="InlineBlockArea.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.InlineFillerArea" sourceFile="InlineFillerArea.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.LeafAreaNode" sourceFile="LeafAreaNode.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.LeafBlockArea" sourceFile="LeafBlockArea.java" interface="false" size="19" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.LeafInlineArea" sourceFile="LeafInlineArea.java" interface="false" size="19" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.LineArea" sourceFile="LineArea.java" interface="false" size="87" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.NonLeafAreaNode" sourceFile="NonLeafAreaNode.java" interface="false" size="75" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.NonLeafAreaNode$Expansion" sourceFile="NonLeafAreaNode.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.PositionedBlockArea" sourceFile="PositionedBlockArea.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.ReferenceArea" sourceFile="ReferenceArea.java" interface="false" size="34" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.SpaceArea" sourceFile="SpaceArea.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.area.ViewportArea" sourceFile="ViewportArea.java" interface="false" size="7" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.fonts" total_bugs="0" total_types="12" total_size="809">
+      <ClassStats class="com.skynav.ttpe.fonts.Font" sourceFile="Font.java" interface="false" size="93" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontCache" sourceFile="FontCache.java" interface="false" size="133" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontCache$1" sourceFile="FontCache.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontFeature" sourceFile="FontFeature.java" interface="false" size="81" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontKerning" sourceFile="FontKerning.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontKey" sourceFile="FontKey.java" interface="false" size="163" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontLoader" sourceFile="FontLoader.java" interface="false" size="35" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontSpecification" sourceFile="FontSpecification.java" interface="false" size="59" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontState" sourceFile="FontState.java" interface="false" size="192" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontState$GlyphMapping" sourceFile="FontState.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontStyle" sourceFile="FontStyle.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.fonts.FontWeight" sourceFile="FontWeight.java" interface="false" size="12" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.geometry" total_bugs="0" total_types="9" total_size="235">
+      <ClassStats class="com.skynav.ttpe.geometry.Axis" sourceFile="Axis.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.geometry.Dimension" sourceFile="Dimension.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.geometry.Direction" sourceFile="Direction.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.geometry.Extent" sourceFile="Extent.java" interface="false" size="57" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.geometry.Overflow" sourceFile="Overflow.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.geometry.Point" sourceFile="Point.java" interface="false" size="29" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.geometry.Rectangle" sourceFile="Rectangle.java" interface="false" size="41" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.geometry.TransformMatrix" sourceFile="TransformMatrix.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.geometry.WritingMode" sourceFile="WritingMode.java" interface="false" size="38" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.layout" total_bugs="0" total_types="19" total_size="1252">
+      <ClassStats class="com.skynav.ttpe.layout.AbstractElementLayout" sourceFile="AbstractElementLayout.java" interface="false" size="6" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.AnnotationLayout" sourceFile="AnnotationLayout.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.BasicLayoutProcessor" sourceFile="BasicLayoutProcessor.java" interface="false" size="265" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.BasicLayoutState" sourceFile="BasicLayoutState.java" interface="false" size="228" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.BlockLayout" sourceFile="BlockLayout.java" interface="false" size="6" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.Consume" sourceFile="Consume.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.ElementLayout" sourceFile="ElementLayout.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.Layout" sourceFile="Layout.java" interface="true" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LayoutProcessor" sourceFile="LayoutProcessor.java" interface="false" size="38" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LayoutState" sourceFile="LayoutState.java" interface="true" size="36" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LineLayout" sourceFile="LineLayout.java" interface="false" size="291" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LineLayout$EmbeddingRun" sourceFile="LineLayout.java" interface="false" size="25" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LineLayout$InlineBreak" sourceFile="LineLayout.java" interface="false" size="22" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LineLayout$InlineBreakOpportunity" sourceFile="LineLayout.java" interface="false" size="36" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LineLayout$NonWhitespaceRun" sourceFile="LineLayout.java" interface="false" size="32" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LineLayout$TextRun" sourceFile="LineLayout.java" interface="false" size="131" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LineLayout$WhitespaceRun" sourceFile="LineLayout.java" interface="false" size="66" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.LineLayout$WhitespaceState" sourceFile="LineLayout.java" interface="false" size="24" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.layout.ParagraphLayout" sourceFile="ParagraphLayout.java" interface="false" size="12" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.presenter" total_bugs="0" total_types="2" total_size="6">
+      <ClassStats class="com.skynav.ttpe.presenter.PresentationParameters" sourceFile="PresentationParameters.java" interface="true" size="1" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.presenter.PresenterContext" sourceFile="PresenterContext.java" interface="true" size="5" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.render" total_bugs="0" total_types="10" total_size="164">
+      <ClassStats class="com.skynav.ttpe.render.AbstractDocumentFrame" sourceFile="AbstractDocumentFrame.java" interface="false" size="21" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.AbstractFrame" sourceFile="AbstractFrame.java" interface="false" size="30" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.AbstractFrameImage" sourceFile="AbstractFrameImage.java" interface="false" size="30" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.AbstractImageFrame" sourceFile="AbstractImageFrame.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.DocumentFrame" sourceFile="DocumentFrame.java" interface="true" size="6" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.Frame" sourceFile="Frame.java" interface="true" size="8" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.FrameImage" sourceFile="FrameImage.java" interface="true" size="7" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.ImageFrame" sourceFile="ImageFrame.java" interface="true" size="1" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.Render" sourceFile="Render.java" interface="true" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.RenderProcessor" sourceFile="RenderProcessor.java" interface="false" size="43" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.render.png" total_bugs="0" total_types="4" total_size="158">
+      <ClassStats class="com.skynav.ttpe.render.png.PNGFrameImage" sourceFile="PNGFrameImage.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.png.PNGImageFrame" sourceFile="PNGImageFrame.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.png.PNGRenderProcessor" sourceFile="PNGRenderProcessor.java" interface="false" size="138" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.png.PNGRenderProcessor$GenerationMode" sourceFile="PNGRenderProcessor.java" interface="false" size="12" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.render.svg" total_bugs="0" total_types="2" total_size="668">
+      <ClassStats class="com.skynav.ttpe.render.svg.SVGDocumentFrame" sourceFile="SVGDocumentFrame.java" interface="false" size="65" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.svg.SVGRenderProcessor" sourceFile="SVGRenderProcessor.java" interface="false" size="603" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.render.xml" total_bugs="0" total_types="2" total_size="294">
+      <ClassStats class="com.skynav.ttpe.render.xml.XMLDocumentFrame" sourceFile="XMLDocumentFrame.java" interface="false" size="68" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.render.xml.XMLRenderProcessor" sourceFile="XMLRenderProcessor.java" interface="false" size="226" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.style" total_bugs="0" total_types="22" total_size="1109">
+      <ClassStats class="com.skynav.ttpe.style.Annotation" sourceFile="Annotation.java" interface="false" size="31" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.AnnotationPosition" sourceFile="AnnotationPosition.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.AnnotationStyleCollector" sourceFile="AnnotationStyleCollector.java" interface="false" size="55" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.BlockAlignment" sourceFile="BlockAlignment.java" interface="false" size="31" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Color" sourceFile="Color.java" interface="false" size="148" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Constants" sourceFile="Constants.java" interface="false" size="100" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Decoration" sourceFile="Decoration.java" interface="false" size="54" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Decoration$Type" sourceFile="Decoration.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Emphasis" sourceFile="Emphasis.java" interface="false" size="54" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Emphasis$Position" sourceFile="Emphasis.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Emphasis$Style" sourceFile="Emphasis.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Helpers" sourceFile="Helpers.java" interface="false" size="75" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.InlineAlignment" sourceFile="InlineAlignment.java" interface="false" size="35" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.LineFeedTreatment" sourceFile="LineFeedTreatment.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Overflow" sourceFile="Overflow.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.StyleAttribute" sourceFile="StyleAttribute.java" interface="false" size="45" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.StyleAttributeInterval" sourceFile="StyleAttributeInterval.java" interface="false" size="97" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.StyleCollector" sourceFile="StyleCollector.java" interface="false" size="238" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.SuppressAtLineBreakTreatment" sourceFile="SuppressAtLineBreakTreatment.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Whitespace" sourceFile="Whitespace.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.WhitespaceTreatment" sourceFile="WhitespaceTreatment.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.style.Wrap" sourceFile="Wrap.java" interface="false" size="12" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.text" total_bugs="0" total_types="13" total_size="622">
+      <ClassStats class="com.skynav.ttpe.text.AnnotationCollector" sourceFile="AnnotationCollector.java" interface="false" size="131" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.AnnotationPhrase" sourceFile="AnnotationPhrase.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.BreakPhrase" sourceFile="BreakPhrase.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.BreakPhrase$Break" sourceFile="BreakPhrase.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.Constants" sourceFile="Constants.java" interface="false" size="30" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.EmbeddingPhrase" sourceFile="EmbeddingPhrase.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.LineBreakIterator" sourceFile="LineBreakIterator.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.LineBreaker" sourceFile="LineBreaker.java" interface="false" size="91" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.Paragraph" sourceFile="Paragraph.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.ParagraphCollector" sourceFile="ParagraphCollector.java" interface="false" size="48" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.ParagraphCollector$ParagraphPhraseCollector" sourceFile="ParagraphCollector.java" interface="false" size="23" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.Phrase" sourceFile="Phrase.java" interface="false" size="154" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.text.PhraseCollector" sourceFile="PhraseCollector.java" interface="false" size="83" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="com.skynav.ttpe.util" total_bugs="0" total_types="4" total_size="857">
+      <ClassStats class="com.skynav.ttpe.util.AttributedStrings" sourceFile="AttributedStrings.java" interface="false" size="24" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.util.Characters" sourceFile="Characters.java" interface="false" size="792" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.util.Integers" sourceFile="Integers.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="com.skynav.ttpe.util.Strings" sourceFile="Strings.java" interface="false" size="33" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1017" invocations="954" avgMicrosecondsPerInvocation="1066" maxMicrosecondsPerInvocation="503619" standardDeviationMircosecondsPerInvocation="16372"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="744" invocations="1018" avgMicrosecondsPerInvocation="731" maxMicrosecondsPerInvocation="52545" standardDeviationMircosecondsPerInvocation="2511"/>
+      <ClassProfile name="de.tobject.findbugs.builder.FindBugs2Eclipse" totalMilliseconds="690" invocations="2" avgMicrosecondsPerInvocation="345123" maxMicrosecondsPerInvocation="462218" standardDeviationMircosecondsPerInvocation="117095"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="667" invocations="952" avgMicrosecondsPerInvocation="701" maxMicrosecondsPerInvocation="25620" standardDeviationMircosecondsPerInvocation="1561"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="654" invocations="1049" avgMicrosecondsPerInvocation="623" maxMicrosecondsPerInvocation="26846" standardDeviationMircosecondsPerInvocation="1553"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="641" invocations="308" avgMicrosecondsPerInvocation="2082" maxMicrosecondsPerInvocation="56231" standardDeviationMircosecondsPerInvocation="4815"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="635" invocations="308" avgMicrosecondsPerInvocation="2064" maxMicrosecondsPerInvocation="55670" standardDeviationMircosecondsPerInvocation="4831"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="612" invocations="955" avgMicrosecondsPerInvocation="640" maxMicrosecondsPerInvocation="18680" standardDeviationMircosecondsPerInvocation="1397"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="570" invocations="1474" avgMicrosecondsPerInvocation="387" maxMicrosecondsPerInvocation="12132" standardDeviationMircosecondsPerInvocation="892"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="506" invocations="1010" avgMicrosecondsPerInvocation="501" maxMicrosecondsPerInvocation="11645" standardDeviationMircosecondsPerInvocation="971"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="352" invocations="784" avgMicrosecondsPerInvocation="449" maxMicrosecondsPerInvocation="10233" standardDeviationMircosecondsPerInvocation="858"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="335" invocations="956" avgMicrosecondsPerInvocation="350" maxMicrosecondsPerInvocation="12907" standardDeviationMircosecondsPerInvocation="614"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="216" invocations="308" avgMicrosecondsPerInvocation="704" maxMicrosecondsPerInvocation="17842" standardDeviationMircosecondsPerInvocation="1514"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="200" invocations="955" avgMicrosecondsPerInvocation="209" maxMicrosecondsPerInvocation="8449" standardDeviationMircosecondsPerInvocation="552"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="199" invocations="1053" avgMicrosecondsPerInvocation="189" maxMicrosecondsPerInvocation="1707" standardDeviationMircosecondsPerInvocation="254"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="160" invocations="129" avgMicrosecondsPerInvocation="1247" maxMicrosecondsPerInvocation="17488" standardDeviationMircosecondsPerInvocation="2783"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="143" invocations="308" avgMicrosecondsPerInvocation="464" maxMicrosecondsPerInvocation="5320" standardDeviationMircosecondsPerInvocation="661"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="138" invocations="308" avgMicrosecondsPerInvocation="449" maxMicrosecondsPerInvocation="10790" standardDeviationMircosecondsPerInvocation="1013"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="138" invocations="1038" avgMicrosecondsPerInvocation="133" maxMicrosecondsPerInvocation="39210" standardDeviationMircosecondsPerInvocation="1335"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="128" invocations="390" avgMicrosecondsPerInvocation="330" maxMicrosecondsPerInvocation="16786" standardDeviationMircosecondsPerInvocation="1178"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="124" invocations="948" avgMicrosecondsPerInvocation="131" maxMicrosecondsPerInvocation="5036" standardDeviationMircosecondsPerInvocation="342"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="116" invocations="308" avgMicrosecondsPerInvocation="379" maxMicrosecondsPerInvocation="6373" standardDeviationMircosecondsPerInvocation="920"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="105" invocations="308" avgMicrosecondsPerInvocation="342" maxMicrosecondsPerInvocation="7696" standardDeviationMircosecondsPerInvocation="798"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History>
+    <AppVersion sequence="0" timestamp="1429284577452" release="" codeSize="0" numClasses="0"/>
+  </History>
+</BugCollection>
