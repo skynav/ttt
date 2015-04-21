@@ -15,9 +15,12 @@
   </parent>
 
   <modules>
+    <module>ttt</module>
     <module>ttt-ttv</module>
     <module>ttt-ttx</module>
     <module>ttt-ttxv</module>
+    <module>ttt-cap2tt</module>
+    <module>ttt-ttpe</module>
   </modules>
 
   <distributionManagement>
