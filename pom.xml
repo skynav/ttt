@@ -3,25 +3,19 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.skynav.ttt</groupId>
-  <artifactId>ttt</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <artifactId>ttt-core</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Timed Text Toolkit</name>
-  <url>.</url>
+  <name>${project.groupId}:${project.artifactId}</name>
 
   <parent>
-    <groupId>com.skynav</groupId>
-    <artifactId>skynav</artifactId>
-    <version>1</version>
-    <relativePath/>
+    <groupId>com.skynav.ttt</groupId>
+    <artifactId>ttt</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <java.version>1.7</java.version>
     <junit.version>4.11</junit.version>
-    <surefire.version>2.18.1</surefire.version>
-    <project.version>1.1-SNAPSHOT</project.version>
-    <project.info.reports.version>2.8</project.info.reports.version>
   </properties>
 
   <modules>
@@ -29,29 +23,6 @@
     <module>ttx</module>
     <module>ttxv</module>
   </modules>
-
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>${surefire.version}</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>${project.info.reports.version}</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 
   <distributionManagement>
     <site>
