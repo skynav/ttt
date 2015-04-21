@@ -1,0 +1,12 @@
+StringVariablePreferencePage=120,100,99,79,
+eclipse.preferences.version=1
+org.eclipse.debug.ui.PREF_LAUNCH_PERSPECTIVES=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<launchPerspectives/>\n
+org.eclipse.debug.ui.remove_all_breakpoints_prompt=false
+org.eclipse.debug.ui.switch_perspective_on_suspend=always
+org.eclipse.debug.ui.user_view_bindings=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<viewBindings>\n<view id\="org.eclipse.debug.ui.ExpressionView">\n<perspective id\="org.eclipse.debug.ui.DebugPerspective" userAction\="opened"/>\n</view>\n<view id\="org.eclipse.ui.console.ConsoleView">\n<perspective id\="org.eclipse.debug.ui.DebugPerspective" userAction\="opened"/>\n</view>\n</viewBindings>\n
+pref_state_memento.org.eclipse.debug.ui.BreakpointView=<?xml version\="1.0" encoding\="UTF-8"?>\n<VariablesViewMemento org.eclipse.debug.ui.SASH_DETAILS_PART\="315" org.eclipse.debug.ui.SASH_VIEW_PART\="684">\n<PRESENTATION_CONTEXT_PROPERTIES IMemento.internal.id\="org.eclipse.debug.ui.BreakpointView">\n<BOOLEAN BOOLEAN\="true" IMemento.internal.id\="org.eclipse.debug.ui.check"/>\n</PRESENTATION_CONTEXT_PROPERTIES>\n</VariablesViewMemento>
+pref_state_memento.org.eclipse.debug.ui.DebugVieworg.eclipse.debug.ui.DebugView=<?xml version\="1.0" encoding\="UTF-8"?>\n<DebugViewMemento org.eclipse.debug.ui.BREADCRUMB_DROPDOWN_AUTO_EXPAND\="false"/>
+pref_state_memento.org.eclipse.debug.ui.ExpressionView=<?xml version\="1.0" encoding\="UTF-8"?>\n<VariablesViewMemento org.eclipse.debug.ui.SASH_DETAILS_PART\="315" org.eclipse.debug.ui.SASH_VIEW_PART\="684">\n<PRESENTATION_CONTEXT_PROPERTIES IMemento.internal.id\="org.eclipse.debug.ui.ExpressionView"/>\n</VariablesViewMemento>
+pref_state_memento.org.eclipse.debug.ui.VariableView=<?xml version\="1.0" encoding\="UTF-8"?>\n<VariablesViewMemento org.eclipse.debug.ui.SASH_DETAILS_PART\="105" org.eclipse.debug.ui.SASH_VIEW_PART\="894">\n<PRESENTATION_CONTEXT_PROPERTIES IMemento.internal.id\="org.eclipse.debug.ui.VariableView"/>\n</VariablesViewMemento>
+preferredDetailPanes=DefaultDetailPane\:DefaultDetailPane|org.eclipse.jdt.debug.ui.DETAIL_PANE_LINE_BREAKPOINT\:org.eclipse.jdt.debug.ui.DETAIL_PANE_LINE_BREAKPOINT|org.eclipse.jdt.debug.ui.DETAIL_PANE_EXCEPTION_BREAKPOINT\:org.eclipse.jdt.debug.ui.DETAIL_PANE_EXCEPTION_BREAKPOINT|org.eclipse.jdt.debug.ui.DETAIL_PANE_METHOD_BREAKPOINT\:org.eclipse.jdt.debug.ui.DETAIL_PANE_METHOD_BREAKPOINT|
+preferredTargets=default\:default|

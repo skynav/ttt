@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FindBugsFilter>
+  <Match>
+    <Bug pattern="DM_CONVERT_CASE"/>
+  </Match>
+  <Match>
+    <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
+  </Match>
+  <Match>
+    <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
+    <Or>
+      <Class name="com.skynav.cap2tt.app.Converter$2"/>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="UCF_USELESS_CONTROL_FLOW"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.cap2tt.app.Converter"/>
+        <Method name="convert" params="java.lang.String[],java.lang.String" returns="int"/>
+      </And>
+    </Or>
+  </Match>
+</FindBugsFilter>

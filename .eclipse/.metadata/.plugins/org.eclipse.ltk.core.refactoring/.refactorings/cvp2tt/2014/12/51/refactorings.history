@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;cvp2tt&apos;&#x0A;- Original project: &apos;cvp2tt&apos;&#x0A;- Original element: &apos;cvp2tt/src&apos;" description="Delete element" element1="/src" elements="1" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1418627734891" subPackages="false" version="1.0"/>
+</session>
