@@ -22,6 +22,7 @@
   </scm>
   <properties>
     <java.version>1.7</java.version>
+    <junit.version>4.11</junit.version>
     <surefire.version>2.18.1</surefire.version>
     <project.info.reports.version>2.8</project.info.reports.version>
   </properties>
