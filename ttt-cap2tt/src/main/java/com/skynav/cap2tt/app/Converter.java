@@ -90,7 +90,6 @@ import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.app.UsageException;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
-import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Division;
 import com.skynav.ttv.model.ttml2.tt.Head;
@@ -211,6 +210,9 @@ public class Converter implements ConverterContext {
 
     // ttv annotation names
     private static final QName ttvaModelAttrName = new QName(Annotations.getNamespace(), "model");
+
+    // miscellaneous
+    private static final float[] shears = new float[] { 0, 6.345103f, 11.33775f, 16.78842f, 21.99875f, 27.97058f };
 
     // banner text
     private static final String title = "CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
@@ -3305,7 +3307,7 @@ public class Converter implements ConverterContext {
                 p.setFontStyle(FontStyle.NORMAL);
                 attributes.put(ttsFontShearAttrName, "0%");
             } else if (name.equals("斜")) {
-                int shear;
+                float shear;
                 if (count < 0)
                     shear = shears[0];
                 else if (count < shears.length)
@@ -3391,13 +3393,12 @@ public class Converter implements ConverterContext {
                     styles.add(qn);
             }
         }
-        private static final int[] shears = new int[] { 0, 10, 18, 27, 36, 47 };
         public void populate(Span s, Set<QName> styles) {
             String name = specification.name;
             Map<QName, String> attributes = s.getOtherAttributes();
             if (name.equals("正体")) {
             } else if (name.equals("斜")) {
-                int shear;
+                float shear;
                 if (count < 0)
                     shear = shears[0];
                 else if (count < shears.length)

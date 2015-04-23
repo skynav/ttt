@@ -1,11 +1,3 @@
-# build related
-
-# eclipse related
-.eclipse/.metadata
-.eclipse/RemoteSystemsTempFiles
-.eclipse/Servers
-
-# other
 .DS_Store
 *~
 *.orig
@@ -13,3 +5,8 @@
 run
 target
 tmp
+.eclipse
+.project
+.classpath
+.settings
+

@@ -76,7 +76,7 @@ public class Emphasis {
     }
 
     private static String[] splitComponents(String value) {
-        return value.split("[ \t\r\n]+"); // [TBD] - FIXME - handle whitespace in color component
+        return value.split("[ \t\r\n]+");
     }
 
     private static int isStyle(String[] components, int index, Locator locator, VerifierContext context, TextEmphasis.Style[] outputStyle, String[] outputText) {
