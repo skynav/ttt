@@ -17,9 +17,9 @@ A collection of related tools that provide support for or make use of the W3C Ti
 
 Prior to performing a build, the following requirements must be met:
 
-- install JDK 1.7
-- install maven 3
-- perform one time installation of third party library dependncies as follows, where `$TTT_HOME` is set to the directory where the `ttt` repository is cloned:
+- Install JDK 1.7.
+- Install maven 3.
+- Perform one-time installation of third party library dependencies as follows, where `$TTT_HOME` is set to the directory where the `ttt` repository is cloned:
 
 <pre>
     $ cd $TTT_HOME
