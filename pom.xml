@@ -23,6 +23,8 @@
     <junit.version>4.11</junit.version>
     <surefire.version>2.18.1</surefire.version>
     <project.info.reports.version>2.8</project.info.reports.version>
+    <findbugs.version>3.0.1</findbugs.version>
+    <pmd.version>3.4</pmd.version>
   </properties>
 
   <scm>
@@ -58,12 +60,24 @@
           </configuration>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${surefire.version}</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>${project.info.reports.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>${pmd.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>${findbugs.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>

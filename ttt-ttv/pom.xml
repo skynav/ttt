@@ -113,6 +113,25 @@
           <threshold>Low</threshold>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${pmd.version}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>pmd</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <rulesets>
+            <ruleset>${project.baseUri}src/tools/resources/pmd/rules.xml</ruleset>
+          </rulesets>
+          <linkXRef>false</linkXRef>
+          <skipEmptyReport>false</skipEmptyReport>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 
