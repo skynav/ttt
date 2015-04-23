@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.verifier.util;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.xml.sax.Locator;
@@ -76,7 +77,7 @@ public class Colors {
         }
     }
 
-    private static Map<String,Color> namedColors;
+    private static final Map<String,Color> namedColors;
     private static final double cc80 = 128.0 / 255.0;
     private static final double ccC0 = 192.0 / 255.0;
     private static final Object[][] namedColorValues = new Object[][] {
@@ -101,10 +102,11 @@ public class Colors {
         { "cyan",        new ColorImpl(0,1,1,1)          },
     };
     static {
-        namedColors = new java.util.HashMap<String,Color>();
+        Map<String,Color> m = new java.util.HashMap<String,Color>();
         for (Object[] namedColor : namedColorValues) {
-            namedColors.put((String) namedColor[0], (Color) namedColor[1]);
+            m.put((String) namedColor[0], (Color) namedColor[1]);
         }
+        namedColors = Collections.unmodifiableMap(m);
     }
 
     private static boolean isNamedColor(String value, Color[] outputColor) {

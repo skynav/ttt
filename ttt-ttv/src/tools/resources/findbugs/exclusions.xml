@@ -53,6 +53,10 @@
     <Bug pattern="FE_FLOATING_POINT_EQUALITY"/>
     <Or>
       <And>
+        <Class name="com.skynav.ttv.model.value.impl.ColorImpl"/>
+        <Method name="equals"/>
+      </And>
+      <And>
         <Class name="com.skynav.ttv.verifier.util.Numbers"/>
         <Method name="normalize"/>
       </And>

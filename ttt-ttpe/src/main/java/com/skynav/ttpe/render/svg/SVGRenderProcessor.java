@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -247,7 +248,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             d.appendChild(renderCanvas(null, a, d));
             Namespaces.normalize(d, SVGDocumentFrame.prefixes);
             return new SVGDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d, regions);
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
             reporter.logError(e);
         }
         return null;
@@ -610,8 +611,9 @@ public class SVGRenderProcessor extends RenderProcessor {
         }
         List<Decoration> decorations = a.getDecorations();
         Element e;
-        if ((e = renderGlyphText(g, a, d, getColorDecorations(decorations))) != null)
-            g.appendChild(e);
+        e = renderGlyphText(g, a, d, getColorDecorations(decorations));;
+        assert e != null;
+        g.appendChild(e);
         if ((e = renderGlyphEmphases(g, a, d, getEmphasisDecorations(decorations))) != null)
             g.appendChild(e);
         if (a.isVertical())

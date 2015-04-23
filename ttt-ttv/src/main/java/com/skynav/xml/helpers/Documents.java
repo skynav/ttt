@@ -89,10 +89,8 @@ public class Documents {
         else
             nodes = e.getElementsByTagNameNS(ns, qn.getLocalPart());
         List<Element> elts = new java.util.ArrayList<Element>();
-        if (nodes != null) {
-            for (int i = 0, n = nodes.getLength(); i < n; ++i) {
-                elts.add((Element) nodes.item(i));
-            }
+        for (int i = 0, n = nodes.getLength(); i < n; ++i) {
+            elts.add((Element) nodes.item(i));
         }
         return elts;
     }

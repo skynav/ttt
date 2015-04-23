@@ -14,6 +14,15 @@
     </Or>
   </Match>
   <Match>
+    <Bug pattern="FE_FLOATING_POINT_EQUALITY"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttx.util.TimeCoordinate"/>
+        <Method name="equals"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
     <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
   </Match>
   <Match>

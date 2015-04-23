@@ -1187,8 +1187,8 @@ public class Converter implements ConverterContext {
             if (!uri.isAbsolute()) {
                 URI uriCurrentDirectory = getCWDAsURI();
                 URI uriAbsolute = uriCurrentDirectory.resolve(uri);
-                if (uriAbsolute != null)
-                    uri = uriAbsolute;
+                assert uriAbsolute != null;
+                uri = uriAbsolute;
             }
             return uri;
         } catch (URISyntaxException e) {
@@ -2483,14 +2483,14 @@ public class Converter implements ConverterContext {
         Element e;
         if ((e = Documents.findElementByName(d, ttHeadEltName)) != null) {
             Node m, f;
-            if ((m = createMetadataItemElement(d, "creationSystem", creationSystem)) != null) {
-                f = e.getFirstChild();
-                e.insertBefore(m, f);
-            }
-            if ((m = createMetadataItemElement(d, "creationDate", getXSDDateString(new Date()))) != null) {
-                f = e.getFirstChild();
-                e.insertBefore(m, f);
-            }
+            m = createMetadataItemElement(d, "creationSystem", creationSystem);
+            assert m != null;
+            f = e.getFirstChild();
+            e.insertBefore(m, f);
+            m = createMetadataItemElement(d, "creationDate", getXSDDateString(new Date()));
+            assert m != null;
+            f = e.getFirstChild();
+            e.insertBefore(m, f);
         }
     }
 

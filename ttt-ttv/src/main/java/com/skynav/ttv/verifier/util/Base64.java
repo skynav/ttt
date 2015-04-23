@@ -29,12 +29,15 @@ import java.nio.ByteBuffer;
 
 public class Base64 {
 
-    private static byte[] decodeMap;
+    private static final byte[] decodeMap;
+    static {
+        decodeMap = makeDecodeMap();
+    }
+
     private static byte[] getDecodeMap() {
-        if (decodeMap == null)
-            decodeMap = makeDecodeMap();
         return decodeMap;
     }
+
     private static final byte PAD = 127;
     private static byte[] makeDecodeMap() {
         byte[] map = new byte[128];

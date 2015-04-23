@@ -39,7 +39,7 @@ import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class Integers {
 
-    private static Pattern integerPattern = Pattern.compile("([\\+\\-]?)(\\d+)");
+    private static final Pattern integerPattern = Pattern.compile("([\\+\\-]?)(\\d+)");
     private static boolean isInteger(String value, Locator locator, VerifierContext context, Object[] treatments, Integer[] outputInteger) {
         Reporter reporter = (context != null) ? context.getReporter() : null;
         Matcher m = integerPattern.matcher(value);

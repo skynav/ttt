@@ -66,7 +66,7 @@ public class Timing {
         badCoordinate(value, locator, context, timeParameters);
     }
 
-    private static Pattern clockTimePattern = Pattern.compile("(\\d{2,3}):(\\d{2}):(\\d{2})(\\.\\d+|:\\d{2,}(?:\\.\\d+)?)?");
+    private static final Pattern clockTimePattern = Pattern.compile("(\\d{2,3}):(\\d{2}):(\\d{2})(\\.\\d+|:\\d{2,}(?:\\.\\d+)?)?");
     public static boolean isClockTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
         Matcher m = clockTimePattern.matcher(value);
         if (m.matches()) {
@@ -287,7 +287,7 @@ public class Timing {
         }
     }
 
-    private static Pattern offsetTimePattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(h|m|s|ms|f|t)");
+    private static final Pattern offsetTimePattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(h|m|s|ms|f|t)");
     public static boolean isOffsetTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
         Matcher m = offsetTimePattern.matcher(value);
         if (m.matches()) {
@@ -378,13 +378,11 @@ public class Timing {
             }
             StringBuffer sb = new StringBuffer();
             c = value.charAt(valueIndex);
-            if (Characters.isLetter(c)) {
-                while (Characters.isLetter(c)) {
-                    sb.append(c);
-                    if (++valueIndex >= valueLength)
-                        break;
-                    c = value.charAt(valueIndex);
-                }
+            while (Characters.isLetter(c)) {
+                sb.append(c);
+                if (++valueIndex >= valueLength)
+                    break;
+                c = value.charAt(valueIndex);
             }
             if (sb.length() == 0) {
                 reporter.logInfo(reporter.message(locator, "*KEY*",

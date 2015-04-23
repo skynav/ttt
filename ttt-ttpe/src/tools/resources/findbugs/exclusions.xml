@@ -13,6 +13,19 @@
     </Or>
   </Match>
   <Match>
+    <Bug pattern="FE_FLOATING_POINT_EQUALITY"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttpe.fonts.Font"/>
+        <Method name="isAnamorphic"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttpe.geometry.Extent"/>
+        <Method name="equals"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
     <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
   </Match>
   <Match>

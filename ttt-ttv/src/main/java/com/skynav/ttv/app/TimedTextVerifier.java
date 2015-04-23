@@ -1052,8 +1052,8 @@ public class TimedTextVerifier implements VerifierContext {
             if (!uri.isAbsolute()) {
                 URI uriCurrentDirectory = getCWDAsURI();
                 URI uriAbsolute = uriCurrentDirectory.resolve(uri);
-                if (uriAbsolute != null)
-                    uri = uriAbsolute;
+                assert uriAbsolute != null;
+                uri = uriAbsolute;
             }
             return uri;
         } catch (URISyntaxException e) {
@@ -1670,8 +1670,8 @@ public class TimedTextVerifier implements VerifierContext {
                 try {
                     String ppn = saxPropertyPrefix + pn;
                     Object pv = v.getProperty(ppn);
-                    if (pv != null)
-                        sb.append("SAX property: {" + ppn + "}: " + pv.toString() + "\n");
+                    assert pv != null;
+                    sb.append("SAX property: {" + ppn + "}: " + pv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
                     continue;
                 } catch (SAXNotSupportedException e) {
@@ -1694,8 +1694,8 @@ public class TimedTextVerifier implements VerifierContext {
                 try {
                     String ppn = jaxpPropertyPrefix + pn;
                     Object pv = v.getProperty(ppn);
-                    if (pv != null)
-                        sb.append("JAXP property: {" + ppn + "}: " + pv.toString() + "\n");
+                    assert pv != null;
+                    sb.append("JAXP property: {" + ppn + "}: " + pv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
                     continue;
                 } catch (SAXNotSupportedException e) {
@@ -1718,8 +1718,8 @@ public class TimedTextVerifier implements VerifierContext {
                 try {
                     String ppn = xercesPropertyPrefix + pn;
                     Object pv = v.getProperty(ppn);
-                    if (pv != null)
-                        sb.append("XERCES property: {" + ppn + "}: " + pv.toString() + "\n");
+                    assert pv != null;
+                    sb.append("XERCES property: {" + ppn + "}: " + pv.toString() + "\n");
                 } catch (SAXNotRecognizedException e) {
                     continue;
                 } catch (SAXNotSupportedException e) {

@@ -332,7 +332,7 @@ public class StyleCollector {
             FontKerning k = FontKerning.valueOf(s.getValue().toUpperCase());
             fontFeatures.add(new FontFeature("kern", new Object[]{k}));
         }
-        if ((fontFeatures == null) || fontFeatures.isEmpty())
+        if (fontFeatures.isEmpty())
             fontFeatures = getDefaultFontFeatures(e, styles);
         return fontCache.mapFont(fontFamilies, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
     }

@@ -179,8 +179,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         if ((usage != null) && (usage.size() > 0)) {
             Element ttElement = (Element) getContext().getXMLNode(tt);
             QName cellResolutionName = TTML1ParameterVerifier.cellResolutionAttributeName;
-            String cellResolution = ttElement.getAttributeNS(cellResolutionName.getNamespaceURI(), cellResolutionName.getLocalPart());
-            if ((cellResolution == null) || (cellResolution.length() == 0)) {
+            if (!ttElement.hasAttributeNS(cellResolutionName.getNamespaceURI(), cellResolutionName.getLocalPart())) {
                 Reporter reporter = getContext().getReporter();
                 for (Locator locator : usage) {
                     reporter.logError(reporter.message(locator, "*KEY*", "Uses ''c'' unit, but does not specify ''{0}'' attribute on ''{1}'' element.",

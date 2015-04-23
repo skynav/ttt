@@ -51,20 +51,31 @@ import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.XML;
 
 public class Configuration {
+
+    public static final String defaultConfigurationName         = "cap2tt.xml";
+    private static final Configuration nullConfiguration        = new Configuration();
+
+    private static final QName cap2ttOptionEltName              = new QName(Namespace.NAMESPACE, "option");
+    private static final QName ttInitialEltName                 = new QName(TTML1.Constants.NAMESPACE_TT, "initial");
+    private static final QName ttRegionEltName                  = new QName(TTML1.Constants.NAMESPACE_TT, "region");
+
     private Map<String,String> options;
     private List<Element> initials;
     private List<Element> regions;
+
     private Configuration() {
     }
+
     private Configuration(Document d) {
         populate(d);
     }
+
     private void populate(Document d) {
         populateOptions(d);
         populateInitials(d);
         populateRegions(d);
     }
-    private static final QName cap2ttOptionEltName = new QName(Namespace.NAMESPACE, "option");
+
     private void populateOptions(Document d) {
         Map<String,String> options = new java.util.HashMap<String,String>();
         ConfigurationDefaults.populateDefaults(options);
@@ -77,52 +88,67 @@ public class Configuration {
         }
         this.options = options;
     }
+
     public Map<String,String> getOptions() {
         return options;
     }
+
     public String getOption(String name) {
         return getOption(name, getOptionDefault(name));
     }
+
     public String getOption(String name, String optionDefault) {
         if (options.containsKey(name))
             return options.get(name);
         else
             return optionDefault;
     }
+
     public String getOptionDefault(String name) {
         return ConfigurationDefaults.getDefault(name);
     }
+
     public List<Element> getInitials() {
         return initials;
     }
+
     public List<Element> getRegions() {
         return regions;
     }
+
     public Element getRegion(String id) {
+        String ns = XML.getNamespaceUri();
+        String ln = "id";
         for (Element r : regions) {
-            String rId = r.getAttributeNS(XML.getNamespaceUri(), "id");
-            if ((rId != null) && rId.equals(id))
-                return r;
+            if (r.hasAttributeNS(ns, ln)) {
+                String rId = r.getAttributeNS(ns, ln);
+                if (rId.equals(id))
+                    return r;
+            }
         }
         return null;
     }
-    private static final QName ttInitialEltName = new QName(TTML1.Constants.NAMESPACE_TT, "initial");
+
     private void populateInitials(Document d) {
         this.initials = Documents.findElementsByName(d, ttInitialEltName);
     }
-    private static final QName ttRegionEltName = new QName(TTML1.Constants.NAMESPACE_TT, "region");
+
     private void populateRegions(Document d) {
         this.regions = Documents.findElementsByName(d, ttRegionEltName);
     }
-    public static final String defaultConfigurationName = "cap2tt.xml";
-    private static final Configuration nullConfiguration = new Configuration();
+
+    public static String getDefaultConfigurationName() {
+        return defaultConfigurationName;
+    }
+
     public static Configuration fromDefault() throws IOException {
-        URL urlConfig = Configuration.class.getResource(defaultConfigurationName);
+        URL urlConfig = Configuration.class.getResource(getDefaultConfigurationName());
         if (urlConfig != null)
             return fromStream(urlConfig.openStream());
         else
             return nullConfiguration;
     }
+
     public static Configuration fromFile(File f) throws IOException {
         InputStream is = null;
         try {
@@ -133,6 +159,7 @@ public class Configuration {
             throw e;
         }
     }
+
     public static Configuration fromStream(InputStream is) throws IOException {
         try {
             SAXSource source = new SAXSource(new InputSource(is));
@@ -146,4 +173,5 @@ public class Configuration {
             return nullConfiguration;
         }
     }
+
 }

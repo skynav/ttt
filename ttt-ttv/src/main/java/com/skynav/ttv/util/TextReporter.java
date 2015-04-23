@@ -114,7 +114,7 @@ public class TextReporter implements Reporter {
 
     public void close() throws IOException {
         PrintWriter output = getOutput();
-        if ((output != null) && !outputDefaulted)
+        if (!outputDefaulted)
             output.close();
         this.output = null;
     }
@@ -231,8 +231,7 @@ public class TextReporter implements Reporter {
 
     public void flush() {
         PrintWriter output = getOutput();
-        if (output != null)
-            output.flush();
+        output.flush();
     }
 
     public void setVerbosityLevel(int verbose) {

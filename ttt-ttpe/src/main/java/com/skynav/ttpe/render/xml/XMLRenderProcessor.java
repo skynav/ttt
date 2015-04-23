@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -167,7 +168,7 @@ public class XMLRenderProcessor extends RenderProcessor {
             d.appendChild(renderCanvas(a, d));
             Namespaces.normalize(d, XMLDocumentFrame.prefixes);
             return new XMLDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d, regions);
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
             reporter.logError(e);
         }
         return null;

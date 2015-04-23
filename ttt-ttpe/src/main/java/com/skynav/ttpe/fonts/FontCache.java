@@ -200,7 +200,8 @@ public class FontCache {
     private static boolean maybeFontSpecificationFile(File f) {
         assert f != null;
         String n = f.getName();
-        return (n != null) && n.endsWith(".xml");
+        assert n != null;
+        return n.endsWith(".xml");
     }
 
     public FontState createLoadedState(String source, Reporter reporter) {
