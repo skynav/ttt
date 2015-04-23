@@ -13,7 +13,22 @@ A collection of related tools that provide support for or make use of the W3C Ti
 
 - Lambda CAP to TTML Converter (cap2tt)
 
-## Install
+## Build Requirements
+
+Prior to performing a build, the following requirements must be met:
+
+- install JDK 1.7
+- install maven 3
+- perform one time installation of third party library dependncies as follows, where `$TTT_HOME` is set to the directory where the `ttt` repository is cloned:
+
+<pre>
+    $ cd $TTT_HOME
+    $ mvn -f ttt-deps install
+</pre>
+
+This last step installs snapshot copies of `batik`, `findbugs`, and `xmlgraphics-commons` libraries that contain modifications specific to `ttt`.
+
+## Build and Install
 
 In order to build and install `ttt` in the local maven repository, run `mvn` (*maven*) as follows:
 
