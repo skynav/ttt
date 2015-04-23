@@ -15,13 +15,13 @@ A collection of related tools that provide support for or make use of the W3C Ti
 
 ## Install
 
-In order to build and install **ttt** in the local maven repository, run *mvn* (**maven**) as follows:
+In order to build and install *ttt* in the local maven repository, run *mvn* (**maven**) as follows:
 
 `mvn clean install`
 
 ## Site Construction
 
-In order to build the **ttt* site content, including findbugs reports, run *mvn* (**maven**) as follows *after performing the above build and install step*:
+In order to build the *ttt* site content, including findbugs reports, run *mvn* (**maven**) as follows *after performing the above build and install step*:
 
 `mvn site site:stage`
 
