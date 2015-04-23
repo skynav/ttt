@@ -1,17 +1,30 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.skynav.ttt</groupId>
-  <artifactId>ttt-fontbox</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <artifactId>ttt-deps</artifactId>
+  <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>Timed Text Toolkit - Customized Fontbox</description>
-  <url>https://github.com/skynav/ttt</url>
+
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <relativePath/>
+    <relativePath>../ttt</relativePath>
   </parent>
+
+  <modules>
+    <module>ttt-batik</module>
+    <module>ttt-fontbox</module>
+    <module>ttt-xmlgraphics-commons</module>
+  </modules>
+
+  <distributionManagement>
+    <site>
+      <id>${project.artifactid}-site</id>
+      <url>${project.baseUri}</url>
+    </site>
+  </distributionManagement>
+
 </project>

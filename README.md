@@ -4,22 +4,20 @@ A collection of related tools that provide support for or make use of the W3C Ti
 
 ## Core Tools
 
-- [Timed Text Verifier](https://github.com/skynavga/ttv)
-- [Timed Text Presentation Engine](https://github.com/skynavga/ttpe)
+- Timed Text Verifier (ttv)
+- Timed Text Transformer (ttx)
+- Timed Text Transforming Verifier (ttxv)
+- Timed Text Presentation Engine (ttpe)
 
 ## Conversion Tools
 
-- [Lambda CAP to TTML Converter](https://github.com/skynavga/cap2tt)
-
-This repository is intended to organize top level information about these related tools and provide a home for site, deployment, and repository metadata.
+- Lambda CAP to TTML Converter (cap2tt)
 
 ## Maven Coordinates
 
 <pre>
   &lt;groupId&gt;com.skynav.ttt&lt;/groupId&gt;
   &lt;artifactId&gt;ttt&lt;/artifactId&gt;
-  &lt;packaging&gt;pom&lt;/packaging&gt;
-  &lt;name&gt;Timed Text Toolkit&lt;/name&gt;
 </pre>
 
 

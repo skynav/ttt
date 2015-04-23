@@ -3,31 +3,70 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.skynav.ttt</groupId>
-  <artifactId>ttt-modules</artifactId>
+  <artifactId>ttt</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
+  <description>Timed Text Toolkit</description>
+  <inceptionYear>2013</inceptionYear>
+  <url>https://github.com/skynav/ttt/tree/master</url>
 
   <parent>
-    <groupId>com.skynav.ttt</groupId>
-    <artifactId>ttt</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <relativePath>./ttt</relativePath>
+    <groupId>com.skynav</groupId>
+    <artifactId>skynav</artifactId>
+    <version>1.0</version>
+    <relativePath/>
   </parent>
 
-  <modules>
-    <module>ttt</module>
-    <module>ttt-ttv</module>
-    <module>ttt-ttx</module>
-    <module>ttt-ttxv</module>
-    <module>ttt-cap2tt</module>
-    <module>ttt-ttpe</module>
-  </modules>
+  <properties>
+    <java.version>1.7</java.version>
+    <junit.version>4.11</junit.version>
+    <surefire.version>2.18.1</surefire.version>
+    <project.info.reports.version>2.8</project.info.reports.version>
+  </properties>
+
+  <scm>
+    <connection>scm:git:https://github.com/skynav/ttt.git</connection>
+    <url>scm:git:https://github.com/skynav/ttt.git</url>
+    <developerConnection>scm:git:https://github.com/skynav/ttt.git</developerConnection>
+  </scm>
 
   <distributionManagement>
     <site>
-      <id>${project.artifactid}-site</id>
+      <id>${project.artifactId}-site</id>
       <url>${project.baseUri}</url>
     </site>
   </distributionManagement>
+
+  <modules>
+    <module>ttt-ttv</module>
+    <module>ttt-ttx</module>
+    <module>ttt-ttxv</module>
+    <module>ttt-ttpe</module>
+    <module>ttt-cap2tt</module>
+  </modules>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire.version}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>${project.info.reports.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>

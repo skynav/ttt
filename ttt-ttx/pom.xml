@@ -4,13 +4,26 @@
 
   <artifactId>ttt-ttx</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
+  <description>Timed Text Transformer</description>
   
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <relativePath>../ttt</relativePath>
   </parent>
+
+  <scm>
+    <connection>scm:git:https://github.com/skynav/ttt.git</connection>
+    <url>scm:git:https://github.com/skynav/ttt.git</url>
+    <developerConnection>scm:git:https://github.com/skynav/ttt.git</developerConnection>
+  </scm>
+
+  <distributionManagement>
+    <site>
+      <id>${project.artifactId}-site</id>
+      <url>${project.baseUri}</url>
+    </site>
+  </distributionManagement>
 
   <dependencies>
     <dependency>
