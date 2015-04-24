@@ -48,10 +48,10 @@ public class ST20522010 {
         public static final String NAMESPACE_2010 = "http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt";
         public static final String NAMESPACE_2010_PROFILE = "http://www.smpte-ra.org/schemas/2052-1/2010/profiles/";
         public static final String NAMESPACE_2010_EXTENSION = "http://www.smpte-ra.org/23b/smpte-tt/extension/";
-        public static final String XSD_2010 = "xsd/smpte/2010/smpte-tt.xsd";
+        public static final String XSD_2010 = "com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd";
 
         public static final String NAMESPACE_2010_CEA608 = "http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt#cea608";
-        public static final String XSD_2010_CEA608 = "xsd/smpte/2010/smpte-tt-608.xsd";
+        public static final String XSD_2010_CEA608 = "com/skynav/ttv/xsd/smpte/2010/smpte-tt-608.xsd";
 
         public static final String PROFILE_2010_FULL = "smpte-tt-full";
         public static final String PROFILE_2010_FULL_ABSOLUTE = NAMESPACE_2010_PROFILE + PROFILE_2010_FULL;

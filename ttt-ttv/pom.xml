@@ -48,7 +48,7 @@
             </goals>
             <configuration>
               <specVersion>2.1</specVersion>
-              <schemaDirectory>src/main/resources/xsd/ttml1</schemaDirectory>
+              <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/ttml1</schemaDirectory>
               <generateDirectory>target/generated-sources/xjc-ttml1</generateDirectory>
             </configuration>
           </execution>
@@ -59,7 +59,7 @@
             </goals>
             <configuration>
               <specVersion>2.1</specVersion>
-              <schemaDirectory>src/main/resources/xsd/ttml2</schemaDirectory>
+              <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/ttml2</schemaDirectory>
               <generateDirectory>target/generated-sources/xjc-ttml2</generateDirectory>
             </configuration>
           </execution>
@@ -70,7 +70,7 @@
             </goals>
             <configuration>
               <specVersion>2.1</specVersion>
-              <schemaDirectory>src/main/resources/xsd/smpte/2010</schemaDirectory>
+              <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/smpte/2010</schemaDirectory>
               <generateDirectory>target/generated-sources/xjc-smpte-2010</generateDirectory>
             </configuration>
           </execution>
@@ -81,7 +81,7 @@
             </goals>
             <configuration>
               <specVersion>2.1</specVersion>
-              <schemaDirectory>src/main/resources/xsd/smpte/2013</schemaDirectory>
+              <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/smpte/2013</schemaDirectory>
               <generateDirectory>target/generated-sources/xjc-smpte-2013</generateDirectory>
             </configuration>
           </execution>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2010-2013 Society of Motion Picture and Television Engineers
+     This schema is informative and is intended to reflect the prose of SMPTE ST 2052-1:2013.
+     Any discrepency should be resolved in favor of the Standard.
+  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt" targetNamespace="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2012-03-09">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:element name="data">
+    <xs:complexType>
+      <xs:simpleContent>
+	<xs:extension base="xs:string">
+	  <xs:attribute ref="xml:id" use="optional"/>
+	  <xs:attribute name="encoding" use="required">
+	    <xs:simpleType>
+	      <xs:restriction base="xs:token">
+		<xs:enumeration value="Base64"/>
+	      </xs:restriction>
+	    </xs:simpleType>
+	  </xs:attribute>
+	  <xs:attribute name="datatype" type="xs:string" use="required"/>
+          <xs:anyAttribute namespace="##other" processContents="lax"/>
+	</xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="image">
+    <xs:complexType>
+      <xs:simpleContent>
+	<xs:extension base="xs:string">
+	  <xs:attribute ref="xml:id" use="optional"/>
+	  <xs:attribute name="imageType" use="required">
+	    <xs:simpleType>
+	      <xs:restriction base="xs:token">
+		<xs:enumeration value="PNG"/>
+	      </xs:restriction>
+	    </xs:simpleType>
+	  </xs:attribute>
+	  <xs:attribute name="encoding" use="required">
+	    <xs:simpleType>
+	      <xs:restriction base="xs:token">
+		<xs:enumeration value="Base64"/>
+	      </xs:restriction>
+	    </xs:simpleType>
+	  </xs:attribute>
+          <xs:anyAttribute namespace="##other" processContents="lax"/>
+	</xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="information.attlist">
+    <xs:attribute ref="xml:id" use="optional"/>
+    <xs:attribute name="origin" type="xs:anyURI" use="optional"/>
+    <xs:attribute name="threshold" type="xs:float" use="optional" default="0.05"/>
+    <xs:attribute name="mode" use="optional" default="Preserved">
+      <xs:simpleType>
+	<xs:restriction base="xs:token">
+	  <xs:enumeration value="Enhanced"/>
+	  <xs:enumeration value="Preserved"/>
+	</xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:complexType name="information.eltype" mixed="true">
+    <xs:sequence>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="smpte:information.attlist"/>
+  </xs:complexType>
+  <xs:element name="information" type="smpte:information.eltype"/>
+  <xs:attribute name="backgroundImage" type="xs:anyURI"/>
+  <xs:attribute name="backgroundImageHorizontal" type="xs:string"/>
+  <xs:attribute name="backgroundImageVertical" type="xs:string"/>
+</xs:schema>

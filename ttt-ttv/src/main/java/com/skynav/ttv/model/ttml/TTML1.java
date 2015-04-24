@@ -68,7 +68,7 @@ public class TTML1 {
 
     public static class Constants extends TTML.Constants {
 
-        public static final String XSD_TTML1 = "xsd/ttml1/ttml1.xsd";
+        public static final String XSD_TTML1 = "com/skynav/ttv/xsd/ttml1/ttml1.xsd";
 
         public static final String PROFILE_TTML1_PRESENTATION = "dfxp-presentation";
         public static final String PROFILE_TTML1_TRANSFORMATION = "dfxp-transformation";

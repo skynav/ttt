@@ -48,13 +48,13 @@ public class ST20522013 {
         public static final String NAMESPACE_2013 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt";
         public static final String NAMESPACE_2013_PROFILE = "http://www.smpte-ra.org/schemas/2052-1/2013/profiles/";
         public static final String NAMESPACE_2013_EXTENSION = "http://www.smpte-ra.org/23b/smpte-tt/extension/";
-        public static final String XSD_2013 = "xsd/smpte/2013/smpte-tt.xsd";
+        public static final String XSD_2013 = "com/skynav/ttv/xsd/smpte/2013/smpte-tt.xsd";
 
         public static final String NAMESPACE_2013_CEA608 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608";
-        public static final String XSD_2013_CEA608 = "xsd/smpte/2013/smpte-tt-608.xsd";
+        public static final String XSD_2013_CEA608 = "com/skynav/ttv/xsd/smpte/2013/smpte-tt-608.xsd";
 
         public static final String NAMESPACE_2013_CEA708 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea708";
-        public static final String XSD_2013_CEA708 = "xsd/smpte/2013/smpte-tt-708.xsd";
+        public static final String XSD_2013_CEA708 = "com/skynav/ttv/xsd/smpte/2013/smpte-tt-708.xsd";
 
         public static final String PROFILE_2013_FULL = "smpte-tt-full";
         public static final String PROFILE_2013_FULL_ABSOLUTE = NAMESPACE_2013_PROFILE + PROFILE_2010_FULL;

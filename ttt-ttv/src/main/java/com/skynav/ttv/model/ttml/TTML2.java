@@ -52,7 +52,7 @@ import com.skynav.ttv.verifier.ttml.TTML2TimingVerifier;
 public class TTML2 {
 
     public static class Constants extends TTML1.Constants {
-        public static final String XSD_TTML2 = "xsd/ttml2/ttml2.xsd";
+        public static final String XSD_TTML2 = "com/skynav/ttv/xsd/ttml2/ttml2.xsd";
 
         public static final String PROFILE_TTML2_PRESENTATION = "ttml2-presentation";
         public static final String PROFILE_TTML2_TRANSFORMATION = "ttml2-transformation";
