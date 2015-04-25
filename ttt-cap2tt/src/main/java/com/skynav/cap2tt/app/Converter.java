@@ -2191,7 +2191,7 @@ public class Converter implements ConverterContext {
 
     private static final String attributeSeparatorPatternString = "[\u0020\u3000]+";
     private static Attribute[] parseAttributes(String field, AttrContext context) {
-        if (field.length() < 3)
+        if (!field.startsWith("\uFF20") || (field.length() < 2))
             return null;
         else {
             List<Attribute> attributes = new java.util.ArrayList<Attribute>();
@@ -3313,12 +3313,18 @@ public class Converter implements ConverterContext {
             } else if (name.equals("斜")) {
                 float shear;
                 if (count < 0)
-                    shear = shears[0];
+                    shear = shears[3];
                 else if (count < shears.length)
                     shear = shears[count];
                 else
                     shear = shears[shears.length - 1];
-                attributes.put(ttsFontShearAttrName, shear + "%");
+                StringBuffer sb = new StringBuffer();
+                if (shear == 0)
+                    sb.append('0');
+                else
+                    sb.append(Float.toString(shear));
+                sb.append('%');
+                attributes.put(ttsFontShearAttrName, sb.toString());
             } else if (name.equals("詰")) {
                 String kerning;
                 if (count < 0)
@@ -3401,15 +3407,22 @@ public class Converter implements ConverterContext {
             String name = specification.name;
             Map<QName, String> attributes = s.getOtherAttributes();
             if (name.equals("正体")) {
+                attributes.put(ttsFontShearAttrName, "0%");
             } else if (name.equals("斜")) {
                 float shear;
                 if (count < 0)
-                    shear = shears[0];
+                    shear = shears[3];
                 else if (count < shears.length)
                     shear = shears[count];
                 else
                     shear = shears[shears.length - 1];
-                attributes.put(ttsFontShearAttrName, shear + "%");
+                StringBuffer sb = new StringBuffer();
+                if (shear == 0)
+                    sb.append('0');
+                else
+                    sb.append(Float.toString(shear));
+                sb.append('%');
+                attributes.put(ttsFontShearAttrName, sb.toString());
             } else if (name.equals("詰")) {
                 String kerning;
                 if (count < 0)

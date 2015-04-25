@@ -49,13 +49,18 @@ import com.skynav.ttv.util.Reporter;
 public class ValidTestCases {
 
     @Test
-    public void testConversionSimple1() throws Exception {
-        performConversionTest("test-001.cap", 0, 0);
+    public void testConversion001Simple() throws Exception {
+        performConversionTest("test-001-simple.cap", 0, 0);
     }
 
     @Test
-    public void testConversionSimple2() throws Exception {
-        performConversionTest("test-002.cap", 0, 0);
+    public void testConversion002Simple() throws Exception {
+        performConversionTest("test-002-simple.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion003ScreenAttrItalics() throws Exception {
+        performConversionTest("test-003-screen-attr-italics.cap", 0, 0);
     }
 
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
