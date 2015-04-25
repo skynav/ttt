@@ -272,6 +272,7 @@ public class Converter implements ConverterContext {
         { "reporter-file",              "FILE",     "specify path to file to which reporter output is to be written" },
         { "reporter-file-encoding",     "ENCODING", "specify character encoding of reporter output (default: utf-8)" },
         { "reporter-file-append",       "",         "if reporter file already exists, then append output to it" },
+        { "retain-document",            "",         "retain document in results object (default: don't retain)" },
         { "show-repository",            "",         "show source code repository information" },
         { "show-resource-location",     "",         "show resource location (default: show)" },
         { "show-resource-path",         "",         "show resource path (default: show)" },
@@ -416,6 +417,7 @@ public class Converter implements ConverterContext {
     private String outputPattern;
     private boolean outputIndent;
     private boolean quiet;
+    private boolean retainDocument;
     private boolean showRepository;
     private boolean showWarningTokens;
     private String styleIdPattern;
@@ -704,6 +706,8 @@ public class Converter implements ConverterContext {
             outputIndent = true;
         } else if (option.equals("quiet")) {
             quiet = true;
+        } else if (option.equals("retain-document")) {
+            retainDocument = true;
         } else if (option.equals("show-repository")) {
             showRepository = true;
         } else if (option.equals("show-resource-location")) {
@@ -744,10 +748,6 @@ public class Converter implements ConverterContext {
         } else
             throw new UnknownOptionException("--" + option);
         return index + 1;
-    }
-
-    private void disableOutput(boolean disable) {
-        outputDisabled = disable;
     }
 
     private static boolean isBoolean(String s) {
@@ -2435,7 +2435,7 @@ public class Converter implements ConverterContext {
             Namespaces.normalize(d, prefixes);
             if (!outputDisabled && !writeDocument(d, prefixes))
                 fail = true;
-            if (outputDisabled)
+            if (outputDisabled || retainDocument)
                 outputDocument = d;
         } catch (ParserConfigurationException e) {
             reporter.logError(e);
@@ -2846,7 +2846,7 @@ public class Converter implements ConverterContext {
         reporter.logInfo(reporter.message("i.017", "Conversion {0,choice,0#Failed|1#Succeeded}{1}.", rvSucceeded(rv) ? 1 : 0, resultDetails()));
         reporter.flush();
         Results results = new Results(uri, rv,
-            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), getEncoding());
+            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), getEncoding(), outputDocument);
         this.results.put(uri, results);
         return rv;
     }
@@ -3024,7 +3024,7 @@ public class Converter implements ConverterContext {
         return rv;
     }
 
-    public TimedText convert(String[] args, File input, Reporter reporter) {
+    public Document convert(String[] args, File input, Reporter reporter, Document unused) {
         assert args != null;
         assert input != null;
         if (reporter == null)
@@ -3040,9 +3040,13 @@ public class Converter implements ConverterContext {
             setReporter(reporter, null, null, false, false);
         }
         parseArgs(processConfigurationOptions(args), null);
-        disableOutput(true);
         convert(null, input.toURI().toString());
-        return (outputDocument != null) ? unmarshall(outputDocument) : null;
+        return outputDocument;
+    }
+
+    public TimedText convert(String[] args, File input, Reporter reporter) {
+        Document d = convert(args, input, reporter, (Document) null);
+        return (d != null) ? unmarshall(d) : null;
     }
 
     private TimedText unmarshall(Document d) {
@@ -3753,13 +3757,14 @@ public class Converter implements ConverterContext {
         private int warningsExpected;
         private int warnings;
         private String encodingName;
+        private Document document;
         public Results() {
             this.uriString = NOURI;
             this.succeeded = false;
             this.code = RV_USAGE;
             this.encodingName = NOENCODING;
         }
-        Results(String uriString, int rv, int errorsExpected, int errors, int warningsExpected, int warnings, Charset encoding) {
+        Results(String uriString, int rv, int errorsExpected, int errors, int warningsExpected, int warnings, Charset encoding, Document document) {
             this.uriString = uriString;
             this.succeeded = rvSucceeded(rv);
             this.code = rvCode(rv);
@@ -3772,6 +3777,7 @@ public class Converter implements ConverterContext {
                 this.encodingName = encoding.name();
             else
                 this.encodingName = "unknown";
+            this.document = document;
         }
         public String getURIString() {
             return uriString;
@@ -3799,6 +3805,9 @@ public class Converter implements ConverterContext {
         }
         public String getEncodingName() {
             return encodingName;
+        }
+        public Document getDocument() {
+            return document;
         }
     }
 

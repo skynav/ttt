@@ -19,12 +19,14 @@
   </parent>
 
   <properties>
+    <exec.version>1.4.0</exec.version>
+    <findbugs.version>3.0.1</findbugs.version>
     <java.version>1.7</java.version>
     <junit.version>4.11</junit.version>
-    <surefire.version>2.18.1</surefire.version>
-    <project.info.reports.version>2.8</project.info.reports.version>
-    <findbugs.version>3.0.1</findbugs.version>
     <pmd.version>3.4</pmd.version>
+    <project.info.reports.version>2.8</project.info.reports.version>
+    <surefire.version>2.18.1</surefire.version>
+    <xmlunit.version>2.0.0-SNAPSHOT</xmlunit.version>
   </properties>
 
   <scm>
@@ -82,5 +84,14 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <repositories>
+    <repository>
+      <id>snapshots-repo</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+  </repositories>
 
 </project>

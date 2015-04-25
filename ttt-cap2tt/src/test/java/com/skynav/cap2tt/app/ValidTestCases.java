@@ -26,14 +26,23 @@
 package com.skynav.cap2tt.app;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-import com.skynav.ttv.model.ttml2.tt.TimedText;
+import org.w3c.dom.Document;
+
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.builder.Input;
+import org.xmlunit.diff.Diff;
+
 import com.skynav.ttv.util.TextReporter;
 import com.skynav.ttv.util.Reporter;
 
@@ -49,13 +58,6 @@ public class ValidTestCases {
         performConversionTest("test-002.cap", 0, 0);
     }
 
-    /*
-    @Test
-    public void testConversionSimple3() throws Exception {
-        performConversionTest("test-003.cap", 0, 0);
-    }
-    */
-
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
@@ -65,6 +67,13 @@ public class ValidTestCases {
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
         String urlString = url.toString();
+        URI uri;
+        try {
+            uri = new URI(urlString);
+        } catch (URISyntaxException e) {
+            fail("Bad test resource syntax: " + urlString + ".");
+            return;
+        }
         List<String> args = new java.util.ArrayList<String>();
         args.add("-v");
         args.add("--warn-on");
@@ -77,6 +86,9 @@ public class ValidTestCases {
             args.add("--expect-warnings");
             args.add(Integer.toString(expectedWarnings));
         }
+        args.add("--output-disable");
+        args.add("--retain-document");
+        maybeAddConfiguration(args, uri);
         if (additionalOptions != null) {
             args.addAll(java.util.Arrays.asList(additionalOptions));
         }
@@ -84,10 +96,12 @@ public class ValidTestCases {
         Converter cvt = new Converter();
         File inputFile = new File(url.getPath());
         Reporter reporter = new TextReporter();
-        TimedText tt = cvt.convert(args.toArray(new String[args.size()]), inputFile, reporter);
-        assertNotNull(tt);
-        int resultCode = cvt.getResultCode(urlString);
-        int resultFlags = cvt.getResultFlags(urlString);
+        Document d = cvt.convert(args.toArray(new String[args.size()]), inputFile, reporter, (Document) null);
+        Converter.Results r = cvt.getResults(urlString);
+        assertEquals(d, r.getDocument());
+        maybeCheckDifferences(d, uri);
+        int resultCode = r.getCode();
+        int resultFlags = r.getFlags();
         if (resultCode == Converter.RV_SUCCESS) {
             if ((resultFlags & Converter.RV_FLAG_ERROR_EXPECTED_MATCH) != 0) {
                 fail("Unexpected success with expected error(s) match.");
@@ -107,6 +121,93 @@ public class ValidTestCases {
             }
         } else
             fail("Unexpected result code " + resultCode + ".");
+    }
+
+    private void maybeAddConfiguration(List<String> args, URI u) {
+        String[] components = getComponents(u);
+        if (hasFileScheme(components)) {
+            File f = getConfiguration(components);
+            if (f != null) {
+                try {
+                    String p = f.getCanonicalPath();
+                    args.add("--config");
+                    args.add(p);
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
+    private File getConfiguration(String[] components) {
+        File f1 = new File(joinComponents(components, ".config.xml"));
+        if (f1.exists())
+            return f1;
+        File f2 = new File(joinComponents(components, "test", ".config.xml"));
+        if (f2.exists())
+            return f2;
+        return null;
+    }
+
+    private void maybeCheckDifferences(Document d, URI u) {
+        String[] components = getComponents(u);
+        if (hasFileScheme(components)) {
+            File f = new File(joinComponents(components, ".expected.xml"));
+            if (f.exists()) {
+                checkDifferences(d, f);
+            }
+        }
+    }
+
+    private void checkDifferences(Document d, File f) {
+        Diff diff = DiffBuilder
+            .compare(Input.fromFile(f).build())
+            .withTest(Input.fromDocument(d).build())
+            .ignoreWhitespace()
+            .build();
+        assertFalse(diff.toString(), diff.hasDifferences());
+    }
+
+    private String[] getComponents(URI u) {
+        String s = u.getScheme();
+        String p = u.getPath();
+        String n, x;
+        int i = p.lastIndexOf('/');
+        if (i >= 0) {
+            n = p.substring(i + 1);
+            p = p.substring(0, i + 1);
+        } else
+            n = null;
+        int j = n.lastIndexOf('.');
+        if (j >= 0) {
+            x = n.substring(j);
+            n = n.substring(0, j);
+        } else {
+            x = null;
+        }
+
+        return new String[] { s, p, n, x };
+    }
+
+    private boolean hasFileScheme(String[] components) {
+        return (components != null) && (components[0] != null) && components[0].equals("file");
+    }
+
+    private String joinComponents(String[] components, String extension) {
+        assert components != null;
+        return joinComponents(components, components[2], extension);
+    }
+
+    private String joinComponents(String[] components, String name, String extension) {
+        assert components != null;
+        assert components[1] != null;
+        assert name != null;
+        assert extension != null;
+        StringBuffer sb = new StringBuffer();
+        sb.append(components[1]);
+        sb.append('/');
+        sb.append(name);
+        sb.append(extension);
+        return sb.toString();
     }
 
 }

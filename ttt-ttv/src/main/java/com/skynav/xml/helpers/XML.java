@@ -33,6 +33,10 @@ public class XML {
     public static final String xmlnsNamespace = "http://www.w3.org/2000/xmlns/";
     public static final String xsiNamespace = "http://www.w3.org/2001/XMLSchema-instance";
 
+    public static final String xmlPrefix = "xml";
+    public static final String xmlnsPrefix = "xmlns";
+    public static final String xsiPrefix = "xsi";
+
     private XML() {
     }
 
