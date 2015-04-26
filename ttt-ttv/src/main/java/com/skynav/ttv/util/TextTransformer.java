@@ -51,6 +51,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import com.skynav.xml.helpers.XML;
+
 public class TextTransformer extends Transformer {
 
     private String encoding;
@@ -251,8 +253,10 @@ public class TextTransformer extends Transformer {
                 prefixes.put(ns, prefix);
             }
             if (prefix.length() > 0) {
-                w.write(prefix);
-                w.write(':');
+                if (!ln.equals(XML.xmlnsPrefix)) {
+                    w.write(prefix);
+                    w.write(':');
+                }
             }
         }
         w.write(ln);

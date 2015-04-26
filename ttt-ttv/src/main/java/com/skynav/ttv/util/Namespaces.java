@@ -66,14 +66,17 @@ public class Namespaces {
                 String ns = na[i];
                 int c = ca[i];
                 if (c > 0) {
-                    String prefix = normalizedPrefixes.get(ns);
-                    if ((prefix.length() > 0) && !prefix.equals(XML.xmlnsPrefix)) {
-                        if (!tt.hasAttributeNS(XML.xmlnsNamespace, prefix)) {
-                            if (!XML.isAnyXMLNamespace(ns))
-                                tt.setAttributeNS(XML.xmlnsNamespace, XML.xmlnsPrefix + ":" + prefix, ns);
+                    if (!XML.isAnyXMLNamespace(ns)) {
+                        String prefix = normalizedPrefixes.get(ns);
+                        if (prefix.length() > 0) {
+                            if (!prefix.equals(XML.xmlnsPrefix)) {
+                                if (!tt.hasAttributeNS(XML.xmlnsNamespace, prefix)) {
+                                    tt.setAttributeNS(XML.xmlnsNamespace, XML.xmlnsPrefix + ":" + prefix, ns);
+                                }
+                            }
+                        } else if (!tt.hasAttributeNS(XML.xmlnsNamespace, XML.xmlnsPrefix)) {
+                            tt.setAttributeNS(XML.xmlnsNamespace, XML.xmlnsPrefix, ns);
                         }
-                    } else if (!tt.hasAttributeNS(XML.xmlnsNamespace, XML.xmlnsPrefix)) {
-                        tt.setAttributeNS(XML.xmlnsNamespace, XML.xmlnsPrefix, ns);
                     }
                 }
             }
