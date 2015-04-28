@@ -25,30 +25,8 @@
 
 package com.skynav.ttpe.app;
 
-import java.util.Map;
-
-public class ConfigurationDefaults {
-    private static final String[][] optionDefaultSpecifications = new String[][] {
-        { "add-creation-metadata", "true" },
-        { "default-region", "横下" },
-        { "merge-styles", "true" },
-        { "style-id-pattern", "s{0}" },
-        { "style-id-sequence-start", "1" },
-    };
-    private static Map<String,String> optionDefaults;
-    static {
-        optionDefaults = new java.util.HashMap<String,String>();
-        for (String[] optionDefault: optionDefaultSpecifications) {
-            optionDefaults.put(optionDefault[0], optionDefault[1]);
-        }
-    }
-    public static Map<String,String> getDefaults() {
-        return optionDefaults;
-    }
-    public static String getDefault(String name) {
-        return getDefaults().get(name);
-    }
-    public static void populateDefaults(Map<String,String> options) {
-        options.putAll(optionDefaults);
+public class ConfigurationDefaults extends com.skynav.ttx.app.ConfigurationDefaults {
+    public ConfigurationDefaults(String configDirectory) {
+        super(configDirectory);
     }
 }

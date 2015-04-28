@@ -26,6 +26,13 @@
     </Or>
   </Match>
   <Match>
+    <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+    <Or>
+      <Class name="com.skynav.ttpe.app.Configuration"/>
+      <Class name="com.skynav.ttpe.app.ConfigurationDefaults"/>
+    </Or>
+  </Match>
+  <Match>
     <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
   </Match>
   <Match>

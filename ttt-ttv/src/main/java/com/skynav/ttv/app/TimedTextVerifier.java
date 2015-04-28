@@ -99,6 +99,8 @@ import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.Configuration;
+import com.skynav.ttv.util.ConfigurationDefaults;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Locators;
@@ -160,6 +162,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private static final String[][] longOptionSpecifications = new String[][] {
+        { "config",                     "FILE",     "specify path to configuration file" },
         { "debug",                      "",         "enable debug output (may be specified multiple times to increase debug level)" },
         { "debug-exceptions",           "",         "enable stack traces on exceptions (implies --debug)" },
         { "debug-level",                "LEVEL",    "enable debug output at specified level (default: 0)" },
@@ -300,6 +303,7 @@ public class TimedTextVerifier implements VerifierContext {
     private String untilPhase;
 
     // derived option state
+    private Configuration configuration;
     private Charset forceEncoding;
     private Model forceModel;
     private Model model;
@@ -558,142 +562,159 @@ public class TimedTextVerifier implements VerifierContext {
         return state;
     }
 
-    private int parseLongOption(String args[], int index, OptionProcessor optionProcessor) {
-        Reporter reporter = getReporter();
-        String option = args[index];
-        assert option.length() > 2;
-        option = option.substring(2);
-        if (option.equals("debug")) {
-            int debug = reporter.getDebugLevel();
-            if (debug < 1)
-                debug = 1;
+    private List<String> preProcessOptions(List<String> args, OptionProcessor optionProcessor) {
+        args = processReporterOptions(args, optionProcessor);
+        args = processConfigurationOptions(args, optionProcessor);
+        if (optionProcessor != null)
+            args = optionProcessor.preProcessOptions(args, configuration, shortOptions, longOptions);
+        return args;
+    }
+
+    private List<String> processReporterOptions(List<String> args, OptionProcessor optionProcessor) {
+        String reporterName = null;
+        String reporterFileName = null;
+        String reporterFileEncoding = null;
+        boolean reporterFileAppend = false;
+        boolean reporterIncludeSource = false;
+        List<String> skippedArgs = new java.util.ArrayList<String>();
+        for (int i = 0, n = args.size(); i < n; ++i) {
+            String arg = args.get(i);
+            if (arg.indexOf("--") == 0) {
+                String option = arg.substring(2);
+                if (option.equals("reporter")) {
+                    if (i + 1 >= n)
+                        throw new MissingOptionArgumentException("--" + option);
+                    reporterName = args.get(++i);
+                } else if (option.equals("reporter-file")) {
+                    if (i + 1 >= n)
+                        throw new MissingOptionArgumentException("--" + option);
+                    reporterFileName = args.get(++i);
+                } else if (option.equals("reporter-file-encoding")) {
+                    if (i + 1 >= n)
+                        throw new MissingOptionArgumentException("--" + option);
+                    reporterFileEncoding = args.get(++i);
+                } else if (option.equals("reporter-file-append")) {
+                    reporterFileAppend = true;
+                } else if (option.equals("reporter-include-source")) {
+                    reporterIncludeSource = true;
+                } else {
+                    skippedArgs.add(arg);
+                }
+            } else
+                skippedArgs.add(arg);
+        }
+        if (reporterName != null)
+            setReporter(reporterName, reporterFileName, reporterFileEncoding, reporterFileAppend, reporterIncludeSource);
+        return skippedArgs;
+    }
+
+    private List<String> processConfigurationOptions(List<String> args, OptionProcessor optionProcessor) {
+        String configFilePath = null;
+        List<String> skippedArgs = new java.util.ArrayList<String>();
+        for (int i = 0, n = args.size(); i < n; ++i) {
+            String arg = args.get(i);
+            if (arg.indexOf("--") == 0) {
+                String option = arg.substring(2);
+                if (option.equals("config")) {
+                    if (i + 1 >= n)
+                        throw new MissingOptionArgumentException("--" + option);
+                    configFilePath = args.get(++i);
+                } else {
+                    skippedArgs.add(arg);
+                }
+            } else
+                skippedArgs.add(arg);
+        }
+        configuration = loadConfiguration(configFilePath, optionProcessor);
+        return skippedArgs;
+    }
+
+    private Configuration loadConfiguration(String configFilePath, OptionProcessor optionProcessor) {
+        File configFile;
+        if ((configFilePath == null) && (optionProcessor != null))
+            configFilePath = optionProcessor.getDefaultConfigurationPath();
+        if (configFilePath == null)
+            configFilePath = Configuration.getDefaultConfigurationPath(TimedTextVerifier.class, null);
+        if (configFilePath != null) {
+            Reporter reporter = getReporter();
+            configFile = new File(configFilePath);
+            if (!configFile.exists())
+                throw new InvalidOptionUsageException("config", reporter.message("*KEY*", "configuration does not exist: {0}", configFilePath));
+            else if (!configFile.isFile())
+                throw new InvalidOptionUsageException("config", reporter.message("*KEY*", "not a file: {0}", configFilePath));
             else
-                debug += 1;
-            reporter.setDebugLevel(debug);
-        } else if (option.equals("debug-exceptions")) {
-            int debug = reporter.getDebugLevel();
-            if (debug < 2)
-                debug = 2;
-            reporter.setDebugLevel(debug);
-        } else if (option.equals("debug-level")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            String level = args[++index];
-            int debugNew;
-            try {
-                debugNew = Integer.parseInt(level);
-            } catch (NumberFormatException e) {
-                throw new InvalidOptionUsageException("debug-level", "bad syntax: " + level);
-            }
-            int debug = reporter.getDebugLevel();
-            if (debugNew > debug)
-                reporter.setDebugLevel(debugNew);
-        } else if (option.equals("disable-warnings")) {
-            reporter.disableWarnings();
-        } else if (option.equals("expect-errors")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            expectedErrors = args[++index];
-        } else if (option.equals("expect-warnings")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            expectedWarnings = args[++index];
-        } else if (option.equals("extension-schema")) {
-            if (index + 2 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            String namespaceURI = args[++index];
-            String schemaResourceURL = args[++index];
-            extensionSchemas.put(namespaceURI, schemaResourceURL);
-        } else if (option.equals("external-duration")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            externalDuration = args[++index];
-        } else if (option.equals("external-extent")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            externalExtent = args[++index];
-        } else if (option.equals("external-frame-rate")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            externalFrameRate = args[++index];
-        } else if (option.equals("force-encoding")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            forceEncodingName = args[++index];
-        } else if (option.equals("force-model")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            forceModelName = args[++index];
-        } else if (option.equals("help")) {
-            throw new ShowUsageException();
-        } else if (option.equals("hide-resource-location")) {
-            reporter.hideLocation();
-        } else if (option.equals("hide-resource-path")) {
-            reporter.hidePath();
-        } else if (option.equals("hide-warnings")) {
-            reporter.hideWarnings();
-        } else if (option.equals("model")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            modelName = args[++index];
-        } else if (option.equals("no-warn-on")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            String token = args[++index];
-            if (!reporter.hasDefaultWarning(token))
-                throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
-            reporter.disableWarning(token);
-        } else if (option.equals("no-verbose")) {
-            reporter.setVerbosityLevel(0);
-        } else if (option.equals("quiet")) {
-            quiet = true;
-        } else if (option.equals("servlet")) {
-            configureServletDefaults();
-        } else if (option.equals("show-models")) {
-            showModels = true;
-        } else if (option.equals("show-repository")) {
-            showRepository = true;
-        } else if (option.equals("show-resource-location")) {
-            reporter.showLocation();
-        } else if (option.equals("show-resource-path")) {
-            reporter.showPath();
-        } else if (option.equals("show-validator")) {
-            showValidator = true;
-        } else if (option.equals("show-warning-tokens")) {
-            showWarningTokens = true;
-        } else if (option.equals("treat-foreign-as")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            treatForeignAs = args[++index];
-        } else if (option.equals("treat-warning-as-error")) {
-            reporter.setTreatWarningAsError(true);
-        } else if (option.equals("until-phase")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            untilPhase = args[++index];
-        } else if (option.equals("verbose")) {
-            reporter.incrementVerbosityLevel();
-        } else if (option.equals("warn-on")) {
-            if (index + 1 > args.length)
-                throw new MissingOptionArgumentException("--" + option);
-            String token = args[++index];
-            if (!reporter.hasDefaultWarning(token))
-                throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
-            reporter.enableWarning(token);
-        } else if ((optionProcessor != null) && optionProcessor.hasOption(args[index])) {
-            return optionProcessor.parseOption(args, index);
+                return loadConfiguration(configFile, optionProcessor);
         } else
-            throw new UnknownOptionException("--" + option);
-        return index + 1;
+            return new Configuration();
     }
 
-    private void configureServletDefaults() {
-        getReporter().hideLocation();
+    private Configuration loadConfiguration(File configFile, OptionProcessor optionProcessor) {
+        try {
+            String configDirectoryPath = IOUtil.getDirectory(configFile).getAbsolutePath();
+            ConfigurationDefaults configDefaults = (optionProcessor != null) ? optionProcessor.getConfigurationDefaults(configDirectoryPath) : null;
+            if (configDefaults == null)
+                configDefaults = new ConfigurationDefaults(configDirectoryPath);
+            Class<? extends Configuration> configClass = (optionProcessor != null) ? optionProcessor.getConfigurationClass() : null;
+            if (configClass == null)
+                configClass = Configuration.class;
+            return Configuration.fromFile(configFile, configDefaults, configClass);
+        } catch (IOException e) {
+            getReporter().logError(e);
+            return null;
+        }
     }
 
-    private int parseShortOption(String args[], int index, OptionProcessor optionProcessor) {
+    private List<String> parseArgs(List<String> args, OptionProcessor optionProcessor) {
+        args = processConfigurationArguments(args, optionProcessor);
+        args = processOptionArguments(args, optionProcessor);
+        args = processNonOptionArguments(args, optionProcessor);
+        processDerivedOptions(optionProcessor);
+        return args;
+    }
+
+    private List<String> processConfigurationArguments(List<String> args, OptionProcessor optionProcessor) {
+        if (configuration != null) {
+            for (Map.Entry<String,String> e : configuration.getOptions().entrySet()) {
+                String n = e.getKey();
+                String v = e.getValue();
+                List<String> option = new java.util.ArrayList<String>(2);
+                option.add("--" + n);
+                option.add(v);
+                int i = parseLongOption(option, 0, optionProcessor);
+                assert i > 0;
+            }
+        }
+        return args;
+    }
+
+    private List<String> processOptionArguments(List<String> args, OptionProcessor optionProcessor) {
+        int nonOptionIndex = -1;
+        for (int i = 0; i < args.size();) {
+            String arg = args.get(i);
+            if (arg.charAt(0) == '-') {
+                if (arg.charAt(1) != '-') {
+                    if (arg.length() != 2)
+                        throw new UnknownOptionException(arg);
+                    i = parseShortOption(args, i, optionProcessor);
+                } else {
+                    i = parseLongOption(args, i, optionProcessor);
+                }
+            } else {
+                nonOptionIndex = i;
+                break;
+            }
+        }
+        List<String> nonOptionArgs = new java.util.ArrayList<String>();
+        if (nonOptionIndex >= 0) {
+            for (int i = nonOptionIndex, n = args.size(); i < n; ++i)
+                nonOptionArgs.add(args.get(i));
+        }
+        return nonOptionArgs;
+    }
+
+    private int parseShortOption(List<String> args, int index, OptionProcessor optionProcessor) {
         Reporter reporter = getReporter();
-        String option = args[index];
+        String option = args.get(index);
         assert option.length() == 2;
         option = option.substring(1);
         switch (option.charAt(0)) {
@@ -709,12 +730,149 @@ public class TimedTextVerifier implements VerifierContext {
         case '?':
             throw new ShowUsageException();
         default:
-            if ((optionProcessor != null) && optionProcessor.hasOption(args[index]))
+            if ((optionProcessor != null) && optionProcessor.hasOption(args.get(index)))
                 return optionProcessor.parseOption(args, index);
             else
                 throw new UnknownOptionException("-" + option);
         }
         return index + 1;
+    }
+
+    private int parseLongOption(List<String> args, int index, OptionProcessor optionProcessor) {
+        Reporter reporter = getReporter();
+        String arg = args.get(index);
+        int numArgs = args.size();
+        String option = arg;
+        assert option.length() > 2;
+        option = option.substring(2);
+        if (option.equals("debug")) {
+            int debug = reporter.getDebugLevel();
+            if (debug < 1)
+                debug = 1;
+            else
+                debug += 1;
+            reporter.setDebugLevel(debug);
+        } else if (option.equals("debug-exceptions")) {
+            int debug = reporter.getDebugLevel();
+            if (debug < 2)
+                debug = 2;
+            reporter.setDebugLevel(debug);
+        } else if (option.equals("debug-level")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String level = args.get(++index);
+            int debugNew;
+            try {
+                debugNew = Integer.parseInt(level);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException("debug-level", "bad syntax: " + level);
+            }
+            int debug = reporter.getDebugLevel();
+            if (debugNew > debug)
+                reporter.setDebugLevel(debugNew);
+        } else if (option.equals("disable-warnings")) {
+            reporter.disableWarnings();
+        } else if (option.equals("expect-errors")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            expectedErrors = args.get(++index);
+        } else if (option.equals("expect-warnings")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            expectedWarnings = args.get(++index);
+        } else if (option.equals("extension-schema")) {
+            if (index + 2 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String namespaceURI = args.get(++index);
+            String schemaResourceURL = args.get(++index);
+            extensionSchemas.put(namespaceURI, schemaResourceURL);
+        } else if (option.equals("external-duration")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            externalDuration = args.get(++index);
+        } else if (option.equals("external-extent")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            externalExtent = args.get(++index);
+        } else if (option.equals("external-frame-rate")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            externalFrameRate = args.get(++index);
+        } else if (option.equals("force-encoding")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            forceEncodingName = args.get(++index);
+        } else if (option.equals("force-model")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            forceModelName = args.get(++index);
+        } else if (option.equals("help")) {
+            throw new ShowUsageException();
+        } else if (option.equals("hide-resource-location")) {
+            reporter.hideLocation();
+        } else if (option.equals("hide-resource-path")) {
+            reporter.hidePath();
+        } else if (option.equals("hide-warnings")) {
+            reporter.hideWarnings();
+        } else if (option.equals("model")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            modelName = args.get(++index);
+        } else if (option.equals("no-warn-on")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String token = args.get(++index);
+            if (!reporter.hasDefaultWarning(token))
+                throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
+            reporter.disableWarning(token);
+        } else if (option.equals("no-verbose")) {
+            reporter.setVerbosityLevel(0);
+        } else if (option.equals("quiet")) {
+            quiet = true;
+        } else if (option.equals("servlet")) {
+            reporter.hideLocation();
+        } else if (option.equals("show-models")) {
+            showModels = true;
+        } else if (option.equals("show-repository")) {
+            showRepository = true;
+        } else if (option.equals("show-resource-location")) {
+            reporter.showLocation();
+        } else if (option.equals("show-resource-path")) {
+            reporter.showPath();
+        } else if (option.equals("show-validator")) {
+            showValidator = true;
+        } else if (option.equals("show-warning-tokens")) {
+            showWarningTokens = true;
+        } else if (option.equals("treat-foreign-as")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            treatForeignAs = args.get(++index);
+        } else if (option.equals("treat-warning-as-error")) {
+            reporter.setTreatWarningAsError(true);
+        } else if (option.equals("until-phase")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            untilPhase = args.get(++index);
+        } else if (option.equals("verbose")) {
+            reporter.incrementVerbosityLevel();
+        } else if (option.equals("warn-on")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String token = args.get(++index);
+            if (!reporter.hasDefaultWarning(token))
+                throw new InvalidOptionUsageException("--" + option, "token '" + token + "' is not a recognized warning token");
+            reporter.enableWarning(token);
+        } else if ((optionProcessor != null) && optionProcessor.hasOption(arg)) {
+            return optionProcessor.parseOption(args, index);
+        } else
+            throw new UnknownOptionException("--" + option);
+        return index + 1;
+    }
+
+    private List<String> processNonOptionArguments(List<String> args, OptionProcessor optionProcessor) {
+        if (optionProcessor != null)
+            args = optionProcessor.processNonOptionArguments(args);
+        return args;
     }
 
     private void processDerivedOptions(OptionProcessor optionProcessor) {
@@ -803,90 +961,6 @@ public class TimedTextVerifier implements VerifierContext {
         }
         if (optionProcessor != null)
             optionProcessor.processDerivedOptions();
-    }
-
-    private List<String> processOptionsAndArgs(List<String> nonOptionArgs, OptionProcessor optionProcessor) {
-        processDerivedOptions(optionProcessor);
-        if (optionProcessor != null)
-            nonOptionArgs = optionProcessor.processNonOptionArguments(nonOptionArgs);
-        return nonOptionArgs;
-    }
-
-    private String[] preProcessOptions(String[] args, OptionProcessor optionProcessor) {
-        args = processReporterOptions(args);
-        if (optionProcessor != null)
-            args = optionProcessor.preProcessOptions(args, shortOptions, longOptions);
-        return args;
-    }
-
-    private String[] processReporterOptions(String[] args) {
-        String reporterName = null;
-        String reporterFileName = null;
-        String reporterFileEncoding = null;
-        boolean reporterFileAppend = false;
-        boolean reporterIncludeSource = false;
-        List<String> skippedArgs = new java.util.ArrayList<String>();
-        for (int i = 0; i < args.length; ++i) {
-            String arg = args[i];
-            if (arg.indexOf("--") == 0) {
-                String option = arg.substring(2);
-                if (option.equals("reporter")) {
-                    if (i + 1 >= args.length)
-                        throw new MissingOptionArgumentException("--" + option);
-                    reporterName = args[i + 1];
-                    ++i;
-                } else if (option.equals("reporter-file")) {
-                    if (i + 1 >= args.length)
-                        throw new MissingOptionArgumentException("--" + option);
-                    reporterFileName = args[i + 1];
-                    ++i;
-                } else if (option.equals("reporter-file-encoding")) {
-                    if (i + 1 >= args.length)
-                        throw new MissingOptionArgumentException("--" + option);
-                    reporterFileEncoding = args[i + 1];
-                    ++i;
-                } else if (option.equals("reporter-file-append")) {
-                    reporterFileAppend = true;
-                } else if (option.equals("reporter-include-source")) {
-                    reporterIncludeSource = true;
-                } else {
-                    skippedArgs.add(arg);
-                }
-            } else
-                skippedArgs.add(arg);
-        }
-        if (reporterName != null)
-            setReporter(reporterName, reporterFileName, reporterFileEncoding, reporterFileAppend, reporterIncludeSource);
-        return skippedArgs.toArray(new String[skippedArgs.size()]);
-    }
-
-    private List<String> parseArgs(String[] args, OptionProcessor optionProcessor) {
-        List<String> nonOptionArgs = new java.util.ArrayList<String>();
-        int nonOptionIndex = -1;
-        for (int i = 0; i < args.length;) {
-            String arg = args[i];
-            if (arg.charAt(0) == '-') {
-                switch (arg.charAt(1)) {
-                case '-':
-                    i = parseLongOption(args, i, optionProcessor);
-                    break;
-                default:
-                    if (arg.length() != 2)
-                        throw new UnknownOptionException(arg);
-                    else
-                        i = parseShortOption(args, i, optionProcessor);
-                    break;
-                }
-            } else {
-                nonOptionIndex = i;
-                break;
-            }
-        }
-        if (nonOptionIndex >= 0) {
-            for (int i = nonOptionIndex; i < args.length; ++i)
-                nonOptionArgs.add(args[i]);
-        }
-        return processOptionsAndArgs(nonOptionArgs, optionProcessor);
     }
 
     public void setShowOutput(PrintWriter showOutput) {
@@ -1865,7 +1939,7 @@ public class TimedTextVerifier implements VerifierContext {
         return reporter.getResourceErrors() == 0;
     }
 
-    private int verify(String[] args, String uri, ResultProcessor resultProcessor) {
+    private int verify(List<String> args, String uri, ResultProcessor resultProcessor) {
         Reporter reporter = getReporter();
         if (!reporter.isHidingLocation())
             reporter.logInfo(reporter.message("*KEY*", "Verifying '{'{0}'}'.", uri));
@@ -1997,7 +2071,7 @@ public class TimedTextVerifier implements VerifierContext {
             return noun + "s";
     }
 
-    private int verify(String[] args, List<String> nonOptionArgs, ResultProcessor resultProcessor) {
+    private int verify(List<String> args, List<String> nonOptionArgs, ResultProcessor resultProcessor) {
         Reporter reporter = getReporter();
         int numFailure = 0;
         int numSuccess = 0;
@@ -2039,19 +2113,17 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     public int run(String[] args) {
-        return run(args, null);
+        return run(Arrays.asList(args), null);
     }
 
     public int run(List<String> args, ResultProcessor resultProcessor) {
-        return run(args.toArray(new String[args.size()]), resultProcessor);
-    }
-
-    public int run(String[] args, ResultProcessor resultProcessor) {
         int rv = 0;
         OptionProcessor optionProcessor = (OptionProcessor) resultProcessor;
         try {
-            List<String> nonOptionArgs = parseArgs(preProcessOptions(args, optionProcessor), optionProcessor);
-            showBanner(getShowOutput(), optionProcessor);
+            List<String> argsPreProcessed = preProcessOptions(args, optionProcessor);
+            showBanner(getShowOutput(), (OptionProcessor) null);
+            getShowOutput().flush();
+            List<String> nonOptionArgs = parseArgs(argsPreProcessed, optionProcessor);
             if (showModels)
                 showModels();
             if (showRepository)

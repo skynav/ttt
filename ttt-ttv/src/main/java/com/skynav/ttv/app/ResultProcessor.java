@@ -26,6 +26,7 @@
 package com.skynav.ttv.app;
 
 import java.net.URI;
+import java.util.List;
 
 public interface ResultProcessor extends OptionProcessor {
 
@@ -35,7 +36,7 @@ public interface ResultProcessor extends OptionProcessor {
      * @param uri uri of verified resource
      * @param root binding object associated with root element
      */
-    void processResult(String[] args, URI uri, Object root);
+    void processResult(List<String> args, URI uri, Object root);
 
 }
 

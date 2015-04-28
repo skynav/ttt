@@ -26,6 +26,7 @@
 package com.skynav.ttx.transformer;
 
 import java.io.OutputStream;
+import java.util.List;
 
 public interface Transformer extends TransformerOptions {
 
@@ -43,6 +44,6 @@ public interface Transformer extends TransformerOptions {
      * @param context state for transformation
      * @param out stream to which to write transformed output
      */
-    void transform(String[] args, Object root, TransformerContext context, OutputStream out);
+    void transform(List<String> args, Object root, TransformerContext context, OutputStream out);
 
 }

@@ -25,87 +25,43 @@
 
 package com.skynav.cap2tt.app;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXSource;
-
-import org.xml.sax.InputSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.skynav.ttv.model.ttml.TTML1;
-import com.skynav.ttv.util.IOUtil;
+import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.XML;
 
-public class Configuration {
+public class Configuration extends com.skynav.ttv.util.Configuration {
 
-    public static final String defaultConfigurationName         = "cap2tt.xml";
-    private static final Configuration nullConfiguration        = new Configuration();
+    private static final QName ttInitialEltName                 = new QName(TTML2.Constants.NAMESPACE_TT, "initial");
+    private static final QName ttRegionEltName                  = new QName(TTML2.Constants.NAMESPACE_TT, "region");
 
-    private static final QName cap2ttOptionEltName              = new QName(Namespace.NAMESPACE, "option");
-    private static final QName ttInitialEltName                 = new QName(TTML1.Constants.NAMESPACE_TT, "initial");
-    private static final QName ttRegionEltName                  = new QName(TTML1.Constants.NAMESPACE_TT, "region");
-
-    private Map<String,String> options;
     private List<Element> initials;
     private List<Element> regions;
 
-    private Configuration() {
+    public Configuration() {
+        this(new ConfigurationDefaults());
     }
 
-    private Configuration(Document d) {
-        populate(d);
+    public Configuration(com.skynav.ttv.util.ConfigurationDefaults defaults) {
+        this(defaults, null);
     }
 
-    private void populate(Document d) {
-        populateOptions(d);
+    public Configuration(com.skynav.ttv.util.ConfigurationDefaults defaults, Document d) {
+        super(defaults, d);
+    }
+
+    @Override
+    protected void populate(Document d) {
+        super.populate(d);
         populateInitials(d);
         populateRegions(d);
-    }
-
-    private void populateOptions(Document d) {
-        Map<String,String> options = new java.util.HashMap<String,String>();
-        ConfigurationDefaults.populateDefaults(options);
-        for (Element e : Documents.findElementsByName(d, cap2ttOptionEltName)) {
-            if (e.hasAttribute("name")) {
-                String n = e.getAttribute("name");
-                String v = e.getTextContent();
-                options.put(n, v);
-            }
-        }
-        this.options = options;
-    }
-
-    public Map<String,String> getOptions() {
-        return options;
-    }
-
-    public String getOption(String name) {
-        return getOption(name, getOptionDefault(name));
-    }
-
-    public String getOption(String name, String optionDefault) {
-        if (options.containsKey(name))
-            return options.get(name);
-        else
-            return optionDefault;
-    }
-
-    public String getOptionDefault(String name) {
-        return ConfigurationDefaults.getDefault(name);
     }
 
     public List<Element> getInitials() {
@@ -130,48 +86,17 @@ public class Configuration {
     }
 
     private void populateInitials(Document d) {
-        this.initials = Documents.findElementsByName(d, ttInitialEltName);
+        List<Element> elts = Documents.findElementsByName(d, ttInitialEltName);
+        this.initials = Collections.unmodifiableList(elts);
     }
 
     private void populateRegions(Document d) {
-        this.regions = Documents.findElementsByName(d, ttRegionEltName);
+        List<Element> elts = Documents.findElementsByName(d, ttRegionEltName);
+        this.regions = Collections.unmodifiableList(elts);
     }
 
-    public static String getDefaultConfigurationName() {
-        return defaultConfigurationName;
-    }
-
-    public static Configuration fromDefault() throws IOException {
-        URL urlConfig = Configuration.class.getResource(getDefaultConfigurationName());
-        if (urlConfig != null)
-            return fromStream(urlConfig.openStream());
-        else
-            return nullConfiguration;
-    }
-
-    public static Configuration fromFile(File f) throws IOException {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(f);
-            return fromStream(is); 
-        } catch (IOException e) {
-            IOUtil.closeSafely(is);
-            throw e;
-        }
-    }
-
-    public static Configuration fromStream(InputStream is) throws IOException {
-        try {
-            SAXSource source = new SAXSource(new InputSource(is));
-            DOMResult result = new DOMResult();
-            TransformerFactory.newInstance().newTransformer().transform(source, result);
-            Document d = (Document) result.getNode();
-            return new Configuration(d);
-        } catch (TransformerFactoryConfigurationError e) {
-            return nullConfiguration;
-        } catch (TransformerException e) {
-            return nullConfiguration;
-        }
+    public static String getDefaultConfigurationPath() {
+        return getDefaultConfigurationPath(Configuration.class, null);
     }
 
 }

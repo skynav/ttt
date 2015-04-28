@@ -114,14 +114,16 @@ public class XMLRenderProcessor extends RenderProcessor {
     }
 
     @Override
-    public int parseLongOption(String args[], int index) {
-        String option = args[index];
+    public int parseLongOption(List<String> args, int index) {
+        String arg = args.get(index);
+        int numArgs = args.size();
+        String option = arg;
         assert option.length() > 2;
         option = option.substring(2);
         if (option.equals("output-pattern")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputPattern = args[++index];
+            outputPattern = args.get(++index);
         } else if (option.equals("xml-include-generator")) {
             includeGenerator = true;
         } else {

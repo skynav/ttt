@@ -29,7 +29,8 @@ import java.text.MessageFormat;
 
 public class Extent {
     
-    public static final Extent EMPTY = new Extent(0, 0);
+    public static final Extent EMPTY                            = new Extent(0, 0);
+    public static final Extent UNIT                             = new Extent(1, 1);
 
     private double width;
     private double height;

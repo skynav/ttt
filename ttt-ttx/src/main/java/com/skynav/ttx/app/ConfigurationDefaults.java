@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Skynav, Inc. All rights reserved.
+ * Copyright 2014-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,35 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.cap2tt.app;
-
-import java.util.Collections;
-import java.util.Map;
+package com.skynav.ttx.app;
 
 public class ConfigurationDefaults extends com.skynav.ttv.util.ConfigurationDefaults {
-    private static final String[][] optionDefaultSpecifications = new String[][] {
-        { "add-creation-metadata", "true" },
-        { "default-region", "横下" },
-        { "merge-styles", "true" },
-        { "style-id-pattern", "s{0}" },
-        { "style-id-sequence-start", "1" },
-    };
-    private static final Map<String,String> optionDefaults;
-    static {
-        Map<String,String> m = new java.util.HashMap<String,String>();
-        for (String[] optionDefault: optionDefaultSpecifications) {
-            assert optionDefault.length >= 2;
-            m.put(optionDefault[0], optionDefault[1]);
-        }
-        optionDefaults = Collections.unmodifiableMap(m);
-    }
-    public ConfigurationDefaults() {
-        super();
-    }
     public ConfigurationDefaults(String configDirectory) {
         super(configDirectory);
-    }
-    public Map<String,String> getDefaults() {
-        return optionDefaults;
     }
 }

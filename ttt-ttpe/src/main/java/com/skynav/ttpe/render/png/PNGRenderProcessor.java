@@ -118,26 +118,28 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
 
 
     @Override
-    public int parseLongOption(String args[], int index) {
-        String option = args[index];
+    public int parseLongOption(List<String> args, int index) {
+        String arg = args.get(index);
+        int numArgs = args.size();
+        String option = arg;
         assert option.length() > 2;
         option = option.substring(2);
         if (option.equals("output-pattern")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputPattern = args[++index];
+            outputPattern = args.get(++index);
         } else if (option.equals("png-background")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            backgroundOption = args[++index];
+            backgroundOption = args.get(++index);
         } else if (option.equals("png-generation-mode")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            modeOption = args[++index];
+            modeOption = args.get(++index);
         } else if (option.equals("png-pixel-density")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            pixelDensityOption = args[++index];
+            pixelDensityOption = args.get(++index);
         } else {
             return super.parseLongOption(args, index);
         }

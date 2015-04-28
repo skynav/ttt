@@ -23,35 +23,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.cap2tt.app;
+package com.skynav.ttx.app;
 
-import java.util.Collections;
-import java.util.Map;
+import org.w3c.dom.Document;
 
-public class ConfigurationDefaults extends com.skynav.ttv.util.ConfigurationDefaults {
-    private static final String[][] optionDefaultSpecifications = new String[][] {
-        { "add-creation-metadata", "true" },
-        { "default-region", "横下" },
-        { "merge-styles", "true" },
-        { "style-id-pattern", "s{0}" },
-        { "style-id-sequence-start", "1" },
-    };
-    private static final Map<String,String> optionDefaults;
-    static {
-        Map<String,String> m = new java.util.HashMap<String,String>();
-        for (String[] optionDefault: optionDefaultSpecifications) {
-            assert optionDefault.length >= 2;
-            m.put(optionDefault[0], optionDefault[1]);
-        }
-        optionDefaults = Collections.unmodifiableMap(m);
+public class Configuration extends com.skynav.ttv.util.Configuration {
+    public Configuration(com.skynav.ttv.util.ConfigurationDefaults defaults, Document d) {
+        super(defaults, d);
     }
-    public ConfigurationDefaults() {
-        super();
-    }
-    public ConfigurationDefaults(String configDirectory) {
-        super(configDirectory);
-    }
-    public Map<String,String> getDefaults() {
-        return optionDefaults;
+    public static String getDefaultConfigurationPath() {
+        return getDefaultConfigurationPath(Configuration.class, null);
     }
 }

@@ -26,13 +26,14 @@
 package com.skynav.ttx.transformer;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.skynav.ttv.app.OptionSpecification;
 
 public interface TransformerOptions {
     Collection<OptionSpecification> getShortOptionSpecs();
     Collection<OptionSpecification> getLongOptionSpecs();
-    int parseLongOption(String args[], int index);
-    int parseShortOption(String args[], int index);
+    int parseLongOption(List<String> args, int index);
+    int parseShortOption(List<String> args, int index);
     void processDerivedOptions();
 }

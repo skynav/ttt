@@ -108,27 +108,29 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     @Override
-    public int parseLongOption(String args[], int index) {
-            String option = args[index];
-            assert option.length() > 2;
-            option = option.substring(2);
-            if (option.equals("font")) {
-                if (index + 1 > args.length)
-                    throw new MissingOptionArgumentException("--" + option);
-                if (fontSpecificationFileNames == null)
-                    fontSpecificationFileNames = new java.util.ArrayList<String>();
-                fontSpecificationFileNames.add(args[++index]);
-            } else if (option.equals("font-directory")) {
-                if (index + 1 > args.length)
-                    throw new MissingOptionArgumentException("--" + option);
-                fontSpecificationDirectoryPath = args[++index];
-            } else if (option.equals("line-breaker")) {
-                if (index + 1 > args.length)
-                    throw new MissingOptionArgumentException("--" + option);
-                lineBreakerName = args[++index];
-            } else
-                index = index - 1;
-            return index + 1;
+    public int parseLongOption(List<String> args, int index) {
+        String arg = args.get(index);
+        int numArgs = args.size();
+        String option = arg;
+        assert option.length() > 2;
+        option = option.substring(2);
+        if (option.equals("font")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            if (fontSpecificationFileNames == null)
+                fontSpecificationFileNames = new java.util.ArrayList<String>();
+            fontSpecificationFileNames.add(args.get(++index));
+        } else if (option.equals("font-directory")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            fontSpecificationDirectoryPath = args.get(++index);
+        } else if (option.equals("line-breaker")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            lineBreakerName = args.get(++index);
+        } else
+            index = index - 1;
+        return index + 1;
     }
 
     @Override

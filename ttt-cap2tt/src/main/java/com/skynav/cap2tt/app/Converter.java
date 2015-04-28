@@ -52,6 +52,7 @@ import java.text.AttributedString;
 import java.text.CharacterIterator;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -424,6 +425,7 @@ public class Converter implements ConverterContext {
     private int styleIdSequenceStart;
 
     // derived option state
+    private Configuration configuration;
     private Charset forceEncoding;
     private File outputDirectory;
     private Charset outputEncoding;
@@ -439,7 +441,6 @@ public class Converter implements ConverterContext {
     private Model model;
     private Reporter reporter;
     private Map<String,Results> results = new java.util.HashMap<String,Results>();
-    private Configuration configuration;
     private int outputFileSequence;
 
     // per-resource processing state
@@ -587,15 +588,206 @@ public class Converter implements ConverterContext {
             return null;
     }
 
-    private int parseLongOption(String args[], int index, OptionProcessor optionProcessor) {
+    private List<String> preProcessOptions(List<String> args, OptionProcessor optionProcessor) {
+        args = processReporterOptions(args, optionProcessor);
+        args = processConfigurationOptions(args, optionProcessor);
+        if (optionProcessor != null)
+            args = optionProcessor.preProcessOptions(args, configuration, shortOptions, longOptions);
+        return args;
+    }
+
+    private List<String> processReporterOptions(List<String> args, OptionProcessor optionProcessor) {
+        String reporterName = null;
+        String reporterFileName = null;
+        String reporterFileEncoding = null;
+        boolean reporterFileAppend = false;
+        boolean reporterIncludeSource = false;
+        List<String> skippedArgs = new java.util.ArrayList<String>();
+        for (int i = 0, numArgs = args.size(); i < numArgs; ++i) {
+            String arg = args.get(i);
+            if (arg.indexOf("--") == 0) {
+                String option = arg.substring(2);
+                if (option.equals("reporter")) {
+                    if (i + 1 >= numArgs)
+                        throw new MissingOptionArgumentException("--" + option);
+                    reporterName = args.get(i + 1);
+                    ++i;
+                } else if (option.equals("reporter-file")) {
+                    if (i + 1 >= numArgs)
+                        throw new MissingOptionArgumentException("--" + option);
+                    reporterFileName = args.get(i + 1);
+                    ++i;
+                } else if (option.equals("reporter-file-encoding")) {
+                    if (i + 1 >= numArgs)
+                        throw new MissingOptionArgumentException("--" + option);
+                    reporterFileEncoding = args.get(i + 1);
+                    ++i;
+                } else if (option.equals("reporter-file-append")) {
+                    reporterFileAppend = true;
+                } else if (option.equals("reporter-include-source")) {
+                    reporterIncludeSource = true;
+                } else {
+                    skippedArgs.add(arg);
+                }
+            } else
+                skippedArgs.add(arg);
+        }
+        if (reporterName != null)
+            setReporter(reporterName, reporterFileName, reporterFileEncoding, reporterFileAppend, reporterIncludeSource);
+        return skippedArgs;
+    }
+
+    private List<String> processConfigurationOptions(List<String> args, OptionProcessor optionProcessor) {
+        String configFilePath = null;
+        List<String> skippedArgs = new java.util.ArrayList<String>();
+        for (int i = 0, numArgs = args.size(); i < numArgs; ++i) {
+            String arg = args.get(i);
+            if (arg.indexOf("--") == 0) {
+                String option = arg.substring(2);
+                if (option.equals("config")) {
+                    if (i + 1 >= numArgs)
+                        throw new MissingOptionArgumentException("--" + option);
+                    configFilePath = args.get(i + 1);
+                    ++i;
+                } else {
+                    skippedArgs.add(arg);
+                }
+            } else
+                skippedArgs.add(arg);
+        }
+        configuration = loadConfiguration(configFilePath, optionProcessor);
+        return skippedArgs;
+    }
+
+    private Configuration loadConfiguration(String configFilePath, OptionProcessor optionProcessor) {
+        File configFile;
+        if ((configFilePath == null) && (optionProcessor != null))
+            configFilePath = optionProcessor.getDefaultConfigurationPath();
+        if (configFilePath == null)
+            configFilePath = Configuration.getDefaultConfigurationPath();
+        if (configFilePath != null) {
+            configFile = new File(configFilePath);
+            if (!configFile.exists())
+                throw new InvalidOptionUsageException("config", reporter.message("x.016", "configuration does not exist: {0}", configFilePath));
+            else if (!configFile.isFile())
+                throw new InvalidOptionUsageException("config", reporter.message("x.017", "not a file: {0}", configFilePath));
+            else
+                return loadConfiguration(configFile, optionProcessor);
+        } else
+            return new Configuration();
+    }
+
+    private Configuration loadConfiguration(File configFile, OptionProcessor optionProcessor) {
+        try {
+            String configDirectory = IOUtil.getDirectory(configFile).getAbsolutePath();
+            com.skynav.ttv.util.ConfigurationDefaults configDefaults;
+            Class<? extends com.skynav.ttv.util.Configuration> configClass;
+            if (optionProcessor != null) {
+                configDefaults = optionProcessor.getConfigurationDefaults(configDirectory);
+                configClass = optionProcessor.getConfigurationClass();
+            } else {
+                configDefaults = null;
+                configClass = null;
+            }
+            if (configDefaults == null)
+                configDefaults = new ConfigurationDefaults(configDirectory);
+            if (configClass == null)
+                configClass = Configuration.class;
+            return (Configuration) Configuration.fromFile(configFile, configDefaults, configClass);
+        } catch (IOException e) {
+            getReporter().logError(e);
+            return null;
+        }
+    }
+
+    private List<String> parseArgs(List<String> args, OptionProcessor optionProcessor) {
+        args = processConfigurationArguments(args, optionProcessor);
+        args = processOptionArguments(args, optionProcessor);
+        args = processNonOptionArguments(args, optionProcessor);
+        processDerivedOptions(optionProcessor);
+        return args;
+    }
+
+    private List<String> processConfigurationArguments(List<String> args, OptionProcessor optionProcessor) {
+        if (configuration != null) {
+            for (Map.Entry<String,String> e : configuration.getOptions().entrySet()) {
+                String n = e.getKey();
+                String v = e.getValue();
+                List<String> option = new java.util.ArrayList<String>(2);
+                option.add("--" + n);
+                option.add(v);
+                int i = parseLongOption(option, 0, optionProcessor);
+                assert i > 0;
+            }
+        }
+        return args;
+    }
+
+    private List<String> processOptionArguments(List<String> args, OptionProcessor optionProcessor) {
+        int nonOptionIndex = -1;
+        for (int i = 0; i < args.size();) {
+            String arg = args.get(i);
+            if (arg.charAt(0) == '-') {
+                if (arg.charAt(1) != '-') {
+                    if (arg.length() != 2)
+                        throw new UnknownOptionException(arg);
+                    i = parseShortOption(args, i, optionProcessor);
+                } else {
+                    i = parseLongOption(args, i, optionProcessor);
+                }
+            } else {
+                nonOptionIndex = i;
+                break;
+            }
+        }
+        List<String> nonOptionArgs = new java.util.ArrayList<String>();
+        if (nonOptionIndex >= 0) {
+            for (int i = nonOptionIndex, n = args.size(); i < n; ++i)
+                nonOptionArgs.add(args.get(i));
+            if (nonOptionArgs.isEmpty())
+                nonOptionArgs.add(uriStandardInput);
+        }
+        return nonOptionArgs;
+    }
+
+    private int parseShortOption(List<String> args, int index, OptionProcessor optionProcessor) {
         Reporter reporter = getReporter();
-        String option = args[index];
+        String arg = args.get(index);
+        String option = arg;
+        assert option.length() == 2;
+        option = option.substring(1);
+        switch (option.charAt(0)) {
+        case 'd':
+            reporter.incrementDebugLevel();
+            break;
+        case 'q':
+            quiet = true;
+            break;
+        case 'v':
+            reporter.incrementVerbosityLevel();
+            break;
+        case '?':
+            throw new ShowUsageException();
+        default:
+            if ((optionProcessor != null) && optionProcessor.hasOption(args.get(index)))
+                return optionProcessor.parseOption(args, index);
+            else
+                throw new UnknownOptionException("-" + option);
+        }
+        return index + 1;
+    }
+
+    private int parseLongOption(List<String> args, int index, OptionProcessor optionProcessor) {
+        Reporter reporter = getReporter();
+        String arg = args.get(index);
+        int numArgs = args.size();
+        String option = arg;
         assert option.length() > 2;
         option = option.substring(2);
         if (option.equals("add-creation-metadata")) {
             Boolean b = Boolean.TRUE;
-            if ((index + 1 < args.length) && isBoolean(args[index + 1])) {
-                b = Boolean.valueOf(args[++index]);
+            if ((index + 1 < numArgs) && isBoolean(args.get(index + 1))) {
+                b = Boolean.valueOf(args.get(++index));
             }
             metadataCreation = b.booleanValue();
         } else if (option.equals("debug")) {
@@ -611,9 +803,9 @@ public class Converter implements ConverterContext {
                 debug = 2;
             reporter.setDebugLevel(debug);
         } else if (option.equals("debug-level")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            String level = args[++index];
+            String level = args.get(++index);
             int debugNew;
             try {
                 debugNew = Integer.parseInt(level);
@@ -624,39 +816,39 @@ public class Converter implements ConverterContext {
             if (debugNew > debug)
                 reporter.setDebugLevel(debugNew);
         } else if (option.equals("default-language")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            defaultLanguage = args[++index];
+            defaultLanguage = args.get(++index);
         } else if (option.equals("default-region")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            defaultRegion = args[++index];
+            defaultRegion = args.get(++index);
         } else if (option.equals("disable-warnings")) {
             reporter.disableWarnings();
         } else if (option.equals("expect-errors")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            expectedErrors = args[++index];
+            expectedErrors = args.get(++index);
         } else if (option.equals("expect-warnings")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            expectedWarnings = args[++index];
+            expectedWarnings = args.get(++index);
         } else if (option.equals("external-duration")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            externalDuration = args[++index];
+            externalDuration = args.get(++index);
         } else if (option.equals("external-extent")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            externalExtent = args[++index];
+            externalExtent = args.get(++index);
         } else if (option.equals("external-frame-rate")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            externalFrameRate = args[++index];
+            externalFrameRate = args.get(++index);
         } else if (option.equals("force-encoding")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            forceEncodingName = args[++index];
+            forceEncodingName = args.get(++index);
         } else if (option.equals("help")) {
             throw new ShowUsageException();
         } else if (option.equals("hide-resource-location")) {
@@ -667,41 +859,41 @@ public class Converter implements ConverterContext {
             reporter.hideWarnings();
         } else if (option.equals("merge-styles")) {
             Boolean b = Boolean.TRUE;
-            if ((index + 1 < args.length) && isBoolean(args[index + 1])) {
-                b = parseBoolean(args[++index]);
+            if ((index + 1 < numArgs) && isBoolean(args.get(index + 1))) {
+                b = parseBoolean(args.get(++index));
             }
             mergeStyles = b.booleanValue();
         } else if (option.equals("no-warn-on")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            String token = args[++index];
+            String token = args.get(++index);
             if (!reporter.hasDefaultWarning(token))
                 throw new InvalidOptionUsageException("--" + option, reporter.message("x.005", "token ''{0}'' is not a recognized warning token", token));
             reporter.disableWarning(token);
         } else if (option.equals("no-verbose")) {
             reporter.setVerbosityLevel(0);
         } else if (option.equals("output-directory")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputDirectoryPath = args[++index];
+            outputDirectoryPath = args.get(++index);
         } else if (option.equals("output-disable")) {
             Boolean b = Boolean.TRUE;
-            if ((index + 1 < args.length) && isBoolean(args[index + 1])) {
-                b = parseBoolean(args[++index]);
+            if ((index + 1 < numArgs) && isBoolean(args.get(index + 1))) {
+                b = parseBoolean(args.get(++index));
             }
             outputDisabled = b.booleanValue();
         } else if (option.equals("output-encoding")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputEncodingName = args[++index];
+            outputEncodingName = args.get(++index);
         } else if (option.equals("output-file")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputFilePath = args[++index];
+            outputFilePath = args.get(++index);
         } else if (option.equals("output-pattern")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputPattern = args[++index];
+            outputPattern = args.get(++index);
         } else if (option.equals("output-indent")) {
             outputIndent = true;
         } else if (option.equals("quiet")) {
@@ -717,13 +909,13 @@ public class Converter implements ConverterContext {
         } else if (option.equals("show-warning-tokens")) {
             showWarningTokens = true;
         } else if (option.equals("style-id-pattern")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            styleIdPattern = args[++index];
+            styleIdPattern = args.get(++index);
         } else if (option.equals("style-id-sequence-start")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            String optionArgument = args[++index];
+            String optionArgument = args.get(++index);
             try {
                 int number = Integer.parseInt(optionArgument);
                 if (number < 0)
@@ -737,13 +929,13 @@ public class Converter implements ConverterContext {
         } else if (option.equals("verbose")) {
             reporter.incrementVerbosityLevel();
         } else if (option.equals("warn-on")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            String token = args[++index];
+            String token = args.get(++index);
             if (!reporter.hasDefaultWarning(token))
                 throw new InvalidOptionUsageException("--" + option, reporter.message("x.005", "token ''{0}'' is not a recognized warning token", token));
             reporter.enableWarning(token);
-        } else if ((optionProcessor != null) && optionProcessor.hasOption(args[index])) {
+        } else if ((optionProcessor != null) && optionProcessor.hasOption(args.get(index))) {
             return optionProcessor.parseOption(args, index);
         } else
             throw new UnknownOptionException("--" + option);
@@ -774,39 +966,13 @@ public class Converter implements ConverterContext {
             return Boolean.valueOf(s);
     }
 
-    private int parseShortOption(String args[], int index, OptionProcessor optionProcessor) {
-        Reporter reporter = getReporter();
-        String option = args[index];
-        assert option.length() == 2;
-        option = option.substring(1);
-        switch (option.charAt(0)) {
-        case 'd':
-            reporter.incrementDebugLevel();
-            break;
-        case 'q':
-            quiet = true;
-            break;
-        case 'v':
-            reporter.incrementVerbosityLevel();
-            break;
-        case '?':
-            throw new ShowUsageException();
-        default:
-            if ((optionProcessor != null) && optionProcessor.hasOption(args[index]))
-                return optionProcessor.parseOption(args, index);
-            else
-                throw new UnknownOptionException("-" + option);
+    private List<String> processNonOptionArguments(List<String> nonOptionArgs, OptionProcessor optionProcessor) {
+        if ((outputFile != null) && (nonOptionArgs.size() > 1)) {
+            throw new InvalidOptionUsageException("output-file", getReporter().message("x.019", "must not be used when multiple URL arguments are specified"));
         }
-        return index + 1;
-    }
-
-    private void processConfigurationOptions(Map<String,String> options, OptionProcessor optionProcessor) {
-        for (Map.Entry<String,String> e : options.entrySet()) {
-            String[] args = new String[] { "--" + e.getKey(), e.getValue() };
-            int index = 0;
-            index = parseLongOption(args, index, optionProcessor);
-            assert index == 2;
-        }
+        if (optionProcessor != null)
+            nonOptionArgs = optionProcessor.processNonOptionArguments(nonOptionArgs);
+        return nonOptionArgs;
     }
 
     private void processDerivedOptions(OptionProcessor optionProcessor) {
@@ -907,154 +1073,6 @@ public class Converter implements ConverterContext {
         this.outputPattern = outputPattern;
         if (optionProcessor != null)
             optionProcessor.processDerivedOptions();
-    }
-
-    private List<String> processOptionsAndArgs(List<String> nonOptionArgs, OptionProcessor optionProcessor) {
-        processConfigurationOptions(configuration.getOptions(), optionProcessor);
-        processDerivedOptions(optionProcessor);
-        return processNonOptionArguments(nonOptionArgs, optionProcessor);
-    }
-
-    private List<String> processNonOptionArguments(List<String> nonOptionArgs, OptionProcessor optionProcessor) {
-        if ((outputFile != null) && (nonOptionArgs.size() > 1)) {
-            throw new InvalidOptionUsageException("output-file", getReporter().message("x.019", "must not be used when multiple URL arguments are specified"));
-        }
-        if (optionProcessor != null)
-            nonOptionArgs = optionProcessor.processNonOptionArguments(nonOptionArgs);
-        return nonOptionArgs;
-    }
-
-    private String[] preProcessOptions(String[] args, OptionProcessor optionProcessor) {
-        args = processReporterOptions(args);
-        args = processConfigurationOptions(args);
-        if (optionProcessor != null)
-            args = optionProcessor.preProcessOptions(args, shortOptions, longOptions);
-        return args;
-    }
-
-    private String[] processReporterOptions(String[] args) {
-        String reporterName = null;
-        String reporterFileName = null;
-        String reporterFileEncoding = null;
-        boolean reporterFileAppend = false;
-        boolean reporterIncludeSource = false;
-        List<String> skippedArgs = new java.util.ArrayList<String>();
-        for (int i = 0; i < args.length; ++i) {
-            String arg = args[i];
-            if (arg.indexOf("--") == 0) {
-                String option = arg.substring(2);
-                if (option.equals("reporter")) {
-                    if (i + 1 >= args.length)
-                        throw new MissingOptionArgumentException("--" + option);
-                    reporterName = args[i + 1];
-                    ++i;
-                } else if (option.equals("reporter-file")) {
-                    if (i + 1 >= args.length)
-                        throw new MissingOptionArgumentException("--" + option);
-                    reporterFileName = args[i + 1];
-                    ++i;
-                } else if (option.equals("reporter-file-encoding")) {
-                    if (i + 1 >= args.length)
-                        throw new MissingOptionArgumentException("--" + option);
-                    reporterFileEncoding = args[i + 1];
-                    ++i;
-                } else if (option.equals("reporter-file-append")) {
-                    reporterFileAppend = true;
-                } else if (option.equals("reporter-include-source")) {
-                    reporterIncludeSource = true;
-                } else {
-                    skippedArgs.add(arg);
-                }
-            } else
-                skippedArgs.add(arg);
-        }
-        if (reporterName != null)
-            setReporter(reporterName, reporterFileName, reporterFileEncoding, reporterFileAppend, reporterIncludeSource);
-        return skippedArgs.toArray(new String[skippedArgs.size()]);
-    }
-
-    private String[] processConfigurationOptions(String[] args) {
-        String configFilePath = null;
-        List<String> skippedArgs = new java.util.ArrayList<String>();
-        for (int i = 0; i < args.length; ++i) {
-            String arg = args[i];
-            if (arg.indexOf("--") == 0) {
-                String option = arg.substring(2);
-                if (option.equals("config")) {
-                    if (i + 1 >= args.length)
-                        throw new MissingOptionArgumentException("--" + option);
-                    configFilePath = args[i + 1];
-                    ++i;
-                } else {
-                    skippedArgs.add(arg);
-                }
-            } else
-                skippedArgs.add(arg);
-        }
-        configuration = loadConfiguration(configFilePath);
-        return skippedArgs.toArray(new String[skippedArgs.size()]);
-    }
-
-    private Configuration loadConfiguration(String configFilePath) {
-        File configFile;
-        if (configFilePath != null) {
-            configFile = new File(configFilePath);
-            if (!configFile.exists())
-                throw new InvalidOptionUsageException("config", reporter.message("x.016", "configuration does not exist: {0}", configFilePath));
-            else if (!configFile.isFile())
-                throw new InvalidOptionUsageException("config", reporter.message("x.017", "not a file: {0}", configFilePath));
-        } else
-            configFile = null;
-        return loadConfiguration(configFile);
-    }
-
-    private Configuration loadConfiguration(File configFile) {
-        Reporter reporter = getReporter();
-        try {
-            Configuration c;
-            if (configFile != null)
-                c = Configuration.fromFile(configFile);
-            else
-                c = Configuration.fromDefault();
-            return c;
-        } catch (IOException e) {
-            reporter.logError(e);
-            return null;
-        }
-    }
-
-    private List<String> parseArgs(String[] args, OptionProcessor optionProcessor) {
-        List<String> nonOptionArgs = new java.util.ArrayList<String>();
-        int nonOptionIndex = -1;
-        for (int i = 0; i < args.length;) {
-            String arg = args[i];
-            if (arg.equals("--")) {
-                nonOptionIndex = i + 1;
-                break;
-            } else if (arg.charAt(0) == '-') {
-                switch (arg.charAt(1)) {
-                case '-':
-                    i = parseLongOption(args, i, optionProcessor);
-                    break;
-                default:
-                    if (arg.length() != 2)
-                        throw new UnknownOptionException(arg);
-                    else
-                        i = parseShortOption(args, i, optionProcessor);
-                    break;
-                }
-            } else {
-                nonOptionIndex = i;
-                break;
-            }
-        }
-        if (nonOptionIndex >= 0) {
-            for (int i = nonOptionIndex; i < args.length; ++i)
-                nonOptionArgs.add(args[i]);
-            if (nonOptionArgs.isEmpty())
-                nonOptionArgs.add(uriStandardInput);
-        }
-        return processOptionsAndArgs(nonOptionArgs, optionProcessor);
     }
 
     public void setShowOutput(PrintWriter showOutput) {
@@ -2388,7 +2406,7 @@ public class Converter implements ConverterContext {
         reporter.logInfo(reporter.message("i.014", "Converting resource ..."));
         try {
             //  convert screens to a div of paragraphs
-            State state = new State(configuration);
+            State state = new State();
             state.process(screens);
             // populate body, extracting division from state object, must be performed prior to populating head
             Body body = ttmlFactory.createBody();
@@ -2827,7 +2845,7 @@ public class Converter implements ConverterContext {
         }
     }
 
-    private int convert(String[] args, String uri) {
+    private int convert(List<String> args, String uri) {
         Reporter reporter = getReporter();
         if (!reporter.isHidingLocation())
             reporter.logInfo(reporter.message("i.016", "Converting '{'{0}'}'.", uri));
@@ -2956,7 +2974,7 @@ public class Converter implements ConverterContext {
             return noun + "s";
     }
 
-    private int convert(String[] args, List<String> nonOptionArgs) {
+    private int convert(List<String> args, List<String> nonOptionArgs) {
         Reporter reporter = getReporter();
         int numFailure = 0;
         int numSuccess = 0;
@@ -2995,10 +3013,10 @@ public class Converter implements ConverterContext {
         return numFailure > 0 ? 1 : 0;
     }
 
-    public int run(String[] args) {
+    public int run(List<String> args) {
         int rv = 0;
         try {
-            String[] argsPreProcessed = preProcessOptions(args, null);
+            List<String> argsPreProcessed = preProcessOptions(args, null);
             showBanner(getShowOutput(), (OptionProcessor) null);
             getShowOutput().flush();
             List<String> nonOptionArgs = parseArgs(argsPreProcessed, null);
@@ -3024,7 +3042,7 @@ public class Converter implements ConverterContext {
         return rv;
     }
 
-    public Document convert(String[] args, File input, Reporter reporter, Document unused) {
+    public Document convert(List<String> args, File input, Reporter reporter, Document unused) {
         assert args != null;
         assert input != null;
         if (reporter == null)
@@ -3039,12 +3057,12 @@ public class Converter implements ConverterContext {
         } else {
             setReporter(reporter, null, null, false, false);
         }
-        parseArgs(processConfigurationOptions(args), null);
+        parseArgs(preProcessOptions(args, null), null);
         convert(null, input.toURI().toString());
         return outputDocument;
     }
 
-    public TimedText convert(String[] args, File input, Reporter reporter) {
+    public TimedText convert(List<String> args, File input, Reporter reporter) {
         Document d = convert(args, input, reporter, (Document) null);
         return (d != null) ? unmarshall(d) : null;
     }
@@ -3098,7 +3116,7 @@ public class Converter implements ConverterContext {
     }
 
     public static void main(String[] args) {
-        Runtime.getRuntime().exit(new Converter().run(args));
+        Runtime.getRuntime().exit(new Converter().run(Arrays.asList(args)));
     }
 
     public static class AttributeSpecification {
@@ -3571,21 +3589,16 @@ public class Converter implements ConverterContext {
     }
 
     private static final ObjectFactory ttmlFactory = new ObjectFactory();
-    public static class State {
-        private Configuration configuration;
+    private static class State {
         private Division division;
         private Paragraph paragraph;
         private String placement;
         private Map<String,Region> regions;
         private Set<QName> styles;
-        public State(Configuration configuration) {
-            this.configuration = configuration;
+        public State() {
             this.division = ttmlFactory.createDivision();
             this.regions = new java.util.TreeMap<String,Region>();
             this.styles = new java.util.HashSet<QName>();
-        }
-        public Configuration getConfiguration() {
-            return configuration;
         }
         public void process(List<Screen> screens) {
             for (Screen s: screens)

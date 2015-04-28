@@ -27,6 +27,7 @@ package com.skynav.ttx.app;
 
 import java.io.PrintWriter;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -132,7 +133,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     @Override
-    public void processResult(String[] args, URI uri, Object root) {
+    public void processResult(List<String> args, URI uri, Object root) {
         Reporter reporter = getReporter();
         initializeResourceState(uri);
         if (transformer != null) {
@@ -209,15 +210,28 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return verifier.extractResourceState(key);
     }
 
-    public String[] preProcessOptions(String[] args, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
+    public String getDefaultConfigurationPath() {
+        return Configuration.getDefaultConfigurationPath();
+    }
+
+    public com.skynav.ttv.util.ConfigurationDefaults getConfigurationDefaults(String configDirectory) {
+        return new ConfigurationDefaults(configDirectory);
+    }
+
+    public Class<? extends com.skynav.ttv.util.Configuration> getConfigurationClass() {
+        return Configuration.class;
+    }
+
+    public List<String> preProcessOptions(List<String> args,
+        com.skynav.ttv.util.Configuration configuration, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
         if (doMergeTransformerOptions()) {
-            for (int i = 0; i < args.length; ++i) {
-                String arg = args[i];
+            for (int i = 0, n = args.size(); i < n; ++i) {
+                String arg = args.get(i);
                 if (arg.indexOf("--") == 0) {
                     String option = arg.substring(2);
                     if (option.equals("transformer")) {
-                        if (i + 1 <= args.length) {
-                            TransformerOptions transformerOptions = Transformers.getTransformer(args[++i]);
+                        if (i + 1 <= n) {
+                            TransformerOptions transformerOptions = Transformers.getTransformer(args.get(++i));
                             if (transformerOptions != null)
                                 this.transformerOptions = new TransformerOptions[] { transformerOptions };
                         }
@@ -300,8 +314,8 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
             return hasShortOption(arg.substring(1));
     }
 
-    public int parseOption(String args[], int index) {
-        String option = args[index];
+    public int parseOption(List<String> args, int index) {
+        String option = args.get(index);
         assert option.length() >= 2;
         assert option.charAt(0) == '-';
         if (option.charAt(1) == '-')
@@ -356,8 +370,10 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return mergedLongOptionsMap.containsKey(option);
     }
 
-    protected int parseLongOption(String args[], int index) {
-        String option = args[index];
+    protected int parseLongOption(List<String> args, int index) {
+        String arg = args.get(index);
+        int numArgs = args.size();
+        String option = arg;
         assert option.length() > 2;
         option = option.substring(2);
         if (option.equals("show-memory")) {
@@ -365,9 +381,9 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         } else if (option.equals("show-transformers")) {
             showTransformers = true;
         } else if (option.equals("transformer")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            transformerName = args[++index];
+            transformerName = args.get(++index);
         } else {
             if (transformerOptions != null) {
                 for (TransformerOptions options: transformerOptions) {
@@ -385,8 +401,9 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return mergedShortOptionsMap.containsKey(option);
     }
 
-    protected int parseShortOption(String args[], int index) {
-        String option = args[index];
+    protected int parseShortOption(List<String> args, int index) {
+        String arg = args.get(index);
+        String option = arg;
         assert option.length() == 2;
         option = option.substring(1);
         if (transformerOptions != null) {
@@ -415,7 +432,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     public int run(String[] args) {
-        return (verifier = new TimedTextVerifier()).run(args, this);
+        return (verifier = new TimedTextVerifier()).run(Arrays.asList(args), this);
     }
 
     public TimedTextVerifier.Results getResults(String uri) {

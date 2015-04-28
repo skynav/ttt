@@ -237,15 +237,16 @@ public class StyleCollector {
         StyleSpecification s = styles.get(ttsLineHeightAttrName);
         Object v = null;
         if (s != null) {
+            Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
             if (Keywords.isNormal(s.getValue())) {
-                v = Double.valueOf(font.getSize(Axis.VERTICAL) * 1.25);
+                v = Double.valueOf(fs.getDimension(Axis.VERTICAL) * 1.25);
             } else {
                 Integer[] minMax = new Integer[] { 1, 1 };
                 Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
                 List<Length> lengths = new java.util.ArrayList<Length>();
                 if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
                     assert lengths.size() == 1;
-                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize()));
+                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs));
                 }
             }
         }
@@ -381,10 +382,11 @@ public class StyleCollector {
         List<Length> lengths = new java.util.ArrayList<Length>();
         if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
-            double h = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize());
+            Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+            double h = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs);
             if (lengths.size() == 1)
                 lengths.add(lengths.get(0));
-            double w = Helpers.resolveLength(e, lengths.get(1), Axis.HORIZONTAL, extBounds, refBounds, font.getSize());
+            double w = Helpers.resolveLength(e, lengths.get(1), Axis.HORIZONTAL, extBounds, refBounds, fs);
             return new Extent(w, h);
         } else
             return null;

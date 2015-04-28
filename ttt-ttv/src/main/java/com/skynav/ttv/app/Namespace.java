@@ -22,36 +22,21 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+package com.skynav.ttv.app;
 
-package com.skynav.cap2tt.app;
+public class Namespace {
+    public static final String NAMESPACE = "http://skynav.com/ns/ttv";
 
-import java.util.Collections;
-import java.util.Map;
+    public static String getNamespace() {
+        return NAMESPACE;
+    }
 
-public class ConfigurationDefaults extends com.skynav.ttv.util.ConfigurationDefaults {
-    private static final String[][] optionDefaultSpecifications = new String[][] {
-        { "add-creation-metadata", "true" },
-        { "default-region", "横下" },
-        { "merge-styles", "true" },
-        { "style-id-pattern", "s{0}" },
-        { "style-id-sequence-start", "1" },
-    };
-    private static final Map<String,String> optionDefaults;
-    static {
-        Map<String,String> m = new java.util.HashMap<String,String>();
-        for (String[] optionDefault: optionDefaultSpecifications) {
-            assert optionDefault.length >= 2;
-            m.put(optionDefault[0], optionDefault[1]);
-        }
-        optionDefaults = Collections.unmodifiableMap(m);
-    }
-    public ConfigurationDefaults() {
-        super();
-    }
-    public ConfigurationDefaults(String configDirectory) {
-        super(configDirectory);
-    }
-    public Map<String,String> getDefaults() {
-        return optionDefaults;
+    public static void main(String[] args) {
+        System.out.println(getNamespace());
     }
 }
+
+
+
+

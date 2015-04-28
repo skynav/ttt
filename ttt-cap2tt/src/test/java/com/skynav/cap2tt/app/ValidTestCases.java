@@ -101,7 +101,7 @@ public class ValidTestCases {
         Converter cvt = new Converter();
         File inputFile = new File(url.getPath());
         Reporter reporter = new TextReporter();
-        Document d = cvt.convert(args.toArray(new String[args.size()]), inputFile, reporter, (Document) null);
+        Document d = cvt.convert(args, inputFile, reporter, (Document) null);
         Converter.Results r = cvt.getResults(urlString);
         assertEquals(d, r.getDocument());
         maybeCheckDifferences(d, uri);

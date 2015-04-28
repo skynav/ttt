@@ -337,9 +337,11 @@ public class LineLayout {
                     assert t <= text.length();
                     String segText = text.substring(f, t);
                     Font segFont = (Font) fai.getValue();
-                    double segAdvance = segFont.getAdvance(segText);
-                    List<Decoration> segDecorations = getSegmentDecorations(decorations, f, t);
-                    l.addChild(new GlyphArea(content.getElement(), segAdvance, lineHeight, segText, segDecorations, segFont), LineArea.ENCLOSE_ALL);
+                    if (segFont != null) {
+                        double segAdvance = segFont.getAdvance(segText);
+                        List<Decoration> segDecorations = getSegmentDecorations(decorations, f, t);
+                        l.addChild(new GlyphArea(content.getElement(), segAdvance, lineHeight, segText, segDecorations, segFont), LineArea.ENCLOSE_ALL);
+                    }
                 }
             }
         }
@@ -599,15 +601,18 @@ public class LineLayout {
         double getAdvance(int from, int to, double available) {
             double advance = 0;
             for (StyleAttributeInterval fai : fontIntervals) {
-                if (fai.isOuterScope()) {
-                    advance += ((Font) fai.getValue()).getAdvance(getText().substring(from, to));
+                Font font = (Font) fai.getValue();
+                if (font == null)
+                    continue;
+                else if (fai.isOuterScope()) {
+                    advance += font.getAdvance(getText().substring(from, to));
                     break;
                 } else {
                     int[] intersection = fai.intersection(start + from, start + to);
                     if (intersection != null) {
                         int f = intersection[0] - start;
                         int t = intersection[1] - start;
-                        advance += ((Font) fai.getValue()).getAdvance(getText().substring(f,t));
+                        advance += font.getAdvance(getText().substring(f,t));
                     }
                 }
             }
@@ -813,7 +818,7 @@ public class LineLayout {
             return sb.toString();
         }
         private String processFeatures(String t, Font font) {
-            Collection<FontFeature> features = font.getFeatures();
+            Collection<FontFeature> features = (font != null) ? font.getFeatures() : null;
             if (features != null) {
                 for (FontFeature feature : features) {
                     if (feature.getFeature().equals("hwid"))

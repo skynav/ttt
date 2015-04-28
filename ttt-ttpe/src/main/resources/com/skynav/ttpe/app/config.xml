@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config version="1" xmlns="http://skynav.com/ns/ttv">
+<option name="external-duration">24h</option>
+<option name="external-extent">1280px 720px</option>
+<option name="output-format">svg</option>
+</config>

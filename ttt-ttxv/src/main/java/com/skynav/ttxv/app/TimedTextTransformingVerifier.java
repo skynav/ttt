@@ -27,9 +27,7 @@ package com.skynav.ttxv.app;
 
 import java.io.PrintWriter;
 import java.net.URI;
-import java.util.Collection;
-
-import com.skynav.ttv.app.OptionSpecification;
+import java.util.List;
 
 import com.skynav.ttx.app.TimedTextTransformer;
 import com.skynav.ttx.transformer.Transformers;
@@ -48,7 +46,7 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
     }
 
     @Override
-    public void processResult(String[] args, URI uri, Object root) {
+    public void processResult(List<String> args, URI uri, Object root) {
         super.processResult(args, uri, root);
         performPostTransformVerification(uri, root, getResourceState(TransformerContext.ResourceState.ttxOutput.name()));
     }
@@ -62,43 +60,13 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
     }
 
     @Override
-    public String[] preProcessOptions(String[] args, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
-        return super.preProcessOptions(args, baseShortOptions, baseLongOptions);
-    }
-
-    @Override
     protected void showBanner(PrintWriter out, String banner) {
         super.showBanner(out, TimedTextTransformingVerifier.banner);
     }
 
     @Override
-    public void showUsage(PrintWriter out) {
-        super.showUsage(out);
-    }
-
-    @Override
     protected boolean doMergeTransformerOptions() {
         return false;
-    }
-
-    @Override
-    protected boolean hasLongOption(String option) {
-        return super.hasLongOption(option);
-    }
-
-    @Override
-    protected int parseLongOption(String args[], int index) {
-        return super.parseLongOption(args, index);
-    }
-
-    @Override
-    protected boolean hasShortOption(String option) {
-        return super.hasShortOption(option);
-    }
-
-    @Override
-    protected int parseShortOption(String args[], int index) {
-        return super.parseShortOption(args, index);
     }
 
     private void performPostTransformVerification(URI uri, Object root, Object ttxOutput) {

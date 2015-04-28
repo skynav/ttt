@@ -173,34 +173,37 @@ public class ISD {
         }
 
         @Override
-        public int parseLongOption(String args[], int index) {
-            String option = args[index];
+        public int parseLongOption(List<String> args, int index) {
+            String arg = args.get(index);
+            int numArgs = args.size();
+            String option = arg;
             assert option.length() > 2;
             option = option.substring(2);
             if (option.equals("isd-output-clean")) {
                 outputDirectoryClean = true;
             } else if (option.equals("isd-output-directory")) {
-                if (index + 1 > args.length)
+                if (index + 1 > numArgs)
                     throw new MissingOptionArgumentException("--" + option);
-                outputDirectoryPath = args[++index];
+                outputDirectoryPath = args.get(++index);
             } else if (option.equals("isd-output-encoding")) {
-                if (index + 1 > args.length)
+                if (index + 1 > numArgs)
                     throw new MissingOptionArgumentException("--" + option);
-                outputEncodingName = args[++index];
+                outputEncodingName = args.get(++index);
             } else if (option.equals("isd-output-indent")) {
                 outputIndent = true;
             } else if (option.equals("isd-output-pattern")) {
-                if (index + 1 > args.length)
+                if (index + 1 > numArgs)
                     throw new MissingOptionArgumentException("--" + option);
-                outputPattern = args[++index];
+                outputPattern = args.get(++index);
             } else
                 index = index - 1;
             return index + 1;
         }
 
         @Override
-        public int parseShortOption(String args[], int index) {
-            String option = args[index];
+        public int parseShortOption(List<String> args, int index) {
+            String arg = args.get(index);
+            String option = arg;
             assert option.length() == 2;
             option = option.substring(1);
             throw new UnknownOptionException("-" + option);
@@ -242,7 +245,7 @@ public class ISD {
         }
 
         @Override
-        public void transform(String[] args, Object root, TransformerContext context, OutputStream out) {
+        public void transform(List<String> args, Object root, TransformerContext context, OutputStream out) {
             assert root != null;
             assert context != null;
             populateContext(context);

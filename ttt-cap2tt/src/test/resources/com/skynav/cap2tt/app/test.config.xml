@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cap2tt version="1" xmlns="http://skynav.com/ns/cap2tt">
+<config version="1" xmlns="http://skynav.com/ns/ttv">
 <option name="add-creation-metadata">false</option>
 <option name="default-language">jp</option>
 <option name="default-region">横下</option>
@@ -25,4 +25,4 @@
 </layout>
 </head>
 </tt>
-</cap2tt>
+</config>

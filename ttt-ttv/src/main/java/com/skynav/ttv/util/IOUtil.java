@@ -78,6 +78,15 @@ public class IOUtil {
         }
     }
 
+    public static String getDirectoryPath(File f) {
+        try {
+            File d = getDirectory(f);
+            return (d != null) ? d.getCanonicalPath() : null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     public static File getDirectory(File f) {
         if (f.isDirectory())
             return f;

@@ -56,11 +56,11 @@ public abstract class LayoutProcessor implements TransformerOptions, Layout {
         return new java.util.ArrayList<OptionSpecification>();
     }
 
-    public int parseLongOption(String args[], int index) {
+    public int parseLongOption(List<String> args, int index) {
         return index;
     }
 
-    public int parseShortOption(String args[], int index) {
+    public int parseShortOption(List<String> args, int index) {
         return index;
     }
 

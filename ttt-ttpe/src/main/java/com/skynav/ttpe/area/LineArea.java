@@ -117,19 +117,19 @@ public class LineArea extends BlockArea {
     }
 
     public double getLeadingBefore() {
-        return font.getLeading() / 2;
+        return (font != null) ? font.getLeading() / 2 : 0;
     }
 
     public double getLeadingAfter() {
-        return font.getLeading() / 2;
+        return (font != null) ? font.getLeading() / 2 : 0;
     }
 
     public double getAscent() {
-        return font.getAscent();
+        return (font != null) ? font.getAscent() : 0;
     }
 
     public double getDescent() {
-        return font.getDescent();
+        return (font != null) ? font.getDescent() : 0;
     }
 
     public double getAnnotationBPD() {

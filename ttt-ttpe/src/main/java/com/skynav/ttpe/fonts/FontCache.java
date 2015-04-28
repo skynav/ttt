@@ -69,8 +69,11 @@ public class FontCache {
 
     public Font get(FontKey key) {
         Font f = instances.get(key);
-        if (f == null)
-            put(f = create(key));
+        if (f == null) {
+            f = create(key);
+            if (f != null)
+                put(f);
+        }
         return f;
     }
 
@@ -102,15 +105,17 @@ public class FontCache {
 
     private FontSpecification findExactMatch(List<String> families, FontStyle style, FontWeight weight, String language) {
         for (String family : families) {
-            for (FontSpecification  fs : fontSpecifications) {
-                if (fs.family.compareToIgnoreCase(family) == 0) {
-                    if (fs.style != style)
-                        continue;
-                    if (fs.weight != weight)
-                        continue;
-                    if ((language != null) && (fs.language != null) && !fs.language.equals(language))
-                        continue;
-                    return fs;
+            if (fontSpecifications != null) {
+                for (FontSpecification  fs : fontSpecifications) {
+                    if (fs.family.compareToIgnoreCase(family) == 0) {
+                        if (fs.style != style)
+                            continue;
+                        if (fs.weight != weight)
+                            continue;
+                        if ((language != null) && (fs.language != null) && !fs.language.equals(language))
+                            continue;
+                        return fs;
+                    }
                 }
             }
         }
@@ -118,43 +123,46 @@ public class FontCache {
     }
 
     private FontSpecification findBestMatch(List<String> families, FontStyle style, FontWeight weight, String language, Axis axis, Extent size) {
-        List<FontSpecification> matchesFamily = new java.util.ArrayList<FontSpecification>();
-        for (FontSpecification  fs : fontSpecifications) {
-            for (String family : families) {
-                if (fs.family.compareToIgnoreCase(family) == 0)
-                    matchesFamily.add(fs);
+        if (fontSpecifications != null) {
+            List<FontSpecification> matchesFamily = new java.util.ArrayList<FontSpecification>();
+            for (FontSpecification  fs : fontSpecifications) {
+                for (String family : families) {
+                    if (fs.family.compareToIgnoreCase(family) == 0)
+                        matchesFamily.add(fs);
+                }
             }
+            List<FontSpecification> matchesLanguage = new java.util.ArrayList<FontSpecification>();
+            for (FontSpecification  fs : matchesFamily) {
+                if ((language == null) || language.isEmpty())
+                    matchesLanguage.add(fs);
+                else if (fs.language.compareToIgnoreCase(language) == 0)
+                    matchesLanguage.add(fs);
+            }
+            List<FontSpecification> matchesStyle = new java.util.ArrayList<FontSpecification>();
+            for (FontSpecification  fs : matchesLanguage) {
+                if (style == null)
+                    matchesStyle.add(fs);
+                else if (fs.style == style)
+                    matchesStyle.add(fs);
+            }
+            List<FontSpecification> matchesWeight = new java.util.ArrayList<FontSpecification>();
+            for (FontSpecification  fs : matchesStyle) {
+                if (weight == null)
+                    matchesWeight.add(fs);
+                else if (fs.weight == weight)
+                    matchesWeight.add(fs);
+            }
+            if (!matchesWeight.isEmpty())
+                return matchesWeight.get(0);
+            if (!matchesStyle.isEmpty())
+                return matchesStyle.get(0);
+            if (!matchesLanguage.isEmpty())
+                return matchesLanguage.get(0);
+            if (!matchesFamily.isEmpty())
+                return matchesFamily.get(0);
         }
-        List<FontSpecification> matchesLanguage = new java.util.ArrayList<FontSpecification>();
-        for (FontSpecification  fs : matchesFamily) {
-            if ((language == null) || language.isEmpty())
-                matchesLanguage.add(fs);
-            else if (fs.language.compareToIgnoreCase(language) == 0)
-                matchesLanguage.add(fs);
-        }
-        List<FontSpecification> matchesStyle = new java.util.ArrayList<FontSpecification>();
-        for (FontSpecification  fs : matchesLanguage) {
-            if (style == null)
-                matchesStyle.add(fs);
-            else if (fs.style == style)
-                matchesStyle.add(fs);
-        }
-        List<FontSpecification> matchesWeight = new java.util.ArrayList<FontSpecification>();
-        for (FontSpecification  fs : matchesStyle) {
-            if (weight == null)
-                matchesWeight.add(fs);
-            else if (fs.weight == weight)
-                matchesWeight.add(fs);
-        }
-        if (!matchesWeight.isEmpty())
-            return matchesWeight.get(0);
-        if (!matchesStyle.isEmpty())
-            return matchesStyle.get(0);
-        if (!matchesLanguage.isEmpty())
-            return matchesLanguage.get(0);
-        if (!matchesFamily.isEmpty())
-            return matchesFamily.get(0);
-        return getDefaultFont(axis, size).getSpecification();
+        Font f = getDefaultFont(axis, size);
+        return (f != null) ? f.getSpecification() : null;
     }
 
     private Font create(FontKey key) {
@@ -166,9 +174,11 @@ public class FontCache {
     }
 
     private FontSpecification findSpecification(FontKey key) {
-        for (FontSpecification fs : fontSpecifications) {
-            if (fs.matches(key))
-                return fs;
+        if (fontSpecifications != null) {
+            for (FontSpecification fs : fontSpecifications) {
+                if (fs.matches(key))
+                    return fs;
+            }
         }
         return null;
     }

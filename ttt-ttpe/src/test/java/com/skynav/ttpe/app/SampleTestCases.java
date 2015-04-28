@@ -34,9 +34,75 @@ import static org.junit.Assert.fail;
 import com.skynav.ttpe.app.Presenter;
 
 public class SampleTestCases {
+
     @Test
     public void testSample1() throws Exception {
         performPresentationTest("sample-001.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample2() throws Exception {
+        performPresentationTest("sample-002.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample3() throws Exception {
+        performPresentationTest("sample-003.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample4() throws Exception {
+        performPresentationTest("sample-004.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample5() throws Exception {
+        performPresentationTest("sample-005.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample6() throws Exception {
+        performPresentationTest("sample-006.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample7() throws Exception {
+        performPresentationTest("sample-007.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample8() throws Exception {
+        performPresentationTest("sample-008.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample9() throws Exception {
+        performPresentationTest("sample-009.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample10() throws Exception {
+        performPresentationTest("sample-010.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample11() throws Exception {
+        performPresentationTest("sample-011.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample12() throws Exception {
+        performPresentationTest("sample-012.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample13() throws Exception {
+        performPresentationTest("sample-013.xml", -1, -1);
+    }
+
+    @Test
+    public void testSample14() throws Exception {
+        performPresentationTest("sample-014.xml", -1, -1);
     }
 
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
@@ -49,7 +115,6 @@ public class SampleTestCases {
             fail("Can't find test resource: " + resourceName + ".");
         String urlString = url.toString();
         List<String> args = new java.util.ArrayList<String>();
-        args.add("-q");
         args.add("-v");
         args.add("--warn-on");
         args.add("all");

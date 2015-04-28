@@ -14,6 +14,7 @@
 
   <properties>
     <icu4j.version>54.1.1</icu4j.version>
+    <test.basedir>${basedir}/run/test</test.basedir>
   </properties>
 
   <scm>
@@ -80,17 +81,36 @@
 
   <build>
     <plugins>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>${surefire.version}</version>
-          <configuration>
-            <includes>
-              <include>**/*TestCase.java</include>
-              <include>**/*TestCases.java</include>
-            </includes>
-            <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          </configuration>
-        </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire.version}</version>
+        <configuration>
+          <includes>
+            <include>**/*TestCase.java</include>
+            <include>**/*TestCases.java</include>
+          </includes>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${exec.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>com.skynav.ttpe.app.Presenter</mainClass>
+          <arguments>
+            <argument>--config</argument>
+            <argument>${test.basedir}/test.config.xml</argument>
+          </arguments>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

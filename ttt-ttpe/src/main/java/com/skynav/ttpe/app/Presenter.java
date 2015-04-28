@@ -143,10 +143,6 @@ public class Presenter extends TimedTextTransformer {
     private static final String uriStandardOutput               = uriFileDescriptorScheme + ":" + uriFileDescriptorStandardOut;
     private static final String uriFileScheme                   = "file";
 
-    // defaults state
-    private LayoutProcessor defaultLayout;
-    private RenderProcessor defaultRenderer;
-
     // options state
     private boolean outputArchive;
     private String outputArchiveFilePath;
@@ -176,8 +172,6 @@ public class Presenter extends TimedTextTransformer {
     private int outputFileSequenceISD;
 
     public Presenter() {
-        this.defaultLayout = LayoutProcessor.getDefaultProcessor(this);
-        this.defaultRenderer = RenderProcessor.getDefaultProcessor(this);
     }
 
     public String getShowUsageCommand() {
@@ -185,7 +179,7 @@ public class Presenter extends TimedTextTransformer {
     } 
 
     @Override
-    public void processResult(String[] args, URI uri, Object root) {
+    public void processResult(List<String> args, URI uri, Object root) {
         super.processResult(args, uri, root);
         performPresentation(args, uri, root, extractResourceState(TransformerContext.ResourceState.ttxOutput.name()));
     }
@@ -206,39 +200,80 @@ public class Presenter extends TimedTextTransformer {
     }
 
     @Override
-    public String[] preProcessOptions(String[] args, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
-        LayoutProcessor layout = null;
-        RenderProcessor renderer = null;
-        for (int i = 0; i < args.length; ++i) {
-            String arg = args[i];
+    public String getDefaultConfigurationPath() {
+        return Configuration.getDefaultConfigurationPath();
+    }
+
+    @Override
+    public com.skynav.ttv.util.ConfigurationDefaults getConfigurationDefaults(String configDirectory) {
+        return new ConfigurationDefaults(configDirectory);
+    }
+
+    @Override
+    public Class<? extends com.skynav.ttv.util.Configuration> getConfigurationClass() {
+        return Configuration.class;
+    }
+
+    @Override
+    public List<String> preProcessOptions(List<String> args,
+        com.skynav.ttv.util.Configuration configuration, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
+        String layoutName = null;
+        String rendererName = null;
+        // extract layout and renderer names from configuration options if present
+        if (configuration != null) {
+            for (Map.Entry<String,String> e : configuration.getOptions().entrySet()) {
+                String n = e.getKey();
+                String v = e.getValue();
+                if (n.equals("layout"))
+                    layoutName = v;
+                else if (n.equals("output-format"))
+                    rendererName = v;
+            }
+        }
+        // extract layout and renderer names from argument options if present
+        List<String> skippedArgs = new java.util.ArrayList<String>();
+        for (int i = 0, n = args.size(); i < n; ++i) {
+            String arg = args.get(i);
             if (arg.indexOf("--") == 0) {
                 String option = arg.substring(2);
                 if (option.equals("layout")) {
-                    if (i + 1 <= args.length) {
-                        String layoutName = args[++i];
-                        layout = LayoutProcessor.getProcessor(layoutName, this);
-                        if (layout == null)
-                            throw new InvalidOptionUsageException("layout", "unknown layout: " + layoutName);
-                    }
+                    if (i + 1 >= n)
+                        throw new MissingOptionArgumentException("--" + option);
+                    layoutName = args.get(++i);
                 } else if (option.equals("output-format")) {
-                    if (i + 1 <= args.length) {
-                        String rendererName = args[++i];
-                        renderer = RenderProcessor.getProcessor(rendererName, this);
-                        if (renderer == null)
-                            throw new InvalidOptionUsageException("output-format", "unknown format: " + rendererName);
-                    }
+                    if (i + 1 >= n)
+                        throw new MissingOptionArgumentException("--" + option);
+                    rendererName = args.get(++i);
+                } else {
+                    skippedArgs.add(arg);
                 }
-            }
+            } else
+                skippedArgs.add(arg);
         }
-        if (layout == null)
-            layout = defaultLayout;
-        if (renderer == null)
-            renderer = defaultRenderer;
+        // derive layout
+        LayoutProcessor layout;
+        if (layoutName != null) {
+            layout = LayoutProcessor.getProcessor(layoutName, this);
+            if (layout == null)
+                throw new InvalidOptionUsageException("layout", "unknown layout: " + layoutName);
+        } else {
+            layout = LayoutProcessor.getDefaultProcessor(this);
+        }
         this.layout = layout;
+        // derive renderer
+        RenderProcessor renderer;
+        if (rendererName != null) {
+            renderer = RenderProcessor.getProcessor(rendererName, this);
+            if (renderer == null)
+                throw new InvalidOptionUsageException("output-format", "unknown format: " + rendererName);
+        } else {
+            renderer = RenderProcessor.getDefaultProcessor(this);
+        }
         this.renderer = renderer;
+        // merge layout and renderer option specifications in option maps
         TransformerOptions[] transformerOptions = new TransformerOptions[] { layout, renderer };
         populateMergedOptionsMaps(baseShortOptions, baseLongOptions, transformerOptions, shortOptions, longOptions);
-        return args;
+        return skippedArgs;
     }
 
     @Override
@@ -260,48 +295,48 @@ public class Presenter extends TimedTextTransformer {
     }
 
     @Override
-    protected int parseLongOption(String args[], int index) {
-        String option = args[index];
+    protected int parseLongOption(List<String> args, int index) {
+        String arg = args.get(index);
+        int numArgs = args.size();
+        String option = arg;
         assert option.length() > 2;
         option = option.substring(2);
         if (option.equals("layout")) {
-            if (index + 1 > args.length)
+            if (index + 1 >= numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            else // handled by preProcessOptions
-                ++index;
+            ++index; // ignore - already processed by #preProcessOptions 
         } else if (option.equals("output-archive")) {
             outputArchive = true;
         } else if (option.equals("output-archive-file")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputArchiveFilePath = args[++index];
+            outputArchiveFilePath = args.get(++index);
         } else if (option.equals("output-directory")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputDirectoryPath = args[++index];
+            outputDirectoryPath = args.get(++index);
         } else if (option.equals("output-directory-retained")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputDirectoryRetainedPath = args[++index];
+            outputDirectoryRetainedPath = args.get(++index);
         } else if (option.equals("output-encoding")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputEncodingName = args[++index];
+            outputEncodingName = args.get(++index);
         } else if (option.equals("output-format")) {
-            if (index + 1 > args.length)
+            if (index + 1 >= numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            else // handled by preProcessOptions
-                ++index;
+            ++index; // ignore - already processed by #preProcessOptions 
         } else if (option.equals("output-indent")) {
             outputIndent = true;
         } else if (option.equals("output-pattern")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputPattern = args[++index];
+            outputPattern = args.get(++index);
         } else if (option.equals("output-pattern-isd")) {
-            if (index + 1 > args.length)
+            if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            outputPatternISD = args[++index];
+            outputPatternISD = args.get(++index);
         } else if (option.equals("output-retain-frames")) {
             outputRetainFrames = true;
         } else if (option.equals("output-retain-isd")) {
@@ -406,7 +441,7 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private void showLayouts(PrintWriter out) {
-        String defaultLayoutName = defaultLayout.getName();
+        String defaultLayoutName = LayoutProcessor.getDefaultName();
         StringBuffer sb = new StringBuffer();
         sb.append("Layouts:\n");
         for (String layoutName : LayoutProcessor.getProcessorNames()) {
@@ -421,7 +456,7 @@ public class Presenter extends TimedTextTransformer {
     }
 
     private void showRenderers(PrintWriter out) {
-        String defaultRendererName = defaultRenderer.getName();
+        String defaultRendererName = RenderProcessor.getDefaultName();
         StringBuffer sb = new StringBuffer();
         sb.append("Formats:\n");
         for (String rendererName : RenderProcessor.getProcessorNames()) {
@@ -435,7 +470,7 @@ public class Presenter extends TimedTextTransformer {
         out.print(sb.toString());
     }
 
-    private void performPresentation(String[] args, URI uri, Object root, Object ttxOutput) {
+    private void performPresentation(List<String> args, URI uri, Object root, Object ttxOutput) {
         Reporter reporter = getReporter();
         long prePresentMemory = 0;
         long postPresentMemory = 0;

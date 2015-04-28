@@ -26,20 +26,23 @@
 package com.skynav.ttv.app;
 
 import java.io.PrintWriter;
-
 import java.util.List;
 import java.util.Collection;
 
-public interface OptionProcessor {
+import com.skynav.ttv.util.Configuration;
+import com.skynav.ttv.util.ConfigurationDefaults;
 
-    String[] preProcessOptions(String[] args, Collection<OptionSpecification> shortOptions, Collection<OptionSpecification> longOptions);
+public interface OptionProcessor {
+    String getDefaultConfigurationPath();
+    ConfigurationDefaults getConfigurationDefaults(String configDirectory);
+    Class<? extends Configuration> getConfigurationClass();
+    List<String> preProcessOptions(List<String> args, Configuration configuration, Collection<OptionSpecification> shortOptions, Collection<OptionSpecification> longOptions);
     boolean hasOption(String arg);
-    int parseOption(String[] args, int index) throws UsageException;
+    int parseOption(List<String> args, int index) throws UsageException;
     void processDerivedOptions();
     List<String> processNonOptionArguments(List<String> nonOptionArgs);
     void showBanner(PrintWriter out);
     void showUsage(PrintWriter out);
     String getShowUsageCommand();
     void runOptions(PrintWriter out);
-
 }

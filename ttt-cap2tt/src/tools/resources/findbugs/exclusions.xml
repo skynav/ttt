@@ -4,6 +4,13 @@
     <Bug pattern="DM_CONVERT_CASE"/>
   </Match>
   <Match>
+    <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+    <Or>
+      <Class name="com.skynav.cap2tt.app.Configuration"/>
+      <Class name="com.skynav.cap2tt.app.ConfigurationDefaults"/>
+    </Or>
+  </Match>
+  <Match>
     <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
   </Match>
   <Match>
@@ -17,7 +24,7 @@
     <Or>
       <And>
         <Class name="com.skynav.cap2tt.app.Converter"/>
-        <Method name="convert" params="java.lang.String[],java.lang.String" returns="int"/>
+        <Method name="convert" params="java.util.List,java.lang.String" returns="int"/>
       </And>
     </Or>
   </Match>
