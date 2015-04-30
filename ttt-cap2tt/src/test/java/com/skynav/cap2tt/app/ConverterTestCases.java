@@ -46,16 +46,16 @@ import org.xmlunit.diff.Diff;
 import com.skynav.ttv.util.TextReporter;
 import com.skynav.ttv.util.Reporter;
 
-public class ValidTestCases {
+public class ConverterTestCases {
 
     @Test
-    public void testConversion001Simple() throws Exception {
-        performConversionTest("test-001-simple.cap", 0, 0);
+    public void testConversion001Mixed() throws Exception {
+        performConversionTest("test-001-mixed.cap", 0, 0);
     }
 
     @Test
-    public void testConversion002Simple() throws Exception {
-        performConversionTest("test-002-simple.cap", 0, 0);
+    public void testConversion002Mixed() throws Exception {
+        performConversionTest("test-002-mixed.cap", 0, 0);
     }
 
     @Test

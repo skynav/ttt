@@ -405,7 +405,7 @@ public class TimedTextVerifier implements VerifierContext {
         setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource, false);
     }
 
-    private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, boolean closeOldReporter) {
+    public void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, boolean closeOldReporter) {
         if (reporter == this.reporter)
             return;
         if (this.reporter != null)

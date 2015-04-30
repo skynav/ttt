@@ -132,6 +132,10 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return r.totalMemory() - r.freeMemory();
     }
 
+    protected void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, boolean closeOldReporter) {
+        verifier.setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource, closeOldReporter);
+    }
+
     @Override
     public void processResult(List<String> args, URI uri, Object root) {
         Reporter reporter = getReporter();
@@ -432,7 +436,11 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     public int run(String[] args) {
-        return (verifier = new TimedTextVerifier()).run(Arrays.asList(args), this);
+        return run(Arrays.asList(args));
+    }
+
+    public int run(List<String> args) {
+        return (verifier = new TimedTextVerifier()).run(args, this);
     }
 
     public TimedTextVerifier.Results getResults(String uri) {

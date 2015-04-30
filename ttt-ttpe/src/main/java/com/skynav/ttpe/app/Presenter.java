@@ -72,7 +72,9 @@ import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttx.app.TimedTextTransformer;
 import com.skynav.ttv.util.IOUtil;
+import com.skynav.ttv.util.NullReporter;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.Reporters;
 import com.skynav.ttv.util.TextTransformer;
 import com.skynav.ttx.transformer.Transformers;
 import com.skynav.ttx.transformer.TransformerContext;
@@ -174,15 +176,31 @@ public class Presenter extends TimedTextTransformer {
     public Presenter() {
     }
 
-    public String getShowUsageCommand() {
-        return usageCommand;
-    } 
-
-    @Override
-    public void processResult(List<String> args, URI uri, Object root) {
-        super.processResult(args, uri, root);
-        performPresentation(args, uri, root, extractResourceState(TransformerContext.ResourceState.ttxOutput.name()));
+    public URI present(List<String> args, Reporter reporter) {
+        if (reporter == null)
+            reporter = new NullReporter();
+        if (!reporter.isOpen()) {
+            String pwEncoding = Reporters.getDefaultEncoding();
+            try {
+                PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.err, pwEncoding)));
+                setReporter(reporter, pw, pwEncoding, false, true);
+            } catch (Throwable e) {
+            }
+        } else {
+            setReporter(reporter, null, null, false, false);
+        }
+        run(args);
+        if (outputArchiveFile != null)
+            return outputArchiveFile.toURI();
+        else
+            return null;
     }
+
+    public static void main(String[] args) {
+        Runtime.getRuntime().exit(new Presenter().run(args));
+    }
+
+    // TimedTextTransformer
 
     @Override
     protected void initializeResourceState(URI uri) {
@@ -198,6 +216,82 @@ public class Presenter extends TimedTextTransformer {
         else
             return super.getResourceState(key);
     }
+
+    @Override
+    protected boolean doMergeTransformerOptions() {
+        return false;
+    }
+
+    @Override
+    protected int parseLongOption(List<String> args, int index) {
+        String arg = args.get(index);
+        int numArgs = args.size();
+        String option = arg;
+        assert option.length() > 2;
+        option = option.substring(2);
+        if (option.equals("layout")) {
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            ++index; // ignore - already processed by #preProcessOptions 
+        } else if (option.equals("output-archive")) {
+            outputArchive = true;
+        } else if (option.equals("output-archive-file")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputArchiveFilePath = args.get(++index);
+        } else if (option.equals("output-directory")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputDirectoryPath = args.get(++index);
+        } else if (option.equals("output-directory-retained")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputDirectoryRetainedPath = args.get(++index);
+        } else if (option.equals("output-encoding")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputEncodingName = args.get(++index);
+        } else if (option.equals("output-format")) {
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            ++index; // ignore - already processed by #preProcessOptions 
+        } else if (option.equals("output-indent")) {
+            outputIndent = true;
+        } else if (option.equals("output-pattern")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputPattern = args.get(++index);
+        } else if (option.equals("output-pattern-isd")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputPatternISD = args.get(++index);
+        } else if (option.equals("output-retain-frames")) {
+            outputRetainFrames = true;
+        } else if (option.equals("output-retain-isd")) {
+            outputRetainISD = true;
+        } else if (option.equals("output-retain-manifest")) {
+            outputRetainManifest = true;
+        } else if (option.equals("show-formats")) {
+            showRenderers = true;
+        } else if (option.equals("show-layouts")) {
+            showLayouts = true;
+        } else if (option.equals("show-memory")) {
+            showMemory = true;
+        } else {
+            return super.parseLongOption(args, index);
+        }
+        return index + 1;
+    }
+
+    // ResultProcessor
+
+    @Override
+    public void processResult(List<String> args, URI uri, Object root) {
+        super.processResult(args, uri, root);
+        performPresentation(args, uri, root, extractResourceState(TransformerContext.ResourceState.ttxOutput.name()));
+    }
+
+    // OptionProcessor
 
     @Override
     public String getDefaultConfigurationPath() {
@@ -277,85 +371,6 @@ public class Presenter extends TimedTextTransformer {
     }
 
     @Override
-    public void showBanner(PrintWriter out) {
-        showBanner(out, banner);
-    }
-
-    @Override
-    public void runOptions(PrintWriter out) {
-        if (showLayouts)
-            showLayouts(out);
-        if (showRenderers)
-            showRenderers(out);
-    }
-
-    @Override
-    protected boolean doMergeTransformerOptions() {
-        return false;
-    }
-
-    @Override
-    protected int parseLongOption(List<String> args, int index) {
-        String arg = args.get(index);
-        int numArgs = args.size();
-        String option = arg;
-        assert option.length() > 2;
-        option = option.substring(2);
-        if (option.equals("layout")) {
-            if (index + 1 >= numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            ++index; // ignore - already processed by #preProcessOptions 
-        } else if (option.equals("output-archive")) {
-            outputArchive = true;
-        } else if (option.equals("output-archive-file")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            outputArchiveFilePath = args.get(++index);
-        } else if (option.equals("output-directory")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            outputDirectoryPath = args.get(++index);
-        } else if (option.equals("output-directory-retained")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            outputDirectoryRetainedPath = args.get(++index);
-        } else if (option.equals("output-encoding")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            outputEncodingName = args.get(++index);
-        } else if (option.equals("output-format")) {
-            if (index + 1 >= numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            ++index; // ignore - already processed by #preProcessOptions 
-        } else if (option.equals("output-indent")) {
-            outputIndent = true;
-        } else if (option.equals("output-pattern")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            outputPattern = args.get(++index);
-        } else if (option.equals("output-pattern-isd")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            outputPatternISD = args.get(++index);
-        } else if (option.equals("output-retain-frames")) {
-            outputRetainFrames = true;
-        } else if (option.equals("output-retain-isd")) {
-            outputRetainISD = true;
-        } else if (option.equals("output-retain-manifest")) {
-            outputRetainManifest = true;
-        } else if (option.equals("show-formats")) {
-            showRenderers = true;
-        } else if (option.equals("show-layouts")) {
-            showLayouts = true;
-        } else if (option.equals("show-memory")) {
-            showMemory = true;
-        } else {
-            return super.parseLongOption(args, index);
-        }
-        return index + 1;
-    }
-
-    @Override
     public void processDerivedOptions() {
         // first handle ttx derived options, then layout, then renderer
         super.processDerivedOptions();
@@ -431,6 +446,24 @@ public class Presenter extends TimedTextTransformer {
             throw new InvalidOptionUsageException("output-directory-retained", "must not be used when multiple URL arguments are specified");
         }
         return nonOptionArgs;
+    }
+
+    @Override
+    public void showBanner(PrintWriter out) {
+        showBanner(out, banner);
+    }
+
+    @Override
+    public String getShowUsageCommand() {
+        return usageCommand;
+    } 
+
+    @Override
+    public void runOptions(PrintWriter out) {
+        if (showLayouts)
+            showLayouts(out);
+        if (showRenderers)
+            showRenderers(out);
     }
 
     private File getOutputDirectoryRetained(URI uri) {
@@ -526,7 +559,7 @@ public class Presenter extends TimedTextTransformer {
             lp.clear(true);
         }
         if (outputArchive)
-            archiveFrames(uri, frames, outputArchiveFile);
+            outputArchiveFile = archiveFrames(uri, frames, outputArchiveFile);
         if (outputRetainManifest)
             writeManifest(uri, frames);
         if (outputArchive && !outputRetainFrames)
@@ -779,7 +812,7 @@ public class Presenter extends TimedTextTransformer {
             return true;
     }
 
-    private void archiveFrames(URI uri, List<Frame> frames, File archiveFile) {
+    private File archiveFrames(URI uri, List<Frame> frames, File archiveFile) {
         Reporter reporter = getReporter();
         BufferedOutputStream bos = null;
         ZipOutputStream zos = null;
@@ -800,7 +833,10 @@ public class Presenter extends TimedTextTransformer {
                 }
             }
             reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE archive ''{0}''.", (archiveFile != null) ? archiveFile.getAbsolutePath() : uriStandardOutput));
+            return archiveFile;
         } catch (IOException e) {
+            reporter.logError(e);
+            return null;
         } finally {
             IOUtil.closeSafely(zos);
             IOUtil.closeSafely(bos);
@@ -942,10 +978,6 @@ public class Presenter extends TimedTextTransformer {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Runtime.getRuntime().exit(new Presenter().run(args));
     }
 
 }

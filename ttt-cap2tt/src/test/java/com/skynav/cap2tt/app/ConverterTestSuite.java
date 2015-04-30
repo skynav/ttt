@@ -31,7 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    ValidTestCases.class
+    ConverterTestCases.class
 })
 public class ConverterTestSuite {
 }
