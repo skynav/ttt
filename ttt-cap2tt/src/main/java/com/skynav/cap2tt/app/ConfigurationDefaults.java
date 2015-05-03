@@ -25,13 +25,13 @@
 
 package com.skynav.cap2tt.app;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 
 public class ConfigurationDefaults extends com.skynav.ttv.util.ConfigurationDefaults {
     private static final String[][] optionDefaultSpecifications = new String[][] {
         { "add-creation-metadata", "true" },
-        { "default-region", "横下" },
         { "merge-styles", "true" },
         { "style-id-pattern", "s{0}" },
         { "style-id-sequence-start", "1" },
@@ -48,8 +48,8 @@ public class ConfigurationDefaults extends com.skynav.ttv.util.ConfigurationDefa
     public ConfigurationDefaults() {
         super();
     }
-    public ConfigurationDefaults(String configDirectory) {
-        super(configDirectory);
+    public ConfigurationDefaults(URL locator) {
+        super(locator);
     }
     public Map<String,String> getDefaults() {
         return optionDefaults;

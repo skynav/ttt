@@ -26,20 +26,26 @@
 package com.skynav.ttv.util;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 
 public class ConfigurationDefaults {
     private static final Map<String,String> emptyDefaults = Collections.unmodifiableMap(new java.util.HashMap<String,String>());
-    private String configDirectory;
+    private URL locator;
     public ConfigurationDefaults() {
-        this(new File(".").getAbsolutePath());
+        this(null);
     }
-    public ConfigurationDefaults(String configDirectory) {
-        this.configDirectory = configDirectory;
+    public ConfigurationDefaults(URL locator) {
+        this.locator = locator;
+    }
+    public URL getConfigurationLocator() {
+        return locator;
     }
     public String getConfigurationDirectory() {
-        return configDirectory;
+        return getConfigurationDirectory(locator);
     }
     public Map<String,String> getDefaults() {
         return emptyDefaults;
@@ -49,5 +55,24 @@ public class ConfigurationDefaults {
     }
     public void populateDefaults(Map<String,String> options) {
         options.putAll(getDefaults());
+    }
+    public static String getConfigurationDirectory(URL url) {
+        try {
+            if (url == null)
+                url = new File(".").toURI().toURL();
+            String path = url.toURI().getPath();
+            if (path != null) {
+                int i = path.lastIndexOf('/');
+                if (i >= 0)
+                    return path.substring(0, i);
+                else
+                    return path;
+            } else
+                return null;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

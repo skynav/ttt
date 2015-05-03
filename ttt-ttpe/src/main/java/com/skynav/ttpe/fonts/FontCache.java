@@ -204,6 +204,8 @@ public class FontCache {
         if (fontSpecificationFiles != null) {
             fontSpecifications = FontLoader.load(fontSpecificationFiles, reporter);
         }
+        if ((fontSpecifications == null) || fontSpecifications.isEmpty())
+            reporter.logWarning(reporter.message("*KEY*", "No font specifications! No text will be rendered."));
         loaded = true;
     }
 

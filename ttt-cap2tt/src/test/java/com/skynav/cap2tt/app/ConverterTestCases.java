@@ -81,6 +81,7 @@ public class ConverterTestCases {
         }
         List<String> args = new java.util.ArrayList<String>();
         args.add("-v");
+        args.add("-v");
         args.add("--warn-on");
         args.add("all");
         if (expectedErrors >= 0) {

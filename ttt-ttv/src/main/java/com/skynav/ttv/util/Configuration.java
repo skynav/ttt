@@ -25,14 +25,10 @@
 
 package com.skynav.ttv.util;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
@@ -49,7 +45,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import com.skynav.ttv.app.Namespace;
-import com.skynav.ttv.util.IOUtil;
 import com.skynav.xml.helpers.Documents;
 
 public class Configuration {
@@ -144,6 +139,10 @@ public class Configuration {
             return null;
     }
 
+    public URL getLocator() {
+        return (defaults != null) ? defaults.getConfigurationLocator() : null;
+    }
+
     public Map<String,String> getOptions() {
         return options;
     }
@@ -163,73 +162,65 @@ public class Configuration {
         return (defaults != null) ? defaults.getDefault(name) : null;
     }
 
-    public static Configuration fromFile(String name, ConfigurationDefaults defaults, Class<? extends Configuration> cls) throws IOException {
-        if (name == null)
-            name = defaultFileName;
-        URL urlConfig = cls.getResource(name);
-        if (urlConfig != null)
-            return fromStream(urlConfig.openStream(), defaults, cls);
-        else
-            return newInstance(cls, defaults, null);
-    }
-
-    public static Configuration fromFile(File f, ConfigurationDefaults defaults, Class<? extends Configuration> cls) throws IOException {
-        InputStream is = null;
+    public static Configuration fromLocator(URL locator, ConfigurationDefaults defaults, Class<? extends Configuration> cls, Reporter reporter) throws IOException {
         try {
-            is = new FileInputStream(f);
-            return fromStream(is, defaults, cls); 
+            return (locator != null) ? fromStream(locator.openStream(), defaults, cls, reporter) : null;
         } catch (IOException e) {
-            IOUtil.closeSafely(is);
-            throw e;
+            reporter.logError(e);
+            return null;
         }
     }
 
-    public static Configuration fromStream(InputStream is, ConfigurationDefaults defaults, Class<? extends Configuration> cls) throws IOException {
+    public static Configuration fromStream(InputStream is, ConfigurationDefaults defaults, Class<? extends Configuration> cls, Reporter reporter) throws IOException {
         try {
             SAXSource source = new SAXSource(new InputSource(is));
             DOMResult result = new DOMResult();
             TransformerFactory.newInstance().newTransformer().transform(source, result);
-            return newInstance(cls, defaults, (Document) result.getNode());
+            return newInstance(cls, defaults, (Document) result.getNode(), reporter);
         } catch (TransformerFactoryConfigurationError e) {
+            reporter.logError(new RuntimeException(e));
             return null;
         } catch (TransformerException e) {
+            reporter.logError(e);
             return null;
         }
     }
 
-    public static Configuration newInstance(Class<? extends Configuration> cls, ConfigurationDefaults defaults, Document d) {
+    public static Configuration newInstance(Class<? extends Configuration> cls, ConfigurationDefaults defaults, Document d, Reporter reporter) {
         if (cls != null) {
             try {
                 Constructor<? extends Configuration> constructor = cls.getDeclaredConstructor(new Class<?>[] { ConfigurationDefaults.class, Document.class });
                 return constructor.newInstance(new Object[] { defaults, d });
             } catch (NoSuchMethodException e) {
+                reporter.logError(e);
                 return null;
             } catch (IllegalAccessException e) {
+                reporter.logError(e);
                 return null;
             } catch (InvocationTargetException e) {
+                reporter.logError(e);
                 return null;
             } catch (InstantiationException e) {
+                reporter.logError(e);
                 return null;
             }
         } else
             return null;
     }
 
-    public static String getDefaultConfigurationPath(Class<?> cls, String name) {
+    public static URL getDefaultConfigurationLocator(Class<?> cls, String name) {
         if (name == null)
             name = defaultFileName;
-        URL url = cls.getResource(name);
-        if (url != null) {
-            try {
-                URI uri = url.toURI();
-                if (uri.getScheme().equals("file")) {
-                    File f = new File(uri.getPath());
-                    return f.getAbsolutePath();
-                }
-            } catch (URISyntaxException e) {
-            }
-        }
-        return null;
+        ClassLoader loader = cls.getClassLoader();
+        if (loader == null)
+            loader = ClassLoader.getSystemClassLoader();
+        Package pkg = cls.getPackage();
+        String path = (pkg != null) ? pkg.getName().replace('.','/') : null;
+        if (path != null)
+            path = path + "/" + name;
+        else
+            path = name;
+        return loader.getResource(path);
     }
 
 }

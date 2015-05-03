@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-14 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -136,12 +136,12 @@ public class TimedTextVerifier implements VerifierContext {
 
     // banner text
     private static final String title = "Timed Text Verifier (TTV) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-14 Skynav, Inc.";
+    private static final String copyright = "Copyright 2013-15 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     // usage text
     private static final String repositoryURL =
-        "https://github.com/skynav/ttv";
+        "https://github.com/skynav/ttt";
     private static final String repositoryInfo =
         "Source Repository: " + repositoryURL;
 
@@ -200,7 +200,7 @@ public class TimedTextVerifier implements VerifierContext {
         { "treat-foreign-as",           "TOKEN",    "specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
             ForeignTreatment.getDefault().name().toLowerCase() + ")" },
         { "treat-warning-as-error",     "",         "treat warning as error (overrides --disable-warnings)" },
-        { "until-phase",                "PHASE",    "verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
+        { "until-phase",                "PHASE",    "verify up to specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
             Phase.getDefault().name().toLowerCase() + ")" },
         { "warn-on",                    "TOKEN",    "enable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
     };
@@ -630,36 +630,38 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private Configuration loadConfiguration(String configFilePath, OptionProcessor optionProcessor) {
-        File configFile;
-        if ((configFilePath == null) && (optionProcessor != null))
-            configFilePath = optionProcessor.getDefaultConfigurationPath();
-        if (configFilePath == null)
-            configFilePath = Configuration.getDefaultConfigurationPath(TimedTextVerifier.class, null);
-        if (configFilePath != null) {
-            Reporter reporter = getReporter();
-            configFile = new File(configFilePath);
-            if (!configFile.exists())
-                throw new InvalidOptionUsageException("config", reporter.message("*KEY*", "configuration does not exist: {0}", configFilePath));
-            else if (!configFile.isFile())
-                throw new InvalidOptionUsageException("config", reporter.message("*KEY*", "not a file: {0}", configFilePath));
-            else
-                return loadConfiguration(configFile, optionProcessor);
-        } else
-            return new Configuration();
+        try {
+            URL locator;
+            if (configFilePath != null) {
+                File f = new File(configFilePath);
+                if (!f.isAbsolute())
+                    f = new File(new File(".").getCanonicalFile(), configFilePath);
+                locator = f.toURI().toURL();
+            } else
+                locator = null;
+            return loadConfiguration(locator, optionProcessor);
+        } catch (IOException e) {
+            getReporter().logError(e);
+            return null;
+        }
     }
 
-    private Configuration loadConfiguration(File configFile, OptionProcessor optionProcessor) {
+    private Configuration loadConfiguration(URL locator, OptionProcessor optionProcessor) {
+        Reporter reporter = getReporter();
+        if ((locator == null) && (optionProcessor != null))
+            locator = optionProcessor.getDefaultConfigurationLocator();
+        if (locator == null)
+            locator = Configuration.getDefaultConfigurationLocator(TimedTextVerifier.class, null);
         try {
-            String configDirectoryPath = IOUtil.getDirectory(configFile).getAbsolutePath();
-            ConfigurationDefaults configDefaults = (optionProcessor != null) ? optionProcessor.getConfigurationDefaults(configDirectoryPath) : null;
+            ConfigurationDefaults configDefaults = (optionProcessor != null) ? optionProcessor.getConfigurationDefaults(locator) : null;
             if (configDefaults == null)
-                configDefaults = new ConfigurationDefaults(configDirectoryPath);
+                configDefaults = new ConfigurationDefaults(locator);
             Class<? extends Configuration> configClass = (optionProcessor != null) ? optionProcessor.getConfigurationClass() : null;
             if (configClass == null)
                 configClass = Configuration.class;
-            return Configuration.fromFile(configFile, configDefaults, configClass);
+            return Configuration.fromLocator(locator, configDefaults, configClass, reporter);
         } catch (IOException e) {
-            getReporter().logError(e);
+            reporter.logError(e);
             return null;
         }
     }
@@ -930,10 +932,8 @@ public class TimedTextVerifier implements VerifierContext {
             } catch (NumberFormatException e) {
                 throw new InvalidOptionUsageException("external-frame-rate", "invalid syntax, must be a double: " + externalFrameRate);
             }
-        } else {
+        } else
             parsedExternalFrameRate = 30.0;
-            reporter.logInfo(reporter.message("*KEY*", "Defaulting external frame rate to " + parsedExternalFrameRate + "fps."));
-        }
         if (externalDuration != null) {
             Time[] duration = new Time[1];
             TimeParameters timeParameters = new TimeParameters(parsedExternalFrameRate);
@@ -1036,7 +1036,10 @@ public class TimedTextVerifier implements VerifierContext {
 
     private void showProcessingInfo() {
         Reporter reporter = getReporter();
-        if (reporter.getVerbosityLevel() >  0) {
+        int level = reporter.getVerbosityLevel();
+        if (level >  0) {
+            if (level > 1)
+                showConfigurationInfo();
             if (reporter.isTreatingWarningAsError())
                 reporter.logInfo(reporter.message("*KEY*", "Warnings are treated as errors."));
             else if (reporter.areWarningsDisabled())
@@ -1044,6 +1047,24 @@ public class TimedTextVerifier implements VerifierContext {
             else if (reporter.areWarningsHidden())
                 reporter.logInfo(reporter.message("*KEY*", "Warnings are hidden."));
         }
+    }
+
+    private void showConfigurationInfo() {
+        Reporter reporter = getReporter();
+        if (configuration != null) {
+            URL locator = configuration.getLocator();
+            reporter.logInfo(reporter.message("*KEY*", "Loaded configuration from ''{0}''.", (locator != null) ? locator : "default empty configuration"));
+            if (!configuration.getOptions().isEmpty()) {
+                Map<String,String> options = configuration.getOptions();
+                Set<String> names = new java.util.TreeSet<String>(options.keySet());
+                for (String n : names) {
+                    String v = options.get(n);
+                    reporter.logInfo(reporter.message("*KEY*", "Configuration option: {0} = ''{1}''.", n, v));
+                }
+            } else
+                reporter.logInfo(reporter.message("*KEY*", "Configuration is empty."));
+        } else
+            reporter.logInfo(reporter.message("*KEY*", "No configuration."));
     }
 
     private void showModels() {
@@ -2121,7 +2142,7 @@ public class TimedTextVerifier implements VerifierContext {
         OptionProcessor optionProcessor = (OptionProcessor) resultProcessor;
         try {
             List<String> argsPreProcessed = preProcessOptions(args, optionProcessor);
-            showBanner(getShowOutput(), (OptionProcessor) null);
+            showBanner(getShowOutput(), optionProcessor);
             getShowOutput().flush();
             List<String> nonOptionArgs = parseArgs(argsPreProcessed, optionProcessor);
             if (showModels)

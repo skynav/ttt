@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -294,13 +295,13 @@ public class Presenter extends TimedTextTransformer {
     // OptionProcessor
 
     @Override
-    public String getDefaultConfigurationPath() {
-        return Configuration.getDefaultConfigurationPath();
+    public URL getDefaultConfigurationLocator() {
+        return Configuration.getDefaultConfigurationLocator();
     }
 
     @Override
-    public com.skynav.ttv.util.ConfigurationDefaults getConfigurationDefaults(String configDirectory) {
-        return new ConfigurationDefaults(configDirectory);
+    public com.skynav.ttv.util.ConfigurationDefaults getConfigurationDefaults(URL locator) {
+        return new ConfigurationDefaults(locator);
     }
 
     @Override
@@ -666,7 +667,7 @@ public class Presenter extends TimedTextTransformer {
                 File outputFile = retOutputFile[0];
                 IOUtil.write(is, bos);
                 bos.close(); bos = null;
-                reporter.logInfo(reporter.message("*KEY*", "Wrote ISD artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
+                reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
             }
         } catch (Exception e) {
             reporter.logError(e);

@@ -117,6 +117,7 @@
           <arguments>
             <argument>--config</argument>
             <argument>${test.basedir}/test.config.xml</argument>
+            <argument>${test.basedir}/test.xml</argument>
           </arguments>
         </configuration>
       </plugin>

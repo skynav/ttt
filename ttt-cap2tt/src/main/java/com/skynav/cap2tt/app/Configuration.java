@@ -25,6 +25,7 @@
 
 package com.skynav.cap2tt.app;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
@@ -86,17 +87,25 @@ public class Configuration extends com.skynav.ttv.util.Configuration {
     }
 
     private void populateInitials(Document d) {
-        List<Element> elts = Documents.findElementsByName(d, ttInitialEltName);
+        List<Element> elts;
+        if (d != null)
+            elts = Documents.findElementsByName(d, ttInitialEltName);
+        else
+            elts = new java.util.ArrayList<Element>();
         this.initials = Collections.unmodifiableList(elts);
     }
 
     private void populateRegions(Document d) {
-        List<Element> elts = Documents.findElementsByName(d, ttRegionEltName);
+        List<Element> elts;
+        if (d != null)
+            elts = Documents.findElementsByName(d, ttRegionEltName);
+        else
+            elts = new java.util.ArrayList<Element>();
         this.regions = Collections.unmodifiableList(elts);
     }
 
-    public static String getDefaultConfigurationPath() {
-        return getDefaultConfigurationPath(Configuration.class, null);
+    public static URL getDefaultConfigurationLocator() {
+        return getDefaultConfigurationLocator(Configuration.class, null);
     }
 
 }

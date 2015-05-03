@@ -27,6 +27,7 @@ package com.skynav.ttx.app;
 
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -214,12 +215,12 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return verifier.extractResourceState(key);
     }
 
-    public String getDefaultConfigurationPath() {
-        return Configuration.getDefaultConfigurationPath();
+    public URL getDefaultConfigurationLocator() {
+        return Configuration.getDefaultConfigurationLocator();
     }
 
-    public com.skynav.ttv.util.ConfigurationDefaults getConfigurationDefaults(String configDirectory) {
-        return new ConfigurationDefaults(configDirectory);
+    public com.skynav.ttv.util.ConfigurationDefaults getConfigurationDefaults(URL locator) {
+        return new ConfigurationDefaults(locator);
     }
 
     public Class<? extends com.skynav.ttv.util.Configuration> getConfigurationClass() {

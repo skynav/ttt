@@ -39,6 +39,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -656,46 +657,44 @@ public class Converter implements ConverterContext {
                 skippedArgs.add(arg);
         }
         configuration = loadConfiguration(configFilePath, optionProcessor);
+        if (configuration == null)
+            configuration = new Configuration();
         return skippedArgs;
     }
 
     private Configuration loadConfiguration(String configFilePath, OptionProcessor optionProcessor) {
-        File configFile;
-        if ((configFilePath == null) && (optionProcessor != null))
-            configFilePath = optionProcessor.getDefaultConfigurationPath();
-        if (configFilePath == null)
-            configFilePath = Configuration.getDefaultConfigurationPath();
-        if (configFilePath != null) {
-            configFile = new File(configFilePath);
-            if (!configFile.exists())
-                throw new InvalidOptionUsageException("config", reporter.message("x.016", "configuration does not exist: {0}", configFilePath));
-            else if (!configFile.isFile())
-                throw new InvalidOptionUsageException("config", reporter.message("x.017", "not a file: {0}", configFilePath));
-            else
-                return loadConfiguration(configFile, optionProcessor);
-        } else
-            return new Configuration();
-    }
-
-    private Configuration loadConfiguration(File configFile, OptionProcessor optionProcessor) {
         try {
-            String configDirectory = IOUtil.getDirectory(configFile).getAbsolutePath();
-            com.skynav.ttv.util.ConfigurationDefaults configDefaults;
-            Class<? extends com.skynav.ttv.util.Configuration> configClass;
-            if (optionProcessor != null) {
-                configDefaults = optionProcessor.getConfigurationDefaults(configDirectory);
-                configClass = optionProcessor.getConfigurationClass();
-            } else {
-                configDefaults = null;
-                configClass = null;
-            }
-            if (configDefaults == null)
-                configDefaults = new ConfigurationDefaults(configDirectory);
-            if (configClass == null)
-                configClass = Configuration.class;
-            return (Configuration) Configuration.fromFile(configFile, configDefaults, configClass);
+            URL locator;
+            if (configFilePath != null) {
+                File f = new File(configFilePath);
+                if (!f.isAbsolute())
+                    f = new File(new File(".").getCanonicalFile(), configFilePath);
+                locator = f.toURI().toURL();
+            } else
+                locator = null;
+            return loadConfiguration(locator, optionProcessor);
         } catch (IOException e) {
             getReporter().logError(e);
+            return null;
+        }
+    }
+
+    private Configuration loadConfiguration(URL locator, OptionProcessor optionProcessor) {
+        Reporter reporter = getReporter();
+        if ((locator == null) && (optionProcessor != null))
+            locator = optionProcessor.getDefaultConfigurationLocator();
+        if (locator == null)
+            locator = Configuration.getDefaultConfigurationLocator();
+        try {
+            com.skynav.ttv.util.ConfigurationDefaults configDefaults = (optionProcessor != null) ? optionProcessor.getConfigurationDefaults(locator) : null;
+            if (configDefaults == null)
+                configDefaults = new ConfigurationDefaults(locator);
+            Class<? extends com.skynav.ttv.util.Configuration> configClass = (optionProcessor != null) ? optionProcessor.getConfigurationClass() : null;
+            if (configClass == null)
+                configClass = Configuration.class;
+            return (Configuration) Configuration.fromLocator(locator, configDefaults, configClass, reporter);
+        } catch (IOException e) {
+            reporter.logError(e);
             return null;
         }
     }
@@ -1148,7 +1147,10 @@ public class Converter implements ConverterContext {
 
     private void showProcessingInfo() {
         Reporter reporter = getReporter();
-        if (reporter.getVerbosityLevel() >  0) {
+        int level = reporter.getVerbosityLevel();
+        if (level >  0) {
+            if (level > 1)
+                showConfigurationInfo();
             if (reporter.isTreatingWarningAsError())
                 reporter.logInfo(reporter.message("i.002", "Warnings are treated as errors."));
             else if (reporter.areWarningsDisabled())
@@ -1156,6 +1158,27 @@ public class Converter implements ConverterContext {
             else if (reporter.areWarningsHidden())
                 reporter.logInfo(reporter.message("i.004", "Warnings are hidden."));
         }
+    }
+
+    private void showConfigurationInfo() {
+        Reporter reporter = getReporter();
+        if (configuration != null) {
+            URL locator = configuration.getLocator();
+            if (locator != null)
+                reporter.logInfo(reporter.message("i.022", "Loaded configuration from ''{0}''.", locator.toString()));
+            else
+                reporter.logInfo(reporter.message("i.023", "Loaded configuration from built-in configuration defaults."));
+            if (!configuration.getOptions().isEmpty()) {
+                Map<String,String> options = configuration.getOptions();
+                Set<String> names = new java.util.TreeSet<String>(options.keySet());
+                for (String n : names) {
+                    String v = options.get(n);
+                    reporter.logInfo(reporter.message("i.024", "Configuration option: {0}=''{1}''.", n, v));
+                }
+            } else
+                reporter.logInfo(reporter.message("i.025", "Configuration is empty."));
+        } else
+            reporter.logInfo(reporter.message("i.026", "No configuration."));
     }
 
     private void showRepository() {

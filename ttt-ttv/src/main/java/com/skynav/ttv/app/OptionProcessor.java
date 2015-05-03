@@ -26,6 +26,7 @@
 package com.skynav.ttv.app;
 
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.List;
 import java.util.Collection;
 
@@ -33,8 +34,8 @@ import com.skynav.ttv.util.Configuration;
 import com.skynav.ttv.util.ConfigurationDefaults;
 
 public interface OptionProcessor {
-    String getDefaultConfigurationPath();
-    ConfigurationDefaults getConfigurationDefaults(String configDirectory);
+    URL getDefaultConfigurationLocator();
+    ConfigurationDefaults getConfigurationDefaults(URL configLocator);
     Class<? extends Configuration> getConfigurationClass();
     List<String> preProcessOptions(List<String> args, Configuration configuration, Collection<OptionSpecification> shortOptions, Collection<OptionSpecification> longOptions);
     boolean hasOption(String arg);

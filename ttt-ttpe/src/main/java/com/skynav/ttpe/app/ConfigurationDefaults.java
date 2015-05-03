@@ -25,8 +25,10 @@
 
 package com.skynav.ttpe.app;
 
+import java.net.URL;
+
 public class ConfigurationDefaults extends com.skynav.ttx.app.ConfigurationDefaults {
-    public ConfigurationDefaults(String configDirectory) {
-        super(configDirectory);
+    public ConfigurationDefaults(URL locator) {
+        super(locator);
     }
 }

@@ -25,13 +25,15 @@
 
 package com.skynav.ttpe.app;
 
+import java.net.URL;
+
 import org.w3c.dom.Document;
 
 public class Configuration extends com.skynav.ttx.app.Configuration {
     public Configuration(com.skynav.ttv.util.ConfigurationDefaults defaults, Document d) {
         super(defaults, d);
     }
-    public static String getDefaultConfigurationPath() {
-        return getDefaultConfigurationPath(Configuration.class, null);
+    public static URL getDefaultConfigurationLocator() {
+        return getDefaultConfigurationLocator(Configuration.class, null);
     }
 }

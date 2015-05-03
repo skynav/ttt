@@ -102,7 +102,7 @@ public class LineBreaker {
                 if (rulesLocator != null) {
                     is = rulesLocator.openStream();
                     bi = RuleBasedBreakIterator.getInstanceFromCompiledRules(is);
-                    reporter.logInfo(reporter.message("*KEY*", "Loaded rules based break iterator ''{0}''", rulesLocator.toString()));
+                    reporter.logInfo(reporter.message("*KEY*", "Loaded rules based break iterator from ''{0}''.", rulesLocator.toString()));
                 } else
                     bi = BreakIterator.getCharacterInstance();
             } catch (IOException e) {

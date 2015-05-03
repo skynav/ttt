@@ -77,6 +77,7 @@
           <mainClass>com.skynav.cap2tt.app.Converter</mainClass>
           <arguments>
             <argument>-v</argument>
+            <argument>-v</argument>
             <argument>--warn-on</argument>
             <argument>all</argument>
             <argument>--config</argument>
