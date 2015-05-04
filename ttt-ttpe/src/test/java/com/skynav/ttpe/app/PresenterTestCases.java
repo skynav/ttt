@@ -125,6 +125,11 @@ public class PresenterTestCases {
         performPresentationTest("test-014-region-display-align-justify-lrtb.xml", -1, -1);
     }
 
+    @Test
+    public void test015RegionPositionInitialValue() throws Exception {
+        performPresentationTest("test-015-region-position-initial-value.xml", -1, -1);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

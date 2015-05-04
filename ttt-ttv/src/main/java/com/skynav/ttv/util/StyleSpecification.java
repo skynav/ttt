@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.util;
 
+import javax.xml.namespace.QName;
+
 public class StyleSpecification implements Comparable<StyleSpecification> {
 
     private ComparableQName name;
@@ -32,6 +34,10 @@ public class StyleSpecification implements Comparable<StyleSpecification> {
 
     public StyleSpecification(String nsUri, String localName, String value) {
         this(new ComparableQName(nsUri, localName), value);
+    }
+
+    public StyleSpecification(QName name, String value) {
+        this(new ComparableQName(name), value);
     }
 
     public StyleSpecification(ComparableQName name, String value) {

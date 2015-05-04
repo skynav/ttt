@@ -100,6 +100,7 @@ public class Constants {
     public static final FontWeight defaultFontWeight                    = FontKey.DEFAULT_WEIGHT;
     public static final String defaultLanguage                          = FontKey.DEFAULT_LANGUAGE;
     public static final double defaultLineHeight                        = defaultFontSize.getHeight() * 1.25;
+    public static final String defaultPositionComponents                = "center";
     public static final Point defaultOrigin                             = Point.ZERO;
     public static final Overflow defaultOverflow                        = Overflow.HIDDEN;
     public static final Whitespace defaultWhitespace                    = Whitespace.DEFAULT;

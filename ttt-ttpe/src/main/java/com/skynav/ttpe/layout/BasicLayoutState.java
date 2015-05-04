@@ -324,6 +324,8 @@ public class BasicLayoutState implements LayoutState {
 
     public Point getPosition(Element e, Extent extent) {
         StyleSpecification s = getStyles(e).get(ttsPositionAttrName);
+        if ((s == null) && (getStyles(e).get(ttsOriginAttrName) == null) && (context.getModel().getTTMLVersion() >= 2))
+            s = new StyleSpecification(ttsPositionAttrName, defaultPositionComponents);
         if (s != null) {
             String v = s.getValue();
             String [] components = v.split("[ \t\r\n]+");
