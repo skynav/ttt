@@ -68,6 +68,16 @@ public class ConverterTestCases {
         performConversionTest("test-004-non-text-attribute-in-text-field.cap", 0, 1);
     }
 
+    @Test
+    public void testConversion005NonTextAttributeAlignContinuation() throws Exception {
+        //performConversionTest("test-005-non-text-attribute-align-continuation.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion006RegionPositionInitialValue() throws Exception {
+        performConversionTest("test-006-region-position-initial-value.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
