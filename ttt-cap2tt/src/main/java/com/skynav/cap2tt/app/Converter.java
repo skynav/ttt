@@ -308,6 +308,7 @@ public class Converter implements ConverterContext {
         { "bad-header-length",                          Boolean.TRUE,   "header line too short" },
         { "bad-header-preamble",                        Boolean.TRUE,   "header line preamble missing or incorrect" },
         { "bad-header-scene-standard",                  Boolean.TRUE,   "bad header scene standard" },
+        { "non-text-attribute-in-text-field",           Boolean.TRUE,   "non-text attribute in text field" },
         { "out-time-precedes-in-time",                  Boolean.TRUE,   "out time precedes in time" }
     };
 
@@ -321,6 +322,14 @@ public class Converter implements ConverterContext {
         None,
         Mandatory,
         Optional;
+    };
+
+    public enum NonTextAttributeTreatment {
+        Fail,           // fail silently
+        Error,          // fail with message
+        Warning,        // warn with message
+        Info,           // allow with message
+        Ignore;         // allow silently
     };
 
     // known attribute specifications { name, context, count, minCount, maxCount }
@@ -983,10 +992,8 @@ public class Converter implements ConverterContext {
             } catch (NumberFormatException e) {
                 throw new InvalidOptionUsageException("external-frame-rate", reporter.message("x.007", "invalid syntax, must be a double: {0}", externalFrameRate));
             }
-        } else {
+        } else
             parsedExternalFrameRate = 30.0;
-            reporter.logInfo(reporter.message("i.001", "Defaulting external frame rate to {0} fps.", parsedExternalFrameRate));
-        }
         if (externalDuration != null) {
             Time[] duration = new Time[1];
             TimeParameters timeParameters = new TimeParameters(parsedExternalFrameRate);
@@ -1797,7 +1804,7 @@ public class Converter implements ConverterContext {
         // text field
         if (!fail) {
             int fieldIndex;
-            if ((fieldIndex = hasTextField(fields, fieldIndexNext)) >= 0) {
+            if ((fieldIndex = hasTextField(locator, fields, fieldIndexNext, NonTextAttributeTreatment.Warning)) >= 0) {
                 if (parseTextField(fields[fieldIndex], s) == s)
                     fieldIndexNext = fieldIndex + 1;
                 else
@@ -2010,12 +2017,12 @@ public class Converter implements ConverterContext {
         return isCountDigit(c);
     }
 
-    private static int hasTextField(String[] fields, int fieldIndex) {
+    private int hasTextField(LocatorImpl locator, String[] fields, int fieldIndex, NonTextAttributeTreatment nonTextAttributeTreatment) {
         while (fieldIndex < fields.length) {
             String field = fields[fieldIndex];
             if (field.length() == 0)
                 ++fieldIndex;
-            else if (isTextField(field))
+            else if (isTextField(locator, field, fieldIndex, nonTextAttributeTreatment))
                 return fieldIndex;
             else
                 return -1;
@@ -2023,16 +2030,51 @@ public class Converter implements ConverterContext {
         return -1;
     }
 
-    private static boolean isTextField(String field) {
+    private boolean isTextField(LocatorImpl locator, String field, int fieldIndex, NonTextAttributeTreatment nonTextAttributeTreatment) {
         if (field.length() == 0)
             return false;
         else {
-            for (String part : splitTextField(field)) {
+            String[] parts = splitTextField(field);
+            int numParts = parts.length;
+            int numNonTextAttributes = 0;
+            for (int i = 0, n = numParts; i < n; ++i) {
+                String part = parts[i];
+                if (isNonTextAttribute(part))
+                    ++numNonTextAttributes;
+            }
+            // if all parts are non-text-attributes, then always fail
+            if (numNonTextAttributes == numParts)
+                return false;
+            for (int i = 0, n = numParts; i < n; ++i) {
+                String part = parts[i];
                 if (isTextEscape(part))
                     continue;
                 else if (isTextAttribute(part))
                     continue;
-                else if (isText(part))
+                else if (isNonTextAttribute(part)) {
+                    if (nonTextAttributeTreatment == NonTextAttributeTreatment.Ignore)
+                        continue;
+                    else if (nonTextAttributeTreatment == NonTextAttributeTreatment.Fail)
+                        return false;
+                    else {
+                        Reporter reporter = getReporter();
+                        Message m = reporter.message(locator, "w.010",
+                            "Field {0}, part {1} contains a non-text attribute ''{2}''. Is a field separator missing?", fieldIndex + 1, i + 1, part);
+                        if (nonTextAttributeTreatment == NonTextAttributeTreatment.Info) {
+                            reporter.logInfo(m);
+                            continue;
+                        } if (nonTextAttributeTreatment == NonTextAttributeTreatment.Warning) {
+                            if (reporter.isWarningEnabled("non-text-attribute-in-text-field")) {
+                                if (reporter.logWarning(m))
+                                    return false;
+                            }
+                        } else if (nonTextAttributeTreatment == NonTextAttributeTreatment.Warning) {
+                            reporter.logError(m);
+                            return false;
+                        }
+                    }
+                    continue;
+                } else if (isText(part))
                     continue;
                 else
                     return false;
@@ -2135,6 +2177,8 @@ public class Converter implements ConverterContext {
                     sb.append(t);
                     int end = sb.length();
                     annotations.add(new AnnotatedRange(new Annotation(ra[0]), start, end));
+                } else if (isNonTextAttribute(part)) {
+                    continue;
                 } else if ((t = parseText(part)) != null) {
                     sb.append(t);
                 } else {
@@ -2228,6 +2272,10 @@ public class Converter implements ConverterContext {
 
     private static boolean isTextAttribute(String field) {
         return parseTextAttribute(field) != null;
+    }
+
+    private static boolean isNonTextAttribute(String field) {
+        return parseNonTextAttribute(field) != null;
     }
 
     private static final String attributeSeparatorPatternString = "[\u0020\u3000]+";

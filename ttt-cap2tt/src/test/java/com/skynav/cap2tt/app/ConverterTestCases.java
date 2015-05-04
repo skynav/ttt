@@ -63,6 +63,11 @@ public class ConverterTestCases {
         performConversionTest("test-003-screen-attr-italics.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion004NonTextAttributeInTextField() throws Exception {
+        performConversionTest("test-004-non-text-attribute-in-text-field.cap", 0, 1);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
