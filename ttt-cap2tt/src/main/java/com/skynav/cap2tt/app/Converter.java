@@ -27,6 +27,7 @@ package com.skynav.cap2tt.app;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayReader;
 import java.io.File;
@@ -110,6 +111,7 @@ import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
 import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.Base64;
 import com.skynav.ttv.util.ComparableQName;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
@@ -308,6 +310,7 @@ public class Converter implements ConverterContext {
         { "bad-header-length",                          Boolean.TRUE,   "header line too short" },
         { "bad-header-preamble",                        Boolean.TRUE,   "header line preamble missing or incorrect" },
         { "bad-header-scene-standard",                  Boolean.TRUE,   "bad header scene standard" },
+        { "empty-input",                                Boolean.TRUE,   "empty input (no lines)" },
         { "non-text-attribute-in-text-field",           Boolean.TRUE,   "non-text attribute in text field" },
         { "out-time-precedes-in-time",                  Boolean.TRUE,   "out time precedes in time" }
     };
@@ -1270,6 +1273,8 @@ public class Converter implements ConverterContext {
     private InputStream getInputStream(URI uri) throws IOException {
         if (isStandardInput(uri))
             return System.in;
+        else if (isData(uri))
+            return openStreamFromData(uri);
         else
             return uri.toURL().openStream();
     }
@@ -1308,6 +1313,39 @@ public class Converter implements ConverterContext {
             return false;
         else
             return true;
+    }
+
+    private boolean isData(URI uri) {
+        return uri.getScheme().equals("data");
+    }
+
+    private InputStream openStreamFromData(URI uri) {
+        assert isData(uri);
+        String ssp = uri.getSchemeSpecificPart();
+        int dataIndex;
+        byte[] bytes;
+        if ((dataIndex = ssp.indexOf(',')) >= 0) {
+            String metadata = ssp.substring(0, dataIndex++);
+            String data = (dataIndex < ssp.length()) ? ssp.substring(dataIndex) : "";
+            if (isBase64Data(metadata))
+                bytes = Base64.decode(data.toCharArray());
+            else {
+                bytes = new byte[data.length()];
+                for (int i = 0, n = bytes.length; i < n; ++i) {
+                    char c = data.charAt(i);
+                    if (c > 128)
+                        throw new IllegalArgumentException();
+                    else
+                        bytes[i] = (byte) c;
+                }
+            }
+        } else
+            bytes = new byte[0];
+        return new ByteArrayInputStream(bytes);
+    }
+
+    private boolean isBase64Data(String metadata) {
+        return metadata.endsWith(";base64");
     }
 
     private static final List<Charset> permittedEncodings;
@@ -1652,6 +1690,12 @@ public class Converter implements ConverterContext {
                 }
             }
             reporter.logInfo(reporter.message("i.013", "Read {0} lines.", lineNumber));
+            if (lineNumber == 0) {
+                if (reporter.isWarningEnabled("empty-input")) {
+                    if (reporter.logWarning(reporter.message(locator, "w.011", "Empty input resource (no lines).")))
+                        fail = true;
+                }
+            }
         } catch (Exception e) {
             reporter.logError(e);
         }
@@ -3113,7 +3157,7 @@ public class Converter implements ConverterContext {
         return rv;
     }
 
-    public Document convert(List<String> args, File input, Reporter reporter, Document unused) {
+    public Document convert(List<String> args, URI input, Reporter reporter, Document unused) {
         assert args != null;
         assert input != null;
         if (reporter == null)
@@ -3129,11 +3173,15 @@ public class Converter implements ConverterContext {
             setReporter(reporter, null, null, false, false);
         }
         parseArgs(preProcessOptions(args, null), null);
-        convert(null, input.toURI().toString());
+        convert(null, input.toString());
         return outputDocument;
     }
 
     public TimedText convert(List<String> args, File input, Reporter reporter) {
+        return convert(args, input.toURI(), reporter);
+    }
+
+    public TimedText convert(List<String> args, URI input, Reporter reporter) {
         Document d = convert(args, input, reporter, (Document) null);
         return (d != null) ? unmarshall(d) : null;
     }

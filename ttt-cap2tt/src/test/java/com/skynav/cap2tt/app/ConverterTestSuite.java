@@ -31,7 +31,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    ConverterTestCases.class
+    ConverterTestCases.class,
+    ExternalReporterTestCase.class
 })
 public class ConverterTestSuite {
 }

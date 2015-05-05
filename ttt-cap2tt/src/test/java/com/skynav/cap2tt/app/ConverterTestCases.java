@@ -115,9 +115,8 @@ public class ConverterTestCases {
         }
         args.add(urlString);
         Converter cvt = new Converter();
-        File inputFile = new File(url.getPath());
         Reporter reporter = new TextReporter();
-        Document d = cvt.convert(args, inputFile, reporter, (Document) null);
+        Document d = cvt.convert(args, uri, reporter, (Document) null);
         Converter.Results r = cvt.getResults(urlString);
         assertEquals(d, r.getDocument());
         maybeCheckDifferences(d, uri);
