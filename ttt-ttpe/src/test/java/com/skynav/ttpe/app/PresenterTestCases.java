@@ -57,77 +57,82 @@ public class PresenterTestCases {
 
     @Test
     public void test001Mixed() throws Exception {
-        performPresentationTest("test-001-mixed.xml", -1, -1);
+        performPresentationTest("test-001-mixed.xml", 0, 0);
     }
 
     @Test
     public void test002SpanTextAlignEN() throws Exception {
-        performPresentationTest("test-002-span-text-align-en.xml", -1, -1);
+        performPresentationTest("test-002-span-text-align-en.xml", 0, 0);
     }
 
     @Test
     public void test003SpanTextAlignJP() throws Exception {
-        performPresentationTest("test-003-span-text-align-jp.xml", -1, -1);
+        performPresentationTest("test-003-span-text-align-jp.xml", 0, 0);
     }
 
     @Test
     public void test004Ruby() throws Exception {
-        performPresentationTest("test-004-ruby.xml", -1, -1);
+        performPresentationTest("test-004-ruby.xml", 0, 0);
     }
 
     @Test
     public void test005SpanFontVariantWidth() throws Exception {
-        performPresentationTest("test-005-span-font-variant-width.xml", -1, -1);
+        performPresentationTest("test-005-span-font-variant-width.xml", 0, 0);
     }
 
     @Test
     public void test006RegionDisplayAlignLRTB() throws Exception {
-        performPresentationTest("test-006-region-display-align-lrtb.xml", -1, -1);
+        performPresentationTest("test-006-region-display-align-lrtb.xml", 0, 0);
     }
 
     @Test
     public void test007RegionDisplayAlignTBLR() throws Exception {
-        performPresentationTest("test-007-region-display-align-tblr.xml", -1, -1);
+        performPresentationTest("test-007-region-display-align-tblr.xml", 0, 0);
     }
 
     @Test
     public void test008RegionDisplayAlignTBRL() throws Exception {
-        performPresentationTest("test-008-region-display-align-tbrl.xml", -1, -1);
+        performPresentationTest("test-008-region-display-align-tbrl.xml", 0, 0);
     }
 
     @Test
     public void test009SpanFontKerningLRTB() throws Exception {
-        performPresentationTest("test-009-span-font-kerning-lrtb.xml", -1, -1);
+        performPresentationTest("test-009-span-font-kerning-lrtb.xml", 0, 0);
     }
 
     @Test
     public void test010SpanFontShearLRTB() throws Exception {
-        performPresentationTest("test-010-span-font-shear-lrtb.xml", -1, -1);
+        performPresentationTest("test-010-span-font-shear-lrtb.xml", 0, 0);
     }
 
     @Test
     public void test010SpanFontSizeAnomorphicLRTB() throws Exception {
-        performPresentationTest("test-010-span-font-size-anomorphic-lrtb.xml", -1, -1);
+        performPresentationTest("test-010-span-font-size-anomorphic-lrtb.xml", 0, 0);
     }
 
     @Test
     public void test012SpanTextEmphasis() throws Exception {
-        performPresentationTest("test-012-span-text-emphasis.xml", -1, -1);
+        performPresentationTest("test-012-span-text-emphasis.xml", 0, 0);
     }
 
     @Test
     public void test013SpanTextAlignJustifyEN() throws Exception {
-        performPresentationTest("test-013-span-text-align-justify-en.xml", -1, -1);
+        performPresentationTest("test-013-span-text-align-justify-en.xml", 0, 0);
     }
 
     @Test
     public void test014RegionDisplayAlignJustifyLRTB() throws Exception {
-        performPresentationTest("test-014-region-display-align-justify-lrtb.xml", -1, -1);
+        performPresentationTest("test-014-region-display-align-justify-lrtb.xml", 0, 0);
     }
 
     @Test
     public void test015RegionPositionInitialValue() throws Exception {
-        performPresentationTest("test-015-region-position-initial-value.xml", -1, -1);
+        performPresentationTest("test-015-region-position-initial-value.xml", 0, 0);
+    }
+
+    @Test
+    public void test016SpanTextCombine() throws Exception {
+        performPresentationTest("test-016-span-text-combine.xml", 0, 0);
     }
 
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {

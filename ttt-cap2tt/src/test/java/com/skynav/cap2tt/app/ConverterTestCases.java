@@ -78,6 +78,11 @@ public class ConverterTestCases {
         performConversionTest("test-006-region-position-initial-value.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion007TateChuYoko() throws Exception {
+        performConversionTest("test-007-tate-chu-yoko.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }

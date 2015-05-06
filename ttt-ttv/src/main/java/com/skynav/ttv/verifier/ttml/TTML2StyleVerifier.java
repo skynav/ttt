@@ -77,6 +77,7 @@ import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.ShowBackgroundVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextAlignVerifier;
+import com.skynav.ttv.verifier.ttml.style.TextCombineVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextDecorationVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextEmphasisVerifier;
 import com.skynav.ttv.verifier.ttml.style.UnicodeBidiVerifier;
@@ -275,6 +276,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             TextAlign.START,
             TextAlign.START.value(),
+        },
+        {
+            new QName(NAMESPACE,"textCombine"),
+            "TextCombine",
+            String.class,
+            TextCombineVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "none",
+            null
         },
         {
             new QName(NAMESPACE,"textDecoration"),
