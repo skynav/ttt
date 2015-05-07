@@ -37,7 +37,9 @@ public class Characters {
     public static final int   UC_FF                             = '\u000C';             // form feed
     public static final int   UC_CR                             = '\r';                 // carriage return
     public static final int   UC_SPACE                          = '\u0020';             // space
+    public static final int   UC_HYPHEN_MINUS                   = '\u002D';             // hyphen-minus
     public static final int   UC_NBSP                           = '\u00A0';             // non-breaking space
+    public static final int   UC_SOFT_HYPHEN                    = '\u00AD';             // soft hyphen
     public static final int   UC_SPACE_EN_QUAD                  = '\u2000';             // en quad
     public static final int   UC_SPACE_EM_QUAD                  = '\u2001';             // em quad
     public static final int   UC_SPACE_EN                       = '\u2002';             // en space
@@ -55,9 +57,15 @@ public class Characters {
     public static final int   UC_NNBSP                          = '\u202F';             // narrow non-breaking space
     public static final int   UC_MMSP                           = '\u205F';             // medium mathematical space
     public static final int   UC_IDSP                           = '\u3000';             // ideographic space
+    public static final int   UC_CJK_START                      = '\u4E00';             // unified cjk ideographs - start
+    public static final int   UC_CJK_END                        = '\u9FCC';             // unified cjk ideographs - end (inclusive)
     public static final int   UC_OBJECT                         = '\uFFFC';             // object replacement character
     public static final int   UC_REPLACEMENT                    = '\uFFFD';             // replacement character
     public static final int   UC_NOT_A_CHARACTER                = '\uFFFF';             // not a character
+
+    public static boolean isLineSeparator(int c) {
+        return c == UC_LINE_SEPARATOR;
+    }
 
     public static boolean isBreakingWhitespace(int c) {
         if (c == UC_HT)
@@ -114,6 +122,14 @@ public class Characters {
             return true;
         else
             return false;
+    }
+
+    public static boolean isHyphenationPoint(int c) {
+        return (c == UC_HYPHEN_MINUS) || (c == UC_SOFT_HYPHEN);
+    }
+
+    public static boolean isIdeograph(int c) {
+        return (c >= UC_CJK_START) && (c <= UC_CJK_END);
     }
 
     private static final int[] h2fKey = new int[] {

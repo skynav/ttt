@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="jp" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<head>
+<ttm:item name="creationDate">2015-05-01T21:38:33Z</ttm:item>
+<ttm:item name="creationSystem">CAP2TT/1.0.0dev</ttm:item>
+<styling>
+<initial tts:fontSize="4vh"/>
+<initial tts:lineHeight="5vh"/>
+<initial tts:showBackground="whenActive"/>
+</styling>
+<layout>
+<region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>
+</layout>
+</head>
+<body region="横下">
+<div>
+<p begin="00:02:05:00" end="00:02:08:00"> w h i t e <br/>white</p>
+</div>
+</body>
+</tt>

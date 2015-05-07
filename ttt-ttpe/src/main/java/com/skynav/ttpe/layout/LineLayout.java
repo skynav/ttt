@@ -595,6 +595,17 @@ public class LineLayout {
         }
         // obtain inline break type at INDEX of run, where INDEX is index into run, not outer iterator
         InlineBreak getInlineBreak(int index) {
+            if (index > 0) {
+                char c = getText(index - 1, index).charAt(0);
+                if (Characters.isLineSeparator(c))
+                    return InlineBreak.HARD;
+                else if (Characters.isBreakingWhitespace(c))
+                    return InlineBreak.SOFT_WHITESPACE;
+                else if (Characters.isHyphenationPoint(c))
+                    return InlineBreak.SOFT_HYPHENATION_POINT;
+                else if (Characters.isIdeograph(c))
+                    return InlineBreak.SOFT_IDEOGRAPH;
+            }
             return InlineBreak.UNKNOWN;
         }
         // obtain advance of text starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator

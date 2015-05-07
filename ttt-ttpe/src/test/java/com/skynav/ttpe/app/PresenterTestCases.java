@@ -135,6 +135,11 @@ public class PresenterTestCases {
         performPresentationTest("test-016-span-text-combine.xml", 0, 0);
     }
 
+    @Test
+    public void test017Break() throws Exception {
+        performPresentationTest("test-017-break.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
