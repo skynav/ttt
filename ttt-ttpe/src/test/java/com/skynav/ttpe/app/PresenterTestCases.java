@@ -140,6 +140,11 @@ public class PresenterTestCases {
         performPresentationTest("test-017-break.xml", 0, 0);
     }
 
+    @Test
+    public void test018BreakFontShear() throws Exception {
+        performPresentationTest("test-018-break-font-shear.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

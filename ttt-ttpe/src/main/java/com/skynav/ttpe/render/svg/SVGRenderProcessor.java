@@ -586,9 +586,6 @@ public class SVGRenderProcessor extends RenderProcessor {
             FontWeight fontWeight = font.getWeight();
             if (fontWeight != FontWeight.NORMAL)
                 Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
-            TransformMatrix fontMatrix = font.getTransform();
-            if (fontMatrix != null)
-                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
         }
     }
 
