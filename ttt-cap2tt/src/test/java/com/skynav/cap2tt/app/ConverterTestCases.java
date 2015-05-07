@@ -83,6 +83,16 @@ public class ConverterTestCases {
         performConversionTest("test-007-tate-chu-yoko.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion008EscapedHalfWidthSpace() throws Exception {
+        performConversionTest("test-008-escaped-half-width-space.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion009EscapedFullWidthSpace() throws Exception {
+        performConversionTest("test-009-escaped-full-width-space.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }

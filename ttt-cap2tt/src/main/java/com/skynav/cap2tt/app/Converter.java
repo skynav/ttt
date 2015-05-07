@@ -2285,14 +2285,28 @@ public class Converter implements ConverterContext {
     }
 
     private static String parseText(String text) {
+        int escapedSpaces = 0;
         for (int i = 0, n = text.length(); i < n; ++i) {
             char c = text.charAt(i);
             if (c == attributePrefix)
                 return null;
             else if (c == '\t')
                 return null;
+            else if ((c == '\u005F') || (c == '\uFF3F'))
+                ++escapedSpaces;
         }
-        return text;
+        if (escapedSpaces == 0)
+            return text;
+        StringBuffer sb = new StringBuffer(text.length());
+        for (int i = 0, n = text.length(); i < n; ++i) {
+            char c = text.charAt(i);
+            if (c == '\u005F')
+                c = '\u0020';
+            else if (c == '\uFF3F')
+                c = '\u3000';
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     private static int hasAttributeField(String[] fields, int fieldIndex) {
