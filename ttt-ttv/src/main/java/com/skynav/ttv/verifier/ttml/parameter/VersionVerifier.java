@@ -25,6 +25,8 @@
  
 package com.skynav.ttv.verifier.ttml.parameter;
 
+import java.math.BigInteger;
+
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
@@ -32,23 +34,18 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.util.Integers;
-import com.skynav.ttv.verifier.util.NegativeTreatment;
-import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class VersionVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
-        Integer[] minMax = new Integer[] { 1, 1 };
-        Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
-        if (Integers.isIntegers(value, locator, context, minMax, treatments, null))
+        assert valueObject instanceof BigInteger;
+        int value = ((BigInteger) valueObject).intValue();
+        if (value < 0)
+            throw new IllegalStateException("Unexpected negative value.");
+        else if (value == 0)
+            throw new IllegalStateException("Unexpected zero value.");
+        else
             return true;
-        else {
-            Integers.badIntegers(value, locator, context, minMax, treatments);
-            return false;
-        }
     }
 
 }

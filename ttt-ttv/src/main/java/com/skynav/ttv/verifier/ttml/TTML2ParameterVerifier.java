@@ -25,6 +25,7 @@
  
 package com.skynav.ttv.verifier.ttml;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -84,10 +85,10 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
         {
             new QName(NAMESPACE,"version"),
             "Version",
-            String.class,
+            BigInteger.class,
             VersionVerifier.class,
             Boolean.FALSE,
-            "2",
+            BigInteger.valueOf(2),
         },
     };
 
