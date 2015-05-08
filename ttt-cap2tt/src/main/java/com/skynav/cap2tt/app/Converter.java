@@ -249,8 +249,13 @@ public class Converter implements ConverterContext {
         { "debug",                      "",         "enable debug output (may be specified multiple times to increase debug level)" },
         { "debug-exceptions",           "",         "enable stack traces on exceptions (implies --debug)" },
         { "debug-level",                "LEVEL",    "enable debug output at specified level (default: 0)" },
+        { "default-alignment",          "ALIGNMENT","specify default alignment (default: \"中央\")" },
+        { "default-kerning",            "KERNING",  "specify default kerning (default: \"1\")" },
         { "default-language",           "LANGUAGE", "specify default language (default: \"\")" },
+        { "default-placement",          "PLACEMENT","specify default placement (default: \"横下\")" },
         { "default-region",             "ID",       "specify identifier of default region (default: undefined)" },
+        { "default-shear",              "SHEAR",    "specify default shear (default: \"3\")" },
+        { "default-typeface",           "TYPEFACE", "specify default typeface (default: \"default\")" },
         { "disable-warnings",           "",         "disable warnings (both hide and don't count warnings)" },
         { "expect-errors",              "COUNT",    "expect count errors or -1 meaning unspecified expectation (default: -1)" },
         { "expect-warnings",            "COUNT",    "expect count warnings or -1 meaning unspecified expectation (default: -1)" },
@@ -413,8 +418,13 @@ public class Converter implements ConverterContext {
     };
 
     // options state
+    private String defaultAlignment;
+    private String defaultKerning;
     private String defaultLanguage;
+    private String defaultPlacement;
     private String defaultRegion;
+    private String defaultShear;
+    private String defaultTypeface;
     private String expectedErrors;
     private String expectedWarnings;
     private String externalDuration;
@@ -826,14 +836,34 @@ public class Converter implements ConverterContext {
             int debug = reporter.getDebugLevel();
             if (debugNew > debug)
                 reporter.setDebugLevel(debugNew);
+        } else if (option.equals("default-alignment")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultAlignment = args.get(++index);
+        } else if (option.equals("default-kerning")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultKerning = args.get(++index);
         } else if (option.equals("default-language")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             defaultLanguage = args.get(++index);
+        } else if (option.equals("default-placement")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultPlacement = args.get(++index);
         } else if (option.equals("default-region")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             defaultRegion = args.get(++index);
+        } else if (option.equals("default-shear")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultShear = args.get(++index);
+        } else if (option.equals("default-typeface")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultTypeface = args.get(++index);
         } else if (option.equals("disable-warnings")) {
             reporter.disableWarnings();
         } else if (option.equals("expect-errors")) {
@@ -3356,50 +3386,162 @@ public class Converter implements ConverterContext {
             else
                 return false;
         }
-        public String getPlacement() {
+        public String getPlacement(boolean[] retGlobal) {
+            String v;
             String name = specification.name;
             if (name.startsWith("横")) {
                 if (name.equals("横下"))
-                    return name;
+                    v = name;
                 else if (name.equals("横上"))
-                    return name;
+                    v = name;
                 else if (name.equals("横適"))
-                    return name;
+                    v = name;
                 else if (name.equals("横中"))
-                    return name;
+                    v = name;
                 else if (name.equals("横中央"))
-                    return "横下";
+                    v = "横下";
                 else if (name.equals("横中頭"))
-                    return "横下";
+                    v = "横下";
                 else if (name.equals("横中末"))
-                    return "横下";
+                    v = "横下";
                 else if (name.equals("横行頭"))
-                    return "横下";
+                    v = "横下";
                 else if (name.equals("横行末"))
-                    return "横下";
+                    v = "横下";
                 else
-                    return null;
+                    v = null;
             } else if (name.startsWith("縦")) {
                 if (name.equals("縦右"))
-                    return name;
+                    v = name;
                 else if (name.equals("縦左"))
-                    return name;
+                    v = name;
                 else if (name.equals("縦適"))
-                    return name;
+                    v = name;
                 else if (name.equals("縦中"))
-                    return name;
+                    v = name;
                 else if (name.equals("縦右頭"))
-                    return "縦右";
+                    v = "縦右";
                 else if (name.equals("縦左頭"))
-                    return "縦左";
+                    v = "縦左";
                 else if (name.equals("縦中頭"))
-                    return "縦中";
+                    v = "縦中";
                 else
-                    return null;
+                    v = null;
             } else
-                return null;
+                v = null;
+            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
+                retGlobal[0] = retain;
+            return v;
         }
-        public void populate(Paragraph p, Set<QName> styles) {
+        private static final String[] alignments = new String[] {
+            "右頭",
+            "行頭",
+            "行末",
+            "左頭",
+            "中央",
+            "中頭",
+            "中末",
+            "両端"
+        };
+        public boolean hasAlignment() {
+            String name = specification.name;
+            for (String a : alignments) {
+                if (name.equals(a))
+                    return true;
+                else if (name.endsWith(a))
+                    return true;
+            }
+            return false;
+        }
+        private String getAlignment(boolean[] retGlobal) {
+            String v = null;
+            String name = specification.name;
+            for (String a : alignments) {
+                if (name.equals(a)) {
+                    v = a;
+                    break;
+                } else if (name.endsWith(a)) {
+                    v = a;
+                    break;
+                }
+            }
+            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
+                retGlobal[0] = retain;
+            return v;
+        }
+        public boolean hasShear() {
+            String name = specification.name;
+            if (name.equals("正体"))
+                return true;
+            else if (name.equals("斜"))
+                return true;
+            else
+                return false;
+        }
+        private String getShear(boolean[] retGlobal) {
+            String v;
+            String name = specification.name;
+            if (name.equals("正体"))
+                v = "0";
+            else if (name.equals("斜")) {
+                if (count < 0)
+                    v = "3";
+                else if (count < shears.length) {
+                    v = Integer.toString(count);
+                } else
+                    v = Integer.toString(shears.length - 1);
+            } else
+                v = null;
+            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
+                retGlobal[0] = retain;
+            return v;
+        }
+        public boolean hasKerning() {
+            return specification.name.equals("詰");
+        }
+        private String getKerning(boolean[] retGlobal) {
+            String v;
+            String name = specification.name;
+            if (name.equals("詰"))
+                v = Integer.toString((count == 0) ? 0 : 1);
+            else
+                v = null;
+            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
+                retGlobal[0] = retain;
+            return v;
+        }
+        private static final String[] typefaces = new String[] {
+            "丸ゴ",
+            "丸ゴシック",
+            "角ゴ",
+            "太角ゴ",
+            "太角ゴシック",
+            "太明",
+            "太明朝",
+            "シネマ"
+        };
+        public boolean hasTypeface() {
+            String name = specification.name;
+            for (String t : typefaces) {
+                if (name.equals(t))
+                    return true;
+            }
+            return false;
+        }
+        private String getTypeface(boolean[] retGlobal) {
+            String v = null;
+            String name = specification.name;
+            for (String t : typefaces) {
+                if (name.equals(t)) {
+                    v = t;
+                    break;
+                }
+            }
+            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
+                retGlobal[0] = retain;
+            return v;
+        }
+        public void populate(Paragraph p, Set<QName> styles, String defaultRegion) {
             String name = specification.name;
             Map<QName, String> attributes = p.getOtherAttributes();
             if (name.equals("横下")) {
@@ -3533,6 +3675,9 @@ public class Converter implements ConverterContext {
             } else if (name.equals("シネマ")) {
                 p.setFontFamily("シネマ");
             }
+            String region = attributes.get(regionAttrName);
+            if ((region != null) && (defaultRegion != null) && region.equals(defaultRegion))
+                attributes.remove(regionAttrName);
             updateStyles(p, styles);
         }
         public void updateStyles(Paragraph p, Set<QName> styles) {
@@ -3709,11 +3854,51 @@ public class Converter implements ConverterContext {
                 attributes = new java.util.ArrayList<Attribute>();
             attributes.add(a);
         }
-        public String getPlacement() {
+        public String getPlacement(boolean[] retGlobal) {
             if (attributes != null) {
                 for (Attribute a : attributes) {
                     if (a.hasPlacement()) {
-                        return a.getPlacement();
+                        return a.getPlacement(retGlobal);
+                    }
+                }
+            }
+            return null;
+        }
+        public String getAlignment(boolean[] retGlobal) {
+            if (attributes != null) {
+                for (Attribute a : attributes) {
+                    if (a.hasAlignment()) {
+                        return a.getAlignment(retGlobal);
+                    }
+                }
+            }
+            return null;
+        }
+        public String getShear(boolean[] retGlobal) {
+            if (attributes != null) {
+                for (Attribute a : attributes) {
+                    if (a.hasShear()) {
+                        return a.getShear(retGlobal);
+                    }
+                }
+            }
+            return null;
+        }
+        public String getKerning(boolean[] retGlobal) {
+            if (attributes != null) {
+                for (Attribute a : attributes) {
+                    if (a.hasKerning()) {
+                        return a.getKerning(retGlobal);
+                    }
+                }
+            }
+            return null;
+        }
+        public String getTypeface(boolean[] retGlobal) {
+            if (attributes != null) {
+                for (Attribute a : attributes) {
+                    if (a.hasTypeface()) {
+                        return a.getTypeface(retGlobal);
                     }
                 }
             }
@@ -3722,14 +3907,28 @@ public class Converter implements ConverterContext {
     }
 
     private static final ObjectFactory ttmlFactory = new ObjectFactory();
-    private static class State {
-        private Division division;
-        private Paragraph paragraph;
-        private String placement;
-        private Map<String,Region> regions;
-        private Set<QName> styles;
+    private class State {
+        private Division division;              // current division being constructed
+        private Paragraph paragraph;            // current pargraph being constructed
+        private String globalPlacement;         // global placement
+        private String placement;               // current screen placement
+        private String globalAlignment;         // global alignment
+        private String alignment;               // current screen alignment
+        private String globalShear;             // global italics
+        private String shear;                   // current screen shear
+        private String globalKerning;           // global kerning
+        private String kerning;                 // current screen kerning
+        private String globalTypeface;          // global typeface
+        private String typeface;                // current screen kerning
+        private Map<String,Region> regions;     // active regions
+        private Set<QName> styles;              
         public State() {
             this.division = ttmlFactory.createDivision();
+            this.globalPlacement = defaultPlacement;
+            this.globalAlignment = defaultAlignment;
+            this.globalShear = defaultShear;
+            this.globalKerning = defaultKerning;
+            this.globalTypeface = defaultTypeface;
             this.regions = new java.util.TreeMap<String,Region>();
             this.styles = new java.util.HashSet<QName>();
         }
@@ -3779,32 +3978,119 @@ public class Converter implements ConverterContext {
                     }
                     pNew.setBegin(begin);
                     pNew.setEnd(end);
-                    populateStyles(pNew, s.attributes);
+                    populateStyles(pNew, mergeDefaults(s.attributes));
                     populateText(pNew, s.text, false);
-                    this.placement = s.getPlacement();
+                    updateScreenAttributes(s);
                 }
                 this.paragraph = pNew;
             } else {
                 populateText(p, s.text, true);
             }
         }
+        private void updateScreenAttributes(Screen s) {
+            boolean global[] = new boolean[1];
+            placement = getPlacement(s, global);
+            if (global[0])
+                globalPlacement = placement;
+            alignment = getAlignment(s, global);
+            if (global[0])
+                globalAlignment = alignment;
+            shear = getShear(s, global);
+            if (global[0])
+                globalShear = shear;
+            kerning = getKerning(s, global);
+            if (global[0])
+                globalKerning = kerning;
+            typeface = getTypeface(s, global);
+            if (global[0])
+                globalTypeface = typeface;
+        }
+        private String getPlacement(Screen s, boolean[] retGlobal) {
+            return s.getPlacement(retGlobal);
+        }
+        private String getAlignment(Screen s, boolean[] retGlobal) {
+            return s.getAlignment(retGlobal);
+        }
+        private String getShear(Screen s, boolean[] retGlobal) {
+            return s.getShear(retGlobal);
+        }
+        private String getKerning(Screen s, boolean[] retGlobal) {
+            return s.getKerning(retGlobal);
+        }
+        private String getTypeface(Screen s, boolean[] retGlobal) {
+            return s.getTypeface(retGlobal);
+        }
         private boolean isNonContinuation(Screen s) {
             if (s == null)                                                              // special 'final' screen, never treat as continuation
                 return true;
-            else if (s.hasInOutCodes())                                                 // any screen with time codes is considered a non-continuation
+            else if (s.hasInOutCodes())                                                 // a screen with time codes is considered a non-continuation
                 return true;
-            else {                                                                      // screen has no time codes
-                String newPlacement = s.getPlacement();
-                if (newPlacement != null) {
-                    if ((placement != null) || !newPlacement.equals(placement))
-                        return true;                                                    // new placement is different from current placement
-                    else
-                        return false;                                                   // new placement is same as current placement, treat as continuation
-                } else if (placement != null) {
+            else if (isNewPlacement(s))                                                 // a screen with new placement is considered a non-continuation
+                return true;
+            else if (isNewAlignment(s))                                                 // a screen with new alignment is considered a non-continuation
+                return true;
+            else if (isNewShear(s))                                                     // a screen with new shear is considered a non-continuation
+                return true;
+            else if (isNewKerning(s))                                                   // a screen with new kerning is considered a non-continuation
+                return true;
+            else if (isNewTypeface(s))                                                  // a screen with new typeface is considered a non-continuation
+                return true;
+            else
+                return false;
+        }
+        private boolean isNewPlacement(Screen s) {
+            String newPlacement = s.getPlacement(null);
+            if (newPlacement != null) {
+                if ((placement != null) || !newPlacement.equals(placement))
                     return true;                                                        // new placement is different from current placement
-                } else {
-                    return false;                                                       // new placement and current placement are default placement, treat as continuation
-                }
+                else
+                    return false;                                                       // new placement is same as current placement, treat as continuation
+            } else {
+                return false;                                                           // new placement not specified, treat as continuation
+            }
+        }
+        private boolean isNewAlignment(Screen s) {
+            String newAlignment = s.getAlignment(null);
+            if (newAlignment != null) {
+                if ((alignment != null) || !newAlignment.equals(alignment))
+                    return true;                                                        // new alignment is different from current alignment
+                else
+                    return false;                                                       // new alignment is same as current alignment, treat as continuation
+            } else {
+                return false;                                                           // new alignment not specified, treat as continuation
+            }
+        }
+        private boolean isNewShear(Screen s) {
+            String newShear = s.getShear(null);
+            if (newShear != null) {
+                if ((shear != null) || !newShear.equals(shear))
+                    return true;                                                        // new shear is different from current shear
+                else
+                    return false;                                                       // new shear is same as current shear, treat as continuation
+            } else {
+                return false;                                                           // new shear not specified, treat as continuation
+            }
+        }
+        private boolean isNewKerning(Screen s) {
+            String newKerning = s.getKerning(null);
+            if (newKerning != null) {
+                if ((kerning != null) || !newKerning.equals(kerning))
+                    return true;                                                        // new kerning is different from current kerning
+                else
+                    return false;                                                       // new kerning is same as current kerning, treat as continuation
+            } else {
+                return false;                                                           // new kerning not specified, treat as continuation
+            }
+        }
+        private boolean isNewTypeface(Screen s) {
+            String newTypeface = s.getTypeface(null);
+            if (newTypeface != null) {
+                if ((typeface != null) || !newTypeface.equals(typeface))
+                    return true;                                                        // new typeface is different from current typeface
+                else
+                    return false;                                                       // new typeface is same as current typeface, treat as continuation
+            } else {
+                return false;                                                           // new typeface not specified, treat as continuation
             }
         }
         private Paragraph populate(Division d, Paragraph p) {
@@ -3890,12 +4176,101 @@ public class Converter implements ConverterContext {
             s.getContent().add(text);
             return s;
         }
+        private List<Attribute> mergeDefaults(List<Attribute> attributes) {
+            boolean hasAlignment = false;
+            boolean hasKerning = false;
+            boolean hasPlacement = false;
+            boolean hasShear = false;
+            boolean hasTypeface = false;
+            if (attributes != null) {
+                for (Attribute a : attributes) {
+                    if (a.hasAlignment())
+                        hasAlignment = true;
+                    if (a.hasKerning())
+                        hasKerning = true;
+                    if (a.hasPlacement())
+                        hasPlacement = true;
+                    if (a.hasShear())
+                        hasShear = true;
+                    if (a.hasTypeface())
+                        hasTypeface = true;
+                }
+            }
+            if (hasAlignment && hasKerning && hasPlacement && hasShear && hasTypeface)
+                return attributes;
+            List<Attribute> mergedAttributes = attributes != null ? new java.util.ArrayList<Attribute>(attributes) : new java.util.ArrayList<Attribute>();
+            if (!hasAlignment) {
+                String v = alignment;
+                if (v == null)
+                    v = globalAlignment;
+                if (v != null) {
+                    AttributeSpecification as = knownAttributes.get(v);
+                    if (as != null)
+                        mergedAttributes.add(new Attribute(as, -1, false, null, null));
+                }
+            }
+            if (!hasKerning) {
+                String v = kerning;
+                if (v == null)
+                    v = globalKerning;
+                if (v != null) {
+                    AttributeSpecification as = knownAttributes.get("詰");
+                    if (as != null) {
+                        int count;
+                        try {
+                            count = Integer.parseInt(v);
+                        } catch (NumberFormatException e) {
+                            count = -1;
+                        }
+                        mergedAttributes.add(new Attribute(as, count, false, null, null));
+                    }
+                }
+            }
+            if (!hasPlacement) {
+                String v = placement;
+                if (v == null)
+                    v = globalPlacement;
+                if (v != null) {
+                    AttributeSpecification as = knownAttributes.get(v);
+                    if (as != null)
+                        mergedAttributes.add(new Attribute(as, -1, false, null, null));
+                }
+            }
+            if (!hasShear) {
+                String v = shear;
+                if (v == null)
+                    v = globalShear;
+                if (v != null) {
+                    AttributeSpecification as = knownAttributes.get("斜");
+                    if (as != null) {
+                        int count;
+                        try {
+                            count = Integer.parseInt(v);
+                        } catch (NumberFormatException e) {
+                            count = -1;
+                        }
+                        mergedAttributes.add(new Attribute(as, count, false, null, null));
+                    }
+                }
+            }
+            if (!hasTypeface) {
+                String v = typeface;
+                if (v == null)
+                    v = globalTypeface;
+                if (v != null) {
+                    AttributeSpecification as = knownAttributes.get(v);
+                    if (as != null)
+                        mergedAttributes.add(new Attribute(as, -1, false, null, null));
+                }
+            }
+            return mergedAttributes;
+        }
         private void populateStyles(Region r, String id) {
         }
         private void populateStyles(Paragraph p, List<Attribute> attributes) {
             if (attributes != null) {
                 for (Attribute a : attributes) {
-                    a.populate(p, styles);
+                    a.populate(p, styles, defaultRegion);
                 }
             }
         }

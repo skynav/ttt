@@ -9,12 +9,12 @@
 </styling>
 <layout>
 <region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>
-<region xml:id="縦中" tts:displayAlign="center" tts:extent="15vw 80vh" tts:writingMode="tbrl"/>
+<region xml:id="縦右" tts:extent="15vw 80vh" tts:position="right 5vh center" tts:writingMode="tbrl"/>
 </layout>
 </head>
 <body region="横下">
 <div>
-<p begin="00:00:57:00" end="00:01:00:00" region="縦中">Vertical<br/>Center</p>
+<p begin="00:00:05:00" end="00:00:08:00" region="縦右">Alignment:<br/>Center</p>
 </div>
 </body>
 </tt>

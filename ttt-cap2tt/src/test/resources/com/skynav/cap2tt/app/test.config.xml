@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config version="1" xmlns="http://skynav.com/ns/ttv">
 <option name="add-creation-metadata">false</option>
+<option name="default-alignment">中頭</option>
+<option name="default-kerning">1</option>
 <option name="default-language">jp</option>
+<option name="default-placement">横下</option>
 <option name="default-region">横下</option>
+<option name="default-shear">0</option>
 <option name="merge-styles">true</option>
 <option name="style-id-pattern">s{0}</option>
 <option name="style-id-sequence-start">1</option>
@@ -12,6 +16,7 @@
 <initial tts:fontSize="4vh"/>
 <initial tts:lineHeight="5vh"/>
 <initial tts:showBackground="whenActive"/>
+<initial tts:textAlign="center"/>
 </styling>
 <layout>
 <region xml:id="横下" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center bottom 5vh" tts:displayAlign="after"/>

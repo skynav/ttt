@@ -69,8 +69,8 @@ public class ConverterTestCases {
     }
 
     @Test
-    public void testConversion005NonTextAttributeAlignContinuation() throws Exception {
-        //performConversionTest("test-005-non-text-attribute-align-continuation.cap", 0, 0);
+    public void testConversion005PlacementAndAlignmentContinuation() throws Exception {
+        performConversionTest("test-005-placement-and-alignment-continuation.cap", 0, 0);
     }
 
     @Test
@@ -91,6 +91,21 @@ public class ConverterTestCases {
     @Test
     public void testConversion009EscapedFullWidthSpace() throws Exception {
         performConversionTest("test-009-escaped-full-width-space.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion010PlacementContinuation() throws Exception {
+        performConversionTest("test-010-placement-continuation.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion011PlacementAndALignmentContinuation() throws Exception {
+        performConversionTest("test-011-placement-and-alignment-continuation.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion012PlacementAndAlignmentRetained() throws Exception {
+        performConversionTest("test-012-placement-and-alignment-retained.cap", 0, 0);
     }
 
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
