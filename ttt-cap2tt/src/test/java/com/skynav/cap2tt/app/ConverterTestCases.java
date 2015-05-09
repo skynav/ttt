@@ -108,6 +108,11 @@ public class ConverterTestCases {
         performConversionTest("test-012-placement-and-alignment-retained.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion013PlacementAndAlignmentDefault() throws Exception {
+        performConversionTest("test-013-placement-and-alignment-default.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
