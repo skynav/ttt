@@ -131,6 +131,7 @@ import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.Timing;
 import com.skynav.xml.helpers.Documents;
+import com.skynav.xml.helpers.Nodes;
 import com.skynav.xml.helpers.Sniffer;
 import com.skynav.xml.helpers.XML;
 
@@ -2782,7 +2783,8 @@ public class Converter implements ConverterContext {
                     QName qn = new QName(ns, a.getLocalName());
                     String initial = initials.get(qn);
                     if ((initial != null) && a.getValue().equals(initial)) {
-                        elide.add(a);
+                        if (!isSpan(e) || !isTextAlign(a))
+                            elide.add(a);
                     }
                 }
             }
@@ -2790,6 +2792,14 @@ public class Converter implements ConverterContext {
         for (Attr a: elide) {
             e.removeAttributeNode(a);
         }
+    }
+
+    private static boolean isSpan(Element e) {
+        return Nodes.matchesName(e, ttSpanEltName);
+    }
+
+    private static boolean isTextAlign(Attr a) {
+        return Nodes.matchesName(a, ttsTextAlignAttrName);
     }
 
     private static Map<Element, StyleSet> getUniqueSpecifiedStyles(Document d, int[] indices, String styleIdPattern, int styleIdStart) {
@@ -4095,6 +4105,7 @@ public class Converter implements ConverterContext {
         }
         private Paragraph populate(Division d, Paragraph p) {
             if ((p != null) && (p.getContent().size() > 0)) {
+                maybeWrapContentInSpan(p);
                 maybeAddRegion(p.getOtherAttributes().get(regionAttrName));
                 d.getBlockOrEmbeddedClass().add(p);
             }
@@ -4276,6 +4287,40 @@ public class Converter implements ConverterContext {
         }
         private void populateStyles(Span s, Attribute a) {
             a.populate(s, styles);
+        }
+        private void maybeWrapContentInSpan(Paragraph p) {
+            String a = (alignment != null) ? alignment : globalAlignment;
+            if (isMixedAlignment(a)) {
+                TextAlign sa, pa;
+                if (a.equals("中頭")) {
+                    pa = TextAlign.CENTER;
+                    sa = TextAlign.START;
+                } else if (a.equals("中末")) {
+                    pa = TextAlign.CENTER;
+                    sa = TextAlign.END;
+                } else {
+                    pa = TextAlign.CENTER;
+                    sa = null;
+                }
+                if (sa != null) {
+                    Span s = ttmlFactory.createSpan();
+                    s.getContent().addAll(p.getContent());
+                    s.setTextAlign(sa);
+                    p.getContent().clear();
+                    p.getContent().add(ttmlFactory.createSpan(s));
+                    p.setTextAlign(pa);
+                }
+            }
+        }
+        private boolean isMixedAlignment(String alignment) {
+            if (alignment == null)
+                return false;
+            else if (alignment.equals("中頭"))
+                return true;
+            else if (alignment.equals("中末"))
+                return true;
+            else
+                return false;
         }
     }
 
