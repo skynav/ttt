@@ -115,8 +115,13 @@
         <configuration>
           <mainClass>com.skynav.ttpe.app.Presenter</mainClass>
           <arguments>
+            <argument>-v</argument>
             <argument>--config</argument>
             <argument>${test.basedir}/test.config.xml</argument>
+            <argument>--font-directory</argument>
+            <argument>${test.basedir}/fonts</argument>
+            <argument>--warn-on</argument>
+            <argument>all</argument>
             <argument>${test.basedir}/test.xml</argument>
           </arguments>
         </configuration>

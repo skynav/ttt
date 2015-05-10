@@ -875,10 +875,9 @@ public class LineLayout {
         }
         private InlineBlockArea layoutEmbedding(Paragraph embedding, double available) {
             InlineBlockArea area = new InlineBlockArea(embedding.getElement());
-            area.addChildren(new ParagraphLayout(embedding, state).layout(available, Consume.FIT), LineArea.ENCLOSE_ALL);
+            area.addChildren(new ParagraphLayout(embedding, state).layout(available, Consume.FIT), LineArea.EXPAND_LINE);
             return area;
         }
     }
 
 }
-

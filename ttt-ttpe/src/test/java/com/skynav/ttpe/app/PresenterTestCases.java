@@ -106,8 +106,8 @@ public class PresenterTestCases {
     }
 
     @Test
-    public void test010SpanFontSizeAnomorphicLRTB() throws Exception {
-        performPresentationTest("test-010-span-font-size-anomorphic-lrtb.xml", 0, 0);
+    public void test011SpanFontSizeAnomorphicLRTB() throws Exception {
+        performPresentationTest("test-011-span-font-size-anomorphic-lrtb.xml", 0, 0);
     }
 
     @Test

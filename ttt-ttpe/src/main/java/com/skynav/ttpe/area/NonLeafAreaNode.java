@@ -34,16 +34,17 @@ import org.w3c.dom.Element;
 public abstract class NonLeafAreaNode extends AreaNode {
 
     public enum Expansion {
-        ENCLOSE_IPD,
-        ENCLOSE_BPD,
-        EXPAND_IPD,
-        EXPAND_BPD;
+        ENCLOSE_IPD,                                    // increase ipd if needed to enclose new child
+        ENCLOSE_BPD,                                    // increase bpd if needed to enclose new child
+        EXPAND_IPD,                                     // increase ipd by new child's ipd
+        EXPAND_BPD;                                     // increase bpd by new child's bpd
     };
 
-    public static final Set<Expansion> ENCLOSE_ALL;
-    public static final Set<Expansion> EXPAND_ALL;
-    public static final Set<Expansion> EXPAND_IPD;
-    public static final Set<Expansion> EXPAND_BPD;
+    public static final Set<Expansion> ENCLOSE_ALL;     // enclose both bpd and ipd
+    public static final Set<Expansion> EXPAND_ALL;      // expand both bpd and ipd
+    public static final Set<Expansion> EXPAND_LINE;     // expand bpd, enclose ipd
+    public static final Set<Expansion> EXPAND_IPD;      // expand ipd only
+    public static final Set<Expansion> EXPAND_BPD;      // expand bpd only
     static {
         Set<Expansion> s;
         s = new java.util.HashSet<Expansion>();
@@ -54,6 +55,10 @@ public abstract class NonLeafAreaNode extends AreaNode {
         s.add(Expansion.EXPAND_IPD);
         s.add(Expansion.EXPAND_BPD);
         EXPAND_ALL = Collections.unmodifiableSet(s);
+        s = new java.util.HashSet<Expansion>();
+        s.add(Expansion.ENCLOSE_IPD);
+        s.add(Expansion.EXPAND_BPD);
+        EXPAND_LINE = Collections.unmodifiableSet(s);
         s = new java.util.HashSet<Expansion>();
         s.add(Expansion.EXPAND_IPD);
         EXPAND_IPD = Collections.unmodifiableSet(s);
