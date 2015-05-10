@@ -145,6 +145,11 @@ public class PresenterTestCases {
         performPresentationTest("test-018-break-font-shear.xml", 0, 0);
     }
 
+    @Test
+    public void test019PlacementAndAlignmentDefault() throws Exception {
+        performPresentationTest("test-019-placement-and-alignment-default.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
