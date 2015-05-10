@@ -8,11 +8,20 @@ OUTFIL=$OUTDIR/files.js
 [ -e $OUTDIR ] && rm -rf $OUTDIR
 mkdir $OUTDIR
 # populate review directory with expected test results
-for f in $SRCDIR/test-*.expected.zip
+if [ $# -gt 0 ]; then
+  p=$1
+else
+  p=test-
+fi
+for f in $SRCDIR/$p*.expected.zip
 do
-  echo Unpacking $f for review ...
-  b=$(basename "$f" .expected.zip)
-  unzip -d $OUTDIR/$b $f
+  if [ ! -e $f ]; then
+    continue
+  else
+    echo Unpacking $f for review ...
+    b=$(basename "$f" .expected.zip)
+    unzip -d $OUTDIR/$b $f
+  fi
 done
 # create list of review files
 [ -e $OUTFIL ] && rm $OUTFIL
