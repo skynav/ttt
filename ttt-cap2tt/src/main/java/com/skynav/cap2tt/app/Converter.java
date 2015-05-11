@@ -246,6 +246,7 @@ public class Converter implements ConverterContext {
 
     private static final String[][] longOptionSpecifications = new String[][] {
         { "add-creation-metadata",      "[BOOLEAN]","add creation metadata (default: see configuration)" },
+        { "allow-modified-utf8",        "",         "allow use of modififed utf-8" },
         { "config",                     "FILE",     "specify path to configuration file" },
         { "debug",                      "",         "enable debug output (may be specified multiple times to increase debug level)" },
         { "debug-exceptions",           "",         "enable stack traces on exceptions (implies --debug)" },
@@ -419,6 +420,7 @@ public class Converter implements ConverterContext {
     };
 
     // options state
+    private boolean allowModifiedUTF8;
     private String defaultAlignment;
     private String defaultKerning;
     private String defaultLanguage;
@@ -812,6 +814,8 @@ public class Converter implements ConverterContext {
                 b = Boolean.valueOf(args.get(++index));
             }
             metadataCreation = b.booleanValue();
+        } else if (option.equals("allow-modified-utf8")) {
+            allowModifiedUTF8 = true;
         } else if (option.equals("debug")) {
             int debug = reporter.getDebugLevel();
             if (debug < 1)
@@ -1614,19 +1618,24 @@ public class Converter implements ConverterContext {
             return cs;
         else if ((cs = sniffShiftJIS(bb, outputParameters)) != null)
             return cs;
+        else if ((cs = sniffUTF8DisregardingBOM(bb, allowModifiedUTF8, outputParameters)) != null)
+            return cs;
         else
             return defaultCharset;
     }
 
     private static Charset asciiEncoding;
     private static Charset sjisEncoding;
+    private static Charset utf8Encoding;
     static {
         try {
             asciiEncoding = Charset.forName("US-ASCII");
             sjisEncoding = Charset.forName("SHIFT_JIS");
+            utf8Encoding = Charset.forName("UTF-8");
         } catch (RuntimeException e) {
             asciiEncoding = null;
             sjisEncoding = null;
+            utf8Encoding = null;
         }
     }
 
@@ -1694,6 +1703,140 @@ public class Converter implements ConverterContext {
             return true;
         else
             return false;
+    }
+
+    private static Charset sniffUTF8DisregardingBOM(ByteBuffer bb, boolean allowModifiedUTF8, Object[] outputParameters) {
+        int restore = bb.position();
+        int limit = bb.limit();
+        int na = 0;     // number of ascii
+        int nn = 0;     // number of non-ascii
+        int ns = 0;     // number of surrogates (directly encoded low- or high-surrogate)
+        int no = 0;     // number of out of range (greater than maximum code point)
+        int nz = 0;     // number of zero encodings (using 2-byte form of modified utf-8)
+        int nl = 0;     // number of non-zero long encodings (using > minimum number of bytes)
+        int sb = 0;     // number of bytes skipped
+        int b1Bad = 0;  // number of bad 1st bytes
+        int bXBad = 0;  // number of bad following bytes
+        while (bb.position() < limit) {
+            int c  = 0; // encoded unicode code point
+            int ps = 0; // perform sync if not zero
+            int nf = 0; // number of following bytes
+            int b1 = bb.get() & 0xFF;
+            if (b1 < 0x80) {
+                c = b1 & 0x7F;
+                nf = 0;
+            } else if (b1 < 0xC0) {
+                ps = 1;
+            } else if (b1 < 0xE0) {
+                c = b1 & 0x1F;
+                nf = 1;
+            } else if (b1 < 0xF0) {
+                c = b1 & 0x0F;
+                nf = 2;
+            } else if (b1 < 0xF8) {
+                c = b1 & 0x07;
+                nf = 3;
+            } else if (b1 < 0xFC) {
+                c = b1 & 0x03;
+                nf = 4;
+            } else if (b1 < 0xFE) {
+                c = b1 & 0x01;
+                nf = 5;
+            } else {
+                ps = 1;
+            }
+            if (ps != 0) {
+                ++b1Bad;
+                bb.position(findUTF8FirstByte(bb));
+                ps = 0;
+                continue;
+            }
+            for (int k = nf; (ps == 0) && (k > 0) && (bb.position() < limit); --k) {
+                int bX = bb.get() & 0xFF;
+                if ((bX < 0x80) || (bX >= 0xC0))
+                    ps = 1;
+                else
+                    c = (c << 6) | (bX & 0x3F);
+            }
+            if (ps != 0) {
+                ++bXBad;
+                bb.position(findUTF8FirstByte(bb));
+                ps = 0;
+                continue;
+            }
+            if (c < 0x80) {
+                ++na;
+                if (nf > 1) {
+                    if (c == 0)
+                        ++nz;
+                    else
+                        ++nl;
+                }
+            } else if (c < 0x07FF) {
+                ++nn;
+                if (nf > 2)
+                    ++nl;
+            } else if (c < 0xD800) {
+                ++nn;
+                if (nf > 3)
+                    ++nl;
+            } else if (c <= 0xDF00) {
+                ++ns;
+                if (nf > 3)
+                    ++nl;
+            } else if (c < 0xFFFF) {
+                ++nn;
+                if (nf > 3)
+                    ++nl;
+            } else if (c <= 0x10FFFF) {
+                ++nn;
+                if (nf > 4)
+                    ++nl;
+            } else {
+                ++no;
+            }
+        }
+        bb.position(restore);
+        if ((b1Bad > 0) || (bXBad > 0)) {
+            // if any bad bytes, fail
+            return null;
+        } else if (no > 0) {
+            // if any out of range code points, fail
+            return null;
+        } else if (ns > 0) {
+            // if any surrogate code points, fail
+            return null;
+        } else if (nl > 0) {
+            // if any non-zero (over) long encodings, fail
+            return null;
+        } else if ((nz > 0) && !allowModifiedUTF8) {
+            // if any zero (over) long encoding and modified utf-8 is not allowed, fail
+            return null;
+        } else if (nn > 0) {
+            return utf8Encoding;
+        } else if (na > 0) {
+            return asciiEncoding;
+        } else {
+            // if no non-asii and no ascii characters, fail
+            return null;
+        }
+    }
+
+    private static int findUTF8FirstByte(ByteBuffer bb) {
+        int position = bb.position();
+        int limit = bb.limit();
+        while (position < limit) {
+            int b = bb.get(position) & 0xFF;
+            if (b < 0x80)
+                break;
+            else if (b < 0xC0)
+                ++position;
+            else if (b < 0xFE)
+                break;
+            else
+                ++position;
+        }
+        return position;
     }
 
     private boolean parseResource() {

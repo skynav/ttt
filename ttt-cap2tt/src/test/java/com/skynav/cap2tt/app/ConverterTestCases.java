@@ -113,6 +113,11 @@ public class ConverterTestCases {
         performConversionTest("test-013-placement-and-alignment-default.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion014SniffUTF8NoBOM() throws Exception {
+        performConversionTest("test-014-sniff-utf8-no-bom.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
