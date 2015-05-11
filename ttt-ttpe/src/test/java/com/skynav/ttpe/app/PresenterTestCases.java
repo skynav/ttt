@@ -150,6 +150,26 @@ public class PresenterTestCases {
         performPresentationTest("test-019-placement-and-alignment-default.xml", 0, 0);
     }
 
+    @Test
+    public void test020RubyDisplayAlignLRTB() throws Exception {
+        performPresentationTest("test-020-ruby-display-align-lrtb.xml", 0, 0);
+    }
+
+    @Test
+    public void test021RubyDisplayAlignTBRL() throws Exception {
+        performPresentationTest("test-021-ruby-display-align-tbrl.xml", 0, 0);
+    }
+
+    @Test
+    public void test022RubyDisplayAlignTBLR() throws Exception {
+        performPresentationTest("test-022-ruby-display-align-tblr.xml", 0, 0);
+    }
+
+    @Test
+    public void test023SpanFontShearTBRL() throws Exception {
+        performPresentationTest("test-023-span-font-shear-tbrl.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

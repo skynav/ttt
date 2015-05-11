@@ -107,6 +107,10 @@ public class Font {
         return key.size;
     }
 
+    public boolean isVertical() {
+        return getAxis() == Axis.VERTICAL;
+    }
+
     public double getSize(Axis axis) {
         return key.size.getDimension(axis);
     }
@@ -170,8 +174,15 @@ public class Font {
 
     private TransformMatrix applyShear(TransformMatrix t0, double shear) {
         TransformMatrix t = (TransformMatrix) t0.clone();
-        double sx = -Math.tan(Math.toRadians(shear * 90));
-        double sy = 0;
+        double s = -Math.tan(Math.toRadians(shear * 90));
+        double sx, sy;
+        if (isVertical()) {
+            sx = 0;
+            sy = s;
+        } else {
+            sx = s;
+            sy = 0;
+        }
         t.shear(sx, sy);
         return t;
     }
