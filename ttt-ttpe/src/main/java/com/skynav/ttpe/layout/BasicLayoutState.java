@@ -393,11 +393,8 @@ public class BasicLayoutState implements LayoutState {
         for (AreaNode c : a.getChildren()) {
             if (dimension == Dimension.IPD)
                 consumed += c.getIPD();
-            else if (dimension == Dimension.BPD) {
+            else if (dimension == Dimension.BPD)
                 consumed += c.getBPD();
-                if (c instanceof LineArea)
-                    consumed += ((LineArea) c).getAnnotationBPD();
-            }
         }
         return consumed;
     }

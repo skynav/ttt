@@ -44,10 +44,12 @@ public class LeafInlineArea extends LeafAreaNode implements Inline {
         this.bpd = bpd;
     }
 
+    @Override
     public void setIPD(double ipd) {
         this.ipd = ipd;
     }
 
+    @Override
     public void setBPD(double bpd) {
         this.bpd = bpd;
     }

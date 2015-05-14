@@ -308,36 +308,6 @@ public class SVGRenderProcessor extends RenderProcessor {
                 if (wm.getDirection(Dimension.IPD) == RL)
                     xCurrent += extent.getWidth();
             }
-            /*
-            BlockAlignment alignment = a.getBlockAlignment();
-            if (alignment != null) {
-                double available = a.getBPD();
-                double consumed = computeChildrenBPD(a);
-                double free = available - consumed;
-                double adjust = 0;
-                if (free < 0)
-                    free = 0;
-                if (alignment == BlockAlignment.BEFORE) {
-                    adjust = 0;
-                } else if (alignment == BlockAlignment.AFTER) {
-                    adjust = free;
-                } else if (alignment == BlockAlignment.CENTER) {
-                    adjust = free / 2;
-                } else if (alignment == BlockAlignment.JUSTIFY) {
-                    int nc = a.getChildCount();
-                    adjust = free / (a.getChildCount() - 1);
-                }
-                if (adjust > 0) {
-                    if (wm.isVertical()) {
-                        if (wm.getDirection(Dimension.BPD) == RL)
-                            adjust *= -1;
-                        xCurrent += adjust;
-                    } else {
-                        yCurrent += adjust;
-                    }
-                }
-            }
-            */
             if (decorateRegions) {
                 Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
@@ -412,24 +382,13 @@ public class SVGRenderProcessor extends RenderProcessor {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         double xSaved = xCurrent;
         double ySaved = yCurrent;
-        LineArea l = getLine(a);
-        assert l != null;
+        LineArea l = a.getLine();
         WritingMode wm = l.getWritingMode();
         boolean vertical = wm.isVertical();
         Direction bpdDirection = wm.getDirection(Dimension.BPD);
         AnnotationPosition position = a.getPosition();
-        if (position == AnnotationPosition.BEFORE) {
-            double bpdOffset = a.getBPD();
-            if (vertical) {
-                if (bpdDirection == LR)
-                    xCurrent -= bpdOffset;
-                else
-                    xCurrent += bpdOffset;
-            } else {
-               yCurrent -= bpdOffset;
-            }
-        } else if (position == AnnotationPosition.AFTER) {
-            double bpdOffset = l.getBPD() + a.getLeadingBefore();
+        if (position == AnnotationPosition.AFTER) {
+            double bpdOffset = l.getBPD() - a.getBPD();
             if (vertical) {
                 if (bpdDirection == LR)
                     xCurrent += bpdOffset;
@@ -449,25 +408,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         e = renderChildren(e, a, d);
         xCurrent = xSaved;
         yCurrent = ySaved;
-        if (vertical) {
-            if (bpdDirection == LR)
-                xCurrent += a.getBPD();
-            else
-                xCurrent -= a.getBPD();
-        } else {
-            yCurrent += a.getBPD();
-        }
         return e;
-    }
-
-    private LineArea getLine(AreaNode a) {
-        while (a != null) {
-            if (a instanceof LineArea)
-                return (LineArea) a;
-            else
-                a = a.getParent();
-        }
-        return null;
     }
 
     private Element renderLine(Element parent, LineArea a, Document d) {
@@ -477,15 +418,6 @@ public class SVGRenderProcessor extends RenderProcessor {
         WritingMode wm = a.getWritingMode();
         boolean vertical = wm.isVertical();
         Direction bpdDirection = wm.getDirection(Dimension.BPD);
-        double bpdAnnotationBefore = a.getAnnotationBPD(AnnotationPosition.BEFORE);
-        if (vertical) {
-            if (bpdDirection == LR)
-                xCurrent += bpdAnnotationBefore;
-            else
-                xCurrent -= bpdAnnotationBefore;
-        } else {
-           yCurrent += bpdAnnotationBefore;
-        }
         if ((xCurrent != 0) || (yCurrent != 0))
             Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
         xCurrent = 0;
@@ -601,11 +533,14 @@ public class SVGRenderProcessor extends RenderProcessor {
         Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         double ipd = a.getIPD();
         double bpd = a.getBPD();
+        double bpdAnnotationBefore = a.getLine().getAnnotationBPD(AnnotationPosition.BEFORE);
         if (a.isVertical()) {
-            double baselineOffset = (bpd / 2) * ((a.getWritingMode().getDirection(Dimension.BPD) == LR) ? 1 : -1);
+            double baselineOffset = (bpd / 2) + bpdAnnotationBefore;
+            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                baselineOffset *= -1;
             Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {baselineOffset, yCurrent}));
         } else {
-            double baselineOffset = a.getFont().getHeight();
+            double baselineOffset = a.getFont().getHeight() + bpdAnnotationBefore;
             Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {xCurrent, baselineOffset}));
         }
         List<Decoration> decorations = a.getDecorations();
@@ -882,20 +817,5 @@ public class SVGRenderProcessor extends RenderProcessor {
         else
             throw new IllegalArgumentException();
     }
-
-    /*
-    private double computeChildrenBPD(Area a) {
-        double bpd = 0;
-        if (a instanceof NonLeafAreaNode) {
-            for (Area c : ((NonLeafAreaNode) a).getChildren()) {
-                if (c instanceof BlockArea)
-                    bpd += ((BlockArea) c).getBPD();
-                if (c instanceof LineArea)
-                    bpd += ((LineArea) c).getAnnotationBPD();
-            }
-        }
-        return bpd;
-    }
-    */
 
 }

@@ -1714,7 +1714,6 @@ public class Converter implements ConverterContext {
         int no = 0;     // number of out of range (greater than maximum code point)
         int nz = 0;     // number of zero encodings (using 2-byte form of modified utf-8)
         int nl = 0;     // number of non-zero long encodings (using > minimum number of bytes)
-        int sb = 0;     // number of bytes skipped
         int b1Bad = 0;  // number of bad 1st bytes
         int bXBad = 0;  // number of bad following bytes
         while (bb.position() < limit) {

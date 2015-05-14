@@ -170,6 +170,21 @@ public class PresenterTestCases {
         performPresentationTest("test-023-span-font-shear-tbrl.xml", 0, 0);
     }
 
+    @Test
+    public void test024RubyMultiLineLRTB() throws Exception {
+        performPresentationTest("test-024-ruby-multi-line-lrtb.xml", 0, 0);
+    }
+
+    @Test
+    public void test025RubyMultiLineTBRL() throws Exception {
+        performPresentationTest("test-025-ruby-multi-line-tbrl.xml", 0, 0);
+    }
+
+    @Test
+    public void test026RubyMultiLineTBLR() throws Exception {
+        performPresentationTest("test-026-ruby-multi-line-tblr.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

@@ -57,17 +57,6 @@ public class GlyphArea extends LeafInlineArea {
         return font;
     }
 
-    public LineArea getLine() {
-        AreaNode p = getParent();
-        while (p != null) {
-            if (p instanceof LineArea)
-                return (LineArea) p;
-            else
-                p = p.getParent();
-        }
-        return new LineArea();
-    }
-
     public BlockArea getContainingBlock() {
         return getLine().getContainingBlock();
     }

@@ -56,6 +56,11 @@ public class LineArea extends BlockArea {
     }
 
     @Override
+    public double getBPD() {
+        return super.getBPD() + getAnnotationBPD();
+    }
+
+    @Override
     public void addChild(AreaNode c, Set<Expansion> expansions) {
         if (c instanceof Inline) {
             super.addChild(c, expansions);

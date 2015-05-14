@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.area;
 
+import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
@@ -68,6 +69,41 @@ public class BlockArea extends NonLeafAreaNode implements Block {
         return numLines;
     }
 
+    public LineArea getFirstLine() {
+        List<LineArea> lines = getLines();
+        if (!lines.isEmpty())
+            return lines.get(0);
+        else
+            return null;
+    }
+
+    public LineArea getLastLine() {
+        List<LineArea> lines = getLines();
+        if (!lines.isEmpty())
+            return lines.get(lines.size() - 1);
+        else
+            return null;
+    }
+
+    public List<LineArea> getLines() {
+        return getLines(true);
+    }
+
+    public List<LineArea> getLines(boolean includeDescendants) {
+        List<LineArea> lines = new java.util.ArrayList<LineArea>();
+        return getLines(lines, this, includeDescendants);
+    }
+
+    public List<LineArea> getLines(List<LineArea> lines, NonLeafAreaNode a, boolean includeDescendants) {
+        for (AreaNode c : a.getChildren()) {
+            if (c instanceof LineArea)
+                lines.add((LineArea) c);
+            if (includeDescendants && (c instanceof NonLeafAreaNode))
+                getLines(lines, (NonLeafAreaNode) c, includeDescendants);
+        }
+        return lines;
+    }
+
     public void setOverflow(double overflow) {
         this.overflow = overflow;
     }
@@ -85,8 +121,10 @@ public class BlockArea extends NonLeafAreaNode implements Block {
                 ipdCurrent = 0;
             if (expansions.contains(Expansion.EXPAND_IPD))
                 setIPD(ipdCurrent + ipd);
-            else if (expansions.contains(Expansion.ENCLOSE_IPD))
-                setIPD(ipdCurrent < ipd ? ipd : ipdCurrent);
+            else if (expansions.contains(Expansion.ENCLOSE_IPD)) {
+                if (ipd > ipdCurrent)
+                    setIPD(ipd);
+            }
         }
         double bpd = a.getBPD();
         if (!Double.isNaN(bpd)) {
@@ -95,8 +133,10 @@ public class BlockArea extends NonLeafAreaNode implements Block {
                 bpdCurrent = 0;
             if (expansions.contains(Expansion.EXPAND_BPD))
                 setBPD(bpdCurrent + bpd);
-            else if (expansions.contains(Expansion.ENCLOSE_BPD))
-                setBPD(bpdCurrent < bpd ? bpd : bpdCurrent);
+            else if (expansions.contains(Expansion.ENCLOSE_BPD)) {
+                if (bpd > bpdCurrent)
+                    setBPD(bpd);
+            }
         }
     }
 

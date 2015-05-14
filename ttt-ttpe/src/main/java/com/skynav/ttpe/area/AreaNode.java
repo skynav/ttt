@@ -100,4 +100,14 @@ public class AreaNode extends AbstractArea {
         return (parent != null) ? parent.get() : null;
     }
 
+    public LineArea getLine() {
+        for (AreaNode p = getParent(); p != null; p = p.getParent()) {
+            if (p instanceof LineArea)
+                return (LineArea) p;
+            else if (p instanceof ReferenceArea)
+                break;
+        }
+        return new LineArea();
+    }
+
 }
