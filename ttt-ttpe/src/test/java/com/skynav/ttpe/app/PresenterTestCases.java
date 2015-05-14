@@ -185,6 +185,21 @@ public class PresenterTestCases {
         performPresentationTest("test-026-ruby-multi-line-tblr.xml", 0, 0);
     }
 
+    @Test
+    public void test027InlineBlockRubyMultiLineLRTB() throws Exception {
+        performPresentationTest("test-027-inline-block-ruby-multi-line-lrtb.xml", 0, 0);
+    }
+
+    @Test
+    public void test028InlineBlockRubyMultiLineTBRL() throws Exception {
+        performPresentationTest("test-028-inline-block-ruby-multi-line-tbrl.xml", 0, 0);
+    }
+
+    @Test
+    public void test029InlineBlockRubyMultiLineTBLR() throws Exception {
+        performPresentationTest("test-029-inline-block-ruby-multi-line-tblr.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

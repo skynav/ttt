@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="jp" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<head>
+<ttm:item name="creationDate">2015-05-11T14:50:08Z</ttm:item>
+<ttm:item name="creationSystem">CAP2TT/1.0.0dev</ttm:item>
+<styling>
+<initial tts:fontSize="4vh"/>
+<initial tts:lineHeight="5vh"/>
+<initial tts:showBackground="whenActive"/>
+<style xml:id="s1" tts:textAlign="center"/>
+<style xml:id="s2" tts:textAlign="start"/>
+<style xml:id="s3" tts:ruby="container"/>
+<style xml:id="s4" tts:ruby="base"/>
+<style xml:id="s5" tts:ruby="text" tts:rubyPosition="before"/>
+<style xml:id="s6" tts:ruby="text" tts:rubyPosition="auto"/>
+<style xml:id="s7" tts:ruby="text" tts:rubyPosition="after"/>
+</styling>
+<layout>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="108px 80vh" tts:position="center right 10vw" tts:writingMode="tbrl"/>
+<region xml:id="r1" tts:displayAlign="center" tts:extent="108px 80vh" tts:position="center" tts:writingMode="tbrl"/>
+<region xml:id="r2" tts:displayAlign="center" tts:extent="108px 80vh" tts:position="center left 10vw" tts:writingMode="tbrl"/>
+</layout>
+</head>
+<body>
+<div>
+<p region="r0" begin="00:02:31:00" end="00:02:33:02" style="s1"><span style="s2">
+にかまれた<span style="s3"><span style="s4">五歩蛇</span><span style="s5">ごほだ</span></span>にかまれた<br/>
+<span style="s3"><span style="s4">五歩蛇</span><span style="s5">ごほだ</span></span>にかまれた
+</span></p>
+<p region="r1" begin="00:02:31:00" end="00:02:33:02" style="s1"><span style="s2">
+にかまれた<span style="s3"><span style="s4">五歩蛇</span><span style="s6">ごほだ</span></span>にかまれた<br/>
+<span style="s3"><span style="s4">五歩蛇</span><span style="s6">ごほだ</span></span>にかまれた
+</span></p>
+<p region="r2" begin="00:02:31:00" end="00:02:33:02" style="s1"><span style="s2">
+にかまれた<span style="s3"><span style="s4">五歩蛇</span><span style="s7">ごほだ</span></span>にかまれた<br/>
+<span style="s3"><span style="s4">五歩蛇</span><span style="s7">ごほだ</span></span>にかまれた
+</span></p>
+</div>
+</body>
+</tt>
