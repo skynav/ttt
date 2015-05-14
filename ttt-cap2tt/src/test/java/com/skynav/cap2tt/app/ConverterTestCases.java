@@ -118,6 +118,11 @@ public class ConverterTestCases {
         performConversionTest("test-014-sniff-utf8-no-bom.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion015RubyPosition() throws Exception {
+        performConversionTest("test-015-ruby-position.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }

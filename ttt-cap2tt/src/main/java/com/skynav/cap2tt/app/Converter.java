@@ -105,6 +105,7 @@ import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.FontStyle;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
+import com.skynav.ttv.model.ttml2.ttd.RubyPosition;
 import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
@@ -341,6 +342,12 @@ public class Converter implements ConverterContext {
         Info,           // allow with message
         Ignore;         // allow silently
     };
+
+    public enum Direction {
+        LR,             // left to right
+        RL,             // right to left
+        TB;             // top to bottom
+    }
 
     // known attribute specifications { name, context, count, minCount, maxCount }
     private static final Object[][] knownAttributeSpecifications = new Object[][] {
@@ -3662,6 +3669,36 @@ public class Converter implements ConverterContext {
                 retGlobal[0] = retain;
             return v;
         }
+        private RubyPosition getRubyPosition(Direction blockDirection) {
+            RubyPosition v = null;
+            String name = specification.name;
+            int l = name.length();
+            if (name.startsWith("ルビ")) {
+                if (l == 2)
+                    v = RubyPosition.AUTO;
+                else if (l > 2) {
+                    char c = name.charAt(2);
+                    if (blockDirection == Direction.TB) {
+                        if (c == '上')
+                            v = RubyPosition.BEFORE;
+                        else if (c == '下')
+                            v = RubyPosition.AFTER;
+                    } else if (blockDirection == Direction.RL) {
+                        if (c == '右')
+                            v = RubyPosition.BEFORE;
+                        else if (c == '左')
+                            v = RubyPosition.AFTER;
+                    } else if (blockDirection == Direction.LR) {
+                        if (c == '右')
+                            v = RubyPosition.AFTER;
+                        else if (c == '左')
+                            v = RubyPosition.BEFORE;
+                    }
+                }
+            }
+            return v;
+        }
+
         private static final String[] typefaces = new String[] {
             "丸ゴ",
             "丸ゴシック",
@@ -4131,13 +4168,26 @@ public class Converter implements ConverterContext {
                     pNew.setBegin(begin);
                     pNew.setEnd(end);
                     populateStyles(pNew, mergeDefaults(s.attributes));
-                    populateText(pNew, s.text, false);
+                    populateText(pNew, s.text, false, getBlockDirection(s));
                     updateScreenAttributes(s);
                 }
                 this.paragraph = pNew;
             } else {
-                populateText(p, s.text, true);
+                populateText(p, s.text, true, getBlockDirection(s));
             }
+        }
+        private Direction getBlockDirection(Screen s) {
+            Direction d;
+            String p = getPlacement(s, null);
+            if (p == null)
+                p = placement;
+            if (p == null)
+                p = globalPlacement;
+            if (p.startsWith("縦"))
+                d = Direction.RL;
+            else
+                d = Direction.TB;
+            return d;
         }
         private void updateScreenAttributes(Screen s) {
             boolean global[] = new boolean[1];
@@ -4263,7 +4313,7 @@ public class Converter implements ConverterContext {
                 }
             }
         }
-        private void populateText(Paragraph p, AttributedString as, boolean insertBreakBefore) {
+        private void populateText(Paragraph p, AttributedString as, boolean insertBreakBefore, Direction blockDirection) {
             if (as != null) {
                 List<Serializable> content = p.getContent();
                 if (insertBreakBefore)
@@ -4280,7 +4330,7 @@ public class Converter implements ConverterContext {
                     }
                     String text = sb.toString();
                     if (annotation != null)
-                        content.add(ttmlFactory.createSpan(createSpan(text, (Attribute) annotation.getValue())));
+                        content.add(ttmlFactory.createSpan(createSpan(text, (Attribute) annotation.getValue(), blockDirection)));
                     else
                         content.add(text);
                     sb.setLength(0);
@@ -4288,40 +4338,44 @@ public class Converter implements ConverterContext {
                 }
             }
         }
-        private Span createSpan(String text, Attribute a) {
+        private Span createSpan(String text, Attribute a, Direction blockDirection) {
             if (a.isEmphasis())
-                return createEmphasis(text, a);
+                return createEmphasis(text, a, blockDirection);
             else if (a.isRuby())
-                return createRuby(text, a);
+                return createRuby(text, a, blockDirection);
             else if (a.isCombine())
-                return createCombine(text, a);
+                return createCombine(text, a, blockDirection);
             else
                 return createStyledSpan(text, a);
         }
-        private Span createEmphasis(String text, Attribute a) {
+        private Span createEmphasis(String text, Attribute a, Direction blockDirection) {
             Span s = ttmlFactory.createSpan();
             s.getOtherAttributes().put(ttsTextEmphasisAttrName, "circle");
             s.getContent().add(text);
             return s;
         }
-        private Span createRuby(String text, Attribute a) {
+        private Span createRuby(String text, Attribute a, Direction blockDirection) {
             Span sBase = ttmlFactory.createSpan();
             sBase.getOtherAttributes().put(ttsRubyAttrName, "base");
             sBase.getContent().add(text);
             Span sText = ttmlFactory.createSpan();
             sText.getOtherAttributes().put(ttsRubyAttrName, "text");
             sText.getContent().add(a.annotation);
+            sText.setRubyPosition(a.getRubyPosition(blockDirection));
             Span sCont = ttmlFactory.createSpan();
             sCont.getOtherAttributes().put(ttsRubyAttrName, "container");
             sCont.getContent().add(ttmlFactory.createSpan(sBase));
             sCont.getContent().add(ttmlFactory.createSpan(sText));
             return sCont;
         }
-        private Span createCombine(String text, Attribute a) {
-            Span s = ttmlFactory.createSpan();
-            s.getOtherAttributes().put(ttsTextCombineAttrName, "all");
-            s.getContent().add(text);
-            return s;
+        private Span createCombine(String text, Attribute a, Direction blockDirection) {
+            if (blockDirection != Direction.TB) {
+                Span s = ttmlFactory.createSpan();
+                s.getOtherAttributes().put(ttsTextCombineAttrName, "all");
+                s.getContent().add(text);
+                return s;
+            } else
+                return createStyledSpan(text, a);
         }
         private Span createStyledSpan(String text, Attribute a) {
             Span s = ttmlFactory.createSpan();
