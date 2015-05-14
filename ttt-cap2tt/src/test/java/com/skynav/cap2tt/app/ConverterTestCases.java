@@ -123,6 +123,11 @@ public class ConverterTestCases {
         performConversionTest("test-015-ruby-position.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion016EmphasisPosition() throws Exception {
+        performConversionTest("test-016-emphasis-position.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }

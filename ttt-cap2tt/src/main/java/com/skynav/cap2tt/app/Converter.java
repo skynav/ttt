@@ -4350,7 +4350,14 @@ public class Converter implements ConverterContext {
         }
         private Span createEmphasis(String text, Attribute a, Direction blockDirection) {
             Span s = ttmlFactory.createSpan();
-            s.getOtherAttributes().put(ttsTextEmphasisAttrName, "circle");
+            StringBuffer sb = new StringBuffer();
+            sb.append("circle");
+            RubyPosition rp = a.getRubyPosition(blockDirection);
+            if ((rp != null) && (rp != RubyPosition.AUTO)) {
+                sb.append(' ');
+                sb.append(rp.name().toLowerCase());
+            }
+            s.getOtherAttributes().put(ttsTextEmphasisAttrName, sb.toString());
             s.getContent().add(text);
             return s;
         }
@@ -4361,7 +4368,9 @@ public class Converter implements ConverterContext {
             Span sText = ttmlFactory.createSpan();
             sText.getOtherAttributes().put(ttsRubyAttrName, "text");
             sText.getContent().add(a.annotation);
-            sText.setRubyPosition(a.getRubyPosition(blockDirection));
+            RubyPosition rp = a.getRubyPosition(blockDirection);
+            if (rp != null)
+                sText.setRubyPosition(rp);
             Span sCont = ttmlFactory.createSpan();
             sCont.getOtherAttributes().put(ttsRubyAttrName, "container");
             sCont.getContent().add(ttmlFactory.createSpan(sBase));
