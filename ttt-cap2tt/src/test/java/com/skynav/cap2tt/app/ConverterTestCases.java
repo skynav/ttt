@@ -128,6 +128,11 @@ public class ConverterTestCases {
         performConversionTest("test-016-emphasis-position.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion017EmphasisMixed() throws Exception {
+        performConversionTest("test-017-emphasis-mixed.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }

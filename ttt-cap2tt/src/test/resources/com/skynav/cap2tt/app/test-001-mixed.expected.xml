@@ -10,7 +10,7 @@
 <style xml:id="s3" tts:fontShear="16.78842%"/>
 <style xml:id="s4" tts:textAlign="center"/>
 <style xml:id="s5" tts:fontSize="1.0em 1.5em"/>
-<style xml:id="s6" tts:textEmphasis="circle before"/>
+<style xml:id="s6" tts:textEmphasis="dot before"/>
 </styling>
 <layout>
 <region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>

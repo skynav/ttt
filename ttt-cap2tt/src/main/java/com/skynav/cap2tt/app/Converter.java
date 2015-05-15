@@ -3527,7 +3527,13 @@ public class Converter implements ConverterContext {
                 int n = annotation.length();
                 for (; i < n; ++i) {
                     char c = annotation.charAt(i);
-                    if (c == '\u30FB')              // U+30FB KATAKANA MIDDLE DOT '・'
+                    if (c == '\u2191')                  // U+2191 UPWARDS ARROW
+                        continue;
+                    else if (c == '\u2193')             // U+2193 DOWNWARDS ARROW
+                        continue;
+                    else if (c == '\u30FB')             // U+30FB KATAKANA MIDDLE DOT '・'
+                        continue;
+                    else if (c == '\uFF3E')             // U+FF3E FULLWIDTH CIRCUMFLEX ACCENT
                         continue;
                     else
                         break;
@@ -4351,7 +4357,7 @@ public class Converter implements ConverterContext {
         private Span createEmphasis(String text, Attribute a, Direction blockDirection) {
             Span s = ttmlFactory.createSpan();
             StringBuffer sb = new StringBuffer();
-            sb.append("circle");
+            sb.append(blockDirection == Direction.TB ? "dot" : "sesame");
             RubyPosition rp = a.getRubyPosition(blockDirection);
             if ((rp != null) && (rp != RubyPosition.AUTO)) {
                 sb.append(' ');

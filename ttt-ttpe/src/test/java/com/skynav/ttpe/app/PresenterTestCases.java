@@ -200,6 +200,11 @@ public class PresenterTestCases {
         performPresentationTest("test-029-inline-block-ruby-multi-line-tblr.xml", 0, 0);
     }
 
+    @Test
+    public void test030SpanTextEmphasisMixed() throws Exception {
+        performPresentationTest("test-030-span-text-emphasis-mixed.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
