@@ -1998,7 +1998,7 @@ public class Converter implements ConverterContext {
         return !fail;
     }
 
-    private static final String fieldSeparatorPatternString = "\\t+";
+    private static final String fieldSeparatorPatternString = "[ \\t]+";
     private boolean parseContentLine(String line, LocatorImpl locator) {
         boolean fail = false;
         String[] fields = line.split(fieldSeparatorPatternString);
@@ -2025,12 +2025,24 @@ public class Converter implements ConverterContext {
                     fail = true;
             }
         }
-        // text field
+        // text fields
         if (!fail) {
-            int fieldIndex;
-            if ((fieldIndex = hasTextField(locator, fields, fieldIndexNext, NonTextAttributeTreatment.Warning)) >= 0) {
-                if (parseTextField(fields[fieldIndex], s) == s)
-                    fieldIndexNext = fieldIndex + 1;
+            StringBuffer sb = new StringBuffer();
+            int lastTextFieldIndex = -1;
+            for (int i = fieldIndexNext, j, n = fieldCount; i < n; ++i) {
+                if (fields[i].length() == 0) {
+                    continue;
+                } else if ((j = hasTextField(locator, fields, i, NonTextAttributeTreatment.Warning)) >= 0) {
+                    if (sb.length() > 0)
+                        sb.append(' ');
+                    sb.append(fields[i]);
+                    lastTextFieldIndex = j;
+                } else
+                      break;
+            }
+            if (sb.length() > 0) {
+                if (parseTextField(sb.toString(), s) == s)
+                    fieldIndexNext = lastTextFieldIndex + 1;
                 else
                     fail = true;
             }
@@ -2245,7 +2257,7 @@ public class Converter implements ConverterContext {
         while (fieldIndex < fields.length) {
             String field = fields[fieldIndex];
             if (field.length() == 0)
-                ++fieldIndex;
+                return -1;
             else if (isTextField(locator, field, fieldIndex, nonTextAttributeTreatment))
                 return fieldIndex;
             else
@@ -3763,24 +3775,19 @@ public class Converter implements ConverterContext {
                 p.setTextAlign(TextAlign.END);
             } else if (name.equals("中頭")) {
                 p.setTextAlign(TextAlign.CENTER);
-                // TBD - wrap content of paragraph in a span with textAlign start
             } else if (name.equals("中末")) {
                 p.setTextAlign(TextAlign.CENTER);
-                // TBD - wrap content of paragraph in a span with textAlign end
             } else if (name.equals("両端")) {
-                // TBD - need to add justify alignment value
-                // p.setTextAlign(TextAlign.JUSTIFY);
+                p.setTextAlign(TextAlign.JUSTIFY);
             } else if (name.equals("横中央")) {
                 attributes.put(regionAttrName, "横下");
                 p.setTextAlign(TextAlign.CENTER);
             } else if (name.equals("横中頭")) {
                 attributes.put(regionAttrName, "横下");
                 p.setTextAlign(TextAlign.CENTER);
-                // TBD - wrap content of paragraph in a span with textAlign start
             } else if (name.equals("横中末")) {
                 attributes.put(regionAttrName, "横下");
                 p.setTextAlign(TextAlign.CENTER);
-                // TBD - wrap content of paragraph in a span with textAlign end
             } else if (name.equals("横行頭")) {
                 attributes.put(regionAttrName, "横下");
                 p.setTextAlign(TextAlign.START);
@@ -3794,7 +3801,6 @@ public class Converter implements ConverterContext {
             } else if (name.equals("縦中頭")) {
                 attributes.put(regionAttrName, "縦中");
                 p.setTextAlign(TextAlign.CENTER);
-                // TBD - wrap content of paragraph in a span with textAlign start
             } else if (name.equals("正体")) {
                 p.setFontStyle(FontStyle.NORMAL);
                 attributes.put(ttsFontShearAttrName, "0%");

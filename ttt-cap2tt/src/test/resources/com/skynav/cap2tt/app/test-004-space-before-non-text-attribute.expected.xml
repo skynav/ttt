@@ -5,8 +5,7 @@
 <initial tts:fontSize="4vh"/>
 <initial tts:lineHeight="5vh"/>
 <initial tts:showBackground="whenActive"/>
-<style xml:id="s1" tts:textAlign="center"/>
-<style xml:id="s2" tts:textAlign="start"/>
+<style xml:id="s1" tts:textAlign="justify"/>
 </styling>
 <layout>
 <region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>
@@ -15,7 +14,7 @@
 </head>
 <body region="横下">
 <div>
-<p begin="00:00:25:00" end="00:00:28:00" region="縦右" style="s1"><span style="s2">Align: <br/>Justify</span></p>
+<p begin="00:00:25:00" end="00:00:28:00" region="縦右" style="s1">Align:<br/>Justify</p>
 </div>
 </body>
 </tt>

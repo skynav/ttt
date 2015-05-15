@@ -64,8 +64,8 @@ public class ConverterTestCases {
     }
 
     @Test
-    public void testConversion004NonTextAttributeInTextField() throws Exception {
-        performConversionTest("test-004-non-text-attribute-in-text-field.cap", 0, 1);
+    public void testConversion004SpaceBeforeNonTextAttribute() throws Exception {
+        performConversionTest("test-004-space-before-non-text-attribute.cap", 0, 1);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ConverterTestCases {
     }
 
     @Test
-    public void testConversion011PlacementAndALignmentContinuation() throws Exception {
+    public void testConversion011PlacementAndAlignmentContinuation() throws Exception {
         performConversionTest("test-011-placement-and-alignment-continuation.cap", 0, 0);
     }
 
