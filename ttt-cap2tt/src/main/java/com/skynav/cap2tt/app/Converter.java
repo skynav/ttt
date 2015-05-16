@@ -2033,8 +2033,9 @@ public class Converter implements ConverterContext {
                 if (fields[i].length() == 0) {
                     continue;
                 } else if ((j = hasTextField(locator, fields, i, NonTextAttributeTreatment.Warning)) >= 0) {
+                    // re-encode SPACE separator as LOW LINE (U+005F), later converted back to SPACE
                     if (sb.length() > 0)
-                        sb.append(' ');
+                        sb.append('\u005F');
                     sb.append(fields[i]);
                     lastTextFieldIndex = j;
                 } else
