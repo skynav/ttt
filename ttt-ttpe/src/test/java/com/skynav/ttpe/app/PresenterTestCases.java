@@ -111,8 +111,8 @@ public class PresenterTestCases {
     }
 
     @Test
-    public void test012SpanTextEmphasis() throws Exception {
-        performPresentationTest("test-012-span-text-emphasis.xml", 0, 0);
+    public void test012SpanTextEmphasisArialLRTB() throws Exception {
+        performPresentationTest("test-012-span-text-emphasis-arial-lrtb.xml", 0, 0);
     }
 
     @Test
@@ -203,6 +203,11 @@ public class PresenterTestCases {
     @Test
     public void test030SpanTextEmphasisMixed() throws Exception {
         performPresentationTest("test-030-span-text-emphasis-mixed.xml", 0, 0);
+    }
+
+    @Test
+    public void test031SpanTextEmphasisNotoLRTB() throws Exception {
+        performPresentationTest("test-031-span-text-emphasis-noto-lrtb.xml", 0, 0);
     }
 
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {

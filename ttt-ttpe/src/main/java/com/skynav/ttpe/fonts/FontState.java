@@ -25,12 +25,18 @@
  
 package com.skynav.ttpe.fonts;
 
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.fontbox.cff.CFFCIDFont;
+import org.apache.fontbox.cff.CFFCharset;
+import org.apache.fontbox.cff.CFFFont;
+import org.apache.fontbox.cff.Type1CharString;
+import org.apache.fontbox.ttf.CFFTable;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.GlyphData;
@@ -60,6 +66,7 @@ public class FontState {
     private CmapSubtable cmapSubtable;
     private KerningSubtable kerningSubtable;
     private GlyphTable glyphTable;
+    private CFFTable cffTable;
     private Deque<GlyphMapping> glyphs = new java.util.ArrayDeque<GlyphMapping>(GLYPHS_CACHE_SIZE);
     private Map<Integer,Integer> mappedGlyphs = new java.util.HashMap<Integer,Integer>();
 
@@ -177,32 +184,84 @@ public class FontState {
     }
 
     public Rectangle[] getGlyphBounds(FontKey key, String text) {
+        Rectangle[] bounds = null;
         if (maybeLoad(key)) {
-            if (glyphTable != null) {
-                Rectangle[] bounds = new Rectangle[text.length()];
-                int[] glyphs = getGlyphs(text);
-                for (int i = 0, n = glyphs.length; i < n; ++i) {
-                    int g = glyphs[i];
-                    if (g >= 0) {
-                        try {
-                            GlyphData d = glyphTable.getGlyph(g);
-                            if (d != null) {
-                                BoundingBox b = d.getBoundingBox();
-                                double x = scaleFontUnits(key, b.getLowerLeftX());
-                                double y = scaleFontUnits(key, b.getLowerLeftY());
-                                double w = scaleFontUnits(key, b.getWidth());
-                                double h = scaleFontUnits(key, b.getHeight());
-                                bounds[i] = new Rectangle(x, y, w, h);
-                            } else
-                                bounds[i] = Rectangle.EMPTY;
-                        } catch (IOException e) {
-                        }
-                    }
-                }
-                return bounds;
+            if (glyphTable != null)
+                bounds = getGlyphBounds(key, glyphTable, text);
+            else if (cffTable != null)
+                bounds = getGlyphBounds(key, cffTable, text);
+        }
+        if (bounds != null) {
+            for (int i = 0, n = bounds.length; i < n; ++i) {
+                if (bounds[i] == null)
+                    bounds[i] = Rectangle.EMPTY;
             }
         }
-        return null;
+        return bounds;
+    }
+
+    public Rectangle[] getGlyphBounds(FontKey key, GlyphTable glyphTable, String text) {
+        assert glyphTable != null;
+        Rectangle[] bounds = new Rectangle[text.length()];
+        int[] glyphs = getGlyphs(text);
+        for (int i = 0, n = glyphs.length; i < n; ++i) {
+            int g = glyphs[i];
+            if (g >= 0) {
+                try {
+                    GlyphData d = glyphTable.getGlyph(g);
+                    if (d != null) {
+                        BoundingBox b = d.getBoundingBox();
+                        double x = scaleFontUnits(key, b.getLowerLeftX());
+                        double y = scaleFontUnits(key, b.getLowerLeftY());
+                        double w = scaleFontUnits(key, b.getWidth());
+                        double h = scaleFontUnits(key, b.getHeight());
+                        bounds[i] = new Rectangle(x, y, w, h);
+                    }
+                } catch (IOException e) {
+                }
+            }
+        }
+        return bounds;
+    }
+
+    public Rectangle[] getGlyphBounds(FontKey key, CFFTable cffTable, String text) {
+        assert cffTable != null;
+        CFFFont cff = cffTable.getFont();
+        if ((cff != null) && (cff instanceof CFFCIDFont))
+            return getGlyphBounds(key, (CFFCIDFont) cff, text);
+        else
+            return null;
+    }
+
+    public Rectangle[] getGlyphBounds(FontKey key, CFFCIDFont cff, String text) {
+        assert cff != null;
+        CFFCharset charset = cff.getCharset();
+        if (charset == null)
+            return null;
+        Rectangle[] bounds = new Rectangle[text.length()];
+        int[] glyphs = getGlyphs(text);
+        for (int i = 0, n = glyphs.length; i < n; ++i) {
+            int g = glyphs[i];
+            if (g >= 0) {
+                try {
+                    int cid = charset.getCIDForGID(g);
+                    Type1CharString cs = cff.getType2CharString(cid);
+                    if (cs != null) {
+                        Rectangle2D r = cs.getBounds();
+                        if (r != null) {
+                            double x = scaleFontUnits(key, r.getX());
+                            double y = scaleFontUnits(key, r.getY());
+                            double w = scaleFontUnits(key, r.getWidth());
+                            double h = scaleFontUnits(key, r.getHeight());
+                            bounds[i] = new Rectangle(x, y, w, h);
+                        }
+                    }
+
+                } catch (IOException e) {
+                }
+            }
+        }
+        return bounds;
     }
 
     private boolean maybeLoad(FontKey key) {
@@ -225,12 +284,11 @@ public class FontState {
                         if (cmapSubtable == null)
                             cmapSubtable = cmap.getSubtable(CmapTable.PLATFORM_WINDOWS, CmapTable.ENCODING_WIN_UNICODE_BMP);
                     }
-                    if (key.isKerningEnabled()) {
-                        KerningTable kerning = otf.getKerning();
-                        if (kerning != null)
-                            kerningSubtable = kerning.getHorizontalKerningSubtable();
-                    }
+                    KerningTable kerning = otf.getKerning();
+                    if (kerning != null)
+                        kerningSubtable = kerning.getHorizontalKerningSubtable();
                     glyphTable = otf.getGlyph();
+                    cffTable = otf.getCFF();
                     reporter.logInfo(reporter.message("*KEY*", "Loaded font instance ''{0}''", f.getAbsolutePath()));
                 }
             } catch (IOException e) {
