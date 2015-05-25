@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.style;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,7 @@ import com.skynav.ttpe.fonts.FontKerning;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.geometry.Axis;
+import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttv.model.value.FontFamily;
@@ -69,6 +71,7 @@ public class StyleCollector {
     protected Font font;
     private Map<String,StyleSet> styles;
     private List<StyleAttributeInterval> attributes;
+    private BidiLevelIterator bidi;
 
     public StyleCollector(StyleCollector sc) {
         this(sc.context, sc.fontCache, sc.extBounds, sc.refBounds, sc.writingMode, sc.language, sc.font, sc.styles);
@@ -84,6 +87,7 @@ public class StyleCollector {
         this.language = language;
         this.font = font;
         this.styles = styles;
+        this.bidi = new BidiLevelIterator();
     }
 
     protected void setFont(Font font) {
@@ -153,6 +157,115 @@ public class StyleCollector {
         collectCommonStyles(e, begin, end);
     }
 
+    public void collectContentStyles(String content, int begin, int end) {
+        int contentLength = content.length();
+        if (begin < 0)
+            begin = 0;
+        if (begin > contentLength)
+            begin = contentLength;
+        if ((end < 0) || (end > contentLength))
+            end = contentLength;
+        if (begin > end)
+            begin = end;
+        collectContentOrientation(content, begin, end);
+        collectContentBidiLevels(content, begin, end);
+    }
+
+    public void collectContentOrientation(String content, int begin, int end) {
+        if (isVertical()) {
+            int lastBegin = begin;
+            int lastEnd = lastBegin;
+            Orientation lastOrientation = null;
+            for (int i = begin, n = end; i < n; ++i) {
+                int c = content.charAt(i);
+                Orientation o = Orientation.fromCharacter(c);
+                if (o != lastOrientation) {
+                    if ((lastOrientation != null) && (lastOrientation != defaultOrientation) && (lastEnd > lastBegin))
+                        addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, i);
+                    lastOrientation = o;
+                    lastBegin = i;
+                }
+                lastEnd = i + 1;
+            }
+            if (lastBegin < end) {
+                if ((lastOrientation != null) && (lastOrientation != defaultOrientation) && (lastEnd > lastBegin))
+                    addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, lastEnd);
+            }
+        }
+    }
+
+    private boolean isVertical() {
+        return writingMode.getAxis(IPD) == Axis.VERTICAL;
+    }
+
+    protected void collectContentBidiLevels(String content, int begin, int end) {
+        int defaultLevel = getDefaultBidiLevel();
+        int index = 0;
+        for (int limit : getBidiRunLimits(begin, end)) {
+            if (index >= end)
+                break;
+            else if (limit > index)
+                collectContentBidiLevels(content, index, limit, defaultLevel);
+            index = limit;
+        }
+    }
+
+    private int getDefaultBidiLevel() {
+        if (writingMode.getAxis(IPD) == Axis.VERTICAL)
+            return 0;
+        else
+            return (writingMode.getDirection(IPD) == Direction.RL) ? 1 : 0;
+    }
+
+    private static final Set<StyleAttribute> bidiRunBreakingAttributes;
+    static {
+        Set<StyleAttribute> s = new java.util.HashSet<StyleAttribute>();
+        s.add(StyleAttribute.ORIENTATION);
+        bidiRunBreakingAttributes = Collections.unmodifiableSet(s);
+    }
+
+    private int[] getBidiRunLimits(int begin, int end) {
+        Set<Integer> limits = new java.util.TreeSet<Integer>();
+        limits.add(begin);
+        for (StyleAttributeInterval i : getIntervals(bidiRunBreakingAttributes)) {
+            int b = i.getBegin();
+            if ((b >= begin) && (b < end))
+                limits.add(b);
+            int e = i.getEnd();
+            if ((e > begin) && (e <= end))
+                limits.add(e);
+        }
+        limits.add(end);
+        int[] la = new int[limits.size()];
+        int i = 0;
+        for (int l : limits)
+            la[i++] = l;
+        return la;
+    }
+
+    protected void collectContentBidiLevels(String content, int begin, int end, int defaultLevel) {
+        BidiLevelIterator bi = bidi.setParagraph(content.substring(begin, end), defaultLevel);
+        int lastBegin = begin;
+        int lastLevel = -1;
+        int maxLevel = lastLevel;
+        for (int i = bi.first(); i != BidiLevelIterator.DONE; i = bi.next()) {
+            int level = bi.level();
+            if (level != lastLevel) {
+                if (lastLevel >= 0) {
+                    addAttribute(StyleAttribute.BIDI, Integer.valueOf(lastLevel), lastBegin, i);
+                }
+                lastLevel = level;
+                lastBegin = i;
+            }
+            if (level > maxLevel)
+                maxLevel = level;
+        }
+        if (lastBegin < end) {
+            if ((lastLevel >= 0) && (maxLevel > 0))
+                addAttribute(StyleAttribute.BIDI, Integer.valueOf(lastLevel), lastBegin, end);
+        }
+    }
+
     public void addEmbedding(Object object, int begin, int end) {
         addAttribute(StyleAttribute.EMBEDDING, object, begin, end);
     }
@@ -194,6 +307,19 @@ public class StyleCollector {
             v = InlineAlignment.fromValue(s.getValue());
         if (v != null)
             addAttribute(StyleAttribute.INLINE_ALIGNMENT, v, begin, end);
+
+        // TEXT_COMBINE
+        s = styles.get(ttsTextCombineAttrName);
+        v = null;
+        if (s != null) {
+            com.skynav.ttv.model.value.TextCombine[] retCombine = new com.skynav.ttv.model.value.TextCombine[1];
+            if (com.skynav.ttv.verifier.util.Combine.isCombine(s.getValue(), null, null, retCombine)) {
+                com.skynav.ttv.model.value.TextCombine tc = retCombine[0];
+                v = new Combine(tc.getStyle().name(), tc.getCount());
+            }
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.COMBINE, v, begin, end);
 
         // TEXT_EMPHASIS
         s = styles.get(ttsTextEmphasisAttrName);
@@ -354,6 +480,28 @@ public class StyleCollector {
         if (attributes == null)
             attributes = new java.util.ArrayList<StyleAttributeInterval>();
         attributes.add(new StyleAttributeInterval(attribute, value, begin, end));
+    }
+
+    protected List<StyleAttributeInterval> getIntervals(Set<StyleAttribute> attributes) {
+        List<StyleAttributeInterval> intervals = new java.util.ArrayList<StyleAttributeInterval>();
+        if (this.attributes != null) {
+            for (StyleAttributeInterval i : this.attributes) {
+                if (attributes.contains(i.getAttribute()))
+                    intervals.add(i);
+            }
+        }
+        return intervals;
+    }
+
+    protected List<StyleAttributeInterval> getIntervals(StyleAttribute attribute) {
+        List<StyleAttributeInterval> intervals = new java.util.ArrayList<StyleAttributeInterval>();
+        if (this.attributes != null) {
+            for (StyleAttributeInterval i : this.attributes) {
+                if (i.getAttribute().equals(attribute))
+                    intervals.add(i);
+            }
+        }
+        return intervals;
     }
 
     protected List<String> getDefaultFontFamilies(Element e, StyleSet styles) {

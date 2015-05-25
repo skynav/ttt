@@ -42,6 +42,8 @@ public class Emphasis {
         OUTSIDE;
     };
 
+    public static final Emphasis NONE = new Emphasis(Style.NONE.name(), null, Position.AUTO.name(), null);
+
     private Style style;
     private String text;
     private Position position;

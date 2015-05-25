@@ -39,32 +39,32 @@ public class Combine {
             return false;
         int index = 0;
         String c1 = components[index++];
-        TextCombine.Combine combine;
+        TextCombine.Style style;
         if (c1 != null) {
             try {
-                combine = TextCombine.Combine.fromValue(c1);
+                style = TextCombine.Style.fromValue(c1);
             } catch (IllegalArgumentException e) {
                 return false;
             }
         } else
-            combine = null;
+            style = null;
         String c2 = (index < numComponents) ? components[index] : null;
-        int digits;
+        int count;
         if (c2 != null) {
             try {
-                digits = Integer.parseInt(c2);
+                count = Integer.parseInt(c2);
             } catch (NumberFormatException e) {
                 return false;
             }
         } else
-            digits = 0;
-        if (combine == null)
+            count = 0;
+        if (style == null)
             return false;
-        if (digits < 0)
+        if (count < 0)
             return false;
         if (outputCombine != null) {
             assert outputCombine.length >= 1;
-            outputCombine[0] = new TextCombine(combine, digits);
+            outputCombine[0] = new TextCombine(style, count);
         }
         return true;
     }

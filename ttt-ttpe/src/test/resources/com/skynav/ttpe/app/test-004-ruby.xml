@@ -16,10 +16,10 @@
     <span tts:ruby="baseContainer">
       <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="before" tts:rubyAlign="center">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="center">
       <span tts:ruby="text">ライセンス</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="after" tts:rubyAlign="center">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="after" tts:rubyAlign="center">
       <span tts:ruby="text">license</span>
     </span>
   </span>
@@ -31,10 +31,10 @@
     <span tts:ruby="baseContainer">
       <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="before" tts:rubyAlign="start">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="start">
       <span tts:ruby="text">ライセンス</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="after" tts:rubyAlign="end">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="after" tts:rubyAlign="end">
       <span tts:ruby="text">license</span>
     </span>
   </span>
@@ -46,10 +46,10 @@
     <span tts:ruby="baseContainer">
       <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="before" tts:rubyAlign="start">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="start">
       <span tts:ruby="text">ライセンス</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="20px" tts:rubyPosition="after" tts:rubyAlign="end">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="after" tts:rubyAlign="end">
       <span tts:ruby="text">license</span>
     </span>
   </span>

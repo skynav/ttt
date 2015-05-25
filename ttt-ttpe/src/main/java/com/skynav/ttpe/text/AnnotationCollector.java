@@ -172,15 +172,12 @@ public class AnnotationCollector extends PhraseCollector {
                 if (t != null)
                     text.append(t);
             }
-            /*
-            else if (n instanceof Element) {
-                // ignore non-text children (for now)
-            }
-            */
         }
         StyleCollector sc = new AnnotationStyleCollector(styleCollector, null);
         sc.collectSpanStyles(e, -1, -1);
-        addBase(e, text.toString(), sc.extract());
+        String content = text.toString();
+        sc.collectContentStyles(content, 0, content.length());
+        addBase(e, content, sc.extract());
     }
 
     private void collectText(Element e) {
@@ -198,15 +195,12 @@ public class AnnotationCollector extends PhraseCollector {
                     if (t != null)
                         text.append(t);
                 }
-                /*
-                else if (n instanceof Element) {
-                    // ignore non-text children (for now)
-                }
-                */
             }
             StyleCollector sc = new AnnotationStyleCollector(styleCollector, (currentBase < 0) ? null : bases.get(currentBase).getElement());
             sc.collectSpanStyles(e, -1, -1);
-            addAnnotation(e, text.toString(), sc.extract());
+            String content = text.toString();
+            sc.collectContentStyles(content, 0, content.length());
+            addAnnotation(e, content, sc.extract());
             ++currentBase;
         } else
             currentBase = -1;

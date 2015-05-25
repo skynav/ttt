@@ -144,15 +144,27 @@ public class Font {
     }
 
     public double getAdvance(String text) {
-        return ls.getAdvance(key, text);
+        return getAdvance(text, isKerningEnabled(), false);
     }
 
-    public double getAdvance(String text, boolean adjustForKerning) {
-        return ls.getAdvance(key, text, adjustForKerning);
+    public double getRotatedAdvance(String text) {
+        return getAdvance(text, isKerningEnabled(), true);
+    }
+
+    public double getAdvance(String text, boolean adjustForKerning, boolean rotatedOrientation) {
+        return ls.getAdvance(key, text, adjustForKerning, rotatedOrientation);
     }
 
     public double[] getAdvances(String text) {
-        return ls.getAdvances(key, text);
+        return getAdvances(text, isKerningEnabled(), false);
+    }
+
+    public double[] getRotatedAdvances(String text) {
+        return getAdvances(text, isKerningEnabled(), true);
+    }
+
+    public double[] getAdvances(String text, boolean adjustForKerning, boolean rotatedOrientation) {
+        return ls.getAdvances(key, text, adjustForKerning, rotatedOrientation);
     }
 
     public double getKerningAdvance(String text) {
@@ -164,19 +176,23 @@ public class Font {
     }
 
     public TransformMatrix getTransform() {
+        return getTransform(key.axis);
+    }
+
+    public TransformMatrix getTransform(Axis axis) {
         TransformMatrix t = TransformMatrix.IDENTITY;
         if (isSheared())
-            t = applyShear(t, getShear());
+            t = applyShear(t, getShear(), axis);
         if (isAnamorphic())
-            t = applyAnamorphic(t, getSize());
+            t = applyAnamorphic(t, getSize(), axis);
         return !t.isIdentity() ? t : null;
     }
 
-    private TransformMatrix applyShear(TransformMatrix t0, double shear) {
+    private TransformMatrix applyShear(TransformMatrix t0, double shear, Axis axis) {
         TransformMatrix t = (TransformMatrix) t0.clone();
         double s = -Math.tan(Math.toRadians(shear * 90));
         double sx, sy;
-        if (isVertical()) {
+        if (axis.isVertical()) {
             sx = 0;
             sy = s;
         } else {
@@ -187,7 +203,7 @@ public class Font {
         return t;
     }
 
-    private TransformMatrix applyAnamorphic(TransformMatrix t0, Extent size) {
+    private TransformMatrix applyAnamorphic(TransformMatrix t0, Extent size, Axis axis) {
         TransformMatrix t = (TransformMatrix) t0.clone();
         double sx = size.getDimension(Axis.HORIZONTAL) / size.getDimension(Axis.VERTICAL);
         double sy = 1;

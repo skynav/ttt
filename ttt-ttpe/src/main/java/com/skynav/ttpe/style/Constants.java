@@ -40,11 +40,6 @@ import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
-import com.skynav.ttpe.style.BlockAlignment;
-import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.InlineAlignment;
-import com.skynav.ttpe.style.Whitespace;
-import com.skynav.ttpe.style.Wrap;
 
 import static com.skynav.ttv.model.ttml.TTML.Constants.*;
 
@@ -57,6 +52,7 @@ public class Constants {
     public static final QName isdCSSAttrName                            = new QName(NAMESPACE_TT_ISD, "css");
 
     // TTML Style Attribute Names
+    public static final QName ttsBackgroundColorAttrName                = new QName(NAMESPACE_TT_STYLE, "backgroundColor");
     public static final QName ttsBPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "bpd");
     public static final QName ttsColorAttrName                          = new QName(NAMESPACE_TT_STYLE, "color");
     public static final QName ttsDisplayAlignAttrName                   = new QName(NAMESPACE_TT_STYLE, "displayAlign");
@@ -78,6 +74,7 @@ public class Constants {
     public static final QName ttsRubyOffsetAttrName                     = new QName(NAMESPACE_TT_STYLE, "rubyOffset");
     public static final QName ttsRubyPositionAttrName                   = new QName(NAMESPACE_TT_STYLE, "rubyPosition");
     public static final QName ttsTextAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "textAlign");
+    public static final QName ttsTextCombineAttrName                    = new QName(NAMESPACE_TT_STYLE, "textCombine");
     public static final QName ttsTextEmphasisAttrName                   = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
     public static final QName ttsWrapOptionAttrName                     = new QName(NAMESPACE_TT_STYLE, "wrapOption");
     public static final QName ttsWritingModeAttrName                    = new QName(NAMESPACE_TT_STYLE, "writingMode");
@@ -87,8 +84,11 @@ public class Constants {
     public static final InlineAlignment defaultAnnotationAlign          = InlineAlignment.CENTER;
     public static final double defaultAnnotationOffset                  = 0;
     public static final AnnotationPosition defaultAnnotationPosition    = AnnotationPosition.AUTO;
+    public static final Color defaultBackgroundColor                    = Color.TRANSPARENT;
     public static final Color defaultColor                              = Color.YELLOW;
+    public static final Combine defaultCombine                          = Combine.NONE;
     public static final BlockAlignment defaultDisplayAlign              = BlockAlignment.BEFORE;
+    public static final Emphasis defaultEmphasis                        = Emphasis.NONE;
     public static final Extent defaultExtent                            = Extent.EMPTY;
     public static final Extent defaultExternalExtent                    = new Extent(1280, 720);
     public static final List<String> defaultFontFamilies                = FontKey.DEFAULT_FAMILIES;
@@ -102,6 +102,7 @@ public class Constants {
     public static final double defaultLineHeight                        = defaultFontSize.getHeight() * 1.25;
     public static final String defaultPositionComponents                = "center";
     public static final Point defaultOrigin                             = Point.ZERO;
+    public static final Orientation defaultOrientation                  = Orientation.ROTATE000;
     public static final Overflow defaultOverflow                        = Overflow.HIDDEN;
     public static final Whitespace defaultWhitespace                    = Whitespace.DEFAULT;
     public static final InlineAlignment defaultTextAlign                = InlineAlignment.START;

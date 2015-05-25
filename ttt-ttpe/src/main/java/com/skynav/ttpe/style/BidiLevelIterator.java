@@ -23,53 +23,56 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.style;
 
-import java.util.List;
+import com.ibm.icu.text.Bidi;
+import com.ibm.icu.text.BidiRun;
 
-import org.w3c.dom.Element;
+public class BidiLevelIterator {
 
-import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.Decoration;
-import com.skynav.ttpe.style.Orientation;
+    public static final int DONE = -1;
 
-public class GlyphArea extends LeafInlineArea {
+    private Bidi bidi;
+    private BidiRun run;
 
-    private String text;
-    private List<Decoration> decorations;
-    private Font font;
-    private Orientation orientation;
-
-    public GlyphArea(Element e, double ipd, double bpd, String text, List<Decoration> decorations, Font font, Orientation orientation) {
-        super(e, ipd, bpd);
-        this.text = text;
-        this.decorations = decorations;
-        this.font = font;
-        this.orientation = orientation;
+    public BidiLevelIterator() {
+        this.bidi = new Bidi();
     }
 
-    public String getText() {
-        return text;
+    public BidiLevelIterator setParagraph(String text, int defaultLevel) {
+        bidi.setPara(text, (byte) defaultLevel, null);
+        setIndex(0);
+        return this;
     }
 
-    public List<Decoration> getDecorations() {
-        return decorations;
+    public int current() {
+        return (run != null) ? run.getStart() : DONE;
     }
 
-    public Font getFont() {
-        return font;
+    public int limit() {
+        return (run != null) ? run.getLimit() : DONE;
     }
 
-    public Orientation getOrientation() {
-        return orientation;
+    public int level() {
+        return (run != null) ? run.getEmbeddingLevel() : DONE;
     }
 
-    public boolean isRotatedOrientation() {
-        return orientation.isRotated();
+    public int first() {
+        return setIndex(0);
     }
 
-    public BlockArea getContainingBlock() {
-        return getLine().getContainingBlock();
+    public int next() {
+        return setIndex(limit());
+    }
+
+    public int setIndex(int index) {
+        if (index < 0)
+            return DONE;
+        else if (index < bidi.getProcessedLength()) {
+            run = bidi.getLogicalRun(index);
+            return current();
+        } else
+            return DONE;
     }
 
 }

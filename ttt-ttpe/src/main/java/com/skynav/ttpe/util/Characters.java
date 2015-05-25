@@ -57,11 +57,32 @@ public class Characters {
     public static final int   UC_NNBSP                          = '\u202F';             // narrow non-breaking space
     public static final int   UC_MMSP                           = '\u205F';             // medium mathematical space
     public static final int   UC_IDSP                           = '\u3000';             // ideographic space
+    public static final int   UC_CJK_SYMBOL_START               = '\u3000';             // cjk symbols - start
+    public static final int   UC_CJK_SYMBOL_END                 = '\u303F';             // cjk symbols - end (inclusive)
+    public static final int   UC_HIRAGANA_START                 = '\u3040';             // hiragana - start
+    public static final int   UC_HIRAGANA_END                   = '\u309F';             // hiragana - end (inclusive)
+    public static final int   UC_KATAKANA_START                 = '\u30A0';             // katakana - start
+    public static final int   UC_KATAKANA_END                   = '\u30FF';             // katakana - end (inclusive)
     public static final int   UC_CJK_START                      = '\u4E00';             // unified cjk ideographs - start
     public static final int   UC_CJK_END                        = '\u9FCC';             // unified cjk ideographs - end (inclusive)
+    public static final int   UC_CJK_VERTICAL_START             = '\uFE10';             // cjk vertical forms - start
+    public static final int   UC_CJK_VERTICAL_END               = '\uFE1F';             // cjk vertical forms - end (inclusive)
+    public static final int   UC_CJK_COMPAT_START               = '\uFE30';             // cjk compatibility forms - start
+    public static final int   UC_CJK_COMPAT_END                 = '\uFE4F';             // cjk compatibility forms - end (inclusive)
+    public static final int   UC_CJK_HALF_FULL_WIDTH_START      = '\uFF00';             // cjk half and full width forms - start
+    public static final int   UC_CJK_HALF_FULL_WIDTH_END        = '\uFFEF';             // cjk half and full width forms - end (inclusive)
     public static final int   UC_OBJECT                         = '\uFFFC';             // object replacement character
     public static final int   UC_REPLACEMENT                    = '\uFFFD';             // replacement character
     public static final int   UC_NOT_A_CHARACTER                = '\uFFFF';             // not a character
+
+    public static String formatCharacter(int c) {
+        if (c < 65536)
+            return String.format("'%c' (U+%04X)", (char) c, c);
+        else if (c < 1114112)
+            return String.format("'%c' (U+%06X)", (char) c, c);
+        else
+            return String.format("*illegal character* (%08X)", c);
+    }
 
     public static boolean isLineSeparator(int c) {
         return c == UC_LINE_SEPARATOR;
@@ -128,8 +149,59 @@ public class Characters {
         return (c == UC_HYPHEN_MINUS) || (c == UC_SOFT_HYPHEN);
     }
 
-    public static boolean isIdeograph(int c) {
+    public static boolean isCJKSymbol(int c) {
+        return (c >= UC_CJK_SYMBOL_START) && (c <= UC_CJK_SYMBOL_END);
+    }
+
+    public static boolean isCJKIdeograph(int c) {
         return (c >= UC_CJK_START) && (c <= UC_CJK_END);
+    }
+
+    public static boolean isCJKVertical(int c) {
+        return (c >= UC_CJK_VERTICAL_START) && (c <= UC_CJK_VERTICAL_END);
+    }
+
+    public static boolean isCJKCompatibility(int c) {
+        return (c >= UC_CJK_COMPAT_START) && (c <= UC_CJK_COMPAT_END);
+    }
+
+    public static boolean isCJKHalfFullWidth(int c) {
+        return (c >= UC_CJK_HALF_FULL_WIDTH_START) && (c <= UC_CJK_HALF_FULL_WIDTH_END);
+    }
+
+    public static boolean isHiragana(int c) {
+        return (c >= UC_HIRAGANA_START) && (c <= UC_HIRAGANA_END);
+    }
+
+    public static boolean isKatakana(int c) {
+        return (c >= UC_KATAKANA_START) && (c <= UC_KATAKANA_END);
+    }
+
+    public static boolean isCJK(int c) {
+        if (isCJKSymbol(c))
+            return true;
+        else if (isHiragana(c))
+            return true;
+        else if (isKatakana(c))
+            return true;
+        else if (isCJKIdeograph(c))
+            return true;
+        else if (isCJKVertical(c))
+            return true;
+        else if (isCJKCompatibility(c))
+            return true;
+        else if (isCJKHalfFullWidth(c))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isUprightOrientation(int c) {
+        return isCJK(c);
+    }
+
+    public static boolean isMixedOrientation(int c) {
+        return !isUprightOrientation(c);
     }
 
     private static final int[] h2fKey = new int[] {

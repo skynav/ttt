@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2015 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,53 +23,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.style;
 
-import java.util.List;
+public class Combine {
 
-import org.w3c.dom.Element;
+    public enum Style {
+        NONE,
+        ALL,
+        DIGITS;
+    };
 
-import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.Decoration;
-import com.skynav.ttpe.style.Orientation;
+    public static final Combine NONE = new Combine(Style.NONE.name(), 0);
 
-public class GlyphArea extends LeafInlineArea {
+    private Style style;
+    private int count;
 
-    private String text;
-    private List<Decoration> decorations;
-    private Font font;
-    private Orientation orientation;
-
-    public GlyphArea(Element e, double ipd, double bpd, String text, List<Decoration> decorations, Font font, Orientation orientation) {
-        super(e, ipd, bpd);
-        this.text = text;
-        this.decorations = decorations;
-        this.font = font;
-        this.orientation = orientation;
+    public Combine(String style, int count) {
+        this.style = Style.valueOf(style);
+        this.count = count;
     }
 
-    public String getText() {
-        return text;
+    public Style getStyle() {
+        return style;
     }
 
-    public List<Decoration> getDecorations() {
-        return decorations;
+    public boolean isNone() {
+        return getStyle() == Style.NONE;
     }
 
-    public Font getFont() {
-        return font;
+    public int getCount() {
+        return count;
     }
 
-    public Orientation getOrientation() {
-        return orientation;
-    }
-
-    public boolean isRotatedOrientation() {
-        return orientation.isRotated();
-    }
-
-    public BlockArea getContainingBlock() {
-        return getLine().getContainingBlock();
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('[');
+        sb.append(style);
+        sb.append(',');
+        sb.append(count);
+        sb.append(']');
+        return sb.toString();
     }
 
 }

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFCharset;
@@ -49,6 +50,7 @@ import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.util.BoundingBox;
 
+import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.util.Characters;
 import com.skynav.ttv.util.Reporter;
@@ -69,6 +71,7 @@ public class FontState {
     private CFFTable cffTable;
     private Deque<GlyphMapping> glyphs = new java.util.ArrayDeque<GlyphMapping>(GLYPHS_CACHE_SIZE);
     private Map<Integer,Integer> mappedGlyphs = new java.util.HashMap<Integer,Integer>();
+    private Set<Integer> mappingFailures;
 
     public FontState(String source, Reporter reporter) {
         this.source = source;
@@ -120,29 +123,26 @@ public class FontState {
         return putCachedGlyphs(text, mapGlyphs(text, substitution));
     }
 
-    public double getAdvance(FontKey key, String text) {
-        return getAdvance(key, text, true);
-    }
-
-    public double getAdvance(FontKey key, String text, boolean adjustForKerning) {
+    public double getAdvance(FontKey key, String text, boolean adjustForKerning, boolean rotatedOrientation) {
         double advance = 0;
-        for (double a : getAdvances(key, text))
+        for (double a : getAdvances(key, text, adjustForKerning, rotatedOrientation))
             advance += a;
-        if (adjustForKerning)
-            advance += getKerningAdvance(key, text);
         return advance;
     }
 
-    public double[] getAdvances(FontKey key, String text) {
+    public double[] getAdvances(FontKey key, String text, boolean adjustForKerning, boolean rotatedOrientation) {
+        boolean vertical = key.axis == Axis.VERTICAL;
         double[] advances = new double[text.length()];
         if (maybeLoad(key)) {
             int[] glyphs = getGlyphs(text);
+            int[] kerning = (adjustForKerning && (kerningSubtable != null)) ? kerningSubtable.getKerning(glyphs) : null;
             for (int i = 0, n = glyphs.length; i < n; ++i) {
                 int g = glyphs[i];
                 int c = mappedGlyphs.get(g);
                 if (!Characters.isZeroWidthWhitespace(c)) {
                     try {
-                        advances[i] = scaleFontUnits(key, (double) otf.getAdvanceWidth(g));
+                        int k = kerning != null ? kerning[i] : 0;
+                        advances[i] = scaleFontUnits(key, (double) (((vertical && !rotatedOrientation) ? otf.getAdvanceHeight(g) : otf.getAdvanceWidth(g)) + k));
                     } catch (IOException e) {
                     }
                 }
@@ -353,7 +353,29 @@ public class FontState {
     }
 
     private int getGlyphId(int c) {
-        return cmapSubtable.getGlyphId(c);
+        int gid = cmapSubtable.getGlyphId(c);
+        if (gid == 0)
+            maybeReportMappingFailure(c);
+        return gid;
+    }
+
+    private void maybeReportMappingFailure(int c) {
+        if (dontReportMappingFailure(c))
+            return;
+        if (mappingFailures == null)
+            mappingFailures = new java.util.HashSet<Integer>();
+        Integer value = Integer.valueOf(c);
+        if (!mappingFailures.contains(value)) {
+            reporter.logWarning(reporter.message("*KEY*", "No glyph mapping for character {0} in font resource ''{1}''.", Characters.formatCharacter(c), source));
+            mappingFailures.add(value);
+        }
+    }
+
+    private boolean dontReportMappingFailure(int c) {
+        if (Characters.isZeroWidthWhitespace(c))
+            return true;
+        else
+            return false;
     }
 
     private double scaleFontUnits(FontKey key, double v) {

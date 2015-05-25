@@ -54,6 +54,7 @@ import com.skynav.ttpe.area.ViewportArea;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
+import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.Extent;
@@ -534,18 +535,30 @@ public class SVGRenderProcessor extends RenderProcessor {
         double ipd = a.getIPD();
         double bpd = a.getBPD();
         double bpdAnnotationBefore = a.getLine().getAnnotationBPD(AnnotationPosition.BEFORE);
+        Font font = a.getFont();
         if (a.isVertical()) {
-            double baselineOffset = (bpd / 2) + bpdAnnotationBefore;
-            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
-                baselineOffset *= -1;
-            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {baselineOffset, yCurrent}));
+            double baselineOffset;
+            if (a.isRotatedOrientation()) {
+                if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                    baselineOffset = -(font.getHeight() + bpdAnnotationBefore);
+                else
+                    baselineOffset = bpd - font.getHeight();
+            } else {
+                baselineOffset = bpd / 2 + bpdAnnotationBefore;
+                if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                    baselineOffset *= -1;
+            }
+            StringBuffer sb = new StringBuffer(translateFormatter.format(new Object[] {baselineOffset, yCurrent}));
+            if (a.isRotatedOrientation())
+                sb.append(",rotate(90)");
+            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, sb.toString());
         } else {
-            double baselineOffset = a.getFont().getHeight() + bpdAnnotationBefore;
+            double baselineOffset = font.getHeight() + bpdAnnotationBefore;
             Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {xCurrent, baselineOffset}));
         }
         List<Decoration> decorations = a.getDecorations();
         Element e;
-        e = renderGlyphText(g, a, d, getColorDecorations(decorations));;
+        e = renderGlyphText(g, a, d, getColorDecorations(decorations));
         assert e != null;
         g.appendChild(e);
         if ((e = renderGlyphEmphases(g, a, d, getEmphasisDecorations(decorations))) != null)
@@ -576,24 +589,61 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
+        if (a.isVertical() && !a.isRotatedOrientation())
+            return renderGlyphTextVertical(parent, a, d, colors);
+        else
+            return renderGlyphTextHorizontal(parent, a, d, colors);
+    }
+
+    private Element renderGlyphTextVertical(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
+        Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+        String text = a.getText();
+        Font font = a.getFont();
+        Extent fs = font.getSize();
+        double fh = fs.getHeight();
+        double fw = fs.getWidth();
+        double centerlineOffset = fw / 2;
+        StringBuffer dxBuf = new StringBuffer();
+        StringBuffer dyBuf = new StringBuffer();
+        double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
+        for (int i = 0, n = advances.length; i < n; ++i) {
+            double ga = advances[i];
+            if (i == 0) {
+                dxBuf.append(doubleFormatter.format(new Object[] {-centerlineOffset}));
+                dyBuf.append(doubleFormatter.format(new Object[] {font.getAscent()}));
+            } else {
+                dxBuf.append(' ');
+                dxBuf.append(doubleFormatter.format(new Object[] {-ga}));
+                dyBuf.append(' ');
+                dyBuf.append(doubleFormatter.format(new Object[] {fh}));
+            }
+        }
+        if (dxBuf.length() > 0)
+            Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, dxBuf.toString());
+        if (dyBuf.length() > 0)
+            Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, dyBuf.toString());
+        TransformMatrix fontMatrix = font.getTransform();
+        if (fontMatrix != null)
+            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+        e.appendChild(d.createTextNode(text));
+        return e;
+    }
+
+    private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
         String text = a.getText();
         Font font = a.getFont();
         Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-        if (a.isVertical()) {
-            Documents.setAttribute(e, SVGDocumentFrame.writingModeAttrName, "tb");
-        } else {
-            double[] kerning = font.getKerning(text);
-            if (kerning != null) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("0");
-                for (int i = 0; i < kerning.length - 1; ++i) {
-                    sb.append(',');
-                    sb.append(doubleFormatter.format(new Object[] {kerning[i]}));
-                }
-                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
+        double[] kerning = font.getKerning(text);
+        if (kerning != null) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("0");
+            for (int i = 0; i < kerning.length - 1; ++i) {
+                sb.append(',');
+                sb.append(doubleFormatter.format(new Object[] {kerning[i]}));
             }
+            Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
         }
-        TransformMatrix fontMatrix = font.getTransform();
+        TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL);
         if (fontMatrix != null)
             Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
         e.appendChild(d.createTextNode(text));
@@ -667,16 +717,18 @@ public class SVGRenderProcessor extends RenderProcessor {
         if (bounds == null)
             return null;
         Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-        double[] advances = font.getAdvances(text);
+        double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
         int[] glyphs = font.getGlyphs(text);
         Font fontEmphasis = font.getScaledFont(0.5);
-        double[] advancesEmphasis = fontEmphasis.getAdvances(emphasis);
+        double[] advancesEmphasis = fontEmphasis.getAdvances(emphasis, fontEmphasis.isKerningEnabled(), a.isRotatedOrientation());
         Rectangle[] boundsEmphasis = fontEmphasis.getGlyphBounds(emphasis);
         double xLast = 0;
         double yLast = 0;
         double dxLast = 0;
         double dyLast = 0;
         double beHeightMax = 0;
+        double beCenterYMax = 0;
+        double beCenterYMin = Double.MAX_VALUE;
         StringBuffer sb = new StringBuffer();
         List<Element> glyphBoxes = new java.util.ArrayList<Element>();
         for (int i = 0, n = glyphs.length; i < n; ++i) {
@@ -685,10 +737,15 @@ public class SVGRenderProcessor extends RenderProcessor {
             double beHeight = be.getHeight();
             if (beHeight > beHeightMax)
                 beHeightMax = beHeight;
+            double beCenterY = be.getY() + be.getHeight()/2;
+            if (beCenterY > beCenterYMax)
+                beCenterYMax = beCenterY;
+            if (beCenterY < beCenterYMin)
+                beCenterYMin = beCenterY;
             double ct, ce;
-            if (vertical) {
+            if (vertical && !a.isRotatedOrientation()) {
                 ct = bt.getY() + bt.getHeight()/2;
-                ce = be.getY() + be.getHeight()/2;
+                ce = be.getX() + be.getWidth()/2;
             } else {
                 ct = bt.getX() + bt.getWidth()/2;
                 ce = be.getX() + be.getWidth()/2;
@@ -698,9 +755,11 @@ public class SVGRenderProcessor extends RenderProcessor {
                 glyphBoxes.add(renderGlyphBoundingBox(parent, a, d, xLast, yLast, bt));
             if (sb.length() > 0)
                 sb.append(',');
-            if (vertical) {
-                sb.append(doubleFormatter.format(new Object[] {dxLast + dc}));
-                dxLast = advances[i] - advancesEmphasis[i] - dc;
+            if (vertical && !a.isRotatedOrientation()) {
+                if (i == 0)
+                    dxLast = bt.getHeight()/2;
+                sb.append(doubleFormatter.format(new Object[] {dxLast}));
+                dxLast = advances[i] - 2 * ce;
                 yLast += advances[i];
             } else {
                 sb.append(doubleFormatter.format(new Object[] {dyLast + dc}));
@@ -709,25 +768,47 @@ public class SVGRenderProcessor extends RenderProcessor {
             }
         }
         double bpd = a.getBPD();
-        if (vertical) {
+        Direction bpdDirection = a.getWritingMode().getDirection(Dimension.BPD);
+        if (vertical && !a.isRotatedOrientation()) {
             if (sb.length() > 0)
-                Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, sb.toString());
-            double xo = bpd / 2;
-            if (position == Emphasis.Position.AFTER)
-                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, doubleFormatter.format(new Object[] {-xo}));
-            else
-                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, doubleFormatter.format(new Object[] {+xo}));
+                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
+            double dy;
+            if (position == Emphasis.Position.AFTER) {
+                if (bpdDirection == RL)
+                    dy = beCenterYMax + bpd/2;
+                else
+                    dy = beCenterYMax - bpd/2;
+            } else {
+                if (bpdDirection == RL)
+                    dy = beCenterYMax - bpd/2;
+                else
+                    dy = beCenterYMax + bpd/2;
+            }
+            Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {dy}));
         } else {
             if (sb.length() > 0)
                 Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
-            if (position == Emphasis.Position.AFTER)
-                Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {-font.getHeight() + bpd + fontEmphasis.getAscent()}));
-            else
-                Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {-font.getHeight() - fontEmphasis.getLeading()/2}));
+            double dy;
+            if (position == Emphasis.Position.AFTER) {
+                if (bpdDirection == RL)
+                    dy = beCenterYMax + (bpd - font.getHeight());
+                else if (bpdDirection == LR)
+                    dy = beCenterYMax - font.getHeight();
+                else
+                    dy = beCenterYMax - font.getHeight() + bpd;
+            } else {
+                if (bpdDirection == RL)
+                    dy = beCenterYMax - font.getHeight();
+                else if (bpdDirection == LR)
+                    dy = beCenterYMax - font.getHeight() + bpd;
+                else
+                    dy = beCenterYMax - font.getHeight();
+            }
+            Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {dy}));
         }
         Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontEmphasis.getHeight()}));
-        if (vertical)
-            Documents.setAttribute(e, SVGDocumentFrame.writingModeAttrName, "tb");
+        if (vertical && !a.isRotatedOrientation())
+            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, "rotate(90)");
         e.appendChild(d.createTextNode(emphasis));
         if (!glyphBoxes.isEmpty()) {
             Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
@@ -744,15 +825,12 @@ public class SVGRenderProcessor extends RenderProcessor {
         double w = bounds.getWidth();
         double h = bounds.getHeight();
         double x, y;
-        if (a.isVertical()) {
-            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
-                x = xLast - w/2;
-            else
-                x = xLast + w/2;
-            y = yLast + h/2 - bounds.getY();
+        if (a.isVertical() && !a.isRotatedOrientation()) {
+            x = xLast - (w + bounds.getX())/2;
+            y = yLast - bounds.getY();
         } else {
-            x = xLast + bounds.getX();;
-            y = yLast - h;
+            x = xLast + bounds.getX();
+            y = yLast - h - bounds.getY();
         }
         Documents.setAttribute(e, SVGDocumentFrame.fillAttrName, "none");
         Documents.setAttribute(e, SVGDocumentFrame.strokeAttrName, decorationColor.toRGBString());

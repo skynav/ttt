@@ -28,6 +28,7 @@ package com.skynav.ttpe.layout;
 import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +49,7 @@ import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
+import com.skynav.ttpe.style.Orientation;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.SuppressAtLineBreakTreatment;
@@ -62,6 +64,7 @@ import com.skynav.ttpe.util.Integers;
 import com.skynav.ttpe.util.Strings;
 
 import static com.skynav.ttpe.geometry.Dimension.*;
+import static com.skynav.ttpe.style.Constants.*;
 
 public class LineLayout {
 
@@ -194,28 +197,32 @@ public class LineLayout {
                 break;
             else if (inBreakingWhitespace ^ Characters.isBreakingWhitespace(c))
                 break;
-            else if (hasBreakingAttribute(iterator))
+            else if (hasTextRunBreakingAttribute(iterator))
                 break;
         }
         int e = iterator.getIndex();
         return inBreakingWhitespace ? new WhitespaceRun(s, e, whitespace) : new NonWhitespaceRun(s, e);
     }
 
-    private static boolean hasBreakingAttribute(AttributedCharacterIterator iterator) {
-        return hasBreakingAttribute(iterator, iterator.getIndex());
+    private static boolean hasTextRunBreakingAttribute(AttributedCharacterIterator iterator) {
+        return hasTextRunBreakingAttribute(iterator, iterator.getIndex());
     }
 
-    private static Set<StyleAttribute> breakingAttributes;
+    private static final Set<StyleAttribute> textRunBreakingAttributes;
     static {
-        breakingAttributes = new java.util.HashSet<StyleAttribute>();
-        breakingAttributes.add(StyleAttribute.ANNOTATIONS);
+        Set<StyleAttribute> s = new java.util.HashSet<StyleAttribute>();
+        s.add(StyleAttribute.ANNOTATIONS);
+        s.add(StyleAttribute.BIDI);
+        s.add(StyleAttribute.COMBINE);
+        s.add(StyleAttribute.ORIENTATION);
+        textRunBreakingAttributes = Collections.unmodifiableSet(s);
     }
 
-    private static boolean hasBreakingAttribute(AttributedCharacterIterator iterator, int index) {
+    private static boolean hasTextRunBreakingAttribute(AttributedCharacterIterator iterator, int index) {
         int s = iterator.getIndex();
         if (index != s)
             iterator.setIndex(index);
-        int k = iterator.getRunStart(breakingAttributes);
+        int k = iterator.getRunStart(textRunBreakingAttributes);
         if (index != s)
             iterator.setIndex(s);
         return k == index;
@@ -323,9 +330,11 @@ public class LineLayout {
             l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL); 
         else if (run instanceof NonWhitespaceRun) {
             int start = run.start;
+            Orientation orientation = run.orientation;
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
                 if (fai.isOuterScope()) {
-                    l.addChild(new GlyphArea(content.getElement(), advance, lineHeight, text, decorations, font), LineArea.ENCLOSE_ALL);
+                    GlyphArea a = new GlyphArea(content.getElement(), advance, lineHeight, text, decorations, font, orientation);
+                    l.addChild(a, LineArea.ENCLOSE_ALL);
                     break;
                 } else {
                     int f = fai.getBegin() - start;
@@ -338,9 +347,10 @@ public class LineLayout {
                     String segText = text.substring(f, t);
                     Font segFont = (Font) fai.getValue();
                     if (segFont != null) {
-                        double segAdvance = segFont.getAdvance(segText);
+                        double segAdvance = segFont.getAdvance(segText, font.isKerningEnabled(), orientation == Orientation.ROTATE090);
                         List<Decoration> segDecorations = getSegmentDecorations(decorations, f, t);
-                        l.addChild(new GlyphArea(content.getElement(), segAdvance, lineHeight, segText, segDecorations, segFont), LineArea.ENCLOSE_ALL);
+                        GlyphArea a = new GlyphArea(content.getElement(), segAdvance, lineHeight, segText, segDecorations, segFont, orientation);
+                        l.addChild(a, LineArea.ENCLOSE_ALL);
                     }
                 }
             }
@@ -536,11 +546,13 @@ public class LineLayout {
         int start;                                              // start index in outer iterator
         int end;                                                // end index in outer iterator
         List<StyleAttributeInterval> fontIntervals;             // cached font sub-intervals over complete run interval
+        Orientation orientation;                                // dominant glyph orientation for run
         String text;                                            // cached text over complete run interval
         TextRun(int start, int end) {
             this.start = start;
             this.end = end;
             this.fontIntervals = getFontIntervals(0, end - start, font);
+            this.orientation = getDominantOrientation(0, end - start);
         }
         @Override
         public String toString() {
@@ -603,7 +615,7 @@ public class LineLayout {
                     return InlineBreak.SOFT_WHITESPACE;
                 else if (Characters.isHyphenationPoint(c))
                     return InlineBreak.SOFT_HYPHENATION_POINT;
-                else if (Characters.isIdeograph(c))
+                else if (Characters.isCJKIdeograph(c))
                     return InlineBreak.SOFT_IDEOGRAPH;
             }
             return InlineBreak.UNKNOWN;
@@ -616,18 +628,24 @@ public class LineLayout {
                 if (font == null)
                     continue;
                 else if (fai.isOuterScope()) {
-                    advance += font.getAdvance(getText().substring(from, to));
+                    advance += getAdvance(getText().substring(from, to), orientation);
                     break;
                 } else {
                     int[] intersection = fai.intersection(start + from, start + to);
                     if (intersection != null) {
                         int f = intersection[0] - start;
                         int t = intersection[1] - start;
-                        advance += font.getAdvance(getText().substring(f,t));
+                        advance += getAdvance(getText().substring(f,t), orientation);
                     }
                 }
             }
             return advance;
+        }
+        double getAdvance(String text, Orientation orientation) {
+            if (font.isVertical() && (orientation == Orientation.ROTATE090))
+                return font.getRotatedAdvance(text);
+            else
+                return font.getAdvance(text);
         }
         // determine if content associate with break is suppressed after line break
         boolean suppressAfterLineBreak() {
@@ -693,6 +711,33 @@ public class LineLayout {
             }
             aci.setIndex(savedIndex);
             return emphasis;
+        }
+        // obtain dominant for specified interval FROM to TO of run
+        private Orientation getDominantOrientation(int from, int to) {
+            for (StyleAttributeInterval sai : getOrientationIntervals(from, to)) {
+                Orientation orientation = (Orientation) sai.getValue();
+                if (orientation.isRotated())
+                    return orientation;
+            }
+            return defaultOrientation;
+        }
+        // obtain orientation for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getOrientationIntervals(int from, int to) {
+            StyleAttribute orientationAttr = StyleAttribute.ORIENTATION;
+            List<StyleAttributeInterval> orientations = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, orientationAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                iterator.setIndex(s);
+                Object v = aci.getAttribute(orientationAttr);
+                if (v != null)
+                    orientations.add(new StyleAttributeInterval(orientationAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            return orientations;
         }
         // obtain intervals over [FROM,TO) for which ATTRIBUTE is defined
         private int[] getAttributeIntervals(int from, int to, StyleAttribute attribute) {

@@ -23,53 +23,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.style;
 
-import java.util.List;
+import com.skynav.ttpe.util.Characters;
 
-import org.w3c.dom.Element;
-
-import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.Decoration;
-import com.skynav.ttpe.style.Orientation;
-
-public class GlyphArea extends LeafInlineArea {
-
-    private String text;
-    private List<Decoration> decorations;
-    private Font font;
-    private Orientation orientation;
-
-    public GlyphArea(Element e, double ipd, double bpd, String text, List<Decoration> decorations, Font font, Orientation orientation) {
-        super(e, ipd, bpd);
-        this.text = text;
-        this.decorations = decorations;
-        this.font = font;
-        this.orientation = orientation;
+public enum Orientation {
+    ROTATE000,
+    ROTATE090,
+    ROTATE180,
+    ROTATE270;
+    public boolean isRotated() {
+        return (this != ROTATE000);
     }
-
-    public String getText() {
-        return text;
+    public static Orientation fromCharacter(int c) {
+        if (Characters.isUprightOrientation(c))
+            return ROTATE000;
+        else
+            return ROTATE090;
     }
-
-    public List<Decoration> getDecorations() {
-        return decorations;
-    }
-
-    public Font getFont() {
-        return font;
-    }
-
-    public Orientation getOrientation() {
-        return orientation;
-    }
-
-    public boolean isRotatedOrientation() {
-        return orientation.isRotated();
-    }
-
-    public BlockArea getContainingBlock() {
-        return getLine().getContainingBlock();
-    }
-
 }

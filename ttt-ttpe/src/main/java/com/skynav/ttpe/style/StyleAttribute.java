@@ -32,9 +32,11 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   ANNOTATION_ALIGNMENT   = new StyleAttribute("ANNOTATION_ALIGNMENT");   // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   ANNOTATION_OFFSET      = new StyleAttribute("ANNOTATION_OFFSET");      // Double
     public static final StyleAttribute   ANNOTATION_POSITION    = new StyleAttribute("ANNOTATION_POSITION");    // com.skynav.ttpe.style.AnnotationPosition
+    public static final StyleAttribute   BIDI                   = new StyleAttribute("BIDI");                   // Integer
     public static final StyleAttribute   BLOCK_ALIGNMENT        = new StyleAttribute("BLOCK_ALIGNMENT");        // com.skynav.ttpe.style.BlockAlignment
     public static final StyleAttribute   BPD                    = new StyleAttribute("BPD");                    // Double
     public static final StyleAttribute   COLOR                  = new StyleAttribute("COLOR");                  // com.skynav.ttpe.style.Color
+    public static final StyleAttribute   COMBINE                = new StyleAttribute("COMBINE");                // com.skynav.ttpe.style.Combine
     public static final StyleAttribute   EMBEDDING              = new StyleAttribute("EMBEDDING");              // Object
     public static final StyleAttribute   EMPHASIS               = new StyleAttribute("EMPHASIS");               // com.skynav.ttpe.style.Emphasis
     public static final StyleAttribute   FONT                   = new StyleAttribute("FONT");                   // com.skynav.ttpe.fonts.Font
@@ -43,6 +45,7 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   LANGUAGE               = new StyleAttribute("LANGUAGE");               // String
     public static final StyleAttribute   LETTER_SPACING         = new StyleAttribute("LETTER_SPACING");         // Double
     public static final StyleAttribute   LINE_HEIGHT            = new StyleAttribute("LINE_HEIGHT");            // Double
+    public static final StyleAttribute   ORIENTATION            = new StyleAttribute("ORIENTATION");            // com.skynav.ttpe.style.Orientation
     public static final StyleAttribute   WHITESPACE             = new StyleAttribute("WHITESPACE");             // com.skynav.ttpe.style.Whitespace
     public static final StyleAttribute   WRAP                   = new StyleAttribute("WRAP");                   // com.skynav.ttpe.style.Wrap
 

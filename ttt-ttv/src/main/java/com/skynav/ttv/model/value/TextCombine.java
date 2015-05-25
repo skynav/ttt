@@ -27,33 +27,33 @@ package com.skynav.ttv.model.value;
 
 public class TextCombine {
 
-    public enum Combine {
+    public enum Style {
         NONE,
         ALL,
         DIGITS;
-        public static Combine fromValue(String v) {
-            return Combine.valueOf(v.toUpperCase());
+        public static Style fromValue(String v) {
+            return Style.valueOf(v.toUpperCase());
         }
     };
 
-    public static final TextCombine NONE        = new TextCombine(Combine.NONE, 0);
+    public static final TextCombine NONE        = new TextCombine(Style.NONE, 0);
 
-    private Combine combine;
-    private int digits;
+    private Style style;
+    private int count;
 
-    public TextCombine(Combine combine, int digits) {
-        if (combine == null)
-            combine = Combine.NONE;
-        this.combine = combine;
-        this.digits = digits;
+    public TextCombine(Style style, int count) {
+        if (style == null)
+            style = Style.NONE;
+        this.style = style;
+        this.count = count;
     }
 
-    public Combine getCombine() {
-        return combine;
+    public Style getStyle() {
+        return style;
     }
 
-    public int getDigits() {
-        return digits;
+    public int getCount() {
+        return count;
     }
 
 }

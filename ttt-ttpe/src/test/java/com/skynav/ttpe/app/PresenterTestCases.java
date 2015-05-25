@@ -210,6 +210,16 @@ public class PresenterTestCases {
         performPresentationTest("test-031-span-text-emphasis-noto-lrtb.xml", 0, 0);
     }
 
+    @Test
+    public void test032SpanTextEmphasisNotoBeforeMixedOrientation() throws Exception {
+        performPresentationTest("test-032-span-text-emphasis-noto-before-mixed-orientation.xml", 0, 0);
+    }
+
+    @Test
+    public void test033SpanTextEmphasisNotoAfterMixedOrientation() throws Exception {
+        performPresentationTest("test-033-span-text-emphasis-noto-after-mixed-orientation.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
@@ -338,7 +348,7 @@ public class PresenterTestCases {
         if (hasFileScheme(components)) {
             File control = new File(joinComponents(components, ".expected.zip"));
             if (control.exists()) {
-                checkDifferences(output, control.toURI());
+                checkDifferences(control.toURI(), output);
             }
         }
     }

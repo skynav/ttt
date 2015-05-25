@@ -19,7 +19,7 @@
 <region xml:id="縦右" tts:displayAlign="center" tts:extent="15vw 80vh" tts:position="right 5vh center" tts:writingMode="tbrl"/>
 </layout>
 </head>
-<body region="横下" tts:fontFamily="Arial">
+<body region="横下" tts:fontFamily="Noto Sans">
 <div>
 <p begin="00:00:01:00" end="00:00:02:00" style="s1"><span style="s2"><span style="s3">above</span></span></p>
 <p begin="00:00:02:00" end="00:00:03:00" style="s1"><span style="s2"><span style="s4">below</span></span></p>

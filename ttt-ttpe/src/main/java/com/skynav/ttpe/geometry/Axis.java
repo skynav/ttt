@@ -28,4 +28,7 @@ package com.skynav.ttpe.geometry;
 public enum Axis {
     HORIZONTAL,         // parallel with the horizon
     VERTICAL;           // perpendicular to the horizon
+    public boolean isVertical() {
+        return this == VERTICAL;
+    }
 }

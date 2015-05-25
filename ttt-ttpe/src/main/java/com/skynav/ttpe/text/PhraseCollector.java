@@ -120,8 +120,11 @@ public class PhraseCollector {
     }
 
     protected void emit(Element e) {
-        if (text.length() > 0)
-            add(newPhrase(e, text.toString(), styleCollector.extract()));
+        if (text.length() > 0) {
+            String content = text.toString();
+            styleCollector.collectContentStyles(content, 0, content.length());
+            add(newPhrase(e, content, styleCollector.extract()));
+        }
         text.setLength(0);
     }
 
