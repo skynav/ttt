@@ -4364,7 +4364,7 @@ public class Converter implements ConverterContext {
         private Span createEmphasis(String text, Attribute a, Direction blockDirection) {
             Span s = ttmlFactory.createSpan();
             StringBuffer sb = new StringBuffer();
-            sb.append(blockDirection == Direction.TB ? "dot" : "sesame");
+            sb.append("dot");
             RubyPosition rp = a.getRubyPosition(blockDirection);
             if ((rp != null) && (rp != RubyPosition.AUTO)) {
                 sb.append(' ');
