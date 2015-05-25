@@ -361,7 +361,7 @@ public class LineLayout {
         List<Decoration> sd = new java.util.ArrayList<Decoration>();
         for (Decoration d : decorations) {
             if (d.intersects(from, to))
-                sd.add(d);
+                sd.add(d.adjustInterval(-from));
         }
         return sd;
     }

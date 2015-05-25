@@ -25,7 +25,7 @@
 
 package com.skynav.ttpe.style;
 
-public class Decoration {
+public class Decoration implements Cloneable {
 
     public enum Type {
         COLOR,
@@ -99,6 +99,22 @@ public class Decoration {
             return true;
     }
 
+    public Decoration adjustInterval(int adjust) {
+        try {
+            Decoration d = (Decoration) this.clone();
+            d.begin += adjust;
+            d.end += adjust;
+            if (d.begin < 0) {
+                int l = d.end - d.begin;
+                d.begin = 0;
+                d.end = l;
+            }
+            return d;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -114,6 +130,11 @@ public class Decoration {
         sb.append(value);
         sb.append(']');
         return sb.toString();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
     
 }

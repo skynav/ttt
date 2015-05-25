@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+<head>
+<layout>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="768px 225px" tts:origin="256px 475px" tts:writingMode="lrtb"/>
+</layout>
+</head>
+<body tts:fontFamily="Arial" tts:fontSize="36px" tts:lineHeight="45px">
+<div>
+<p region="r0" begin="1s" end="2s" tts:textAlign="start">AB<span tts:textEmphasis="circle">CD</span>EF</p>
+</div>
+</body>
+</tt>
