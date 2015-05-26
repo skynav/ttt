@@ -230,6 +230,11 @@ public class PresenterTestCases {
         performPresentationTest("test-035-break-between-ruby-containers.xml", 0, 0);
     }
 
+    @Test
+    public void test036SpanTextEmphasisAutoPosition() throws Exception {
+        performPresentationTest("test-036-span-text-emphasis-auto-position.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

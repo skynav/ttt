@@ -89,7 +89,7 @@ public class LineArea extends BlockArea {
     public BlockArea getContainingBlock() {
         AreaNode p = getParent();
         while (p != null) {
-            if ((p instanceof BlockArea) && !(p instanceof Inline))
+            if (p instanceof BlockArea)
                 return (BlockArea) p;
             else
                 p = p.getParent();
