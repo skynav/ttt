@@ -2004,7 +2004,7 @@ public class Converter implements ConverterContext {
         String[] fields = line.split(fieldSeparatorPatternString);
         int fieldCount = fields.length;
         int fieldIndexNext = 0;
-        Screen s = new Screen(locator);
+        Screen s = new Screen(locator, getLastScreenNumber());
         // screen field
         if (!fail) {
             int fieldIndex;
@@ -2067,6 +2067,20 @@ public class Converter implements ConverterContext {
                 screens.add(s);
         }
         return !fail;
+    }
+
+    private int getLastScreenNumber() {
+        if (screens.isEmpty())
+            return 0;
+        else {
+            for (int i = screens.size(); i > 0; --i) {
+                int k = i - 1;
+                Screen s = screens.get(k);
+                if (s.number > 0)
+                    return s.number;
+            }
+            return 0;
+        }
     }
 
     private static int hasScreenField(String[] fields, int fieldIndex) {
@@ -4006,13 +4020,15 @@ public class Converter implements ConverterContext {
     public static class Screen {
         private Locator locator;
         private int number;
+        private int lastNumber;
         private char letter;
         private ClockTime in;
         private ClockTime out;
         private List<Attribute> attributes;
         private AttributedString text;
-        public Screen(Locator locator) {
+        public Screen(Locator locator, int lastNumber) {
             this.locator = locator;
+            this.lastNumber = lastNumber;
         }
         public Locator getLocator() {
             return locator;
@@ -4031,6 +4047,9 @@ public class Converter implements ConverterContext {
         }
         public AttributedString getText() {
             return text;
+        }
+        public boolean sameNumberAsLastScreen() {
+            return (number == 0) || (number == lastNumber);
         }
         public boolean empty() {
             if (hasInOutCodes())
@@ -4180,6 +4199,7 @@ public class Converter implements ConverterContext {
                     }
                     pNew.setBegin(begin);
                     pNew.setEnd(end);
+                    resetScreenAttributes();
                     populateStyles(pNew, mergeDefaults(s.attributes));
                     populateText(pNew, s.text, false, getBlockDirection(s));
                     updateScreenAttributes(s);
@@ -4201,6 +4221,12 @@ public class Converter implements ConverterContext {
             else
                 d = Direction.TB;
             return d;
+        }
+        private void resetScreenAttributes() {
+            placement = globalPlacement;
+            shear = globalShear;
+            kerning = globalKerning;
+            typeface = globalTypeface;
         }
         private void updateScreenAttributes(Screen s) {
             boolean global[] = new boolean[1];
@@ -4237,6 +4263,8 @@ public class Converter implements ConverterContext {
         }
         private boolean isNonContinuation(Screen s) {
             if (s == null)                                                              // special 'final' screen, never treat as continuation
+                return true;
+            else if (!s.sameNumberAsLastScreen())                                       // a screen with a different number is considered a non-continuation
                 return true;
             else if (s.hasInOutCodes())                                                 // a screen with time codes is considered a non-continuation
                 return true;
