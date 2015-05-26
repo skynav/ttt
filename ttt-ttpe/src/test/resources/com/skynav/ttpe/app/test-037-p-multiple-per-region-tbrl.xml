@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="jp" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<head>
+<styling>
+<initial tts:fontSize="4vh"/>
+<initial tts:lineHeight="5vh"/>
+<initial tts:showBackground="whenActive"/>
+<style xml:id="s1" tts:textAlign="center"/>
+<style xml:id="s2" tts:textAlign="start"/>
+<style xml:id="s3" tts:ruby="container"/>
+<style xml:id="s4" tts:ruby="base"/>
+<style xml:id="s5" tts:ruby="text" tts:rubyPosition="after"/>
+</styling>
+<layout>
+<region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>
+<region xml:id="縦右" tts:extent="15vw 80vh" tts:position="right 5vh center" tts:writingMode="tbrl"/>
+</layout>
+</head>
+<body region="横下">
+<div>
+<p begin="00:00:05:20" end="00:00:09:10" region="縦右" style="s1"><span style="s2">横横横横横<br/><span style="s3"><span style="s4">横横横横横</span><span style="s5">横横横横横</span></span></span></p>
+<p begin="00:00:05:20" end="00:00:09:10" region="縦右" style="s1"><span style="s2">横横横横横<br/><span style="s3"><span style="s4">横横横横横</span><span style="s5">横横横横横</span></span></span></p>
+</div>
+</body>
+</tt>

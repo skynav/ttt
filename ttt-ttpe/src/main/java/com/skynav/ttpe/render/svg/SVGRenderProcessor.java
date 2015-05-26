@@ -357,7 +357,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         double bpd = a.getBPD();
         if (a.isVertical()) {
             Direction bpdDirection = wm.getDirection(Dimension.BPD);
-            xCurrent = ySaved + bpd * ((bpdDirection == RL) ? -1 : 1);
+            xCurrent = xSaved + bpd * ((bpdDirection == RL) ? -1 : 1);
         } else
             yCurrent = ySaved + bpd;
         // update decoration indices

@@ -235,6 +235,11 @@ public class PresenterTestCases {
         performPresentationTest("test-036-span-text-emphasis-auto-position.xml", 0, 0);
     }
 
+    @Test
+    public void test037PMultiplePerRegionTBRL() throws Exception {
+        performPresentationTest("test-037-p-multiple-per-region-tbrl.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
