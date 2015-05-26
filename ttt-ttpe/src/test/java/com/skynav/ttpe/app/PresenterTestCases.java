@@ -225,6 +225,11 @@ public class PresenterTestCases {
         performPresentationTest("test-034-span-text-emphasis-segmented.xml", 0, 0);
     }
 
+    @Test
+    public void test035BreakBetweenRubyContainers() throws Exception {
+        performPresentationTest("test-035-break-between-ruby-containers.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

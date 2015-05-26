@@ -111,6 +111,7 @@ public class PhraseCollector {
 
     protected void collectBreak(Element e) {
         text.append((char) Characters.UC_LINE_SEPARATOR);
+        emit(e);
     }
 
     protected void clear() {
