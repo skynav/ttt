@@ -2508,7 +2508,7 @@ public class Converter implements ConverterContext {
         for (int i = 0, n = text.length(); i < n; ++i) {
             char c = text.charAt(i);
             if (c == '\u005F')
-                c = '\u0020';
+                c = (sb.length() == 0) ? '\u00A0' : '\u0020';
             else if (c == '\uFF3F')
                 c = '\u3000';
             sb.append(c);
