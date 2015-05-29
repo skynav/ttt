@@ -14,7 +14,7 @@
 <style xml:id="s7" tts:fontShear="27.97058%" tts:textAlign="center"/>
 </styling>
 <layout>
-<region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>
+<region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 10vh"/>
 </layout>
 </head>
 <body region="横下">

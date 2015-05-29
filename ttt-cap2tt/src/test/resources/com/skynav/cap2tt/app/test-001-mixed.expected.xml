@@ -13,9 +13,9 @@
 <style xml:id="s6" tts:textEmphasis="dot before"/>
 </styling>
 <layout>
-<region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 5vh"/>
-<region xml:id="縦右" tts:extent="15vw 80vh" tts:position="right 5vh center" tts:writingMode="tbrl"/>
-<region xml:id="縦左" tts:displayAlign="after" tts:extent="15vw 80vh" tts:position="left 5vh center" tts:writingMode="tbrl"/>
+<region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 10vh"/>
+<region xml:id="縦右" tts:extent="15vw 80vh" tts:position="right 10vw center" tts:writingMode="tbrl"/>
+<region xml:id="縦左" tts:displayAlign="after" tts:extent="15vw 80vh" tts:position="left 10vw center" tts:writingMode="tbrl"/>
 </layout>
 </head>
 <body region="横下">
