@@ -57,6 +57,10 @@ public abstract class AbstractArea implements Area {
         return (wm != null) && wm.isVertical();
     }
 
+    public int getBidiLevel() {
+        return -1;
+    }
+
     public void setIPD(double ipd) {
     }
 

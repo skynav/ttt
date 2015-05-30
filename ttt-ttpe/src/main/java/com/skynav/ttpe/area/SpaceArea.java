@@ -34,8 +34,8 @@ public class SpaceArea extends InlineFillerArea {
     private String text;
     private Font font;
 
-    public SpaceArea(Element e, double ipd, double bpd, String text, Font font) {
-        super(e, ipd, bpd);
+    public SpaceArea(Element e, double ipd, double bpd, int level,String text, Font font) {
+        super(e, ipd, bpd, level);
         this.text = text;
         this.font = font;
     }

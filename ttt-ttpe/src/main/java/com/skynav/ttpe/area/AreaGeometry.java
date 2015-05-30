@@ -41,6 +41,11 @@ public interface AreaGeometry {
     boolean isVertical();
 
     /**
+     * Determine bidirectional level.
+     */
+    int getBidiLevel();
+
+    /**
      * Set IPD of area.
      */
     void setIPD(double ipd);

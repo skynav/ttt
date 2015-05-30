@@ -66,6 +66,7 @@ public interface LayoutState {
     String getLanguage();
     Whitespace getWhitespace();
     WritingMode getWritingMode();
+    int getBidiLevel();
     Font getFont();
     double getAvailable(Dimension dimension);
     Extent getReferenceExtent();

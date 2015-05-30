@@ -29,8 +29,8 @@ import org.w3c.dom.Element;
 
 public class InlineFillerArea extends LeafInlineArea {
 
-    public InlineFillerArea(Element e, double ipd, double bpd) {
-        super(e, ipd, bpd);
+    public InlineFillerArea(Element e, double ipd, double bpd, int level) {
+        super(e, ipd, bpd, level);
     }
 
 }

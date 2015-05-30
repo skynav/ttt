@@ -14,4 +14,18 @@
     <param name="style">NORMAL</param>
     <param name="weight">BOLD</param>
   </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">IW</param>
+    <param name="source">NotoSansHebrew-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">IW</param>
+    <param name="source">NotoSansHebrew-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
 </fonts>

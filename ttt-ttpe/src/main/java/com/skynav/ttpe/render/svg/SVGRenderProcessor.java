@@ -387,6 +387,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         WritingMode wm = l.getWritingMode();
         boolean vertical = wm.isVertical();
         Direction bpdDirection = wm.getDirection(Dimension.BPD);
+        Direction ipdDirection = wm.getDirection(Dimension.IPD);
         AnnotationPosition position = a.getPosition();
         if (position == AnnotationPosition.AFTER) {
             double bpdOffset = l.getBPD() - a.getBPD();
@@ -404,7 +405,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         xCurrent = 0;
         yCurrent = 0;
         if (decorateLines)
-            decorateLine(e, a, d, vertical, bpdDirection, true);
+            decorateLine(e, a, d, vertical, bpdDirection, ipdDirection, true);
         maybeStyleLineGroup(e, a);
         e = renderChildren(e, a, d);
         xCurrent = xSaved;
@@ -419,12 +420,13 @@ public class SVGRenderProcessor extends RenderProcessor {
         WritingMode wm = a.getWritingMode();
         boolean vertical = wm.isVertical();
         Direction bpdDirection = wm.getDirection(Dimension.BPD);
+        Direction ipdDirection = wm.getDirection(Dimension.IPD);
         if ((xCurrent != 0) || (yCurrent != 0))
             Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
         xCurrent = 0;
         yCurrent = 0;
         if (decorateLines)
-            decorateLine(e, a, d, vertical, bpdDirection, false);
+            decorateLine(e, a, d, vertical, bpdDirection, ipdDirection, false);
         maybeStyleLineGroup(e, a);
         e = renderChildren(e, a, d);
         xCurrent = xSaved;
@@ -441,7 +443,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         return e;
     }
 
-    private void decorateLine(Element e, LineArea a, Document d, boolean vertical, Direction bpdDirection, boolean annotation) {
+    private void decorateLine(Element e, LineArea a, Document d, boolean vertical, Direction bpdDirection, Direction ipdDirection, boolean annotation) {
         boolean showBoundingBox = true;
         boolean showLabel = !annotation;
         double w, h;
@@ -453,14 +455,9 @@ public class SVGRenderProcessor extends RenderProcessor {
             w = a.getIPD();
         }
         double x, y;
-        if (vertical) {
-            if (bpdDirection == LR) {
-                x = xCurrent;
-                y = yCurrent;
-            } else {
-                x = xCurrent - w;
-                y = yCurrent;
-            }
+        if ((bpdDirection == RL) || (ipdDirection == RL)) {
+            x = xCurrent - w;
+            y = yCurrent;
         } else {
             x = xCurrent;
             y = yCurrent;
@@ -482,6 +479,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         // label
         if (showLabel) {
             Element eDecorationLabel = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            String label = "P" + (paragraphGenerationIndex + 1) + "L" + (lineGenerationIndex + 1);
             Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fontFamilyAttrName, "sans-serif");
             Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fontSizeAttrName, "6");
             if (vertical) {
@@ -493,13 +491,18 @@ public class SVGRenderProcessor extends RenderProcessor {
                     Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 3}));
                 }
             } else {
-                Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x + 2}));
-                Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 8}));
+                if (ipdDirection == LR) {
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x + 2}));
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 8}));
+                } else {
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {- (double) 5*label.length()}));
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 8}));
+                }
             }
             Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fillAttrName, decorationColor.toRGBString());
             if (vertical)
                 Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.writingModeAttrName, "tb");
-            eDecorationLabel.appendChild(d.createTextNode("P" + (paragraphGenerationIndex + 1) + "L" + (lineGenerationIndex + 1)));
+            eDecorationLabel.appendChild(d.createTextNode(label));
             e.appendChild(eDecorationLabel);
         }
     }
@@ -532,9 +535,10 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     private Element renderGlyphs(Element parent, GlyphArea a, Document d) {
         Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        LineArea l = a.getLine();
         double ipd = a.getIPD();
         double bpd = a.getBPD();
-        double bpdAnnotationBefore = a.getLine().getAnnotationBPD(AnnotationPosition.BEFORE);
+        double bpdAnnotationBefore = l.getAnnotationBPD(AnnotationPosition.BEFORE);
         Font font = a.getFont();
         if (a.isVertical()) {
             double baselineOffset;
@@ -565,8 +569,12 @@ public class SVGRenderProcessor extends RenderProcessor {
             g.appendChild(e);
         if (a.isVertical())
             yCurrent += ipd;
-        else
-            xCurrent += ipd;
+        else {
+            if ((l.getBidiLevel() & 1) == 0)
+                xCurrent += ipd;
+            else
+                xCurrent -= ipd;
+        }
         return g;
     }
 
@@ -630,19 +638,51 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
+        int level = a.getBidiLevel();
+        if (level < 0)
+            level = 0;
+        if ((level & 1) == 1)
+            return renderGlyphTextHorizontalRL(parent, a, d, colors);
+        else
+            return renderGlyphTextHorizontalLR(parent, a, d, colors);
+    }
+
+    private Element renderGlyphTextHorizontalRL(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
+        Font font = a.getFont();
+        Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL);
+        if (fontMatrix != null)
+            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+
+        String text = a.getText();
+        double[] advances = font.getAdvances(text, font.isKerningEnabled(), false);
+        double x = 0;
+        for (int i = 0, n = advances.length; i < n; ++i) {
+            double ga = advances[i];
+            Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x - ga}));
+            e.appendChild(d.createTextNode(text.substring(i, i + 1)));
+            g.appendChild(e);
+            x -= ga;
+        }
+        return g;
+    }
+
+    private Element renderGlyphTextHorizontalLR(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
         String text = a.getText();
         Font font = a.getFont();
         Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+        StringBuffer dxBuf = new StringBuffer();
         double[] kerning = font.getKerning(text);
         if (kerning != null) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("0");
+            dxBuf.append("0");
             for (int i = 0; i < kerning.length - 1; ++i) {
-                sb.append(',');
-                sb.append(doubleFormatter.format(new Object[] {kerning[i]}));
+                dxBuf.append(',');
+                dxBuf.append(doubleFormatter.format(new Object[] {kerning[i]}));
             }
-            Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
         }
+        if (dxBuf.length() > 0)
+            Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, dxBuf.toString());
         TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL);
         if (fontMatrix != null)
             Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
@@ -845,8 +885,10 @@ public class SVGRenderProcessor extends RenderProcessor {
         double ipd = a.getIPD();
         if (a.isVertical())
             yCurrent += ipd;
-        else
+        else if ((a.getLine().getBidiLevel() & 1) == 0)
             xCurrent += ipd;
+        else
+            xCurrent -= ipd;
         return null;
     }
 
@@ -854,8 +896,10 @@ public class SVGRenderProcessor extends RenderProcessor {
         double ipd = a.getIPD();
         if (a.isVertical())
             yCurrent += ipd;
-        else
+        else if ((a.getLine().getBidiLevel() & 1) == 0)
             xCurrent += ipd;
+        else
+            xCurrent -= ipd;
         return null;
     }
 

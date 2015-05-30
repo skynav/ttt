@@ -119,7 +119,7 @@ public class BasicLayoutState implements LayoutState {
     public NonLeafAreaNode pushBlock(Element e) {
         ReferenceArea ra = getReferenceArea();
         if (ra != null)
-            return push(new BlockArea(e, ra.getIPD(), ra.getBPD()));
+            return push(new BlockArea(e, ra.getIPD(), ra.getBPD(), getBidiLevel()));
         else
             throw new IllegalStateException();
     }
@@ -192,6 +192,10 @@ public class BasicLayoutState implements LayoutState {
         if (wm == null)
             wm = defaultWritingMode;
         return wm;
+    }
+
+    public int getBidiLevel() {
+        return !areas.empty() ? areas.peek().getBidiLevel() : -1;
     }
 
     public Font getFont() {

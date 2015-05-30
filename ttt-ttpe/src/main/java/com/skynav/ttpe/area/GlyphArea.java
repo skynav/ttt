@@ -40,8 +40,8 @@ public class GlyphArea extends LeafInlineArea {
     private Font font;
     private Orientation orientation;
 
-    public GlyphArea(Element e, double ipd, double bpd, String text, List<Decoration> decorations, Font font, Orientation orientation) {
-        super(e, ipd, bpd);
+    public GlyphArea(Element e, double ipd, double bpd, int level, String text, List<Decoration> decorations, Font font, Orientation orientation) {
+        super(e, ipd, bpd, level);
         this.text = text;
         this.decorations = decorations;
         this.font = font;

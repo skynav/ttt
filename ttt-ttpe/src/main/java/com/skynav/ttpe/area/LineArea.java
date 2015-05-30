@@ -44,11 +44,11 @@ public class LineArea extends BlockArea {
     private double bpdAnnotationAfter;
 
     public LineArea() {
-        this(null, 0, 0, null, null, null, 0);
+        this(null, 0, 0, -1, null, null, null, 0);
     }
 
-    public LineArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font, int lineNumber) {
-        super(e, ipd, bpd);
+    public LineArea(Element e, double ipd, double bpd, int level, InlineAlignment alignment, Color color, Font font, int lineNumber) {
+        super(e, ipd, bpd, level);
         this.alignment = alignment;
         this.color = color;
         this.font = font;

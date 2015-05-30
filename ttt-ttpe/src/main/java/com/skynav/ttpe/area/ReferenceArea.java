@@ -65,6 +65,18 @@ public class ReferenceArea extends PositionedBlockArea {
         return wm;
     }
 
+    public int getBidiLevel() {
+        WritingMode wm = this.wm;
+        if (wm == null)
+            wm = WritingMode.LRTB;
+        if (wm == WritingMode.LRTB)
+            return 0;
+        else if (wm == WritingMode.RLTB)
+            return 1;
+        else
+            return 0;
+    }
+
     public TransformMatrix getCTM() {
         return ctm;
     }

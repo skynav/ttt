@@ -956,7 +956,7 @@ public class ISD {
             Element isd = document.createElementNS(TTMLHelper.NAMESPACE_ISD, "isd");
             isd.setAttributeNS(null, "begin", interval.getBegin().toString());
             isd.setAttributeNS(null, "end", interval.getEnd().toString());
-            copyParameterAttributes(isd, root);
+            copyWrapperAttributes(isd, root);
             generateISDComputedStyleSets(isd, root, context);
             generateISDRegions(isd, root, context);
             unwrapRedundantAnonymousSpans(isd, root, context);
@@ -964,17 +964,23 @@ public class ISD {
             document.appendChild(isd);
         }
 
-        private static void copyParameterAttributes(Element isd, Element root) {
+        private static void copyWrapperAttributes(Element isd, Element root) {
             NamedNodeMap attrs = root.getAttributes();
             for (int i = 0, n = attrs.getLength(); i < n; ++i) {
                 Node node = attrs.item(i);
                 if (node instanceof Attr) {
                     Attr a = (Attr) node;
                     String nsUri = a.getNamespaceURI();
-                    if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT_PARAMETER)) {
+                    if (nsUri == null) {
+                        continue;
+                    } else if (nsUri.equals(TTMLHelper.NAMESPACE_TT_PARAMETER)) {
                         if (inISDParameterAttributeSet(a) && !isDefaultParameterValue(a)) {
                             isd.setAttributeNS(nsUri, a.getLocalName(), a.getValue());
                         }
+                    } else if (nsUri.equals(XML.xmlNamespace)) {
+                        String ln = a.getLocalName();
+                        if (ln.equals("lang") || ln.equals("space"))
+                            isd.setAttributeNS(nsUri, ln, a.getValue());
                     }
                 }
             }

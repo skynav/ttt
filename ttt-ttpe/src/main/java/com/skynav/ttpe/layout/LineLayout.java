@@ -96,6 +96,7 @@ public class LineLayout {
     private InlineAlignment textAlign;
     private Wrap wrap;
     private WritingMode writingMode;
+    private int level;
 
     // derived style state
     private Font font;
@@ -106,9 +107,11 @@ public class LineLayout {
         // content state
         this.content = content;
         this.iterator = content.getIterator();
+        // layout state
         this.state = state;
         // area derived state
         this.writingMode = state.getWritingMode();
+        this.level = state.getBidiLevel();
         // paragraph specified styles
         this.color = content.getColor(-1);
         this.textAlign = relativizeAlignment(content.getTextAlign(-1), this.writingMode);
@@ -253,11 +256,11 @@ public class LineLayout {
     private LineArea emit(double available, double consumed, Consume consume, List<InlineBreakOpportunity> breaks) {
         consumed = maybeRemoveLeading(breaks, consumed);
         consumed = maybeRemoveTrailing(breaks, consumed);
-        return addTextAreas(newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, textAlign, color, font), breaks);
+        return addTextAreas(newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, level, textAlign, color, font), breaks);
     }
 
-    protected LineArea newLine(Phrase p, double ipd, double bpd, InlineAlignment textAlign, Color color, Font font) {
-        return new LineArea(p.getElement(), ipd, bpd, textAlign, color, font, ++lineNumber);
+    protected LineArea newLine(Phrase p, double ipd, double bpd, int level, InlineAlignment textAlign, Color color, Font font) {
+        return new LineArea(p.getElement(), ipd, bpd, level, textAlign, color, font, ++lineNumber);
     }
 
     protected int getNextLineNumber() {
@@ -325,7 +328,7 @@ public class LineLayout {
 
     private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, TextRun run) {
         if (run instanceof WhitespaceRun)
-            l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, text, font), LineArea.ENCLOSE_ALL);
+            l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.level, text, font), LineArea.ENCLOSE_ALL);
         else if (run instanceof EmbeddingRun)
             l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL); 
         else if (run instanceof NonWhitespaceRun) {
@@ -333,7 +336,7 @@ public class LineLayout {
             Orientation orientation = run.orientation;
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
                 if (fai.isOuterScope()) {
-                    GlyphArea a = new GlyphArea(content.getElement(), advance, lineHeight, text, decorations, font, orientation);
+                    GlyphArea a = new GlyphArea(content.getElement(), advance, lineHeight, run.level, text, decorations, font, orientation);
                     l.addChild(a, LineArea.ENCLOSE_ALL);
                     break;
                 } else {
@@ -349,7 +352,7 @@ public class LineLayout {
                     if (segFont != null) {
                         double segAdvance = segFont.getAdvance(segText, font.isKerningEnabled(), orientation == Orientation.ROTATE090);
                         List<Decoration> segDecorations = getSegmentDecorations(decorations, f, t);
-                        GlyphArea a = new GlyphArea(content.getElement(), segAdvance, lineHeight, segText, segDecorations, segFont, orientation);
+                        GlyphArea a = new GlyphArea(content.getElement(), segAdvance, lineHeight, run.level, segText, segDecorations, segFont, orientation);
                         l.addChild(a, LineArea.ENCLOSE_ALL);
                     }
                 }
@@ -416,28 +419,29 @@ public class LineLayout {
             }
         }
         double available = measure - consumed;
+        int level = l.getBidiLevel();
         if (available > 0) {
             if (alignment == InlineAlignment.START) {
-                AreaNode a = new InlineFillerArea(l.getElement(), available, 0);
+                AreaNode a = new InlineFillerArea(l.getElement(), available, 0, level);
                 l.addChild(a, LineArea.EXPAND_IPD);
             } else if (alignment == InlineAlignment.END) {
-                AreaNode a = new InlineFillerArea(l.getElement(), available, 0);
+                AreaNode a = new InlineFillerArea(l.getElement(), available, 0, level);
                 l.insertChild(a, l.firstChild(), LineArea.EXPAND_IPD);
             } else if (alignment == InlineAlignment.CENTER) {
                 double half = available / 2;
-                AreaNode a1 = new InlineFillerArea(l.getElement(), half, 0);
-                AreaNode a2 = new InlineFillerArea(l.getElement(), half, 0);
+                AreaNode a1 = new InlineFillerArea(l.getElement(), half, 0, level);
+                AreaNode a2 = new InlineFillerArea(l.getElement(), half, 0, level);
                 l.insertChild(a1, l.firstChild(), LineArea.EXPAND_IPD);
                 l.insertChild(a2, null, LineArea.EXPAND_IPD);
             } else {
-                justifyTextAreas(l, measure, consumed, numNonAnnotationChildren, alignment);
+                justifyTextAreas(l, measure, consumed, level, numNonAnnotationChildren, alignment);
             }
         } else if (available < 0) {
             l.setOverflow(-available);
         }
     }
 
-    private void justifyTextAreas(LineArea l, double measure, double consumed, int numNonAnnotationChildren, InlineAlignment alignment) {
+    private void justifyTextAreas(LineArea l, double measure, double consumed, int level, int numNonAnnotationChildren, InlineAlignment alignment) {
         double available = measure - consumed;
         if (alignment == InlineAlignment.JUSTIFY)
             alignment = InlineAlignment.SPACE_BETWEEN;
@@ -456,14 +460,14 @@ public class LineLayout {
         if (fill > 0) {
             List<AreaNode> children = new java.util.ArrayList<AreaNode>(l.getChildren());
             for (AreaNode c : children) {
-                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0);
+                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0, level);
                 if ((c == children.get(0)) && (alignment == InlineAlignment.SPACE_BETWEEN))
                     continue;
                 else
                     l.insertChild(f, c, LineArea.EXPAND_IPD);
             }
             if (alignment == InlineAlignment.SPACE_AROUND) {
-                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0);
+                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0, level);
                 l.insertChild(f, null, LineArea.EXPAND_IPD);
             }
         }
@@ -547,12 +551,15 @@ public class LineLayout {
         int end;                                                // end index in outer iterator
         List<StyleAttributeInterval> fontIntervals;             // cached font sub-intervals over complete run interval
         Orientation orientation;                                // dominant glyph orientation for run
+        int level;                                              // bidirectional level
         String text;                                            // cached text over complete run interval
         TextRun(int start, int end) {
             this.start = start;
             this.end = end;
-            this.fontIntervals = getFontIntervals(0, end - start, font);
-            this.orientation = getDominantOrientation(0, end - start);
+            int l = end - start;
+            this.fontIntervals = getFontIntervals(0, l, font);
+            this.orientation = getDominantOrientation(0, l);
+            this.level = getDominantLevel(0, l);
         }
         @Override
         public String toString() {
@@ -665,7 +672,7 @@ public class LineLayout {
             for (int i = 0, n = intervals.length / 2; i < n; ++i) {
                 int s = start + intervals[i*2 + 0];
                 int e = start + intervals[i*2 + 1];
-                iterator.setIndex(s);
+                aci.setIndex(s);
                 Object v = aci.getAttribute(fontAttr);
                 if (v == null)
                     v = defaultFont;
@@ -686,7 +693,7 @@ public class LineLayout {
             for (int i = 0, n = intervals.length / 2; i < n; ++i) {
                 int s = start + intervals[i*2 + 0];
                 int e = start + intervals[i*2 + 1];
-                iterator.setIndex(s);
+                aci.setIndex(s);
                 Object v = aci.getAttribute(colorAttr);
                 if (v != null)
                     colors.add(new StyleAttributeInterval(colorAttr, v, s, e));
@@ -704,7 +711,7 @@ public class LineLayout {
             for (int i = 0, n = intervals.length / 2; i < n; ++i) {
                 int s = start + intervals[i*2 + 0];
                 int e = start + intervals[i*2 + 1];
-                iterator.setIndex(s);
+                aci.setIndex(s);
                 Object v = aci.getAttribute(emphasisAttr);
                 if (v != null)
                     emphasis.add(new StyleAttributeInterval(emphasisAttr, v, s, e));
@@ -731,13 +738,32 @@ public class LineLayout {
             for (int i = 0, n = intervals.length / 2; i < n; ++i) {
                 int s = start + intervals[i*2 + 0];
                 int e = start + intervals[i*2 + 1];
-                iterator.setIndex(s);
+                aci.setIndex(s);
                 Object v = aci.getAttribute(orientationAttr);
                 if (v != null)
                     orientations.add(new StyleAttributeInterval(orientationAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
             return orientations;
+        }
+        // obtain dominant bidi level for run, which must be the same value from start to end in outer iterator
+        private int getDominantLevel(int from, int to) {
+            StyleAttribute bidiAttr = StyleAttribute.BIDI;
+            int[] intervals = getAttributeIntervals(from, to, bidiAttr);
+            if (intervals.length >= 2) {
+                AttributedCharacterIterator aci = iterator;
+                int savedIndex = aci.getIndex();
+                int s = start + intervals[0];
+                int e = start + intervals[1];
+                assert s == start;
+                assert e == end;
+                aci.setIndex(s);
+                Object v = aci.getAttribute(bidiAttr);
+                int level = (v != null) ? (int) v : -1;
+                aci.setIndex(savedIndex);
+                return level;
+            } else
+                return -1;
         }
         // obtain intervals over [FROM,TO) for which ATTRIBUTE is defined
         private int[] getAttributeIntervals(int from, int to, StyleAttribute attribute) {

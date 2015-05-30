@@ -236,8 +236,13 @@ public class PresenterTestCases {
     }
 
     @Test
-    public void test037PMultiplePerRegionTBRL() throws Exception {
+    public void test037ParagraphMultiplePerRegionTBRL() throws Exception {
         performPresentationTest("test-037-p-multiple-per-region-tbrl.xml", 0, 0);
+    }
+
+    @Test
+    public void test038ParagraphTextAlignHebrewRLTB() throws Exception {
+        performPresentationTest("test-038-p-text-align-iw-rltb.xml", 0, 0);
     }
 
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {

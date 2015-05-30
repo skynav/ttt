@@ -36,6 +36,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
 
     private double bpd;
     private double ipd;
+    private int level;
     private double overflow;
 
     public BlockArea() {
@@ -43,19 +44,27 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public BlockArea(Element e) {
-        this(e, Double.NaN, Double.NaN);
+        this(e, Double.NaN, Double.NaN, -1);
     }
 
-    public BlockArea(Element e, double ipd, double bpd) {
+    public BlockArea(Element e, double ipd, double bpd, int level) {
         super(e);
         this.ipd = ipd;
         this.bpd = bpd;
+        this.level = level;
     }
 
+    @Override
+    public int getBidiLevel() {
+        return level;
+    }
+
+    @Override
     public void setIPD(double ipd) {
         this.ipd = ipd;
     }
 
+    @Override
     public void setBPD(double bpd) {
         this.bpd = bpd;
     }

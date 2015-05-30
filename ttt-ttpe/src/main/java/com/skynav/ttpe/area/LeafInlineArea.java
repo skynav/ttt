@@ -33,15 +33,22 @@ public class LeafInlineArea extends LeafAreaNode implements Inline {
 
     private double bpd;
     private double ipd;
+    private int level;
 
     public LeafInlineArea(Element e) {
-        this(e, 0, 0);
+        this(e, 0, 0, -1);
     }
 
-    public LeafInlineArea(Element e, double ipd, double bpd) {
+    public LeafInlineArea(Element e, double ipd, double bpd, int level) {
         super(e);
         this.ipd = ipd;
         this.bpd = bpd;
+        this.level = level; 
+    }
+
+    @Override
+    public int getBidiLevel() {
+        return level;
     }
 
     @Override

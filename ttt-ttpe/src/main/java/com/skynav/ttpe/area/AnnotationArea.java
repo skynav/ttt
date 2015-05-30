@@ -37,8 +37,8 @@ public class AnnotationArea extends LineArea implements Inline {
     private double offset;
     private AnnotationPosition position;
 
-    public AnnotationArea(Element e, double ipd, double bpd, InlineAlignment alignment, Color color, Font font, int annotationNumber) {
-        super(e, ipd, bpd, alignment, color, font, annotationNumber);
+    public AnnotationArea(Element e, double ipd, double bpd, int level, InlineAlignment alignment, Color color, Font font, int annotationNumber) {
+        super(e, ipd, bpd, level, alignment, color, font, annotationNumber);
     }
 
     public void setOffset(double offset) {
