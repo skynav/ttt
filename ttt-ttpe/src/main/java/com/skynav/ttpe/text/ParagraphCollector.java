@@ -55,6 +55,7 @@ public class ParagraphCollector {
 
     private List<Paragraph> collectParagraph(Element e) {
         clear();
+        styleCollector.maybeWrapWithBidiControls(e);
         styleCollector.collectParagraphStyles(e);
         for (Phrase p : new ParagraphPhraseCollector(new StyleCollector(styleCollector), embedding ? e : null).collect(e)) {
             if ((p instanceof BreakPhrase) && (((BreakPhrase) p).isParagraphBreak()))

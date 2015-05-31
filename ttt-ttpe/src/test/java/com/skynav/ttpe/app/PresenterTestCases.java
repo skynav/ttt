@@ -245,6 +245,11 @@ public class PresenterTestCases {
         performPresentationTest("test-038-p-text-align-iw-rltb.xml", 0, 0);
     }
 
+    @Test
+    public void test039SpanBidiLROInRLTB() throws Exception {
+        performPresentationTest("test-039-span-bidi-rlo-rltb.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

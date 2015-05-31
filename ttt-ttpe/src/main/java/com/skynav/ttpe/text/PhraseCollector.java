@@ -70,6 +70,7 @@ public class PhraseCollector {
 
     protected void collectSpan(Element e) {
         int begin = text.length();
+        styleCollector.maybeWrapWithBidiControls(e);
         collectChildren(e);
         styleCollector.collectSpanStyles(e, begin, text.length());
         emit(e);

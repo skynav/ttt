@@ -52,8 +52,17 @@ public class Characters {
     public static final int   UC_SPACE_THIN                     = '\u2009';             // thin space
     public static final int   UC_SPACE_HAIR                     = '\u200A';             // hair space
     public static final int   UC_SPACE_ZWSP                     = '\u200B';             // zero-width space
+    public static final int   UC_ZWNJ                           = '\u200C';             // zero-width non-joiner
+    public static final int   UC_ZWJ                            = '\u200D';             // zero-width joiner
+    public static final int   UC_LRM                            = '\u200E';             // left-to-right mark
+    public static final int   UC_RLM                            = '\u200F';             // right-to-left mark
     public static final int   UC_LINE_SEPARATOR                 = '\u2028';             // line separator
     public static final int   UC_PARA_SEPARATOR                 = '\u2029';             // paragraph separator
+    public static final int   UC_LRE                            = '\u202A';             // left-to-right embedding
+    public static final int   UC_RLE                            = '\u202B';             // right-to-left embedding
+    public static final int   UC_PDF                            = '\u202C';             // pop directional formatting
+    public static final int   UC_LRO                            = '\u202D';             // left-to-right override
+    public static final int   UC_RLO                            = '\u202E';             // right-to-left override
     public static final int   UC_NNBSP                          = '\u202F';             // narrow non-breaking space
     public static final int   UC_MMSP                           = '\u205F';             // medium mathematical space
     public static final int   UC_IDSP                           = '\u3000';             // ideographic space

@@ -31,6 +31,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontCache;
@@ -42,6 +45,7 @@ import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.util.Characters;
 import com.skynav.ttv.model.value.FontFamily;
 import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.Length;
@@ -155,6 +159,67 @@ public class StyleCollector {
 
     public void collectSpanStyles(Element e, int begin, int end) {
         collectCommonStyles(e, begin, end);
+    }
+
+    public void maybeWrapWithBidiControls(Element e) {
+        StyleSet styles = getStyles(e);
+
+        // style values
+        StyleSpecification s;
+        String v;
+
+        // direction
+        Direction d = null;
+        s = styles.get(ttsDirectionAttrName);
+        if (s != null) {
+            v = s.getValue().toLowerCase();
+            if (v.equals("ltr"))
+                d = Direction.LR;
+            else if (v.equals("rtl"))
+                d = Direction.RL;
+        }
+
+        // unicode bidi
+        UnicodeBidi u = null;
+        s = styles.get(ttsUnicodeBidiAttrName);
+        if (s != null) {
+            v = s.getValue().toLowerCase();
+            if (v.equals("normal"))
+                u = UnicodeBidi.NORMAL;
+            else if (v.equals("embed"))
+                u = UnicodeBidi.EMBED;
+            else if (v.equals("bidioverride"))
+                u = UnicodeBidi.OVERRIDE;
+        }
+
+        int c = 0;
+        if ((u != null) && (u != UnicodeBidi.NORMAL) && (d != null)) {
+            if (u == UnicodeBidi.EMBED) {
+                if (d == Direction.RL)
+                    c = Characters.UC_RLE;
+                else if (d == Direction.LR)
+                    c = Characters.UC_LRE;
+            } else if (u == UnicodeBidi.OVERRIDE) {
+                if (d == Direction.RL)
+                    c = Characters.UC_RLO;
+                else if (d == Direction.LR)
+                    c = Characters.UC_LRO;
+            }
+        }
+        if (c != 0) {
+            NodeList children = e.getChildNodes();
+            if (children.getLength() == 1) {
+                Node n = children.item(0);
+                if (n instanceof Text) {
+                    Text t = (Text) n;
+                    StringBuffer sb = new StringBuffer();
+                    sb.append((char) c);
+                    sb.append(t.getWholeText());
+                    sb.append((char) Characters.UC_PDF);
+                    t.replaceWholeText(sb.toString());
+                }
+            }
+        }
     }
 
     public void collectContentStyles(String content, int begin, int end) {

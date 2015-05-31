@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2014-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -22,27 +22,11 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
-package com.skynav.ttv.verifier.ttml.style;
 
-import javax.xml.namespace.QName;
+package com.skynav.ttpe.style;
 
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-
-public class DirectionVerifier implements StyleValueVerifier {
-
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        // Schema validation phase (3) reports invalid values.
-        if (model.isTTMLVersion(1) && (valueObject instanceof com.skynav.ttv.model.ttml1.ttd.Direction))
-            return true;
-        else if (model.isTTMLVersion(2) && (valueObject instanceof com.skynav.ttv.model.ttml2.ttd.Direction))
-            return true;
-        else
-            throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());
-    }
-
+public enum UnicodeBidi {
+    NORMAL,
+    EMBED,
+    OVERRIDE;
 }

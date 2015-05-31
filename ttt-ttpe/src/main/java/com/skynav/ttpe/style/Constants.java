@@ -55,6 +55,7 @@ public class Constants {
     public static final QName ttsBackgroundColorAttrName                = new QName(NAMESPACE_TT_STYLE, "backgroundColor");
     public static final QName ttsBPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "bpd");
     public static final QName ttsColorAttrName                          = new QName(NAMESPACE_TT_STYLE, "color");
+    public static final QName ttsDirectionAttrName                      = new QName(NAMESPACE_TT_STYLE, "direction");
     public static final QName ttsDisplayAlignAttrName                   = new QName(NAMESPACE_TT_STYLE, "displayAlign");
     public static final QName ttsExtentAttrName                         = new QName(NAMESPACE_TT_STYLE, "extent");
     public static final QName ttsFontFamilyAttrName                     = new QName(NAMESPACE_TT_STYLE, "fontFamily");
@@ -76,6 +77,7 @@ public class Constants {
     public static final QName ttsTextAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "textAlign");
     public static final QName ttsTextCombineAttrName                    = new QName(NAMESPACE_TT_STYLE, "textCombine");
     public static final QName ttsTextEmphasisAttrName                   = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
+    public static final QName ttsUnicodeBidiAttrName                    = new QName(NAMESPACE_TT_STYLE, "unicodeBidi");
     public static final QName ttsWrapOptionAttrName                     = new QName(NAMESPACE_TT_STYLE, "wrapOption");
     public static final QName ttsWritingModeAttrName                    = new QName(NAMESPACE_TT_STYLE, "writingMode");
 
