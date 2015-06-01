@@ -94,14 +94,14 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] annotationAttr = new StyleAttribute[] { StyleAttribute.ANNOTATIONS };
-    public Phrase[] getAnnotations(int index) {
+    public Phrase[] getAnnotations(int index, Defaults defaults) {
         Object v;
         if (index < 0)
             v = attributes.get(annotationAttr[0]);
         else
             v = content.getIterator(annotationAttr, index, index + 1).getAttribute(annotationAttr[0]);
         if (v == null)
-            v = defaultAnnotation;
+            v = defaults.getAnnotation();
         if (v instanceof Phrase[])
             return (Phrase[]) v;
         else
@@ -109,14 +109,14 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] annotationAlignAttr = new StyleAttribute[] { StyleAttribute.ANNOTATION_ALIGNMENT };
-    public InlineAlignment getAnnotationAlign(int index) {
+    public InlineAlignment getAnnotationAlign(int index, Defaults defaults) {
         Object v;
         if (index < 0)
             v = attributes.get(annotationAlignAttr[0]);
         else
             v = content.getIterator(annotationAlignAttr, index, index + 1).getAttribute(annotationAlignAttr[0]);
         if (v == null)
-            v = defaultAnnotationAlign;
+            v = defaults.getAnnotationAlign();
         if (v instanceof InlineAlignment)
             return (InlineAlignment) v;
         else
@@ -124,14 +124,14 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] annotationOffsetAttr = new StyleAttribute[] { StyleAttribute.ANNOTATION_OFFSET };
-    public Double getAnnotationOffset(int index) {
+    public Double getAnnotationOffset(int index, Defaults defaults) {
         Object v;
         if (index < 0)
             v = attributes.get(annotationOffsetAttr[0]);
         else
             v = content.getIterator(annotationOffsetAttr, index, index + 1).getAttribute(annotationOffsetAttr[0]);
         if (v == null)
-            v = defaultAnnotationOffset;
+            v = defaults.getAnnotationOffset();
         if (v instanceof Double)
             return (Double) v;
         else
@@ -139,14 +139,14 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] annotationPositionAttr = new StyleAttribute[] { StyleAttribute.ANNOTATION_POSITION };
-    public AnnotationPosition getAnnotationPosition(int index) {
+    public AnnotationPosition getAnnotationPosition(int index, Defaults defaults) {
         Object v;
         if (index < 0)
             v = attributes.get(annotationPositionAttr[0]);
         else
             v = content.getIterator(annotationPositionAttr, index, index + 1).getAttribute(annotationPositionAttr[0]);
         if (v == null)
-            v = defaultAnnotationPosition;
+            v = defaults.getAnnotationPosition();
         if (v instanceof AnnotationPosition)
             return (AnnotationPosition) v;
         else
@@ -169,7 +169,7 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] fontAttr = new StyleAttribute[] { StyleAttribute.FONT };
-    public Font getFont(int index) {
+    public Font getFont(int index, Defaults defaults) {
         Object v;
         if (index < 0)
             v = attributes.get(fontAttr[0]);
@@ -182,7 +182,7 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] lineHeightAttr = new StyleAttribute[] { StyleAttribute.LINE_HEIGHT };
-    public Double getLineHeight(int index, Font font) {
+    public Double getLineHeight(int index, Defaults defaults, Font font) {
         Object v;
         if (index < 0)
             v = attributes.get(lineHeightAttr[0]);
@@ -192,7 +192,7 @@ public class Phrase {
             if (font != null)
                 v = font.getDefaultLineHeight();
             else
-                v = defaultLineHeight;
+                v = defaults.getLineHeight();
         }
         if (v instanceof Double)
             return (Double) v;
@@ -201,14 +201,14 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] textAlignAttr = new StyleAttribute[] { StyleAttribute.INLINE_ALIGNMENT };
-    public InlineAlignment getTextAlign(int index) {
+    public InlineAlignment getTextAlign(int index, Defaults defaults) {
         Object v;
         if (index < 0)
             v = attributes.get(textAlignAttr[0]);
         else
             v = content.getIterator(textAlignAttr, index, index + 1).getAttribute(textAlignAttr[0]);
         if (v == null)
-            v = defaultTextAlign;
+            v = defaults.getTextAlign();
         if (v instanceof InlineAlignment)
             return (InlineAlignment) v;
         else
@@ -216,14 +216,14 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] wrapOptionAttr = new StyleAttribute[] { StyleAttribute.WRAP };
-    public Wrap getWrapOption(int index) {
+    public Wrap getWrapOption(int index, Defaults defaults) {
         Object v;
         if (index < 0)
             v = attributes.get(wrapOptionAttr[0]);
         else
             v = content.getIterator(wrapOptionAttr, index, index + 1).getAttribute(wrapOptionAttr[0]);
         if (v == null)
-            v = defaultWrap;
+            v = defaults.getWrap();
         if (v instanceof Wrap)
             return (Wrap) v;
         else

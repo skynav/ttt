@@ -81,35 +81,4 @@ public class Constants {
     public static final QName ttsWrapOptionAttrName                     = new QName(NAMESPACE_TT_STYLE, "wrapOption");
     public static final QName ttsWritingModeAttrName                    = new QName(NAMESPACE_TT_STYLE, "writingMode");
 
-    // Default Style Values
-    public static final Annotation defaultAnnotation                    = null;
-    public static final InlineAlignment defaultAnnotationAlign          = InlineAlignment.CENTER;
-    public static final double defaultAnnotationOffset                  = 0;
-    public static final AnnotationPosition defaultAnnotationPosition    = AnnotationPosition.AUTO;
-    public static final Color defaultBackgroundColor                    = Color.TRANSPARENT;
-    public static final Color defaultColor                              = Color.YELLOW;
-    public static final Combine defaultCombine                          = Combine.NONE;
-    public static final BlockAlignment defaultDisplayAlign              = BlockAlignment.BEFORE;
-    public static final Emphasis defaultEmphasis                        = Emphasis.NONE;
-    public static final Extent defaultExtent                            = Extent.EMPTY;
-    public static final Extent defaultExternalExtent                    = new Extent(1280, 720);
-    public static final List<String> defaultFontFamilies                = FontKey.DEFAULT_FAMILIES;
-    public static final Set<FontFeature> defaultFontFeatures            = FontKey.DEFAULT_FEATURES;
-    public static final FontKerning defaultFontKerning                  = FontKerning.NORMAL;
-    public static final double defaultFontShear                         = 0;
-    public static final Extent defaultFontSize                          = FontKey.DEFAULT_SIZE;
-    public static final FontStyle defaultFontStyle                      = FontKey.DEFAULT_STYLE;
-    public static final FontWeight defaultFontWeight                    = FontKey.DEFAULT_WEIGHT;
-    public static final String defaultLanguage                          = FontKey.DEFAULT_LANGUAGE;
-    public static final double defaultLineHeight                        = defaultFontSize.getHeight() * 1.25;
-    public static final String defaultPositionComponents                = "center";
-    public static final Point defaultOrigin                             = Point.ZERO;
-    public static final Orientation defaultOrientation                  = Orientation.ROTATE000;
-    public static final Overflow defaultOverflow                        = Overflow.HIDDEN;
-    public static final Whitespace defaultWhitespace                    = Whitespace.DEFAULT;
-    public static final InlineAlignment defaultTextAlign                = InlineAlignment.START;
-    public static final TransformMatrix defaultTransform                = TransformMatrix.IDENTITY;
-    public static final WritingMode defaultWritingMode                  = WritingMode.LRTB;
-    public static final Wrap defaultWrap                                = Wrap.WRAP;
-
 }

@@ -72,7 +72,7 @@ public class AnnotationStyleCollector extends StyleCollector {
                     return new Extent(fs.getWidth() * 0.5, fs.getHeight() * 0.5);
             }
         }
-        return defaultFontSize;
+        return defaults.getFontSize();
     }
 
     private void collectCommonAnnotationStyles(Element e, int begin, int end, StyleSet styles) {

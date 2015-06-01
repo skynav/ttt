@@ -46,6 +46,7 @@ import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
+import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
@@ -89,6 +90,7 @@ public class LineLayout {
 
     // layout state
     private LayoutState state;
+    private Defaults defaults;
     private int lineNumber;
 
     // style related state
@@ -109,16 +111,17 @@ public class LineLayout {
         this.iterator = content.getIterator();
         // layout state
         this.state = state;
+        this.defaults = state.getDefaults();
         // area derived state
         this.writingMode = state.getWritingMode();
         this.level = state.getBidiLevel();
         // paragraph specified styles
-        this.color = content.getColor(-1, state.getDefaults());
-        this.textAlign = relativizeAlignment(content.getTextAlign(-1), this.writingMode);
-        this.wrap = content.getWrapOption(-1);
+        this.color = content.getColor(-1, defaults);
+        this.textAlign = relativizeAlignment(content.getTextAlign(-1, defaults), this.writingMode);
+        this.wrap = content.getWrapOption(-1, defaults);
         // derived styles
-        this.font = content.getFont(-1);
-        this.lineHeight = content.getLineHeight(-1, font);
+        this.font = content.getFont(-1, defaults);
+        this.lineHeight = content.getLineHeight(-1, defaults, font);
         this.whitespace = new WhitespaceState(state.getWhitespace());
     }
 
@@ -380,9 +383,9 @@ public class LineLayout {
 
     private void addAnnotationAreas(LineArea l, Phrase[] annotations, Font font, double advance, double lineHeight) {
         for (Phrase p : annotations) {
-            InlineAlignment annotationAlign = p.getAnnotationAlign(-1);
-            Double annotationOffset = p.getAnnotationOffset(-1);
-            AnnotationPosition annotationPosition = p.getAnnotationPosition(-1);
+            InlineAlignment annotationAlign = p.getAnnotationAlign(-1, defaults);
+            Double annotationOffset = p.getAnnotationOffset(-1, defaults);
+            AnnotationPosition annotationPosition = p.getAnnotationPosition(-1, defaults);
             for (AnnotationArea a :  new AnnotationLayout(p, state).layout()) {
                 a.setAlignment(annotationAlign);
                 a.setOffset(annotationOffset);
@@ -558,7 +561,7 @@ public class LineLayout {
             this.end = end;
             int l = end - start;
             this.fontIntervals = getFontIntervals(0, l, font);
-            this.orientation = getDominantOrientation(0, l);
+            this.orientation = getDominantOrientation(0, l, defaults.getOrientation());
             this.level = getDominantLevel(0, l);
         }
         @Override
@@ -720,7 +723,7 @@ public class LineLayout {
             return emphasis;
         }
         // obtain dominant for specified interval FROM to TO of run
-        private Orientation getDominantOrientation(int from, int to) {
+        private Orientation getDominantOrientation(int from, int to, Orientation defaultOrientation) {
             for (StyleAttributeInterval sai : getOrientationIntervals(from, to)) {
                 Orientation orientation = (Orientation) sai.getValue();
                 if (orientation.isRotated())

@@ -196,7 +196,7 @@ public class BasicLayoutState implements LayoutState {
         if (!areas.empty())
             ws = areas.peek().getWhitespace();
         if (ws == null)
-            ws = defaultWhitespace;
+            ws = defaults.getWhitespace();
         return ws;
     }
 
@@ -205,7 +205,7 @@ public class BasicLayoutState implements LayoutState {
         if (!areas.empty())
             wm = areas.peek().getWritingMode();
         if (wm == null)
-            wm = defaultWritingMode;
+            wm = defaults.getWritingMode();
         return wm;
     }
 
@@ -218,7 +218,7 @@ public class BasicLayoutState implements LayoutState {
         if (!areas.empty())
             f = areas.peek().getFont();
         if (f == null)
-            f = fontCache.getDefaultFont(getWritingMode().getAxis(Dimension.BPD), defaultFontSize);
+            f = fontCache.getDefaultFont(getWritingMode().getAxis(Dimension.BPD), defaults.getFontSize());
         return f;
     }
 
@@ -243,7 +243,7 @@ public class BasicLayoutState implements LayoutState {
             double[] parsedExternalExtent = (double[]) value;
             return new Extent(parsedExternalExtent[0], parsedExternalExtent[1]);
         } else
-            return defaultExternalExtent;
+            return defaults.getExternalExtent();
     }
 
     public Point getExternalOrigin() {
@@ -290,7 +290,7 @@ public class BasicLayoutState implements LayoutState {
             String v = s.getValue();
             return BlockAlignment.valueOf(v.toUpperCase());
         } else
-            return defaultDisplayAlign;
+            return defaults.getDisplayAlign();
     }
 
     public Extent getExtent(Element e) {
@@ -314,7 +314,7 @@ public class BasicLayoutState implements LayoutState {
                 }
             }
         }
-        return defaultExtent;
+        return defaults.getExtent();
     }
 
     public Point getOrigin(Element e) {
@@ -338,13 +338,13 @@ public class BasicLayoutState implements LayoutState {
                 }
             }
         }
-        return defaultOrigin;
+        return defaults.getOrigin();
     }
 
     public Point getPosition(Element e, Extent extent) {
         StyleSpecification s = getStyles(e).get(ttsPositionAttrName);
         if ((s == null) && (getStyles(e).get(ttsOriginAttrName) == null) && (context.getModel().getTTMLVersion() >= 2))
-            s = new StyleSpecification(ttsPositionAttrName, defaultPositionComponents);
+            s = new StyleSpecification(ttsPositionAttrName, defaults.getPositionComponents());
         if (s != null) {
             String v = s.getValue();
             String [] components = v.split("[ \t\r\n]+");
@@ -362,11 +362,11 @@ public class BasicLayoutState implements LayoutState {
             String v = s.getValue();
             return Overflow.valueOf(v.toUpperCase());
         } else
-            return defaultOverflow;
+            return defaults.getOverflow();
     }
 
     public TransformMatrix getTransform(Element e) {
-        return defaultTransform;
+        return defaults.getTransform();
     }
 
     public WritingMode getWritingMode(Element e) {
@@ -375,7 +375,7 @@ public class BasicLayoutState implements LayoutState {
             String v = s.getValue();
             return WritingMode.valueOf(v.toUpperCase());
         } else
-            return defaultWritingMode;
+            return defaults.getWritingMode();
     }
 
     public void incrementCounters(CounterEvent event, Area a) {

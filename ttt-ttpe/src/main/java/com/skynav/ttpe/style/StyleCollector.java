@@ -68,6 +68,7 @@ public class StyleCollector {
 
     protected TransformerContext context;
     protected FontCache fontCache;
+    protected Defaults defaults;
     protected Extent extBounds;
     protected Extent refBounds;
     protected WritingMode writingMode;
@@ -78,13 +79,14 @@ public class StyleCollector {
     private BidiLevelIterator bidi;
 
     public StyleCollector(StyleCollector sc) {
-        this(sc.context, sc.fontCache, sc.extBounds, sc.refBounds, sc.writingMode, sc.language, sc.font, sc.styles);
+        this(sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.writingMode, sc.language, sc.font, sc.styles);
     }
 
     public StyleCollector
-        (TransformerContext context, FontCache fontCache, Extent extBounds, Extent refBounds, WritingMode writingMode, String language, Font font, Map<String,StyleSet> styles) {
+        (TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, WritingMode writingMode, String language, Font font, Map<String,StyleSet> styles) {
         this.context = context;
         this.fontCache = fontCache;
+        this.defaults = defaults;
         this.extBounds = extBounds;
         this.refBounds = refBounds;
         this.writingMode = writingMode;
@@ -245,7 +247,7 @@ public class StyleCollector {
                 int c = content.charAt(i);
                 Orientation o = Orientation.fromCharacter(c);
                 if (o != lastOrientation) {
-                    if ((lastOrientation != null) && (lastOrientation != defaultOrientation) && (lastEnd > lastBegin))
+                    if ((lastOrientation != null) && (lastOrientation != defaults.getOrientation()) && (lastEnd > lastBegin))
                         addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, i);
                     lastOrientation = o;
                     lastBegin = i;
@@ -253,7 +255,7 @@ public class StyleCollector {
                 lastEnd = i + 1;
             }
             if (lastBegin < end) {
-                if ((lastOrientation != null) && (lastOrientation != defaultOrientation) && (lastEnd > lastBegin))
+                if ((lastOrientation != null) && (lastOrientation != defaults.getOrientation()) && (lastEnd > lastBegin))
                     addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, lastEnd);
             }
         }
@@ -570,23 +572,23 @@ public class StyleCollector {
     }
 
     protected List<String> getDefaultFontFamilies(Element e, StyleSet styles) {
-        return defaultFontFamilies;
+        return defaults.getFontFamilies();
     }
 
     protected FontStyle getDefaultFontStyle(Element e, StyleSet styles) {
-        return defaultFontStyle;
+        return defaults.getFontStyle();
     }
 
     protected FontWeight getDefaultFontWeight(Element e, StyleSet styles) {
-        return defaultFontWeight;
+        return defaults.getFontWeight();
     }
 
     protected Extent getDefaultFontSize(Element e, StyleSet styles) {
-        return defaultFontSize;
+        return defaults.getFontSize();
     }
 
     protected Set<FontFeature> getDefaultFontFeatures(Element e, StyleSet styles) {
-        return defaultFontFeatures;
+        return defaults.getFontFeatures();
     }
 
     protected Extent parseFontSize(Element e, StyleSpecification s) {
