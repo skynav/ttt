@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <head>
+    <styling>
+      <initial tts:displayAlign="center"/>
+      <initial tts:textAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r0" tts:extent="640px 45px" tts:position="center top 45px"/>
+      <region xml:id="r1" tts:extent="640px 90px" tts:position="center top 135px"/>
+      <region xml:id="r2" tts:extent="640px 90px" tts:position="center bottom 135px"/>
+      <region xml:id="r3" tts:extent="640px 45px" tts:position="center bottom 45px"/>
+    </layout>
+  </head>
+  <body tts:textAlign="center" tts:fontFamily="Arial" tts:fontSize="36px" tts:lineHeight="45px">
+    <div begin="1s" end="2s">
+      <p region="r0">ABC</p>
+      <p region="r1">ABC</p>
+      <p region="r2">ABC</p>
+      <p region="r3">ABC</p>
+    </div>
+  </body>
+</tt>
+
+

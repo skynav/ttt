@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.area.ReferenceArea;
@@ -47,6 +48,22 @@ import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttv.util.StyleSet;
 
 public interface LayoutState {
+    public enum Counter {
+        REGIONS_IN_CANVAS,
+        LINES_IN_CANVAS,
+        LINES_IN_REGION,
+        MAX_LINES_IN_REGION,
+        CHARS_IN_CANVAS,
+        CHARS_IN_REGION,
+        MAX_CHARS_IN_REGION,
+        CHARS_IN_LINE,
+        MAX_CHARS_IN_LINE;
+    };
+    public enum CounterEvent {
+        ADD_REGION,
+        ADD_LINE,
+        RESET;
+    };
     // non-content derived state
     LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator);
     FontCache getFontCache();
@@ -88,4 +105,8 @@ public interface LayoutState {
     Overflow getOverflow(Element e);
     TransformMatrix getTransform(Element e);
     WritingMode getWritingMode(Element e);
+    // statistics
+    void incrementCounters(CounterEvent event, Area a);
+    void finalizeCounters();
+    int getCounter(Counter counter);
 }

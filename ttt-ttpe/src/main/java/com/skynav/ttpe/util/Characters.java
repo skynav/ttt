@@ -158,6 +158,31 @@ public class Characters {
         return (c == UC_HYPHEN_MINUS) || (c == UC_SOFT_HYPHEN);
     }
 
+    public static boolean isNonSpacing(int c) {
+        if ((c >= 0x0300) && (c <= 0x036F))
+            return true;
+        else if ((c >= 0x0590) && (c <= 0x05CF))
+            return (c != 0x05C0) && (c != 0x05C6);
+        else if (((c >= 0x0610) && (c <= 0x061A)) || (c == 0x061C))
+            return true;
+        else if ((c >= 0x064B) && (c <= 0x065F))
+            return true;
+        else if ((c >= 0x06D6) && (c <= 0x06ED))
+            return (c != 0x06E5) && (c != 0x06E6) && (c != 0x06E9);
+        else if ((c >= 0x1AB0) && (c <= 0x1AFF))
+            return true;
+        else if ((c >= 0x1DC0) && (c <= 0x1DFF))
+            return true;
+        else if ((c >= 0x2000) && (c <= 0x200F))
+            return true;
+        else if ((c >= 0x2028) && (c <= 0x202F))
+            return true;
+        else if ((c >= 0x205F) && (c <= 0x206F))
+            return true;
+        else
+            return false;
+    }
+
     public static boolean isCJKSymbol(int c) {
         return (c >= UC_CJK_SYMBOL_START) && (c <= UC_CJK_SYMBOL_END);
     }

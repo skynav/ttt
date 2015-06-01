@@ -73,6 +73,12 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         { "line-breaker",               "NAME",     "specify line breaker name (default: " + defaultLineBreakerName + ")" },
         { "font",                       "FILE",     "specify font configuration file" },
         { "font-directory",             "DIRECTORY","specify path to directory where font configuration files are located" },
+        { "max-regions",                "COUNT",    "maximum number of regions in canvas (default: no limit)" },
+        { "max-lines",                  "COUNT",    "maximum number of lines in canvas (default: no limit)" },
+        { "max-lines-per-region",       "COUNT",    "maximum number of lines in a region (default: no limit)" },
+        { "max-chars",                  "COUNT",    "maximum number of characters in canvas (default: no limit)" },
+        { "max-chars-per-region",       "COUNT",    "maximum number of characters in a region (default: no limit)" },
+        { "max-chars-per-line",         "COUNT",    "maximum number of characters in a line (default: no limit)" },
     };
     private static final Map<String,OptionSpecification> longOptions;
     static {
@@ -87,6 +93,12 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private List<String> fontSpecificationFileNames;
     private String lineBreakerName;
     private String charBreakerName;
+    private int maxRegions = -1;
+    private int maxLines = -1;
+    private int maxLinesPerRegion = -1;
+    private int maxChars = -1;
+    private int maxCharsPerRegion = -1;
+    private int maxCharsPerLine = -1;
 
     // derived state
     private FontCache fontCache;
@@ -109,6 +121,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
 
     @Override
     public int parseLongOption(List<String> args, int index) {
+        Reporter reporter = context.getReporter();
         String arg = args.get(index);
         int numArgs = args.size();
         String option = arg;
@@ -128,6 +141,60 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             lineBreakerName = args.get(++index);
+        } else if (option.equals("max-regions")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String count = args.get(++index);
+            try {
+                maxRegions = Integer.parseInt(count);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException(option, reporter.message("*KEY*", "bad count syntax: {0}", count));
+            }
+        } else if (option.equals("max-lines")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String count = args.get(++index);
+            try {
+                maxLines = Integer.parseInt(count);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException(option, reporter.message("*KEY*", "bad count syntax: {0}", count));
+            }
+        } else if (option.equals("max-lines-per-region")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String count = args.get(++index);
+            try {
+                maxLinesPerRegion = Integer.parseInt(count);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException(option, reporter.message("*KEY*", "bad count syntax: {0}", count));
+            }
+        } else if (option.equals("max-chars")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String count = args.get(++index);
+            try {
+                maxChars = Integer.parseInt(count);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException(option, reporter.message("*KEY*", "bad count syntax: {0}", count));
+            }
+        } else if (option.equals("max-chars-per-region")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String count = args.get(++index);
+            try {
+                maxCharsPerRegion = Integer.parseInt(count);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException(option, reporter.message("*KEY*", "bad count syntax: {0}", count));
+            }
+        } else if (option.equals("max-chars-per-line")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String count = args.get(++index);
+            try {
+                maxCharsPerLine = Integer.parseInt(count);
+            } catch (NumberFormatException e) {
+                throw new InvalidOptionUsageException(option, reporter.message("*KEY*", "bad count syntax: {0}", count));
+            }
         } else
             index = index - 1;
         return index + 1;
@@ -172,17 +239,19 @@ public class BasicLayoutProcessor extends LayoutProcessor {
 
     @Override
     public List<Area> layout(Document d) {
+        List<Area> areas = null;
         if (d != null) {
             Element root = d.getDocumentElement();
             if (root != null) {
                 LayoutState ls = makeLayoutState();
                 if (isElement(root, isdSequenceElementName))
-                    return layoutISDSequence(root, ls);
+                    areas = layoutISDSequence(root, ls);
                 else if (isElement(root, isdInstanceElementName))
-                    return layoutISDInstance(root, ls);
+                    areas = layoutISDInstance(root, ls);
+                warnOnCounterViolations(ls);
             }
         }
-        return new java.util.ArrayList<Area>();
+        return (areas != null) ? areas : new java.util.ArrayList<Area>();
     }
 
     @Override
@@ -418,6 +487,29 @@ public class BasicLayoutProcessor extends LayoutProcessor {
                 b.insertChild(f, null, null);
             }
         }
+    }
+
+    private void warnOnCounterViolations(LayoutState ls) {
+        Reporter reporter = context.getReporter();
+        ls.finalizeCounters();
+        int regions = ls.getCounter(LayoutState.Counter.REGIONS_IN_CANVAS);
+        if ((maxRegions >= 0) && (regions > maxRegions))
+            reporter.logWarning(reporter.message("*KEY*", "Regions per canvas limit exceeded, {0} present, must not exceed {1}.", regions, maxRegions));
+        int lines = ls.getCounter(LayoutState.Counter.LINES_IN_CANVAS);
+        if ((maxLines >= 0) && (lines > maxLines))
+            reporter.logWarning(reporter.message("*KEY*", "Lines per canvas limit exceeded, {0} present, must not exceed {1}.", lines, maxLines));
+        int linesPerRegion = ls.getCounter(LayoutState.Counter.MAX_LINES_IN_REGION);
+        if ((maxLinesPerRegion >= 0) && (linesPerRegion > maxLinesPerRegion))
+            reporter.logWarning(reporter.message("*KEY*", "Lines per region limit exceeded, {0} present, must not exceed {1}.", linesPerRegion, maxLinesPerRegion));
+        int chars = ls.getCounter(LayoutState.Counter.CHARS_IN_CANVAS);
+        if ((maxChars >= 0) && (chars > maxChars))
+            reporter.logWarning(reporter.message("*KEY*", "Characters per canvas limit exceeded, {0} present, must not exceed {1}.", chars, maxChars));
+        int charsPerRegion = ls.getCounter(LayoutState.Counter.MAX_CHARS_IN_REGION);
+        if ((maxCharsPerRegion >= 0) && (charsPerRegion > maxCharsPerRegion))
+            reporter.logWarning(reporter.message("*KEY*", "Characters per region limit exceeded, {0} present, must not exceed {1}.", charsPerRegion, maxCharsPerRegion));
+        int charsPerLine = ls.getCounter(LayoutState.Counter.MAX_CHARS_IN_LINE);
+        if ((maxCharsPerLine >= 0) && (charsPerLine > maxCharsPerLine))
+            reporter.logWarning(reporter.message("*KEY*", "Characters per line limit exceeded, {0} present, must not exceed {1}.", charsPerLine, maxCharsPerLine));
     }
 
 }

@@ -250,6 +250,36 @@ public class PresenterTestCases {
         performPresentationTest("test-039-span-bidi-rlo-rltb.xml", 0, 0);
     }
 
+    @Test
+    public void test040MaxRegionsExceeded() throws Exception {
+        performPresentationTest("test-040-max-regions-exceeded.xml", 0, 1, new String[]{"--max-regions", "3"});
+    }
+
+    @Test
+    public void test041MaxLinesExceeded() throws Exception {
+        performPresentationTest("test-041-max-lines-exceeded.xml", 0, 1, new String[]{"--max-lines", "5"});
+    }
+
+    @Test
+    public void test042MaxLinesPerRegionExceeded() throws Exception {
+        performPresentationTest("test-042-max-lines-per-region-exceeded.xml", 0, 1, new String[]{"--max-lines-per-region", "1"});
+    }
+
+    @Test
+    public void test043MaxCharsExceeded() throws Exception {
+        performPresentationTest("test-043-max-chars-exceeded.xml", 0, 1, new String[]{"--max-chars", "11"});
+    }
+
+    @Test
+    public void test044MaxCharsPerRegionExceeded() throws Exception {
+        performPresentationTest("test-044-max-chars-per-region-exceeded.xml", 0, 1, new String[]{"--max-chars-per-region", "5"});
+    }
+
+    @Test
+    public void test045MaxCharsPerRegionExceeded() throws Exception {
+        performPresentationTest("test-045-max-chars-per-line-exceeded.xml", 0, 1, new String[]{"--max-chars-per-line", "3"});
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

@@ -32,6 +32,7 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Orientation;
+import com.skynav.ttpe.util.Characters;
 
 public class GlyphArea extends LeafInlineArea {
 
@@ -70,6 +71,16 @@ public class GlyphArea extends LeafInlineArea {
 
     public BlockArea getContainingBlock() {
         return getLine().getContainingBlock();
+    }
+
+    public int getSpacingGlyphsCount() {
+        int ng = 0;
+        for (int i = 0, n = text.length(); i < n; ++i) {
+            int c = text.charAt(i);
+            if (!Characters.isWhitespace(c) && !Characters.isNonSpacing(c))
+                ng++;
+        }
+        return ng;
     }
 
 }

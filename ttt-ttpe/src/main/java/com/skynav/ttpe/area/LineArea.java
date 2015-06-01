@@ -137,6 +137,15 @@ public class LineArea extends BlockArea {
         return (font != null) ? font.getDescent() : 0;
     }
 
+    public int getSpacingGlyphsCount() {
+        int ng = 0;
+        for (AreaNode a : getChildren()) {
+            if (a instanceof GlyphArea)
+                ng += ((GlyphArea) a).getSpacingGlyphsCount();
+        }
+        return ng;
+    }
+
     public double getAnnotationBPD() {
         return getAnnotationBPD(AnnotationPosition.BEFORE) + getAnnotationBPD(AnnotationPosition.AFTER);
     }

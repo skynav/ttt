@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.layout;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -33,6 +34,7 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.BlockArea;
@@ -54,9 +56,9 @@ import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
+import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
-import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
@@ -78,9 +80,11 @@ public class BasicLayoutState implements LayoutState {
     private LineBreakIterator characterIterator;
     private Stack<NonLeafAreaNode> areas;
     private Map<String, StyleSet> styles;
+    private int[] counters;
 
     public BasicLayoutState(TransformerContext context) {
         this.context = context;
+        this.counters = new int[Counter.values().length];
     }
 
     public LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator) {
@@ -109,7 +113,10 @@ public class BasicLayoutState implements LayoutState {
     }
 
     public NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip) {
-        return push(new ViewportArea(e, width, height, clip));
+        NonLeafAreaNode a = push(new ViewportArea(e, width, height, clip));
+        if (areas.size() > 2)
+            incrementCounters(CounterEvent.ADD_REGION, a);
+        return a;
     }
 
     public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
@@ -137,6 +144,7 @@ public class BasicLayoutState implements LayoutState {
             throw new IllegalStateException();
         else
             p.addChild(l);
+        incrementCounters(CounterEvent.ADD_LINE, l);
         return l;
     }
 
@@ -361,6 +369,77 @@ public class BasicLayoutState implements LayoutState {
             return WritingMode.valueOf(v.toUpperCase());
         } else
             return defaultWritingMode;
+    }
+
+    public void incrementCounters(CounterEvent event, Area a) {
+        if (event == CounterEvent.ADD_REGION) {
+            updateCharCounters(a);
+            updateLineCounters(a);
+            int nr = 1;
+            counters[Counter.REGIONS_IN_CANVAS.ordinal()] += nr;
+        } else if (event == CounterEvent.ADD_LINE) {
+            updateCharCounters(a);
+            int nc = countSpacingGlyphs(a);
+            counters[Counter.CHARS_IN_LINE.ordinal()] += nc;
+            counters[Counter.CHARS_IN_REGION.ordinal()] += nc;
+            counters[Counter.CHARS_IN_CANVAS.ordinal()] += nc;
+            int nl = 1;
+            counters[Counter.LINES_IN_REGION.ordinal()] += nl;
+            counters[Counter.LINES_IN_CANVAS.ordinal()] += nl;
+        } else if (event == CounterEvent.RESET) {
+            Arrays.fill(counters, 0);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void finalizeCounters() {
+        updateCharCounters(null);
+        updateLineCounters(null);
+    }
+
+    public int getCounter(Counter counter) {
+        return counters[counter.ordinal()];
+    }
+
+    private void updateLineCounters(Area a) {
+        int n, m;
+        if ((a == null) || (a instanceof ViewportArea)) {
+            n = counters[Counter.LINES_IN_REGION.ordinal()];
+            m = counters[Counter.MAX_LINES_IN_REGION.ordinal()];
+            if (n > m)
+                counters[Counter.MAX_LINES_IN_REGION.ordinal()] = n;
+            resetCounter(Counter.LINES_IN_REGION);
+        }
+    }
+
+    private void updateCharCounters(Area a) {
+        int n, m;
+        if ((a == null) || (a instanceof LineArea)) {
+            n = counters[Counter.CHARS_IN_LINE.ordinal()];
+            m = counters[Counter.MAX_CHARS_IN_LINE.ordinal()];
+            if (n > m)
+                counters[Counter.MAX_CHARS_IN_LINE.ordinal()] = n;
+            resetCounter(Counter.CHARS_IN_LINE);
+        }
+        if ((a == null) || (a instanceof ViewportArea)) {
+            n = counters[Counter.CHARS_IN_REGION.ordinal()];
+            m = counters[Counter.MAX_CHARS_IN_REGION.ordinal()];
+            if (n > m)
+                counters[Counter.MAX_CHARS_IN_REGION.ordinal()] = n;
+            resetCounter(Counter.CHARS_IN_REGION);
+        }
+    }
+
+    private int countSpacingGlyphs(Area a) {
+        if (a instanceof LineArea)
+            return ((LineArea) a).getSpacingGlyphsCount();
+        else
+            return 0;
+    }
+
+    private void resetCounter(Counter counter) {
+        counters[counter.ordinal()] = 0;
     }
 
     private StyleSet parseStyle(Element e, String id) {
