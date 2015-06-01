@@ -113,7 +113,7 @@ public class LineLayout {
         this.writingMode = state.getWritingMode();
         this.level = state.getBidiLevel();
         // paragraph specified styles
-        this.color = content.getColor(-1);
+        this.color = content.getColor(-1, state.getDefaults());
         this.textAlign = relativizeAlignment(content.getTextAlign(-1), this.writingMode);
         this.wrap = content.getWrapOption(-1);
         // derived styles

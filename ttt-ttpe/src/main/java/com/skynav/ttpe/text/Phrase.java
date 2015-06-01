@@ -33,8 +33,9 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.AnnotationPosition;
+import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
@@ -153,14 +154,14 @@ public class Phrase {
     }
 
     private static final StyleAttribute[] colorAttr = new StyleAttribute[] { StyleAttribute.COLOR };
-    public Color getColor(int index) {
+    public Color getColor(int index, Defaults defaults) {
         Object v;
         if (index < 0)
             v = attributes.get(colorAttr[0]);
         else
             v = content.getIterator(colorAttr, index, index + 1).getAttribute(colorAttr[0]);
         if (v == null)
-            v = defaultColor;
+            v = defaults.getColor();
         if (v instanceof Color)
             return (Color) v;
         else

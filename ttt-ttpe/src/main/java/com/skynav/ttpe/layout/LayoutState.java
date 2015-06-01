@@ -42,6 +42,7 @@ import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
+import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
@@ -65,10 +66,11 @@ public interface LayoutState {
         RESET;
     };
     // non-content derived state
-    LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator);
+    LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator, Defaults defaults);
     FontCache getFontCache();
     LineBreakIterator getBreakIterator();
     LineBreakIterator getCharacterIterator();
+    Defaults getDefaults();
     // area stack
     NonLeafAreaNode pushCanvas(Element e, double begin, double end);
     NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);

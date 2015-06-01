@@ -280,6 +280,11 @@ public class PresenterTestCases {
         performPresentationTest("test-045-max-chars-per-line-exceeded.xml", 0, 1, new String[]{"--max-chars-per-line", "3"});
     }
 
+    @Test
+    public void test046OptionDefaultColorRed() throws Exception {
+        performPresentationTest("test-046-option-default-color-red.xml", 0, 1, new String[]{"--default-color", "red"});
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

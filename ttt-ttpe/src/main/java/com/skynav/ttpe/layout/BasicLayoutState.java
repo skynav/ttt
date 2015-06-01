@@ -51,6 +51,7 @@ import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Helpers;
 import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Whitespace;
@@ -78,6 +79,7 @@ public class BasicLayoutState implements LayoutState {
     private FontCache fontCache;
     private LineBreakIterator breakIterator;
     private LineBreakIterator characterIterator;
+    private Defaults defaults;
     private Stack<NonLeafAreaNode> areas;
     private Map<String, StyleSet> styles;
     private int[] counters;
@@ -87,10 +89,11 @@ public class BasicLayoutState implements LayoutState {
         this.counters = new int[Counter.values().length];
     }
 
-    public LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator) {
+    public LayoutState initialize(FontCache fontCache, LineBreakIterator breakIterator, LineBreakIterator characterIterator, Defaults defaults) {
         this.fontCache = fontCache.maybeLoad();
         this.breakIterator = breakIterator;
         this.characterIterator = characterIterator;
+        this.defaults = defaults;
         this.areas = new java.util.Stack<NonLeafAreaNode>();
         this.styles = new java.util.HashMap<String,StyleSet>();
         return this;
@@ -106,6 +109,10 @@ public class BasicLayoutState implements LayoutState {
 
     public LineBreakIterator getCharacterIterator() {
         return characterIterator;
+    }
+
+    public Defaults getDefaults() {
+        return defaults;
     }
 
     public NonLeafAreaNode pushCanvas(Element e, double begin, double end) {
@@ -180,7 +187,7 @@ public class BasicLayoutState implements LayoutState {
         if (!areas.empty())
             language = areas.peek().getLanguage();
         if (language == null)
-            language = defaultLanguage;
+            language = defaults.getLanguage();
         return language;
     }
 

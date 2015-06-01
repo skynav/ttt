@@ -47,6 +47,8 @@ import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
+import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.StyleCollector;
 import com.skynav.ttpe.text.LineBreaker;
 import com.skynav.ttpe.text.LineBreakIterator;
@@ -70,9 +72,10 @@ public class BasicLayoutProcessor extends LayoutProcessor {
 
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
-        { "line-breaker",               "NAME",     "specify line breaker name (default: " + defaultLineBreakerName + ")" },
         { "font",                       "FILE",     "specify font configuration file" },
         { "font-directory",             "DIRECTORY","specify path to directory where font configuration files are located" },
+        { "default-color",              "COLOR",    "default foreground color" },
+        { "line-breaker",               "NAME",     "specify line breaker name (default: " + defaultLineBreakerName + ")" },
         { "max-regions",                "COUNT",    "maximum number of regions in canvas (default: no limit)" },
         { "max-lines",                  "COUNT",    "maximum number of lines in canvas (default: no limit)" },
         { "max-lines-per-region",       "COUNT",    "maximum number of lines in a region (default: no limit)" },
@@ -93,6 +96,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private List<String> fontSpecificationFileNames;
     private String lineBreakerName;
     private String charBreakerName;
+    private String defaultColor;
     private int maxRegions = -1;
     private int maxLines = -1;
     private int maxLinesPerRegion = -1;
@@ -104,6 +108,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private FontCache fontCache;
     private LineBreaker lineBreaker;
     private LineBreaker charBreaker;
+    private Defaults defaults;
 
     protected BasicLayoutProcessor(TransformerContext context) {
         super(context);
@@ -127,7 +132,11 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         String option = arg;
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("font")) {
+        if (option.equals("default-color")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultColor = args.get(++index);
+        } else if (option.equals("font")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             if (fontSpecificationFileNames == null)
@@ -235,6 +244,14 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             charBreakerName = defaultCharacterBreakerName;
         LineBreaker cb = LineBreaker.getInstance(charBreakerName);
         this.charBreaker = cb;
+        this.defaults = new Defaults();
+        if (defaultColor != null) {
+            com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
+            if (com.skynav.ttv.verifier.util.Colors.isColor(defaultColor, null, null, retColor))
+                defaults.setColor(new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha()));
+            else
+                throw new InvalidOptionUsageException("default-color", "invalid color syntax:  " + defaultColor);
+        }
     }
 
     @Override
@@ -276,17 +293,21 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected LayoutState initializeLayoutState(LayoutState ls) {
-        return ls.initialize(fontCache, getLineBreakIterator(), getCharacterBreakIterator());
+        return ls.initialize(fontCache, getLineBreakIterator(), getCharacterBreakIterator(), getDefaults());
     }
 
-    private LineBreakIterator getLineBreakIterator() {
+    protected LineBreakIterator getLineBreakIterator() {
         LineBreaker lb = lineBreaker;
         return (lb != null) ? lb.getIterator(context.getReporter()) : null;
     }
 
-    private LineBreakIterator getCharacterBreakIterator() {
+    protected LineBreakIterator getCharacterBreakIterator() {
         LineBreaker cb = charBreaker;
         return (cb != null) ? cb.getIterator(context.getReporter()) : null;
+    }
+
+    protected Defaults getDefaults() {
+        return defaults;
     }
 
     protected List<Area> layoutISDSequence(Element e, LayoutState ls) {
