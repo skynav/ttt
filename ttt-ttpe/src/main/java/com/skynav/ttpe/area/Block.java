@@ -26,4 +26,3 @@
 package com.skynav.ttpe.area;
 
 public interface Block {}
-

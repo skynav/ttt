@@ -71,4 +71,3 @@ public interface AreaGeometry {
     double getAvailable(Dimension dimension);
 
 }
-

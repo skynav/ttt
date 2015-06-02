@@ -64,4 +64,3 @@ public interface Area extends AreaGeometry {
     Font getFont();
 
 }
-

@@ -58,4 +58,3 @@ public class AnnotationLayout extends LineLayout {
         return getNextLineNumber();
     }
 }
-
