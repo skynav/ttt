@@ -65,7 +65,6 @@ import com.skynav.ttpe.util.Integers;
 import com.skynav.ttpe.util.Strings;
 
 import static com.skynav.ttpe.geometry.Dimension.*;
-import static com.skynav.ttpe.style.Constants.*;
 
 public class LineLayout {
 

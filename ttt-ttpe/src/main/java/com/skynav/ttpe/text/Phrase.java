@@ -42,8 +42,6 @@ import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.Wrap;
 import com.skynav.ttpe.util.AttributedStrings;
 
-import static com.skynav.ttpe.style.Constants.*;
-
 public class Phrase {
 
     protected Element element;                                  // element that generated content

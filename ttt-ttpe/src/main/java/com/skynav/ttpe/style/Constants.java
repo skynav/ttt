@@ -25,21 +25,7 @@
 
 package com.skynav.ttpe.style;
 
-import java.util.List;
-import java.util.Set;
-
 import javax.xml.namespace.QName;
-
-import com.skynav.ttpe.fonts.FontFeature;
-import com.skynav.ttpe.fonts.FontKerning;
-import com.skynav.ttpe.fonts.FontKey;
-import com.skynav.ttpe.fonts.FontStyle;
-import com.skynav.ttpe.fonts.FontWeight;
-import com.skynav.ttpe.geometry.Extent;
-import com.skynav.ttpe.geometry.Overflow;
-import com.skynav.ttpe.geometry.Point;
-import com.skynav.ttpe.geometry.TransformMatrix;
-import com.skynav.ttpe.geometry.WritingMode;
 
 import static com.skynav.ttv.model.ttml.TTML.Constants.*;
 
