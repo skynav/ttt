@@ -226,12 +226,18 @@ public class FontKey {
 
     private void populateFeatures(Collection<FontFeature> features) {
         Map<String,FontFeature> m;
-        if ((features != null) && !features.isEmpty()) {
+        if (((features != null) && !features.isEmpty()) || (axis == Axis.VERTICAL))
             m = new java.util.TreeMap<String,FontFeature>();
-            for (FontFeature f : features)
-                m.put(f.getFeature(), f);
-        } else
+        else
             m = null;
+        if (m != null) {
+            if (features != null) {
+                for (FontFeature f : features)
+                    m.put(f.getFeature(), f);
+            }
+            if (axis == Axis.VERTICAL)
+                m.put(FontFeature.VROT.getFeature(), FontFeature.VROT);
+        }
         this.features = m;
     }
 

@@ -29,6 +29,11 @@ import com.skynav.ttv.model.value.FontVariant;
 
 public class FontFeature {
 
+    public static final FontFeature     HWID            = new FontFeature("hwid");
+    public static final FontFeature     FWID            = new FontFeature("fwid");
+    public static final FontFeature     RUBY            = new FontFeature("ruby");
+    public static final FontFeature     VROT            = new FontFeature("vrot");
+
     private final String feature;
     private final Object[] arguments;
  

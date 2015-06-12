@@ -72,4 +72,21 @@ public class Strings {
             return s;
     }
 
+    public static String toVertical(String s) {
+        boolean hasVertical = false;
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            if (Characters.hasVertical(s.charAt(i))) {
+                hasVertical = true;
+                break;
+            }
+        }
+        if (hasVertical) {
+            StringBuffer sb = new StringBuffer(s.length());
+            for (int i = 0, n = s.length(); i < n; ++i)
+                sb.append((char) Characters.toVertical(s.charAt(i)));
+            return sb.toString();
+        } else
+            return s;
+    }
+
 }

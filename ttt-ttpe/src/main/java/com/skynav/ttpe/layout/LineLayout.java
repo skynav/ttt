@@ -348,7 +348,8 @@ public class LineLayout {
                     int t = fai.getEnd() - start;
                     assert t >= 0;
                     assert t >= f;
-                    assert t <= text.length();
+                    if (t > text.length())
+                        t = text.length();
                     String segText = text.substring(f, t);
                     Font segFont = (Font) fai.getValue();
                     if (segFont != null) {
@@ -909,6 +910,8 @@ public class LineLayout {
                         t = processHalfWidth(t);
                     else if (feature.getFeature().equals("fwid"))
                         t = processFullWidth(t);
+                    if (feature.getFeature().equals("vrot"))
+                        t = processVertical(t);
                 }
             }
             return t;
@@ -918,6 +921,9 @@ public class LineLayout {
         }
         private String processFullWidth(String t) {
             return Strings.toFullWidth(t);
+        }
+        private String processVertical(String t) {
+            return Strings.toVertical(t);
         }
     }
 

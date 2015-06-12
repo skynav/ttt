@@ -282,7 +282,12 @@ public class PresenterTestCases {
 
     @Test
     public void test046OptionDefaultColorRed() throws Exception {
-        performPresentationTest("test-046-option-default-color-red.xml", 0, 1, new String[]{"--default-color", "red"});
+        performPresentationTest("test-046-option-default-color-red.xml", 0, 0, new String[]{"--default-color", "red"});
+    }
+
+    @Test
+    public void test047VerticalVariants() throws Exception {
+        performPresentationTest("test-047-vertical-variants.xml", 0, 0);
     }
 
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
