@@ -638,56 +638,37 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
-        int level = a.getBidiLevel();
-        if (level < 0)
-            level = 0;
-        if ((level & 1) == 1)
-            return renderGlyphTextHorizontalRL(parent, a, d, colors);
-        else
-            return renderGlyphTextHorizontalLR(parent, a, d, colors);
-    }
-
-    private Element renderGlyphTextHorizontalRL(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
         Font font = a.getFont();
         Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL);
-        if (fontMatrix != null)
-            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
-
         String text = a.getText();
-        double[] advances = font.getAdvances(text, font.isKerningEnabled(), false);
-        double x = 0;
+        double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
+        int level = a.getBidiLevel();
+        if (level < 0)
+            level = 0;
+        boolean rtl = ((level & 1) == 1);
+        double xSaved = xCurrent;
+        xCurrent = 0;
         for (int i = 0, n = advances.length; i < n; ++i) {
             double ga = advances[i];
-            Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-            Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x - ga}));
-            e.appendChild(d.createTextNode(text.substring(i, i + 1)));
-            g.appendChild(e);
-            x -= ga;
-        }
-        return g;
-    }
-
-    private Element renderGlyphTextHorizontalLR(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
-        String text = a.getText();
-        Font font = a.getFont();
-        Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-        StringBuffer dxBuf = new StringBuffer();
-        double[] kerning = font.getKerning(text);
-        if (kerning != null) {
-            dxBuf.append("0");
-            for (int i = 0; i < kerning.length - 1; ++i) {
-                dxBuf.append(',');
-                dxBuf.append(doubleFormatter.format(new Object[] {kerning[i]}));
+            double x = rtl ? xCurrent - ga : xCurrent;
+            Element t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            t.appendChild(d.createTextNode(text.substring(i, i + 1)));
+            Element e;
+            if (fontMatrix != null) {
+                Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,0}));
+                e.appendChild(t);
+            } else {
+                Documents.setAttribute(t, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                e = t;
             }
+            g.appendChild(e);
+            xCurrent += rtl ? -ga : ga;
         }
-        if (dxBuf.length() > 0)
-            Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, dxBuf.toString());
-        TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL);
-        if (fontMatrix != null)
-            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
-        e.appendChild(d.createTextNode(text));
-        return e;
+        xCurrent = xSaved;
+        return g;
     }
 
     private Element renderGlyphEmphases(Element parent, GlyphArea a, Document d, List<Decoration> emphases) {

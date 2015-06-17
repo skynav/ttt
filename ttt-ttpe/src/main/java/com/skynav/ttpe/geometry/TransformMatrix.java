@@ -37,6 +37,13 @@ public class TransformMatrix extends AffineTransform {
     private static final MessageFormat transformMatrixFormatter =
         new MessageFormat("{0,number,#.####},{1,number,#.####},{2,number,#.####},{3,number,#.####},{4,number,#.####},{5,number,#.####}");
 
+    public TransformMatrix() {
+    }
+
+    public TransformMatrix(TransformMatrix m) {
+        super(m);
+    }
+
     @Override
     public String toString() {
         double[] m = new double[6];
