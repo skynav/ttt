@@ -19,9 +19,9 @@
 </styling>
 <layout>
 <region xml:id="横下" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center bottom 10vh" tts:displayAlign="after"/>
-<region xml:id="横上" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center top 10vh" tts:displayAlign="after"/>
+<region xml:id="横上" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center top 10vh" tts:displayAlign="before"/>
 <region xml:id="横適" tts:writingMode="lrtb" tts:extent="80vw 80vh" tts:position="center" tts:displayAlign="justify"/>
-<region xml:id="横中" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center" tts:displayAlign="after"/>
+<region xml:id="横中" tts:writingMode="lrtb" tts:extent="80vw 15vh" tts:position="center" tts:displayAlign="center"/>
 <region xml:id="縦右" tts:writingMode="tbrl" tts:extent="15vw 80vh" tts:position="right 10vw center" tts:displayAlign="before"/>
 <region xml:id="縦左" tts:writingMode="tbrl" tts:extent="15vw 80vh" tts:position="left 10vw center" tts:displayAlign="after"/>
 <region xml:id="縦適" tts:writingMode="tbrl" tts:extent="80vw 80vh" tts:position="center" tts:displayAlign="justify"/>
