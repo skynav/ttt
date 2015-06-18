@@ -603,7 +603,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             return renderGlyphTextHorizontal(parent, a, d, colors);
     }
 
-    private Element renderGlyphTextVertical(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
+    /*
+    private Element renderGlyphTextVerticalOld(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
         String text = a.getText();
         Font font = a.getFont();
@@ -635,6 +636,42 @@ public class SVGRenderProcessor extends RenderProcessor {
             Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
         e.appendChild(d.createTextNode(text));
         return e;
+    }
+    */
+
+    private Element renderGlyphTextVertical(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
+        Font font = a.getFont();
+        Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
+        TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL);
+        String text = a.getText();
+        double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
+        int level = a.getBidiLevel();
+        if (level < 0)
+            level = 0;
+        boolean btt = ((level & 1) == 1);
+        double ySaved = yCurrent;
+        yCurrent = 0;
+        for (int i = 0, n = advances.length; i < n; ++i) {
+            double ga = advances[i];
+            double y = btt ? yCurrent - ga : yCurrent;
+            Element t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            t.appendChild(d.createTextNode(text.substring(i, i + 1)));
+            Element e;
+            if (fontMatrix != null) {
+                Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {0,y}));
+                e.appendChild(t);
+            } else {
+                Documents.setAttribute(t, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
+                e = t;
+            }
+            g.appendChild(e);
+            yCurrent += btt ? -ga : ga;
+        }
+        yCurrent = ySaved;
+        return g;
     }
 
     private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
