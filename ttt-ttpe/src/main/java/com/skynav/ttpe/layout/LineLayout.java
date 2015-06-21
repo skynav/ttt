@@ -932,7 +932,7 @@ public class LineLayout {
                         t = processHalfWidth(t);
                     else if (feature.getFeature().equals("fwid"))
                         t = processFullWidth(t);
-                    if (feature.getFeature().equals("vrot"))
+                    if (feature.getFeature().equals("vert"))
                         t = processVertical(t);
                 }
             }

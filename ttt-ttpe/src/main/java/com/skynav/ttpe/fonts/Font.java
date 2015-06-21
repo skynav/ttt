@@ -180,15 +180,19 @@ public class Font {
     }
 
     public TransformMatrix getTransform(Axis axis) {
+        return getTransform(axis, false);
+    }
+
+    public TransformMatrix getTransform(Axis axis, boolean rotatedOrientation) {
         TransformMatrix t = TransformMatrix.IDENTITY;
         if (isSheared())
-            t = applyShear(t, getShear(), axis);
+            t = applyShear(t, getShear(), axis, rotatedOrientation);
         if (isAnamorphic())
             t = applyAnamorphic(t, getSize(), axis);
         return !t.isIdentity() ? t : null;
     }
 
-    private TransformMatrix applyShear(TransformMatrix t0, double shear, Axis axis) {
+    private TransformMatrix applyShear(TransformMatrix t0, double shear, Axis axis, boolean rotatedOrientation) {
         TransformMatrix t = (TransformMatrix) t0.clone();
         double s = -Math.tan(Math.toRadians(shear * 90));
         double sx, sy;
@@ -196,7 +200,7 @@ public class Font {
             sx = 0;
             sy = s;
         } else {
-            sx = s;
+            sx = rotatedOrientation ? -s : s;
             sy = 0;
         }
         t.shear(sx, sy);

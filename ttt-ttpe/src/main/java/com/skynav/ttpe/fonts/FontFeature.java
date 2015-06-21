@@ -32,7 +32,7 @@ public class FontFeature {
     public static final FontFeature     HWID            = new FontFeature("hwid");
     public static final FontFeature     FWID            = new FontFeature("fwid");
     public static final FontFeature     RUBY            = new FontFeature("ruby");
-    public static final FontFeature     VROT            = new FontFeature("vrot");
+    public static final FontFeature     VERT            = new FontFeature("vert");
 
     private final String feature;
     private final Object[] arguments;

@@ -236,7 +236,7 @@ public class FontKey {
                     m.put(f.getFeature(), f);
             }
             if (axis == Axis.VERTICAL)
-                m.put(FontFeature.VROT.getFeature(), FontFeature.VROT);
+                m.put(FontFeature.VERT.getFeature(), FontFeature.VERT);
         }
         this.features = m;
     }

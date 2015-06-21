@@ -599,7 +599,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         Font font = a.getFont();
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         Documents.setAttribute(gOuter, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
-        TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL);
+        TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL, a.isRotatedOrientation());
         String text = a.getText();
         double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
         int level = a.getBidiLevel();
@@ -661,7 +661,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
         Font font = a.getFont();
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-        TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL);
+        TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL, a.isRotatedOrientation());
         String text = a.getText();
         double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
         int level = a.getBidiLevel();
