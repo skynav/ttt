@@ -68,6 +68,7 @@ import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Emphasis;
+import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.util.Characters;
 import com.skynav.ttpe.util.Strings;
 import com.skynav.ttv.app.InvalidOptionUsageException;
@@ -562,7 +563,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         }
         List<Decoration> decorations = a.getDecorations();
         Element e;
-        e = renderGlyphText(g, a, d, getColorDecorations(decorations));
+        e = renderGlyphText(g, a, d, decorations);
         assert e != null;
         g.appendChild(e);
         if ((e = renderGlyphEmphases(g, a, d, getEmphasisDecorations(decorations))) != null)
@@ -578,15 +579,6 @@ public class SVGRenderProcessor extends RenderProcessor {
         return g;
     }
 
-    private List<Decoration> getColorDecorations(List<Decoration> decorations) {
-        List<Decoration> colors = new java.util.ArrayList<Decoration>();
-        for (Decoration d : decorations) {
-            if (d.isColor())
-                colors.add(d);
-        }
-        return !colors.isEmpty() ? colors : null;
-    }
-
     private List<Decoration> getEmphasisDecorations(List<Decoration> decorations) {
         List<Decoration> emphases = new java.util.ArrayList<Decoration>();
         for (Decoration d : decorations) {
@@ -596,53 +588,17 @@ public class SVGRenderProcessor extends RenderProcessor {
         return !emphases.isEmpty() ? emphases : null;
     }
 
-    private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
+    private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
         if (a.isVertical() && !a.isRotatedOrientation())
-            return renderGlyphTextVertical(parent, a, d, colors);
+            return renderGlyphTextVertical(parent, a, d, decorations);
         else
-            return renderGlyphTextHorizontal(parent, a, d, colors);
+            return renderGlyphTextHorizontal(parent, a, d, decorations);
     }
 
-    /*
-    private Element renderGlyphTextVerticalOld(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
-        Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-        String text = a.getText();
+    private Element renderGlyphTextVertical(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
         Font font = a.getFont();
-        Extent fs = font.getSize();
-        double fh = fs.getHeight();
-        double fw = fs.getWidth();
-        double centerlineOffset = fw / 2;
-        StringBuffer dxBuf = new StringBuffer();
-        StringBuffer dyBuf = new StringBuffer();
-        double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
-        for (int i = 0, n = advances.length; i < n; ++i) {
-            double ga = advances[i];
-            if (i == 0) {
-                dxBuf.append(doubleFormatter.format(new Object[] {-centerlineOffset}));
-                dyBuf.append(doubleFormatter.format(new Object[] {font.getAscent()}));
-            } else {
-                dxBuf.append(' ');
-                dxBuf.append(doubleFormatter.format(new Object[] {-ga}));
-                dyBuf.append(' ');
-                dyBuf.append(doubleFormatter.format(new Object[] {fh}));
-            }
-        }
-        if (dxBuf.length() > 0)
-            Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, dxBuf.toString());
-        if (dyBuf.length() > 0)
-            Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, dyBuf.toString());
-        TransformMatrix fontMatrix = font.getTransform();
-        if (fontMatrix != null)
-            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
-        e.appendChild(d.createTextNode(text));
-        return e;
-    }
-    */
-
-    private Element renderGlyphTextVertical(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
-        Font font = a.getFont();
-        Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-        Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
+        Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        Documents.setAttribute(gOuter, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
         TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL);
         String text = a.getText();
         double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
@@ -653,30 +609,58 @@ public class SVGRenderProcessor extends RenderProcessor {
         double ySaved = yCurrent;
         yCurrent = 0;
         for (int i = 0, n = advances.length; i < n; ++i) {
+            int j = i + 1;
             double ga = advances[i];
             double y = btt ? yCurrent - ga : yCurrent;
+            // outline if required
+            Element tOutline;
+            Decoration decoration;
+            decoration = findDecoration(decorations, Decoration.Type.OUTLINE, i, j);
+            if (decoration != null) {
+                Outline outline = decoration.getOutline();
+                tOutline = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+                Documents.setAttribute(tOutline, SVGDocumentFrame.strokeAttrName, outline.getColor().toRGBString());
+                Documents.setAttribute(tOutline, SVGDocumentFrame.strokeWidthAttrName, doubleFormatter.format(new Object[] {outline.getThickness()}));
+                Documents.setAttribute(tOutline, SVGDocumentFrame.fillAttrName, "none");
+                tOutline.appendChild(d.createTextNode(text.substring(i, j)));
+            } else
+                tOutline = null;
+            // text
             Element t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-            t.appendChild(d.createTextNode(text.substring(i, i + 1)));
-            Element e;
-            if (fontMatrix != null) {
-                Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
-                e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {0,y}));
-                e.appendChild(t);
-            } else {
-                Documents.setAttribute(t, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
-                e = t;
+            decoration = findDecoration(decorations, Decoration.Type.COLOR, i, j);
+            if (decoration != null) {
+                Color color = decoration.getColor();
+                Documents.setAttribute(t, SVGDocumentFrame.fillAttrName, color.toRGBString());
             }
-            g.appendChild(e);
+            t.appendChild(d.createTextNode(text.substring(i, j)));
+            // group wrapper (gInner) if font transform required
+            if (fontMatrix != null) {
+                Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+                Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {0,y}));
+                if (tOutline != null) {
+                    Documents.setAttribute(tOutline, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                    gInner.appendChild(tOutline);
+                }
+                Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                gInner.appendChild(t);
+                gOuter.appendChild(gInner);
+            } else {
+                if (tOutline != null) {
+                    Documents.setAttribute(tOutline, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
+                    gOuter.appendChild(tOutline);
+                }
+                Documents.setAttribute(t, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
+                gOuter.appendChild(t);
+            }
             yCurrent += btt ? -ga : ga;
         }
         yCurrent = ySaved;
-        return g;
+        return gOuter;
     }
 
-    private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> colors) {
+    private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
         Font font = a.getFont();
-        Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL);
         String text = a.getText();
         double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
@@ -687,25 +671,63 @@ public class SVGRenderProcessor extends RenderProcessor {
         double xSaved = xCurrent;
         xCurrent = 0;
         for (int i = 0, n = advances.length; i < n; ++i) {
+            int j = i + 1;
             double ga = advances[i];
             double x = rtl ? xCurrent - ga : xCurrent;
+            // outline if required
+            Element tOutline;
+            Decoration decoration;
+            decoration = findDecoration(decorations, Decoration.Type.OUTLINE, i, j);
+            if (decoration != null) {
+                Outline outline = decoration.getOutline();
+                tOutline = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+                Documents.setAttribute(tOutline, SVGDocumentFrame.strokeAttrName, outline.getColor().toRGBString());
+                Documents.setAttribute(tOutline, SVGDocumentFrame.strokeWidthAttrName, doubleFormatter.format(new Object[] {outline.getThickness()}));
+                Documents.setAttribute(tOutline, SVGDocumentFrame.fillAttrName, "none");
+                tOutline.appendChild(d.createTextNode(text.substring(i, j)));
+            } else
+                tOutline = null;
+            // text
             Element t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-            t.appendChild(d.createTextNode(text.substring(i, i + 1)));
-            Element e;
-            if (fontMatrix != null) {
-                Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
-                e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,0}));
-                e.appendChild(t);
-            } else {
-                Documents.setAttribute(t, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
-                e = t;
+            decoration = findDecoration(decorations, Decoration.Type.COLOR, i, j);
+            if (decoration != null) {
+                Color color = decoration.getColor();
+                Documents.setAttribute(t, SVGDocumentFrame.fillAttrName, color.toRGBString());
             }
-            g.appendChild(e);
+            t.appendChild(d.createTextNode(text.substring(i, j)));
+            // group wrapper (gInner) if font transform required
+            if (fontMatrix != null) {
+                Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+                Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,0}));
+                if (tOutline != null) {
+                    Documents.setAttribute(tOutline, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                    gInner.appendChild(tOutline);
+                }
+                Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                gInner.appendChild(t);
+                gOuter.appendChild(gInner);
+            } else {
+                if (tOutline != null) {
+                    Documents.setAttribute(tOutline, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                    gOuter.appendChild(tOutline);
+                }
+                Documents.setAttribute(t, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                gOuter.appendChild(t);
+            }
             xCurrent += rtl ? -ga : ga;
         }
         xCurrent = xSaved;
-        return g;
+        return gOuter;
+    }
+
+    private Decoration findDecoration(List<Decoration> decorations, Decoration.Type type, int from, int to) {
+        if (decorations != null) {
+            for (Decoration d : decorations) {
+                if (d.isType(type) && d.intersects(from, to))
+                    return d;
+            }
+        }
+        return null;
     }
 
     private Element renderGlyphEmphases(Element parent, GlyphArea a, Document d, List<Decoration> emphases) {

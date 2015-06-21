@@ -31,7 +31,8 @@ public class Decoration implements Cloneable {
         COLOR,
         EMPHASIS,
         HIGHLIGHT,
-        LINING;
+        LINING,
+        OUTLINE;
     }
 
     private int begin;
@@ -62,6 +63,10 @@ public class Decoration implements Cloneable {
         return type;
     }
     
+    public boolean isType(Type type) {
+        return this.type == type;
+    }
+    
     public boolean isColor() {
         return getType() == Type.COLOR;
     }
@@ -84,6 +89,14 @@ public class Decoration implements Cloneable {
 
     public boolean isLining() {
         return getType() == Type.LINING;
+    }
+
+    public boolean isOutline() {
+        return getType() == Type.OUTLINE;
+    }
+
+    public Outline getOutline() {
+        return isOutline() ? (Outline) getValue() : null;
     }
 
     public Object getValue() {

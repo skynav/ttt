@@ -51,6 +51,7 @@ import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
 import com.skynav.ttpe.style.Orientation;
+import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.SuppressAtLineBreakTreatment;
@@ -599,6 +600,7 @@ public class LineLayout {
             Set<StyleAttributeInterval> intervals = new java.util.TreeSet<StyleAttributeInterval>();
             intervals.addAll(getColorIntervals(from, to));
             intervals.addAll(getEmphasisIntervals(from, to));
+            intervals.addAll(getOutlineIntervals(from, to));
             List<Decoration> decorations = new java.util.ArrayList<Decoration>();
             for (StyleAttributeInterval i : intervals) {
                 Decoration.Type t;
@@ -608,6 +610,8 @@ public class LineLayout {
                         t = Decoration.Type.COLOR;
                     else if (v instanceof Emphasis)
                         t = Decoration.Type.EMPHASIS;
+                    else if (v instanceof Outline)
+                        t = Decoration.Type.OUTLINE;
                     else
                         t = null;
                     decorations.add(new Decoration(i.getBegin() - start, i.getEnd() - start, t, v));
@@ -707,7 +711,7 @@ public class LineLayout {
         // obtain emphasis for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getEmphasisIntervals(int from, int to) {
             StyleAttribute emphasisAttr = StyleAttribute.EMPHASIS;
-            List<StyleAttributeInterval> emphasis = new java.util.ArrayList<StyleAttributeInterval>();
+            List<StyleAttributeInterval> emphases = new java.util.ArrayList<StyleAttributeInterval>();
             int[] intervals = getAttributeIntervals(from, to, emphasisAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
@@ -717,10 +721,28 @@ public class LineLayout {
                 aci.setIndex(s);
                 Object v = aci.getAttribute(emphasisAttr);
                 if (v != null)
-                    emphasis.add(new StyleAttributeInterval(emphasisAttr, v, s, e));
+                    emphases.add(new StyleAttributeInterval(emphasisAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            return emphasis;
+            return emphases;
+        }
+        // obtain outline for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getOutlineIntervals(int from, int to) {
+            StyleAttribute outlineAttr = StyleAttribute.OUTLINE;
+            List<StyleAttributeInterval> outlines = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, outlineAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                aci.setIndex(s);
+                Object v = aci.getAttribute(outlineAttr);
+                if (v != null)
+                    outlines.add(new StyleAttributeInterval(outlineAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            return outlines;
         }
         // obtain dominant for specified interval FROM to TO of run
         private Orientation getDominantOrientation(int from, int to, Orientation defaultOrientation) {

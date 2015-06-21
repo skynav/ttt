@@ -403,6 +403,26 @@ public class StyleCollector {
         if (v != null)
             addAttribute(StyleAttribute.EMPHASIS, v, begin, end);
 
+        // TEXT_OUTLINE
+        s = styles.get(ttsTextOutlineAttrName);
+        v = null;
+        if (s != null) {
+            com.skynav.ttv.model.value.TextOutline[] retOutline = new com.skynav.ttv.model.value.TextOutline[1];
+            if (com.skynav.ttv.verifier.util.Outline.isOutline(s.getValue(), null, context, retOutline)) {
+                com.skynav.ttv.model.value.TextOutline to = retOutline[0];
+                com.skynav.ttv.model.value.Color toColor = to.getColor();
+                Color c = (toColor != null) ? new Color(toColor.getRed(), toColor.getGreen(), toColor.getBlue(), toColor.getAlpha()) : color;
+                Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                Length thickness = to.getThickness();
+                double t = Helpers.resolveLength(e, thickness, Axis.VERTICAL, extBounds, refBounds, fs);
+                Length blur = to.getBlur();
+                double b = Helpers.resolveLength(e, blur, Axis.VERTICAL, extBounds, refBounds, fs);
+                v = new Outline(c, t, b);
+            }
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.OUTLINE, v, begin, end);
+
         // WRAP
         s = styles.get(ttsWrapOptionAttrName);
         v = null;

@@ -63,6 +63,7 @@ public class Constants {
     public static final QName ttsTextAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "textAlign");
     public static final QName ttsTextCombineAttrName                    = new QName(NAMESPACE_TT_STYLE, "textCombine");
     public static final QName ttsTextEmphasisAttrName                   = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
+    public static final QName ttsTextOutlineAttrName                    = new QName(NAMESPACE_TT_STYLE, "textOutline");
     public static final QName ttsUnicodeBidiAttrName                    = new QName(NAMESPACE_TT_STYLE, "unicodeBidi");
     public static final QName ttsWrapOptionAttrName                     = new QName(NAMESPACE_TT_STYLE, "wrapOption");
     public static final QName ttsWritingModeAttrName                    = new QName(NAMESPACE_TT_STYLE, "writingMode");

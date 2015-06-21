@@ -290,6 +290,11 @@ public class PresenterTestCases {
         performPresentationTest("test-047-vertical-variants.xml", 0, 0);
     }
 
+    @Test
+    public void test048SpanTextOutline() throws Exception {
+        performPresentationTest("test-048-span-text-outline.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

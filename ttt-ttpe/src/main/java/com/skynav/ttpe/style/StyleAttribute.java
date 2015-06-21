@@ -27,7 +27,7 @@ package com.skynav.ttpe.style;
 
 public class StyleAttribute extends java.text.AttributedCharacterIterator.Attribute implements Comparable<StyleAttribute> {
 
-    //                               ** name **                                                                 ** value type ** 
+    //                                                                               ** name **                 ** value type ** 
     public static final StyleAttribute   ANNOTATIONS            = new StyleAttribute("ANNOTATIONS");            // com.skynav.ttpe.text.Phrase[]
     public static final StyleAttribute   ANNOTATION_ALIGNMENT   = new StyleAttribute("ANNOTATION_ALIGNMENT");   // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   ANNOTATION_OFFSET      = new StyleAttribute("ANNOTATION_OFFSET");      // Double
@@ -46,6 +46,7 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   LETTER_SPACING         = new StyleAttribute("LETTER_SPACING");         // Double
     public static final StyleAttribute   LINE_HEIGHT            = new StyleAttribute("LINE_HEIGHT");            // Double
     public static final StyleAttribute   ORIENTATION            = new StyleAttribute("ORIENTATION");            // com.skynav.ttpe.style.Orientation
+    public static final StyleAttribute   OUTLINE                = new StyleAttribute("OUTLINE");                // com.skynav.ttpe.style.Outline
     public static final StyleAttribute   WHITESPACE             = new StyleAttribute("WHITESPACE");             // com.skynav.ttpe.style.Whitespace
     public static final StyleAttribute   WRAP                   = new StyleAttribute("WRAP");                   // com.skynav.ttpe.style.Wrap
 

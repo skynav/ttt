@@ -64,6 +64,7 @@ public class Defaults {
     public static final String defaultPositionComponents                = "center";
     public static final Point defaultOrigin                             = Point.ZERO;
     public static final Orientation defaultOrientation                  = Orientation.ROTATE000;
+    public static final Outline defaultOutline                          = Outline.NONE;
     public static final Overflow defaultOverflow                        = Overflow.HIDDEN;
     public static final Whitespace defaultWhitespace                    = Whitespace.DEFAULT;
     public static final InlineAlignment defaultTextAlign                = InlineAlignment.START;
@@ -94,6 +95,7 @@ public class Defaults {
     private String positionComponents                                   = defaultPositionComponents;
     private Point origin                                                = defaultOrigin;
     private Orientation orientation                                     = defaultOrientation;
+    private Outline outline                                             = defaultOutline;
     private Overflow overflow                                           = defaultOverflow;
     private Whitespace whitespace                                       = defaultWhitespace;
     private InlineAlignment textAlign                                   = defaultTextAlign;
@@ -286,6 +288,14 @@ public class Defaults {
 
     public Orientation getOrientation() {
         return orientation;
+    }
+
+    public void setOutline(Outline outline) {
+        this.outline = outline;
+    }
+
+    public Outline getOutline() {
+        return outline;
     }
 
     public void setOverflow(Overflow overflow) {

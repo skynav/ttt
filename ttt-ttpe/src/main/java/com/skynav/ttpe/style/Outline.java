@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2015 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -22,29 +22,55 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
-package com.skynav.ttv.verifier.ttml.style;
 
-import javax.xml.namespace.QName;
+package com.skynav.ttpe.style;
 
-import org.xml.sax.Locator;
+import java.text.MessageFormat;
 
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.util.Outline;
+public class Outline {
 
-public class TextOutlineVerifier implements StyleValueVerifier {
+    public static final Outline NONE = new Outline(null, 0, 0);
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
-        if (Outline.isOutline(value, locator, context, null))
-            return true;
-        else {
-            Outline.badOutline(value, locator, context);
-            return false;
+    private Color color;
+    private double thickness;
+    private double blur;
+
+    public Outline(Color color, double thickness, double blur) {
+        this.color = color;
+        this.thickness = thickness;
+        this.blur = blur;
+    }
+
+    public boolean isNone() {
+        return (this == NONE) || !(thickness != 0);
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public double getThickness() {
+        return thickness;
+    }
+
+    public double getBlur() {
+        return blur;
+    }
+
+    private static final MessageFormat doubleFormatter = new MessageFormat("[{0,number,#.####}]");
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('[');
+        if (color != null) {
+            sb.append(color);
+            sb.append(',');
         }
+        sb.append(doubleFormatter.format(new Object[] {thickness}));
+        sb.append(',');
+        sb.append(doubleFormatter.format(new Object[] {blur}));
+        sb.append(']');
+        return sb.toString();
     }
 
 }
