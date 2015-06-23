@@ -517,11 +517,13 @@
   </xs:simpleType>
   <xs:simpleType name="rubyAlign">
     <xs:restriction base="xs:token">
+      <xs:enumeration value="auto"/>
       <xs:enumeration value="start"/>
       <xs:enumeration value="center"/>
       <xs:enumeration value="end"/>
-      <xs:enumeration value="spaceBetween"/>
       <xs:enumeration value="spaceAround"/>
+      <xs:enumeration value="spaceBetween"/>
+      <xs:enumeration value="withBase"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="rubyOffset">

@@ -42,7 +42,7 @@ import com.skynav.ttpe.geometry.WritingMode;
 public class Defaults {
 
     public static final Annotation defaultAnnotation                    = null;
-    public static final InlineAlignment defaultAnnotationAlign          = InlineAlignment.CENTER;
+    public static final InlineAlignment defaultAnnotationAlign          = InlineAlignment.AUTO;
     public static final double defaultAnnotationOffset                  = 0;
     public static final AnnotationPosition defaultAnnotationPosition    = AnnotationPosition.AUTO;
     public static final Color defaultBackgroundColor                    = Color.TRANSPARENT;

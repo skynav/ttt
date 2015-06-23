@@ -27,6 +27,7 @@ package com.skynav.ttpe.layout;
 
 import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -280,21 +281,25 @@ public class LineLayout {
             double advance = 0;
             for (InlineBreakOpportunity b : breaks) {
                 TextRun r = b.run;
-                if ((lastRun != null) && (r != lastRun)) {
-                    maybeAddAnnotationAreas(l, lastRunStart, font, advance, lineHeight);
+                if ((lastRun != null) && ((r != lastRun) || (l instanceof AnnotationArea))) {
+                    if (!(l instanceof AnnotationArea))
+                        maybeAddAnnotationAreas(l, lastRunStart, r.start, font, advance, lineHeight);
                     addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun);
                     sb.setLength(0);
                     decorations.clear();
                     advance = 0;
+                    lastRunStart = -1;
                 }
                 sb.append(r.getText(b.start, b.index));
                 decorations.addAll(r.getDecorations(b.start, b.index));
                 advance += b.advance;
                 lastRun = r;
-                lastRunStart = r.start + b.start;
+                if (lastRunStart < 0)
+                    lastRunStart = r.start + b.start;
             }
             if (sb.length() > 0) {
-                maybeAddAnnotationAreas(l, lastRunStart, font, advance, lineHeight);
+                if (!(l instanceof AnnotationArea))
+                    maybeAddAnnotationAreas(l, lastRunStart, lastRun != null ? lastRun.end : -1, font, advance, lineHeight);
                 addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun);
             }
             iterator.setIndex(savedIndex);
@@ -354,7 +359,7 @@ public class LineLayout {
                     String segText = text.substring(f, t);
                     Font segFont = (Font) fai.getValue();
                     if (segFont != null) {
-                        double segAdvance = segFont.getAdvance(segText, font.isKerningEnabled(), orientation == Orientation.ROTATE090);
+                        double segAdvance = segFont.getAdvance(segText, font.isKerningEnabled(), orientation.isRotated());
                         List<Decoration> segDecorations = getSegmentDecorations(decorations, f, t);
                         GlyphArea a = new GlyphArea(content.getElement(), segAdvance, lineHeight, run.level, segText, segDecorations, segFont, orientation);
                         l.addChild(a, LineArea.ENCLOSE_ALL);
@@ -373,16 +378,48 @@ public class LineLayout {
         return sd;
     }
 
-    private void maybeAddAnnotationAreas(LineArea l, int start, Font font, double advance, double lineHeight) {
+    private void maybeAddAnnotationAreas(LineArea l, int start, int end, Font font, double advance, double lineHeight) {
         if (start >= 0) {
             iterator.setIndex(start);
             Phrase[] annotations = (Phrase[]) iterator.getAttribute(StyleAttribute.ANNOTATIONS);
-            if (annotations != null)
-                addAnnotationAreas(l, annotations, font, advance, lineHeight);
+            if (annotations != null) {
+                String base = getAnnotationBase(start, end);
+                Orientation[] baseOrientations = getAnnotationBaseOrientations(start, end);
+                addAnnotationAreas(l, base, baseOrientations, annotations, font, advance, lineHeight);
+            }
         }
     }
 
-    private void addAnnotationAreas(LineArea l, Phrase[] annotations, Font font, double advance, double lineHeight) {
+    private String getAnnotationBase(int start, int end) {
+        StringBuffer sb = new StringBuffer();
+        int savedIndex = iterator.getIndex();
+        for (int i = start, j = end; i < j; ++i) {
+            char c = iterator.setIndex(i);
+            if (c == CharacterIterator.DONE)
+                break;
+            else
+                sb.append(c);
+        }
+        iterator.setIndex(savedIndex);
+        return sb.toString();
+    }
+
+    private Orientation[] getAnnotationBaseOrientations(int start, int end) {
+        int savedIndex = iterator.getIndex();
+        iterator.setIndex(start);
+        Orientation orientation = (Orientation) iterator.getAttribute(StyleAttribute.ORIENTATION);
+        iterator.setIndex(savedIndex);
+        if ((orientation == null) || !orientation.isRotated())
+            return null;
+        else {
+            int length = end - start;
+            Orientation[] orientations = new Orientation[length];
+            Arrays.fill(orientations, 0, length, orientation);
+            return orientations;
+        }
+    }
+
+    private void addAnnotationAreas(LineArea l, String base, Orientation[] baseOrientations, Phrase[] annotations, Font font, double advance, double lineHeight) {
         for (Phrase p : annotations) {
             InlineAlignment annotationAlign = p.getAnnotationAlign(-1, defaults);
             Double annotationOffset = p.getAnnotationOffset(-1, defaults);
@@ -391,9 +428,29 @@ public class LineLayout {
                 a.setAlignment(annotationAlign);
                 a.setOffset(annotationOffset);
                 a.setPosition(annotationPosition);
-                alignTextAreas(a, advance, annotationAlign);
+                alignTextAreas(a, advance, annotationAlign, getBaseAdvances(base, baseOrientations, font));
                 l.addChild(a, LineArea.ENCLOSE_ALL);
             }
+        }
+    }
+
+    private double[] getBaseAdvances(String base, Orientation[] baseOrientations, Font font) {
+        if (base == null)
+            return null;
+        else {
+            int baseLength = base.length();
+            double[] advances = new double[baseLength];
+            boolean kerningEnabled = font.isKerningEnabled();
+            for (int i = 0, n = baseLength; i < n; ++i) {
+                int j = i + 1;
+                Orientation orientation;
+                if ((baseOrientations == null) || (i >= baseOrientations.length))
+                    orientation = Orientation.ROTATE000;
+                else
+                    orientation = baseOrientations[i];
+                advances[i] = font.getAdvance(base.substring(i, j), kerningEnabled, orientation.isRotated());
+            }
+            return advances;
         }
     }
 
@@ -405,13 +462,13 @@ public class LineLayout {
                 maxMeasure = measure;
         }
         for (LineArea l : lines) {
-            alignTextAreas(l, maxMeasure, textAlign);
+            alignTextAreas(l, maxMeasure, textAlign, null);
             l.setIPD(maxMeasure);
         }
         return lines;
     }
 
-    private void alignTextAreas(LineArea l, double measure, InlineAlignment alignment) {
+    private void alignTextAreas(LineArea l, double measure, InlineAlignment alignment, double[] baseAdvances) {
         double consumed = 0;
         int numNonAnnotationChildren = 0;
         for (AreaNode c : l.getChildren()) {
@@ -421,6 +478,17 @@ public class LineLayout {
                 consumed += c.getIPD();
                 ++numNonAnnotationChildren;
             }
+        }
+        if ((l instanceof AnnotationArea) && (alignment == InlineAlignment.AUTO)) {
+            int nb = (baseAdvances != null) ? baseAdvances.length : 0;
+            int na = numNonAnnotationChildren;
+            if (na == nb)
+                alignment = InlineAlignment.WITH_BASE;
+            else if (na < nb)
+                alignment = (na > 1) ? InlineAlignment.SPACE_BETWEEN : InlineAlignment.SPACE_AROUND;
+            else if (na > nb)
+                alignment = InlineAlignment.CENTER;
+            l.setAlignment(alignment);
         }
         double available = measure - consumed;
         int level = l.getBidiLevel();
@@ -438,14 +506,14 @@ public class LineLayout {
                 l.insertChild(a1, l.firstChild(), LineArea.EXPAND_IPD);
                 l.insertChild(a2, null, LineArea.EXPAND_IPD);
             } else {
-                justifyTextAreas(l, measure, consumed, level, numNonAnnotationChildren, alignment);
+                justifyTextAreas(l, measure, consumed, level, numNonAnnotationChildren, alignment, baseAdvances);
             }
         } else if (available < 0) {
             l.setOverflow(-available);
         }
     }
 
-    private void justifyTextAreas(LineArea l, double measure, double consumed, int level, int numNonAnnotationChildren, InlineAlignment alignment) {
+    private void justifyTextAreas(LineArea l, double measure, double consumed, int level, int numNonAnnotationChildren, InlineAlignment alignment, double[] baseAdvances) {
         double available = measure - consumed;
         if (alignment == InlineAlignment.JUSTIFY)
             alignment = InlineAlignment.SPACE_BETWEEN;
@@ -454,6 +522,8 @@ public class LineLayout {
             numFillers = numNonAnnotationChildren + 1;
         } else if (alignment == InlineAlignment.SPACE_BETWEEN) {
             numFillers = numNonAnnotationChildren - 1;
+        } else if (alignment == InlineAlignment.WITH_BASE) {
+            numFillers = justifyTextAreasWithBase(l, available, level, baseAdvances);
         } else
             numFillers = 0;
         double fill;
@@ -474,6 +544,40 @@ public class LineLayout {
                 AreaNode f = new InlineFillerArea(l.getElement(), fill, 0, level);
                 l.insertChild(f, null, LineArea.EXPAND_IPD);
             }
+        }
+    }
+
+    private int justifyTextAreasWithBase(LineArea l, double available, int level, double[] baseAdvances) {
+        List<AreaNode> leaves = new java.util.ArrayList<AreaNode>();
+        for (AreaNode c : l.getChildren()) {
+            if (c instanceof AnnotationArea)
+                continue;
+            else
+                leaves.add(c);
+        }
+        if (leaves.size() != baseAdvances.length) {
+            return 2;
+        } else {
+            for (int i = 0, n = baseAdvances.length; i < n; ++i)
+                available -= baseAdvances[i];
+            if (available < 0)
+                available = 0;
+            double s = available/2;
+            int i = 0;
+            for (AreaNode c : leaves) {
+                double d = baseAdvances[i] - c.getIPD();
+                s += d/2;
+                if (s > 0) {
+                    l.insertChild(new InlineFillerArea(l.getElement(), s, 0, level), c, LineArea.EXPAND_IPD);
+                }
+                s = d/2;
+                ++i;
+            }
+            s += available/2;
+            if (s > 0) {
+                l.insertChild(new InlineFillerArea(l.getElement(), s, 0, level), null, LineArea.EXPAND_IPD);
+            }
+            return 0;
         }
     }
 

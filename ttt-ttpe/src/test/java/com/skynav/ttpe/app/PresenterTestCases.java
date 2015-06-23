@@ -295,6 +295,16 @@ public class PresenterTestCases {
         performPresentationTest("test-048-span-text-outline.xml", 0, 0);
     }
 
+    @Test
+    public void test049RubyAlignAutoLRTB() throws Exception {
+        performPresentationTest("test-049-ruby-align-auto-lrtb.xml", 0, 0);
+    }
+
+    @Test
+    public void test050RubyAlignAutoTBRL() throws Exception {
+        performPresentationTest("test-050-ruby-align-auto-tbrl.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

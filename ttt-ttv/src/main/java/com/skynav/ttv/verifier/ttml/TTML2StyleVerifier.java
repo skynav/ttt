@@ -230,8 +230,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.TRUE,
-            RubyAlign.SPACE_AROUND,
-            RubyAlign.SPACE_AROUND.value()
+            RubyAlign.AUTO,
+            RubyAlign.AUTO.value()
         },
         {
             new QName(NAMESPACE,"rubyOffset"),

@@ -76,11 +76,10 @@ public class AnnotationStyleCollector extends StyleCollector {
     }
 
     private void collectCommonAnnotationStyles(Element e, int begin, int end, StyleSet styles) {
-
         StyleSpecification s;
         Object v;
 
-        // ANNOTATION_ALIGN
+        // ANNOTATION_ALIGNMENT
         s = styles.get(ttsRubyAlignAttrName);
         v = null;
         if (s != null)

@@ -27,6 +27,7 @@ package com.skynav.ttpe.style;
 
 // alignment in ipd (inline) axis
 public enum InlineAlignment {
+    AUTO("auto"),
     LEFT("left"),
     CENTER("center"),
     RIGHT("right"),
@@ -34,7 +35,8 @@ public enum InlineAlignment {
     END("end"),
     JUSTIFY("justify"),
     SPACE_AROUND("spaceAround"),
-    SPACE_BETWEEN("spaceBetween");
+    SPACE_BETWEEN("spaceBetween"),
+    WITH_BASE("withBase");
     private final String value;
     InlineAlignment(String v) {
         value = v;
