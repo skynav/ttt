@@ -3,9 +3,22 @@
 <module name="Checker">
   <module name="FileTabCharacter"/>
   <module name="NewlineAtEndOfFile"/>
+  <!--
+  <module name="RegexpSingleline">
+    <property name="format" value="\s+$"/>
+    <property name="message" value="Line has trailing spaces."/>
+  </module>
+  -->
   <module name="TreeWalker">
     <module name="AvoidStarImport">
       <property name="allowStaticMemberImports" value="true"/>
     </module>
+    <module name="IllegalImport"/>
+    <!--
+    <module name="ImportOrder">
+      <property name="groups" value="java,javax,org,com.skynav"/>
+      <property name="separated" value="true"/>
+    </module>
+    -->
   </module>
 </module>

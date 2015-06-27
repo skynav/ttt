@@ -36,7 +36,3 @@ public class Namespace {
         System.out.println(getNamespace());
     }
 }
-
-
-
-

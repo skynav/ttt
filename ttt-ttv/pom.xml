@@ -88,6 +88,16 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${checkstyle.version}</version>
+        <configuration>
+          <configLocation>${project.baseUri}src/tools/resources/checkstyle/checkstyle.xml</configLocation>
+          <headerLocation>${project.baseUri}src/tools/resources/checkstyle/LICENSE.txt</headerLocation>
+          <linkXRef>false</linkXRef>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire.version}</version>
         <configuration>
@@ -109,7 +119,6 @@
         <version>${checkstyle.version}</version>
         <configuration>
           <configLocation>${project.baseUri}src/tools/resources/checkstyle/checkstyle.xml</configLocation>
-          <consoleOutput>true</consoleOutput>
           <headerLocation>${project.baseUri}src/tools/resources/checkstyle/LICENSE.txt</headerLocation>
           <linkXRef>false</linkXRef>
         </configuration>
