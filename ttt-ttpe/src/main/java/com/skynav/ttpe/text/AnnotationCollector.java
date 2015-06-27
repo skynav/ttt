@@ -28,17 +28,22 @@ package com.skynav.ttpe.text;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.style.Annotation;
 import com.skynav.ttpe.style.AnnotationStyleCollector;
+import com.skynav.ttpe.style.Defaults;
+import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.StyleCollector;
 import com.skynav.xml.helpers.Documents;
 
+import static com.skynav.ttpe.style.Constants.*;
 import static com.skynav.ttpe.text.Constants.*;
 
 public class AnnotationCollector extends PhraseCollector {
@@ -54,7 +59,11 @@ public class AnnotationCollector extends PhraseCollector {
     }
 
     public List<Phrase> collect(Element e) {
-        return collectAnnotation(e);
+        Annotation annotation = styleCollector.getAnnotation(e);
+        if (annotation == Annotation.EMPHASIS)
+            return collectEmphasis(e);
+        else
+            return collectAnnotation(e);
     }
 
     @Override
@@ -70,6 +79,64 @@ public class AnnotationCollector extends PhraseCollector {
             }
             add(new AnnotationPhrase(e, bases, styleCollector.extract()));
         }
+    }
+
+    private List<Phrase> collectEmphasis(Element e) {
+        clear();
+        collectBaseWithEmphasis(e);
+        collectTextWithEmphasis(e);
+        emit(e);
+        return extract();
+    }
+
+    private void collectBaseWithEmphasis(Element eBase) {
+        collectBase(eBase, true);
+    }
+
+    private void collectTextWithEmphasis(Element eBase) {
+        Element eText = null;
+        if (currentBase < 0) {
+            if ((baseStarts == null) || baseStarts.isEmpty())
+                currentBase = -1;
+            else
+                currentBase = baseStarts.get(baseStarts.get(0));
+        }
+        if (currentBase >= 0) {
+            Defaults defaults = styleCollector.getDefaults();
+            Document d = eBase.getOwnerDocument();
+            for (int i = currentBase, n = bases.size(); i < n; ++i) {
+                Phrase b = bases.get(i);
+                if (b != null) {
+                    int nb = b.length();
+                    if (nb > 0) {
+                        Emphasis emphasis = b.getEmphasis(-1, defaults);
+                        if ((emphasis != null) && !emphasis.isNone()) {
+                            String emphasisText = emphasis.resolveText(b.getFont(-1, defaults).isVertical() ? Axis.VERTICAL : Axis.HORIZONTAL);
+                            assert (emphasisText != null) && (emphasisText.length() > 0);
+                            emphasisText = emphasisText.substring(0,1);
+                            StringBuffer sb = new StringBuffer();
+                            for (int j = 0; j < nb; ++j)
+                                sb.append(emphasisText);
+                            Text t = d.createTextNode(sb.toString());
+                            eText = Documents.createElement(d, ttSpanElementName);
+                            styleCollector.addStyle(eText, ttsRubyPositionAttrName, getRubyPosition(emphasis)); 
+                            eText.appendChild(t);
+                            collectText(eText, true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private String getRubyPosition(Emphasis e) {
+        Emphasis.Position p = e.getPosition();
+        if (p == Emphasis.Position.BEFORE)
+            return "before";
+        else if (p == Emphasis.Position.AFTER)
+            return "after";
+        else
+            return "auto";
     }
 
     private List<Phrase> collectAnnotation(Element e) {
@@ -165,22 +232,42 @@ public class AnnotationCollector extends PhraseCollector {
     }
 
     private void collectBase(Element e) {
+        collectBase(e, false);
+    }
+
+    private void collectBase(Element e, boolean emphasis) {
         StringBuffer text = new StringBuffer();
         for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Text) {
                 String t = ((Text) n).getWholeText();
                 if (t != null)
                     text.append(t);
+            } else {
+                // [TBD] handle nested spans when collecting emphasis as base content
             }
         }
+        if (emphasis) {
+            for (int i = 0, n = text.length(); i < n; ++i) {
+                char c = text.charAt(i);
+                addBaseStart();
+                collectBase(e, new String(new char[]{c}));
+            }
+        } else
+            collectBase(e, text.toString());
+    }
+
+    private void collectBase(Element e, String content) {
         StyleCollector sc = new AnnotationStyleCollector(styleCollector, null);
         sc.collectSpanStyles(e, -1, -1);
-        String content = text.toString();
         sc.collectContentStyles(content, 0, content.length());
         addBase(e, content, sc.extract());
     }
 
     private void collectText(Element e) {
+        collectText(e, false);
+    }
+
+    private void collectText(Element e, boolean emphasis) {
         if (currentBase < 0) {
             if ((baseStarts == null) || baseStarts.isEmpty())
                 currentBase = -1;
@@ -200,7 +287,8 @@ public class AnnotationCollector extends PhraseCollector {
             sc.collectSpanStyles(e, -1, -1);
             String content = text.toString();
             sc.collectContentStyles(content, 0, content.length());
-            addAnnotation(e, content, sc.extract());
+            if (!emphasis || !bases.get(currentBase).isWhitespace())
+                addAnnotation(e, content, sc.extract());
             ++currentBase;
         } else
             currentBase = -1;

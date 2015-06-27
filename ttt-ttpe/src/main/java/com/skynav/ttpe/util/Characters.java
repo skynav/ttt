@@ -689,7 +689,7 @@ public class Characters {
         int n = voSingles1.length;
         if (n > 0) {
             for (int f = 0, t = n;  f <= t; ) {
-                int m  = (f + t) / 2;
+                int m  = (f + t) >>> 1;
                 int c0 = voSingles1[m];
                 if (c0 < c) {
                     if ((f = m + 1) > n)

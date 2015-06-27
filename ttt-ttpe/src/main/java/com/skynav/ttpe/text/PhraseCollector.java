@@ -94,9 +94,10 @@ public class PhraseCollector {
                 Element c = (Element) n;
                 if (breakPhrase(c))
                     break;
-                else if (Documents.isElement(c, ttSpanElementName))
+                else if (Documents.isElement(c, ttSpanElementName)) {
+                    emit(e);
                     collectSpan(c);
-                else if (Documents.isElement(c, ttBreakElementName))
+                } else if (Documents.isElement(c, ttBreakElementName))
                     collectBreak(c);
             }
         }

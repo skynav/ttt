@@ -3,12 +3,16 @@
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
 <head>
 <layout>
-<region xml:id="r0" tts:displayAlign="center" tts:extent="768px 225px" tts:origin="256px 475px" tts:writingMode="lrtb"/>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="768px 60px" tts:position="center top 135px" tts:writingMode="lrtb"/>
+<region xml:id="r1" tts:displayAlign="center" tts:extent="768px 60px" tts:position="center" tts:writingMode="lrtb"/>
+<region xml:id="r2" tts:displayAlign="center" tts:extent="768px 60px" tts:position="center bottom 135px" tts:writingMode="lrtb"/>
 </layout>
 </head>
 <body tts:fontFamily="Arial" tts:fontSize="36px" tts:lineHeight="45px">
 <div>
 <p region="r0" begin="1s" end="2s" tts:textAlign="start">AB<span tts:textEmphasis="circle">CD</span>EF</p>
+<p region="r1" begin="1s" end="2s" tts:textAlign="center">AB<span tts:textEmphasis="circle">CD</span>EF</p>
+<p region="r2" begin="1s" end="2s" tts:textAlign="end">AB<span tts:textEmphasis="circle">CD</span>EF</p>
 </div>
 </body>
 </tt>

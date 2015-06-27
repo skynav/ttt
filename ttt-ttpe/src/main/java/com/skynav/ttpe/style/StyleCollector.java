@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -74,6 +76,7 @@ public class StyleCollector {
     protected WritingMode writingMode;
     protected String language;
     protected Font font;
+    private int synthesizedStylesIndex;
     private Map<String,StyleSet> styles;
     private List<StyleAttributeInterval> attributes;
     private BidiLevelIterator bidi;
@@ -96,6 +99,10 @@ public class StyleCollector {
         this.bidi = new BidiLevelIterator();
     }
 
+    public Defaults getDefaults() {
+        return defaults;
+    }
+
     protected void setFont(Font font) {
         this.font = font;
     }
@@ -108,18 +115,21 @@ public class StyleCollector {
     public boolean generatesAnnotationBlock(Element e) {
         if (Documents.isElement(e, ttSpanElementName)) {
             Annotation r = getAnnotation(e);
-            return (r != null) && (r == Annotation.CONTAINER);
+            return (r != null) && ((r == Annotation.CONTAINER) || (r == Annotation.EMPHASIS));
         } else
             return false;
     }
 
     public Annotation getAnnotation(Element e) {
         StyleSet styles = getStyles(e);
-        StyleSpecification s = styles.get(ttsRubyAttrName);
+        StyleSpecification s;
+        s = styles.get(ttsRubyAttrName);
         if (s != null)
             return Annotation.fromValue(s.getValue());
-        else
-            return null;
+        s = styles.get(ttsTextEmphasisAttrName);
+        if (s != null)
+            return Annotation.EMPHASIS;
+        return null;
     }
 
     public boolean generatesInlineBlock(Element e) {
@@ -343,6 +353,14 @@ public class StyleCollector {
         return attributes;
     }
 
+    public void addStyle(Element e, QName name, String value) {
+        StyleSet styles = getStyles(e);
+        if (styles == StyleSet.EMPTY)
+            styles = newStyles(e);
+        styles.merge(name, value);
+        Documents.setAttribute(e, isdCSSAttrName, styles.getId());
+    }
+
     protected void collectCommonStyles(Element e, int begin, int end) {
         collectCommonStyles(e, begin, end, getStyles(e));
     }
@@ -561,6 +579,21 @@ public class StyleCollector {
                 return StyleSet.EMPTY;
         } else
             return StyleSet.EMPTY;
+    }
+
+    protected StyleSet newStyles(Element e) {
+        StyleSet styles = new StyleSet();
+        String id = generateSynthesizedStylesId();
+        styles.setId(id);
+        this.styles.put(id, styles);
+        return styles;
+    }
+
+    private String generateSynthesizedStylesId() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('_');
+        sb.append(synthesizedStylesIndex++);
+        return sb.toString();
     }
 
     protected void addAttribute(StyleAttribute attribute, Object value, int begin, int end) {

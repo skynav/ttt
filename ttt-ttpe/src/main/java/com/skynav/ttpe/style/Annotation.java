@@ -31,7 +31,8 @@ public enum Annotation {
     TEXT_CONTAINER("textContainer"),
     BASE("base"),
     TEXT("text"),
-    DELIMITER("delimiter");
+    DELIMITER("delimiter"),
+    EMPHASIS("emphasis");
     private final String value;
     Annotation(String v) {
         value = v;

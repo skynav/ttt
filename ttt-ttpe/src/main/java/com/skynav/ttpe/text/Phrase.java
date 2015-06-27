@@ -36,11 +36,13 @@ import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Defaults;
+import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.Wrap;
 import com.skynav.ttpe.util.AttributedStrings;
+import com.skynav.ttpe.util.Characters;
 
 public class Phrase {
 
@@ -89,6 +91,19 @@ public class Phrase {
     public int length() {
         AttributedCharacterIterator aci = getIterator();
         return aci.getEndIndex() - aci.getBeginIndex();
+    }
+
+    public boolean isWhitespace() {
+        boolean rv = true;
+        AttributedCharacterIterator aci = getIterator();
+        int savedIndex = aci.getIndex();
+        for (int i = aci.getBeginIndex(), n = aci.getEndIndex(); rv && (i < n); ++i) {
+            char c = aci.setIndex(i);
+            if (!Characters.isWhitespace(c))
+                rv = false;
+        }
+        aci.setIndex(savedIndex);
+        return rv;
     }
 
     private static final StyleAttribute[] annotationAttr = new StyleAttribute[] { StyleAttribute.ANNOTATIONS };
@@ -162,6 +177,19 @@ public class Phrase {
             v = defaults.getColor();
         if (v instanceof Color)
             return (Color) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] emphasisAttr = new StyleAttribute[] { StyleAttribute.EMPHASIS };
+    public Emphasis getEmphasis(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(emphasisAttr[0]);
+        else
+            v = content.getIterator(emphasisAttr, index, index + 1).getAttribute(emphasisAttr[0]);
+        if (v instanceof Emphasis)
+            return (Emphasis) v;
         else
             return null;
     }

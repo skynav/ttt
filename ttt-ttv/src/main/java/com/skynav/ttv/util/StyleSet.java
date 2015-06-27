@@ -100,6 +100,10 @@ public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> i
         this.styles.putAll(styles);
     }
 
+    public void merge(QName name, String value) {
+        merge(new StyleSpecification(name, value));
+    }
+
     public void merge(StyleSpecification style) {
         this.styles.put(style.getName(), style);
     }

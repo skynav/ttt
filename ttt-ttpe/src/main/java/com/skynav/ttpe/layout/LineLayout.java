@@ -48,7 +48,6 @@ import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Defaults;
-import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
 import com.skynav.ttpe.style.Orientation;
@@ -335,11 +334,12 @@ public class LineLayout {
     }
 
     private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, TextRun run) {
-        if (run instanceof WhitespaceRun)
-            l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.level, text, font), LineArea.ENCLOSE_ALL);
-        else if (run instanceof EmbeddingRun)
+        if (run instanceof WhitespaceRun) {
+            if (advance > 0)
+                l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.level, text, font), LineArea.ENCLOSE_ALL);
+        } else if (run instanceof EmbeddingRun) {
             l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL); 
-        else if (run instanceof NonWhitespaceRun) {
+        } else if (run instanceof NonWhitespaceRun) {
             int start = run.start;
             Orientation orientation = run.orientation;
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
@@ -703,7 +703,6 @@ public class LineLayout {
         List<Decoration> getDecorations(int from, int to) {
             Set<StyleAttributeInterval> intervals = new java.util.TreeSet<StyleAttributeInterval>();
             intervals.addAll(getColorIntervals(from, to));
-            intervals.addAll(getEmphasisIntervals(from, to));
             intervals.addAll(getOutlineIntervals(from, to));
             List<Decoration> decorations = new java.util.ArrayList<Decoration>();
             for (StyleAttributeInterval i : intervals) {
@@ -712,8 +711,6 @@ public class LineLayout {
                 if (v != null) {
                     if (v instanceof Color)
                         t = Decoration.Type.COLOR;
-                    else if (v instanceof Emphasis)
-                        t = Decoration.Type.EMPHASIS;
                     else if (v instanceof Outline)
                         t = Decoration.Type.OUTLINE;
                     else
@@ -811,24 +808,6 @@ public class LineLayout {
             }
             aci.setIndex(savedIndex);
             return colors;
-        }
-        // obtain emphasis for specified interval FROM to TO of run
-        private List<StyleAttributeInterval> getEmphasisIntervals(int from, int to) {
-            StyleAttribute emphasisAttr = StyleAttribute.EMPHASIS;
-            List<StyleAttributeInterval> emphases = new java.util.ArrayList<StyleAttributeInterval>();
-            int[] intervals = getAttributeIntervals(from, to, emphasisAttr);
-            AttributedCharacterIterator aci = iterator;
-            int savedIndex = aci.getIndex();
-            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
-                int s = start + intervals[i*2 + 0];
-                int e = start + intervals[i*2 + 1];
-                aci.setIndex(s);
-                Object v = aci.getAttribute(emphasisAttr);
-                if (v != null)
-                    emphases.add(new StyleAttributeInterval(emphasisAttr, v, s, e));
-            }
-            aci.setIndex(savedIndex);
-            return emphases;
         }
         // obtain outline for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getOutlineIntervals(int from, int to) {

@@ -67,11 +67,8 @@ import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
-import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.Outline;
-import com.skynav.ttpe.util.Characters;
-import com.skynav.ttpe.util.Strings;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
@@ -95,7 +92,6 @@ public class SVGRenderProcessor extends RenderProcessor {
     private static final String[][] longOptionSpecifications = new String[][] {
         { "svg-background",             "COLOR",    "paint background of specified color into root region (default: transparent)" },
         { "svg-decorate-all",           "",         "decorate regions, lines, glyphs, etc., for debugging purposes" },
-        { "svg-decorate-emphasis",      "",         "decorate emphasis features for debugging purposes" },
         { "svg-decorate-glyphs",        "",         "decorate glyphs with bounding box, etc., for debugging purposes" },
         { "svg-decorate-lines",         "",         "decorate lines with bounding box, etc., for debugging purposes" },
         { "svg-decorate-regions",       "",         "decorate regions with bounding box, etc., for debugging purposes" },
@@ -116,7 +112,6 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     // options state
     private String backgroundOption;
-    private boolean decorateEmphasis;
     @SuppressWarnings("unused")
     private boolean decorateGlyphs;
     private boolean decorateLines;
@@ -173,8 +168,6 @@ public class SVGRenderProcessor extends RenderProcessor {
             decorateGlyphs = true;
             decorateLines = true;
             decorateRegions = true;
-        } else if (option.equals("svg-decorate-emphasis")) {
-            decorateEmphasis = true;
         } else if (option.equals("svg-decorate-glyphs")) {
             decorateGlyphs = true;
         } else if (option.equals("svg-decorate-lines")) {
@@ -562,7 +555,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
                     baselineOffset = -(font.getHeight() + bpdAnnotationBefore);
                 else
-                    baselineOffset = bpd - font.getHeight();
+                    baselineOffset = bpdAnnotationBefore + bpd - font.getHeight();
             } else {
                 baselineOffset = bpd / 2 + bpdAnnotationBefore;
                 if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
@@ -581,8 +574,6 @@ public class SVGRenderProcessor extends RenderProcessor {
         e = renderGlyphText(g, a, d, decorations);
         assert e != null;
         g.appendChild(e);
-        if ((e = renderGlyphEmphases(g, a, d, getEmphasisDecorations(decorations))) != null)
-            g.appendChild(e);
         if (a.isVertical())
             yCurrent += ipd;
         else {
@@ -592,15 +583,6 @@ public class SVGRenderProcessor extends RenderProcessor {
                 xCurrent -= ipd;
         }
         return g;
-    }
-
-    private List<Decoration> getEmphasisDecorations(List<Decoration> decorations) {
-        List<Decoration> emphases = new java.util.ArrayList<Decoration>();
-        for (Decoration d : decorations) {
-            if (d.isEmphasis())
-                emphases.add(d);
-        }
-        return !emphases.isEmpty() ? emphases : null;
     }
 
     private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
@@ -743,197 +725,6 @@ public class SVGRenderProcessor extends RenderProcessor {
             }
         }
         return null;
-    }
-
-    private Element renderGlyphEmphases(Element parent, GlyphArea a, Document d, List<Decoration> emphases) {
-        if ((emphases != null) && !emphases.isEmpty()) {
-            String text = a.getText();
-            int numLines = a.getContainingBlock().getLineCount();
-            boolean firstLine = a.getLine().isFirstLine();
-            String eTextBefore = getEmphasisText(a, text, emphases, Emphasis.Position.BEFORE, numLines, firstLine);
-            Element eBefore = renderGlyphEmphasis(parent, a, d, eTextBefore, Emphasis.Position.BEFORE);
-            String eTextAfter = getEmphasisText(a, text, emphases, Emphasis.Position.AFTER, numLines, firstLine);
-            Element eAfter = renderGlyphEmphasis(parent, a, d, eTextAfter, Emphasis.Position.AFTER);
-            if ((eBefore == null) && (eAfter == null))
-                return null;
-            else if ((eBefore != null) && (eAfter == null))
-                return eBefore;
-            else if ((eBefore == null) && (eAfter != null))
-                return eAfter;
-            else {
-                Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-                g.appendChild(eBefore);
-                g.appendChild(eAfter);
-                return g;
-            }
-        } else
-            return null;
-    }
-
-    private String getEmphasisText(GlyphArea a, String text, List<Decoration> emphases, Emphasis.Position position, int numLines, boolean firstLine) {
-        char[] ea = new char[text.length()];
-        for (Decoration decoration : emphases) {
-            assert decoration.isEmphasis();                
-            Emphasis emphasis = decoration.getEmphasis();
-            if (emphasis.isNone())
-                continue;
-            String et = emphasis.resolveText(a.getWritingMode().getAxis(Dimension.IPD));
-            if ((et == null) || et.isEmpty())
-                continue;
-            char ec = et.charAt(0);
-            if (emphasis.resolvePosition(numLines, firstLine) != position)
-                continue;
-            if ((ec >= 0xD800) && (ec < 0xE000))
-                throw new UnsupportedOperationException("non-BMP emphasis characters not yet supported");
-            for (int i = decoration.getBegin(), e = decoration.getEnd(); i < e; ++i) {
-                char c = text.charAt(i);
-                if ((c >= 0xD800) && (c < 0xE000))
-                    throw new UnsupportedOperationException("emphasis on non-BMP characters not yet supported");
-                if (decoration.intersects(i, i + 1))
-                    ea[i] = ec;
-            }
-        }
-        for (int i = 0, n = ea.length; i < n; ++i) {
-            if (ea[i] == 0)
-                ea[i] = Characters.UC_SPACE;
-        }
-        return new String(ea);
-    }
-
-    private Element renderGlyphEmphasis(Element parent, GlyphArea a, Document d, String emphasis, Emphasis.Position position) {
-        String text = a.getText();
-        boolean vertical = a.isVertical();
-        if ((text == null) || text.isEmpty() || Strings.isWhitespace(text))
-            return null;
-        if ((emphasis == null) || emphasis.isEmpty() || Strings.isWhitespace(emphasis))
-            return null;
-        Font font = a.getFont();
-        Rectangle[] bounds = font.getGlyphBounds(text);
-        if (bounds == null)
-            return null;
-        Element e = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
-        double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
-        int[] glyphs = font.getGlyphs(text);
-        Font fontEmphasis = font.getScaledFont(0.5);
-        double[] advancesEmphasis = fontEmphasis.getAdvances(emphasis, fontEmphasis.isKerningEnabled(), a.isRotatedOrientation());
-        Rectangle[] boundsEmphasis = fontEmphasis.getGlyphBounds(emphasis);
-        double xLast = 0;
-        double yLast = 0;
-        double dxLast = 0;
-        double dyLast = 0;
-        double beHeightMax = 0;
-        double beCenterYMax = 0;
-        double beCenterYMin = Double.MAX_VALUE;
-        StringBuffer sb = new StringBuffer();
-        List<Element> glyphBoxes = new java.util.ArrayList<Element>();
-        for (int i = 0, n = glyphs.length; i < n; ++i) {
-            Rectangle bt = bounds[i];
-            Rectangle be = boundsEmphasis[i];
-            double beHeight = be.getHeight();
-            if (beHeight > beHeightMax)
-                beHeightMax = beHeight;
-            double beCenterY = be.getY() + be.getHeight()/2;
-            if (beCenterY > beCenterYMax)
-                beCenterYMax = beCenterY;
-            if (beCenterY < beCenterYMin)
-                beCenterYMin = beCenterY;
-            double ct, ce;
-            if (vertical && !a.isRotatedOrientation()) {
-                ct = bt.getY() + bt.getHeight()/2;
-                ce = be.getX() + be.getWidth()/2;
-            } else {
-                ct = bt.getX() + bt.getWidth()/2;
-                ce = be.getX() + be.getWidth()/2;
-            }
-            double dc = ct - ce;
-            if (decorateEmphasis)
-                glyphBoxes.add(renderGlyphBoundingBox(parent, a, d, xLast, yLast, bt));
-            if (sb.length() > 0)
-                sb.append(',');
-            if (vertical && !a.isRotatedOrientation()) {
-                if (i == 0)
-                    dxLast = bt.getHeight()/2;
-                sb.append(doubleFormatter.format(new Object[] {dxLast}));
-                dxLast = advances[i] - 2 * ce;
-                yLast += advances[i];
-            } else {
-                sb.append(doubleFormatter.format(new Object[] {dyLast + dc}));
-                dyLast = advances[i] - advancesEmphasis[i] - dc;
-                xLast += advances[i];
-            }
-        }
-        double bpd = a.getBPD();
-        Direction bpdDirection = a.getWritingMode().getDirection(Dimension.BPD);
-        if (vertical && !a.isRotatedOrientation()) {
-            if (sb.length() > 0)
-                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
-            double dy;
-            if (position == Emphasis.Position.AFTER) {
-                if (bpdDirection == RL)
-                    dy = beCenterYMax + bpd/2;
-                else
-                    dy = beCenterYMax - bpd/2;
-            } else {
-                if (bpdDirection == RL)
-                    dy = beCenterYMax - bpd/2;
-                else
-                    dy = beCenterYMax + bpd/2;
-            }
-            Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {dy}));
-        } else {
-            if (sb.length() > 0)
-                Documents.setAttribute(e, SVGDocumentFrame.dxAttrName, sb.toString());
-            double dy;
-            if (position == Emphasis.Position.AFTER) {
-                if (bpdDirection == RL)
-                    dy = beCenterYMax + (bpd - font.getHeight());
-                else if (bpdDirection == LR)
-                    dy = beCenterYMax - font.getHeight();
-                else
-                    dy = beCenterYMax - font.getHeight() + bpd;
-            } else {
-                if (bpdDirection == RL)
-                    dy = beCenterYMax - font.getHeight();
-                else if (bpdDirection == LR)
-                    dy = beCenterYMax - font.getHeight() + bpd;
-                else
-                    dy = beCenterYMax - font.getHeight();
-            }
-            Documents.setAttribute(e, SVGDocumentFrame.dyAttrName, doubleFormatter.format(new Object[] {dy}));
-        }
-        Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontEmphasis.getHeight()}));
-        if (vertical && !a.isRotatedOrientation())
-            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, "rotate(90)");
-        e.appendChild(d.createTextNode(emphasis));
-        if (!glyphBoxes.isEmpty()) {
-            Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-            g.appendChild(e);
-            for (Element b : glyphBoxes)
-                g.appendChild(b);
-            return g;
-        } else
-            return e;
-    }
-
-    private Element renderGlyphBoundingBox(Element parent, GlyphArea a, Document d, double xLast, double yLast, Rectangle bounds) {
-        Element e = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
-        double w = bounds.getWidth();
-        double h = bounds.getHeight();
-        double x, y;
-        if (a.isVertical() && !a.isRotatedOrientation()) {
-            x = xLast - (w + bounds.getX())/2;
-            y = yLast - bounds.getY();
-        } else {
-            x = xLast + bounds.getX();
-            y = yLast - h - bounds.getY();
-        }
-        Documents.setAttribute(e, SVGDocumentFrame.fillAttrName, "none");
-        Documents.setAttribute(e, SVGDocumentFrame.strokeAttrName, decorationColor.toRGBString());
-        Documents.setAttribute(e, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Double[] {w}));
-        Documents.setAttribute(e, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Double[] {h}));
-        Documents.setAttribute(e, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x}));
-        Documents.setAttribute(e, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y}));
-        return e;
     }
 
     private Element renderSpace(Element parent, SpaceArea a, Document d) {
