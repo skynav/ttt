@@ -27,8 +27,8 @@ package com.skynav.ttv.app;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 import com.skynav.ttv.util.Configuration;
 import com.skynav.ttv.util.ConfigurationDefaults;

@@ -32,8 +32,8 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.verifier.TimingValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.VerificationParameters;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Timing;
 
 public class TimeDurationVerifier implements TimingValueVerifier {

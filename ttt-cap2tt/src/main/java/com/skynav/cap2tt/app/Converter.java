@@ -82,6 +82,15 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
+import org.xml.sax.Locator;
+import org.xml.sax.helpers.LocatorImpl;
+
 import com.skynav.cap2tt.converter.ConverterContext;
 
 import com.skynav.ttv.app.InvalidOptionUsageException;
@@ -104,8 +113,8 @@ import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.FontStyle;
-import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 import com.skynav.ttv.model.ttml2.ttd.RubyPosition;
+import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
@@ -135,15 +144,6 @@ import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Nodes;
 import com.skynav.xml.helpers.Sniffer;
 import com.skynav.xml.helpers.XML;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
-import org.xml.sax.Locator;
-import org.xml.sax.helpers.LocatorImpl;
 
 import static com.skynav.ttv.model.ttml.TTML2.Constants.*;
 

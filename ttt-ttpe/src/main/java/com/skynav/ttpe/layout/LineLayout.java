@@ -40,10 +40,10 @@ import com.skynav.ttpe.area.InlineBlockArea;
 import com.skynav.ttpe.area.InlineFillerArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.SpaceArea;
-import com.skynav.ttpe.geometry.Direction;
-import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontFeature;
+import com.skynav.ttpe.geometry.Direction;
+import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Combine;
@@ -348,7 +348,6 @@ public class LineLayout {
             boolean combined = !combine.isNone();
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
                 Font fo = font;
-                Font fi = font;
                 double ipd = 0;
                 double bpd = lineHeight;
                 if (fai.isOuterScope()) {
@@ -367,6 +366,7 @@ public class LineLayout {
                     if (j > text.length())
                         j = text.length();
                     String segText = text.substring(i, j);
+                    Font fi;
                     if ((fi = (Font) fai.getValue()) != null) {
                         boolean kerned = fi.isKerningEnabled();
                         List<Decoration> segDecorations = getSegmentDecorations(decorations, i, j);

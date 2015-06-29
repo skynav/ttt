@@ -95,6 +95,7 @@
           <configLocation>${project.baseUri}src/tools/resources/checkstyle/checkstyle.xml</configLocation>
           <headerLocation>${project.baseUri}src/tools/resources/checkstyle/LICENSE.txt</headerLocation>
           <linkXRef>false</linkXRef>
+          <logViolationsToConsole>true</logViolationsToConsole>
         </configuration>
       </plugin>
       <plugin>

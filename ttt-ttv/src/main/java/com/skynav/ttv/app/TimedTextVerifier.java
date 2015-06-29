@@ -56,7 +56,6 @@ import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.Stack;
 
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -64,8 +63,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -115,6 +114,8 @@ import com.skynav.ttv.verifier.util.Timing;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Sniffer;
 import com.skynav.xml.helpers.XML;
+
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 public class TimedTextVerifier implements VerifierContext {
 

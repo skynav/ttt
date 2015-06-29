@@ -28,8 +28,8 @@ package com.skynav.ttpe.area;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.AnnotationPosition;
+import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
 
 public class AnnotationArea extends LineArea implements Inline {

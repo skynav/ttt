@@ -29,9 +29,9 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.smpte.ST20522013;
+import com.skynav.ttv.model.smpte.tt.rel2013.Data;
 import com.skynav.ttv.model.smpte.tt.rel2013.Image;
 import com.skynav.ttv.model.smpte.tt.rel2013.Information;
-import com.skynav.ttv.model.smpte.tt.rel2013.Data;
 
 import static com.skynav.ttv.model.smpte.ST20522013.Constants.*;
 

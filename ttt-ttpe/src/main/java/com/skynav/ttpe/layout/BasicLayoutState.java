@@ -36,9 +36,9 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
-import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.CanvasArea;
+import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.area.ReferenceArea;
 import com.skynav.ttpe.area.ViewportArea;
@@ -51,9 +51,9 @@ import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Helpers;
-import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 

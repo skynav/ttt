@@ -25,19 +25,19 @@
 
 package com.skynav.ttpe.render.png;
 
-import java.io.ByteArrayOutputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Document;
-
-import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+
+import org.w3c.dom.Document;
 
 import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.geometry.Point;

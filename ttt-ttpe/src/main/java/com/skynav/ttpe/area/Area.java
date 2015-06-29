@@ -27,8 +27,8 @@ package com.skynav.ttpe.area;
 
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.Whitespace;
 
 public interface Area extends AreaGeometry {

@@ -48,11 +48,11 @@ import com.skynav.ttv.model.ttml2.tt.Set;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.TimeContainer;
-import com.skynav.ttv.verifier.ttml.TTML2StyleVerifier;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.util.Visitor;
+import com.skynav.ttv.verifier.ttml.TTML2StyleVerifier;
 import com.skynav.ttx.transformer.TransformerContext;
 
 public class TTML2Helper extends TTMLHelper {

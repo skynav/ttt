@@ -31,8 +31,8 @@ import java.util.Set;
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.util.URIs;
 
-import static com.skynav.ttv.model.ttml.TTML1.Constants.NAMESPACE_TT_FEATURE;
 import static com.skynav.ttv.model.ttml.TTML1.Constants.NAMESPACE_TT_EXTENSION;
+import static com.skynav.ttv.model.ttml.TTML1.Constants.NAMESPACE_TT_FEATURE;
 
 public class TTML1StandardDesignations extends Profile.StandardDesignations {
     

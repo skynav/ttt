@@ -34,11 +34,10 @@ import java.util.Set;
 
 import org.w3c.dom.Document;
 
+import com.skynav.ttpe.area.Area;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.ttx.transformer.TransformerOptions;
-
-import com.skynav.ttpe.area.Area;
 
 public abstract class LayoutProcessor implements TransformerOptions, Layout {
 

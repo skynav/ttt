@@ -31,10 +31,10 @@ import java.util.regex.Pattern;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.value.ClockTime;
+import com.skynav.ttv.model.value.OffsetTime;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.model.value.TimeParameters;
-import com.skynav.ttv.model.value.OffsetTime;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
 import com.skynav.ttv.model.value.impl.OffsetTimeImpl;
 import com.skynav.ttv.util.Reporter;

@@ -25,9 +25,9 @@
  
 package com.skynav.ttv.verifier;
 
-import org.xml.sax.Locator;
-
 import org.w3c.dom.Node;
+
+import org.xml.sax.Locator;
 
 public interface SemanticsVerifier {
 

@@ -33,11 +33,11 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
-import com.skynav.ttv.model.ttml1.ttp.Profile;
-import com.skynav.ttv.model.ttml1.ttp.Feature;
-import com.skynav.ttv.model.ttml1.ttp.Features;
 import com.skynav.ttv.model.ttml1.ttp.Extension;
 import com.skynav.ttv.model.ttml1.ttp.Extensions;
+import com.skynav.ttv.model.ttml1.ttp.Feature;
+import com.skynav.ttv.model.ttml1.ttp.Features;
+import com.skynav.ttv.model.ttml1.ttp.Profile;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ProfileVerifier;

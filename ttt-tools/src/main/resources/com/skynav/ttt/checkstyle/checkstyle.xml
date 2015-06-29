@@ -14,11 +14,11 @@
       <property name="allowStaticMemberImports" value="true"/>
     </module>
     <module name="IllegalImport"/>
-    <!--
     <module name="ImportOrder">
-      <property name="groups" value="java,javax,org,com.skynav"/>
+      <property name="groups" value="java,javax,org,com"/>
+      <property name="option" value="bottom"/>
       <property name="separated" value="true"/>
+      <!-- <property name="sortStaticImportsAlphabetically" value="true"/> -->
     </module>
-    -->
   </module>
 </module>

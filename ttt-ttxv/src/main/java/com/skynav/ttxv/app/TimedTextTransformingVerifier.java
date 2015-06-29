@@ -30,8 +30,8 @@ import java.net.URI;
 import java.util.List;
 
 import com.skynav.ttx.app.TimedTextTransformer;
-import com.skynav.ttx.transformer.Transformers;
 import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.ttx.transformer.Transformers;
 
 public class TimedTextTransformingVerifier extends TimedTextTransformer {
 

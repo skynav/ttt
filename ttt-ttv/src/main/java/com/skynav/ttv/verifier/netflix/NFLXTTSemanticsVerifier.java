@@ -37,12 +37,12 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
-
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,17 +50,15 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 
-import javax.xml.namespace.QName;
-
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.netflix.NFLXTT;
+import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
 import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
-import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.PreVisitor;
@@ -68,10 +66,10 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ParameterVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1StyleVerifier;
-import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
 import com.skynav.ttv.verifier.util.Integers;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;

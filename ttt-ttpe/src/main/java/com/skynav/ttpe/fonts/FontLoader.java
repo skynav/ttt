@@ -37,9 +37,9 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 
-import org.xml.sax.InputSource;
-
 import org.w3c.dom.Document;
+
+import org.xml.sax.InputSource;
 
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Reporter;

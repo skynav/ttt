@@ -32,19 +32,19 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.xml.sax.Locator;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import org.xml.sax.Locator;
+
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml1.tt.Body;
+import com.skynav.ttv.model.ttml1.tt.Break;
 import com.skynav.ttv.model.ttml1.tt.Division;
+import com.skynav.ttv.model.ttml1.tt.Metadata;
 import com.skynav.ttv.model.ttml1.tt.Paragraph;
 import com.skynav.ttv.model.ttml1.tt.Span;
-import com.skynav.ttv.model.ttml1.tt.Break;
-import com.skynav.ttv.model.ttml1.tt.Metadata;
 import com.skynav.ttv.model.ttml1.ttd.AgentType;
 import com.skynav.ttv.model.ttml1.ttm.Actor;
 import com.skynav.ttv.model.ttml1.ttm.Agent;
@@ -52,8 +52,8 @@ import com.skynav.ttv.model.ttml1.ttm.Name;
 import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
-import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
+import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.metadata.AgentAttributeVerifier;
 import com.skynav.ttv.verifier.ttml.metadata.RoleAttributeVerifier;

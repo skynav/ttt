@@ -47,9 +47,6 @@ import com.skynav.ttv.model.ttml2.tt.Set;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
-import com.skynav.ttv.model.ttml2.ttp.Extensions;
-import com.skynav.ttv.model.ttml2.ttp.Features;
-import com.skynav.ttv.model.ttml2.ttp.Profile;
 import com.skynav.ttv.model.ttml2.ttm.Actor;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
 import com.skynav.ttv.model.ttml2.ttm.Copyright;
@@ -57,6 +54,9 @@ import com.skynav.ttv.model.ttml2.ttm.Description;
 import com.skynav.ttv.model.ttml2.ttm.Item;
 import com.skynav.ttv.model.ttml2.ttm.Name;
 import com.skynav.ttv.model.ttml2.ttm.Title;
+import com.skynav.ttv.model.ttml2.ttp.Extensions;
+import com.skynav.ttv.model.ttml2.ttp.Features;
+import com.skynav.ttv.model.ttml2.ttp.Profile;
 
 public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 

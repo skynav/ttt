@@ -28,10 +28,11 @@ package com.skynav.ttv.util;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Comparator;
-import java.util.Set;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -40,8 +41,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import javax.xml.namespace.QName;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;

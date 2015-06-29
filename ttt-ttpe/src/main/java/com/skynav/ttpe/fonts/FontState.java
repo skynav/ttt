@@ -46,8 +46,8 @@ import org.apache.fontbox.ttf.KerningSubtable;
 import org.apache.fontbox.ttf.KerningTable;
 import org.apache.fontbox.ttf.NamingTable;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
-import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.OTFParser;
+import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 
 import com.skynav.ttpe.geometry.Axis;

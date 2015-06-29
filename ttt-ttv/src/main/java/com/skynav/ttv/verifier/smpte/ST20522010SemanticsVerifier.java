@@ -29,19 +29,19 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.xml.sax.Locator;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import org.xml.sax.Locator;
+
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.smpte.ST20522010;
+import com.skynav.ttv.model.smpte.tt.rel2010.Data;
 import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.smpte.tt.rel2010.Information;
-import com.skynav.ttv.model.smpte.tt.rel2010.Data;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.URIs;

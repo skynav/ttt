@@ -30,8 +30,8 @@ import java.net.URI;
 import com.skynav.ttv.model.Profile.Specification;
 import com.skynav.ttv.model.Profile.Usage;
 
-import static com.skynav.ttv.model.ttml.TTML1.Constants.PROFILE_TTML1_FULL_ABSOLUTE;
 import static com.skynav.ttv.model.smpte.ST20522013.Constants.NAMESPACE_2013_EXTENSION;
+import static com.skynav.ttv.model.ttml.TTML1.Constants.PROFILE_TTML1_FULL_ABSOLUTE;
 
 public class ST20522013FullProfileSpecification extends Specification {
     
