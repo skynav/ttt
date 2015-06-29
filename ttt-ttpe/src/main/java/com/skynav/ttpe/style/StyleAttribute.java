@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -27,7 +27,7 @@ package com.skynav.ttpe.style;
 
 public class StyleAttribute extends java.text.AttributedCharacterIterator.Attribute implements Comparable<StyleAttribute> {
 
-    //                                                                               ** name **                 ** value type ** 
+    //                                                                               ** name **                 ** value type **
     public static final StyleAttribute   ANNOTATIONS            = new StyleAttribute("ANNOTATIONS");            // com.skynav.ttpe.text.Phrase[]
     public static final StyleAttribute   ANNOTATION_ALIGNMENT   = new StyleAttribute("ANNOTATION_ALIGNMENT");   // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   ANNOTATION_OFFSET      = new StyleAttribute("ANNOTATION_OFFSET");      // Double

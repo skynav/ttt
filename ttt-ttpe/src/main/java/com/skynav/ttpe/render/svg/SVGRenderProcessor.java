@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -87,7 +87,7 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     // static defaults
     private static final String defaultOutputFileNamePattern    = "ttps{0,number,000000}.svg";
-    
+
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
         { "svg-background",             "COLOR",    "paint background of specified color into root region (default: transparent)" },
@@ -275,7 +275,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         if (extent != null) {
             Documents.setAttribute(eSVG, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
             Documents.setAttribute(eSVG, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
-        } 
+        }
         if (root)  {
             if (backgroundColor != null) {
                 Element eBackground = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);

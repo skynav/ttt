@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -63,7 +63,7 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
     private static final GenerationMode defaultMode             = GenerationMode.ISD;
     private static final double defaultDensity                  = 96;
     private static final String defaultOutputFileNamePattern    = "ttpi{0,number,000000}.png";
-    
+
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
         { "png-background",             "COLOR",    "paint background with specified color (default: transparent)" },
@@ -232,9 +232,9 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
             t.addTranscodingHint(PNGTranscoder.KEY_WIDTH, Float.valueOf((float) rectRegion.getWidth()));
             t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, Float.valueOf((float) rectRegion.getHeight()));
             t.addTranscodingHint(PNGTranscoder.KEY_AOI, rectRegion.getAWTRectangle());
-            if (background != null) 
+            if (background != null)
                 t.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, background.getPaint());
-            if (pixelDensity != 0) 
+            if (pixelDensity != 0)
                 t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, Float.valueOf((float) (25.4 / pixelDensity)));
             t.transcode(ti, to);
             bos.flush();

@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -33,7 +33,7 @@ public class Color {
 
     public static final Color AQUA                              = new Color(0,1,1);
     public static final Color BLACK                             = new Color(0,0,0);
-    public static final Color BLUE                              = new Color(0,0,1); 
+    public static final Color BLUE                              = new Color(0,0,1);
     public static final Color CYAN                              = new Color(0,1,1);
     public static final Color FUCHSIA                           = new Color(1,0,1);
     public static final Color GRAY                              = new Color(0.5,0.5,0.5);

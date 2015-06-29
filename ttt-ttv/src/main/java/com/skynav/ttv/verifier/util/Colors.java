@@ -1,6 +1,6 @@
 /*
  * Copyright 2013 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttv.verifier.util;
 
 import java.util.Collections;
@@ -361,7 +361,7 @@ public class Colors {
                 }
                 hexDigits = sb.toString();
             }
-            
+
             // hex digits count
             if (hexDigits != null) {
                 int numDigits = hexDigits.length();
@@ -399,7 +399,7 @@ public class Colors {
                     message = reporter.message(locator, "*KEY*",
                         "Bad <#...> color expression, unrecognized characters not permitted after sign, got ''{0}''.", sb.toString());
                 } else {
-                    message = reporter.message(locator, "*KEY*", 
+                    message = reporter.message(locator, "*KEY*",
                         "Bad <#...> color expression, unrecognized characters not permitted after hexadecimal digits, got ''{0}''.", sb.toString());
                 }
                 reporter.logInfo(message);

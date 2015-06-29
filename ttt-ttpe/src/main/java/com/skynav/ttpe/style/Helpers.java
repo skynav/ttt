@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -89,7 +89,7 @@ public class Helpers {
 
         x -= xOffset;
         y -= yOffset;
-        
+
         if ((x == 0) && (y == 0))
             return Point.ZERO;
         else

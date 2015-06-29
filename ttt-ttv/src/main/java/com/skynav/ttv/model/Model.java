@@ -1,6 +1,6 @@
 /*
  * Copyright 2013 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttv.model;
 
 import java.net.URI;
@@ -113,37 +113,37 @@ public interface Model {
     boolean isElement(QName name);
 
     /**
-     * Obtain TT profile namespace URI. 
+     * Obtain TT profile namespace URI.
      * @return TT profile namespace URI
      */
     URI getTTProfileNamespaceUri();
 
     /**
-     * Obtain model's profile namespace URI. 
+     * Obtain model's profile namespace URI.
      * @return profile namespace URI
      */
     URI getProfileNamespaceUri();
 
     /**
-     * Obtain TT feature namespace URI. 
+     * Obtain TT feature namespace URI.
      * @return feature namespace URI
      */
     URI getTTFeatureNamespaceUri();
 
     /**
-     * Obtain model's feature namespace URI. 
+     * Obtain model's feature namespace URI.
      * @return feature namespace URI
      */
     URI getFeatureNamespaceUri();
 
     /**
-     * Obtain TT extension namespace URI. 
+     * Obtain TT extension namespace URI.
      * @return extension namespace URI
      */
     URI getTTExtensionNamespaceUri();
 
     /**
-     * Obtain model's extension namespace URI. 
+     * Obtain model's extension namespace URI.
      * @return extension namespace URI
      */
     URI getExtensionNamespaceUri();
@@ -156,7 +156,7 @@ public interface Model {
 
     /**
      * Obtain set of profiles designators.
-     * @return model's profile designators 
+     * @return model's profile designators
      */
     Set<URI> getProfileDesignators();
 

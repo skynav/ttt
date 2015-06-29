@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -71,7 +71,7 @@ public class XMLRenderProcessor extends RenderProcessor {
 
     // static defaults
     private static final String defaultOutputFileNamePattern    = "ttpx{0,number,000000}.xml";
-    
+
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
         { "xml-include-generator",      "",         "include ISD generator information in output, i.e., information about source ISD instance" },

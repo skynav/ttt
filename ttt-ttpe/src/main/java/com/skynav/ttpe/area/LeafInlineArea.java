@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -43,7 +43,7 @@ public class LeafInlineArea extends LeafAreaNode implements Inline {
         super(e);
         this.ipd = ipd;
         this.bpd = bpd;
-        this.level = level; 
+        this.level = level;
     }
 
     @Override

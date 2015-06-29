@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -119,7 +119,7 @@ public class AnnotationCollector extends PhraseCollector {
                                 sb.append(emphasisText);
                             Text t = d.createTextNode(sb.toString());
                             eText = Documents.createElement(d, ttSpanElementName);
-                            styleCollector.addStyle(eText, ttsRubyPositionAttrName, getRubyPosition(emphasis)); 
+                            styleCollector.addStyle(eText, ttsRubyPositionAttrName, getRubyPosition(emphasis));
                             eText.appendChild(t);
                             collectText(eText, true);
                         }

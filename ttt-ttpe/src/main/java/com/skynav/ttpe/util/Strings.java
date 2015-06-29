@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -28,7 +28,7 @@ package com.skynav.ttpe.util;
 public class Strings {
 
     private Strings() {}
-    
+
     public static boolean isWhitespace(String s) {
         for (int i = 0, n = s.length(); i < n; ++i) {
             char c = s.charAt(i);

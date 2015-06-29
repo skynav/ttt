@@ -1,6 +1,6 @@
 /*
  * Copyright 2013 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttv.verifier.ttml.timing;
 
 import javax.xml.namespace.QName;
@@ -40,7 +40,7 @@ public class TimeDurationVerifier implements TimingValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters) {
         String value = (String) valueObject;
-        assert parameters instanceof TimingVerificationParameters; 
+        assert parameters instanceof TimingVerificationParameters;
         TimingVerificationParameters timingParameters = (TimingVerificationParameters) parameters;
         TimeParameters timeParameters = timingParameters.getTimeParameters();
         if (Timing.isDuration(value, locator, context, timeParameters, null)) {

@@ -1,6 +1,6 @@
 /*
  * Copyright 2013 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttv.verifier.util;
 
 import java.util.List;
@@ -101,7 +101,7 @@ public class Identifiers {
 
         do {
             char c;
-            
+
             // optional hyphen before ident-start
             if (valueIndex == valueLength)
                 break;
@@ -136,13 +136,13 @@ public class Identifiers {
                 } else
                     break;
             }
-            
+
             // don't allow subsequent characters that are not ident-following
             if (valueIndex < valueLength)
                 return false;
 
         } while (false);
-        
+
         if (isReservedKeyword(value))
             return false;
 
@@ -158,7 +158,7 @@ public class Identifiers {
 
         do {
             char c;
-            
+
             // optional hyphen before ident-start
             if (valueIndex == valueLength)
                 break;
@@ -201,7 +201,7 @@ public class Identifiers {
                     valueIndex = valueLength;
                 }
             }
-            
+
             // don't allow subsequent characters that are not ident-following
             if (valueIndex < valueLength)
                 reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, unexpected character ''{0}'' following last ident-following character.", c));

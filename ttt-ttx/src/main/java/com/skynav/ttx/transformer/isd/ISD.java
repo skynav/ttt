@@ -1,6 +1,6 @@
 /*
  * Copyright 2013-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttx.transformer.isd;
 
 import java.io.BufferedOutputStream;
@@ -1096,7 +1096,7 @@ public class ISD {
                         e.setValue(cssUnique);
                 }
             }
-            
+
             return computedStyleSets;
         }
 
@@ -1643,7 +1643,7 @@ public class ISD {
             for (Attr a : exclusions)
                 elt.removeAttributeNode(a);
             return exclusions.size() > 0;
-        } 
+        }
 
         // TBD - use defaulting data from TTML1ParameterVerifier.parameterAccessorMap
         private static boolean isDefaultParameterValue(Attr attr) {
@@ -1721,7 +1721,7 @@ public class ISD {
                IOUtil.closeSafely(bos);
                IOUtil.closeSafely(fos);
            }
-        } 
+        }
 
         private Object writeISDAsByteArray(Document document, int sequenceIndex, TransformerContext context) {
            Reporter reporter = context.getReporter();
@@ -1739,7 +1739,7 @@ public class ISD {
                IOUtil.closeSafely(bos);
                IOUtil.closeSafely(bas);
            }
-        } 
+        }
 
         private void writeISD(Document document, OutputStream os, TransformerContext context) throws TransformerException {
            BufferedWriter bw = null;

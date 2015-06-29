@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttpe.fonts;
 
 import java.io.File;
@@ -53,7 +53,7 @@ public class FontCache {
         this.loadedState = new java.util.HashMap<String,FontState>();
         this.reporter = reporter;
     }
-    
+
     public Font getDefaultFont(Axis axis, Extent size) {
         return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.DEFAULT_VERTICAL : FontKey.DEFAULT_HORIZONTAL, size));
     }

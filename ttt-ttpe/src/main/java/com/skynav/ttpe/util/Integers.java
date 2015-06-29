@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -30,7 +30,7 @@ import java.util.List;
 public class Integers {
 
     private Integers() {}
-    
+
     public static int[] toArray(List<Integer> integers) {
         int[] ia = new int[integers.size()];
         for (int i = 0, n = ia.length; i < n; ++i) {

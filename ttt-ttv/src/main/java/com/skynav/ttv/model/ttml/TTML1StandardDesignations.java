@@ -1,6 +1,6 @@
 /*
  * Copyright 2013 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttv.model.ttml;
 
 import java.net.URI;
@@ -35,7 +35,7 @@ import static com.skynav.ttv.model.ttml.TTML1.Constants.NAMESPACE_TT_EXTENSION;
 import static com.skynav.ttv.model.ttml.TTML1.Constants.NAMESPACE_TT_FEATURE;
 
 public class TTML1StandardDesignations extends Profile.StandardDesignations {
-    
+
     private static final String[] featureDesignationStrings = new String[] {
         "#animation",
         "#backgroundColor-block",
@@ -163,7 +163,7 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
         populateFeatureDesignations();
         populateExtensionDesignations();
     }
-    
+
     private void populateFeatureDesignations() {
         URI featureNamespaceUri = URIs.makeURISafely(NAMESPACE_TT_FEATURE);
         if (featureNamespaceUri != null) {
@@ -185,7 +185,7 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
             this.extensionDesignations = extensionDesignations;
         }
     }
-    
+
     public static TTML1StandardDesignations getInstance() {
         return new TTML1StandardDesignations();
     }

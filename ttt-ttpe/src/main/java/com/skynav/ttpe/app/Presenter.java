@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -233,7 +233,7 @@ public class Presenter extends TimedTextTransformer {
         if (option.equals("layout")) {
             if (index + 1 >= numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            ++index; // ignore - already processed by #preProcessOptions 
+            ++index; // ignore - already processed by #preProcessOptions
         } else if (option.equals("output-archive")) {
             outputArchive = true;
         } else if (option.equals("output-archive-file")) {
@@ -255,7 +255,7 @@ public class Presenter extends TimedTextTransformer {
         } else if (option.equals("output-format")) {
             if (index + 1 >= numArgs)
                 throw new MissingOptionArgumentException("--" + option);
-            ++index; // ignore - already processed by #preProcessOptions 
+            ++index; // ignore - already processed by #preProcessOptions
         } else if (option.equals("output-indent")) {
             outputIndent = true;
         } else if (option.equals("output-pattern")) {
@@ -457,7 +457,7 @@ public class Presenter extends TimedTextTransformer {
     @Override
     public String getShowUsageCommand() {
         return usageCommand;
-    } 
+    }
 
     @Override
     public void runOptions(PrintWriter out) {
@@ -688,7 +688,6 @@ public class Presenter extends TimedTextTransformer {
             if (retOutputFile != null)
                 retOutputFile[0] = outputFile;
             return new BufferedOutputStream(new FileOutputStream(outputFile));
-            
         } else
             return null;
     }
@@ -784,7 +783,6 @@ public class Presenter extends TimedTextTransformer {
             if (retOutputFile != null)
                 retOutputFile[0] = outputFile;
             return new BufferedOutputStream(new FileOutputStream(outputFile));
-            
         } else
             return null;
     }
@@ -932,7 +930,6 @@ public class Presenter extends TimedTextTransformer {
             if (retOutputFile != null)
                 retOutputFile[0] = outputFile;
             return new BufferedOutputStream(new FileOutputStream(outputFile));
-            
         } else
             return null;
     }

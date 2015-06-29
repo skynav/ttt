@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttpe.fonts;
 
 import java.io.File;
@@ -71,7 +71,7 @@ public class FontLoader {
         InputStream is = null;
         try {
             is = new FileInputStream(f);
-            List<FontSpecification> specifications = fromStream(is, f.getParentFile().getAbsolutePath()); 
+            List<FontSpecification> specifications = fromStream(is, f.getParentFile().getAbsolutePath());
             reporter.logInfo(reporter.message("*KEY*", "Loaded font specification ''{0}''", f.getAbsolutePath()));
             return specifications;
         } catch (IOException e) {

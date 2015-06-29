@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -339,7 +339,7 @@ public class LineLayout {
             if (advance > 0)
                 l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.level, text, font), LineArea.ENCLOSE_ALL);
         } else if (run instanceof EmbeddingRun) {
-            l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL); 
+            l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL);
         } else if (run instanceof NonWhitespaceRun) {
             int start = run.start;
             Orientation orientation = run.orientation;

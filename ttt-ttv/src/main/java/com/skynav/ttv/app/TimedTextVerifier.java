@@ -1,6 +1,6 @@
 /*
  * Copyright 2013-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttv.app;
 
 import java.io.BufferedWriter;
@@ -2335,12 +2335,12 @@ public class TimedTextVerifier implements VerifierContext {
             } else
                 return attrs;
         }
-        
+
         private AttributesImpl copyAttribute(AttributesImpl attrsNew, Attributes attrsOld, int i) {
             attrsNew.addAttribute(attrsOld.getURI(i), attrsOld.getLocalName(i), attrsOld.getQName(i), attrsOld.getType(i), attrsOld.getValue(i));
             return attrsNew;
         }
-        
+
         private void checkXSIAttribute(Attributes attrs, int index) {
             Reporter reporter = getReporter();
             QName qn = new QName(attrs.getURI(index), attrs.getLocalName(index));

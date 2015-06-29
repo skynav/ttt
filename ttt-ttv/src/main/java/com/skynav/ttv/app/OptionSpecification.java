@@ -1,6 +1,6 @@
 /*
  * Copyright 2013 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttv.app;
 
 import java.util.Arrays;
@@ -30,7 +30,7 @@ import java.util.Arrays;
 public class OptionSpecification implements Comparable<OptionSpecification> {
 
     public static final int OPTION_FIELD_LENGTH = 36;
-    
+
     private String name;
     private String[] parameters;
     private String description;

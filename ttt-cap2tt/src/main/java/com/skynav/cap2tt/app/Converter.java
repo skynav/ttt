@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -207,7 +207,7 @@ public class Converter implements ConverterContext {
     private static final QName ttsFontStyleAttrName = new QName(NAMESPACE_TT_STYLE, "fontStyle");
     private static final QName ttsTextAlignAttrName = new QName(NAMESPACE_TT_STYLE, "textAlign");
 
-    // ttml2 attribute names 
+    // ttml2 attribute names
     private static final QName ttsFontKerningAttrName = new QName(NAMESPACE_TT_STYLE, "fontKerning");
     private static final QName ttsFontShearAttrName = new QName(NAMESPACE_TT_STYLE, "fontShear");
     private static final QName ttsRubyAttrName = new QName(NAMESPACE_TT_STYLE, "ruby");
@@ -364,7 +364,7 @@ public class Converter implements ConverterContext {
         { "中央",               AttrContext.Attribute,    AttrCount.None               }, // center
         { "行頭",               AttrContext.Attribute,    AttrCount.None               }, // start
         { "行末",               AttrContext.Attribute,    AttrCount.None               }, // end
-        { "中頭",               AttrContext.Attribute,    AttrCount.None               }, // center start 
+        { "中頭",               AttrContext.Attribute,    AttrCount.None               }, // center start
         { "中末",               AttrContext.Attribute,    AttrCount.None               }, // center end
         { "両端",               AttrContext.Attribute,    AttrCount.None               }, // justify
         // mixed placement and alignment (9.1.3)
@@ -488,7 +488,7 @@ public class Converter implements ConverterContext {
 
     // per-resource parsing state
     private List<Screen> screens;
-    private int[] indices; 
+    private int[] indices;
 
     public Converter() {
         this(null, null, null, false, null);
@@ -2990,7 +2990,7 @@ public class Converter implements ConverterContext {
         Set<StyleSet> uniqueStyles = new java.util.TreeSet<StyleSet>(StyleSet.getValuesComparator());
         uniqueStyles.addAll(orderedStyles);
 
-        // final reorder by generation 
+        // final reorder by generation
         orderedStyles.clear();
         orderedStyles.addAll(uniqueStyles);
         List<StyleSet> styles = new java.util.ArrayList<StyleSet>(orderedStyles);
@@ -4142,7 +4142,7 @@ public class Converter implements ConverterContext {
         private String globalTypeface;          // global typeface
         private String typeface;                // current screen kerning
         private Map<String,Region> regions;     // active regions
-        private Set<QName> styles;              
+        private Set<QName> styles;
         public State() {
             this.division = ttmlFactory.createDivision();
             this.globalPlacement = defaultPlacement;
@@ -4648,6 +4648,6 @@ public class Converter implements ConverterContext {
 
 }
 
-// Local Variables: 
+// Local Variables:
 // coding: utf-8-unix
-// End: 
+// End:

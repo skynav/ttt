@@ -1,6 +1,6 @@
 /*
  * Copyright 2013 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package com.skynav.ttv.model.smpte;
 
 import java.net.URI;
@@ -34,7 +34,7 @@ import com.skynav.ttv.util.URIs;
 import static com.skynav.ttv.model.smpte.ST20522010.Constants.NAMESPACE_2010_EXTENSION;
 
 public class ST20522010StandardDesignations extends TTML1StandardDesignations {
-    
+
     private static final String[] extensionDesignationStrings = new String[] {
         "#data",
         "#image",
@@ -46,7 +46,7 @@ public class ST20522010StandardDesignations extends TTML1StandardDesignations {
     protected ST20522010StandardDesignations() {
         populateExtensionDesignations();
     }
-    
+
     private void populateExtensionDesignations() {
         URI extensionNamespaceUri = URIs.makeURISafely(NAMESPACE_2010_EXTENSION);
         if (extensionNamespaceUri != null) {
@@ -57,7 +57,7 @@ public class ST20522010StandardDesignations extends TTML1StandardDesignations {
             this.extensionDesignations = extensionDesignations;
         }
     }
-    
+
     public static ST20522010StandardDesignations getInstance() {
         return new ST20522010StandardDesignations();
     }

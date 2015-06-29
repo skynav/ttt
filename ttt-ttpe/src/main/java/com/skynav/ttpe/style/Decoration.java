@@ -1,6 +1,6 @@
 /*
  * Copyright 2014-15 Skynav, Inc. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -50,23 +50,23 @@ public class Decoration implements Cloneable {
     public int[] getInterval() {
         return new int[]{begin, end};
     }
-    
+
     public int getBegin() {
         return begin;
     }
-    
+
     public int getEnd() {
         return end;
     }
-    
+
     public Type getType() {
         return type;
     }
-    
+
     public boolean isType(Type type) {
         return this.type == type;
     }
-    
+
     public boolean isColor() {
         return getType() == Type.COLOR;
     }
@@ -149,5 +149,5 @@ public class Decoration implements Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-    
+
 }
