@@ -305,6 +305,11 @@ public class PresenterTestCases {
         performPresentationTest("test-050-ruby-align-auto-tbrl.xml", 0, 0);
     }
 
+    @Test
+    public void test051TextCombineMixed() throws Exception {
+        performPresentationTest("test-051-text-combine-mixed.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

@@ -545,28 +545,41 @@ public class SVGRenderProcessor extends RenderProcessor {
     private Element renderGlyphs(Element parent, GlyphArea a, Document d) {
         Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         LineArea l = a.getLine();
-        double ipd = a.getIPD();
-        double bpd = a.getBPD();
-        double bpdAnnotationBefore = l.getAnnotationBPD(AnnotationPosition.BEFORE);
+        double bpdLine = l.getBPD();
+        double bpdLineAnnotationBefore = l.getAnnotationBPD(AnnotationPosition.BEFORE);
+        double bpdLineSansAnnotationBefore = bpdLine - bpdLineAnnotationBefore;
+        double bpdLineAnnotationAfter = l.getAnnotationBPD(AnnotationPosition.AFTER);
+        double bpdLineSansAnnotation = bpdLine - (bpdLineAnnotationBefore + bpdLineAnnotationAfter);
+        double bpdGlyphs = a.getBPD();
+        double ipdGlyphs = a.getIPD();
         Font font = a.getFont();
+        boolean combined = a.isCombined();
         if (a.isVertical()) {
-            double baselineOffset;
-            if (a.isRotatedOrientation()) {
+            double baselineOffset = bpdLineAnnotationBefore;
+            double yOffset = 0;
+            boolean rotate = a.isRotatedOrientation();
+            if (rotate && !combined) {
                 if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
-                    baselineOffset = -(font.getHeight() + bpdAnnotationBefore);
+                    baselineOffset += (bpdLineSansAnnotation - font.getHeight())/2 + font.getAscent();
                 else
-                    baselineOffset = bpdAnnotationBefore + bpd - font.getHeight();
-            } else {
-                baselineOffset = bpd / 2 + bpdAnnotationBefore;
+                    baselineOffset += (bpdLineSansAnnotation - bpdGlyphs)/2 + font.getLeading()/2;
+            } else if (combined) {
                 if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
-                    baselineOffset *= -1;
+                    baselineOffset += (bpdLineSansAnnotationBefore + ipdGlyphs)/2;
+                else
+                    baselineOffset += (bpdLineSansAnnotationBefore - ipdGlyphs)/2;
+                yOffset = font.getHeight();
+            } else {
+                baselineOffset += bpdLineSansAnnotation/2;
             }
-            StringBuffer sb = new StringBuffer(translateFormatter.format(new Object[] {baselineOffset, yCurrent}));
-            if (a.isRotatedOrientation())
+            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                baselineOffset *= -1;
+            StringBuffer sb = new StringBuffer(translateFormatter.format(new Object[] {baselineOffset, yCurrent + yOffset}));
+            if (rotate && !combined)
                 sb.append(",rotate(90)");
             Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, sb.toString());
         } else {
-            double baselineOffset = font.getHeight() + bpdAnnotationBefore;
+            double baselineOffset = font.getHeight() + bpdLineAnnotationBefore;
             Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {xCurrent, baselineOffset}));
         }
         List<Decoration> decorations = a.getDecorations();
@@ -574,19 +587,19 @@ public class SVGRenderProcessor extends RenderProcessor {
         e = renderGlyphText(g, a, d, decorations);
         assert e != null;
         g.appendChild(e);
-        if (a.isVertical())
-            yCurrent += ipd;
-        else {
+        if (a.isVertical()) {
+            yCurrent += combined ? bpdGlyphs : ipdGlyphs;
+        } else {
             if ((l.getBidiLevel() & 1) == 0)
-                xCurrent += ipd;
+                xCurrent += ipdGlyphs;
             else
-                xCurrent -= ipd;
+                xCurrent -= ipdGlyphs;
         }
         return g;
     }
 
     private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
-        if (a.isVertical() && !a.isRotatedOrientation())
+        if (a.isVertical() && !a.isRotatedOrientation() && !a.isCombined())
             return renderGlyphTextVertical(parent, a, d, decorations);
         else
             return renderGlyphTextHorizontal(parent, a, d, decorations);
@@ -596,9 +609,10 @@ public class SVGRenderProcessor extends RenderProcessor {
         Font font = a.getFont();
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         Documents.setAttribute(gOuter, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
-        TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL, a.isRotatedOrientation());
+        boolean rotate = a.isRotatedOrientation() && !a.isCombined();
+        TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL, rotate);
         String text = a.getText();
-        double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
+        double[] advances = font.getAdvances(text, font.isKerningEnabled(), rotate, a.isCombined());
         int level = a.getBidiLevel();
         if (level < 0)
             level = 0;
@@ -658,9 +672,10 @@ public class SVGRenderProcessor extends RenderProcessor {
     private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
         Font font = a.getFont();
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-        TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL, a.isRotatedOrientation());
+        boolean rotate = a.isRotatedOrientation() && !a.isCombined();
+        TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL, rotate);
         String text = a.getText();
-        double[] advances = font.getAdvances(text, font.isKerningEnabled(), a.isRotatedOrientation());
+        double[] advances = font.getAdvances(text, font.isKerningEnabled(), rotate, a.isCombined());
         int level = a.getBidiLevel();
         if (level < 0)
             level = 0;

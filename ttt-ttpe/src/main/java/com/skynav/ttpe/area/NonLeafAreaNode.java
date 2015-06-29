@@ -34,23 +34,30 @@ import org.w3c.dom.Element;
 public abstract class NonLeafAreaNode extends AreaNode {
 
     public enum Expansion {
-        ENCLOSE_IPD,                                    // increase ipd if needed to enclose new child
-        ENCLOSE_BPD,                                    // increase bpd if needed to enclose new child
-        EXPAND_IPD,                                     // increase ipd by new child's ipd
-        EXPAND_BPD;                                     // increase bpd by new child's bpd
+        ENCLOSE_IPD,                                            // increase ipd if needed to enclose new child
+        ENCLOSE_BPD,                                            // increase bpd if needed to enclose new child
+        EXPAND_IPD,                                             // increase ipd by new child's ipd
+        EXPAND_BPD,                                             // increase bpd by new child's bpd
+        CROSS;                                                  // apply to cross (perpendicular) axis
     };
 
-    public static final Set<Expansion> ENCLOSE_ALL;     // enclose both bpd and ipd
-    public static final Set<Expansion> EXPAND_ALL;      // expand both bpd and ipd
-    public static final Set<Expansion> EXPAND_LINE;     // expand bpd, enclose ipd
-    public static final Set<Expansion> EXPAND_IPD;      // expand ipd only
-    public static final Set<Expansion> EXPAND_BPD;      // expand bpd only
+    public static final Set<Expansion> ENCLOSE_ALL;             // enclose both bpd and ipd
+    public static final Set<Expansion> ENCLOSE_ALL_CROSS;       // enclose both bpd and ipd
+    public static final Set<Expansion> EXPAND_ALL;              // expand both bpd and ipd
+    public static final Set<Expansion> EXPAND_LINE;             // expand bpd, enclose ipd
+    public static final Set<Expansion> EXPAND_IPD;              // expand ipd only
+    public static final Set<Expansion> EXPAND_BPD;              // expand bpd only
     static {
         Set<Expansion> s;
         s = new java.util.HashSet<Expansion>();
         s.add(Expansion.ENCLOSE_IPD);
         s.add(Expansion.ENCLOSE_BPD);
         ENCLOSE_ALL = Collections.unmodifiableSet(s);
+        s = new java.util.HashSet<Expansion>();
+        s.add(Expansion.ENCLOSE_IPD);
+        s.add(Expansion.ENCLOSE_BPD);
+        s.add(Expansion.CROSS);
+        ENCLOSE_ALL_CROSS = Collections.unmodifiableSet(s);
         s = new java.util.HashSet<Expansion>();
         s.add(Expansion.EXPAND_IPD);
         s.add(Expansion.EXPAND_BPD);

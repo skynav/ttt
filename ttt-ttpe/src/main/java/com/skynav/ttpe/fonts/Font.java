@@ -144,27 +144,27 @@ public class Font {
     }
 
     public double getAdvance(String text) {
-        return getAdvance(text, isKerningEnabled(), false);
+        return getAdvance(text, isKerningEnabled(), false, false);
     }
 
     public double getRotatedAdvance(String text) {
-        return getAdvance(text, isKerningEnabled(), true);
+        return getAdvance(text, isKerningEnabled(), true, false);
     }
 
-    public double getAdvance(String text, boolean adjustForKerning, boolean rotatedOrientation) {
-        return ls.getAdvance(key, text, adjustForKerning, rotatedOrientation);
+    public double getAdvance(String text, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
+        return ls.getAdvance(key, text, adjustForKerning, rotatedOrientation, cross);
     }
 
     public double[] getAdvances(String text) {
-        return getAdvances(text, isKerningEnabled(), false);
+        return getAdvances(text, isKerningEnabled(), false, false);
     }
 
     public double[] getRotatedAdvances(String text) {
-        return getAdvances(text, isKerningEnabled(), true);
+        return getAdvances(text, isKerningEnabled(), true, false);
     }
 
-    public double[] getAdvances(String text, boolean adjustForKerning, boolean rotatedOrientation) {
-        return ls.getAdvances(key, text, adjustForKerning, rotatedOrientation);
+    public double[] getAdvances(String text, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
+        return ls.getAdvances(key, text, adjustForKerning, rotatedOrientation, cross);
     }
 
     public double getKerningAdvance(String text) {

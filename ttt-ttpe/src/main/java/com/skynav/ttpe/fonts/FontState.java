@@ -123,15 +123,15 @@ public class FontState {
         return putCachedGlyphs(text, mapGlyphs(text, substitution));
     }
 
-    public double getAdvance(FontKey key, String text, boolean adjustForKerning, boolean rotatedOrientation) {
+    public double getAdvance(FontKey key, String text, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
         double advance = 0;
-        for (double a : getAdvances(key, text, adjustForKerning, rotatedOrientation))
+        for (double a : getAdvances(key, text, adjustForKerning, rotatedOrientation, cross))
             advance += a;
         return advance;
     }
 
-    public double[] getAdvances(FontKey key, String text, boolean adjustForKerning, boolean rotatedOrientation) {
-        boolean vertical = key.axis == Axis.VERTICAL;
+    public double[] getAdvances(FontKey key, String text, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
+        boolean vertical = ((key.axis == Axis.VERTICAL) && !cross) || ((key.axis == Axis.HORIZONTAL) && cross);
         double[] advances = new double[text.length()];
         if (maybeLoad(key)) {
             int[] glyphs = getGlyphs(text);

@@ -30,6 +30,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.Combine;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Orientation;
 import com.skynav.ttpe.util.Characters;
@@ -40,13 +41,15 @@ public class GlyphArea extends LeafInlineArea {
     private List<Decoration> decorations;
     private Font font;
     private Orientation orientation;
+    private Combine combine;
 
-    public GlyphArea(Element e, double ipd, double bpd, int level, String text, List<Decoration> decorations, Font font, Orientation orientation) {
+    public GlyphArea(Element e, double ipd, double bpd, int level, String text, List<Decoration> decorations, Font font, Orientation orientation, Combine combine) {
         super(e, ipd, bpd, level);
         this.text = text;
         this.decorations = decorations;
         this.font = font;
         this.orientation = orientation;
+        this.combine = combine;
     }
 
     public String getText() {
@@ -67,6 +70,14 @@ public class GlyphArea extends LeafInlineArea {
 
     public boolean isRotatedOrientation() {
         return orientation.isRotated();
+    }
+
+    public Combine getCombine() {
+        return combine;
+    }
+
+    public boolean isCombined() {
+        return !combine.isNone();
     }
 
     public BlockArea getContainingBlock() {

@@ -46,6 +46,7 @@ import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.Combine;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.InlineAlignment;
@@ -342,27 +343,36 @@ public class LineLayout {
         } else if (run instanceof NonWhitespaceRun) {
             int start = run.start;
             Orientation orientation = run.orientation;
+            boolean rotated = orientation.isRotated();
+            Combine combine = run.combine;
+            boolean combined = !combine.isNone();
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
+                Font fo = font;
+                Font fi = font;
+                double ipd = 0;
+                double bpd = lineHeight;
                 if (fai.isOuterScope()) {
-                    GlyphArea a = new GlyphArea(content.getElement(), advance, lineHeight, run.level, text, decorations, font, orientation);
-                    l.addChild(a, LineArea.ENCLOSE_ALL);
+                    boolean kerned = fo.isKerningEnabled();
+                    ipd = !combined ? advance : fo.getAdvance(text, kerned, rotated, true);
+                    GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, text, decorations, fo, orientation, combine);
+                    l.addChild(a, combine.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
                     break;
                 } else {
-                    int f = fai.getBegin() - start;
-                    assert f >= 0;
-                    assert f < text.length();
-                    int t = fai.getEnd() - start;
-                    assert t >= 0;
-                    assert t >= f;
-                    if (t > text.length())
-                        t = text.length();
-                    String segText = text.substring(f, t);
-                    Font segFont = (Font) fai.getValue();
-                    if (segFont != null) {
-                        double segAdvance = segFont.getAdvance(segText, font.isKerningEnabled(), orientation.isRotated());
-                        List<Decoration> segDecorations = getSegmentDecorations(decorations, f, t);
-                        GlyphArea a = new GlyphArea(content.getElement(), segAdvance, lineHeight, run.level, segText, segDecorations, segFont, orientation);
-                        l.addChild(a, LineArea.ENCLOSE_ALL);
+                    int i = fai.getBegin() - start;
+                    assert i >= 0;
+                    assert i < text.length();
+                    int j = fai.getEnd() - start;
+                    assert j >= 0;
+                    assert j >= i;
+                    if (j > text.length())
+                        j = text.length();
+                    String segText = text.substring(i, j);
+                    if ((fi = (Font) fai.getValue()) != null) {
+                        boolean kerned = fi.isKerningEnabled();
+                        List<Decoration> segDecorations = getSegmentDecorations(decorations, i, j);
+                        ipd = fi.getAdvance(segText, kerned, rotated, combined);
+                        GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, segText, segDecorations, fi, orientation, combine);
+                        l.addChild(a, combine.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
                     }
                 }
             }
@@ -448,7 +458,7 @@ public class LineLayout {
                     orientation = Orientation.ROTATE000;
                 else
                     orientation = baseOrientations[i];
-                advances[i] = font.getAdvance(base.substring(i, j), kerningEnabled, orientation.isRotated());
+                advances[i] = font.getAdvance(base.substring(i, j), kerningEnabled, orientation.isRotated(), false);
             }
             return advances;
         }
@@ -659,6 +669,7 @@ public class LineLayout {
         int end;                                                // end index in outer iterator
         List<StyleAttributeInterval> fontIntervals;             // cached font sub-intervals over complete run interval
         Orientation orientation;                                // dominant glyph orientation for run
+        Combine combine;                                        // dominant combine for run
         int level;                                              // bidirectional level
         String text;                                            // cached text over complete run interval
         TextRun(int start, int end) {
@@ -667,6 +678,7 @@ public class LineLayout {
             int l = end - start;
             this.fontIntervals = getFontIntervals(0, l, font);
             this.orientation = getDominantOrientation(0, l, defaults.getOrientation());
+            this.combine = getDominantCombine(0, l, defaults.getCombine());
             this.level = getDominantLevel(0, l);
         }
         @Override
@@ -743,23 +755,26 @@ public class LineLayout {
                 if (font == null)
                     continue;
                 else if (fai.isOuterScope()) {
-                    advance += getAdvance(getText().substring(from, to), orientation);
+                    advance += getAdvance(getText().substring(from, to), orientation, combine);
                     break;
                 } else {
                     int[] intersection = fai.intersection(start + from, start + to);
                     if (intersection != null) {
                         int f = intersection[0] - start;
                         int t = intersection[1] - start;
-                        advance += getAdvance(getText().substring(f,t), orientation);
+                        advance += getAdvance(getText().substring(f,t), orientation, combine);
                     }
                 }
             }
             return advance;
         }
-        double getAdvance(String text, Orientation orientation) {
-            if (font.isVertical() && (orientation == Orientation.ROTATE090))
-                return font.getRotatedAdvance(text);
-            else
+        double getAdvance(String text, Orientation orientation, Combine combine) {
+            if (font.isVertical() && (orientation == Orientation.ROTATE090)) {
+                if (!combine.isNone())
+                    return lineHeight;
+                else
+                    return font.getRotatedAdvance(text);
+            } else
                 return font.getAdvance(text);
         }
         // determine if content associate with break is suppressed after line break
@@ -827,7 +842,7 @@ public class LineLayout {
             aci.setIndex(savedIndex);
             return outlines;
         }
-        // obtain dominant for specified interval FROM to TO of run
+        // obtain dominant orientation for specified interval FROM to TO of run
         private Orientation getDominantOrientation(int from, int to, Orientation defaultOrientation) {
             for (StyleAttributeInterval sai : getOrientationIntervals(from, to)) {
                 Orientation orientation = (Orientation) sai.getValue();
@@ -853,6 +868,35 @@ public class LineLayout {
             }
             aci.setIndex(savedIndex);
             return orientations;
+        }
+        // obtain dominant combine for specified interval FROM to TO of run
+        private Combine getDominantCombine(int from, int to, Combine defaultCombine) {
+            if (orientation.isRotated()) {
+                for (StyleAttributeInterval sai : getCombineIntervals(from, to)) {
+                    Combine combine = (Combine) sai.getValue();
+                    if (!combine.isNone())
+                        return combine;
+                }
+            }
+            return defaultCombine;
+        }
+        // obtain combine for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getCombineIntervals(int from, int to) {
+            StyleAttribute combineAttr = StyleAttribute.COMBINE;
+            List<StyleAttributeInterval> combines = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, combineAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                aci.setIndex(s);
+                Object v = aci.getAttribute(combineAttr);
+                if (v != null)
+                    combines.add(new StyleAttributeInterval(combineAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            return combines;
         }
         // obtain dominant bidi level for run, which must be the same value from start to end in outer iterator
         private int getDominantLevel(int from, int to) {

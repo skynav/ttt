@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="jp" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<head>
+<styling>
+<initial tts:fontSize="4vh"/>
+<initial tts:lineHeight="5vh"/>
+<initial tts:showBackground="whenActive"/>
+<style xml:id="s1" tts:textAlign="center"/>
+<style xml:id="s2" tts:textAlign="start"/>
+<style xml:id="s3" tts:textCombine="all"/>
+</styling>
+<layout>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="80vw 15vh" tts:position="center bottom 10vh"/>
+<region xml:id="r1" tts:displayAlign="center" tts:extent="15vw 80vh" tts:position="right 10vw center" tts:writingMode="tbrl"/>
+<region xml:id="r2" tts:displayAlign="center" tts:extent="15vw 80vh" tts:position="left 10vw center" tts:writingMode="tblr"/>
+</layout>
+</head>
+<body>
+<div>
+<p begin="00:01:45:00" end="00:01:48:00" region="r0" style="s1"><span style="s2">縦gX<span style="s3">12</span>XgX<span style="s3">1212</span>Xg右</span></p>
+<p begin="00:01:45:00" end="00:01:48:00" region="r1" style="s1"><span style="s2">縦gX<span style="s3">12</span>XgX<span style="s3">1212</span>Xg右</span></p>
+<p begin="00:01:45:00" end="00:01:48:00" region="r2" style="s1"><span style="s2">縦gX<span style="s3">12</span>XgX<span style="s3">1212</span>Xg右</span></p>
+</div>
+</body>
+</tt>

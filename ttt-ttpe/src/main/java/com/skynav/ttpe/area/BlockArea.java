@@ -124,27 +124,43 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     @Override
     public void expand(AreaNode a, Set<Expansion> expansions) {
         double ipd = a.getIPD();
+        double ipdCurrent = getIPD();
+        if (Double.isNaN(ipdCurrent))
+            ipdCurrent = 0;
+        double bpd = a.getBPD();
+        double bpdCurrent = getBPD();
+        if (Double.isNaN(bpdCurrent))
+            bpdCurrent = 0;
         if (!Double.isNaN(ipd)) {
-            double ipdCurrent = getIPD();
-            if (Double.isNaN(ipdCurrent))
-                ipdCurrent = 0;
-            if (expansions.contains(Expansion.EXPAND_IPD))
-                setIPD(ipdCurrent + ipd);
-            else if (expansions.contains(Expansion.ENCLOSE_IPD)) {
-                if (ipd > ipdCurrent)
-                    setIPD(ipd);
+            if (expansions.contains(Expansion.EXPAND_IPD)) {
+                if (expansions.contains(Expansion.CROSS))
+                    setBPD(bpdCurrent + ipd);
+                else
+                    setIPD(ipdCurrent + ipd);
+            } else if (expansions.contains(Expansion.ENCLOSE_IPD)) {
+                if (expansions.contains(Expansion.CROSS)) {
+                    if (ipd > bpdCurrent)
+                        setBPD(ipd);
+                } else {
+                    if (ipd > ipdCurrent)
+                        setIPD(ipd);
+                }
             }
         }
-        double bpd = a.getBPD();
         if (!Double.isNaN(bpd)) {
-            double bpdCurrent = getBPD();
-            if (Double.isNaN(bpdCurrent))
-                bpdCurrent = 0;
-            if (expansions.contains(Expansion.EXPAND_BPD))
-                setBPD(bpdCurrent + bpd);
-            else if (expansions.contains(Expansion.ENCLOSE_BPD)) {
-                if (bpd > bpdCurrent)
-                    setBPD(bpd);
+            if (expansions.contains(Expansion.EXPAND_BPD)) {
+                if (expansions.contains(Expansion.CROSS))
+                    setIPD(ipdCurrent + bpd);
+                else
+                    setBPD(bpdCurrent + bpd);
+            } else if (expansions.contains(Expansion.ENCLOSE_BPD)) {
+                if (expansions.contains(Expansion.CROSS)) {
+                    if (bpd > ipdCurrent)
+                        setIPD(bpd);
+                } else {
+                    if (bpd > bpdCurrent)
+                        setBPD(bpd);
+                }
             }
         }
     }
