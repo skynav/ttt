@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.namespace.QName;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -353,12 +351,12 @@ public class StyleCollector {
         return attributes;
     }
 
-    public void addStyle(Element e, QName name, String value) {
+    public StyleSet addStyles(Element e) {
         StyleSet styles = getStyles(e);
         if (styles == StyleSet.EMPTY)
             styles = newStyles(e);
-        styles.merge(name, value);
         Documents.setAttribute(e, isdCSSAttrName, styles.getId());
+        return styles;
     }
 
     protected void collectCommonStyles(Element e, int begin, int end) {

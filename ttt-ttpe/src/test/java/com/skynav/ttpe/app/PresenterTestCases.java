@@ -310,6 +310,16 @@ public class PresenterTestCases {
         performPresentationTest("test-051-text-combine-mixed.xml", 0, 0);
     }
 
+    @Test
+    public void test052TextOutlineOnRubyMixed() throws Exception {
+        performPresentationTest("test-052-text-outline-on-ruby-mixed.xml", 0, 0);
+    }
+
+    @Test
+    public void test053TextOutlineOnEmphasisMixed() throws Exception {
+        performPresentationTest("test-053-text-outline-on-emphasis-mixed.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

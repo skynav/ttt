@@ -96,6 +96,7 @@ public class LineLayout {
 
     // style related state
     private Color color;
+    private Outline outline;
     private InlineAlignment textAlign;
     private Wrap wrap;
     private WritingMode writingMode;
@@ -116,8 +117,9 @@ public class LineLayout {
         // area derived state
         this.writingMode = state.getWritingMode();
         this.level = state.getBidiLevel();
-        // paragraph specified styles
+        // outer context styles
         this.color = content.getColor(-1, defaults);
+        this.outline = content.getOutline(-1, defaults);
         this.textAlign = relativizeAlignment(content.getTextAlign(-1, defaults), this.writingMode);
         this.wrap = content.getWrapOption(-1, defaults);
         // derived styles
@@ -284,7 +286,7 @@ public class LineLayout {
                 if ((lastRun != null) && ((r != lastRun) || (l instanceof AnnotationArea))) {
                     if (!(l instanceof AnnotationArea))
                         maybeAddAnnotationAreas(l, lastRunStart, r.start, font, advance, lineHeight);
-                    addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun);
+                    addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun, lastRunStart);
                     sb.setLength(0);
                     decorations.clear();
                     advance = 0;
@@ -300,7 +302,7 @@ public class LineLayout {
             if (sb.length() > 0) {
                 if (!(l instanceof AnnotationArea))
                     maybeAddAnnotationAreas(l, lastRunStart, lastRun != null ? lastRun.end : -1, font, advance, lineHeight);
-                addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun);
+                addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun, lastRunStart);
             }
             iterator.setIndex(savedIndex);
             breaks.clear();
@@ -334,7 +336,7 @@ public class LineLayout {
         return consumed;
     }
 
-    private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, TextRun run) {
+    private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, TextRun run, int runStart) {
         if (run instanceof WhitespaceRun) {
             if (advance > 0)
                 l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.level, text, font), LineArea.ENCLOSE_ALL);
@@ -369,7 +371,8 @@ public class LineLayout {
                     Font fi;
                     if ((fi = (Font) fai.getValue()) != null) {
                         boolean kerned = fi.isKerningEnabled();
-                        List<Decoration> segDecorations = getSegmentDecorations(decorations, i, j);
+                        int segOffset = runStart - start;
+                        List<Decoration> segDecorations = getSegmentDecorations(decorations, i + segOffset, j + segOffset);
                         ipd = fi.getAdvance(segText, kerned, rotated, combined);
                         GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, segText, segDecorations, fi, orientation, combine);
                         l.addChild(a, combine.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
@@ -822,6 +825,8 @@ public class LineLayout {
                     colors.add(new StyleAttributeInterval(colorAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
+            if (colors.isEmpty() && (color != null) && !color.equals(defaults.getColor()))
+                colors.add(new StyleAttributeInterval(colorAttr, color, start + from, start + to));
             return colors;
         }
         // obtain outline for specified interval FROM to TO of run
@@ -840,6 +845,8 @@ public class LineLayout {
                     outlines.add(new StyleAttributeInterval(outlineAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
+            if (outlines.isEmpty() && (outline != null) && !outline.equals(defaults.getOutline()))
+                outlines.add(new StyleAttributeInterval(outlineAttr, outline, start + from, start + to));
             return outlines;
         }
         // obtain dominant orientation for specified interval FROM to TO of run

@@ -23,6 +23,10 @@
         <Class name="com.skynav.ttpe.geometry.Extent"/>
         <Method name="equals"/>
       </And>
+      <And>
+        <Class name="com.skynav.ttpe.style.Color"/>
+        <Method name="equals"/>
+      </And>
     </Or>
   </Match>
   <Match>

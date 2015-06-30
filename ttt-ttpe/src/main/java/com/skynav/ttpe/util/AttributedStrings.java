@@ -32,13 +32,19 @@ public class AttributedStrings {
 
     private AttributedStrings() {}
 
-    public static AttributedString concat(AttributedCharacterIterator[] iterators) {
+    public static AttributedString concat(AttributedCharacterIterator[] iterators, int[] contentIndices) {
         StringBuffer sb = new StringBuffer();
+        int ci = 0;
         for (AttributedCharacterIterator aci : iterators) {
-            for (int i = aci.getBeginIndex(), e = aci.getEndIndex(); i < e; ++i) {
-                sb.append(aci.setIndex(i));
-            }
+            if ((contentIndices != null) && (contentIndices.length > ci))
+                contentIndices[ci++] = sb.length();
+            int b = aci.getBeginIndex();
+            int e = aci.getEndIndex();
+            while (b < e)
+                sb.append(aci.setIndex(b++));
         }
+        if ((contentIndices != null) && (contentIndices.length > ci))
+            contentIndices[ci] = sb.length();
         AttributedString as = new AttributedString(sb.toString());
         int offset = 0;
         for (AttributedCharacterIterator aci : iterators) {

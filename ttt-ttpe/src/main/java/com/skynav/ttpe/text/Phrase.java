@@ -38,6 +38,7 @@ import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.InlineAlignment;
+import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.Wrap;
@@ -70,17 +71,41 @@ public class Phrase {
     }
 
     public void append(Phrase p) {
-        content = AttributedStrings.concat(new AttributedCharacterIterator[] {getIterator(), p.getIterator()});
+        List<Phrase> phrases = new java.util.ArrayList<Phrase>(1);
+        phrases.add(p);
+        append(phrases);
     }
 
     public void append(List<Phrase> phrases) {
         if ((phrases != null) && !phrases.isEmpty()) {
-            AttributedCharacterIterator[] acis = new AttributedCharacterIterator[1 + phrases.size()];
+            int np = 1 + phrases.size();
+            AttributedCharacterIterator[] acis = new AttributedCharacterIterator[np];
             int ni = 0;
             acis[ni++] = getIterator();
             for (Phrase p : phrases)
                 acis[ni++] = p.getIterator();
-            content = AttributedStrings.concat(acis);
+            int[] contentIndices = new int[np + 1];
+            content = AttributedStrings.concat(acis, contentIndices);
+            for (int i = 0; i < np; ++i) {
+                Phrase p = (i == 0) ? this : phrases.get(i - 1);
+                int b = contentIndices[i + 0];
+                int e = contentIndices[i + 1];
+                if (e > b) {
+                    Map<StyleAttribute,Object> attributes = p.attributes;
+                    if ((attributes != null) && (attributes.size() > 0)) {
+                        for (Map.Entry<StyleAttribute,Object> entry : attributes.entrySet()) {
+                            StyleAttribute a = entry.getKey();
+                            // FIXME - should not special case OUTLINE here, but handle all attributes; however,
+                            // using addAttributes() to add all attributes causes a regression due to apparent
+                            // overwrite of FONT attribute; need to selectively add attribute only if it is not
+                            // already present
+                            if (a.equals(StyleAttribute.OUTLINE)) {
+                                content.addAttribute(a, entry.getValue(), b, e);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -222,6 +247,21 @@ public class Phrase {
         }
         if (v instanceof Double)
             return (Double) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] outlineAttr = new StyleAttribute[] { StyleAttribute.OUTLINE };
+    public Outline getOutline(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(outlineAttr[0]);
+        else
+            v = content.getIterator(outlineAttr, index, index + 1).getAttribute(outlineAttr[0]);
+        if (v == null)
+            v = defaults.getOutline();
+        if (v instanceof Outline)
+            return (Outline) v;
         else
             return null;
     }

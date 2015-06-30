@@ -38,22 +38,24 @@ import com.skynav.ttpe.style.Annotation;
 import com.skynav.ttpe.style.AnnotationStyleCollector;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Emphasis;
+import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.StyleCollector;
+import com.skynav.ttv.util.StyleSet;
 import com.skynav.xml.helpers.Documents;
 
 import static com.skynav.ttpe.style.Constants.*;
 import static com.skynav.ttpe.text.Constants.*;
 
-public class AnnotationCollector extends PhraseCollector {
+public class AnnotatedPhraseCollector extends PhraseCollector {
 
     private List<Phrase> bases;                                 // base phrases
     private List<Integer> baseStarts;                           // indices into base phrases list of start of base containers
     private Map<Phrase,List<Phrase>> annotations;               // annotations expressed as map from bases to annotation lists
     private int currentBase;                                    // current index into bases when processing text container and text spans
 
-    public AnnotationCollector(AnnotationStyleCollector styleCollector) {
+    public AnnotatedPhraseCollector(AnnotationStyleCollector styleCollector) {
         super(styleCollector);
         this.currentBase = -1;
     }
@@ -61,9 +63,9 @@ public class AnnotationCollector extends PhraseCollector {
     public List<Phrase> collect(Element e) {
         Annotation annotation = styleCollector.getAnnotation(e);
         if (annotation == Annotation.EMPHASIS)
-            return collectEmphasis(e);
+            return collectEmphasized(e);
         else
-            return collectAnnotation(e);
+            return collectAnnotated(e);
     }
 
     @Override
@@ -77,11 +79,11 @@ public class AnnotationCollector extends PhraseCollector {
                     }
                 }
             }
-            add(new AnnotationPhrase(e, bases, styleCollector.extract()));
+            add(new AnnotatedPhrase(e, bases, styleCollector.extract()));
         }
     }
 
-    private List<Phrase> collectEmphasis(Element e) {
+    private List<Phrase> collectEmphasized(Element e) {
         clear();
         collectBaseWithEmphasis(e);
         collectTextWithEmphasis(e);
@@ -119,7 +121,11 @@ public class AnnotationCollector extends PhraseCollector {
                                 sb.append(emphasisText);
                             Text t = d.createTextNode(sb.toString());
                             eText = Documents.createElement(d, ttSpanElementName);
-                            styleCollector.addStyle(eText, ttsRubyPositionAttrName, getRubyPosition(emphasis));
+                            StyleSet styles = styleCollector.addStyles(eText);
+                            styles.merge(ttsRubyPositionAttrName, getRubyPosition(emphasis));
+                            Outline outline = b.getOutline(-1, defaults);
+                            if ((outline != null) && !outline.isNone())
+                                styles.merge(ttsTextOutlineAttrName, getOutline(outline));
                             eText.appendChild(t);
                             collectText(eText, true);
                         }
@@ -139,7 +145,11 @@ public class AnnotationCollector extends PhraseCollector {
             return "auto";
     }
 
-    private List<Phrase> collectAnnotation(Element e) {
+    private String getOutline(Outline o) {
+        return o.toTextOutlineString();
+    }
+
+    private List<Phrase> collectAnnotated(Element e) {
         clear();
         for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Text) {

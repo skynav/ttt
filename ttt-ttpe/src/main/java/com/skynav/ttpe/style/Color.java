@@ -53,7 +53,7 @@ public class Color {
 
     public static final String rgbFormat                        = "#%02X%02X%02X";
     public static final String rgbaFormat                       = "#%02X%02X%02X%02X";
-    public static final MessageFormat tupleFormatter            = new MessageFormat("[{0,number,0.0},{0,number,0.0},{0,number,0.0},{0,number,0.0}]");
+    public static final MessageFormat tupleFormatter            = new MessageFormat("[{0,number,0.0},{1,number,0.0},{2,number,0.0},{3,number,0.0}]");
 
     private double red;
     private double green;
@@ -154,6 +154,34 @@ public class Color {
             return String.format(rgbFormat, (int) (red * 255), (int) (green * 255), (int) (blue * 255));
         else
             return String.format(rgbaFormat, (int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255));
+    }
+
+    @Override
+    public int hashCode() {
+        int hc = 23;
+        hc = hc * 31 + Double.valueOf(red).hashCode();
+        hc = hc * 31 + Double.valueOf(green).hashCode();
+        hc = hc * 31 + Double.valueOf(blue).hashCode();
+        hc = hc * 31 + Double.valueOf(alpha).hashCode();
+        return hc;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Color) {
+            Color other = (Color) o;
+            if (other.red != red)
+                return false;
+            else if (other.green != green)
+                return false;
+            else if (other.blue != blue)
+                return false;
+            else if (other.alpha != alpha)
+                return false;
+            else
+                return true;
+        } else
+            return false;
     }
 
     @Override

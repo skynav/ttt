@@ -57,7 +57,56 @@ public class Outline {
         return blur;
     }
 
-    private static final MessageFormat doubleFormatter = new MessageFormat("[{0,number,#.####}]");
+    @Override
+    public int hashCode() {
+        int hc = 23;
+        if (color != null)
+            hc = hc * 31 + color.hashCode();
+        hc = hc * 31 + Double.valueOf(thickness).hashCode();
+        hc = hc * 31 + Double.valueOf(blur).hashCode();
+        return hc;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Outline) {
+            Outline other = (Outline) o;
+            if ((other.color == null) ^ (color == null))
+                return false;
+            else if ((other.color != null) && !other.color.equals(color))
+                return false;
+            else if (other.thickness != thickness)
+                return false;
+            else if (other.blur != blur)
+                return false;
+            else
+                return true;
+        } else
+            return false;
+    }
+
+    private static final MessageFormat doubleFormatter = new MessageFormat("{0,number,#.####}");
+    public String toTextOutlineString() {
+        StringBuffer sb = new StringBuffer();
+        if (color != null) {
+            if (color.getAlpha() < 1)
+                sb.append(color.toRGBAString(false));
+            else
+                sb.append(color.toRGBString());
+        }
+        if (sb.length() > 0)
+            sb.append(' ');
+        sb.append(doubleFormatter.format(new Object[] {thickness}));
+        sb.append("px");
+        if (blur != 0) {
+            if (sb.length() > 0)
+                sb.append(' ');
+            sb.append(doubleFormatter.format(new Object[] {blur}));
+            sb.append("px");
+        }
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();

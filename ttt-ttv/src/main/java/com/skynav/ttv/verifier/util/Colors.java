@@ -280,15 +280,22 @@ public class Colors {
     }
 
     private static boolean isRGBHash(String value, Color[] outputColor) {
-        int numDigits = value.length() - 1;
-        if ((numDigits != 6) && (numDigits != 8))
+        if (value.length() < 7)
             return false;
-        else if (!Strings.isHexDigits(value.substring(1)))
+        else if (value.charAt(0) != '#')
             return false;
         else {
-            if (outputColor != null)
-                outputColor[0] = ColorImpl.fromRGBHash(value);
-            return true;
+            String digits = value.substring(1);
+            int numDigits = digits.length();
+            if ((numDigits != 6) && (numDigits != 8))
+                return false;
+            else if (!Strings.isHexDigits(digits))
+                return false;
+            else {
+                if (outputColor != null)
+                    outputColor[0] = ColorImpl.fromRGBHash(digits);
+                return true;
+            }
         }
     }
 

@@ -31,9 +31,9 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.style.StyleAttributeInterval;
 
-public class AnnotationPhrase extends Phrase {
+public class AnnotatedPhrase extends Phrase {
 
-    public AnnotationPhrase(Element e, List<Phrase> bases, List<StyleAttributeInterval> attributes) {
+    public AnnotatedPhrase(Element e, List<Phrase> bases, List<StyleAttributeInterval> attributes) {
         super(e, bases, attributes);
     }
 
