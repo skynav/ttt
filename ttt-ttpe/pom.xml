@@ -68,8 +68,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.xmlunit</groupId>
-      <artifactId>xmlunit-core</artifactId>
+      <groupId>com.skynav.ttt</groupId>
+      <artifactId>ttt-xmlunit-core</artifactId>
       <version>${xmlunit.version}</version>
       <scope>test</scope>
     </dependency>

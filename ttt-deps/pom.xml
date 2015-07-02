@@ -16,6 +16,7 @@
   <modules>
     <module>ttt-batik</module>
     <module>ttt-fontbox</module>
+    <module>ttt-xmlunit-core</module>
   </modules>
 
   <distributionManagement>
