@@ -2369,7 +2369,123 @@ public class Converter implements ConverterContext {
         }
         if (sb.length() > 0)
             parts.add(sb.toString());
+        // FIXME - short term fix for use of nested designations
+        if (hasNestedDesignations(parts))
+            parts = stripNestedDesignations(parts);
         return parts.toArray(new String[parts.size()]);
+    }
+
+    private static boolean hasNestedDesignations(List<String> parts) {
+        int numAttributePrefix = 0;
+        for (String part : parts)
+            numAttributePrefix += countAttributePrefixes(part);
+        return (numAttributePrefix > 2) && ((numAttributePrefix & 1) == 0);
+    }
+
+    private static int countAttributePrefixes(String s) {
+        int numAttributePrefix = 0;
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            char c = s.charAt(i);
+            if (c == attributePrefix)
+                ++numAttributePrefix;
+        }
+        return numAttributePrefix;
+    }
+
+    private static List<String> stripNestedDesignations(List<String> parts) {
+        List<String> strippedParts = new java.util.ArrayList<String>();
+        StringBuffer sb = new StringBuffer();
+        int nesting = 0;
+        for (int i = 0, n = parts.size(); i < n; ++i) {
+            String part = parts.get(i);
+            if (isTextAttributeStart(part)) {
+                if (!isTextAttributeEnd(part)) {
+                    sb.append(part);
+                    nesting++;
+                } else
+                    strippedParts.add(part);
+            } else if (isTextAttributeEnd(part)) {
+                sb.append(part);
+                if (nesting > 0)
+                    nesting--;
+                if (nesting == 0) {
+                    strippedParts.add(stripNestedDesignations(sb.toString()));
+                    sb.setLength(0);
+                }
+            } else if (nesting > 0) {
+                sb.append(part);
+            } else
+                strippedParts.add(part);
+        }
+        return strippedParts;
+    }
+
+    private static final String textAttributeStart = new String(new char[]{attributePrefix});
+    private static boolean isTextAttributeStart(String s) {
+        if (!s.startsWith(textAttributeStart))
+            return false;
+        else {
+            StringBuffer sb = new StringBuffer();
+            for (int i = 1, n = s.length(); i < n; ++i) {
+                char c = s.charAt(i);
+                if ((c >= '\uFF10') && (c <= '\uFF19'))
+                    break;
+                else if (c == '\uFF01')
+                    break;
+                else if (c == '\uFF20')
+                    break;
+                else if (c == '\uFF3B')
+                    break;
+                else if (c == '\uFF5C')
+                    break;
+                else if (c == '\uFF3D')
+                    break;
+                else
+                    sb.append(c);
+            }
+            return knownAttributes.containsKey(sb.toString());
+        }
+    }
+
+    private static final String textAttributeEnd = new String(new char[]{'\uFF3D',attributePrefix});
+    private static boolean isTextAttributeEnd(String s) {
+        return s.endsWith(textAttributeEnd);
+    }
+
+    private static String stripNestedDesignations(String field) {
+        StringBuffer sb = new StringBuffer();
+        int numAttributePrefix = 0;
+        for (int i = 0, n = field.length(); i < n;) {
+            char c = field.charAt(i);
+            if (c == attributePrefix) {
+                if (++numAttributePrefix > 1) {
+                    int j = i + 1;
+                    int k = field.indexOf(attributePrefix, i + 1);
+                    if (j < k) {
+                        String nestedTextAttribute = field.substring(i, ++k);
+                        Attribute[] retAttr = new Attribute[1];
+                        if (parseTextAttribute(nestedTextAttribute, retAttr) != null) {
+                            Attribute a = retAttr[0];
+                            if (a.isEmphasis()) {
+                                sb.append(a.getText());
+                            } else if (a.isRuby()) {
+                                sb.append(a.getText());
+                                sb.append('(');
+                                sb.append(a.getAnnotation());
+                                sb.append(')');
+                            } else {
+                                sb.append(a.getText());
+                            }
+                            i = k;
+                            continue;
+                        }
+                    }
+                }
+            }
+            sb.append(c);
+            ++i;
+        }
+        return sb.toString();
     }
 
     private static boolean isTextEscape(String text) {
