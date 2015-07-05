@@ -152,6 +152,7 @@ public class LineLayout {
             LineBreakIterator lbi = state.getBreakIterator();
             LineBreakIterator lci = state.getCharacterIterator();
             LineBreakIterator bi;
+            InlineBreakOpportunity bPrev = null;
             for (TextRun r = getNextTextRun(); r != null;) {
                 if (!breaks.isEmpty() || !r.suppressAfterLineBreak()) {
                     bi = updateIterator(lbi, r);
@@ -161,7 +162,10 @@ public class LineLayout {
                             consumed = 0;
                             break;
                         } else {
-                            double advance = b.advance;
+                            double advance = b.getAdvance();
+                            double shearAdvance = b.getShearAdvance(bPrev);
+                            if (shearAdvance != 0)
+                                advance += Math.abs(shearAdvance);
                             if ((consumed + advance) > available) {
                                 if (wrap == Wrap.WRAP) {
                                     if (!breaks.isEmpty()) {
@@ -170,14 +174,14 @@ public class LineLayout {
                                     } else {
                                         if (bi != lci)
                                             bi = updateIterator(lci, b);
-                                        b = getNextBreakOpportunity(bi, r, available - consumed);
+                                        bPrev = b; b = getNextBreakOpportunity(bi, r, available - consumed);
                                     }
                                     continue;
                                 }
                             }
                             breaks.add(b);
                             consumed += advance;
-                            b = getNextBreakOpportunity(bi, r, available - consumed);
+                            bPrev = b; b = getNextBreakOpportunity(bi, r, available - consumed);
                         }
                     }
                 }
@@ -294,7 +298,7 @@ public class LineLayout {
                 }
                 sb.append(r.getText(b.start, b.index));
                 decorations.addAll(r.getDecorations(b.start, b.index));
-                advance += b.advance;
+                advance += b.getAdvance();
                 lastRun = r;
                 if (lastRunStart < 0)
                     lastRunStart = r.start + b.start;
@@ -316,7 +320,7 @@ public class LineLayout {
             InlineBreakOpportunity b = breaks.get(i);
             if (b.suppressAfterLineBreak()) {
                 breaks.remove(i);
-                consumed -= b.advance;
+                consumed -= b.getAdvance();
             } else
                 break;
         }
@@ -329,7 +333,7 @@ public class LineLayout {
             InlineBreakOpportunity b = breaks.get(i);
             if (b.suppressBeforeLineBreak()) {
                 breaks.remove(i);
-                consumed -= b.advance;
+                consumed -= b.getAdvance();
             } else
                 break;
         }
@@ -636,6 +640,15 @@ public class LineLayout {
             this.index = index;
             this.advance = advance;
         }
+        double getAdvance() {
+            return advance;
+        }
+        double getShearAdvance(InlineBreakOpportunity previous) {
+            if (previous == null)
+                return run.getShearAdvance();
+            else
+                return 0;
+        }
         @Override
         public String toString() {
             StringBuffer sb = new StringBuffer();
@@ -779,6 +792,24 @@ public class LineLayout {
                     return font.getRotatedAdvance(text);
             } else
                 return font.getAdvance(text);
+        }
+        // obtain shear advance starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
+        double getShearAdvance() {
+            return getShearAdvance(0, end - start);
+        }
+        double getShearAdvance(int from, int to) {
+            double advance = 0;
+            for (StyleAttributeInterval fai : fontIntervals) {
+                Font font = (Font) fai.getValue();
+                if (font == null)
+                    continue;
+                else if (fai.isOuterScope()) {
+                    advance += font.getShearAdvance(orientation.isRotated(), !combine.isNone());
+                    break;
+                } else if (fai.intersects(start + from, start + to))
+                    advance += font.getShearAdvance(orientation.isRotated(), !combine.isNone());
+            }
+            return advance;
         }
         // determine if content associate with break is suppressed after line break
         boolean suppressAfterLineBreak() {

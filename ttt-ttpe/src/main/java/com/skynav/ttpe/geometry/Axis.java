@@ -31,4 +31,7 @@ public enum Axis {
     public boolean isVertical() {
         return this == VERTICAL;
     }
+    public Axis cross(boolean cross) {
+        return cross ? ((this == VERTICAL) ? HORIZONTAL : VERTICAL) : this;
+    }
 }

@@ -175,6 +175,23 @@ public class Font {
         return ls.getKerning(key, text);
     }
 
+    public double getShearAdvance(boolean rotatedOrientation, boolean cross) {
+        return getShearAdvance(key.axis.cross(cross), rotatedOrientation);
+    }
+
+    public double getShearAdvance(Axis axis, boolean rotatedOrientation) {
+        if (isSheared()) {
+            TransformMatrix m = getTransform(axis, rotatedOrientation);
+            if (m != null) {
+                if (axis.isVertical())
+                    return getWidth() * m.getShearY();
+                else
+                    return getHeight() * m.getShearX();
+            }
+        }
+        return 0;
+    }
+
     public TransformMatrix getTransform() {
         return getTransform(key.axis);
     }

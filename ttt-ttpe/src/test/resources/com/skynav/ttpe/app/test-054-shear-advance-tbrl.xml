@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+<head>
+<layout>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="225px 576px" tts:position="center" tts:writingMode="tbrl"/>
+</layout>
+</head>
+<body tts:textAlign="center" tts:fontFamily="Noto Sans" tts:fontSize="36px" tts:lineHeight="45px">
+<div>
+<p region="r0" begin="1s" end="2s" tts:textAlign="center">
+<span tts:textAlign="start"><span tts:fontShear="28%">斜体５ ABC 123</span></span>
+</p>
+<p region="r0" begin="1s" end="2s" tts:textAlign="center">
+<span tts:textAlign="start"><span tts:fontShear="17%">斜体３ ABC 123</span></span>
+</p>
+<p region="r0" begin="1s" end="2s" tts:textAlign="center">
+<span tts:textAlign="start"><span tts:fontShear="0%">斜体０ ABC 123</span></span>
+</p>
+<p region="r0" begin="1s" end="2s" tts:textAlign="center">
+<span tts:textAlign="start"><span tts:fontShear="-17%">斜体３ ABC 123</span></span>
+</p>
+<p region="r0" begin="1s" end="2s" tts:textAlign="center">
+<span tts:textAlign="start"><span tts:fontShear="-28%">斜体５ ABC 123</span></span>
+</p>
+</div>
+</body>
+</tt>

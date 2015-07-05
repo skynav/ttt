@@ -619,6 +619,9 @@ public class SVGRenderProcessor extends RenderProcessor {
         boolean btt = ((level & 1) == 1);
         double ySaved = yCurrent;
         yCurrent = 0;
+        double shearAdvance = font.getShearAdvance(rotate, a.isCombined());
+        if (shearAdvance < 0)
+            yCurrent += -shearAdvance;
         for (int i = 0, n = advances.length; i < n; ++i) {
             int j = i + 1;
             double ga = advances[i];
@@ -682,6 +685,9 @@ public class SVGRenderProcessor extends RenderProcessor {
         boolean rtl = ((level & 1) == 1);
         double xSaved = xCurrent;
         xCurrent = 0;
+        double shearAdvance = font.getShearAdvance(rotate, a.isCombined());
+        if ((shearAdvance < 0) && rotate)
+            xCurrent += -shearAdvance;
         for (int i = 0, n = advances.length; i < n; ++i) {
             int j = i + 1;
             double ga = advances[i];

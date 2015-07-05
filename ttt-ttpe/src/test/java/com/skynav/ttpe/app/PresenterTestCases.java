@@ -320,6 +320,11 @@ public class PresenterTestCases {
         performPresentationTest("test-053-text-outline-on-emphasis-mixed.xml", 0, 0);
     }
 
+    @Test
+    public void test054ShearAdvanceTBRL() throws Exception {
+        performPresentationTest("test-054-shear-advance-tbrl.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
