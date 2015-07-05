@@ -758,20 +758,20 @@ public class LineLayout {
                 if (font == null)
                     continue;
                 else if (fai.isOuterScope()) {
-                    advance += getAdvance(getText().substring(from, to), orientation, combine);
+                    advance += getAdvance(getText().substring(from, to), font, orientation, combine);
                     break;
                 } else {
                     int[] intersection = fai.intersection(start + from, start + to);
                     if (intersection != null) {
                         int f = intersection[0] - start;
                         int t = intersection[1] - start;
-                        advance += getAdvance(getText().substring(f,t), orientation, combine);
+                        advance += getAdvance(getText().substring(f,t), font, orientation, combine);
                     }
                 }
             }
             return advance;
         }
-        double getAdvance(String text, Orientation orientation, Combine combine) {
+        double getAdvance(String text, Font font, Orientation orientation, Combine combine) {
             if (font.isVertical() && (orientation == Orientation.ROTATE090)) {
                 if (!combine.isNone())
                     return lineHeight;
