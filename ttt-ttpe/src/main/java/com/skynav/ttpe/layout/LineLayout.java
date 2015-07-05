@@ -254,7 +254,7 @@ public class LineLayout {
             int from = bi.current();
             int to = bi.next();
             if (to != LineBreakIterator.DONE)
-                return new InlineBreakOpportunity(r, r.getInlineBreak(to), from, to, r.getAdvance(from, to));
+                return new InlineBreakOpportunity(r, r.getInlineBreak(to), from, to, r.getAdvance(from, to, available));
         }
         return null;
     }
@@ -751,7 +751,7 @@ public class LineLayout {
             return InlineBreak.UNKNOWN;
         }
         // obtain advance of text starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
-        double getAdvance(int from, int to) {
+        double getAdvance(int from, int to, double available) {
             double advance = 0;
             for (StyleAttributeInterval fai : fontIntervals) {
                 Font font = (Font) fai.getValue();
