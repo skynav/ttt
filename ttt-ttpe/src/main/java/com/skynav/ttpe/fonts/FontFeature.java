@@ -115,6 +115,28 @@ public class FontFeature {
             return false;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('[');
+        sb.append('\'');
+        sb.append(feature);
+        sb.append('\'');
+        if (arguments != null) {
+            boolean first = true;
+            sb.append(',');
+            for (Object a : arguments) {
+                if (!first)
+                    sb.append(',');
+                else
+                    first = false;
+                sb.append(a);
+            }
+        }
+        sb.append(']');
+        return sb.toString();
+    }
+
     private boolean equals(Object[] aa1, Object[] aa2) {
         if (aa1 == null) {
             return aa2 == null;

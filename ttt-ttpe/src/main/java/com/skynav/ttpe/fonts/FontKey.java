@@ -100,9 +100,18 @@ public class FontKey {
         sb.append(',');
         sb.append(axis);
         sb.append(',');
-        if (features != null)
-            sb.append(features.values());
-        else
+        if (features != null) {
+            boolean first = true;
+            sb.append('[');
+            for (FontFeature f : features.values()) {
+                if (!first)
+                    sb.append(',');
+                else
+                    first = false;
+                sb.append(f);
+            }
+            sb.append(']');
+        } else
             sb.append("[]");
         sb.append(']');
         return sb.toString();

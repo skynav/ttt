@@ -66,6 +66,21 @@ public class FontSpecification {
             return true;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('[');
+        sb.append(family.toUpperCase());
+        sb.append(',');
+        sb.append(style);
+        sb.append(',');
+        sb.append(weight);
+        sb.append(',');
+        sb.append(source);
+        sb.append(']');
+        return sb.toString();
+    }
+
     private static final QName ttpeFontEltName  = new QName(Namespace.NAMESPACE, "font");
     private static final QName ttpeParamEltName = new QName(Namespace.NAMESPACE, "param");
     public static List<FontSpecification> fromDocument(Document d, String sourceBase) {
