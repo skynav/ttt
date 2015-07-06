@@ -325,6 +325,11 @@ public class PresenterTestCases {
         performPresentationTest("test-054-shear-advance-tbrl.xml", 0, 0);
     }
 
+    @Test
+    public void test055RubyOnMixedOrientations() throws Exception {
+        performPresentationTest("test-055-ruby-on-mixed-orientations.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

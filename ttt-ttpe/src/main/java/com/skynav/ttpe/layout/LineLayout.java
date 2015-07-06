@@ -27,7 +27,6 @@ package com.skynav.ttpe.layout;
 
 import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -398,11 +397,15 @@ public class LineLayout {
     private void maybeAddAnnotationAreas(LineArea l, int start, int end, Font font, double advance, double lineHeight) {
         if (start >= 0) {
             iterator.setIndex(start);
-            Phrase[] annotations = (Phrase[]) iterator.getAttribute(StyleAttribute.ANNOTATIONS);
-            if (annotations != null) {
-                String base = getAnnotationBase(start, end);
-                Orientation[] baseOrientations = getAnnotationBaseOrientations(start, end);
-                addAnnotationAreas(l, base, baseOrientations, annotations, font, advance, lineHeight);
+            int annoStart = iterator.getRunStart(StyleAttribute.ANNOTATIONS);
+            int annoLimit = iterator.getRunLimit(StyleAttribute.ANNOTATIONS);
+            if (annoStart == start) {
+                Phrase[] annotations = (Phrase[]) iterator.getAttribute(StyleAttribute.ANNOTATIONS);
+                if (annotations != null) {
+                    String base = getAnnotationBase(annoStart, annoLimit);
+                    Orientation[] baseOrientations = getAnnotationBaseOrientations(annoStart, annoLimit);
+                    addAnnotationAreas(l, base, baseOrientations, annotations, font, advance, lineHeight);
+                }
             }
         }
     }
@@ -423,17 +426,30 @@ public class LineLayout {
 
     private Orientation[] getAnnotationBaseOrientations(int start, int end) {
         int savedIndex = iterator.getIndex();
-        iterator.setIndex(start);
-        Orientation orientation = (Orientation) iterator.getAttribute(StyleAttribute.ORIENTATION);
-        iterator.setIndex(savedIndex);
-        if ((orientation == null) || !orientation.isRotated())
-            return null;
-        else {
-            int length = end - start;
-            Orientation[] orientations = new Orientation[length];
-            Arrays.fill(orientations, 0, length, orientation);
-            return orientations;
+        Orientation[] orientations = new Orientation[end - start];
+        for (int i = start; i < end;) {
+            iterator.setIndex(i);
+            Orientation o = (Orientation) iterator.getAttribute(StyleAttribute.ORIENTATION);
+            if (o != null) {
+                int j = i;
+                int annoLimit = iterator.getRunLimit(StyleAttribute.ORIENTATION);
+                int k = annoLimit;
+                if (k > end)
+                    k = end;
+                while (j < k)
+                    orientations[j++ - start] = o;
+                i = annoLimit;
+            } else
+                ++i;
         }
+        boolean found = false;
+        for (int i = 0, n = orientations.length; !found && (i < n); ++i) {
+            Orientation o = orientations[i];
+            if ((o != null) && o.isRotated())
+                found = true;
+        }
+        iterator.setIndex(savedIndex);
+        return found ? orientations : null;
     }
 
     private void addAnnotationAreas(LineArea l, String base, Orientation[] baseOrientations, Phrase[] annotations, Font font, double advance, double lineHeight) {
@@ -460,11 +476,11 @@ public class LineLayout {
             boolean kerningEnabled = font.isKerningEnabled();
             for (int i = 0, n = baseLength; i < n; ++i) {
                 int j = i + 1;
-                Orientation orientation;
-                if ((baseOrientations == null) || (i >= baseOrientations.length))
-                    orientation = Orientation.ROTATE000;
-                else
+                Orientation orientation = null;
+                if ((baseOrientations != null) && (i < baseOrientations.length))
                     orientation = baseOrientations[i];
+                if (orientation == null)
+                    orientation = Orientation.ROTATE000;
                 advances[i] = font.getAdvance(base.substring(i, j), kerningEnabled, orientation.isRotated(), false);
             }
             return advances;
@@ -479,7 +495,8 @@ public class LineLayout {
                 maxMeasure = measure;
         }
         for (LineArea l : lines) {
-            alignTextAreas(l, maxMeasure, textAlign, null);
+            if (!(l instanceof AnnotationArea))
+                alignTextAreas(l, maxMeasure, textAlign, null);
             l.setIPD(maxMeasure);
         }
         return lines;
@@ -498,6 +515,13 @@ public class LineLayout {
         }
         if ((l instanceof AnnotationArea) && (alignment == InlineAlignment.AUTO)) {
             int nb = (baseAdvances != null) ? baseAdvances.length : 0;
+            if (nb > 0) {
+                double baseMeasure = 0;
+                for (int i = 0; i < nb; ++i)
+                    baseMeasure += baseAdvances[i];
+                if (measure < baseMeasure)
+                    measure = baseMeasure;
+            }
             int na = numNonAnnotationChildren;
             if (na == nb)
                 alignment = InlineAlignment.WITH_BASE;
