@@ -31,7 +31,7 @@ public interface ParameterVerifier extends ItemVerifier {
 
     /**
      * Obtain qualified name for parameter attribute given a unique, unqualified parameter name.
-     * @param propertyName non-empty local name for parameter
+     * @param parameterName non-empty local name for parameter
      * @return a qualified name or null if parameter
      */
     QName getParameterAttributeName(String parameterName);

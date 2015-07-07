@@ -42,16 +42,37 @@ public interface SemanticsVerifier {
 
     /**
      * Verify semantics of content object.
-     * @param content a JAXB content object
+     * @param root the root JAXB content object
      * @param context verifier context
      * @return true if validation succeeds without error
      */
     boolean verify(Object root, VerifierContext context);
 
+    /**
+     * Verify semantics of other non-TTML element.
+     * @param content a JAXB content object
+     * @param locator location of content
+     * @param context verifier context
+     * @return true if validation succeeds without error
+     */
     boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context);
 
+    /**
+     * Verify semantics of other non-TTML attributes.
+     * @param content a JAXB content object
+     * @param locator location of content
+     * @param context verifier context
+     * @return true if validation succeeds without error
+     */
     boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context);
 
+    /**
+     * Verify post transformation semantics.
+     * @param content a JAXB content object
+     * @param contentTransformed a transformed content object
+     * @param context verifier context
+     * @return true if validation succeeds without error
+     */
     boolean verifyPostTransform(Object content, Object contentTransformed, VerifierContext context);
 
 }

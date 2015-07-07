@@ -76,7 +76,7 @@ public interface VerifierContext {
      * with infoset node. If an (outer) content element, i.e., JAXBElement<?>
      * is available, it will be returned; otherwise, an (inner) content value
      * object will be returned. Or if neither is available, null is returned.
-     * @param an infoset node
+     * @param node an infoset node
      * @return an instance of JAXBElement<?> or a content object instance or null
      */
     public Object getBindingElement(Node node);

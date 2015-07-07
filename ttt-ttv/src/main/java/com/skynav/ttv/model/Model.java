@@ -248,7 +248,7 @@ public interface Model {
      * is not significant, and the order of qualified names contained in inner lists
      * is from most immediate ancestor to least immediate ancestor, where least immediate
      * ancestor need not be the root.
-     * @param attributeName name of referring attribute
+     * @param elementName name of element
      * @return a list of lists of qualified names or null if no constraint on target
      * ancestor element type
      */
@@ -262,10 +262,10 @@ public interface Model {
 
     /**
      * Obtain applicable style names for a specified named element type.
-     * @param name of element type
+     * @param elementName name of element
      * @return a collection of style names that apply to named element
      */
-    Collection<QName> getApplicableStyleNames(QName eltName);
+    Collection<QName> getApplicableStyleNames(QName elementName);
 
     /**
      * Determine if named style is inheritable.

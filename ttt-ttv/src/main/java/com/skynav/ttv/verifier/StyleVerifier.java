@@ -61,10 +61,10 @@ public interface StyleVerifier extends ItemVerifier {
 
     /**
      * Obtain applicable style names for a specified named element type.
-     * @param name of element type
+     * @param elementName of element type
      * @return a collection of style names that apply to named element
      */
-    Collection<QName> getApplicableStyleNames(QName eltName);
+    Collection<QName> getApplicableStyleNames(QName elementName);
 
     /**
      * Determine if named style is inheritable.
