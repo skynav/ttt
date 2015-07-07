@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt-deps</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
   <properties>
@@ -32,7 +32,7 @@
               <goal>install-file</goal>
             </goals>
             <configuration>
-              <file>ttt-xmlunit-core-1.0-SNAPSHOT.jar</file>
+              <file>ttt-xmlunit-core-1.0.jar</file>
               <packaging>jar</packaging>
             </configuration>
           </execution>
@@ -43,7 +43,7 @@
               <goal>install-file</goal>
             </goals>
             <configuration>
-              <file>ttt-xmlunit-core-1.0-SNAPSHOT-sources.jar</file>
+              <file>ttt-xmlunit-core-1.0-sources.jar</file>
               <packaging>jar-source</packaging>
               <classifier>sources</classifier>
             </configuration>

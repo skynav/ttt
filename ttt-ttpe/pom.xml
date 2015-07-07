@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
   <properties>
@@ -34,12 +34,12 @@
     <dependency>
       <groupId>com.skynav.ttt</groupId>
       <artifactId>ttt-ttv</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>com.skynav.ttt</groupId>
       <artifactId>ttt-ttx</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>com.skynav.ttt</groupId>
       <artifactId>ttt-batik</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>xml-apis</groupId>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>com.skynav.ttt</groupId>
       <artifactId>ttt-fontbox</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
