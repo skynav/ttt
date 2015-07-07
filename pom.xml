@@ -27,7 +27,7 @@
     <pmd.version>3.4</pmd.version>
     <project.info.reports.version>2.8</project.info.reports.version>
     <surefire.version>2.18.1</surefire.version>
-    <xmlunit.version>2.0.0-SNAPSHOT</xmlunit.version>
+    <xmlunit.version>1.0-SNAPSHOT</xmlunit.version>
   </properties>
 
   <scm>
