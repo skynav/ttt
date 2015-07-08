@@ -138,6 +138,11 @@ public class ConverterTestCases {
         performConversionTest("test-018-nested-designations-stripped.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion019SpaceInAnnotationEmphasis() throws Exception {
+        performConversionTest("test-019-space-in-annotation-emphasis.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }

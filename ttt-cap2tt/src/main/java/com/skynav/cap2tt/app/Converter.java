@@ -489,6 +489,7 @@ public class Converter implements ConverterContext {
     // per-resource parsing state
     private List<Screen> screens;
     private int[] indices;
+    private boolean inTextAttribute;
 
     public Converter() {
         this(null, null, null, false, null);
@@ -1539,6 +1540,7 @@ public class Converter implements ConverterContext {
         // parsing state
         screens = new java.util.ArrayList<Screen>();
         indices = new int[GenerationIndex.values().length];
+        inTextAttribute = false;
     }
 
     private void setResourceURI(String uri) {
@@ -2275,7 +2277,14 @@ public class Converter implements ConverterContext {
                 return -1;
             else if (isTextField(locator, field, fieldIndex, nonTextAttributeTreatment))
                 return fieldIndex;
-            else
+            else if (inTextAttribute) {
+                if (isTextAttributeEnd(field))
+                    inTextAttribute = false;
+                return fieldIndex;
+            } else if (isTextAttributeStart(field)) {
+                inTextAttribute = true;
+                return fieldIndex;
+            } else
                 return -1;
         }
         return -1;
@@ -2420,13 +2429,21 @@ public class Converter implements ConverterContext {
         return strippedParts;
     }
 
-    private static final String textAttributeStart = new String(new char[]{attributePrefix});
     private static boolean isTextAttributeStart(String s) {
+        return isTextAttributeStart(s, false);
+    }
+
+    private static final String textAttributeStart = new String(new char[]{attributePrefix});
+    private static boolean isTextAttributeStart(String s, boolean ignoreLeadingWhitespace) {
+        if (ignoreLeadingWhitespace)
+            s = trimLeadingWhitespace(s);
         if (!s.startsWith(textAttributeStart))
             return false;
         else {
             StringBuffer sb = new StringBuffer();
-            for (int i = 1, n = s.length(); i < n; ++i) {
+            int i = 1;
+            int n = s.length();
+            while (i < n) {
                 char c = s.charAt(i);
                 if ((c >= '\uFF10') && (c <= '\uFF19'))
                     break;
@@ -2440,16 +2457,67 @@ public class Converter implements ConverterContext {
                     break;
                 else if (c == '\uFF3D')
                     break;
-                else
+                else {
                     sb.append(c);
+                    ++i;
+                }
             }
-            return knownAttributes.containsKey(sb.toString());
+            if (!knownAttributes.containsKey(sb.toString()))
+                return false;
+            while (i < n) {
+                char c = s.charAt(i);
+                if ((c < '\uFF10') || (c > '\uFF19'))
+                    break;
+                else
+                    ++i;
+            }
+            if (i < n)
+                return s.charAt(i) == '\uFF3B';
+            else
+                return false;
         }
     }
 
-    private static final String textAttributeEnd = new String(new char[]{'\uFF3D',attributePrefix});
+    private static String trimLeadingWhitespace(String s) {
+        int i = 0;
+        int n = s.length();
+        for (; i < n; ++i) {
+            char c = s.charAt(i);
+            if (c == '\u0009')
+                continue;
+            else if (c == '\u0020')
+                continue;
+            else
+                break;
+        }
+        return (i > 0) ? s.substring(i) : s;
+    }
+
     private static boolean isTextAttributeEnd(String s) {
+        return isTextAttributeEnd(s, false);
+    }
+
+    private static final String textAttributeEnd = new String(new char[]{'\uFF3D',attributePrefix});
+    private static boolean isTextAttributeEnd(String s, boolean ignoreTrailingWhitespace) {
+        if (ignoreTrailingWhitespace)
+            s = trimTrailingWhitespace(s);
         return s.endsWith(textAttributeEnd);
+    }
+
+    private static String trimTrailingWhitespace(String s) {
+        int i = 0;
+        int n = s.length();
+        for (; i < n; ++i) {
+            int k = n - i - 1;
+            char c = s.charAt(k);
+            if (c == '\u0009')
+                continue;
+            else if (c == '\u0020')
+                continue;
+            else
+                break;
+        }
+        return (i < n) ? s.substring(0, i) : s;
     }
 
     private static String stripNestedDesignations(String field) {
@@ -2546,7 +2614,7 @@ public class Converter implements ConverterContext {
                     annotations.add(new AnnotatedRange(new Annotation(ra[0]), start, end));
                 } else if (isNonTextAttribute(part)) {
                     continue;
-                } else if ((t = parseText(part)) != null) {
+                } else if ((t = parseText(part, true)) != null) {
                     sb.append(t);
                 } else {
                     assert false;
@@ -2607,7 +2675,7 @@ public class Converter implements ConverterContext {
             return null;
     }
 
-    private static String parseText(String text) {
+    private static String parseText(String text, boolean mapInitialSpaceToNBSP) {
         int escapedSpaces = 0;
         for (int i = 0, n = text.length(); i < n; ++i) {
             char c = text.charAt(i);
@@ -2624,7 +2692,7 @@ public class Converter implements ConverterContext {
         for (int i = 0, n = text.length(); i < n; ++i) {
             char c = text.charAt(i);
             if (c == '\u005F')
-                c = (sb.length() == 0) ? '\u00A0' : '\u0020';
+                c = (mapInitialSpaceToNBSP && (sb.length() == 0)) ? '\u00A0' : '\u0020';
             else if (c == '\uFF3F')
                 c = '\u3000';
             sb.append(c);
@@ -3626,8 +3694,15 @@ public class Converter implements ConverterContext {
             this.count = count;
             this.retain = retain;
             this.text = text;
-            this.annotation = annotation;
+            this.annotation = normalizeAnnotation(annotation);
         }
+        private static String normalizeAnnotation(String annotation) {
+            if (annotation != null)
+                return parseText(annotation, false).trim();
+            else
+                return null;
+        }
+
         public AttributeSpecification getSpecification() {
             return specification;
         }
@@ -3847,7 +3922,6 @@ public class Converter implements ConverterContext {
             }
             return v;
         }
-
         private static final String[] typefaces = new String[] {
             "丸ゴ",
             "丸ゴシック",
