@@ -15,7 +15,6 @@
     <groupId>${project.groupId}</groupId>
     <artifactId>${project.artifactId}</artifactId>
     <version>${project.version}</version>
-    <generatePom>false</generatePom>
   </properties>
 
   <dependencies>
@@ -41,19 +40,8 @@
             </goals>
             <configuration>
               <file>ttt-batik-1.0.jar</file>
-              <packaging>jar</packaging>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install-batik-sources</id>
-            <phase>install</phase>
-            <goals>
-              <goal>install-file</goal>
-            </goals>
-            <configuration>
-              <file>ttt-batik-1.0-sources.jar</file>
-              <packaging>jar-source</packaging>
-              <classifier>sources</classifier>
+              <sources>ttt-batik-1.0-sources.jar</sources>
+              <javadoc>ttt-batik-1.0-javadoc.jar</javadoc>
             </configuration>
           </execution>
         </executions>

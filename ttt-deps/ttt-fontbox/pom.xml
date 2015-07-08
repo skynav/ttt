@@ -41,19 +41,8 @@
             </goals>
             <configuration>
               <file>ttt-fontbox-1.0.jar</file>
-              <packaging>jar</packaging>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install-fontbox-sources</id>
-            <phase>install</phase>
-            <goals>
-              <goal>install-file</goal>
-            </goals>
-            <configuration>
-              <file>ttt-fontbox-1.0-sources.jar</file>
-              <packaging>jar-source</packaging>
-              <classifier>sources</classifier>
+              <sources>ttt-fontbox-1.0-sources.jar</sources>
+              <javadoc>ttt-fontbox-1.0-javadoc.jar</javadoc>
             </configuration>
           </execution>
         </executions>
