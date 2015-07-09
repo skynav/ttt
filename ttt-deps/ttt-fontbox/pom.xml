@@ -30,9 +30,27 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <skipIfEmpty>true</skipIfEmpty>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
         <version>2.5.2</version>
         <executions>
+          <execution>
+            <id>default-install</id>
+            <phase>install</phase>
+            <goals>
+              <goal>install</goal>
+            </goals>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </execution>
           <execution>
             <id>install-fontbox</id>
             <phase>install</phase>
@@ -40,6 +58,7 @@
               <goal>install-file</goal>
             </goals>
             <configuration>
+              <pomFile>pom.xml</pomFile>
               <file>ttt-fontbox-1.0.jar</file>
               <sources>ttt-fontbox-1.0-sources.jar</sources>
               <javadoc>ttt-fontbox-1.0-javadoc.jar</javadoc>

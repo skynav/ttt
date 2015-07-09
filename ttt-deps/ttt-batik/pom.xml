@@ -15,9 +15,15 @@
     <groupId>${project.groupId}</groupId>
     <artifactId>${project.artifactId}</artifactId>
     <version>${project.version}</version>
+    <generatePom>false</generatePom>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis-ext</artifactId>
+      <version>1.3.04</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>xmlgraphics-commons</artifactId>
@@ -29,9 +35,27 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <skipIfEmpty>true</skipIfEmpty>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
         <version>2.5.2</version>
         <executions>
+          <execution>
+            <id>default-install</id>
+            <phase>install</phase>
+            <goals>
+              <goal>install</goal>
+            </goals>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </execution>
           <execution>
             <id>install-batik</id>
             <phase>install</phase>
@@ -39,6 +63,7 @@
               <goal>install-file</goal>
             </goals>
             <configuration>
+              <pomFile>pom.xml</pomFile>
               <file>ttt-batik-1.0.jar</file>
               <sources>ttt-batik-1.0-sources.jar</sources>
               <javadoc>ttt-batik-1.0-javadoc.jar</javadoc>
