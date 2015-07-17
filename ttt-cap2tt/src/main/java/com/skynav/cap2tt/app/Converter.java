@@ -2273,15 +2273,16 @@ public class Converter implements ConverterContext {
     private int hasTextField(LocatorImpl locator, String[] fields, int fieldIndex, NonTextAttributeTreatment nonTextAttributeTreatment) {
         while (fieldIndex < fields.length) {
             String field = fields[fieldIndex];
-            if (field.length() == 0)
+            if (field.length() == 0) {
                 return -1;
-            else if (isTextField(locator, field, fieldIndex, nonTextAttributeTreatment))
+            } else if (inTextAttribute) {
+                if (containsTextAttributeEnd(field))
+                    if (!containsTextAttributeStart(field))
+                        inTextAttribute = false;
                 return fieldIndex;
-            else if (inTextAttribute) {
-                if (isTextAttributeEnd(field))
-                    inTextAttribute = false;
+            } else if (isTextField(locator, field, fieldIndex, nonTextAttributeTreatment)) {
                 return fieldIndex;
-            } else if (isTextAttributeStart(field)) {
+            } else if (containsTextAttributeStart(field)) {
                 inTextAttribute = true;
                 return fieldIndex;
             } else
@@ -2429,6 +2430,17 @@ public class Converter implements ConverterContext {
         return strippedParts;
     }
 
+    private static boolean containsTextAttributeStart(String s) {
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            char c = s.charAt(i);
+            if (c == attributePrefix) {
+                if (isTextAttributeStart(s.substring(i)))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean isTextAttributeStart(String s) {
         return isTextAttributeStart(s, false);
     }
@@ -2491,6 +2503,10 @@ public class Converter implements ConverterContext {
                 break;
         }
         return (i > 0) ? s.substring(i) : s;
+    }
+
+    private static boolean containsTextAttributeEnd(String s) {
+        return s.lastIndexOf(textAttributeEnd) >= 0;
     }
 
     private static boolean isTextAttributeEnd(String s) {
