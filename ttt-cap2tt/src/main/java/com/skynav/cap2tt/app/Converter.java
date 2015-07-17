@@ -3709,13 +3709,16 @@ public class Converter implements ConverterContext {
             this.specification = specification;
             this.count = count;
             this.retain = retain;
-            this.text = text;
-            this.annotation = normalizeAnnotation(annotation);
+            this.text = normalize(text, false);
+            this.annotation = normalize(annotation, true);
         }
-        private static String normalizeAnnotation(String annotation) {
-            if (annotation != null)
-                return parseText(annotation, false).trim();
-            else
+        private static String normalize(String s, boolean trim) {
+            if (s != null) {
+                s = parseText(s, false);
+                if (trim)
+                    s = s.trim();
+                return s;
+            } else
                 return null;
         }
 
