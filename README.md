@@ -62,7 +62,7 @@ Additional dependencies are managed by maven.
 
 In order to run the test suite in the `ttt-ttpe` module, it is necessary to obtain and install the following font files in that module's source tree:
 
-- `src/test/fonts/trado.ttf` (Traditional Arabic - avaialble from Microsoft)
+- `src/test/fonts/trado.ttf` (Traditional Arabic - available from Microsoft)
 
 ## Maven Coordinates
 
