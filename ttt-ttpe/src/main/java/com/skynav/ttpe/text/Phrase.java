@@ -232,6 +232,21 @@ public class Phrase {
             return null;
     }
 
+    private static final StyleAttribute[] languageAttr = new StyleAttribute[] { StyleAttribute.LANGUAGE };
+    public String getLanguage(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(languageAttr[0]);
+        else
+            v = content.getIterator(languageAttr, index, index + 1).getAttribute(languageAttr[0]);
+        if (v == null)
+            v = defaults.getLanguage();
+        if (v instanceof String)
+            return (String) v;
+        else
+            return null;
+    }
+
     private static final StyleAttribute[] lineHeightAttr = new StyleAttribute[] { StyleAttribute.LINE_HEIGHT };
     public Double getLineHeight(int index, Defaults defaults, Font font) {
         Object v;
@@ -262,6 +277,21 @@ public class Phrase {
             v = defaults.getOutline();
         if (v instanceof Outline)
             return (Outline) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] scriptAttr = new StyleAttribute[] { StyleAttribute.SCRIPT };
+    public String getScript(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(scriptAttr[0]);
+        else
+            v = content.getIterator(scriptAttr, index, index + 1).getAttribute(scriptAttr[0]);
+        if (v == null)
+            v = defaults.getScript();
+        if (v instanceof String)
+            return (String) v;
         else
             return null;
     }

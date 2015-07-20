@@ -143,36 +143,40 @@ public class Font {
         return ls.getDescent(key);
     }
 
-    public double getAdvance(String text) {
-        return getAdvance(text, isKerningEnabled(), false, false);
+    public String getMappedText(String text) {
+        return ls.getMappedText(key, text);
     }
 
-    public double getRotatedAdvance(String text) {
-        return getAdvance(text, isKerningEnabled(), true, false);
+    public double getAdvance(String text, String script, String language) {
+        return getAdvance(text, script, language, isKerningEnabled(), false, false);
     }
 
-    public double getAdvance(String text, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
-        return ls.getAdvance(key, text, adjustForKerning, rotatedOrientation, cross);
+    public double getRotatedAdvance(String text, String script, String language) {
+        return getAdvance(text, script, language, isKerningEnabled(), true, false);
     }
 
-    public double[] getAdvances(String text) {
-        return getAdvances(text, isKerningEnabled(), false, false);
+    public double getAdvance(String text, String script, String language, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
+        return ls.getAdvance(key, text, script, language, adjustForKerning, rotatedOrientation, cross);
     }
 
-    public double[] getRotatedAdvances(String text) {
-        return getAdvances(text, isKerningEnabled(), true, false);
+    public double[] getAdvances(String text, String script, String language) {
+        return getAdvances(text, script, language, isKerningEnabled(), false, false);
     }
 
-    public double[] getAdvances(String text, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
-        return ls.getAdvances(key, text, adjustForKerning, rotatedOrientation, cross);
+    public double[] getRotatedAdvances(String text, String script, String language) {
+        return getAdvances(text, script, language, isKerningEnabled(), true, false);
     }
 
-    public double getKerningAdvance(String text) {
-        return ls.getKerningAdvance(key, text);
+    public double[] getAdvances(String text, String script, String language, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
+        return ls.getAdvances(key, text, script, language, adjustForKerning, rotatedOrientation, cross);
     }
 
-    public double[] getKerning(String text) {
-        return ls.getKerning(key, text);
+    public double getKerningAdvance(String text, String script, String language) {
+        return ls.getKerningAdvance(key, text, script, language);
+    }
+
+    public double[] getKerning(String text, String script, String language) {
+        return ls.getKerning(key, text, script, language);
     }
 
     public double getShearAdvance(boolean rotatedOrientation, boolean cross) {
@@ -232,12 +236,12 @@ public class Font {
         return t;
     }
 
-    public Rectangle[] getGlyphBounds(String text) {
-        return ls.getGlyphBounds(key, text);
+    public Rectangle[] getGlyphBounds(String text, String script, String language) {
+        return ls.getGlyphBounds(key, text, script, language);
     }
 
-    public int[] getGlyphs(String text) {
-        return ls.getGlyphs(text);
+    public int[] getGlyphs(String text, String script, String language) {
+        return ls.getGlyphs(key, text, script, language);
     }
 
     public Font getScaledFont(double scale) {

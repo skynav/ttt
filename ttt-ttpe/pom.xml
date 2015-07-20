@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
-    <version>1.0</version>
+    <version>2.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -54,7 +54,7 @@
     <dependency>
       <groupId>com.skynav.ttt</groupId>
       <artifactId>ttt-fontbox</artifactId>
-      <version>1.0</version>
+      <version>2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

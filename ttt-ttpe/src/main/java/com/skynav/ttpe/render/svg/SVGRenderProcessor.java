@@ -612,7 +612,9 @@ public class SVGRenderProcessor extends RenderProcessor {
         boolean rotate = a.isRotatedOrientation() && !a.isCombined();
         TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL, rotate);
         String text = a.getText();
-        double[] advances = font.getAdvances(text, font.isKerningEnabled(), rotate, a.isCombined());
+        String script = a.getScript();
+        String language = a.getLanguage();
+        double[] advances = font.getAdvances(text, script, language, font.isKerningEnabled(), rotate, a.isCombined());
         int level = a.getBidiLevel();
         if (level < 0)
             level = 0;
@@ -678,7 +680,9 @@ public class SVGRenderProcessor extends RenderProcessor {
         boolean rotate = a.isRotatedOrientation() && !a.isCombined();
         TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL, rotate);
         String text = a.getText();
-        double[] advances = font.getAdvances(text, font.isKerningEnabled(), rotate, a.isCombined());
+        String script = a.getScript();
+        String language = a.getLanguage();
+        double[] advances = font.getAdvances(text, script, language, font.isKerningEnabled(), rotate, a.isCombined());
         int level = a.getBidiLevel();
         if (level < 0)
             level = 0;

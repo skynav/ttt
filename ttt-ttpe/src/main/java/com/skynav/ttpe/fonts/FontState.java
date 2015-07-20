@@ -28,8 +28,9 @@ package com.skynav.ttpe.fonts;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.util.Deque;
-import java.util.Iterator;
+import java.nio.CharBuffer;
+import java.nio.IntBuffer;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +40,6 @@ import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.Type1CharString;
 import org.apache.fontbox.ttf.CFFTable;
 import org.apache.fontbox.ttf.CmapSubtable;
-import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.GlyphTable;
 import org.apache.fontbox.ttf.KerningSubtable;
@@ -48,6 +48,13 @@ import org.apache.fontbox.ttf.NamingTable;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
+import org.apache.fontbox.ttf.advanced.GlyphDefinitionTable;
+import org.apache.fontbox.ttf.advanced.GlyphPositioningTable;
+import org.apache.fontbox.ttf.advanced.GlyphSubstitutionTable;
+import org.apache.fontbox.ttf.advanced.util.CharAssociation;
+import org.apache.fontbox.ttf.advanced.util.CharNormalize;
+import org.apache.fontbox.ttf.advanced.util.CharScript;
+import org.apache.fontbox.ttf.advanced.util.GlyphSequence;
 import org.apache.fontbox.util.BoundingBox;
 
 import com.skynav.ttpe.geometry.Axis;
@@ -55,9 +62,8 @@ import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.util.Characters;
 import com.skynav.ttv.util.Reporter;
 
+@SuppressWarnings({"unchecked","rawtypes"})
 public class FontState {
-
-    private static final int                    GLYPHS_CACHE_SIZE               = 16;
 
     private String source;
     private Reporter reporter;
@@ -69,9 +75,17 @@ public class FontState {
     private KerningSubtable kerningSubtable;
     private GlyphTable glyphTable;
     private CFFTable cffTable;
-    private Deque<GlyphMapping> glyphs = new java.util.ArrayDeque<GlyphMapping>(GLYPHS_CACHE_SIZE);
+    private boolean useLayoutTables;
+    private boolean useLayoutTablesFailed;
+    private GlyphDefinitionTable gdef;
+    private GlyphSubstitutionTable gsub;
+    private GlyphPositioningTable gpos;
+    private Map<String,GlyphMapping> glyphs = new java.util.HashMap<String,GlyphMapping>();
     private Map<Integer,Integer> mappedGlyphs = new java.util.HashMap<Integer,Integer>();
     private Set<Integer> mappingFailures;
+    private Set<Integer> glyphMappingFailures;
+    private int[] widths;
+    // private int[] heights;
 
     public FontState(String source, Reporter reporter) {
         this.source = source;
@@ -112,30 +126,36 @@ public class FontState {
             return 0;
     }
 
-    public int[] getGlyphs(String text) {
-        return getGlyphs(text, Characters.UC_REPLACEMENT);
+    public int[] getGlyphs(FontKey key, String text, String script, String language) {
+        return getGlyphs(key, text, script, language, Characters.UC_REPLACEMENT);
     }
 
-    public int[] getGlyphs(String text, int substitution) {
+    public int[] getGlyphs(FontKey key, String text, String script, String language, int substitution) {
         int[] glyphs;
         if ((glyphs = getCachedGlyphs(text)) != null)
             return glyphs;
-        return putCachedGlyphs(text, mapGlyphs(text, substitution));
+        return putCachedGlyphs(text, mapGlyphs(key, text, script, language, substitution));
     }
 
-    public double getAdvance(FontKey key, String text, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
+    public String getMappedText(FontKey key, String text) {
+        GlyphMapping m = this.glyphs.get(text);
+        return (m != null) ? m.getMappedText() : text;
+    }
+
+    public double getAdvance(FontKey key, String text, String script, String language, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
         double advance = 0;
-        for (double a : getAdvances(key, text, adjustForKerning, rotatedOrientation, cross))
+        for (double a : getAdvances(key, text, script, language, adjustForKerning, rotatedOrientation, cross))
             advance += a;
         return advance;
     }
 
-    public double[] getAdvances(FontKey key, String text, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
+    public double[] getAdvances(FontKey key, String text, String script, String language, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
         boolean vertical = ((key.axis == Axis.VERTICAL) && !cross) || ((key.axis == Axis.HORIZONTAL) && cross);
-        double[] advances = new double[text.length()];
+        double[] advances = null;
         if (maybeLoad(key)) {
-            int[] glyphs = getGlyphs(text);
+            int[] glyphs = getGlyphs(key, text, script, language);
             int[] kerning = (adjustForKerning && (kerningSubtable != null)) ? kerningSubtable.getKerning(glyphs) : null;
+            advances = new double[glyphs.length];
             for (int i = 0, n = glyphs.length; i < n; ++i) {
                 int g = glyphs[i];
                 int c = mappedGlyphs.get(g);
@@ -151,8 +171,8 @@ public class FontState {
         return advances;
     }
 
-    public double getKerningAdvance(FontKey key, String text) {
-        double[] kerning = getKerning(key, text);
+    public double getKerningAdvance(FontKey key, String text, String script, String language) {
+        double[] kerning = getKerning(key, text, script, language);
         if (kerning != null) {
             double advance = 0;
             for (double k : kerning)
@@ -162,10 +182,10 @@ public class FontState {
             return 0;
     }
 
-    public double[] getKerning(FontKey key, String text) {
+    public double[] getKerning(FontKey key, String text, String script, String language) {
         if (maybeLoad(key)) {
             if (kerningSubtable != null) {
-                int[] glyphs = getGlyphs(text);
+                int[] glyphs = getGlyphs(key, text, script, language);
                 int[] kerning = kerningSubtable.getKerning(glyphs);
                 assert kerning.length == glyphs.length;
                 double[] kerningScaled = new double[kerning.length];
@@ -183,13 +203,13 @@ public class FontState {
         return null;
     }
 
-    public Rectangle[] getGlyphBounds(FontKey key, String text) {
+    public Rectangle[] getGlyphBounds(FontKey key, String text, String script, String language) {
         Rectangle[] bounds = null;
         if (maybeLoad(key)) {
             if (glyphTable != null)
-                bounds = getGlyphBounds(key, glyphTable, text);
+                bounds = getGlyphBounds(key, glyphTable, text, script, language);
             else if (cffTable != null)
-                bounds = getGlyphBounds(key, cffTable, text);
+                bounds = getGlyphBounds(key, cffTable, text, script, language);
         }
         if (bounds != null) {
             for (int i = 0, n = bounds.length; i < n; ++i) {
@@ -200,10 +220,10 @@ public class FontState {
         return bounds;
     }
 
-    public Rectangle[] getGlyphBounds(FontKey key, GlyphTable glyphTable, String text) {
+    public Rectangle[] getGlyphBounds(FontKey key, GlyphTable glyphTable, String text, String script, String language) {
         assert glyphTable != null;
         Rectangle[] bounds = new Rectangle[text.length()];
-        int[] glyphs = getGlyphs(text);
+        int[] glyphs = getGlyphs(key, text, script, language);
         for (int i = 0, n = glyphs.length; i < n; ++i) {
             int g = glyphs[i];
             if (g >= 0) {
@@ -224,22 +244,22 @@ public class FontState {
         return bounds;
     }
 
-    public Rectangle[] getGlyphBounds(FontKey key, CFFTable cffTable, String text) {
+    public Rectangle[] getGlyphBounds(FontKey key, CFFTable cffTable, String text, String script, String language) {
         assert cffTable != null;
         CFFFont cff = cffTable.getFont();
         if ((cff != null) && (cff instanceof CFFCIDFont))
-            return getGlyphBounds(key, (CFFCIDFont) cff, text);
+            return getGlyphBounds(key, (CFFCIDFont) cff, text, script, language);
         else
             return null;
     }
 
-    public Rectangle[] getGlyphBounds(FontKey key, CFFCIDFont cff, String text) {
+    public Rectangle[] getGlyphBounds(FontKey key, CFFCIDFont cff, String text, String script, String language) {
         assert cff != null;
         CFFCharset charset = cff.getCharset();
         if (charset == null)
             return null;
         Rectangle[] bounds = new Rectangle[text.length()];
-        int[] glyphs = getGlyphs(text);
+        int[] glyphs = getGlyphs(key, text, script, language);
         for (int i = 0, n = glyphs.length; i < n; ++i) {
             int g = glyphs[i];
             if (g >= 0) {
@@ -272,23 +292,22 @@ public class FontState {
             CmapSubtable cmapSubtable = null;
             KerningSubtable kerningSubtable = null;
             GlyphTable glyphTable = null;
+            boolean useLayoutTables = false;
             try {
                 File f = new File(source);
                 if (f.exists()) {
                     otf = new OTFParser(false, true).parse(f);
                     nameTable = otf.getNaming();
                     os2Table = otf.getOS2Windows();
-                    CmapTable cmap = otf.getCmap();
-                    if (cmap != null) {
-                        cmapSubtable = cmap.getSubtable(CmapTable.PLATFORM_UNICODE, CmapTable.ENCODING_UNICODE_2_0_BMP);
-                        if (cmapSubtable == null)
-                            cmapSubtable = cmap.getSubtable(CmapTable.PLATFORM_WINDOWS, CmapTable.ENCODING_WIN_UNICODE_BMP);
-                    }
+                    cmapSubtable = otf.getUnicodeCmap();
                     KerningTable kerning = otf.getKerning();
                     if (kerning != null)
                         kerningSubtable = kerning.getHorizontalKerningSubtable();
-                    glyphTable = otf.getGlyph();
-                    cffTable = otf.getCFF();
+                    if (!otf.isPostScript())
+                        glyphTable = otf.getGlyph();
+                    else
+                        cffTable = otf.getCFF();
+                    useLayoutTables = useLayoutTables(key, otf);
                     reporter.logInfo(reporter.message("*KEY*", "Loaded font instance ''{0}''", f.getAbsolutePath()));
                 }
             } catch (IOException e) {
@@ -300,56 +319,83 @@ public class FontState {
                 this.cmapSubtable = cmapSubtable;
                 this.kerningSubtable = kerningSubtable;
                 this.glyphTable = glyphTable;
+                this.useLayoutTables = useLayoutTables;
             } else
                 otfLoadFailed = true;
         }
         return !otfLoadFailed;
     }
 
+    private boolean useLayoutTables(FontKey key, OpenTypeFont otf) throws IOException
+    {
+        if (otf == null)
+            return false;
+        else if (useLayoutTables)
+            return true;
+        else if (otf.hasLayoutTables() && !useLayoutTablesFailed) {
+            if ((gdef = otf.getGDEF()) != null) {
+                gsub = otf.getGSUB();
+                gpos = otf.getGPOS();
+                if ((gsub == null) && (gpos == null))
+                    useLayoutTablesFailed = true;
+                widths = otf.getAdvanceWidths();
+                // heights = otf.getAdvanceHeights();
+            } else
+                useLayoutTablesFailed = true;
+            return !useLayoutTablesFailed;
+        }
+        return false;
+    }
+
     private int[] getCachedGlyphs(String text) {
-        Iterator<GlyphMapping> it = this.glyphs.descendingIterator();
-        while (it.hasNext()) {
-            GlyphMapping m = it.next();
-            if (m.text.equals(text))
-                return m.glyphs;
-        }
-        return null;
+        GlyphMapping m = this.glyphs.get(text);
+        return (m != null) ? m.getGlyphs() : null;
     }
 
-    private int[] putCachedGlyphs(String text, int[] glyphs) {
-        if (this.glyphs.size() == GLYPHS_CACHE_SIZE)
-            this.glyphs.remove();
-        this.glyphs.push(new GlyphMapping(text, glyphs));
-        return glyphs;
+    private int[] putCachedGlyphs(String text, GlyphMapping m) {
+        this.glyphs.put(text, m);
+        return m.getGlyphs();
     }
 
-    private int[] mapGlyphs(String text, int substitution) {
-        int[] glyphs = new int[text.length()];
-        for (int i = 0, k = i, n = text.length(); i < n; i = k) {
-            int c = (int) text.charAt(i);
-            ++k;
-            if ((c >= 0xD800) && (c < 0xE000)) {
-                int s1 = c;
-                if (s1 < 0xDC00) {
-                    if ((i + 1) < n) {
-                        int s2 = (int) text.charAt(i + 1);
-                        ++k;
-                        if ((s2 >= 0xDC00) && (s2 < 0xE000))
-                            c = ((s1 - 0xD800) << 10) + (s2 - 0xDC00) + 65536;
-                        else
-                            c = substitution;
-                    } else
-                        c = substitution;
-                } else
-                    c = substitution;
-            }
-            int g = getGlyphId(c);
-            mappedGlyphs.put(g, c);
-            glyphs[i] = g;
-            if ((k - i) == 2)
-                glyphs[i + 1] = -1;
+    private GlyphMapping mapGlyphs(FontKey key, String text, String script, String language, int substitution) {
+        if (!useLayoutTables)
+            return mapGlyphsSimple(key, text, substitution);
+        else
+            return mapGlyphsComplex(key, text, script, language, substitution);
+    }
+
+    private GlyphMapping mapGlyphsSimple(FontKey key, String text, int substitution) {
+        return new GlyphMapping(text, mapCharsToGlyphs(key, text, null), null);
+    }
+
+    private GlyphMapping mapGlyphsComplex(FontKey key, String text, String script, String language, int substitution) {
+
+        // if script is not specified or it is specified as 'auto', then compute dominant script
+        if ((script == null) || script.isEmpty() || "auto".equals(script)) {
+            script = CharScript.scriptTagFromCode(CharScript.dominantScript(text));
         }
-        return glyphs;
+        if ((language == null) || language.isEmpty() || "none".equals(language)) {
+            language = "dflt";
+        }
+
+        // perform substitutions
+        CharSequence mcs;
+        List associations = new java.util.ArrayList();
+        boolean retainControls = false;
+        if (performsSubstitution())
+            mcs = performSubstitution(key, text, script, language, associations, retainControls);
+        else
+            mcs = text;
+
+        // perform positioning
+        int[][] gpa = null;
+        if (performsPositioning())
+            gpa = performPositioning(key, mcs, script, language, (int) Math.floor(key.size.getDimension(key.axis) * 1000));
+
+        // reorder combining marks
+        mcs = reorderCombiningMarks(key, mcs, gpa, script, language, associations);
+
+        return new GlyphMapping(text, mapCharsToGlyphs(key, mcs, associations), gpa);
     }
 
     private int getGlyphId(int c) {
@@ -378,6 +424,16 @@ public class FontState {
             return false;
     }
 
+    private void reportGlyphMappingFailure(int g) {
+        if (glyphMappingFailures == null)
+            glyphMappingFailures = new java.util.HashSet<Integer>();
+        Integer value = Integer.valueOf(g);
+        if (!glyphMappingFailures.contains(value)) {
+            reporter.logWarning(reporter.message("*KEY*", "No character mapping for glyph {0} in font resource ''{1}''.", String.format("0x%04X", g), source));
+            glyphMappingFailures.add(value);
+        }
+    }
+
     private double scaleFontUnits(FontKey key, double v) {
         try {
             return (v / (double) otf.getUnitsPerEm()) * key.size.getDimension(key.axis);
@@ -388,11 +444,323 @@ public class FontState {
 
     static class GlyphMapping {
         String text;
+        String mappedText;
         int[] glyphs;
-        GlyphMapping(String text, int[] glyphs) {
+        List<CharAssociation> associations;
+        int[][] adjustments;
+        GlyphMapping(String text, GlyphSequence gs, int[][] adjustments) {
             this.text = text;
-            this.glyphs = glyphs;
+            this.mappedText = getText(gs);
+            this.glyphs = getGlyphs(gs);
+            this.associations = getAssociations(gs);
+            this.adjustments = adjustments;
         }
+        public String getText() {
+            return text;
+        }
+        public String getMappedText() {
+            return mappedText;
+        }
+        public int[] getGlyphs() {
+            return glyphs;
+        }
+        public List getAssociations() {
+            return associations;
+        }
+        public int[][] getAdjustments() {
+            return adjustments;
+        }
+        private static String getText(GlyphSequence gs) {
+            IntBuffer cb = gs.getCharacters();
+            cb.rewind();
+            StringBuffer sb = new StringBuffer(cb.limit() - cb.position());
+            while (cb.position() < cb.limit()) {
+                int c = cb.get();
+                if (c < 0x10000)
+                    sb.append((char) c);
+                else {
+                    c -= 0x10000;
+                    int sh = ((c >> 10) & 0x03FF) + 0xD800;
+                    int sl = ((c >>  0) & 0x03FF) + 0xDC00;
+                    sb.append((char) sh);
+                    sb.append((char) sl);
+                }
+            }
+            return sb.toString();
+        }
+        private static int[] getGlyphs(GlyphSequence gs) {
+            IntBuffer gb = gs.getGlyphs();
+            gb.rewind();
+            int[] glyphs = new int[gb.limit() - gb.position()];
+            for (int i = 0; gb.position() < gb.limit(); ) {
+                glyphs[i++] = gb.get();
+            }
+            return glyphs;
+        }
+        private static List<CharAssociation> getAssociations(GlyphSequence gs) {
+            List associations = gs.getAssociations();
+            if (associations != null) {
+                List<CharAssociation> cal = new java.util.ArrayList<CharAssociation>(associations.size());
+                for (Object a : associations) {
+                    if (a instanceof CharAssociation)
+                        cal.add((CharAssociation) a);
+                    else
+                        cal.add(null);
+                }
+                return cal;
+            } else
+                return null;
+        }
+    }
+
+    // advanced typographic table support
+
+    private boolean performsSubstitution() {
+        return gsub != null;
+    }
+
+    private CharSequence performSubstitution(FontKey key, CharSequence cs, String script, String language, List associations, boolean retainControls) {
+        if (gsub != null) {
+            CharSequence  ncs = normalize(cs, associations);
+            GlyphSequence igs = mapCharsToGlyphs(key, ncs, associations);
+            GlyphSequence ogs = gsub.substitute(igs, script, language);
+            if (associations != null) {
+                associations.clear();
+                associations.addAll(ogs.getAssociations());
+            }
+            if (!retainControls) {
+                ogs = elideControls(ogs);
+            }
+            CharSequence ocs = mapGlyphsToChars(key, ogs);
+            return ocs;
+        } else {
+            return cs;
+        }
+    }
+
+    private CharSequence reorderCombiningMarks(FontKey key, CharSequence cs, int[][] gpa, String script, String language, List associations) {
+        if (gdef != null) {
+            GlyphSequence igs = mapCharsToGlyphs(key, cs, associations);
+            GlyphSequence ogs = gdef.reorderCombiningMarks(igs, getUnscaledWidths(igs), gpa, script, language);
+            if (associations != null) {
+                associations.clear();
+                associations.addAll(ogs.getAssociations());
+            }
+            CharSequence ocs = mapGlyphsToChars(key, ogs);
+            return ocs;
+        } else {
+            return cs;
+        }
+    }
+
+    private CharSequence normalize(CharSequence cs, List associations) {
+        return hasDecomposable(cs) ? decompose(cs, associations) : cs;
+    }
+
+    private boolean hasDecomposable(CharSequence cs) {
+        for (int i = 0, n = cs.length(); i < n; i++) {
+            int cc = cs.charAt(i);
+            if (CharNormalize.isDecomposable(cc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private CharSequence decompose(CharSequence cs, List associations) {
+        StringBuffer sb = new StringBuffer(cs.length());
+        int[] daBuffer = new int[CharNormalize.maximumDecompositionLength()];
+        for (int i = 0, n = cs.length(); i < n; i++) {
+            int cc = cs.charAt(i);
+            int[] da = CharNormalize.decompose(cc, daBuffer);
+            for (int j = 0; j < da.length; j++) {
+                if (da[j] > 0) {
+                    sb.append((char) da[j]);
+                } else {
+                    break;
+                }
+            }
+        }
+        return sb;
+    }
+
+    private static GlyphSequence elideControls(GlyphSequence gs) {
+        if (hasElidableControl(gs)) {
+            int[] ca = gs.getCharacterArray(false);
+            IntBuffer ngb = IntBuffer.allocate(gs.getGlyphCount());
+            List nal = new java.util.ArrayList(gs.getGlyphCount());
+            for (int i = 0, n = gs.getGlyphCount(); i < n; ++i) {
+                CharAssociation a = gs.getAssociation(i);
+                int s = a.getStart();
+                int e = a.getEnd();
+                while (s < e) {
+                    int ch = ca [ s ];
+                    if (isElidableControl(ch)) {
+                        break;
+                    } else {
+                        ++s;
+                    }
+                }
+                if (s == e) {
+                    ngb.put(gs.getGlyph(i));
+                    nal.add(a);
+                }
+            }
+            ngb.flip();
+            return new GlyphSequence(gs.getCharacters(), ngb, nal, gs.getPredications());
+        } else {
+            return gs;
+        }
+    }
+
+    private static boolean hasElidableControl(GlyphSequence gs) {
+        int[] ca = gs.getCharacterArray(false);
+        for (int i = 0, n = ca.length; i < n; ++i) {
+            int ch = ca [ i ];
+            if (isElidableControl(ch)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isElidableControl(int ch) {
+        if (ch < 0x0020) {
+            return true;
+        } else if ((ch >= 0x80) && (ch < 0x00A0)) {
+            return true;
+        } else if ((ch >= 0x2000) && (ch <= 0x206F)) {
+            if ((ch >= 0x200B) && (ch <= 0x200F)) {
+                return true;
+            } else if ((ch >= 0x2028) && (ch <= 0x202E)) {
+                return true;
+            } else if (ch >= 0x2066) {
+                return true;
+            } else {
+                return ch == 0x2060;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    protected int[] getUnscaledWidths(GlyphSequence gs) {
+        int[] widths = new int[gs.getGlyphCount()];
+        for (int i = 0, n = widths.length; i < n; ++i) {
+            int g = gs.getGlyph(i);
+            if (g >= this.widths.length)
+                g = this.widths.length - 1;
+            widths[i] = this.widths[g];
+        }
+        return widths;
+    }
+
+    private boolean performsPositioning() {
+        return gpos != null;
+    }
+
+    private int[][] performPositioning(FontKey key, CharSequence cs, String script, String language, int fontSize) {
+        if (gpos != null) {
+            GlyphSequence gs = mapCharsToGlyphs(key, cs, null);
+            int[][] adjustments = new int [ gs.getGlyphCount() ] [ 4 ];
+            if (gpos.position(gs, script, language, fontSize, this.widths, adjustments)) {
+                return scaleAdjustments(adjustments, fontSize);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private int[][] scaleAdjustments(int[][] adjustments, int fontSize) {
+        if (adjustments != null) {
+            for (int i = 0, n = adjustments.length; i < n; i++) {
+                int[] gpa = adjustments [ i ];
+                for (int k = 0; k < 4; k++) {
+                    gpa [ k ] = (gpa [ k ] * fontSize) / 1000;
+                }
+            }
+            return adjustments;
+        } else {
+            return null;
+        }
+    }
+
+    private GlyphSequence mapCharsToGlyphs(FontKey key, CharSequence cs, List associations) {
+        IntBuffer cb = IntBuffer.allocate(cs.length());
+        IntBuffer gb = IntBuffer.allocate(cs.length());
+        int gi;
+        int giMissing = getGlyphId(/*Typeface.NOT_FOUND*/ '#');
+        for (int i = 0, n = cs.length(); i < n; i++) {
+            int cc = cs.charAt(i);
+            if ((cc >= 0xD800) && (cc < 0xDC00)) {
+                if ((i + 1) < n) {
+                    int sh = cc;
+                    int sl = cs.charAt(++i);
+                    if ((sl >= 0xDC00) && (sl < 0xE000)) {
+                        cc = 0x10000 + ((sh - 0xD800) << 10) + ((sl - 0xDC00) << 0);
+                    } else {
+                        throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated high surrogate at index " + i);
+                    }
+                } else {
+                    throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated high surrogate at end of sequence");
+                }
+            } else if ((cc >= 0xDC00) && (cc < 0xE000)) {
+                throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated low surrogate at index " + i);
+            }
+            gi = getGlyphId(cc);
+            if (gi <= 0) {
+                maybeReportMappingFailure((char) cc);
+                gi = giMissing;
+            }
+            cb.put(cc);
+            gb.put(gi);
+            mappedGlyphs.put(gi, cc);
+        }
+        cb.flip();
+        gb.flip();
+        if ((associations != null) && (associations.size() == cs.length())) {
+            associations = new java.util.ArrayList(associations);
+        } else {
+            associations = null;
+        }
+        return new GlyphSequence(cb, gb, associations);
+    }
+
+    private CharSequence mapGlyphsToChars(FontKey key, GlyphSequence gs) {
+        int ng = gs.getGlyphCount();
+        CharBuffer cb = CharBuffer.allocate(ng);
+        int ccMissing = '#';
+        for (int i = 0, n = ng; i < n; i++) {
+            int gi = gs.getGlyph(i);
+            int cc = findCharacterFromGlyphIndex(gi);
+            if ((cc == 0) || (cc > 0x10FFFF)) {
+                cc = ccMissing;
+                reportGlyphMappingFailure(gi);
+            }
+            if (cc > 0x00FFFF) {
+                int sh;
+                int sl;
+                cc -= 0x10000;
+                sh = ((cc >> 10) & 0x3FF) + 0xD800;
+                sl = ((cc >>  0) & 0x3FF) + 0xDC00;
+                cb.put((char) sh);
+                cb.put((char) sl);
+            } else {
+                cb.put((char) cc);
+            }
+        }
+        cb.flip();
+        return cb;
+    }
+
+    private int findCharacterFromGlyphIndex(int g) {
+        if (cmapSubtable != null) {
+            Integer c = cmapSubtable.getCharacterCode(g);
+            return (c != null) ? (int) c : 0;
+        } else
+            return 0;
     }
 
 }

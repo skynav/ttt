@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fonts version="1" xmlns="http://skynav.com/ns/ttpe">
+  <font>
+    <param name="family">Scheherazade</param>
+    <param name="language">AR</param>
+    <param name="source">ScheherazadeRegOT.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+</fonts>

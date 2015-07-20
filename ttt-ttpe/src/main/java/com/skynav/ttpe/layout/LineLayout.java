@@ -86,6 +86,8 @@ public class LineLayout {
 
     // content state
     private Phrase content;
+    private String script;
+    private String language;
     private AttributedCharacterIterator iterator;
 
     // layout state
@@ -107,12 +109,15 @@ public class LineLayout {
     private WhitespaceState whitespace;
 
     public LineLayout(Phrase content, LayoutState state) {
+        Defaults defaults = state.getDefaults();
         // content state
         this.content = content;
+        this.script = content.getScript(-1, defaults);
+        this.language = content.getLanguage(-1, defaults);
         this.iterator = content.getIterator();
         // layout state
         this.state = state;
-        this.defaults = state.getDefaults();
+        this.defaults = defaults;
         // area derived state
         this.writingMode = state.getWritingMode();
         this.level = state.getBidiLevel();
@@ -257,7 +262,7 @@ public class LineLayout {
             int from = bi.current();
             int to = bi.next();
             if (to != LineBreakIterator.DONE)
-                return new InlineBreakOpportunity(r, r.getInlineBreak(to), from, to, r.getAdvance(from, to, available));
+                return new InlineBreakOpportunity(r, r.getInlineBreak(to), from, to, r.getAdvance(from, to, script, language, available));
         }
         return null;
     }
@@ -357,8 +362,9 @@ public class LineLayout {
                 double bpd = lineHeight;
                 if (fai.isOuterScope()) {
                     boolean kerned = fo.isKerningEnabled();
-                    ipd = !combined ? advance : fo.getAdvance(text, kerned, rotated, true);
-                    GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, text, decorations, fo, orientation, combine);
+                    ipd = !combined ? advance : fo.getAdvance(text, script, language, kerned, rotated, true);
+                    text = fo.getMappedText(text);
+                    GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, text, script, language, decorations, fo, orientation, combine);
                     l.addChild(a, combine.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
                     break;
                 } else {
@@ -376,8 +382,9 @@ public class LineLayout {
                         boolean kerned = fi.isKerningEnabled();
                         int segOffset = runStart - start;
                         List<Decoration> segDecorations = getSegmentDecorations(decorations, i + segOffset, j + segOffset);
-                        ipd = fi.getAdvance(segText, kerned, rotated, combined);
-                        GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, segText, segDecorations, fi, orientation, combine);
+                        ipd = fi.getAdvance(segText, script, language, kerned, rotated, combined);
+                        segText = fi.getMappedText(segText);
+                        GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, segText, script, language, segDecorations, fi, orientation, combine);
                         l.addChild(a, combine.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
                     }
                 }
@@ -402,15 +409,16 @@ public class LineLayout {
             if (annoStart == start) {
                 Phrase[] annotations = (Phrase[]) iterator.getAttribute(StyleAttribute.ANNOTATIONS);
                 if (annotations != null) {
-                    String base = getAnnotationBase(annoStart, annoLimit);
+                    String[] baseInfo = new String[2];
+                    String base = getAnnotationBase(annoStart, annoLimit, baseInfo);
                     Orientation[] baseOrientations = getAnnotationBaseOrientations(annoStart, annoLimit);
-                    addAnnotationAreas(l, base, baseOrientations, annotations, font, advance, lineHeight);
+                    addAnnotationAreas(l, base, baseInfo[0], baseInfo[1], baseOrientations, annotations, font, advance, lineHeight);
                 }
             }
         }
     }
 
-    private String getAnnotationBase(int start, int end) {
+    private String getAnnotationBase(int start, int end, String[] baseInfo) {
         StringBuffer sb = new StringBuffer();
         int savedIndex = iterator.getIndex();
         for (int i = start, j = end; i < j; ++i) {
@@ -421,6 +429,10 @@ public class LineLayout {
                 sb.append(c);
         }
         iterator.setIndex(savedIndex);
+        if (baseInfo != null) {
+            baseInfo[0] = this.script;
+            baseInfo[1] = this.language;
+        }
         return sb.toString();
     }
 
@@ -452,7 +464,7 @@ public class LineLayout {
         return found ? orientations : null;
     }
 
-    private void addAnnotationAreas(LineArea l, String base, Orientation[] baseOrientations, Phrase[] annotations, Font font, double advance, double lineHeight) {
+    private void addAnnotationAreas(LineArea l, String base, String baseScript, String baseLanguage, Orientation[] baseOrientations, Phrase[] annotations, Font font, double advance, double lineHeight) {
         for (Phrase p : annotations) {
             InlineAlignment annotationAlign = p.getAnnotationAlign(-1, defaults);
             Double annotationOffset = p.getAnnotationOffset(-1, defaults);
@@ -461,13 +473,13 @@ public class LineLayout {
                 a.setAlignment(annotationAlign);
                 a.setOffset(annotationOffset);
                 a.setPosition(annotationPosition);
-                alignTextAreas(a, advance, annotationAlign, getBaseAdvances(base, baseOrientations, font));
+                alignTextAreas(a, advance, annotationAlign, getBaseAdvances(base, baseScript, baseLanguage, baseOrientations, font));
                 l.addChild(a, LineArea.ENCLOSE_ALL);
             }
         }
     }
 
-    private double[] getBaseAdvances(String base, Orientation[] baseOrientations, Font font) {
+    private double[] getBaseAdvances(String base, String baseScript, String baseLanguage, Orientation[] baseOrientations, Font font) {
         if (base == null)
             return null;
         else {
@@ -481,7 +493,7 @@ public class LineLayout {
                     orientation = baseOrientations[i];
                 if (orientation == null)
                     orientation = Orientation.ROTATE000;
-                advances[i] = font.getAdvance(base.substring(i, j), kerningEnabled, orientation.isRotated(), false);
+                advances[i] = font.getAdvance(base.substring(i, j), baseScript, baseLanguage, kerningEnabled, orientation.isRotated(), false);
             }
             return advances;
         }
@@ -788,34 +800,34 @@ public class LineLayout {
             return InlineBreak.UNKNOWN;
         }
         // obtain advance of text starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
-        double getAdvance(int from, int to, double available) {
+        double getAdvance(int from, int to, String script, String language, double available) {
             double advance = 0;
             for (StyleAttributeInterval fai : fontIntervals) {
                 Font font = (Font) fai.getValue();
                 if (font == null)
                     continue;
                 else if (fai.isOuterScope()) {
-                    advance += getAdvance(getText().substring(from, to), font, orientation, combine);
+                    advance += getAdvance(getText().substring(from, to), script, language, font, orientation, combine);
                     break;
                 } else {
                     int[] intersection = fai.intersection(start + from, start + to);
                     if (intersection != null) {
                         int f = intersection[0] - start;
                         int t = intersection[1] - start;
-                        advance += getAdvance(getText().substring(f,t), font, orientation, combine);
+                        advance += getAdvance(getText().substring(f,t), script, language, font, orientation, combine);
                     }
                 }
             }
             return advance;
         }
-        double getAdvance(String text, Font font, Orientation orientation, Combine combine) {
+        double getAdvance(String text, String script, String language, Font font, Orientation orientation, Combine combine) {
             if (font.isVertical() && (orientation == Orientation.ROTATE090)) {
                 if (!combine.isNone())
                     return lineHeight;
                 else
-                    return font.getRotatedAdvance(text);
+                    return font.getRotatedAdvance(text, script, language);
             } else
-                return font.getAdvance(text);
+                return font.getAdvance(text, script, language);
         }
         // obtain shear advance starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
         double getShearAdvance() {
@@ -1145,7 +1157,7 @@ public class LineLayout {
             super(index, index + 1);
             this.embedding = embedding;
         }
-        double getAdvance(int from, int to, double available) {
+        double getAdvance(int from, int to, String script, String language, double available) {
             // format embedding using available width
             if (area == null)
                 area = layoutEmbedding(available);

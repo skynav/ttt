@@ -38,14 +38,18 @@ import com.skynav.ttpe.util.Characters;
 public class GlyphArea extends LeafInlineArea {
 
     private String text;
+    private String script;
+    private String language;
     private List<Decoration> decorations;
     private Font font;
     private Orientation orientation;
     private Combine combine;
 
-    public GlyphArea(Element e, double ipd, double bpd, int level, String text, List<Decoration> decorations, Font font, Orientation orientation, Combine combine) {
+    public GlyphArea(Element e, double ipd, double bpd, int level, String text, String script, String language, List<Decoration> decorations, Font font, Orientation orientation, Combine combine) {
         super(e, ipd, bpd, level);
         this.text = text;
+        this.script = script;
+        this.language = language;
         this.decorations = decorations;
         this.font = font;
         this.orientation = orientation;
@@ -54,6 +58,14 @@ public class GlyphArea extends LeafInlineArea {
 
     public String getText() {
         return text;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 
     public List<Decoration> getDecorations() {

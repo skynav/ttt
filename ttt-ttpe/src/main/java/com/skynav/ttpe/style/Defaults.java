@@ -66,6 +66,7 @@ public class Defaults {
     public static final Orientation defaultOrientation                  = Orientation.ROTATE000;
     public static final Outline defaultOutline                          = Outline.NONE;
     public static final Overflow defaultOverflow                        = Overflow.HIDDEN;
+    public static final String defaultScript                            = "";
     public static final Whitespace defaultWhitespace                    = Whitespace.DEFAULT;
     public static final InlineAlignment defaultTextAlign                = InlineAlignment.START;
     public static final TransformMatrix defaultTransform                = TransformMatrix.IDENTITY;
@@ -97,6 +98,7 @@ public class Defaults {
     private Orientation orientation                                     = defaultOrientation;
     private Outline outline                                             = defaultOutline;
     private Overflow overflow                                           = defaultOverflow;
+    private String script                                               = defaultScript;
     private Whitespace whitespace                                       = defaultWhitespace;
     private InlineAlignment textAlign                                   = defaultTextAlign;
     private TransformMatrix transform                                   = defaultTransform;
@@ -304,6 +306,14 @@ public class Defaults {
 
     public Overflow getOverflow() {
         return overflow;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+    }
+
+    public String getScript() {
+        return script;
     }
 
     public void setWhitespace(Whitespace whitespace) {

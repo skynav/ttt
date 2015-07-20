@@ -330,6 +330,11 @@ public class PresenterTestCases {
         performPresentationTest("test-055-ruby-on-mixed-orientations.xml", 0, 0);
     }
 
+    @Test
+    public void test056ParagraphTextAlignArabicRLTB() throws Exception {
+        performPresentationTest("test-056-p-text-align-ar-rltb.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

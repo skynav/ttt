@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
-    <version>1.0</version>
+    <version>2.0-SNAPSHOT</version>
   </parent>
 
   <modules>

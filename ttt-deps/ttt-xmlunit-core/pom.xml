@@ -3,6 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>ttt-xmlunit-core</artifactId>
+  <version>1.0</version>
   <name>${project.groupId}:${project.artifactId}</name>
 
   <parent>
@@ -14,7 +15,6 @@
   <properties>
     <groupId>${project.groupId}</groupId>
     <artifactId>${project.artifactId}</artifactId>
-    <version>${project.version}</version>
     <generatePom>false</generatePom>
   </properties>
 
