@@ -75,11 +75,12 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private static final String[][] longOptionSpecifications = new String[][] {
         { "font",                       "FILE",     "specify font configuration file" },
         { "font-directory",             "DIRECTORY","specify path to directory where font configuration files are located" },
-        { "default-background-color",   "COLOR",    "default background color (default: " + Defaults.defaultBackgroundColor + ")" },
-        { "default-color",              "COLOR",    "default foreground color (default: " + Defaults.defaultColor + ")" },
-        { "default-font-families",      "FAMILIES", "default font families (default: " + Defaults.defaultFontFamilies + ")" },
-        { "default-whitespace",         "SPACE",    "default|preserve (default: " + Defaults.defaultWhitespace.toString().toLowerCase() + ")" },
-        { "line-breaker",               "NAME",     "specify line breaker name (default: " + defaultLineBreakerName + ")" },
+        { "default-background-color",   "COLOR",    "default background color (default: \"" + Defaults.defaultBackgroundColor + "\")" },
+        { "default-color",              "COLOR",    "default foreground color (default: " + Defaults.defaultColor + "\")" },
+        { "default-font-families",      "FAMILIES", "default font families (default: \"" + Defaults.defaultFontFamilies + "\")" },
+        { "default-whitespace",         "SPACE",    "default xml space treatment (\"default\"|\"preserve\"; default: \"" +
+            Defaults.defaultWhitespace.toString().toLowerCase() + "\")" },
+        { "line-breaker",               "NAME",     "specify line breaker name (default: \"" + defaultLineBreakerName + "\")" },
         { "max-regions",                "COUNT",    "maximum number of regions in canvas (default: no limit)" },
         { "max-lines",                  "COUNT",    "maximum number of lines in canvas (default: no limit)" },
         { "max-lines-per-region",       "COUNT",    "maximum number of lines in a region (default: no limit)" },

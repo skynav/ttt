@@ -7,6 +7,7 @@
 <option name="default-placement">横下</option>
 <option name="default-region">横下</option>
 <option name="default-shear">0</option>
+<option name="default-whitespace">preserve</option>
 <option name="merge-styles">true</option>
 <option name="style-id-pattern">s{0}</option>
 <option name="style-id-sequence-start">1</option>

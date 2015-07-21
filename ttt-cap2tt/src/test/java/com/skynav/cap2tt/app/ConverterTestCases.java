@@ -153,6 +153,11 @@ public class ConverterTestCases {
         performConversionTest("test-021-space-in-annotation-issue-112.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion022MultipleSpacesIssue110() throws Exception {
+        performConversionTest("test-022-multiple-spaces-issue-110.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }

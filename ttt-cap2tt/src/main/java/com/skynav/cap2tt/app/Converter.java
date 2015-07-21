@@ -206,6 +206,7 @@ public class Converter implements ConverterContext {
     private static final QName ttsFontSizeAttrName = new QName(NAMESPACE_TT_STYLE, "fontSize");
     private static final QName ttsFontStyleAttrName = new QName(NAMESPACE_TT_STYLE, "fontStyle");
     private static final QName ttsTextAlignAttrName = new QName(NAMESPACE_TT_STYLE, "textAlign");
+    private static final QName xmlSpaceAttrName = new QName(XML.xmlNamespace, "space");
 
     // ttml2 attribute names
     private static final QName ttsFontKerningAttrName = new QName(NAMESPACE_TT_STYLE, "fontKerning");
@@ -259,6 +260,7 @@ public class Converter implements ConverterContext {
         { "default-region",             "ID",       "specify identifier of default region (default: undefined)" },
         { "default-shear",              "SHEAR",    "specify default shear (default: \"3\")" },
         { "default-typeface",           "TYPEFACE", "specify default typeface (default: \"default\")" },
+        { "default-whitespace",         "SPACE",    "specify default xml space treatment (\"default\"|\"preserve\"; default: \"default\")" },
         { "disable-warnings",           "",         "disable warnings (both hide and don't count warnings)" },
         { "expect-errors",              "COUNT",    "expect count errors or -1 meaning unspecified expectation (default: -1)" },
         { "expect-warnings",            "COUNT",    "expect count warnings or -1 meaning unspecified expectation (default: -1)" },
@@ -435,6 +437,7 @@ public class Converter implements ConverterContext {
     private String defaultRegion;
     private String defaultShear;
     private String defaultTypeface;
+    private String defaultWhitespace;
     private String expectedErrors;
     private String expectedWarnings;
     private String externalDuration;
@@ -877,6 +880,12 @@ public class Converter implements ConverterContext {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             defaultTypeface = args.get(++index);
+        } else if (option.equals("default-whitespace")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultWhitespace = args.get(++index);
+            if (!defaultWhitespace.equals("default") && !defaultWhitespace.equals("preserve"))
+                throw new InvalidOptionUsageException("default-whitespace", getReporter().message("x.020", "unknown whitespace value: {0}", arg));
         } else if (option.equals("disable-warnings")) {
             reporter.disableWarnings();
         } else if (option.equals("expect-errors")) {
@@ -3013,7 +3022,7 @@ public class Converter implements ConverterContext {
         }
         List<Element> regions = Documents.findElementsByName(d, ttRegionEltName);
         for (Element e : regions) {
-            Element eConfig = configuration.getRegion(e.getAttributeNS(XML.getNamespaceUri(), "id"));
+            Element eConfig = configuration.getRegion(e.getAttributeNS(XML.xmlNamespace, "id"));
             if (eConfig != null)
                 mergeStyles(e, eConfig);
         }
@@ -4383,6 +4392,8 @@ public class Converter implements ConverterContext {
                     body.getOtherAttributes().put(regionAttrName, defaultRegion);
                     maybeAddRegion(defaultRegion);
                 }
+                if (defaultWhitespace != null)
+                    body.getOtherAttributes().put(xmlSpaceAttrName, defaultWhitespace);
                 body.getDiv().add(division);
             }
         }
