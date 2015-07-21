@@ -50,6 +50,7 @@ import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.StyleCollector;
+import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttpe.text.LineBreaker;
 import com.skynav.ttpe.text.Paragraph;
@@ -74,7 +75,10 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private static final String[][] longOptionSpecifications = new String[][] {
         { "font",                       "FILE",     "specify font configuration file" },
         { "font-directory",             "DIRECTORY","specify path to directory where font configuration files are located" },
-        { "default-color",              "COLOR",    "default foreground color" },
+        { "default-background-color",   "COLOR",    "default background color (default: " + Defaults.defaultBackgroundColor + ")" },
+        { "default-color",              "COLOR",    "default foreground color (default: " + Defaults.defaultColor + ")" },
+        { "default-font-families",      "FAMILIES", "default font families (default: " + Defaults.defaultFontFamilies + ")" },
+        { "default-whitespace",         "SPACE",    "default|preserve (default: " + Defaults.defaultWhitespace.toString().toLowerCase() + ")" },
         { "line-breaker",               "NAME",     "specify line breaker name (default: " + defaultLineBreakerName + ")" },
         { "max-regions",                "COUNT",    "maximum number of regions in canvas (default: no limit)" },
         { "max-lines",                  "COUNT",    "maximum number of lines in canvas (default: no limit)" },
@@ -96,7 +100,10 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private List<String> fontSpecificationFileNames;
     private String lineBreakerName;
     private String charBreakerName;
+    private String defaultBackgroundColor;
     private String defaultColor;
+    private String defaultFontFamilies;
+    private String defaultWhitespace;
     private int maxRegions = -1;
     private int maxLines = -1;
     private int maxLinesPerRegion = -1;
@@ -132,10 +139,22 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         String option = arg;
         assert option.length() > 2;
         option = option.substring(2);
-        if (option.equals("default-color")) {
+        if (option.equals("default-background-color")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultBackgroundColor = args.get(++index);
+        } else if (option.equals("default-color")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             defaultColor = args.get(++index);
+        } else if (option.equals("default-font-families")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultFontFamilies = args.get(++index);
+        } else if (option.equals("default-whitespace")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            defaultWhitespace = args.get(++index);
         } else if (option.equals("font")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
@@ -245,12 +264,37 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         LineBreaker cb = LineBreaker.getInstance(charBreakerName);
         this.charBreaker = cb;
         this.defaults = new Defaults();
+        if (defaultBackgroundColor != null) {
+            com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
+            if (com.skynav.ttv.verifier.util.Colors.isColor(defaultBackgroundColor, null, null, retColor))
+                defaults.setBackgroundColor(new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha()));
+            else
+                throw new InvalidOptionUsageException("default-background-color", "invalid color syntax:  " + defaultBackgroundColor);
+        }
         if (defaultColor != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
             if (com.skynav.ttv.verifier.util.Colors.isColor(defaultColor, null, null, retColor))
                 defaults.setColor(new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha()));
             else
                 throw new InvalidOptionUsageException("default-color", "invalid color syntax:  " + defaultColor);
+        }
+        if (defaultFontFamilies != null) {
+            List<com.skynav.ttv.model.value.FontFamily> families = new java.util.ArrayList<com.skynav.ttv.model.value.FontFamily>();
+            Object[] treatments = new Object[] { com.skynav.ttv.verifier.util.QuotedGenericFontFamilyTreatment.Allow };
+            if (com.skynav.ttv.verifier.util.Fonts.isFontFamilies(defaultFontFamilies, null, context, treatments, families)) {
+                List<String> fontFamilies = new java.util.ArrayList<String>(families.size());
+                for (com.skynav.ttv.model.value.FontFamily f : families)
+                    fontFamilies.add(f.toString());
+                defaults.setFontFamilies(fontFamilies);
+            } else
+                throw new InvalidOptionUsageException("default-font-families", "invalid font families syntax:  " + defaultFontFamilies);
+        }
+        if (defaultWhitespace != null) {
+            try {
+                defaults.setWhitespace(Whitespace.valueOf(defaultWhitespace.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new InvalidOptionUsageException("default-whitespace", "invalid whitespace syntax:  " + defaultWhitespace);
+            }
         }
     }
 

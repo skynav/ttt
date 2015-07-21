@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="jp" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<head>
+<styling>
+<initial tts:fontSize="4vh"/>
+<initial tts:lineHeight="5vh"/>
+<initial tts:showBackground="whenActive"/>
+</styling>
+<layout>
+<region xml:id="r0" tts:extent="15vw 80vh" tts:position="left 10vw center" tts:writingMode="tblr"/>
+<region xml:id="r1" tts:extent="15vw 80vh" tts:position="right 10vw center" tts:writingMode="tbrl"/>
+</layout>
+</head>
+<body>
+<div>
+<p xml:space="default"  begin="00:13:07:13" end="00:13:09:18" region="r0">文文文文<br/>文 文 文 文<br/>文   文   文   文<br/>文　　　文　　　文　　　文</p>
+<p xml:space="preserve" begin="00:13:07:13" end="00:13:09:18" region="r1">文文文文<br/>文 文 文 文<br/>文   文   文   文<br/>文　　　文　　　文　　　文</p>
+</div>
+</body>
+</tt>

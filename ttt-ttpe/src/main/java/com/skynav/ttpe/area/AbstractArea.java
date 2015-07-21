@@ -88,7 +88,7 @@ public abstract class AbstractArea implements Area {
     public Whitespace getWhitespace() {
         Element e = getElement();
         if ((e != null) && e.hasAttributeNS(XML.xmlNamespace, "space"))
-            return Whitespace.valueOf(e.getAttributeNS(XML.xmlNamespace, "space"));
+            return Whitespace.valueOf(e.getAttributeNS(XML.xmlNamespace, "space").toUpperCase());
         else
             return null;
     }

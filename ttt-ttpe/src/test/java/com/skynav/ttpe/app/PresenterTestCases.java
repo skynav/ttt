@@ -335,6 +335,16 @@ public class PresenterTestCases {
         performPresentationTest("test-056-p-text-align-ar-rltb.xml", 0, 0);
     }
 
+    @Test
+    public void test057XMLSpace() throws Exception {
+        performPresentationTest("test-057-xml-space.xml", 0, 0);
+    }
+
+    @Test
+    public void test058OptionDefaultWhitespacePreserve() throws Exception {
+        performPresentationTest("test-058-option-default-whitespace-preserve.xml", 0, 0, new String[]{"--default-whitespace", "preserve"});
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
