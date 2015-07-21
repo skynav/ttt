@@ -93,7 +93,6 @@
             <argument>all</argument>
             <argument>--config</argument>
             <argument>${test.basedir}/test.config.xml</argument>
-            <argument>--output-indent</argument>
             <argument>--output-file</argument>
             <argument>${test.basedir}/test.xml</argument>
             <argument>${test.basedir}/test.cap</argument>
