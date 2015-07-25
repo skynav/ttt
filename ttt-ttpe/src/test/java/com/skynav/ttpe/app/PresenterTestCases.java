@@ -345,6 +345,11 @@ public class PresenterTestCases {
         performPresentationTest("test-058-option-default-whitespace-preserve.xml", 0, 0, new String[]{"--default-whitespace", "preserve"});
     }
 
+    @Test
+    public void test05930A1RotationIssue118() throws Exception {
+        performPresentationTest("test-059-30a1-rotation-issue-118.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
