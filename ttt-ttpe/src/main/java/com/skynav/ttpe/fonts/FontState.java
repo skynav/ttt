@@ -150,9 +150,10 @@ public class FontState {
     }
 
     public double[] getAdvances(FontKey key, String text, String script, String language, boolean adjustForKerning, boolean rotatedOrientation, boolean cross) {
-        boolean vertical = ((key.axis == Axis.VERTICAL) && !cross) || ((key.axis == Axis.HORIZONTAL) && cross);
         double[] advances = null;
         if (maybeLoad(key)) {
+            Axis axis = (key.axis.cross(cross).isVertical() && !rotatedOrientation) ? Axis.VERTICAL : Axis.HORIZONTAL;
+            double size = key.size.getDimension(axis);
             int[] glyphs = getGlyphs(key, text, script, language);
             int[] kerning = (adjustForKerning && (kerningSubtable != null)) ? kerningSubtable.getKerning(glyphs) : null;
             advances = new double[glyphs.length];
@@ -161,8 +162,9 @@ public class FontState {
                 int c = mappedGlyphs.get(g);
                 if (!Characters.isZeroWidthWhitespace(c)) {
                     try {
-                        int k = kerning != null ? kerning[i] : 0;
-                        advances[i] = scaleFontUnits(key, (double) (((vertical && !rotatedOrientation) ? otf.getAdvanceHeight(g) : otf.getAdvanceWidth(g)) + k));
+                        double a = (double) (axis.isVertical() ? otf.getAdvanceHeight(g) : otf.getAdvanceWidth(g));
+                        double k = (double) (kerning != null ? kerning[i] : 0);
+                        advances[i] = scaleFontUnits(size, a + k);
                     } catch (IOException e) {
                     }
                 }
@@ -435,8 +437,12 @@ public class FontState {
     }
 
     private double scaleFontUnits(FontKey key, double v) {
+        return scaleFontUnits(key.size.getDimension(key.axis), v);
+    }
+
+    private double scaleFontUnits(double size, double v) {
         try {
-            return (v / (double) otf.getUnitsPerEm()) * key.size.getDimension(key.axis);
+            return (v / (double) otf.getUnitsPerEm()) * size;
         } catch (Exception e) {
             return v;
         }
