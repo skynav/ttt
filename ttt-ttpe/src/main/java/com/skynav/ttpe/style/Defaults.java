@@ -28,11 +28,13 @@ package com.skynav.ttpe.style;
 import java.util.List;
 import java.util.Set;
 
+import com.skynav.ttpe.fonts.Combination;
 import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.fonts.FontKerning;
 import com.skynav.ttpe.fonts.FontKey;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
+import com.skynav.ttpe.fonts.Orientation;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.Point;
@@ -47,7 +49,7 @@ public class Defaults {
     public static final AnnotationPosition defaultAnnotationPosition    = AnnotationPosition.AUTO;
     public static final Color defaultBackgroundColor                    = Color.TRANSPARENT;
     public static final Color defaultColor                              = Color.YELLOW;
-    public static final Combine defaultCombine                          = Combine.NONE;
+    public static final Combination defaultCombination                  = Combination.NONE;
     public static final BlockAlignment defaultDisplayAlign              = BlockAlignment.BEFORE;
     public static final Emphasis defaultEmphasis                        = Emphasis.NONE;
     public static final Extent defaultExtent                            = Extent.EMPTY;
@@ -79,7 +81,7 @@ public class Defaults {
     private AnnotationPosition annotationPosition                       = defaultAnnotationPosition;
     private Color backgroundColor                                       = defaultBackgroundColor;
     private Color color                                                 = defaultColor;
-    private Combine combine                                             = defaultCombine;
+    private Combination combination                                     = defaultCombination;
     private BlockAlignment displayAlign                                 = defaultDisplayAlign;
     private Emphasis emphasis                                           = defaultEmphasis;
     private Extent extent                                               = defaultExtent;
@@ -156,12 +158,12 @@ public class Defaults {
         return color;
     }
 
-    public void setCombine(Combine combine) {
-        this.combine = combine;
+    public void setCombination(Combination combination) {
+        this.combination = combination;
     }
 
-    public Combine getCombine() {
-        return combine;
+    public Combination getCombination() {
+        return combination;
     }
 
     public void setDisplayAlign(BlockAlignment displayAlign) {

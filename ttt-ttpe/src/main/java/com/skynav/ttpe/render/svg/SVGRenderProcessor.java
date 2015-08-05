@@ -54,6 +54,7 @@ import com.skynav.ttpe.area.ViewportArea;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
+import com.skynav.ttpe.fonts.GlyphMapping;
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.Direction;
@@ -611,10 +612,9 @@ public class SVGRenderProcessor extends RenderProcessor {
         Documents.setAttribute(gOuter, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
         boolean rotate = a.isRotatedOrientation() && !a.isCombined();
         TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL, rotate);
-        String text = a.getText();
-        String script = a.getScript();
-        String language = a.getLanguage();
-        double[] advances = font.getAdvances(text, script, language, font.isKerningEnabled(), rotate, a.isCombined());
+        GlyphMapping gm = a.getGlyphMapping();
+        String text = gm.getGlyphsAsText();
+        double[] advances = font.getScaledAdvances(gm);
         int level = a.getBidiLevel();
         if (level < 0)
             level = 0;
@@ -679,10 +679,9 @@ public class SVGRenderProcessor extends RenderProcessor {
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         boolean rotate = a.isRotatedOrientation() && !a.isCombined();
         TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL, rotate);
-        String text = a.getText();
-        String script = a.getScript();
-        String language = a.getLanguage();
-        double[] advances = font.getAdvances(text, script, language, font.isKerningEnabled(), rotate, a.isCombined());
+        GlyphMapping gm = a.getGlyphMapping();
+        String text = gm.getGlyphsAsText();
+        double[] advances = font.getScaledAdvances(gm);
         int level = a.getBidiLevel();
         if (level < 0)
             level = 0;

@@ -36,7 +36,7 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   BLOCK_ALIGNMENT        = new StyleAttribute("BLOCK_ALIGNMENT");        // com.skynav.ttpe.style.BlockAlignment
     public static final StyleAttribute   BPD                    = new StyleAttribute("BPD");                    // Double
     public static final StyleAttribute   COLOR                  = new StyleAttribute("COLOR");                  // com.skynav.ttpe.style.Color
-    public static final StyleAttribute   COMBINE                = new StyleAttribute("COMBINE");                // com.skynav.ttpe.style.Combine
+    public static final StyleAttribute   COMBINATION            = new StyleAttribute("COMBINATION");            // com.skynav.ttpe.style.Combination
     public static final StyleAttribute   EMBEDDING              = new StyleAttribute("EMBEDDING");              // Object
     public static final StyleAttribute   EMPHASIS               = new StyleAttribute("EMPHASIS");               // com.skynav.ttpe.style.Emphasis
     public static final StyleAttribute   FONT                   = new StyleAttribute("FONT");                   // com.skynav.ttpe.fonts.Font

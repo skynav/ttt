@@ -29,67 +29,66 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.fonts.Combination;
 import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.Combine;
+import com.skynav.ttpe.fonts.GlyphMapping;
+import com.skynav.ttpe.fonts.Orientation;
 import com.skynav.ttpe.style.Decoration;
-import com.skynav.ttpe.style.Orientation;
 import com.skynav.ttpe.util.Characters;
 
 public class GlyphArea extends LeafInlineArea {
 
-    private String text;
-    private String script;
-    private String language;
-    private List<Decoration> decorations;
     private Font font;
-    private Orientation orientation;
-    private Combine combine;
+    private GlyphMapping mapping;
+    private List<Decoration> decorations;
 
-    public GlyphArea(Element e, double ipd, double bpd, int level, String text, String script, String language, List<Decoration> decorations, Font font, Orientation orientation, Combine combine) {
+    public GlyphArea(Element e, double ipd, double bpd, int level, Font font, GlyphMapping mapping, List<Decoration> decorations) {
         super(e, ipd, bpd, level);
-        this.text = text;
-        this.script = script;
-        this.language = language;
-        this.decorations = decorations;
         this.font = font;
-        this.orientation = orientation;
-        this.combine = combine;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public String getScript() {
-        return script;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public List<Decoration> getDecorations() {
-        return decorations;
+        this.mapping = mapping;
+        this.decorations = decorations;
     }
 
     public Font getFont() {
         return font;
     }
 
+    public GlyphMapping getGlyphMapping() {
+        return mapping;
+    }
+
+    public String getText() {
+        return mapping.getText();
+    }
+
+    public String getScript() {
+        return mapping.getScript();
+    }
+
+    public String getLanguage() {
+        return mapping.getLanguage();
+    }
+
     public Orientation getOrientation() {
-        return orientation;
+        return mapping.getOrientation();
     }
 
     public boolean isRotatedOrientation() {
-        return orientation.isRotated();
+        Orientation orientation = getOrientation();
+        return (orientation != null) && orientation.isRotated();
     }
 
-    public Combine getCombine() {
-        return combine;
+    public Combination getCombination() {
+        return mapping.getCombination();
     }
 
     public boolean isCombined() {
-        return !combine.isNone();
+        Combination combination = getCombination();
+        return (combination != null) && !combination.isNone();
+    }
+
+    public List<Decoration> getDecorations() {
+        return decorations;
     }
 
     public BlockArea getContainingBlock() {
@@ -97,6 +96,7 @@ public class GlyphArea extends LeafInlineArea {
     }
 
     public int getSpacingGlyphsCount() {
+        String text = mapping.getGlyphsAsText();
         int ng = 0;
         for (int i = 0, n = text.length(); i < n; ++i) {
             int c = text.charAt(i);

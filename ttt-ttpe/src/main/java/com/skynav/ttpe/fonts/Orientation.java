@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2014-15 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,47 +23,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.style;
+package com.skynav.ttpe.fonts;
 
-public class Combine {
+import com.skynav.ttpe.util.Characters;
 
-    public enum Style {
-        NONE,
-        ALL,
-        DIGITS;
-    };
+public enum Orientation {
 
-    public static final Combine NONE = new Combine(Style.NONE.name(), 0);
+    ROTATE000,
+    ROTATE090,
+    ROTATE180,
+    ROTATE270;
 
-    private Style style;
-    private int count;
-
-    public Combine(String style, int count) {
-        this.style = Style.valueOf(style);
-        this.count = count;
+    public boolean isRotated() {
+        return (this != ROTATE000);
     }
 
-    public Style getStyle() {
-        return style;
+    public static Orientation fromCharacter(int c) {
+        if (Characters.isUprightOrientation(c))
+            return ROTATE000;
+        else
+            return ROTATE090;
     }
-
-    public boolean isNone() {
-        return getStyle() == Style.NONE;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append('[');
-        sb.append(style);
-        sb.append(',');
-        sb.append(count);
-        sb.append(']');
-        return sb.toString();
-    }
-
 }

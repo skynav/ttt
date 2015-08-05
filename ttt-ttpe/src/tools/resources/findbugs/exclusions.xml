@@ -7,8 +7,27 @@
     <Bug pattern="EI_EXPOSE_REP"/>
     <Or>
       <And>
+        <Class name="com.skynav.ttpe.fonts.GlyphMapping"/>
+        <Or>
+          <Method name="getAdjustments"/>
+          <Method name="getAdvances"/>
+          <Method name="getGlyphs"/>
+        </Or>
+      </And>
+      <And>
         <Class name="com.skynav.ttpe.render.AbstractFrameImage"/>
         <Method name="getData"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttpe.fonts.GlyphMapping"/>
+        <Or>
+          <Method name="&lt;init&gt;"/>
+        </Or>
       </And>
     </Or>
   </Match>

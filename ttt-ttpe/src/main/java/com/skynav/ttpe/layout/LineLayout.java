@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import com.skynav.ttpe.area.AnnotationArea;
 import com.skynav.ttpe.area.AreaNode;
@@ -39,18 +40,19 @@ import com.skynav.ttpe.area.InlineBlockArea;
 import com.skynav.ttpe.area.InlineFillerArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.SpaceArea;
+import com.skynav.ttpe.fonts.Combination;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontFeature;
+import com.skynav.ttpe.fonts.GlyphMapping;
+import com.skynav.ttpe.fonts.Orientation;
 import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.Combine;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
-import com.skynav.ttpe.style.Orientation;
 import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
@@ -230,7 +232,7 @@ public class LineLayout {
         Set<StyleAttribute> s = new java.util.HashSet<StyleAttribute>();
         s.add(StyleAttribute.ANNOTATIONS);
         s.add(StyleAttribute.BIDI);
-        s.add(StyleAttribute.COMBINE);
+        s.add(StyleAttribute.COMBINATION);
         s.add(StyleAttribute.ORIENTATION);
         textRunBreakingAttributes = Collections.unmodifiableSet(s);
     }
@@ -352,21 +354,15 @@ public class LineLayout {
             l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL);
         } else if (run instanceof NonWhitespaceRun) {
             int start = run.start;
-            Orientation orientation = run.orientation;
-            boolean rotated = orientation.isRotated();
-            Combine combine = run.combine;
-            boolean combined = !combine.isNone();
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
-                Font fo = font;
-                double ipd = 0;
                 double bpd = lineHeight;
+                String t;
+                Font f;
+                List<Decoration> d;
                 if (fai.isOuterScope()) {
-                    boolean kerned = fo.isKerningEnabled();
-                    ipd = !combined ? advance : fo.getAdvance(text, script, language, kerned, rotated, true);
-                    text = fo.getMappedText(text);
-                    GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, text, script, language, decorations, fo, orientation, combine);
-                    l.addChild(a, combine.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
-                    break;
+                    t = text;
+                    f = font;
+                    d = decorations;
                 } else {
                     int i = fai.getBegin() - start;
                     assert i >= 0;
@@ -376,20 +372,40 @@ public class LineLayout {
                     assert j >= i;
                     if (j > text.length())
                         j = text.length();
-                    String segText = text.substring(i, j);
-                    Font fi;
-                    if ((fi = (Font) fai.getValue()) != null) {
-                        boolean kerned = fi.isKerningEnabled();
+                    t = text.substring(i, j);
+                    if ((f = (Font) fai.getValue()) != null) {
                         int segOffset = runStart - start;
-                        List<Decoration> segDecorations = getSegmentDecorations(decorations, i + segOffset, j + segOffset);
-                        ipd = fi.getAdvance(segText, script, language, kerned, rotated, combined);
-                        segText = fi.getMappedText(segText);
-                        GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, segText, script, language, segDecorations, fi, orientation, combine);
-                        l.addChild(a, combine.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
+                        d = getSegmentDecorations(decorations, i + segOffset, j + segOffset);
+                    } else
+                        d = null;
+                }
+                if (f != null) {
+                    GlyphMapping gm = f.getGlyphMapping(t, makeGlyphMappingFeatures(script, language, f.isKerningEnabled(), run.orientation, run.combination));
+                    if (gm != null) {
+                        double ipd = f.getScaledAdvance(gm);
+                        GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, f, gm, d);
+                        l.addChild(a, run.combination.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
                     }
                 }
+                if (fai.isOuterScope())
+                    break;
             }
         }
+    }
+
+    private SortedSet<FontFeature> makeGlyphMappingFeatures(String script, String language, boolean kerned, Orientation orientation, Combination combination) {
+        SortedSet<FontFeature> features = new java.util.TreeSet<FontFeature>();
+        if ((script != null) && !script.isEmpty())
+            features.add(FontFeature.SCPT.parameterize(script));
+        if ((language != null) && !language.isEmpty())
+            features.add(FontFeature.LANG.parameterize(language));
+        if (kerned)
+            features.add(FontFeature.KERN.parameterize(Boolean.TRUE));
+        if ((orientation != null) && orientation.isRotated())
+            features.add(FontFeature.ORNT.parameterize(orientation));
+        if ((combination != null) && !combination.isNone())
+            features.add(FontFeature.COMB.parameterize(combination));
+        return features;
     }
 
     private List<Decoration> getSegmentDecorations(List<Decoration> decorations, int from, int to) {
@@ -493,7 +509,9 @@ public class LineLayout {
                     orientation = baseOrientations[i];
                 if (orientation == null)
                     orientation = Orientation.ROTATE000;
-                advances[i] = font.getAdvance(base.substring(i, j), baseScript, baseLanguage, kerningEnabled, orientation.isRotated(), false);
+                String baseText = base.substring(i, j);
+                GlyphMapping gm = font.getGlyphMapping(baseText, makeGlyphMappingFeatures(baseScript, baseLanguage, kerningEnabled, orientation, Combination.NONE));
+                advances[i] = font.getScaledAdvance(gm);
             }
             return advances;
         }
@@ -721,7 +739,7 @@ public class LineLayout {
         int end;                                                // end index in outer iterator
         List<StyleAttributeInterval> fontIntervals;             // cached font sub-intervals over complete run interval
         Orientation orientation;                                // dominant glyph orientation for run
-        Combine combine;                                        // dominant combine for run
+        Combination combination;                                // dominant combination for run
         int level;                                              // bidirectional level
         String text;                                            // cached text over complete run interval
         TextRun(int start, int end) {
@@ -730,7 +748,7 @@ public class LineLayout {
             int l = end - start;
             this.fontIntervals = getFontIntervals(0, l, font);
             this.orientation = getDominantOrientation(0, l, defaults.getOrientation());
-            this.combine = getDominantCombine(0, l, defaults.getCombine());
+            this.combination = getDominantCombination(0, l, defaults.getCombination());
             this.level = getDominantLevel(0, l);
         }
         @Override
@@ -807,27 +825,26 @@ public class LineLayout {
                 if (font == null)
                     continue;
                 else if (fai.isOuterScope()) {
-                    advance += getAdvance(getText().substring(from, to), script, language, font, orientation, combine);
+                    advance += getAdvance(getText().substring(from, to), script, language, font, orientation, combination);
                     break;
                 } else {
                     int[] intersection = fai.intersection(start + from, start + to);
                     if (intersection != null) {
                         int f = intersection[0] - start;
                         int t = intersection[1] - start;
-                        advance += getAdvance(getText().substring(f,t), script, language, font, orientation, combine);
+                        advance += getAdvance(getText().substring(f,t), script, language, font, orientation, combination);
                     }
                 }
             }
             return advance;
         }
-        double getAdvance(String text, String script, String language, Font font, Orientation orientation, Combine combine) {
-            if (font.isVertical() && (orientation == Orientation.ROTATE090)) {
-                if (!combine.isNone())
-                    return lineHeight;
-                else
-                    return font.getRotatedAdvance(text, script, language);
-            } else
-                return font.getAdvance(text, script, language);
+        double getAdvance(String text, String script, String language, Font font, Orientation orientation, Combination combination) {
+            if (font.isVertical() && (orientation == Orientation.ROTATE090) && !combination.isNone())
+                return lineHeight;
+            else {
+                GlyphMapping gm = font.getGlyphMapping(text, makeGlyphMappingFeatures(script, language, font.isKerningEnabled(), orientation, combination));
+                return (gm != null) ? font.getScaledAdvance(gm) : 0;
+            }
         }
         // obtain shear advance starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
         double getShearAdvance() {
@@ -840,10 +857,10 @@ public class LineLayout {
                 if (font == null)
                     continue;
                 else if (fai.isOuterScope()) {
-                    advance += font.getShearAdvance(orientation.isRotated(), !combine.isNone());
+                    advance += font.getShearAdvance(orientation.isRotated(), !combination.isNone());
                     break;
                 } else if (fai.intersects(start + from, start + to))
-                    advance += font.getShearAdvance(orientation.isRotated(), !combine.isNone());
+                    advance += font.getShearAdvance(orientation.isRotated(), !combination.isNone());
             }
             return advance;
         }
@@ -943,34 +960,34 @@ public class LineLayout {
             aci.setIndex(savedIndex);
             return orientations;
         }
-        // obtain dominant combine for specified interval FROM to TO of run
-        private Combine getDominantCombine(int from, int to, Combine defaultCombine) {
+        // obtain dominant combination for specified interval FROM to TO of run
+        private Combination getDominantCombination(int from, int to, Combination defaultCombination) {
             if (orientation.isRotated()) {
-                for (StyleAttributeInterval sai : getCombineIntervals(from, to)) {
-                    Combine combine = (Combine) sai.getValue();
-                    if (!combine.isNone())
-                        return combine;
+                for (StyleAttributeInterval sai : getCombinationIntervals(from, to)) {
+                    Combination combination = (Combination) sai.getValue();
+                    if (!combination.isNone())
+                        return combination;
                 }
             }
-            return defaultCombine;
+            return defaultCombination;
         }
-        // obtain combine for specified interval FROM to TO of run
-        private List<StyleAttributeInterval> getCombineIntervals(int from, int to) {
-            StyleAttribute combineAttr = StyleAttribute.COMBINE;
-            List<StyleAttributeInterval> combines = new java.util.ArrayList<StyleAttributeInterval>();
-            int[] intervals = getAttributeIntervals(from, to, combineAttr);
+        // obtain combination for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getCombinationIntervals(int from, int to) {
+            StyleAttribute combinationAttr = StyleAttribute.COMBINATION;
+            List<StyleAttributeInterval> combinations = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, combinationAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
             for (int i = 0, n = intervals.length / 2; i < n; ++i) {
                 int s = start + intervals[i*2 + 0];
                 int e = start + intervals[i*2 + 1];
                 aci.setIndex(s);
-                Object v = aci.getAttribute(combineAttr);
+                Object v = aci.getAttribute(combinationAttr);
                 if (v != null)
-                    combines.add(new StyleAttributeInterval(combineAttr, v, s, e));
+                    combinations.add(new StyleAttributeInterval(combinationAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            return combines;
+            return combinations;
         }
         // obtain dominant bidi level for run, which must be the same value from start to end in outer iterator
         private int getDominantLevel(int from, int to) {

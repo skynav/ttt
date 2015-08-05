@@ -35,12 +35,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import com.skynav.ttpe.fonts.Combination;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.fonts.FontKerning;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
+import com.skynav.ttpe.fonts.Orientation;
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.Extent;
@@ -398,11 +400,11 @@ public class StyleCollector {
             com.skynav.ttv.model.value.TextCombine[] retCombine = new com.skynav.ttv.model.value.TextCombine[1];
             if (com.skynav.ttv.verifier.util.Combine.isCombine(s.getValue(), null, null, retCombine)) {
                 com.skynav.ttv.model.value.TextCombine tc = retCombine[0];
-                v = new Combine(tc.getStyle().name(), tc.getCount());
+                v = new Combination(tc.getStyle().name(), tc.getCount());
             }
         }
         if (v != null)
-            addAttribute(StyleAttribute.COMBINE, v, begin, end);
+            addAttribute(StyleAttribute.COMBINATION, v, begin, end);
 
         // TEXT_EMPHASIS
         s = styles.get(ttsTextEmphasisAttrName);

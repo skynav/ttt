@@ -27,12 +27,19 @@ package com.skynav.ttpe.fonts;
 
 import com.skynav.ttv.model.value.FontVariant;
 
-public class FontFeature {
+public class FontFeature implements Comparable<FontFeature> {
 
-    public static final FontFeature     HWID            = new FontFeature("hwid");
-    public static final FontFeature     FWID            = new FontFeature("fwid");
-    public static final FontFeature     RUBY            = new FontFeature("ruby");
-    public static final FontFeature     VERT            = new FontFeature("vert");
+    public static final FontFeature     HWID            = new FontFeature("hwid");              // half width variant
+    public static final FontFeature     FWID            = new FontFeature("fwid");              // full width variant
+    public static final FontFeature     KERN            = new FontFeature("kern");              // kerning
+    public static final FontFeature     RUBY            = new FontFeature("ruby");              // ruby variant
+    public static final FontFeature     VERT            = new FontFeature("vert");              // vertical variant
+
+    // private (non-standard) pseudo-features
+    public static final FontFeature     COMB            = new FontFeature("COMB");              // tate-chu-yoko        (Combine combination)
+    public static final FontFeature     LANG            = new FontFeature("LANG");              // resolved language    (String language)
+    public static final FontFeature     ORNT            = new FontFeature("ORNT");              // orientation          (Orientation orientation)
+    public static final FontFeature     SCPT            = new FontFeature("SCPT");              // resolved script      (String script)
 
     private final String feature;
     private final Object[] arguments;
@@ -42,15 +49,20 @@ public class FontFeature {
     }
 
     public FontFeature(String feature, Object[] arguments) {
-        assert (feature != null) && !feature.isEmpty();
+        if ((feature == null) || feature.isEmpty())
+            throw new IllegalArgumentException();
         this.feature = feature;
         if (arguments != null) {
             int na = arguments.length;
-            Object[] a = new Object[na];
-            System.arraycopy(arguments, 0, a, 0, na);
-            this.arguments = a;
+            Object[] aa = new Object[na];
+            System.arraycopy(arguments, 0, aa, 0, na);
+            this.arguments = aa;
         } else
             this.arguments = null;
+    }
+
+    public FontFeature parameterize(Object ... arguments) {
+        return new FontFeature(this.feature, arguments);
     }
 
     public String getFeature() {
@@ -79,6 +91,81 @@ public class FontFeature {
         else
             feature = null;
         return (feature != null) ? new FontFeature(feature) : null;
+    }
+
+    public int compareTo(FontFeature other) {
+        int d = feature.compareTo(other.feature);
+        if (d != 0)
+            return d;
+        return compareArguments(arguments, other.arguments);
+    }
+
+    private static int compareArguments(Object[] args1, Object[] args2) {
+        if (isEmpty(args1))
+            return isEmpty(args2) ? 0 : -1;
+        else if (isEmpty(args2))
+            return 1;
+        else
+            return compareArgumentsPiecewise(args1, args2);
+    }
+
+    private static boolean isEmpty(Object[] args) {
+        return (args == null) || (args.length == 0);
+    }
+
+    private static int compareArgumentsPiecewise(Object[] args1, Object[] args2) {
+        assert args1 != null;
+        int n1 = args1.length;
+        assert n1 > 0;
+        assert args2 != null;
+        int n2 = args2.length;
+        assert n2 > 0;
+        for (int i = 0, n = (n1 < n2) ? n1 : n2; i < n; ++i) {
+            if (i == n1)
+                return -1;
+            if (i == n2)
+                return 1;
+            int d = compareArguments(args1[i], args2[i]);
+            if (d != 0)
+                return d;
+        }
+        return 0;
+    }
+
+    private static int compareArguments(Object a1, Object a2) {
+        if (a1 == null)
+            return (a2 == null) ? 0 : -1;
+        else if (a2 == null)
+            return 1;
+        else {
+            Class<?> c1 = a1.getClass();
+            Class<?> c2 = a2.getClass();
+            if (!c1.isInstance(a2) || !c2.isInstance(a1))
+                return c1.getName().compareTo(c2.getName());
+            else
+                return compareArgumentsOfCompatibleType(a1, a2);
+        }
+    }
+
+    private static int compareArgumentsOfCompatibleType(Object a1, Object a2) {
+        if (a1 instanceof String) {
+            if (!(a2 instanceof String))
+                throw new IllegalArgumentException();
+            return ((String) a1).compareTo((String) a2);
+        } else if (a1 instanceof Boolean) {
+            if (!(a2 instanceof Boolean))
+                throw new IllegalArgumentException();
+            return ((Boolean) a1).compareTo((Boolean) a2);
+        } else if (a1 instanceof Integer) {
+            if (!(a2 instanceof Integer))
+                throw new IllegalArgumentException();
+            return ((Integer) a1).compareTo((Integer) a2);
+        } else if (a1 instanceof Double) {
+            if (!(a2 instanceof Double))
+                throw new IllegalArgumentException();
+            return ((Double) a1).compareTo((Double) a2);
+        } else
+            return a1.toString().compareTo(a2.toString());
     }
 
     @Override
