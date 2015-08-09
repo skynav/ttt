@@ -26,6 +26,7 @@
 package com.skynav.ttpe.render.svg;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -166,7 +167,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 throw new MissingOptionArgumentException("--" + option);
             backgroundOption = args.get(++index);
         } else if (option.equals("svg-decorate-all")) {
-            decorateGlyphs = true;
+            // decorateGlyphs = true;
             decorateLines = true;
             decorateRegions = true;
         } else if (option.equals("svg-decorate-glyphs")) {
@@ -625,39 +626,68 @@ public class SVGRenderProcessor extends RenderProcessor {
         if (shearAdvance < 0)
             yCurrent += -shearAdvance;
         for (int i = 0, n = advances.length; i < n; ++i) {
-            int j = i + 1;
             double ga = advances[i];
             double y = btt ? yCurrent - ga : yCurrent;
+            int j = i + 1;
+            String tGlyphs = text.substring(i, j);
+            String tGlyphsPath;
+            if (font.containsPUAMapping(tGlyphs))
+                tGlyphsPath = font.getGlyphsPath(tGlyphs, Axis.VERTICAL, Arrays.copyOfRange(advances, i, j));
+            else
+                tGlyphsPath = null;
             // outline if required
             Element tOutline;
             Decoration decoration;
             decoration = findDecoration(decorations, Decoration.Type.OUTLINE, i, j);
             if (decoration != null) {
                 Outline outline = decoration.getOutline();
-                tOutline = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+                if (tGlyphsPath != null)
+                    tOutline = Documents.createElement(d, SVGDocumentFrame.svgPathEltName);
+                else
+                    tOutline = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
                 Documents.setAttribute(tOutline, SVGDocumentFrame.strokeAttrName, outline.getColor().toRGBString());
                 Documents.setAttribute(tOutline, SVGDocumentFrame.strokeWidthAttrName, doubleFormatter.format(new Object[] {outline.getThickness()}));
                 Documents.setAttribute(tOutline, SVGDocumentFrame.fillAttrName, "none");
-                tOutline.appendChild(d.createTextNode(text.substring(i, j)));
+                if (tGlyphsPath != null) {
+                    Documents.setAttribute(tOutline, SVGDocumentFrame.dAttrName, tGlyphsPath);
+                } else
+                    tOutline.appendChild(d.createTextNode(tGlyphs));
             } else
                 tOutline = null;
             // text
-            Element t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            Element t;
+            if (tGlyphsPath != null)
+                t = Documents.createElement(d, SVGDocumentFrame.svgPathEltName);
+            else
+                t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            Color lColor = a.getLine().getColor();
+            Color tColor;
             decoration = findDecoration(decorations, Decoration.Type.COLOR, i, j);
-            if (decoration != null) {
-                Color color = decoration.getColor();
-                Documents.setAttribute(t, SVGDocumentFrame.fillAttrName, color.toRGBString());
-            }
-            t.appendChild(d.createTextNode(text.substring(i, j)));
-            // group wrapper (gInner) if font transform required
-            if (fontMatrix != null) {
+            if (decoration != null)
+                tColor = decoration.getColor();
+            else
+                tColor = a.getLine().getColor();
+            if (!tColor.equals(lColor))
+                Documents.setAttribute(t, SVGDocumentFrame.fillAttrName, tColor.toRGBString());
+            if (tGlyphsPath != null)
+                Documents.setAttribute(t, SVGDocumentFrame.dAttrName, tGlyphsPath);
+            else
+                t.appendChild(d.createTextNode(tGlyphs));
+            // group wrapper (gInner) if font transform required or using glyphs path
+            if ((fontMatrix != null) || (tGlyphsPath != null)) {
                 Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
                 Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {0,y}));
                 if (tOutline != null) {
-                    Documents.setAttribute(tOutline, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                    if (fontMatrix != null)
+                        Documents.setAttribute(tOutline, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
                     gInner.appendChild(tOutline);
                 }
-                Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                if (fontMatrix != null)
+                    Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                if ((tGlyphsPath != null) && (tOutline == null)) {
+                    Documents.setAttribute(t, SVGDocumentFrame.strokeAttrName, tColor.toRGBString());
+                    Documents.setAttribute(t, SVGDocumentFrame.strokeWidthAttrName, "0.5");
+                }
                 gInner.appendChild(t);
                 gOuter.appendChild(gInner);
             } else {
@@ -692,39 +722,68 @@ public class SVGRenderProcessor extends RenderProcessor {
         if ((shearAdvance < 0) && rotate)
             xCurrent += -shearAdvance;
         for (int i = 0, n = advances.length; i < n; ++i) {
-            int j = i + 1;
             double ga = advances[i];
             double x = rtl ? xCurrent - ga : xCurrent;
+            int j = i + 1;
+            String tGlyphs = text.substring(i, j);
+            String tGlyphsPath;
+            if (font.containsPUAMapping(tGlyphs))
+                tGlyphsPath = font.getGlyphsPath(tGlyphs, Axis.HORIZONTAL, Arrays.copyOfRange(advances, i, j));
+            else
+                tGlyphsPath = null;
             // outline if required
             Element tOutline;
             Decoration decoration;
             decoration = findDecoration(decorations, Decoration.Type.OUTLINE, i, j);
             if (decoration != null) {
                 Outline outline = decoration.getOutline();
-                tOutline = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+                if (tGlyphsPath != null)
+                    tOutline = Documents.createElement(d, SVGDocumentFrame.svgPathEltName);
+                else
+                    tOutline = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
                 Documents.setAttribute(tOutline, SVGDocumentFrame.strokeAttrName, outline.getColor().toRGBString());
                 Documents.setAttribute(tOutline, SVGDocumentFrame.strokeWidthAttrName, doubleFormatter.format(new Object[] {outline.getThickness()}));
                 Documents.setAttribute(tOutline, SVGDocumentFrame.fillAttrName, "none");
-                tOutline.appendChild(d.createTextNode(text.substring(i, j)));
+                if (tGlyphsPath != null)
+                    Documents.setAttribute(tOutline, SVGDocumentFrame.dAttrName, tGlyphsPath);
+                else
+                    tOutline.appendChild(d.createTextNode(tGlyphs));
             } else
                 tOutline = null;
             // text
             Element t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            if (tGlyphsPath != null)
+                t = Documents.createElement(d, SVGDocumentFrame.svgPathEltName);
+            else
+                t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+            Color lColor = a.getLine().getColor();
+            Color tColor;
             decoration = findDecoration(decorations, Decoration.Type.COLOR, i, j);
-            if (decoration != null) {
-                Color color = decoration.getColor();
-                Documents.setAttribute(t, SVGDocumentFrame.fillAttrName, color.toRGBString());
-            }
-            t.appendChild(d.createTextNode(text.substring(i, j)));
-            // group wrapper (gInner) if font transform required
-            if (fontMatrix != null) {
+            if (decoration != null)
+                tColor = decoration.getColor();
+            else
+                tColor = a.getLine().getColor();
+            if (!tColor.equals(lColor))
+                Documents.setAttribute(t, SVGDocumentFrame.fillAttrName, tColor.toRGBString());
+            if (tGlyphsPath != null)
+                Documents.setAttribute(t, SVGDocumentFrame.dAttrName, tGlyphsPath);
+            else
+                t.appendChild(d.createTextNode(tGlyphs));
+            // group wrapper (gInner) if font transform required or using glyphs path
+            if ((fontMatrix != null) || (tGlyphsPath != null)) {
                 Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
                 Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,0}));
                 if (tOutline != null) {
-                    Documents.setAttribute(tOutline, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                    if (fontMatrix != null)
+                        Documents.setAttribute(tOutline, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
                     gInner.appendChild(tOutline);
                 }
-                Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                if (fontMatrix != null)
+                    Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                if ((tGlyphsPath != null) && (tOutline == null)) {
+                    Documents.setAttribute(t, SVGDocumentFrame.strokeAttrName, tColor.toRGBString());
+                    Documents.setAttribute(t, SVGDocumentFrame.strokeWidthAttrName, "0.5");
+                }
                 gInner.appendChild(t);
                 gOuter.appendChild(gInner);
             } else {

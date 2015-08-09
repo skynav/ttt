@@ -69,6 +69,10 @@ public class FontFeature implements Comparable<FontFeature> {
         return feature;
     }
 
+    public int getArgumentCount() {
+        return (arguments != null) ? arguments.length : 0;
+    }
+
     public Object getArgument(int index) {
         if ((arguments != null) && (arguments.length > index))
             return arguments[index];

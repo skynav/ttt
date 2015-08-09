@@ -224,4 +224,12 @@ public class Font {
         return ls.getScaledAdvances(key, gm);
     }
 
+    public boolean containsPUAMapping(String glyphsAsText) {
+        return ls.containsPUAMapping(key, glyphsAsText);
+    }
+
+    public String getGlyphsPath(String glyphsAsText, Axis resolvedAxis, double[] advances) {
+        return ls.getGlyphsPath(key, glyphsAsText, resolvedAxis, advances);
+    }
+
 }

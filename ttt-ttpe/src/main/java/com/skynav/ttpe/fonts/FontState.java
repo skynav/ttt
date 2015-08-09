@@ -25,17 +25,26 @@
 
 package com.skynav.ttpe.fonts;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.nio.IntBuffer;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.apache.fontbox.cff.CFFCIDFont;
+import org.apache.fontbox.cff.CFFCharset;
+import org.apache.fontbox.cff.CFFFont;
+import org.apache.fontbox.cff.Type1CharString;
 import org.apache.fontbox.ttf.CFFTable;
 import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.GlyphTable;
 import org.apache.fontbox.ttf.KerningSubtable;
 import org.apache.fontbox.ttf.KerningTable;
@@ -51,41 +60,51 @@ import org.apache.fontbox.ttf.advanced.util.CharNormalize;
 import org.apache.fontbox.ttf.advanced.util.CharScript;
 import org.apache.fontbox.ttf.advanced.util.GlyphSequence;
 
+import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.util.Characters;
 import com.skynav.ttv.util.Reporter;
 
 @SuppressWarnings({"unchecked","rawtypes"})
 public class FontState {
 
-    private String source;
-    private Reporter reporter;
-    private OpenTypeFont otf;
-    private boolean otfLoadFailed;
-    private NamingTable nameTable;
-    private OS2WindowsMetricsTable os2Table;
-    private CmapSubtable cmapSubtable;
-    private KerningSubtable kerningSubtable;
-    @SuppressWarnings("unused")
-    private GlyphTable glyphTable;
-    @SuppressWarnings("unused")
-    private CFFTable cffTable;
-    private boolean useLayoutTables;
-    private boolean useLayoutTablesFailed;
-    private GlyphDefinitionTable gdef;
-    private GlyphSubstitutionTable gsub;
-    private GlyphPositioningTable gpos;
-    private Map<GlyphMapping.Key,GlyphMapping> mappings;
-    private Map<Integer,Integer> mappedGlyphs;
-    private Set<Integer> mappingFailures;
-    private Set<Integer> glyphMappingFailures;
-    private int[] widths;
-    private int[] heights;
+    private static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
+
+    private static final int MISSING_GLYPH_CHAR = '#';          // character for missing glyph
+    private static final int PUA_LOWER_LIMIT    = 0xE000;       // lower limit (inclusive) of bmp pua
+    private static final int PUA_UPPER_LIMIT    = 0xF8FF;       // upper limit (inclusive) of bmp pua
+
+    private String source;                                      // font file source path
+    private Reporter reporter;                                  // reporter for warnings, errors, etc
+    private OpenTypeFont otf;                                   // open type font instance (from fontbox)
+    private boolean otfLoadFailed;                              // true if load of open type font failed
+    private NamingTable nameTable;                              // name table
+    private OS2WindowsMetricsTable os2Table;                    // os2 table
+    private CmapSubtable cmapSubtable;                          // cmap subtable for character to glyph mapping
+    private KerningSubtable kerningSubtable;                    // kerning subtable
+    private GlyphTable glyphTable;                              // glyph table
+    private CFFTable cffTable;                                  // cff table (postscript fonts)
+    private boolean useLayoutTables;                            // true if using advanced typographic (layout) tables
+    private boolean useLayoutTablesFailed;                      // true if load of advanced typographic (layout) tables failed
+    private GlyphDefinitionTable gdef;                          // glyph definition table, if available
+    private GlyphSubstitutionTable gsub;                        // glyph substitution table, if available
+    private GlyphPositioningTable gpos;                         // glyph positioning table, if available
+    private Map<GlyphMapping.Key,GlyphMapping> mappings;        // glyph mappings cache
+    private Map<Integer,Integer> gidMappings;                   // map from input character codes to glyph indices (gids)
+    private Set<Integer> gidMappingFailures;                    // set of input character codes that don't map to any glyph index
+    private int puaMappingNext;                                 // next pua assignment for glyphs with no corresponding character code
+    private Map<Integer,Integer> puaMappings;                   // map from unmappable glyph indices to pua character codes
+    private Map<Integer,Integer> puaGlyphMappings;              // map from pua character codes to unmappable glyph indices
+    private Set<Integer> puaMappingFailures;                    // set of glyph indices for which no pua character code could be assigned
+    private double upem;                                        // units per em
+    private int[] widths;                                       // array of glyph advances in horizontal axis
+    private int[] heights;                                      // array of glyph advances in vertical axis
 
     public FontState(String source, Reporter reporter) {
         this.source = source;
         this.reporter = reporter;
         this.mappings = new java.util.HashMap<GlyphMapping.Key,GlyphMapping>();
-        this.mappedGlyphs = new java.util.HashMap<Integer,Integer>();
+        this.gidMappings = new java.util.HashMap<Integer,Integer>();
+        this.puaMappingNext = PUA_LOWER_LIMIT;
     }
 
     public String getPreferredFamilyName(FontKey key) {
@@ -163,6 +182,112 @@ public class FontState {
         return scaledAdvances;
     }
 
+    public boolean containsPUAMapping(FontKey key, String glyphsAsText) {
+        for (int i = 0, n = glyphsAsText.length(); i < n; ++i) {
+            int c = glyphsAsText.charAt(i);
+            if (inActivePUARange(c))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean inActivePUARange(int c) {
+        return (c >= PUA_LOWER_LIMIT) && (c < puaMappingNext);
+    }
+
+    public String getGlyphsPath(FontKey key, String glyphsAsText, Axis resolvedAxis, double[] advances) {
+        if (glyphTable != null)
+            return getGlyphsPathContours(key, glyphsAsText, advances, glyphTable);
+        else if (cffTable != null)
+            return getGlyphsPathContours(key, glyphsAsText, advances, cffTable);
+        else
+            return "";
+    }
+
+    private String getGlyphsPathContours(FontKey key, String glyphsAsText, double[] advances, GlyphTable glyphs) {
+        StringBuffer sb = new StringBuffer();
+        int[] retNext = new int[1];
+        for (int i = 0, n = glyphsAsText.length(); i < n; i = retNext[0]) {
+            int gi = getGlyphId(glyphsAsText, i, null, retNext);
+            if (gi > 0) {
+                try {
+                    GlyphData gd = glyphs.getGlyph(gi);
+                    if (gd != null) {
+                        GeneralPath p = gd.getPath();
+                        if (p != null) {
+                            sb.append(getGlyphsPathContours(key, p, advances[i]));
+                        }
+                    }
+                } catch (IOException e) {
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    private String getGlyphsPathContours(FontKey key, String glyphsAsText, double[] advances, CFFTable glyphs) {
+        StringBuffer sb = new StringBuffer();
+        CFFFont cff = glyphs.getFont();
+        if ((cff != null) && (cff instanceof CFFCIDFont)) {
+            CFFCharset charset = ((CFFCIDFont) cff).getCharset();
+            if (charset != null) {
+                int[] retNext = new int[1];
+                for (int i = 0, n = glyphsAsText.length(); i < n; i = retNext[0]) {
+                    int gi = getGlyphId(glyphsAsText, i, null, retNext);
+                    if (gi > 0) {
+                        try {
+                            int cid = charset.getCIDForGID(gi);
+                            Type1CharString cs = cff.getType2CharString(cid);
+                            if (cs != null) {
+                                GeneralPath p = cs.getPath();
+                                if (p != null) {
+                                    sb.append(getGlyphsPathContours(key, p, advances[i]));
+                                }
+                            }
+                        } catch (IOException e) {
+                        }
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    private String getGlyphsPathContours(FontKey key, GeneralPath p, double advance) {
+        StringBuffer sb = new StringBuffer();
+        double size = key.size.getHeight();
+        double s = size / this.upem;
+        AffineTransform ctm = AffineTransform.getScaleInstance(s, -s);
+        double[] coordinates = new double[6];
+        for (PathIterator pi = p.getPathIterator(ctm); !pi.isDone(); pi.next()) {
+            int op = pi.currentSegment(coordinates);
+            if (op == PathIterator.SEG_CLOSE) {
+                sb.append("Z ");
+            } else if (op == PathIterator.SEG_CUBICTO) {
+                sb.append("C ");
+                appendCoordinates(sb, coordinates, 6);
+            } else if (op == PathIterator.SEG_LINETO) {
+                sb.append("L ");
+                appendCoordinates(sb, coordinates, 2);
+            } else if (op == PathIterator.SEG_MOVETO) {
+                sb.append("M ");
+                appendCoordinates(sb, coordinates, 2);
+            } else if (op == PathIterator.SEG_QUADTO) {
+                sb.append("Q ");
+                appendCoordinates(sb, coordinates, 4);
+            } else {
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    private void appendCoordinates(StringBuffer sb, double[] coordinates, int numCoordinates) {
+        for (int i = 0, n = numCoordinates; i < n; ++i) {
+            sb.append(doubleFormatter.format(new Object[] {coordinates[i]}));
+            sb.append(' ');
+        }
+    }
+
     private boolean maybeLoad(FontKey key) {
         if ((otf == null) && !otfLoadFailed) {
             OpenTypeFont otf = null;
@@ -172,6 +297,7 @@ public class FontState {
             KerningSubtable kerningSubtable = null;
             GlyphTable glyphTable = null;
             CFFTable cffTable = null;
+            double upem = 1000;
             int[] widths = null;
             int[] heights = null;
             boolean useLayoutTables = false;
@@ -189,6 +315,7 @@ public class FontState {
                         glyphTable = otf.getGlyph();
                     else
                         cffTable = otf.getCFF();
+                    upem = (double) otf.getUnitsPerEm();
                     widths = otf.getAdvanceWidths();
                     heights = otf.getAdvanceHeights();
                     useLayoutTables = useLayoutTables(key, otf);
@@ -204,6 +331,7 @@ public class FontState {
                 this.kerningSubtable = kerningSubtable;
                 this.glyphTable = glyphTable;
                 this.cffTable = cffTable;
+                this.upem = upem;
                 this.widths = widths;
                 this.heights = heights;
                 this.useLayoutTables = useLayoutTables;
@@ -220,16 +348,14 @@ public class FontState {
         else if (useLayoutTables)
             return true;
         else if (otf.hasLayoutTables() && !useLayoutTablesFailed) {
-            if ((gdef = otf.getGDEF()) != null) {
-                gsub = otf.getGSUB();
-                gpos = otf.getGPOS();
-                if ((gsub == null) && (gpos == null))
-                    useLayoutTablesFailed = true;
-            } else
+            gdef = otf.getGDEF();
+            gsub = otf.getGSUB();
+            gpos = otf.getGPOS();
+            if ((gsub == null) && (gpos == null))
                 useLayoutTablesFailed = true;
             return !useLayoutTablesFailed;
-        }
-        return false;
+        } else
+            return false;
     }
 
     private GlyphMapping getCachedMapping(FontKey key, GlyphMapping.Key gmk) {
@@ -268,22 +394,28 @@ public class FontState {
         if ((language == null) || language.isEmpty() || "none".equals(language))
             language = "dflt";
 
+        // prepare mapping features
+        SortedSet<FontFeature> features = new java.util.TreeSet<FontFeature>(gmk.getFeatures());
+        if (gmk.getAdvanceAxis(key).isVertical())
+            features.add(FontFeature.VERT.parameterize(Boolean.TRUE));
+        Object[][] mappingFeatures = getMappingFeatures(features);
+
         // perform substitutions
         CharSequence mcs;
         List associations = new java.util.ArrayList();
         boolean retainControls = false;
         if (performsSubstitution())
-            mcs = performSubstitution(key, text, script, language, associations, retainControls);
+            mcs = performSubstitution(key, text, script, language, mappingFeatures, associations, retainControls);
         else
             mcs = text;
 
         // perform positioning
         int[][] gpa = null;
         if (performsPositioning())
-            gpa = performPositioning(key, mcs, script, language, (int) Math.floor(key.size.getDimension(key.axis) * 1000));
+            gpa = performPositioning(key, mcs, script, language, mappingFeatures, (int) Math.floor(key.size.getDimension(key.axis) * 1000));
 
         // reorder combining marks
-        mcs = reorderCombiningMarks(key, mcs, gpa, script, language, associations);
+        mcs = reorderCombiningMarks(key, mcs, gpa, script, language, mappingFeatures, associations);
 
         // construct final output glyph sequence and mapping
         GlyphSequence ogs = mapCharsToGlyphs(mcs, associations);
@@ -293,16 +425,31 @@ public class FontState {
         return gm;
     }
 
+    private Object[][] getMappingFeatures(SortedSet<FontFeature> features) {
+        int nf = features.size();
+        Object[][] mappingFeatures = new Object[nf][];
+        int k = 0;
+        for (FontFeature f : features) {
+            int na = f.getArgumentCount();
+            Object[] fa = new Object[na + 1];
+            fa[0] = f.getFeature();
+            for (int i = 0, n = na; i < n; ++i)
+                fa[i + 1] = f.getArgument(i);
+            mappingFeatures[k++] = fa;
+        }
+        return mappingFeatures;
+    }
+
     private int[] getAdvances(FontKey key, GlyphMapping.Key gmk, GlyphSequence gs) {
         boolean vertical = gmk.getAdvanceAxis(key).isVertical();
         int[] glyphs = getGlyphs(gs);
         int[] kerning = gmk.isKerningEnabled() ? ((kerningSubtable != null) ? kerningSubtable.getKerning(glyphs) : null) : null;
         int[] advances = new int[glyphs.length];
         for (int i = 0, n = advances.length; i < n; ++i) {
-            int g = glyphs[i];
-            int c = mappedGlyphs.get(g);
+            int gi = glyphs[i];
+            int c = gidMappings.get(gi);
             if (!Characters.isZeroWidthWhitespace(c)) {
-                int a = vertical ? getAdvanceHeight(g) : getAdvanceWidth(g);
+                int a = vertical ? getAdvanceHeight(gi) : getAdvanceWidth(gi);
                 int k = (kerning != null) ? kerning[i] : 0;
                 advances[i] = a + k;
             }
@@ -317,20 +464,20 @@ public class FontState {
         return glyphs;
     }
 
-    private int getAdvanceHeight(int g) {
+    private int getAdvanceHeight(int gi) {
         if (heights != null) {
-            if (g >= heights.length)
-                g = heights.length - 1;
-            return heights[g];
+            if (gi >= heights.length)
+                gi = heights.length - 1;
+            return heights[gi];
         } else
             return 0;
     }
 
-    private int getAdvanceWidth(int g) {
+    private int getAdvanceWidth(int gi) {
         if (widths != null) {
-            if (g >= widths.length)
-                g = widths.length - 1;
-            return widths[g];
+            if (gi >= widths.length)
+                gi = widths.length - 1;
+            return widths[gi];
         } else
             return 0;
     }
@@ -341,7 +488,7 @@ public class FontState {
 
     private double scaleFontUnits(double size, double v) {
         try {
-            return (v / (double) otf.getUnitsPerEm()) * size;
+            return (v / this.upem) * size;
         } catch (Exception e) {
             return v;
         }
@@ -353,11 +500,11 @@ public class FontState {
         return gsub != null;
     }
 
-    private CharSequence performSubstitution(FontKey key, CharSequence cs, String script, String language, List associations, boolean retainControls) {
+    private CharSequence performSubstitution(FontKey key, CharSequence cs, String script, String language, Object[][] features, List associations, boolean retainControls) {
         if (gsub != null) {
             CharSequence  ncs = normalize(cs, associations);
             GlyphSequence igs = mapCharsToGlyphs(ncs, associations);
-            GlyphSequence ogs = gsub.substitute(igs, script, language);
+            GlyphSequence ogs = gsub.substitute(igs, script, language, features);
             if (associations != null) {
                 associations.clear();
                 associations.addAll(ogs.getAssociations());
@@ -372,10 +519,10 @@ public class FontState {
         }
     }
 
-    private CharSequence reorderCombiningMarks(FontKey key, CharSequence cs, int[][] gpa, String script, String language, List associations) {
+    private CharSequence reorderCombiningMarks(FontKey key, CharSequence cs, int[][] gpa, String script, String language, Object[][] features, List associations) {
         if (gdef != null) {
             GlyphSequence igs = mapCharsToGlyphs(cs, associations);
-            GlyphSequence ogs = gdef.reorderCombiningMarks(igs, getUnscaledWidths(igs), gpa, script, language);
+            GlyphSequence ogs = gdef.reorderCombiningMarks(igs, getUnscaledWidths(igs), gpa, script, language, features);
             if (associations != null) {
                 associations.clear();
                 associations.addAll(ogs.getAssociations());
@@ -493,11 +640,11 @@ public class FontState {
         return gpos != null;
     }
 
-    private int[][] performPositioning(FontKey key, CharSequence cs, String script, String language, int fontSize) {
+    private int[][] performPositioning(FontKey key, CharSequence cs, String script, String language, Object[][] features, int fontSize) {
         if (gpos != null) {
             GlyphSequence gs = mapCharsToGlyphs(cs, null);
             int[][] adjustments = new int [ gs.getGlyphCount() ] [ 4 ];
-            if (gpos.position(gs, script, language, fontSize, this.widths, adjustments)) {
+            if (gpos.position(gs, script, language, features, fontSize, this.widths, adjustments)) {
                 return scaleAdjustments(adjustments, fontSize);
             } else {
                 return null;
@@ -525,32 +672,18 @@ public class FontState {
         IntBuffer cb = IntBuffer.allocate(cs.length());
         IntBuffer gb = IntBuffer.allocate(cs.length());
         int gi;
-        int giMissing = getGlyphId(/*Typeface.NOT_FOUND*/ '#');
-        for (int i = 0, n = cs.length(); i < n; i++) {
-            int cc = cs.charAt(i);
-            if ((cc >= 0xD800) && (cc < 0xDC00)) {
-                if ((i + 1) < n) {
-                    int sh = cc;
-                    int sl = cs.charAt(++i);
-                    if ((sl >= 0xDC00) && (sl < 0xE000)) {
-                        cc = 0x10000 + ((sh - 0xD800) << 10) + ((sl - 0xDC00) << 0);
-                    } else {
-                        throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated high surrogate at index " + i);
-                    }
-                } else {
-                    throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated high surrogate at end of sequence");
-                }
-            } else if ((cc >= 0xDC00) && (cc < 0xE000)) {
-                throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated low surrogate at index " + i);
-            }
-            gi = getGlyphId(cc);
+        int giMissing = getGlyphId(MISSING_GLYPH_CHAR);
+        int[] retChar = new int[1];
+        int[] retNext = new int[1];
+        for (int i = 0, n = cs.length(); i < n; i = retNext[0]) {
+            gi = getGlyphId(cs, i, retChar, retNext);
             if (gi <= 0) {
-                maybeReportMappingFailure((char) cc);
+                maybeReportMappingFailure(retChar[0]);
                 gi = giMissing;
             }
-            cb.put(cc);
+            cb.put(retChar[0]);
             gb.put(gi);
-            mappedGlyphs.put(gi, cc);
+            gidMappings.put(gi, retChar[0]);
         }
         cb.flip();
         gb.flip();
@@ -562,9 +695,36 @@ public class FontState {
         return new GlyphSequence(cb, gb, associations);
     }
 
+    private int getGlyphId(CharSequence cs, int index, int[] retChar, int[] retNext) {
+        int c = cs.charAt(index++);
+        if ((c >= 0xD800) && (c < 0xDC00)) {
+            int n = cs.length();
+            if (index < n) {
+                int sh = c;
+                int sl = cs.charAt(index++);
+                if ((sl >= 0xDC00) && (sl < 0xE000)) {
+                    c = 0x10000 + ((sh - 0xD800) << 10) + ((sl - 0xDC00) << 0);
+                } else {
+                    throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated high surrogate at index " + (index - 1));
+                }
+            } else {
+                throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated high surrogate at end of sequence");
+            }
+        } else if ((c >= 0xDC00) && (c < 0xE000)) {
+            throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated low surrogate at index " + (index - 1));
+        }
+        if (retChar != null)
+            retChar[0] = c;
+        if (retNext != null)
+            retNext[0] = index;
+        return getGlyphId(c);
+    }
+
     private int getGlyphId(int c) {
         assert cmapSubtable != null;
         int gid = cmapSubtable.getGlyphId(c);
+        if ((gid == 0) && inActivePUARange(c))
+            gid = getPUAGlyph(c);
         if (gid == 0)
             maybeReportMappingFailure(c);
         return gid;
@@ -573,12 +733,12 @@ public class FontState {
     private void maybeReportMappingFailure(int c) {
         if (dontReportMappingFailure(c))
             return;
-        if (mappingFailures == null)
-            mappingFailures = new java.util.HashSet<Integer>();
+        if (gidMappingFailures == null)
+            gidMappingFailures = new java.util.HashSet<Integer>();
         Integer value = Integer.valueOf(c);
-        if (!mappingFailures.contains(value)) {
+        if (!gidMappingFailures.contains(value)) {
             reporter.logWarning(reporter.message("*KEY*", "No glyph mapping for character {0} in font resource ''{1}''.", Characters.formatCharacter(c), source));
-            mappingFailures.add(value);
+            gidMappingFailures.add(value);
         }
     }
 
@@ -592,14 +752,11 @@ public class FontState {
     private CharSequence mapGlyphsToChars(GlyphSequence gs) {
         int ng = gs.getGlyphCount();
         CharBuffer cb = CharBuffer.allocate(ng);
-        int ccMissing = '#';
         for (int i = 0, n = ng; i < n; i++) {
             int gi = gs.getGlyph(i);
             int cc = findCharacterFromGlyphIndex(gi);
-            if ((cc == 0) || (cc > 0x10FFFF)) {
-                cc = ccMissing;
-                reportGlyphMappingFailure(gi);
-            }
+            if ((cc == 0) || (cc > 0x10FFFF))
+                cc = getPUACharacter(gi);
             if (cc > 0x00FFFF) {
                 int sh;
                 int sl;
@@ -616,21 +773,47 @@ public class FontState {
         return cb;
     }
 
-    private int findCharacterFromGlyphIndex(int g) {
+    private int findCharacterFromGlyphIndex(int gi) {
         if (cmapSubtable != null) {
-            Integer c = cmapSubtable.getCharacterCode(g);
+            Integer c = cmapSubtable.getCharacterCode(gi);
             return (c != null) ? (int) c : 0;
         } else
             return 0;
     }
 
-    private void reportGlyphMappingFailure(int g) {
-        if (glyphMappingFailures == null)
-            glyphMappingFailures = new java.util.HashSet<Integer>();
-        Integer value = Integer.valueOf(g);
-        if (!glyphMappingFailures.contains(value)) {
-            reporter.logWarning(reporter.message("*KEY*", "No character mapping for glyph {0} in font resource ''{1}''.", String.format("0x%04X", g), source));
-            glyphMappingFailures.add(value);
+    private int getPUACharacter(int gi) {
+        Integer v = (puaMappings != null) ? puaMappings.get(gi) : null;
+        if (v == null) {
+            int cc;
+            if (puaMappingNext < PUA_UPPER_LIMIT) {
+                cc = puaMappingNext++;
+                if (puaMappings == null) {
+                    puaMappings = new java.util.HashMap<Integer,Integer>();
+                    puaGlyphMappings = new java.util.HashMap<Integer,Integer>();
+                }
+                puaMappings.put(gi, cc);
+                puaGlyphMappings.put(cc, gi);
+            } else {
+                reportPUAMappingExhausted(gi);
+                cc = MISSING_GLYPH_CHAR;
+            }
+            return cc;
+        } else
+            return (int) v;
+    }
+
+    private int getPUAGlyph(int cc) {
+        Integer v = (puaGlyphMappings != null) ? puaGlyphMappings.get(cc) : null;
+        return (v != null) ? (int) v : 0;
+    }
+
+    private void reportPUAMappingExhausted(int gi) {
+        if (puaMappingFailures == null)
+            puaMappingFailures = new java.util.HashSet<Integer>();
+        Integer value = Integer.valueOf(gi);
+        if (!puaMappingFailures.contains(value)) {
+            reporter.logWarning(reporter.message("*KEY*", "No PUA mapping available for glyph {0} in font resource ''{1}''.", String.format("0x%04X", gi), source));
+            puaMappingFailures.add(value);
         }
     }
 

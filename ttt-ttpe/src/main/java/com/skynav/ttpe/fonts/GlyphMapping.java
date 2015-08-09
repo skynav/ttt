@@ -39,7 +39,7 @@ import com.skynav.ttpe.geometry.Axis;
 @SuppressWarnings("rawtypes")
 public class GlyphMapping {
 
-    private Key key;                                // key (text + features)
+    private Key key;                                // key (input text + input features)
     private String resolvedScript;                  // resolved script
     private String resolvedLanguage;                // resolved language
     private int[] glyphs;                           // mapped glyphs
