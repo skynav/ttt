@@ -384,8 +384,11 @@ public class LineLayout {
                     GlyphMapping gm = f.getGlyphMapping(t, makeGlyphMappingFeatures(script, language, f.getAxis(), f.isKerningEnabled(), run.orientation, run.combination));
                     if (gm != null) {
                         double ipd = f.getScaledAdvance(gm);
+                        boolean cross = !run.combination.isNone();
+                        if (cross)
+                            ipd += run.getShearAdvance();
                         GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, f, gm, d);
-                        l.addChild(a, run.combination.isNone() ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
+                        l.addChild(a, !cross ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
                     }
                 }
                 if (fai.isOuterScope())

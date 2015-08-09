@@ -724,6 +724,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         for (int i = 0, n = advances.length; i < n; ++i) {
             double ga = advances[i];
             double x = rtl ? xCurrent - ga : xCurrent;
+            double y = getCrossShearAdjustment(a);
             int j = i + 1;
             String tGlyphs = text.substring(i, j);
             String tGlyphsPath;
@@ -772,7 +773,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             // group wrapper (gInner) if font transform required or using glyphs path
             if ((fontMatrix != null) || (tGlyphsPath != null)) {
                 Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
-                Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,0}));
+                Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,y}));
                 if (tOutline != null) {
                     if (fontMatrix != null)
                         Documents.setAttribute(tOutline, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
@@ -789,15 +790,31 @@ public class SVGRenderProcessor extends RenderProcessor {
             } else {
                 if (tOutline != null) {
                     Documents.setAttribute(tOutline, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                    if (y != 0)
+                        Documents.setAttribute(tOutline, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
                     gOuter.appendChild(tOutline);
                 }
                 Documents.setAttribute(t, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                if (y != 0)
+                    Documents.setAttribute(t, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
                 gOuter.appendChild(t);
             }
             xCurrent += rtl ? -ga : ga;
         }
         xCurrent = xSaved;
         return gOuter;
+    }
+
+    private double getCrossShearAdjustment(GlyphArea a) {
+        if (a.isCombined()) {
+            AreaNode aPrev = a.getPreviousSibling();
+            if ((aPrev != null) && (aPrev instanceof GlyphArea)) {
+                GlyphArea aPrevGlyphs = (GlyphArea) aPrev;
+                if (!aPrevGlyphs.isCombined())
+                    return - aPrevGlyphs.getFont().getShearAdvance(false, true)/2;
+            }
+        }
+        return 0;
     }
 
     private Decoration findDecoration(List<Decoration> decorations, Decoration.Type type, int from, int to) {

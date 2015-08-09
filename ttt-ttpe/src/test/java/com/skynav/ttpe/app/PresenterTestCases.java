@@ -360,6 +360,11 @@ public class PresenterTestCases {
         performPresentationTest("test-061-vertical-mapped-rotations.xml", 0, 0);
     }
 
+    @Test
+    public void test062TextCombineWithShearIssue125() throws Exception {
+        performPresentationTest("test-062-text-combine-with-shear-issue-125.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

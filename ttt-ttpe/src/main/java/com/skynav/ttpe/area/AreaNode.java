@@ -100,6 +100,34 @@ public class AreaNode extends AbstractArea {
         return (parent != null) ? parent.get() : null;
     }
 
+    public AreaNode getPreviousSibling() {
+        NonLeafAreaNode p = getParent();
+        if (p != null) {
+            AreaNode cPrev = null;
+            for (AreaNode c : p.getChildren()) {
+                if (c == this)
+                    return cPrev;
+                else
+                    cPrev = c;
+            }
+        }
+        return null;
+    }
+
+    public AreaNode getNextSibling() {
+        NonLeafAreaNode p = getParent();
+        if (p != null) {
+            AreaNode cPrev = null;
+            for (AreaNode c : p.getChildren()) {
+                if (cPrev == this)
+                    return c;
+                else
+                    cPrev = c;
+            }
+        }
+        return null;
+    }
+
     public LineArea getLine() {
         for (AreaNode p = getParent(); p != null; p = p.getParent()) {
             if (p instanceof LineArea)
