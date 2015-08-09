@@ -712,9 +712,11 @@ public class Characters {
             return true;
         else if (vo == VerticalOrientation.Tu)
             return true;
-        else if ((vo == VerticalOrientation.Tr) && hasVertical(c))
+        else if (vo == VerticalOrientation.Tr) {
+            // TBD - should return false if font doesn't have a Tr mapping, but we don't have a font binding here; so just assume it does have a mapping;
+            // if it doesn't have one, then will get an upright glyph when we want a rotated glyph
             return true;
-        else
+        } else
             return false;
     }
 
@@ -1451,7 +1453,7 @@ public class Characters {
     };
 
     private static final int[] h2vVal = new int[] {
-        0xFE19,
+        0xFE19
     };
 
     public static boolean hasVertical(int c) {

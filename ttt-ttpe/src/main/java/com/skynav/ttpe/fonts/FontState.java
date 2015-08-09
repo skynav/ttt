@@ -395,10 +395,7 @@ public class FontState {
             language = "dflt";
 
         // prepare mapping features
-        SortedSet<FontFeature> features = new java.util.TreeSet<FontFeature>(gmk.getFeatures());
-        if (gmk.getAdvanceAxis(key).isVertical())
-            features.add(FontFeature.VERT.parameterize(Boolean.TRUE));
-        Object[][] mappingFeatures = getMappingFeatures(features);
+        Object[][] mappingFeatures = getMappingFeatures(new java.util.TreeSet<FontFeature>(gmk.getFeatures()));
 
         // perform substitutions
         CharSequence mcs;

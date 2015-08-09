@@ -684,7 +684,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 }
                 if (fontMatrix != null)
                     Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
-                if ((tGlyphsPath != null) && (tOutline == null)) {
+                if (tGlyphsPath != null) {
                     Documents.setAttribute(t, SVGDocumentFrame.strokeAttrName, tColor.toRGBString());
                     Documents.setAttribute(t, SVGDocumentFrame.strokeWidthAttrName, "0.5");
                 }
@@ -780,7 +780,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 }
                 if (fontMatrix != null)
                     Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
-                if ((tGlyphsPath != null) && (tOutline == null)) {
+                if (tGlyphsPath != null) {
                     Documents.setAttribute(t, SVGDocumentFrame.strokeAttrName, tColor.toRGBString());
                     Documents.setAttribute(t, SVGDocumentFrame.strokeWidthAttrName, "0.5");
                 }

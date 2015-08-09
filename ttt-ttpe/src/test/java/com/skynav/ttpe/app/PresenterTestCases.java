@@ -355,6 +355,11 @@ public class PresenterTestCases {
         performPresentationTest("test-060-expanded-font-width-in-vertical-issue-119.xml", 0, 0);
     }
 
+    @Test
+    public void test061VerticalMappedRotations() throws Exception {
+        performPresentationTest("test-061-vertical-mapped-rotations.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

@@ -45,6 +45,7 @@ import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.fonts.GlyphMapping;
 import com.skynav.ttpe.fonts.Orientation;
+import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.AnnotationPosition;
@@ -380,7 +381,7 @@ public class LineLayout {
                         d = null;
                 }
                 if (f != null) {
-                    GlyphMapping gm = f.getGlyphMapping(t, makeGlyphMappingFeatures(script, language, f.isKerningEnabled(), run.orientation, run.combination));
+                    GlyphMapping gm = f.getGlyphMapping(t, makeGlyphMappingFeatures(script, language, f.getAxis(), f.isKerningEnabled(), run.orientation, run.combination));
                     if (gm != null) {
                         double ipd = f.getScaledAdvance(gm);
                         GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, f, gm, d);
@@ -393,7 +394,7 @@ public class LineLayout {
         }
     }
 
-    private SortedSet<FontFeature> makeGlyphMappingFeatures(String script, String language, boolean kerned, Orientation orientation, Combination combination) {
+    private SortedSet<FontFeature> makeGlyphMappingFeatures(String script, String language, Axis axis, boolean kerned, Orientation orientation, Combination combination) {
         SortedSet<FontFeature> features = new java.util.TreeSet<FontFeature>();
         if ((script != null) && !script.isEmpty())
             features.add(FontFeature.SCPT.parameterize(script));
@@ -405,6 +406,8 @@ public class LineLayout {
             features.add(FontFeature.ORNT.parameterize(orientation));
         if ((combination != null) && !combination.isNone())
             features.add(FontFeature.COMB.parameterize(combination));
+        if ((axis != null) && axis.cross(!combination.isNone()).isVertical() && !orientation.isRotated())
+            features.add(FontFeature.VERT.parameterize(Boolean.TRUE));
         return features;
     }
 
@@ -502,6 +505,7 @@ public class LineLayout {
             int baseLength = base.length();
             double[] advances = new double[baseLength];
             boolean kerningEnabled = font.isKerningEnabled();
+            Axis axis = font.getAxis();
             for (int i = 0, n = baseLength; i < n; ++i) {
                 int j = i + 1;
                 Orientation orientation = null;
@@ -510,7 +514,7 @@ public class LineLayout {
                 if (orientation == null)
                     orientation = Orientation.ROTATE000;
                 String baseText = base.substring(i, j);
-                GlyphMapping gm = font.getGlyphMapping(baseText, makeGlyphMappingFeatures(baseScript, baseLanguage, kerningEnabled, orientation, Combination.NONE));
+                GlyphMapping gm = font.getGlyphMapping(baseText, makeGlyphMappingFeatures(baseScript, baseLanguage, axis, kerningEnabled, orientation, Combination.NONE));
                 advances[i] = font.getScaledAdvance(gm);
             }
             return advances;
@@ -842,7 +846,7 @@ public class LineLayout {
             if (font.isVertical() && (orientation == Orientation.ROTATE090) && !combination.isNone())
                 return lineHeight;
             else {
-                GlyphMapping gm = font.getGlyphMapping(text, makeGlyphMappingFeatures(script, language, font.isKerningEnabled(), orientation, combination));
+                GlyphMapping gm = font.getGlyphMapping(text, makeGlyphMappingFeatures(script, language, font.getAxis(), font.isKerningEnabled(), orientation, combination));
                 return (gm != null) ? font.getScaledAdvance(gm) : 0;
             }
         }

@@ -82,8 +82,13 @@ public class Strings {
         }
         if (hasVertical) {
             StringBuffer sb = new StringBuffer(s.length());
-            for (int i = 0, n = s.length(); i < n; ++i)
-                sb.append((char) Characters.toVertical(s.charAt(i)));
+            for (int i = 0, n = s.length(); i < n; ++i) {
+                int c  = s.charAt(i);
+                int vc = Characters.toVertical(c);
+                if (vc <= 0)
+                    vc = c;
+                sb.append((char) vc);
+            }
             return sb.toString();
         } else
             return s;

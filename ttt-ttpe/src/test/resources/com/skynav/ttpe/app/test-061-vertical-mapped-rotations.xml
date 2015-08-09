@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="ja" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:displayAlign="after" tts:extent="768px 90px" tts:origin="256px 610px"/>
+      <region xml:id="r1" tts:displayAlign="after" tts:extent="90px 576px" tts:origin="20px 72px" tts:writingMode="tblr"/>
+      <region xml:id="r2" tts:displayAlign="after" tts:extent="90px 576px" tts:origin="1170px 72px" tts:writingMode="tbrl"/>
+    </layout>
+  </head>
+  <body tts:textAlign="center" tts:fontFamily="Noto Sans" tts:fontSize="24px" tts:lineHeight="30px">
+    <div>
+      <p region="r0" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center">
+        &#x300C;&#x3001;&#x300D; &#x300C;&#x3002;&#x300D; &#x300C;&#x301D;&#x300D; &#x300C;&#x301E;&#x300D; &#x300C;&#x301F;&#x300D;<br/>
+        &#x300C;&#x309B;&#x300D; &#x300C;&#x309C;&#x300D; &#x300C;&#x30A0;&#x300D; &#x300C;&#x30FC;&#x300D; &#x300C;&#x3300;&#x300D;<br/>
+        &#x300C;&#xFF0C;&#x300D; &#x300C;&#xFF0E;&#x300D; &#x300C;&#xFF1B;&#x300D; &#x300C;&#xFF3F;&#x300D; &#x300C;&#xFFE3;&#x300D;
+      </p>
+      <p region="r2" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center">
+        &#x300C;&#x3001;&#x300D; &#x300C;&#x3002;&#x300D; &#x300C;&#x301D;&#x300D; &#x300C;&#x301E;&#x300D; &#x300C;&#x301F;&#x300D;<br/>
+        &#x300C;&#x309B;&#x300D; &#x300C;&#x309C;&#x300D; &#x300C;&#x30A0;&#x300D; &#x300C;&#x30FC;&#x300D; &#x300C;&#x3300;&#x300D;<br/>
+        &#x300C;&#xFF0C;&#x300D; &#x300C;&#xFF0E;&#x300D; &#x300C;&#xFF1B;&#x300D; &#x300C;&#xFF3F;&#x300D; &#x300C;&#xFFE3;&#x300D;
+      </p>
+    </div>
+  </body>
+</tt>
