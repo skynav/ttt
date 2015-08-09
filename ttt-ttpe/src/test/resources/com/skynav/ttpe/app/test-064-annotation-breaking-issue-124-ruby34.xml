@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="jp" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<head>
+<styling>
+<initial tts:fontSize="4vh"/>
+<initial tts:lineHeight="5vh"/>
+<initial tts:showBackground="whenActive"/>
+<style xml:id="s1" tts:textAlign="center"/>
+<style xml:id="s2" tts:textAlign="start"/>
+<style xml:id="s3" tts:ruby="container"/>
+<style xml:id="s4" tts:ruby="base"/>
+<style xml:id="s5" tts:ruby="text" tts:rubyPosition="before"/>
+</styling>
+<layout>
+<region xml:id="横下" tts:displayAlign="after" tts:extent="80vw 15vh" tts:position="center bottom 10vh"/>
+</layout>
+</head>
+<body region="横下" xml:space="preserve">
+<div>
+<p begin="00:00:29:00" end="00:00:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文文文</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文文文</span></span>”</span></p>
+<p begin="00:01:29:00" end="00:01:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゥゥ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゥゥ</span></span>”</span></p>
+<p begin="00:02:29:00" end="00:02:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ェェ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ェェ</span></span>”</span></p>
+<p begin="00:03:29:00" end="00:03:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ォォ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ォォ</span></span>”</span></p>
+<p begin="00:04:29:00" end="00:04:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ャャ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ャャ</span></span>”</span></p>
+<p begin="00:05:29:00" end="00:05:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ュュ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ュュ</span></span>”</span></p>
+<p begin="00:06:29:00" end="00:06:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ョョ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ョョ</span></span>”</span></p>
+<p begin="00:07:29:00" end="00:07:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヮヮ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヮヮ</span></span>”</span></p>
+<p begin="00:08:29:00" end="00:08:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヵヵ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヵヵ</span></span>”</span></p>
+<p begin="00:09:29:00" end="00:09:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヶヶ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヶヶ</span></span>”</span></p>
+<p begin="00:10:29:00" end="00:10:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ぁぁ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ぁぁ</span></span>”</span></p>
+<p begin="00:11:29:00" end="00:11:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ぃぃ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ぃぃ</span></span>”</span></p>
+<p begin="00:12:29:00" end="00:12:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ぅぅ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ぅぅ</span></span>”</span></p>
+<p begin="00:13:29:00" end="00:13:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ぇぇ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ぇぇ</span></span>”</span></p>
+<p begin="00:14:29:00" end="00:14:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ぉぉ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ぉぉ</span></span>”</span></p>
+<p begin="00:15:29:00" end="00:15:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゃゃ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゃゃ</span></span>”</span></p>
+<p begin="00:16:29:00" end="00:16:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゅゅ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゅゅ</span></span>”</span></p>
+<p begin="00:17:29:00" end="00:17:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ょょ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ょょ</span></span>”</span></p>
+<p begin="00:18:29:00" end="00:18:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゎゎ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゎゎ</span></span>”</span></p>
+<p begin="00:19:29:00" end="00:19:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヷヷ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヷヷ</span></span>”</span></p>
+<p begin="00:20:29:00" end="00:20:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヸヸ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヸヸ</span></span>”</span></p>
+<p begin="00:21:29:00" end="00:21:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヹヹ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヹヹ</span></span>”</span></p>
+<p begin="00:22:29:00" end="00:22:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヺヺ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヺヺ</span></span>”</span></p>
+<p begin="00:23:29:00" end="00:23:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヽヽ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヽヽ</span></span>”</span></p>
+<p begin="00:24:29:00" end="00:24:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヾヾ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヾヾ</span></span>”</span></p>
+<p begin="00:25:29:00" end="00:25:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ヿヿ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ヿヿ</span></span>”</span></p>
+<p begin="00:26:29:00" end="00:26:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゔゔ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゔゔ</span></span>”</span></p>
+<p begin="00:27:29:00" end="00:27:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゕゕ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゕゕ</span></span>”</span></p>
+<p begin="00:28:29:00" end="00:28:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゖゖ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゖゖ</span></span>”</span></p>
+<p begin="00:29:29:00" end="00:29:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文゛゛</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文゛゛</span></span>”</span></p>
+<p begin="00:30:29:00" end="00:30:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文゜゜</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文゜゜</span></span>”</span></p>
+<p begin="00:31:29:00" end="00:31:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゝゝ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゝゝ</span></span>”</span></p>
+<p begin="00:32:29:00" end="00:32:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゞゞ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゞゞ</span></span>”</span></p>
+<p begin="00:33:29:00" end="00:33:32:00" style="s1"><span style="s2">“<span style="s3"><span style="s4">ＳＵＸＸ</span><span style="s5">文ゟゟ</span></span>”　　“<span style="s3"><span style="s4">文文文文</span><span style="s5">文ゟゟ</span></span>”</span></p>
+</div>
+</body>
+</tt>

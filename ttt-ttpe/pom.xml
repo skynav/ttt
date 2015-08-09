@@ -97,31 +97,6 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>${exec.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <mainClass>com.skynav.ttpe.app.Presenter</mainClass>
-          <arguments>
-            <argument>-v</argument>
-            <argument>--config</argument>
-            <argument>${test.basedir}/test.config.xml</argument>
-            <argument>--font-directory</argument>
-            <argument>${test.basedir}/fonts</argument>
-            <argument>--warn-on</argument>
-            <argument>all</argument>
-            <argument>${test.basedir}/test.xml</argument>
-          </arguments>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -168,5 +143,69 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>run-ttpe</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>${exec.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <mainClass>com.skynav.ttpe.app.Presenter</mainClass>
+              <arguments>
+                <argument>-v</argument>
+                <argument>--config</argument>
+                <argument>${test.basedir}/test.config.xml</argument>
+                <argument>--font-directory</argument>
+                <argument>${test.basedir}/fonts</argument>
+                <argument>--warn-on</argument>
+                <argument>all</argument>
+                <argument>${test.basedir}/test.xml</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>run-lb-compiler</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>${exec.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <mainClass>com.skynav.ttpe.text.LineBreaker</mainClass>
+              <arguments>
+                <argument>src/main/resources/com/skynav/ttpe/text/icu-brkiter-uax14.txt</argument>
+                <argument>src/main/resources/com/skynav/ttpe/text/icu-brkiter-uax14.dat</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

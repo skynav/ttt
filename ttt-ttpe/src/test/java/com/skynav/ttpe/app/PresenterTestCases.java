@@ -365,6 +365,16 @@ public class PresenterTestCases {
         performPresentationTest("test-062-text-combine-with-shear-issue-125.xml", 0, 0);
     }
 
+    @Test
+    public void test063AnnotationBreakingIssue124Ruby33() throws Exception {
+        performPresentationTest("test-063-annotation-breaking-issue-124-ruby33.xml", 0, 0);
+    }
+
+    @Test
+    public void test064AnnotationBreakingIssue124Ruby34() throws Exception {
+        performPresentationTest("test-064-annotation-breaking-issue-124-ruby34.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
