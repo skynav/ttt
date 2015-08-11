@@ -34,7 +34,6 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 
 import com.skynav.ttpe.geometry.Extent;
-import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.render.AbstractDocumentFrame;
 import com.skynav.xml.helpers.XML;
 
@@ -50,6 +49,7 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     public static final QName svgPathEltName                    = new QName(NAMESPACE, "path");
 
     // attribute name constants
+    public static final QName classAttrName                     = new QName("", "class");
     public static final QName dAttrName                         = new QName("", "d");
     public static final QName dxAttrName                        = new QName("", "dx");
     public static final QName dyAttrName                        = new QName("", "dy");
@@ -59,6 +59,7 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     public static final QName fontStyleAttrName                 = new QName("", "font-style");
     public static final QName fontWeightAttrName                = new QName("", "font-weight");
     public static final QName heightAttrName                    = new QName("", "height");
+    public static final QName idAttrName                        = new QName("", "id");
     public static final QName opacityAttrName                   = new QName("", "opacity");
     public static final QName strokeAttrName                    = new QName("", "stroke");
     public static final QName strokeWidthAttrName               = new QName("", "stroke-width");
@@ -85,14 +86,14 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
         startTagIndentExclusions.add(svgTextEltName);
     }
 
-    private List<Rectangle> regions;
+    private List<SVGFrameRegion> regions;
 
-    public SVGDocumentFrame(double begin, double end, Extent extent, Document d, List<Rectangle> regions) {
+    public SVGDocumentFrame(double begin, double end, Extent extent, Document d, List<SVGFrameRegion> regions) {
         super(begin, end, extent, d);
         this.regions = regions;
     }
 
-    public List<Rectangle> getRegions() {
+    public List<SVGFrameRegion> getRegions() {
         return regions;
     }
 

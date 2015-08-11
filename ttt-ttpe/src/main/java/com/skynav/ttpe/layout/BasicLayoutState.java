@@ -121,8 +121,10 @@ public class BasicLayoutState implements LayoutState {
 
     public NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip) {
         NonLeafAreaNode a = push(new ViewportArea(e, width, height, clip));
-        if (areas.size() > 2)
+        if (areas.size() > 2) {
             incrementCounters(CounterEvent.ADD_REGION, a);
+            ((ViewportArea) a).setId(generateRegionIdentifier());
+        }
         return a;
     }
 
@@ -447,6 +449,13 @@ public class BasicLayoutState implements LayoutState {
 
     private void resetCounter(Counter counter) {
         counters[counter.ordinal()] = 0;
+    }
+
+    private String generateRegionIdentifier() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('r');
+        sb.append(Integer.toString(getCounter(Counter.REGIONS_IN_CANVAS)));
+        return sb.toString();
     }
 
     private StyleSet parseStyle(Element e, String id) {

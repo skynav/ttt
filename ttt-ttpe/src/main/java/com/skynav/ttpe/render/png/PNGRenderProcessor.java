@@ -38,6 +38,8 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.geometry.Point;
@@ -45,6 +47,7 @@ import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.FrameImage;
 import com.skynav.ttpe.render.svg.SVGDocumentFrame;
+import com.skynav.ttpe.render.svg.SVGFrameRegion;
 import com.skynav.ttpe.render.svg.SVGRenderProcessor;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttv.app.InvalidOptionUsageException;
@@ -54,6 +57,7 @@ import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.util.Colors;
 import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.xml.helpers.Documents;
 
 public class PNGRenderProcessor extends SVGRenderProcessor {
 
@@ -199,15 +203,16 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
             SVGDocumentFrame frameSVG = (SVGDocumentFrame) frame;
             Document d = frameSVG.getDocument();
             Rectangle rectRoot = new Rectangle(Point.ZERO, frameSVG.getExtent());
-            List<Rectangle> regionRects = frameSVG.getRegions();
+            List<SVGFrameRegion> regions = frameSVG.getRegions();
             List<FrameImage> images = new java.util.ArrayList<FrameImage>();
-            if ((mode == GenerationMode.ISD) || regionRects.isEmpty()) {
+            if ((mode == GenerationMode.ISD) || regions.isEmpty()) {
                 FrameImage fi = renderFrameImage(d, rectRoot, null);
                 if (fi != null)
                     images.add(fi);
             } else {
-                for (Rectangle rectRegion : regionRects) {
-                    FrameImage fi = renderFrameImage(d, rectRoot, rectRegion);
+                for (SVGFrameRegion r : regions) {
+                    Document dPruned = pruneOtherRegions(d, r.getId());
+                    FrameImage fi = renderFrameImage(dPruned, rectRoot, r.getBounds());
                     if (fi != null)
                         images.add(fi);
                 }
@@ -215,6 +220,47 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
             return new PNGImageFrame(frame.getBegin(), frame.getEnd(), frame.getExtent(), images);
         }
         return null;
+    }
+
+    /*
+     * Create copy of SVG document having pruned all regions except for region ID. In the SVG
+     * document, a region is identified as an element with @class 'region' and @id 'r[digit]+'.
+     * If no regions present (or pruned), then original document is returned.
+     */
+    private Document pruneOtherRegions(Document d, String idRetain) {
+        if (hasPrunableRegion(d, idRetain))
+            return pruneRegions((Document) d.cloneNode(true), idRetain);
+        else
+            return d;
+    }
+
+    private boolean hasPrunableRegion(Document d, String idRetain) {
+        for (Element e : Documents.findElementsByName(d, SVGDocumentFrame.svgSVGEltName)) {
+            String c = Documents.getAttribute(e, SVGDocumentFrame.classAttrName, null);
+            if ((c != null) && c.equals("region")) {
+                String id = Documents.getAttribute(e, SVGDocumentFrame.idAttrName, null);
+                if ((id != null) && !id.equals(idRetain))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private Document pruneRegions(Document d, String idRetain) {
+        List<Element> prune = new java.util.ArrayList<Element>();
+        for (Element e : Documents.findElementsByName(d, SVGDocumentFrame.svgSVGEltName)) {
+            String c = Documents.getAttribute(e, SVGDocumentFrame.classAttrName, null);
+            if ((c != null) && c.equals("region")) {
+                String id = Documents.getAttribute(e, SVGDocumentFrame.idAttrName, null);
+                if ((id != null) && !id.equals(idRetain))
+                    prune.add(e);
+            }
+        }
+        for (Element e : prune) {
+            Node p = e.getParentNode();
+            p.removeChild(e);
+        }
+        return d;
     }
 
     private FrameImage renderFrameImage(Document d, Rectangle rectRoot, Rectangle rectRegion) {

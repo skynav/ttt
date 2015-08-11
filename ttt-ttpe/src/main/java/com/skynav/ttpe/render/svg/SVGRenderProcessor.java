@@ -128,7 +128,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     // render state
     private double xCurrent;
     private double yCurrent;
-    private List<Rectangle> regions;
+    private List<SVGFrameRegion> regions;
     private int paragraphGenerationIndex;
     private int lineGenerationIndex;
 
@@ -294,8 +294,12 @@ public class SVGRenderProcessor extends RenderProcessor {
             Point origin = a.getOrigin();
             if (origin != null) {
                 Documents.setAttribute(eGroup, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {origin.getX(),origin.getY()}));
-                if (extent != null)
-                    addRegion(origin, extent);
+                if (extent != null) {
+                    String id = a.getParent().getId();
+                    Documents.setAttribute(eSVG, SVGDocumentFrame.idAttrName, id);
+                    Documents.setAttribute(eSVG, SVGDocumentFrame.classAttrName, "region");
+                    addRegion(id, origin, extent);
+                }
             }
             xCurrent = yCurrent = 0;
             WritingMode wm = a.getWritingMode();
@@ -328,10 +332,10 @@ public class SVGRenderProcessor extends RenderProcessor {
         return true;
     }
 
-    private void addRegion(Point origin, Extent extent) {
+    private void addRegion(String id, Point origin, Extent extent) {
         if (regions == null)
-            regions = new java.util.ArrayList<Rectangle>();
-        regions.add(new Rectangle(origin, extent));
+            regions = new java.util.ArrayList<SVGFrameRegion>();
+        regions.add(new SVGFrameRegion(id, new Rectangle(origin, extent)));
     }
 
     private Element renderBlock(Element parent, BlockArea a, Document d) {

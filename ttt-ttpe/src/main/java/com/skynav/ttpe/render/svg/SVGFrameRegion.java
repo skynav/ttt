@@ -23,30 +23,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.render.svg;
 
-import org.w3c.dom.Element;
+import com.skynav.ttpe.geometry.Rectangle;
 
-public class ViewportArea extends BoundedBlockArea {
+public class SVGFrameRegion {
 
     private String id;
-    private boolean clip;
+    private Rectangle bounds;
 
-    public ViewportArea(Element e, double width, double height, boolean clip) {
-        super(e, width, height);
-        this.clip = clip;
-    }
-
-    public void setId(String id) {
+    public SVGFrameRegion(String id, Rectangle bounds) {
         this.id = id;
+        this.bounds = bounds;
     }
 
     public String getId() {
         return id;
     }
 
-    public boolean getClip() {
-        return clip;
+    public Rectangle getBounds() {
+        return bounds;
     }
 
 }
