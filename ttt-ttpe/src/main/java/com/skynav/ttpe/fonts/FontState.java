@@ -748,7 +748,7 @@ public class FontState {
 
     private CharSequence mapGlyphsToChars(GlyphSequence gs) {
         int ng = gs.getGlyphCount();
-        CharBuffer cb = CharBuffer.allocate(ng);
+        CharBuffer cb = CharBuffer.allocate(ng * 2);
         for (int i = 0, n = ng; i < n; i++) {
             int gi = gs.getGlyph(i);
             int cc = findCharacterFromGlyphIndex(gi);

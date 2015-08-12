@@ -375,6 +375,11 @@ public class PresenterTestCases {
         performPresentationTest("test-064-annotation-breaking-issue-124-ruby34.xml", 0, 0);
     }
 
+    @Test
+    public void test065AmbiguousGlyphToCharMappingIssue128() throws Exception {
+        performPresentationTest("test-065-ambiguous-glyph-to-char-mapping-issue-128.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
