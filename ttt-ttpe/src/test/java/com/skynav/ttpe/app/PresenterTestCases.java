@@ -380,6 +380,11 @@ public class PresenterTestCases {
         performPresentationTest("test-065-ambiguous-glyph-to-char-mapping-issue-128.xml", 0, 0);
     }
 
+    @Test
+    public void test066AnnotationOverflowsBaseIssue120Ruby29() throws Exception {
+        performPresentationTest("test-066-annotation-overflows-base-issue-120-ruby29.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
