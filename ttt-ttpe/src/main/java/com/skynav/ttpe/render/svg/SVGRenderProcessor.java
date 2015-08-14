@@ -392,16 +392,25 @@ public class SVGRenderProcessor extends RenderProcessor {
         AnnotationPosition position = a.getPosition();
         double ipdOffset = (a.getAlignment() == InlineAlignment.CENTER) ? (a.getOverflow() / 2) : 0;
         if (ipdOffset > 0) {
+            double lMeasure = l.getIPD();
             if (vertical) {
                 if (ipdDirection == BT)
                     yCurrent += ipdOffset;
                 else
                     yCurrent -= ipdOffset;
+                if (yCurrent < 0)
+                    yCurrent = 0;
+                else if (yCurrent > lMeasure)
+                    yCurrent = lMeasure - a.getIPD();
             } else {
                 if (ipdDirection == RL)
                     xCurrent += ipdOffset;
                 else
                     xCurrent -= ipdOffset;
+                if (xCurrent < 0)
+                    xCurrent = 0;
+                else if (xCurrent > lMeasure)
+                    xCurrent = lMeasure - a.getIPD();
             }
         }
         if (position == AnnotationPosition.AFTER) {
