@@ -295,11 +295,9 @@ public class LineLayout {
             for (InlineBreakOpportunity b : breaks) {
                 TextRun r = b.run;
                 if ((lastRun != null) && ((r != lastRun) || (l instanceof AnnotationArea))) {
-                    double[] annotationOverflow = new double[1];
-                    InlineAlignment[] annotationOverflowAlignment = new InlineAlignment[] {InlineAlignment.CENTER};
                     if (!(l instanceof AnnotationArea))
-                        maybeAddAnnotationAreas(l, lastRunStart, r.start, font, advance, lineHeight, annotationOverflow, annotationOverflowAlignment);
-                    addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, annotationOverflow[0], annotationOverflowAlignment[0], lastRun, lastRunStart);
+                        maybeAddAnnotationAreas(l, lastRunStart, r.start, font, advance, lineHeight);
+                    addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun, lastRunStart);
                     sb.setLength(0);
                     decorations.clear();
                     advance = 0;
@@ -313,11 +311,9 @@ public class LineLayout {
                     lastRunStart = r.start + b.start;
             }
             if (sb.length() > 0) {
-                double[] annotationOverflow = new double[1];
-                InlineAlignment[] annotationOverflowAlignment = new InlineAlignment[] {InlineAlignment.CENTER};
                 if (!(l instanceof AnnotationArea))
-                    maybeAddAnnotationAreas(l, lastRunStart, lastRun != null ? lastRun.end : -1, font, advance, lineHeight, annotationOverflow, annotationOverflowAlignment);
-                addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, annotationOverflow[0], annotationOverflowAlignment[0], lastRun, lastRunStart);
+                    maybeAddAnnotationAreas(l, lastRunStart, lastRun != null ? lastRun.end : -1, font, advance, lineHeight);
+                addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun, lastRunStart);
             }
             iterator.setIndex(savedIndex);
             breaks.clear();
@@ -351,7 +347,7 @@ public class LineLayout {
         return consumed;
     }
 
-    private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, double annotationOverflow, InlineAlignment annotationOverflowAlignment, TextRun run, int runStart) {
+    private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, TextRun run, int runStart) {
         if (run instanceof WhitespaceRun) {
             if (advance > 0)
                 l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.level, text, font), LineArea.ENCLOSE_ALL);
@@ -359,7 +355,6 @@ public class LineLayout {
             l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL);
         } else if (run instanceof NonWhitespaceRun) {
             int start = run.start;
-            maybeFillAnnotationOverflow(l, run.level, annotationOverflow, annotationOverflowAlignment, true);
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
                 double bpd = lineHeight;
                 String t;
@@ -399,24 +394,6 @@ public class LineLayout {
                 if (fai.isOuterScope())
                     break;
             }
-            maybeFillAnnotationOverflow(l, run.level, annotationOverflow, annotationOverflowAlignment, false);
-        }
-    }
-
-    private void maybeFillAnnotationOverflow(LineArea l, int level, double overflow, InlineAlignment align, boolean beforeBase) {
-        if (overflow > 0) {
-            double sf = 0;
-            double ef = 0;
-            if (align == InlineAlignment.START)
-                ef = overflow;
-            else if (align == InlineAlignment.END)
-                sf = overflow;
-            else
-                sf = ef = overflow/2;
-            if ((sf > 0) && beforeBase)
-                l.addChild(new InlineFillerArea(l.getElement(), sf, 0, level), LineArea.ENCLOSE_ALL);
-            if ((ef > 0) && !beforeBase)
-                l.addChild(new InlineFillerArea(l.getElement(), ef, 0, level), LineArea.ENCLOSE_ALL);
         }
     }
 
@@ -446,7 +423,7 @@ public class LineLayout {
         return sd;
     }
 
-    private void maybeAddAnnotationAreas(LineArea l, int start, int end, Font font, double advance, double lineHeight, double[] overflow, InlineAlignment[] overflowAlignment) {
+    private void maybeAddAnnotationAreas(LineArea l, int start, int end, Font font, double advance, double lineHeight) {
         if (start >= 0) {
             iterator.setIndex(start);
             int annoStart = iterator.getRunStart(StyleAttribute.ANNOTATIONS);
@@ -457,7 +434,7 @@ public class LineLayout {
                     String[] baseInfo = new String[2];
                     String base = getAnnotationBase(annoStart, annoLimit, baseInfo);
                     Orientation[] baseOrientations = getAnnotationBaseOrientations(annoStart, annoLimit);
-                    addAnnotationAreas(l, base, baseInfo[0], baseInfo[1], baseOrientations, annotations, font, advance, lineHeight, overflow, overflowAlignment);
+                    addAnnotationAreas(l, base, baseInfo[0], baseInfo[1], baseOrientations, annotations, font, advance, lineHeight);
                 }
             }
         }
@@ -509,7 +486,7 @@ public class LineLayout {
         return found ? orientations : null;
     }
 
-    private void addAnnotationAreas(LineArea l, String base, String baseScript, String baseLanguage, Orientation[] baseOrientations, Phrase[] annotations, Font font, double advance, double lineHeight, double[] overflow, InlineAlignment[] overflowAlignment) {
+    private void addAnnotationAreas(LineArea l, String base, String baseScript, String baseLanguage, Orientation[] baseOrientations, Phrase[] annotations, Font font, double advance, double lineHeight) {
         for (Phrase p : annotations) {
             InlineAlignment annotationAlign = p.getAnnotationAlign(-1, defaults);
             Double annotationOffset = p.getAnnotationOffset(-1, defaults);
@@ -519,14 +496,6 @@ public class LineLayout {
                 a.setOffset(annotationOffset);
                 a.setPosition(annotationPosition);
                 alignTextAreas(a, advance, annotationAlign, getBaseAdvances(base, baseScript, baseLanguage, baseOrientations, font));
-                double over = a.getOverflow();
-                if (overflow != null) {
-                    if (over > overflow[0]) {
-                        overflow[0] = over;
-                        if (annotationAlign != InlineAlignment.AUTO)
-                            overflowAlignment[0] = annotationAlign;
-                    }
-                }
                 l.addChild(a, LineArea.ENCLOSE_ALL);
             }
         }

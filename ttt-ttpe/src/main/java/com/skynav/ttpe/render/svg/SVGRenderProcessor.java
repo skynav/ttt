@@ -69,6 +69,7 @@ import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
+import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.Outline;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
@@ -389,6 +390,20 @@ public class SVGRenderProcessor extends RenderProcessor {
         Direction bpdDirection = wm.getDirection(Dimension.BPD);
         Direction ipdDirection = wm.getDirection(Dimension.IPD);
         AnnotationPosition position = a.getPosition();
+        double ipdOffset = (a.getAlignment() == InlineAlignment.CENTER) ? (a.getOverflow() / 2) : 0;
+        if (ipdOffset > 0) {
+            if (vertical) {
+                if (ipdDirection == BT)
+                    yCurrent += ipdOffset;
+                else
+                    yCurrent -= ipdOffset;
+            } else {
+                if (ipdDirection == RL)
+                    xCurrent += ipdOffset;
+                else
+                    xCurrent -= ipdOffset;
+            }
+        }
         if (position == AnnotationPosition.AFTER) {
             double bpdOffset = l.getBPD() - a.getBPD();
             if (vertical) {
