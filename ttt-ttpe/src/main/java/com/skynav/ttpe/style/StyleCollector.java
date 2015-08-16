@@ -160,6 +160,22 @@ public class StyleCollector {
         StyleSpecification s;
         Object v;
 
+        // ANNOTATION_RESERVE
+        s = styles.get(ttsRubyReserveAttrName);
+        v = null;
+        if (s != null) {
+            com.skynav.ttv.model.value.TextReserve[] retReserve = new com.skynav.ttv.model.value.TextReserve[1];
+            if (com.skynav.ttv.verifier.util.Reserve.isReserve(s.getValue(), null, context, retReserve)) {
+                com.skynav.ttv.model.value.TextReserve ar = retReserve[0];
+                Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                Length reserve = ar.getReserve();
+                double r = (reserve != null) ? Helpers.resolveLength(e, reserve, Axis.VERTICAL, extBounds, refBounds, fs) : -1;
+                v = new AnnotationReserve(ar.getPosition().name(), r);
+            }
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.ANNOTATION_RESERVE, v, begin, end);
+
         // BLOCK_ALIGNMENT
         s = styles.get(ttsDisplayAlignAttrName);
         v = null;

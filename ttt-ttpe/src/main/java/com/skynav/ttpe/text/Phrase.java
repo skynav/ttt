@@ -34,6 +34,7 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.style.AnnotationPosition;
+import com.skynav.ttpe.style.AnnotationReserve;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Emphasis;
@@ -131,6 +132,20 @@ public class Phrase {
         return rv;
     }
 
+    public boolean isEmbedding() {
+        boolean rv = true;
+        AttributedCharacterIterator aci = getIterator();
+        int savedIndex = aci.getIndex();
+        int b = aci.getBeginIndex();
+        int e = aci.getEndIndex();
+        if ((e - b) != 1)
+            rv = false;
+        else if (aci.setIndex(b) != Characters.UC_OBJECT)
+            rv = false;
+        aci.setIndex(savedIndex);
+        return rv;
+    }
+
     private static final StyleAttribute[] annotationAttr = new StyleAttribute[] { StyleAttribute.ANNOTATIONS };
     public Phrase[] getAnnotations(int index, Defaults defaults) {
         Object v;
@@ -187,6 +202,21 @@ public class Phrase {
             v = defaults.getAnnotationPosition();
         if (v instanceof AnnotationPosition)
             return (AnnotationPosition) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] annotationReserveAttr = new StyleAttribute[] { StyleAttribute.ANNOTATION_RESERVE };
+    public AnnotationReserve getAnnotationReserve(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(annotationReserveAttr[0]);
+        else
+            v = content.getIterator(annotationReserveAttr, index, index + 1).getAttribute(annotationReserveAttr[0]);
+        if (v == null)
+            v = defaults.getAnnotationReserve();
+        if (v instanceof AnnotationReserve)
+            return (AnnotationReserve) v;
         else
             return null;
     }

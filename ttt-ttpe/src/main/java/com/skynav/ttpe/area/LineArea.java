@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.style.AnnotationPosition;
+import com.skynav.ttpe.style.AnnotationReserve;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
 
@@ -40,19 +41,21 @@ public class LineArea extends BlockArea {
     private Color color;
     private Font font;
     private int lineNumber;                     // 1 is first line of containing area
+    private boolean embedding;
     private double bpdAnnotationBefore;
     private double bpdAnnotationAfter;
 
     public LineArea() {
-        this(null, 0, 0, -1, null, null, null, 0);
+        this(null, 0, 0, -1, null, null, null, 0, false);
     }
 
-    public LineArea(Element e, double ipd, double bpd, int level, InlineAlignment alignment, Color color, Font font, int lineNumber) {
+    public LineArea(Element e, double ipd, double bpd, int level, InlineAlignment alignment, Color color, Font font, int lineNumber, boolean embedding) {
         super(e, ipd, bpd, level);
         this.alignment = alignment;
         this.color = color;
         this.font = font;
         this.lineNumber = lineNumber;
+        this.embedding = embedding;
     }
 
     @Override
@@ -159,6 +162,15 @@ public class LineArea extends BlockArea {
             return 0;
     }
 
+    public void addAnnotationReserve(AnnotationReserve.Position position, double reserve) {
+        if (!embedding && !(this instanceof AnnotationArea)) {
+            if (position == AnnotationReserve.Position.BEFORE)
+                adjustAnnotationBPD(AnnotationPosition.BEFORE, reserve);
+            else if (position == AnnotationReserve.Position.AFTER)
+                adjustAnnotationBPD(AnnotationPosition.AFTER, reserve);
+        }
+    }
+
     private void maybeUpdateForAnnotation(AreaNode c) {
         if (c instanceof AnnotationArea) {
             AnnotationArea a = (AnnotationArea) c;
@@ -167,14 +179,17 @@ public class LineArea extends BlockArea {
                 position = isFirstLine() ? AnnotationPosition.BEFORE : AnnotationPosition.AFTER;
                 a.setPosition(position);
             }
-            double bpdAnnotation = a.getBPD();
-            if (position == AnnotationPosition.BEFORE) {
-                if (bpdAnnotationBefore < bpdAnnotation)
-                    bpdAnnotationBefore = bpdAnnotation;
-            } else if (position == AnnotationPosition.AFTER) {
-                if (bpdAnnotationAfter < bpdAnnotation)
-                    bpdAnnotationAfter = bpdAnnotation;
-            }
+            adjustAnnotationBPD(position, a.getBPD());
+        }
+    }
+
+    private void adjustAnnotationBPD(AnnotationPosition position, double bpdAnnotation) {
+        if (position == AnnotationPosition.BEFORE) {
+            if (bpdAnnotationBefore < bpdAnnotation)
+                bpdAnnotationBefore = bpdAnnotation;
+        } else if (position == AnnotationPosition.AFTER) {
+            if (bpdAnnotationAfter < bpdAnnotation)
+                bpdAnnotationAfter = bpdAnnotation;
         }
     }
 

@@ -60,6 +60,7 @@ public class Constants {
     public static final QName ttsRubyAttrName                           = new QName(NAMESPACE_TT_STYLE, "ruby");
     public static final QName ttsRubyOffsetAttrName                     = new QName(NAMESPACE_TT_STYLE, "rubyOffset");
     public static final QName ttsRubyPositionAttrName                   = new QName(NAMESPACE_TT_STYLE, "rubyPosition");
+    public static final QName ttsRubyReserveAttrName                    = new QName(NAMESPACE_TT_STYLE, "rubyReserve");
     public static final QName ttsTextAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "textAlign");
     public static final QName ttsTextCombineAttrName                    = new QName(NAMESPACE_TT_STYLE, "textCombine");
     public static final QName ttsTextEmphasisAttrName                   = new QName(NAMESPACE_TT_STYLE, "textEmphasis");

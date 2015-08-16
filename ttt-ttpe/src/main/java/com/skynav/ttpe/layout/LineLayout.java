@@ -49,6 +49,7 @@ import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.AnnotationPosition;
+import com.skynav.ttpe.style.AnnotationReserve;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Defaults;
@@ -99,6 +100,7 @@ public class LineLayout {
     private int lineNumber;
 
     // style related state
+    private AnnotationReserve annotationReserve;
     private Color color;
     private Outline outline;
     private InlineAlignment textAlign;
@@ -125,6 +127,7 @@ public class LineLayout {
         this.writingMode = state.getWritingMode();
         this.level = state.getBidiLevel();
         // outer context styles
+        this.annotationReserve = content.getAnnotationReserve(-1, defaults);
         this.color = content.getColor(-1, defaults);
         this.outline = content.getOutline(-1, defaults);
         this.textAlign = relativizeAlignment(content.getTextAlign(-1, defaults), this.writingMode);
@@ -277,7 +280,7 @@ public class LineLayout {
     }
 
     protected LineArea newLine(Phrase p, double ipd, double bpd, int level, InlineAlignment textAlign, Color color, Font font) {
-        return new LineArea(p.getElement(), ipd, bpd, level, textAlign, color, font, ++lineNumber);
+        return new LineArea(p.getElement(), ipd, bpd, level, textAlign, color, font, ++lineNumber, p.isEmbedding());
     }
 
     protected int getNextLineNumber() {
@@ -525,6 +528,12 @@ public class LineLayout {
     }
 
     private List<LineArea> align(List<LineArea> lines) {
+        lines = alignIPD(lines);
+        lines = alignBPD(lines);
+        return lines;
+    }
+
+    private List<LineArea> alignIPD(List<LineArea> lines) {
         double maxMeasure = 0;
         for (LineArea l : lines) {
             double measure = l.getIPD();
@@ -657,6 +666,34 @@ public class LineLayout {
             }
             return 0;
         }
+    }
+
+    private List<LineArea> alignBPD(List<LineArea> lines) {
+        lines = maybeAddAnnotationReserve(lines);
+        return lines;
+    }
+
+    private List<LineArea> maybeAddAnnotationReserve(List<LineArea> lines) {
+        if (annotationReserve.isNone())
+            return lines;
+        else
+            return maybeAddAnnotationReserve(lines, annotationReserve);
+    }
+
+    private List<LineArea> maybeAddAnnotationReserve(List<LineArea> lines, AnnotationReserve annotationReserve) {
+        int numLines = lines.size();
+        for (LineArea l : lines)
+            maybeAddAnnotationReserve(l, annotationReserve, numLines, l.getLineNumber() == numLines);
+        return lines;
+    }
+
+    private LineArea maybeAddAnnotationReserve(LineArea line, AnnotationReserve annotationReserve, int numLines, boolean lastLine) {
+        AnnotationReserve.Position p = annotationReserve.resolvePosition(numLines, lastLine);
+        double r = annotationReserve.getReserve();
+        if (r < 0)
+            r = lineHeight / 2;
+        line.addAnnotationReserve(p, r);
+        return line;
     }
 
     private static class WhitespaceState {

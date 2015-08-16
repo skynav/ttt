@@ -74,6 +74,7 @@ import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
+import com.skynav.ttv.verifier.ttml.style.RubyReserveVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyVerifier;
 import com.skynav.ttv.verifier.ttml.style.ShowBackgroundVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextAlignVerifier;
@@ -254,6 +255,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             RubyPosition.AUTO,
             RubyPosition.AUTO.value()
+        },
+        {
+            new QName(NAMESPACE,"rubyReserve"),
+            "RubyReserve",
+            String.class,
+            RubyReserveVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "none",
+            null
         },
         {
             new QName(NAMESPACE,"showBackground"),

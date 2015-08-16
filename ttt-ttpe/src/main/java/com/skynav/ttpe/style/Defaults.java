@@ -47,6 +47,7 @@ public class Defaults {
     public static final InlineAlignment defaultAnnotationAlign          = InlineAlignment.AUTO;
     public static final double defaultAnnotationOffset                  = 0;
     public static final AnnotationPosition defaultAnnotationPosition    = AnnotationPosition.AUTO;
+    public static final AnnotationReserve defaultAnnotationReserve      = AnnotationReserve.NONE;
     public static final Color defaultBackgroundColor                    = Color.TRANSPARENT;
     public static final Color defaultColor                              = Color.YELLOW;
     public static final Combination defaultCombination                  = Combination.NONE;
@@ -79,6 +80,7 @@ public class Defaults {
     private InlineAlignment annotationAlign                             = defaultAnnotationAlign;
     private double annotationOffset                                     = defaultAnnotationOffset;
     private AnnotationPosition annotationPosition                       = defaultAnnotationPosition;
+    private AnnotationReserve annotationReserve                         = defaultAnnotationReserve;
     private Color backgroundColor                                       = defaultBackgroundColor;
     private Color color                                                 = defaultColor;
     private Combination combination                                     = defaultCombination;
@@ -140,6 +142,14 @@ public class Defaults {
 
     public AnnotationPosition getAnnotationPosition() {
         return annotationPosition;
+    }
+
+    public void setAnnotationReserve(AnnotationReserve annotationReserve) {
+        this.annotationReserve = annotationReserve;
+    }
+
+    public AnnotationReserve getAnnotationReserve() {
+        return annotationReserve;
     }
 
     public void setBackgroundColor(Color backgroundColor) {

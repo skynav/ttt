@@ -36,6 +36,7 @@
   <xs:attribute name="rubyAlign" type="ttd:rubyAlign"/>
   <xs:attribute name="rubyOffset" type="ttd:rubyOffset"/>
   <xs:attribute name="rubyPosition" type="ttd:rubyPosition"/>
+  <xs:attribute name="rubyReserve" type="ttd:rubyReserve"/>
   <xs:attribute name="showBackground" type="ttd:showBackground"/>
   <xs:attribute name="textAlign" type="ttd:textAlign"/>
   <xs:attribute name="textCombine" type="ttd:textCombine"/>
@@ -82,6 +83,7 @@
     <xs:attribute ref="tts:rubyAlign"/>
     <xs:attribute ref="tts:rubyOffset"/>
     <xs:attribute ref="tts:rubyPosition"/>
+    <xs:attribute ref="tts:rubyReserve"/>
     <xs:attribute ref="tts:textAlign"/>
     <xs:attribute ref="tts:textCombine"/>
     <xs:attribute ref="tts:textDecoration"/>

@@ -540,6 +540,9 @@
       <xs:enumeration value="outside"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="rubyReserve">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:simpleType name="showBackground">
     <xs:restriction base="xs:token">
       <xs:enumeration value="always"/>

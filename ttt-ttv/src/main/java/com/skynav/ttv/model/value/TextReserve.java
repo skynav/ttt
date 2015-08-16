@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,38 +23,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttv.model.value;
 
-import org.w3c.dom.Element;
+public class TextReserve {
 
-import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.AnnotationPosition;
-import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.InlineAlignment;
+    public enum Position {
+        NONE,
+        AUTO,
+        BEFORE,
+        AFTER,
+        OUTSIDE;
+        public static Position fromValue(String v) {
+            return Position.valueOf(v.toUpperCase());
+        }
+    };
 
-public class AnnotationArea extends LineArea implements Inline {
+    public static final TextReserve NONE       = new TextReserve(Position.NONE, null);
 
-    private double offset;
-    private AnnotationPosition position;
+    private Position position;
+    private Length reserve;
 
-    public AnnotationArea(Element e, double ipd, double bpd, int level, InlineAlignment alignment, Color color, Font font, int annotationNumber) {
-        super(e, ipd, bpd, level, alignment, color, font, annotationNumber, false);
-    }
-
-    public void setOffset(double offset) {
-        this.offset = offset;
-    }
-
-    public double getOffset() {
-        return offset;
-    }
-
-    public void setPosition(AnnotationPosition position) {
+    public TextReserve(Position position, Length reserve) {
         this.position = position;
+        this.reserve = reserve;
     }
 
-    public AnnotationPosition getPosition() {
+    public Position getPosition() {
         return position;
+    }
+
+    public Length getReserve() {
+        return reserve;
     }
 
 }

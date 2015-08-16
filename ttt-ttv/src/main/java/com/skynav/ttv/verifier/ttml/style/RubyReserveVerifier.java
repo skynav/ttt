@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,38 +23,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttv.verifier.ttml.style;
 
-import org.w3c.dom.Element;
+import javax.xml.namespace.QName;
 
-import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.AnnotationPosition;
-import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.InlineAlignment;
+import org.xml.sax.Locator;
 
-public class AnnotationArea extends LineArea implements Inline {
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Reserve;
 
-    private double offset;
-    private AnnotationPosition position;
+public class RubyReserveVerifier implements StyleValueVerifier {
 
-    public AnnotationArea(Element e, double ipd, double bpd, int level, InlineAlignment alignment, Color color, Font font, int annotationNumber) {
-        super(e, ipd, bpd, level, alignment, color, font, annotationNumber, false);
-    }
-
-    public void setOffset(double offset) {
-        this.offset = offset;
-    }
-
-    public double getOffset() {
-        return offset;
-    }
-
-    public void setPosition(AnnotationPosition position) {
-        this.position = position;
-    }
-
-    public AnnotationPosition getPosition() {
-        return position;
+    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        boolean failed = false;
+        assert valueObject instanceof String;
+        String value = (String) valueObject;
+        if (!Reserve.isReserve(value, locator, context, null)) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <reserve> expression ''{0}''.", value));
+            failed = true;
+        }
+        return !failed;
     }
 
 }

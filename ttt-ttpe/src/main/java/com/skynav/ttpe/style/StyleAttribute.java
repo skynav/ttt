@@ -32,6 +32,7 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   ANNOTATION_ALIGNMENT   = new StyleAttribute("ANNOTATION_ALIGNMENT");   // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   ANNOTATION_OFFSET      = new StyleAttribute("ANNOTATION_OFFSET");      // Double
     public static final StyleAttribute   ANNOTATION_POSITION    = new StyleAttribute("ANNOTATION_POSITION");    // com.skynav.ttpe.style.AnnotationPosition
+    public static final StyleAttribute   ANNOTATION_RESERVE     = new StyleAttribute("ANNOTATION_RESERVE");     // com.skynav.ttpe.style.AnnotationReserve
     public static final StyleAttribute   BIDI                   = new StyleAttribute("BIDI");                   // Integer
     public static final StyleAttribute   BLOCK_ALIGNMENT        = new StyleAttribute("BLOCK_ALIGNMENT");        // com.skynav.ttpe.style.BlockAlignment
     public static final StyleAttribute   BPD                    = new StyleAttribute("BPD");                    // Double

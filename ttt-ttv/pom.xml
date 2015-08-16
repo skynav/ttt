@@ -96,6 +96,7 @@
           <headerLocation>${project.baseUri}src/tools/resources/checkstyle/LICENSE.txt</headerLocation>
           <linkXRef>false</linkXRef>
           <logViolationsToConsole>true</logViolationsToConsole>
+          <suppressionsLocation>${project.baseUri}src/tools/resources/checkstyle/suppressions.xml</suppressionsLocation>
         </configuration>
       </plugin>
       <plugin>

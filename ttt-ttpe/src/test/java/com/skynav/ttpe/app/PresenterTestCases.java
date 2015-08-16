@@ -385,6 +385,16 @@ public class PresenterTestCases {
         performPresentationTest("test-066-annotation-overflows-line-area-issue-120-ruby29.xml", 0, 0);
     }
 
+    @Test
+    public void test067RubyReserveIssue97Ruby13() throws Exception {
+        performPresentationTest("test-067-ruby-reserve-issue-97-ruby13.xml", 0, 0);
+    }
+
+    @Test
+    public void test068RubyReserveIssue97Ruby16() throws Exception {
+        performPresentationTest("test-068-ruby-reserve-issue-97-ruby16.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
