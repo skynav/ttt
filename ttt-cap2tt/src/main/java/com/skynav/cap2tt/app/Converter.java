@@ -2009,29 +2009,31 @@ public class Converter implements ConverterContext {
         return !fail;
     }
 
-    private static final String fieldSeparatorPatternString = "[ \\t]+";
     private boolean parseContentLine(String line, LocatorImpl locator) {
         boolean fail = false;
-        String[] fields = line.split(fieldSeparatorPatternString);
-        int fieldCount = fields.length;
-        int fieldIndexNext = 0;
+        int[][] types = new int[1][];
+        String[] parts = splitContentLine(line, types);
+        int partCount = parts.length;
+        int partIndexNext = 0;
         Screen s = new Screen(locator, getLastScreenNumber());
-        // screen field
+        // screen part
         if (!fail) {
-            int fieldIndex;
-            if ((fieldIndex = hasScreenField(fields, fieldIndexNext)) >= 0) {
-                if (parseScreenField(fields[fieldIndex], s) == s)
-                    fieldIndexNext = fieldIndex + 1;
+            int partIndex;
+            partIndexNext = maybeSkipSeparators(parts, partIndexNext);
+            if ((partIndex = hasScreenField(parts, partIndexNext)) >= 0) {
+                if (parseScreenField(parts[partIndex], s) == s)
+                    partIndexNext = partIndex + 1;
                 else
                     fail = true;
             }
         }
         // time field
         if (!fail) {
-            int fieldIndex;
-            if ((fieldIndex = hasTimeField(fields, fieldIndexNext)) >= 0) {
-                if (parseTimeField(fields[fieldIndex], s) == s)
-                    fieldIndexNext = fieldIndex + 1;
+            int partIndex;
+            partIndexNext = maybeSkipSeparators(parts, partIndexNext);
+            if ((partIndex = hasTimeField(parts, partIndexNext)) >= 0) {
+                if (parseTimeField(parts[partIndex], s) == s)
+                    partIndexNext = partIndex + 1;
                 else
                     fail = true;
             }
@@ -2039,33 +2041,39 @@ public class Converter implements ConverterContext {
         // text fields
         if (!fail) {
             StringBuffer sb = new StringBuffer();
-            int lastTextFieldIndex = -1;
-            for (int i = fieldIndexNext, j, n = fieldCount; i < n; ++i) {
-                if (fields[i].length() == 0) {
+            int lastTextPartIndex = -1;
+            for (int i = partIndexNext, j, n = partCount; i < n; ++i) {
+                if (parts[i].length() == 0) {
                     continue;
-                } else if ((j = hasTextField(locator, fields, i, NonTextAttributeTreatment.Warning)) >= 0) {
-                    // re-encode SPACE separator as LOW LINE (U+005F), later converted back to SPACE
-                    if (sb.length() > 0)
-                        sb.append('\u005F');
-                    sb.append(fields[i]);
-                    lastTextFieldIndex = j;
-                } else
-                      break;
+                } else {
+                    i = maybeSkipSeparators(parts, i);
+                    if ((j = hasTextField(locator, parts, i, NonTextAttributeTreatment.Warning)) >= 0) {
+                        // insert encoded preceding separator text
+                        if (sb.length() > 0) {
+                            if (i > 0)
+                                sb.append(parseText(parts[i - 1], false));
+                        }
+                        sb.append(parts[i]);
+                        lastTextPartIndex = j;
+                    } else
+                        break;
+                }
             }
             if (sb.length() > 0) {
                 if (parseTextField(sb.toString(), s) == s)
-                    fieldIndexNext = lastTextFieldIndex + 1;
+                    partIndexNext = lastTextPartIndex + 1;
                 else
                     fail = true;
             }
         }
         // attribute fields
         if (!fail) {
-            while ((fieldIndexNext < fieldCount) && !fail) {
-                int fieldIndex;
-                if ((fieldIndex = hasAttributeField(fields, fieldIndexNext)) >= 0) {
-                    if (parseAttributeField(fields[fieldIndex], s) == s)
-                        fieldIndexNext = fieldIndex + 1;
+            while ((partIndexNext < partCount) && !fail) {
+                int partIndex;
+                partIndexNext = maybeSkipSeparators(parts, partIndexNext);
+                if ((partIndex = hasAttributeField(parts, partIndexNext)) >= 0) {
+                    if (parseAttributeField(parts[partIndex], s) == s)
+                        partIndexNext = partIndex + 1;
                     else
                         fail = true;
                 } else
@@ -2078,6 +2086,84 @@ public class Converter implements ConverterContext {
                 screens.add(s);
         }
         return !fail;
+    }
+
+    public enum PartType {
+        SEPARATOR,
+        FIELD;
+    }
+
+    private String[] splitContentLine(String line, int[][] retTypes) {
+        List<String> parts = new java.util.ArrayList<String>();
+        List<Integer> types = new java.util.ArrayList<Integer>();
+        StringBuffer sb = new StringBuffer();
+        boolean inSeparator = false;
+        for (int i = 0, n = line.length(); i < n; ++i) {
+            char c = line.charAt(i);
+            boolean isSeparator = isContentFieldSeparator(c);
+            if (isSeparator ^ inSeparator) {
+                if (sb.length() > 0) {
+                    parts.add(sb.toString());
+                    sb.setLength(0);
+                    types.add(inSeparator ? PartType.SEPARATOR.ordinal() : PartType.FIELD.ordinal());
+                }
+            }
+            sb.append(c);
+            inSeparator = isSeparator;
+        }
+        if (sb.length() > 0) {
+            parts.add(sb.toString());
+            sb.setLength(0);
+            types.add(inSeparator ? PartType.SEPARATOR.ordinal() : PartType.FIELD.ordinal());
+        }
+        if ((retTypes != null) && (retTypes.length > 0)) {
+            int[] ta = new int[types.size()];
+            for (int i = 0, n = ta.length; i < n; ++i)
+                ta[i] = types.get(i);
+            retTypes[0] = ta;
+        }
+        return parts.toArray(new String[parts.size()]);
+    }
+
+    private int maybeSkipSeparators(String[] parts, int partIndex) {
+        assert parts != null;
+        assert partIndex >= 0;
+        while ((partIndex < parts.length) && isEmptyOrContentFieldSeparator(parts[partIndex]))
+            ++partIndex;
+        return partIndex;
+    }
+
+    private boolean isEmptyOrContentFieldSeparator(String s) {
+        if (isNullOrEmpty(s))
+            return true;
+        else if (isContentFieldSeparator(s))
+            return true;
+        else
+            return false;
+    }
+
+    private boolean isNullOrEmpty(String s) {
+        return (s == null) || s.isEmpty();
+    }
+
+    private boolean isContentFieldSeparator(String s) {
+        assert s != null;
+        assert !s.isEmpty();
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            char c = s.charAt(i);
+            if (!isContentFieldSeparator(c))
+                return false;
+        }
+        return true;
+    }
+
+    private boolean isContentFieldSeparator(char c) {
+        if (c == '\u0020')
+            return true;
+        else if (c == '\u0009')
+            return true;
+        else
+            return false;
     }
 
     private int getLastScreenNumber() {
@@ -2094,10 +2180,10 @@ public class Converter implements ConverterContext {
         }
     }
 
-    private static int hasScreenField(String[] fields, int fieldIndex) {
-        if (fieldIndex < fields.length) {
-            if (isScreenField(fields[fieldIndex]))
-                return fieldIndex;
+    private static int hasScreenField(String[] parts, int partIndex) {
+        if (partIndex < parts.length) {
+            if (isScreenField(parts[partIndex]))
+                return partIndex;
         }
         return -1;
     }
@@ -2173,10 +2259,10 @@ public class Converter implements ConverterContext {
             return false;
     }
 
-    private static int hasTimeField(String[] fields, int fieldIndex) {
-        if (fieldIndex < fields.length) {
-            if (isTimeField(fields[fieldIndex]))
-                return fieldIndex;
+    private static int hasTimeField(String[] parts, int partIndex) {
+        if (partIndex < parts.length) {
+            if (isTimeField(parts[partIndex]))
+                return partIndex;
         }
         return -1;
     }
@@ -2279,28 +2365,28 @@ public class Converter implements ConverterContext {
         return isCountDigit(c);
     }
 
-    private int hasTextField(LocatorImpl locator, String[] fields, int fieldIndex, NonTextAttributeTreatment nonTextAttributeTreatment) {
-        while (fieldIndex < fields.length) {
-            String field = fields[fieldIndex];
+    private int hasTextField(LocatorImpl locator, String[] parts, int partIndex, NonTextAttributeTreatment nonTextAttributeTreatment) {
+        while (partIndex < parts.length) {
+            String field = parts[partIndex];
             if (field.length() == 0) {
                 return -1;
             } else if (inTextAttribute) {
                 if (containsTextAttributeEnd(field))
                     if (!containsTextAttributeStart(field))
                         inTextAttribute = false;
-                return fieldIndex;
-            } else if (isTextField(locator, field, fieldIndex, nonTextAttributeTreatment)) {
-                return fieldIndex;
+                return partIndex;
+            } else if (isTextField(locator, field, partIndex, nonTextAttributeTreatment)) {
+                return partIndex;
             } else if (containsTextAttributeStart(field)) {
                 inTextAttribute = true;
-                return fieldIndex;
+                return partIndex;
             } else
                 return -1;
         }
         return -1;
     }
 
-    private boolean isTextField(LocatorImpl locator, String field, int fieldIndex, NonTextAttributeTreatment nonTextAttributeTreatment) {
+    private boolean isTextField(LocatorImpl locator, String field, int partIndex, NonTextAttributeTreatment nonTextAttributeTreatment) {
         if (field.length() == 0)
             return false;
         else {
@@ -2329,7 +2415,7 @@ public class Converter implements ConverterContext {
                     else {
                         Reporter reporter = getReporter();
                         Message m = reporter.message(locator, "w.010",
-                            "Field {0}, part {1} contains a non-text attribute ''{2}''. Is a field separator missing?", fieldIndex + 1, i + 1, part);
+                            "Field {0}, part {1} contains a non-text attribute ''{2}''. Is a field separator missing?", partIndex + 1, i + 1, part);
                         if (nonTextAttributeTreatment == NonTextAttributeTreatment.Info) {
                             reporter.logInfo(m);
                             continue;
@@ -2725,10 +2811,10 @@ public class Converter implements ConverterContext {
         return sb.toString();
     }
 
-    private static int hasAttributeField(String[] fields, int fieldIndex) {
-        if (fieldIndex < fields.length) {
-            if (isAttributeField(fields[fieldIndex]))
-                return fieldIndex;
+    private static int hasAttributeField(String[] parts, int partIndex) {
+        if (partIndex < parts.length) {
+            if (isAttributeField(parts[partIndex]))
+                return partIndex;
         }
         return -1;
     }
