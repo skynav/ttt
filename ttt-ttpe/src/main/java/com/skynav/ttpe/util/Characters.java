@@ -65,6 +65,9 @@ public class Characters {
     public static final int   UC_RLO                            = '\u202E';             // right-to-left override
     public static final int   UC_NNBSP                          = '\u202F';             // narrow non-breaking space
     public static final int   UC_MMSP                           = '\u205F';             // medium mathematical space
+    public static final int   UC_LRI                            = '\u2066';             // left-to-right isolate
+    public static final int   UC_RLI                            = '\u2067';             // right-to-left isolate
+    public static final int   UC_PDI                            = '\u2069';             // pop directional isolate
     public static final int   UC_IDSP                           = '\u3000';             // ideographic space
     public static final int   UC_CJK_SYMBOL_START               = '\u3000';             // cjk symbols - start
     public static final int   UC_CJK_SYMBOL_END                 = '\u303F';             // cjk symbols - end (inclusive)
@@ -149,6 +152,27 @@ public class Characters {
         else if (c == UC_LINE_SEPARATOR)
             return true;
         else if (c == UC_PARA_SEPARATOR)
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isBidiControl(int c) {
+        if (c == UC_LRE)
+            return true;
+        else if (c == UC_RLE)
+            return true;
+        else if (c == UC_LRO)
+            return true;
+        else if (c == UC_RLO)
+            return true;
+        else if (c == UC_PDF)
+            return true;
+        else if (c == UC_LRI)
+            return true;
+        else if (c == UC_RLI)
+            return true;
+        else if (c == UC_PDI)
             return true;
         else
             return false;

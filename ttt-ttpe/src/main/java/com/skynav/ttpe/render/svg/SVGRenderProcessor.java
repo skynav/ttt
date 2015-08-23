@@ -306,9 +306,6 @@ public class SVGRenderProcessor extends RenderProcessor {
             if (wm.isVertical()) {
                 if (wm.getDirection(Dimension.BPD) == RL)
                     xCurrent += extent.getWidth();
-            } else {
-                if (wm.getDirection(Dimension.IPD) == RL)
-                    xCurrent += extent.getWidth();
             }
             if (decorateRegions) {
                 Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
@@ -350,10 +347,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             double ipd = a.getIPD();
             if (a.isVertical())
                 yCurrent = ySaved + ipd;
-            else {
-                Direction ipdDirection = wm.getDirection(Dimension.IPD);
-                xCurrent = xSaved + ipd * ((ipdDirection == RL) ? -1 : 1);
-            }
+            else
+                xCurrent = xSaved + ipd;
         }
         double bpd = a.getBPD();
         if (a.isVertical()) {
@@ -394,19 +389,13 @@ public class SVGRenderProcessor extends RenderProcessor {
         if (ipdOffset > 0) {
             double lMeasure = l.getIPD();
             if (vertical) {
-                if (ipdDirection == BT)
-                    yCurrent += ipdOffset;
-                else
-                    yCurrent -= ipdOffset;
+                yCurrent -= ipdOffset;
                 if (yCurrent < 0)
                     yCurrent = 0;
                 else if (yCurrent > lMeasure)
                     yCurrent = lMeasure - a.getIPD();
             } else {
-                if (ipdDirection == RL)
-                    xCurrent += ipdOffset;
-                else
-                    xCurrent -= ipdOffset;
+                xCurrent -= ipdOffset;
                 if (xCurrent < 0)
                     xCurrent = 0;
                 else if (xCurrent > lMeasure)
@@ -479,7 +468,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             w = a.getIPD();
         }
         double x, y;
-        if ((bpdDirection == RL) || (ipdDirection == RL)) {
+        if (bpdDirection == RL) {
             x = xCurrent - w;
             y = yCurrent;
         } else {
@@ -519,7 +508,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                     Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x + 2}));
                     Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 8}));
                 } else {
-                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {- (double) 5*label.length()}));
+                    Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Double[] {x + w - (double) 4*label.length()}));
                     Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y + 8}));
                 }
             }
@@ -605,10 +594,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         if (a.isVertical()) {
             yCurrent += combined ? bpdGlyphs : ipdGlyphs;
         } else {
-            if ((l.getBidiLevel() & 1) == 0)
-                xCurrent += ipdGlyphs;
-            else
-                xCurrent -= ipdGlyphs;
+            xCurrent += ipdGlyphs;
         }
         return g;
     }
@@ -629,10 +615,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         GlyphMapping gm = a.getGlyphMapping();
         String text = gm.getGlyphsAsText();
         double[] advances = font.getScaledAdvances(gm);
-        int level = a.getBidiLevel();
-        if (level < 0)
-            level = 0;
-        boolean btt = ((level & 1) == 1);
+        boolean btt = false;
         double ySaved = yCurrent;
         yCurrent = 0;
         double shearAdvance = font.getShearAdvance(rotate, a.isCombined());
@@ -724,10 +707,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         GlyphMapping gm = a.getGlyphMapping();
         String text = gm.getGlyphsAsText();
         double[] advances = font.getScaledAdvances(gm);
-        int level = a.getBidiLevel();
-        if (level < 0)
-            level = 0;
-        boolean rtl = ((level & 1) == 1);
+        boolean rtl = false;
         double xSaved = xCurrent;
         xCurrent = 0;
         double shearAdvance = font.getShearAdvance(rotate, a.isCombined());
@@ -842,10 +822,8 @@ public class SVGRenderProcessor extends RenderProcessor {
         double ipd = a.getIPD();
         if (a.isVertical())
             yCurrent += ipd;
-        else if ((a.getLine().getBidiLevel() & 1) == 0)
-            xCurrent += ipd;
         else
-            xCurrent -= ipd;
+            xCurrent += ipd;
         return null;
     }
 
@@ -853,10 +831,8 @@ public class SVGRenderProcessor extends RenderProcessor {
         double ipd = a.getIPD();
         if (a.isVertical())
             yCurrent += ipd;
-        else if ((a.getLine().getBidiLevel() & 1) == 0)
-            xCurrent += ipd;
         else
-            xCurrent -= ipd;
+            xCurrent += ipd;
         return null;
     }
 

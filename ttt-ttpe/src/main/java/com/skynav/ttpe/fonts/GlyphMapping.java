@@ -27,6 +27,7 @@ package com.skynav.ttpe.fonts;
 
 import java.nio.IntBuffer;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -39,20 +40,25 @@ import com.skynav.ttpe.geometry.Axis;
 @SuppressWarnings("rawtypes")
 public class GlyphMapping {
 
-    private Key key;                                // key (input text + input features)
-    private String resolvedScript;                  // resolved script
-    private String resolvedLanguage;                // resolved language
-    private int[] glyphs;                           // mapped glyphs
-    private String glyphsAsText;                    // mapped glyphs as text
-    private List<CharAssociation> associations;     // associations between mapped glyphs and original text
-    private int[] advances;                         // glyph advances (in IPD)
-    private int[][] adjustments;                    // glyph position adjustments
+    private Key key;                                    // key (input text + input features)
+    private String script;                              // resolved script
+    private String language;                            // resolved language
+    private int[] glyphs;                               // mapped glyphs
+    private String glyphsAsText;                        // mapped glyphs as text
+    private List<CharAssociation> associations;         // associations between mapped glyphs and original text
+    private int[] advances;                             // glyph advances (in IPD)
+    private int[][] adjustments;                        // glyph position adjustments
 
     public GlyphMapping(Key key, GlyphSequence gs, int[] advances, int[][] adjustments) {
+        this(key, null, null, getGlyphs(gs), getText(gs), getAssociations(gs), advances, adjustments);
+    }
+
+    private GlyphMapping(Key key, String script, String language, int[] glyphs, String glyphsAsText, List<CharAssociation> associations, int[] advances, int[][] adjustments) {
         this.key = key;
-        this.glyphs = getGlyphs(gs);
-        this.glyphsAsText = getText(gs);
-        this.associations = getAssociations(gs);
+        this.script = script;
+        this.glyphs = glyphs;
+        this.glyphsAsText = glyphsAsText;
+        this.associations = associations;
         this.advances = advances;
         this.adjustments = adjustments;
     }
@@ -74,11 +80,11 @@ public class GlyphMapping {
     }
 
     public void setResolvedScript(String script) {
-        resolvedScript = script;
+        this.script = script;
     }
 
     public String getResolvedScript() {
-        return resolvedScript;
+        return script;
     }
 
     public String getLanguage() {
@@ -86,11 +92,11 @@ public class GlyphMapping {
     }
 
     public String getResolvedLanguage() {
-        return resolvedLanguage;
+        return language;
     }
 
     public void setResolvedLanguage(String language) {
-        resolvedLanguage = language;
+        this.language = language;
     }
 
     public Orientation getOrientation() {
@@ -99,6 +105,14 @@ public class GlyphMapping {
 
     public Combination getCombination() {
         return key.getCombination();
+    }
+
+    public boolean isReversed() {
+        return key.isReversed();
+    }
+
+    public boolean isMirrored() {
+        return key.isMirrored();
     }
 
     public int[] getGlyphs() {
@@ -119,6 +133,54 @@ public class GlyphMapping {
 
     public int[][] getAdjustments() {
         return adjustments;
+    }
+
+    public GlyphMapping reverse(GlyphMapping.Key gmk) {
+        return new GlyphMapping(gmk, script, language, reverse(glyphs), reverse(glyphsAsText), reverse(associations), reverse(advances), reverse(adjustments));
+    }
+
+    private static int[] reverse(int[] a) {
+        if (a != null) {
+            int[] aNew = new int[a.length];
+            for (int i = 0, n = a.length, m = n / 2; i <= m; ++i) {
+                if ((i == m) && ((n & 1) == 1)) {
+                    aNew [ i ] = a [ i ];
+                } else {
+                    int k = n - i - 1;
+                    aNew [ k ] = a [ i ];
+                    aNew [ i ] = a [ k ];
+                }
+            }
+            return aNew;
+        } else
+            return a;
+    }
+
+    private static int[][] reverse(int[][] a) {
+        if (a != null) {
+            int[][] aNew = new int[a.length][];
+            for (int i = 0, n = a.length, m = n / 2; i < m; ++i) {
+                if ((i == m) && ((n & 1) == 1)) {
+                    aNew [ i ] = a [ i ];
+                } else {
+                    int k = n - i - 1;
+                    aNew [ k ] = a [ i ];
+                    aNew [ i ] = a [ k ];
+                }
+            }
+            return aNew;
+        } else
+            return a;
+    }
+
+    private static String reverse(String s) {
+        return new StringBuffer(s).reverse().toString();
+    }
+
+    private static List<CharAssociation> reverse(List<CharAssociation> associations) {
+        List<CharAssociation> associationsNew = new java.util.ArrayList<CharAssociation>(associations);
+        Collections.reverse(associationsNew);
+        return associationsNew;
     }
 
     private static String getText(GlyphSequence gs) {
@@ -169,10 +231,18 @@ public class GlyphMapping {
         return new Key(text, features);
     }
 
+    public static Key makeKey(Key key, SortedSet<FontFeature> features) {
+        return new Key(key, features);
+    }
+
     static class Key {
 
         private String text;                                    // original text
         private Map<String,FontFeature> features;               // font feature and pseudo-feature parameters
+
+        Key(Key key, SortedSet<FontFeature> features) {
+            this(key.text, augmentFeatures(new java.util.TreeSet<FontFeature>(key.features.values()), features));
+        }
 
         Key(String text, SortedSet<FontFeature> features) {
             this.text = text;
@@ -292,9 +362,44 @@ public class GlyphMapping {
             return (key.axis.cross(!getCombination().isNone()).isVertical() && !getOrientation().isRotated()) ? Axis.VERTICAL : Axis.HORIZONTAL;
         }
 
+        boolean isReversed() {
+            return getReversed();
+        }
+
+        Boolean getReversed() {
+            FontFeature f = getFeature(FontFeature.REVS);
+            if (f != null) {
+                Object a0 = f.getArgument(0);
+                if ((a0 != null) && (a0 instanceof Boolean))
+                    return (Boolean) a0;
+            }
+            return Boolean.FALSE;
+        }
+
+        boolean isMirrored() {
+            return getMirrored();
+        }
+
+        Boolean getMirrored() {
+            FontFeature f = getFeature(FontFeature.MIRR);
+            if (f != null) {
+                Object a0 = f.getArgument(0);
+                if ((a0 != null) && (a0 instanceof Boolean))
+                    return (Boolean) a0;
+            }
+            return Boolean.FALSE;
+        }
+
         private void populateFeatures(SortedSet<FontFeature> features) {
             for (FontFeature f : features)
                 putFeature(f);
+        }
+
+        private static SortedSet<FontFeature> augmentFeatures(SortedSet<FontFeature> features, SortedSet<FontFeature> augmentation) {
+            SortedSet<FontFeature> fs = features;
+            for (FontFeature f : augmentation)
+                fs.add(f);
+            return Collections.unmodifiableSortedSet(fs);
         }
 
         private FontFeature getFeature(FontFeature f) {

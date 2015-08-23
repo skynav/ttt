@@ -37,6 +37,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     private double bpd;
     private double ipd;
     private int level;
+    private int reversals;
     private double overflow;
 
     public BlockArea() {
@@ -57,6 +58,16 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     @Override
     public int getBidiLevel() {
         return level;
+    }
+
+    @Override
+    public void reverse() {
+        ++reversals;
+    }
+
+    @Override
+    public boolean needsReversing() {
+        return (reversals & 1) == 1;
     }
 
     @Override

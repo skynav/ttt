@@ -38,7 +38,9 @@ public class FontFeature implements Comparable<FontFeature> {
     // private (non-standard) pseudo-features
     public static final FontFeature     COMB            = new FontFeature("COMB");              // tate-chu-yoko        (Combine combination)
     public static final FontFeature     LANG            = new FontFeature("LANG");              // resolved language    (String language)
+    public static final FontFeature     MIRR            = new FontFeature("MIRR");              // mirrored glyphs      (Boolean mirrored)
     public static final FontFeature     ORNT            = new FontFeature("ORNT");              // orientation          (Orientation orientation)
+    public static final FontFeature     REVS            = new FontFeature("REVS");              // reversed glyphs      (Boolean reversed)
     public static final FontFeature     SCPT            = new FontFeature("SCPT");              // resolved script      (String script)
 
     private final String feature;

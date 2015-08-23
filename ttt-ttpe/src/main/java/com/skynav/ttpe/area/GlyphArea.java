@@ -106,4 +106,17 @@ public class GlyphArea extends LeafInlineArea {
         return ng;
     }
 
+    public void maybeReverseGlyphs(boolean mirror) {
+        if (needsReversing())
+            mapping = font.maybeReverse(mapping, needsMirroring(mirror));
+    }
+
+    private boolean needsMirroring(boolean mirror) {
+        if (mirror) {
+            int level = getBidiLevel();
+            return (level >= 0) && ((level & 1) == 1);
+        } else
+            return false;
+    }
+
 }

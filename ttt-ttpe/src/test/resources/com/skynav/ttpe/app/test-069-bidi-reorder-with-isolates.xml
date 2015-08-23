@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<head>
+<styling>
+<initial tts:fontSize="4vh"/>
+<initial tts:lineHeight="5vh"/>
+</styling>
+<layout>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="80vw 15vh" tts:position="center top 8vh" tts:writingMode="lrtb"/>
+<region xml:id="r1" tts:displayAlign="center" tts:extent="80vw 15vh" tts:position="center top 31vh" tts:writingMode="lrtb"/>
+<region xml:id="r2" tts:displayAlign="center" tts:extent="80vw 15vh" tts:position="center bottom 31vh" tts:writingMode="lrtb"/>
+<region xml:id="r3" tts:displayAlign="center" tts:extent="80vw 15vh" tts:position="center bottom 8vh" tts:writingMode="rltb"/>
+</layout>
+</head>
+<body tts:fontFamily="Arial">
+<div>
+<p begin="0s" end="1s" region="r0">car means &#x202E;CAR&#x202C;.</p>
+<p begin="0s" end="1s" region="r1">&#x2067;car &#x202E;MEANS CAR&#x202C;.&#x2069;</p>
+<p begin="0s" end="1s" region="r2">he said &quot;&#x2067;car &#x202E;MEANS CAR&#x202C;&#x2069;.&quot; &quot;&#x2067;&#x202E;IT DOES&#x202C;&#x2069;,&quot; she agreed.</p>
+<p begin="0s" end="1s" region="r3">&#x202E;DID YOU SAY&#x202C; &apos;&#x2066;he said &quot;&#x2067;car &#x202E;MEANS CAR&#x202C;&#x2069;&quot;&#x2069;&apos;?</p>
+</div>
+</body>
+</tt>

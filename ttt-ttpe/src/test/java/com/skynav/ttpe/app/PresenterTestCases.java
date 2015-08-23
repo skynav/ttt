@@ -395,6 +395,11 @@ public class PresenterTestCases {
         performPresentationTest("test-068-ruby-reserve-issue-97-ruby16.xml", 0, 0);
     }
 
+    @Test
+    public void test069BidiReorderWithIsolates() throws Exception {
+        performPresentationTest("test-069-bidi-reorder-with-isolates.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

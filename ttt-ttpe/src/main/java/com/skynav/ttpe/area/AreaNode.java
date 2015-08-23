@@ -138,4 +138,11 @@ public class AreaNode extends AbstractArea {
         return new LineArea();
     }
 
+    public void reverse() {
+    }
+
+    public boolean needsReversing() {
+        return false;
+    }
+
 }

@@ -34,6 +34,7 @@ public class LeafInlineArea extends LeafAreaNode implements Inline {
     private double bpd;
     private double ipd;
     private int level;
+    private int reversals;
 
     public LeafInlineArea(Element e) {
         this(e, 0, 0, -1);
@@ -49,6 +50,16 @@ public class LeafInlineArea extends LeafAreaNode implements Inline {
     @Override
     public int getBidiLevel() {
         return level;
+    }
+
+    @Override
+    public void reverse() {
+        ++reversals;
+    }
+
+    @Override
+    public boolean needsReversing() {
+        return (reversals & 1) == 1;
     }
 
     @Override

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.CharBuffer;
 import java.nio.IntBuffer;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +73,21 @@ public class FontState {
     private static final int MISSING_GLYPH_CHAR = '#';          // character for missing glyph
     private static final int PUA_LOWER_LIMIT    = 0xE000;       // lower limit (inclusive) of bmp pua
     private static final int PUA_UPPER_LIMIT    = 0xF8FF;       // upper limit (inclusive) of bmp pua
+
+    private static final SortedSet<FontFeature> RVS_M1;         // feature set (reverse, with mirror)
+    private static final SortedSet<FontFeature> RVS_M0;         // feature set (reverse, without mirror)
+
+    static {
+        SortedSet<FontFeature> ss;
+        ss = new java.util.TreeSet<FontFeature>();
+        ss.add(FontFeature.REVS.parameterize(true));
+        ss.add(FontFeature.MIRR.parameterize(true));
+        RVS_M1 = Collections.unmodifiableSortedSet(ss);
+        ss = new java.util.TreeSet<FontFeature>();
+        ss.add(FontFeature.REVS.parameterize(true));
+        ss.add(FontFeature.MIRR.parameterize(false));
+        RVS_M0 = Collections.unmodifiableSortedSet(ss);
+    }
 
     private String source;                                      // font file source path
     private Reporter reporter;                                  // reporter for warnings, errors, etc
@@ -150,6 +166,18 @@ public class FontState {
             return gm;
         } else
             return null;
+    }
+
+    public GlyphMapping maybeReverse(FontKey key, GlyphMapping mapping, boolean mirror) {
+        assert mapping != null;
+        GlyphMapping gm = mapping;
+        if (!gm.isReversed()) {
+            GlyphMapping.Key gmk = GlyphMapping.makeKey(mapping.getKey(), makeReversingFeatures(mirror));
+            gm = getCachedMapping(key, gmk);
+            if (gm == null)
+                gm = putCachedMapping(key, gmk, reverseGlyphs(key, gmk, mapping));
+        }
+        return gm;
     }
 
     public int getAdvance(FontKey key, GlyphMapping gm) {
@@ -435,6 +463,14 @@ public class FontState {
             mappingFeatures[k++] = fa;
         }
         return mappingFeatures;
+    }
+
+    private SortedSet<FontFeature> makeReversingFeatures(boolean mirror) {
+        return new java.util.TreeSet<FontFeature>(mirror ? RVS_M1 : RVS_M0);
+    }
+
+    private GlyphMapping reverseGlyphs(FontKey key, GlyphMapping.Key gmk, GlyphMapping gm) {
+        return gm.reverse(gmk);
     }
 
     private int[] getAdvances(FontKey key, GlyphMapping.Key gmk, GlyphSequence gs) {

@@ -140,6 +140,10 @@ public abstract class NonLeafAreaNode extends AreaNode {
             expand(c, expansions);
     }
 
+    public void setChildren(List<AreaNode> children) {
+        this.children = children;
+    }
+
     public List<AreaNode> getChildren() {
         if (children == null)
             children = new java.util.ArrayList<AreaNode>();

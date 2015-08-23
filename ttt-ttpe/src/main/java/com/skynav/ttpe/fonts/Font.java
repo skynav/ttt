@@ -208,6 +208,10 @@ public class Font {
         return ls.getGlyphMapping(key, text, features);
     }
 
+    public GlyphMapping maybeReverse(GlyphMapping mapping, boolean mirror) {
+        return ls.maybeReverse(key, mapping, mirror);
+    }
+
     public int getAdvance(GlyphMapping gm) {
         return ls.getAdvance(key, gm);
     }

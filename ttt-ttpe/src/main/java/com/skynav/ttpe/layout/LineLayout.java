@@ -36,6 +36,7 @@ import java.util.SortedSet;
 import com.skynav.ttpe.area.AnnotationArea;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.GlyphArea;
+import com.skynav.ttpe.area.Inline;
 import com.skynav.ttpe.area.InlineBlockArea;
 import com.skynav.ttpe.area.InlineFillerArea;
 import com.skynav.ttpe.area.LineArea;
@@ -101,12 +102,12 @@ public class LineLayout {
 
     // style related state
     private AnnotationReserve annotationReserve;
+    private int bidiLevel;
     private Color color;
     private Outline outline;
     private InlineAlignment textAlign;
     private Wrap wrap;
     private WritingMode writingMode;
-    private int level;
 
     // derived style state
     private Font font;
@@ -124,8 +125,8 @@ public class LineLayout {
         this.state = state;
         this.defaults = defaults;
         // area derived state
+        this.bidiLevel = state.getBidiLevel();
         this.writingMode = state.getWritingMode();
-        this.level = state.getBidiLevel();
         // outer context styles
         this.annotationReserve = content.getAnnotationReserve(-1, defaults);
         this.color = content.getColor(-1, defaults);
@@ -164,7 +165,7 @@ public class LineLayout {
             LineBreakIterator bi;
             InlineBreakOpportunity bPrev = null;
             for (TextRun r = getNextTextRun(); r != null;) {
-                if (!breaks.isEmpty() || !r.suppressAfterLineBreak()) {
+                if (!r.ignore() && (!breaks.isEmpty() || !r.suppressAfterLineBreak())) {
                     bi = updateIterator(lbi, r);
                     for (InlineBreakOpportunity b = getNextBreakOpportunity(bi, r, available - consumed); b != null; ) {
                         if (b.isHard()) {
@@ -200,7 +201,7 @@ public class LineLayout {
             if (!breaks.isEmpty())
                 lines.add(emit(available, consumed, consume, breaks));
         }
-        return align(lines);
+        return reorder(align(lines));
     }
 
     private static final StyleAttribute[] embeddingAttr = new StyleAttribute[] { StyleAttribute.EMBEDDING };
@@ -213,10 +214,15 @@ public class LineLayout {
             Object embedding = iterator.getAttribute(embeddingAttr[0]);
             iterator.setIndex(s + 1);
             return new EmbeddingRun(s, embedding);
+        } else if (isIgnoredControl(c)) {
+            iterator.setIndex(s + 1);
+            return new IgnoredControlRun(s);
         }
         boolean inBreakingWhitespace = Characters.isBreakingWhitespace(c);
         while ((c = iterator.next()) != CharacterIterator.DONE) {
             if (c == Characters.UC_OBJECT)
+                break;
+            else if (isIgnoredControl(c))
                 break;
             else if (inBreakingWhitespace ^ Characters.isBreakingWhitespace(c))
                 break;
@@ -225,6 +231,10 @@ public class LineLayout {
         }
         int e = iterator.getIndex();
         return inBreakingWhitespace ? new WhitespaceRun(s, e, whitespace) : new NonWhitespaceRun(s, e);
+    }
+
+    private static boolean isIgnoredControl(int c) {
+        return Characters.isBidiControl(c);
     }
 
     private static boolean hasTextRunBreakingAttribute(AttributedCharacterIterator iterator) {
@@ -274,13 +284,13 @@ public class LineLayout {
     }
 
     private LineArea emit(double available, double consumed, Consume consume, List<InlineBreakOpportunity> breaks) {
-        consumed = maybeRemoveLeading(breaks, consumed);
-        consumed = maybeRemoveTrailing(breaks, consumed);
-        return addTextAreas(newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, level, textAlign, color, font), breaks);
+        consumed = maybeRemoveLeadingWhitespace(breaks, consumed);
+        consumed = maybeRemoveTrailingWhitespace(breaks, consumed);
+        return addTextAreas(newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, bidiLevel, textAlign, color, font), breaks);
     }
 
-    protected LineArea newLine(Phrase p, double ipd, double bpd, int level, InlineAlignment textAlign, Color color, Font font) {
-        return new LineArea(p.getElement(), ipd, bpd, level, textAlign, color, font, ++lineNumber, p.isEmbedding());
+    protected LineArea newLine(Phrase p, double ipd, double bpd, int bidiLevel, InlineAlignment textAlign, Color color, Font font) {
+        return new LineArea(p.getElement(), ipd, bpd, bidiLevel, textAlign, color, font, ++lineNumber, p.isEmbedding());
     }
 
     protected int getNextLineNumber() {
@@ -324,7 +334,7 @@ public class LineLayout {
         return l;
     }
 
-    private double maybeRemoveLeading(List<InlineBreakOpportunity> breaks, double consumed) {
+    private double maybeRemoveLeadingWhitespace(List<InlineBreakOpportunity> breaks, double consumed) {
         while (!breaks.isEmpty()) {
             int i = 0;
             InlineBreakOpportunity b = breaks.get(i);
@@ -337,7 +347,7 @@ public class LineLayout {
         return consumed;
     }
 
-    private double maybeRemoveTrailing(List<InlineBreakOpportunity> breaks, double consumed) {
+    private double maybeRemoveTrailingWhitespace(List<InlineBreakOpportunity> breaks, double consumed) {
         while (!breaks.isEmpty()) {
             int i = breaks.size() - 1;
             InlineBreakOpportunity b = breaks.get(i);
@@ -351,9 +361,11 @@ public class LineLayout {
     }
 
     private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, TextRun run, int runStart) {
-        if (run instanceof WhitespaceRun) {
+        if (run instanceof IgnoredControlRun) {
+            return;
+        } else if (run instanceof WhitespaceRun) {
             if (advance > 0)
-                l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.level, text, font), LineArea.ENCLOSE_ALL);
+                l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.bidiLevel, text, font), LineArea.ENCLOSE_ALL);
         } else if (run instanceof EmbeddingRun) {
             l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL);
         } else if (run instanceof NonWhitespaceRun) {
@@ -390,7 +402,7 @@ public class LineLayout {
                         boolean cross = !run.combination.isNone();
                         if (cross)
                             ipd += run.getShearAdvance();
-                        GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.level, f, gm, d);
+                        GlyphArea a = new GlyphArea(content.getElement(), ipd, bpd, run.bidiLevel, f, gm, d);
                         l.addChild(a, !cross ? LineArea.ENCLOSE_ALL : LineArea.ENCLOSE_ALL_CROSS);
                     }
                 }
@@ -527,6 +539,105 @@ public class LineLayout {
         }
     }
 
+    private List<LineArea> reorder(List<LineArea> lines) {
+        for (LineArea l : lines)
+            reorder(l);
+        return lines;
+    }
+
+    private void reorder(LineArea l) {
+        // 1. extract runs from children
+        List<AreaNode> runs = l.getChildren();
+
+        // 2. determine minimum and maximum levels
+        int[] mm = computeMinMaxLevels(runs);
+
+        // 3. reorder from maximum to minimum level
+        int mn = mm[0];
+        int mx = mm[1];
+        if (mx > 0) {
+            for (int l1 = mx, l2 = ((mn & 1) == 0) ? (mn + 1) : mn; l1 >= l2; --l1) {
+                runs = reorderRuns(runs, l1);
+            }
+        } else
+            return;
+
+        // 4. reverse glyphs in runs while mirroring
+        boolean mirror = true;
+        maybeReverseGlyphs(runs, mirror);
+
+        // 5. replace children with reordered runs
+        l.setChildren(runs);
+    }
+
+    private int[] computeMinMaxLevels(List<AreaNode> runs) {
+        int mn = -1;
+        int mx = -1;
+        for (AreaNode n : runs) {
+            if ((n instanceof Inline) && !(n instanceof AnnotationArea)) {
+                int bidiLevel = n.getBidiLevel();
+                if (bidiLevel >= 0) {
+                    if ((mn < 0) || (bidiLevel < mn))
+                        mn = bidiLevel;
+                    if ((mx < 0) || (bidiLevel > mx))
+                        mx = bidiLevel;
+                }
+            }
+        }
+        return new int[] { mn, mx };
+    }
+
+    private List<AreaNode> reorderRuns(List<AreaNode> runs, int bidiLevel) {
+        assert bidiLevel >= 0;
+        List<AreaNode> runsNew = new java.util.ArrayList<AreaNode>();
+        for (int i = 0, n = runs.size(); i < n; ++i) {
+            AreaNode ni = runs.get(i);
+            if (ni.getBidiLevel() < bidiLevel) {
+                runsNew.add(ni);
+            } else {
+                int s = i;
+                int e = s;
+                while (e < n) {
+                    AreaNode ne = runs.get(e);
+                    if (ne.getBidiLevel() < bidiLevel) {
+                        break;
+                    } else {
+                        e++;
+                    }
+                }
+                if (s < e) {
+                    runsNew.addAll(reverseRuns(runs, s, e));
+                }
+                i = e - 1;
+            }
+        }
+        if (!runsNew.equals(runs)) {
+            runs = runsNew;
+        }
+        return runs;
+    }
+
+    private static List<AreaNode> reverseRuns(List<AreaNode> runs, int s, int e) {
+        int n = e - s;
+        List<AreaNode> runsNew = new java.util.ArrayList<AreaNode>(n);
+        if (n > 0) {
+            for (int i = 0; i < n; ++i) {
+                int k = (n - i - 1);
+                AreaNode nk = runs.get(s + k);
+                nk.reverse();
+                runsNew.add(nk);
+            }
+        }
+        return runsNew;
+    }
+
+    private void maybeReverseGlyphs(List<AreaNode> runs, boolean mirror) {
+        for (AreaNode n : runs) {
+            if (n instanceof GlyphArea)
+                ((GlyphArea) n).maybeReverseGlyphs(mirror);
+        }
+    }
+
     private List<LineArea> align(List<LineArea> lines) {
         lines = alignIPD(lines);
         lines = alignBPD(lines);
@@ -578,29 +689,29 @@ public class LineLayout {
             l.setAlignment(alignment);
         }
         double available = measure - consumed;
-        int level = l.getBidiLevel();
+        int bidiLevel = l.getBidiLevel();
         if (available > 0) {
             if (alignment == InlineAlignment.START) {
-                AreaNode a = new InlineFillerArea(l.getElement(), available, 0, level);
+                AreaNode a = new InlineFillerArea(l.getElement(), available, 0, bidiLevel);
                 l.addChild(a, LineArea.EXPAND_IPD);
             } else if (alignment == InlineAlignment.END) {
-                AreaNode a = new InlineFillerArea(l.getElement(), available, 0, level);
+                AreaNode a = new InlineFillerArea(l.getElement(), available, 0, bidiLevel);
                 l.insertChild(a, l.firstChild(), LineArea.EXPAND_IPD);
             } else if (alignment == InlineAlignment.CENTER) {
                 double half = available / 2;
-                AreaNode a1 = new InlineFillerArea(l.getElement(), half, 0, level);
-                AreaNode a2 = new InlineFillerArea(l.getElement(), half, 0, level);
+                AreaNode a1 = new InlineFillerArea(l.getElement(), half, 0, bidiLevel);
+                AreaNode a2 = new InlineFillerArea(l.getElement(), half, 0, bidiLevel);
                 l.insertChild(a1, l.firstChild(), LineArea.EXPAND_IPD);
                 l.insertChild(a2, null, LineArea.EXPAND_IPD);
             } else {
-                justifyTextAreas(l, measure, consumed, level, numNonAnnotationChildren, alignment, baseAdvances);
+                justifyTextAreas(l, measure, consumed, bidiLevel, numNonAnnotationChildren, alignment, baseAdvances);
             }
         } else if (available < 0) {
             l.setOverflow(-available);
         }
     }
 
-    private void justifyTextAreas(LineArea l, double measure, double consumed, int level, int numNonAnnotationChildren, InlineAlignment alignment, double[] baseAdvances) {
+    private void justifyTextAreas(LineArea l, double measure, double consumed, int bidiLevel, int numNonAnnotationChildren, InlineAlignment alignment, double[] baseAdvances) {
         double available = measure - consumed;
         if (alignment == InlineAlignment.JUSTIFY)
             alignment = InlineAlignment.SPACE_BETWEEN;
@@ -610,7 +721,7 @@ public class LineLayout {
         } else if (alignment == InlineAlignment.SPACE_BETWEEN) {
             numFillers = numNonAnnotationChildren - 1;
         } else if (alignment == InlineAlignment.WITH_BASE) {
-            numFillers = justifyTextAreasWithBase(l, available, level, baseAdvances);
+            numFillers = justifyTextAreasWithBase(l, available, bidiLevel, baseAdvances);
         } else
             numFillers = 0;
         double fill;
@@ -621,20 +732,20 @@ public class LineLayout {
         if (fill > 0) {
             List<AreaNode> children = new java.util.ArrayList<AreaNode>(l.getChildren());
             for (AreaNode c : children) {
-                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0, level);
+                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0, bidiLevel);
                 if ((c == children.get(0)) && (alignment == InlineAlignment.SPACE_BETWEEN))
                     continue;
                 else
                     l.insertChild(f, c, LineArea.EXPAND_IPD);
             }
             if (alignment == InlineAlignment.SPACE_AROUND) {
-                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0, level);
+                AreaNode f = new InlineFillerArea(l.getElement(), fill, 0, bidiLevel);
                 l.insertChild(f, null, LineArea.EXPAND_IPD);
             }
         }
     }
 
-    private int justifyTextAreasWithBase(LineArea l, double available, int level, double[] baseAdvances) {
+    private int justifyTextAreasWithBase(LineArea l, double available, int bidiLevel, double[] baseAdvances) {
         List<AreaNode> leaves = new java.util.ArrayList<AreaNode>();
         for (AreaNode c : l.getChildren()) {
             if (c instanceof AnnotationArea)
@@ -655,14 +766,14 @@ public class LineLayout {
                 double d = baseAdvances[i] - c.getIPD();
                 s += d/2;
                 if (s > 0) {
-                    l.insertChild(new InlineFillerArea(l.getElement(), s, 0, level), c, LineArea.EXPAND_IPD);
+                    l.insertChild(new InlineFillerArea(l.getElement(), s, 0, bidiLevel), c, LineArea.EXPAND_IPD);
                 }
                 s = d/2;
                 ++i;
             }
             s += available/2;
             if (s > 0) {
-                l.insertChild(new InlineFillerArea(l.getElement(), s, 0, level), null, LineArea.EXPAND_IPD);
+                l.insertChild(new InlineFillerArea(l.getElement(), s, 0, bidiLevel), null, LineArea.EXPAND_IPD);
             }
             return 0;
         }
@@ -697,6 +808,7 @@ public class LineLayout {
     }
 
     private static class WhitespaceState {
+        static final WhitespaceState DEFAULT = new WhitespaceState(Whitespace.DEFAULT);
         LineFeedTreatment lineFeedTreatment;
         SuppressAtLineBreakTreatment suppressAtLineBreakTreatment;
         boolean whitespaceCollapse;
@@ -784,7 +896,7 @@ public class LineLayout {
         List<StyleAttributeInterval> fontIntervals;             // cached font sub-intervals over complete run interval
         Orientation orientation;                                // dominant glyph orientation for run
         Combination combination;                                // dominant combination for run
-        int level;                                              // bidirectional level
+        int bidiLevel;                                          // bidirectional level
         String text;                                            // cached text over complete run interval
         TextRun(int start, int end) {
             this.start = start;
@@ -793,13 +905,16 @@ public class LineLayout {
             this.fontIntervals = getFontIntervals(0, l, font);
             this.orientation = getDominantOrientation(0, l, defaults.getOrientation());
             this.combination = getDominantCombination(0, l, defaults.getCombination());
-            this.level = getDominantLevel(0, l);
+            this.bidiLevel = getDominantLevel(0, l);
         }
         @Override
         public String toString() {
             StringBuffer sb = new StringBuffer();
             sb.append(getText());
             return sb.toString();
+        }
+        boolean ignore() {
+            return false;
         }
         // obtain all font intervals associated with run
         List<StyleAttributeInterval> getFontIntervals() {
@@ -1046,9 +1161,9 @@ public class LineLayout {
                 assert e == end;
                 aci.setIndex(s);
                 Object v = aci.getAttribute(bidiAttr);
-                int level = (v != null) ? (int) v : -1;
+                int bidiLevel = (v != null) ? (int) v : -1;
                 aci.setIndex(savedIndex);
-                return level;
+                return bidiLevel;
             } else
                 return -1;
         }
@@ -1160,6 +1275,20 @@ public class LineLayout {
                     return false;
             }
             return true;
+        }
+    }
+
+    private class IgnoredControlRun extends WhitespaceRun {
+        IgnoredControlRun(int index) {
+            super(index, index + 1, WhitespaceState.DEFAULT);
+        }
+        @Override
+        boolean ignore() {
+            return true;
+        }
+        @Override
+        double getAdvance(int from, int to, String script, String language, double available) {
+            return 0;
         }
     }
 
