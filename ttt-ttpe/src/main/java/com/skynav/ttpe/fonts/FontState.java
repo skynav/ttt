@@ -206,23 +206,8 @@ public class FontState {
         double size = key.size.getDimension(gm.getKey().getAdvanceAxis(key));
         double[] scaledAdvances = new double[advances.length];
         for (int i = 0, n = scaledAdvances.length; i < n; ++i)
-            scaledAdvances[i] = scaleFontUnits(size, advances[i]);
+            scaledAdvances[i] = scaleFontUnits(size, (double) advances[i]);
         return scaledAdvances;
-    }
-
-    public double[][] getScaledAdjustments(FontKey key, GlyphMapping gm) {
-        int[][] adjustments = gm.getAdjustments();
-        if (adjustments != null) {
-            double size = key.size.getDimension(gm.getKey().getAdvanceAxis(key));
-            double[][] scaledAdjustments = new double[adjustments.length][];
-            for (int i = 0, n = scaledAdjustments.length; i < n; ++i) {
-                int[] ia = adjustments[i];
-                if (ia != null)
-                    scaledAdjustments[i] = scaleFontUnits(size, ia);
-            }
-            return scaledAdjustments;
-        } else
-            return null;
     }
 
     public boolean containsPUAMapping(FontKey key, String glyphsAsText) {
@@ -530,23 +515,16 @@ public class FontState {
             return 0;
     }
 
-    private double scaleFontUnits(FontKey key, int v) {
-        return scaleFontUnits(key.size.getDimension(key.axis), (double) v);
-    }
-
-    private double[] scaleFontUnits(double size, int[] va) {
-        double[] sa = new double[va.length];
-        for (int i = 0, n = va.length; i < n; ++i)
-            sa[i] = scaleFontUnits(size, (double) va[i]);
-        return sa;
-    }
-
-    private double scaleFontUnits(double size, int v) {
-        return scaleFontUnits(size, (double) v);
+    private double scaleFontUnits(FontKey key, double v) {
+        return scaleFontUnits(key.size.getDimension(key.axis), v);
     }
 
     private double scaleFontUnits(double size, double v) {
-        return (v / this.upem) * size;
+        try {
+            return (v / this.upem) * size;
+        } catch (Exception e) {
+            return v;
+        }
     }
 
     // advanced typographic table support
@@ -700,22 +678,27 @@ public class FontState {
             GlyphSequence gs = mapCharsToGlyphs(cs, null);
             int[][] adjustments = new int [ gs.getGlyphCount() ] [ 4 ];
             if (gpos.position(gs, script, language, features, fontSize, this.widths, adjustments)) {
-                for (int i = 0, n = adjustments.length; i < n; ++i) {
-                    int[] ia = adjustments[i];
-                    if (ia != null) {
-                        for (int k = 0; k < 4; ++k) {
-                            int v = ia[k];
-                            v *= upem;
-                            v /= 1000;
-                            ia[k] = v;
-                        }
-                    }
-                }
-                return adjustments;
-            } else
+                return scaleAdjustments(adjustments, fontSize);
+            } else {
                 return null;
-        } else
+            }
+        } else {
             return null;
+        }
+    }
+
+    private int[][] scaleAdjustments(int[][] adjustments, int fontSize) {
+        if (adjustments != null) {
+            for (int i = 0, n = adjustments.length; i < n; i++) {
+                int[] gpa = adjustments [ i ];
+                for (int k = 0; k < 4; k++) {
+                    gpa [ k ] = (gpa [ k ] * fontSize) / 1000;
+                }
+            }
+            return adjustments;
+        } else {
+            return null;
+        }
     }
 
     private GlyphSequence mapCharsToGlyphs(CharSequence cs, List associations) {
