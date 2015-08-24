@@ -228,6 +228,10 @@ public class Font {
         return ls.getScaledAdvances(key, gm);
     }
 
+    public double[][] getScaledAdjustments(GlyphMapping gm) {
+        return ls.getScaledAdjustments(key, gm);
+    }
+
     public boolean containsPUAMapping(String glyphsAsText) {
         return ls.containsPUAMapping(key, glyphsAsText);
     }

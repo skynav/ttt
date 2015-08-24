@@ -142,14 +142,11 @@ public class GlyphMapping {
     private static int[] reverse(int[] a) {
         if (a != null) {
             int[] aNew = new int[a.length];
+            System.arraycopy(a, 0, aNew, 0, a.length);
             for (int i = 0, n = a.length, m = n / 2; i <= m; ++i) {
-                if ((i == m) && ((n & 1) == 1)) {
-                    aNew [ i ] = a [ i ];
-                } else {
-                    int k = n - i - 1;
-                    aNew [ k ] = a [ i ];
-                    aNew [ i ] = a [ k ];
-                }
+                int k = n - i - 1;
+                aNew [ k ] = a [ i ];
+                aNew [ i ] = a [ k ];
             }
             return aNew;
         } else
@@ -159,14 +156,11 @@ public class GlyphMapping {
     private static int[][] reverse(int[][] a) {
         if (a != null) {
             int[][] aNew = new int[a.length][];
+            System.arraycopy(a, 0, aNew, 0, a.length);
             for (int i = 0, n = a.length, m = n / 2; i < m; ++i) {
-                if ((i == m) && ((n & 1) == 1)) {
-                    aNew [ i ] = a [ i ];
-                } else {
-                    int k = n - i - 1;
-                    aNew [ k ] = a [ i ];
-                    aNew [ i ] = a [ k ];
-                }
+                int k = n - i - 1;
+                aNew [ k ] = a [ i ];
+                aNew [ i ] = a [ k ];
             }
             return aNew;
         } else
