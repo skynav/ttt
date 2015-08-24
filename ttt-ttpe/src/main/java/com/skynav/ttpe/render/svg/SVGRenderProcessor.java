@@ -707,6 +707,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         GlyphMapping gm = a.getGlyphMapping();
         String text = gm.getGlyphsAsText();
         double[] advances = font.getScaledAdvances(gm);
+        double[][] adjustments = font.getScaledAdjustments(gm);
         boolean rtl = false;
         double xSaved = xCurrent;
         xCurrent = 0;
@@ -717,6 +718,14 @@ public class SVGRenderProcessor extends RenderProcessor {
             double ga = advances[i];
             double x = rtl ? xCurrent - ga : xCurrent;
             double y = getCrossShearAdjustment(a);
+            if (adjustments != null) {
+                double[] aa = adjustments[i];
+                if (aa != null) {
+                    x  += aa[0];
+                    y  -= aa[1];
+                    ga += aa[2];
+                }
+            }
             int j = i + 1;
             String tGlyphs = text.substring(i, j);
             String tGlyphsPath;
