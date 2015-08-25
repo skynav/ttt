@@ -118,7 +118,7 @@ public class FontKey {
     }
 
     public FontSpecification getSpecification() {
-        return new FontSpecification(family, style, weight, language, null);
+        return new FontSpecification(family, style, weight, language, null, null);
     }
 
     public Collection<FontFeature> getFeatures() {

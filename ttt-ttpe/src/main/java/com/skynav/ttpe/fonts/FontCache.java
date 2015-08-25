@@ -27,6 +27,7 @@ package com.skynav.ttpe.fonts;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,10 +97,10 @@ public class FontCache {
         loadedState.clear();
     }
 
-    public FontState getLoadedState(String source, Reporter reporter) {
+    public FontState getLoadedState(String source, BitSet forcePath, Reporter reporter) {
         FontState fs;
         if ((fs = loadedState.get(source)) == null)
-            fs = createLoadedState(source, reporter);
+            fs = createLoadedState(source, forcePath, reporter);
         return fs;
     }
 
@@ -168,7 +169,7 @@ public class FontCache {
     private Font create(FontKey key) {
         FontSpecification fs = findSpecification(key);
         if (fs != null)
-            return new Font(this, key, fs.source, reporter);
+            return new Font(this, key, fs.source, fs.forcePath, reporter);
         else
             return null;
     }
@@ -216,8 +217,8 @@ public class FontCache {
         return n.endsWith(".xml");
     }
 
-    public FontState createLoadedState(String source, Reporter reporter) {
-        FontState fs = new FontState(source, reporter);
+    public FontState createLoadedState(String source, BitSet forcePath, Reporter reporter) {
+        FontState fs = new FontState(source, forcePath, reporter);
         assert loadedState != null;
         assert !loadedState.containsKey(source);
         loadedState.put(source, fs);

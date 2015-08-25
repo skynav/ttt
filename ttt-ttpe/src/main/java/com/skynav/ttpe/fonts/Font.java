@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.fonts;
 
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.SortedSet;
 
@@ -40,11 +41,11 @@ public class Font {
     private String source;
     private FontState ls;
 
-    public Font(FontCache cache, FontKey key, String source, Reporter reporter) {
+    public Font(FontCache cache, FontKey key, String source, BitSet forcePath, Reporter reporter) {
         this.cache = cache;
         this.key = key;
         this.source = source;
-        this.ls = cache.getLoadedState(source, reporter);
+        this.ls = cache.getLoadedState(source, forcePath, reporter);
     }
 
     @Override

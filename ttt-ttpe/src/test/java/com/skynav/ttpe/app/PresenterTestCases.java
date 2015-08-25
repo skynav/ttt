@@ -400,6 +400,11 @@ public class PresenterTestCases {
         performPresentationTest("test-069-bidi-reorder-with-isolates.xml", 0, 0);
     }
 
+    @Test
+    public void test070KoranicArabic() throws Exception {
+        performPresentationTest("test-070-koranic-arabic.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

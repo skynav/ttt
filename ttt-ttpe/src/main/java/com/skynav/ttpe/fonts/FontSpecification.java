@@ -26,6 +26,7 @@
 package com.skynav.ttpe.fonts;
 
 import java.io.File;
+import java.util.BitSet;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -44,13 +45,15 @@ public class FontSpecification {
     public FontWeight weight;
     public String language;
     public String source;
+    public BitSet forcePath;
 
-    public FontSpecification(String family, FontStyle style, FontWeight weight, String language, String source) {
+    public FontSpecification(String family, FontStyle style, FontWeight weight, String language, String source, BitSet forcePath) {
         this.family     = family;
         this.style      = style;
         this.weight     = weight;
         this.language   = language;
         this.source     = source;
+        this.forcePath  = forcePath;
     }
 
     public boolean matches(FontKey key) {
@@ -91,6 +94,7 @@ public class FontSpecification {
             FontWeight weight = FontKey.DEFAULT_WEIGHT;
             String language = FontKey.DEFAULT_LANGUAGE;
             String source = null;
+            BitSet forcePath = null;
             for (Element p : Documents.findElementsByName(f, ttpeParamEltName)) {
                 if (p.hasAttribute("name")) {
                     String n = p.getAttribute("name");
@@ -107,16 +111,61 @@ public class FontSpecification {
                         source = v;
                         if (!source.startsWith(File.separator))
                             source = sourceBase + File.separator + source;
-                    }
+                    } else if (n.equals("forcePath"))
+                        forcePath = parseIntegerRanges(v);
                 }
             }
             if ((family == null) || family.isEmpty())
                 continue;
             if ((source == null) || source.isEmpty())
                 continue;
-            specs.add(new FontSpecification(family, style, weight, language, source));
+            specs.add(new FontSpecification(family, style, weight, language, source, forcePath));
         }
         return specs;
+    }
+
+    private static BitSet parseIntegerRanges(String s) {
+        if (s.isEmpty())
+            return null;
+        else {
+            List<Integer> ll = new java.util.ArrayList<Integer>();
+            String[] ranges = s.split(",");
+            int lMax = 0;
+            for (String r : ranges) {
+                String[] limits = r.split("-");
+                int nl = limits.length;
+                int l1, l2;
+                try {
+                    if (nl < 1) {
+                        throw new IllegalArgumentException("invalid range syntax: too few limit values");
+                    } else if (nl < 2) {
+                        l1 = Integer.parseInt(limits[0]);
+                        l2 = l1;
+                    } else if (nl < 3) {
+                        l1 = Integer.parseInt(limits[0]);
+                        l2 = Integer.parseInt(limits[1]);
+                    } else {
+                        throw new IllegalArgumentException("invalid range syntax: too many limit values");
+                    }
+                    if (l1 > l2)
+                        throw new IllegalArgumentException("invalid range syntax: lower limit must be less than or equal to upper limit");
+                    if (l2 > lMax)
+                        lMax = l2;
+                    ll.add(Integer.valueOf(l1));
+                    ll.add(Integer.valueOf(l2));
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("invalid range limit syntax: " + e.getMessage());
+                }
+            }
+            BitSet bits = new BitSet(lMax + 1);
+            for (int i = 0, n = ll.size(); i < n; i += 2) {
+                int l1 = ll.get(i + 0);
+                int l2 = ll.get(i + 1);
+                for (int l = l1; l <= l2; ++l)
+                    bits.set(l);
+            }
+            return bits;
+        }
     }
 }
 

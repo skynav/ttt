@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.CharBuffer;
 import java.nio.IntBuffer;
 import java.text.MessageFormat;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +91,7 @@ public class FontState {
     }
 
     private String source;                                      // font file source path
+    private BitSet forcePath;                                   // force use of path for specified glyph indices represented by bit set
     private Reporter reporter;                                  // reporter for warnings, errors, etc
     private OpenTypeFont otf;                                   // open type font instance (from fontbox)
     private boolean otfLoadFailed;                              // true if load of open type font failed
@@ -115,8 +117,9 @@ public class FontState {
     private int[] widths;                                       // array of glyph advances in horizontal axis
     private int[] heights;                                      // array of glyph advances in vertical axis
 
-    public FontState(String source, Reporter reporter) {
+    public FontState(String source, BitSet forcePath, Reporter reporter) {
         this.source = source;
+        this.forcePath = forcePath;
         this.reporter = reporter;
         this.mappings = new java.util.HashMap<GlyphMapping.Key,GlyphMapping>();
         this.gidMappings = new java.util.HashMap<Integer,Integer>();
@@ -700,17 +703,6 @@ public class FontState {
             GlyphSequence gs = mapCharsToGlyphs(cs, null);
             int[][] adjustments = new int [ gs.getGlyphCount() ] [ 4 ];
             if (gpos.position(gs, script, language, features, fontSize, this.widths, adjustments)) {
-                for (int i = 0, n = adjustments.length; i < n; ++i) {
-                    int[] ia = adjustments[i];
-                    if (ia != null) {
-                        for (int k = 0; k < 4; ++k) {
-                            int v = ia[k];
-                            v *= upem;
-                            v /= 1000;
-                            ia[k] = v;
-                        }
-                    }
-                }
                 return adjustments;
             } else
                 return null;
@@ -824,7 +816,9 @@ public class FontState {
     }
 
     private int findCharacterFromGlyphIndex(int gi) {
-        if (cmapSubtable != null) {
+        if ((forcePath != null) && forcePath.get(gi))
+            return 0;
+        else if (cmapSubtable != null) {
             Integer c = cmapSubtable.getCharacterCode(gi);
             return (c != null) ? (int) c : 0;
         } else

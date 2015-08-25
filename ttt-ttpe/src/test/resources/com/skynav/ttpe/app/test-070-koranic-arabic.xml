@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<head>
+<styling>
+<initial tts:fontSize="7.5vh"/>
+<initial tts:lineHeight="12vh"/>
+</styling>
+<layout>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="80vw 80vh" tts:position="center" tts:writingMode="rltb"/>
+</layout>
+</head>
+<body tts:textAlign="center">
+<div>
+<p begin="0s" end="1s" region="r0" tts:fontFamily="Lateef">
+&#x202E;&#x06DD;&#x0661;&#x202C;
+فِي الْبَدْءِ كَانَ الْكَلِمَةُ، وَاْكَلِمَةُ كَانَ عِنْدَ اللهِ. وَكَلنَ الْكَلِمَةُ هُوَ اللهُ.
+&#x202E;&#x06DD;&#x0662;&#x202C;
+هُوَ كَانَ فِي الْبَدْءِ عِنْدَ اللهِ.
+&#x202E;&#x06DD;&#x0663;&#x202C;
+بِهِ تَكَوَّنَ كُلُّ شَيْءٍ، وَبِغَيْرِهِ لَمْ يَتَكَوَّنْ أَيُّ شَيْءٍ مِمَّا تَكَوَّنَ.
+&#x202E;&#x06DD;&#x0664;&#x202C;
+فِيهِ كَانَتِ الْحَيَاةُ. وَالْحَيَاةُ هَذِهِ كَانَتِ نُورَ النَّاسِ.
+&#x202E;&#x06DD;&#x0665;&#x202C;
+وَالنُّورُ يُضِيءُ فِي الظَّلاَمِ، وَالظَّلاَمُ لَمْ يُدْرِكْ النُّورَ.
+</p>
+<p begin="2s" end="3s" region="r0" tts:fontFamily="Scheherazade">
+&#x202E;&#x06DD;&#x0661;&#x202C;
+فِي الْبَدْءِ كَانَ الْكَلِمَةُ، وَاْكَلِمَةُ كَانَ عِنْدَ اللهِ. وَكَلنَ الْكَلِمَةُ هُوَ اللهُ.
+&#x202E;&#x06DD;&#x0662;&#x202C;
+هُوَ كَانَ فِي الْبَدْءِ عِنْدَ اللهِ.
+&#x202E;&#x06DD;&#x0663;&#x202C;
+بِهِ تَكَوَّنَ كُلُّ شَيْءٍ، وَبِغَيْرِهِ لَمْ يَتَكَوَّنْ أَيُّ شَيْءٍ مِمَّا تَكَوَّنَ.
+&#x202E;&#x06DD;&#x0664;&#x202C;
+فِيهِ كَانَتِ الْحَيَاةُ. وَالْحَيَاةُ هَذِهِ كَانَتِ نُورَ النَّاسِ.
+&#x202E;&#x06DD;&#x0665;&#x202C;
+وَالنُّورُ يُضِيءُ فِي الظَّلاَمِ، وَالظَّلاَمُ لَمْ يُدْرِكْ النُّورَ.
+</p>
+</div>
+</body>
+</tt>

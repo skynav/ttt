@@ -6,5 +6,6 @@
     <param name="source">ScheherazadeRegOT.ttf</param>
     <param name="style">NORMAL</param>
     <param name="weight">NORMAL</param>
+    <param name="forcePath">904-944,1104-1152</param>
   </font>
 </fonts>
