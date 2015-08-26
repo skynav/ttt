@@ -2370,18 +2370,20 @@ public class Converter implements ConverterContext {
             String field = parts[partIndex];
             if (field.length() == 0) {
                 return -1;
-            } else if (inTextAttribute) {
-                if (containsTextAttributeEnd(field))
-                    if (!containsTextAttributeStart(field))
+            } else {
+                int[] delims = countTextAttributeDelimiters(field);
+                if (inTextAttribute) {
+                    if ((delims[1] > 0) && (delims[0] < delims[1]))
                         inTextAttribute = false;
-                return partIndex;
-            } else if (isTextField(locator, field, partIndex, nonTextAttributeTreatment)) {
-                return partIndex;
-            } else if (containsTextAttributeStart(field)) {
-                inTextAttribute = true;
-                return partIndex;
-            } else
-                return -1;
+                    return partIndex;
+                } else if (isTextField(locator, field, partIndex, nonTextAttributeTreatment)) {
+                    return partIndex;
+                } else if ((delims[0] > 0) && (delims[0] > delims[1])) {
+                    inTextAttribute = true;
+                    return partIndex;
+                } else
+                    return -1;
+            }
         }
         return -1;
     }
@@ -2503,13 +2505,13 @@ public class Converter implements ConverterContext {
         int nesting = 0;
         for (int i = 0, n = parts.size(); i < n; ++i) {
             String part = parts.get(i);
-            if (isTextAttributeStart(part)) {
-                if (!isTextAttributeEnd(part)) {
+            if (beginsWithTextAttributeStart(part)) {
+                if (!endsWithTextAttributeEnd(part)) {
                     sb.append(part);
                     nesting++;
                 } else
                     strippedParts.add(part);
-            } else if (isTextAttributeEnd(part)) {
+            } else if (endsWithTextAttributeEnd(part)) {
                 sb.append(part);
                 if (nesting > 0)
                     nesting--;
@@ -2525,23 +2527,36 @@ public class Converter implements ConverterContext {
         return strippedParts;
     }
 
+    private static int[] countTextAttributeDelimiters(String s) {
+        int ns = 0;
+        int ne = 0;
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            String t = s.substring(i);
+            if (beginsWithTextAttributeStart(t))
+                ++ns;
+            if (beginsWithTextAttributeEnd(t))
+                ++ne;
+        }
+        return new int[] { ns, ne };
+    }
+
     private static boolean containsTextAttributeStart(String s) {
         for (int i = 0, n = s.length(); i < n; ++i) {
             char c = s.charAt(i);
             if (c == attributePrefix) {
-                if (isTextAttributeStart(s.substring(i)))
+                if (beginsWithTextAttributeStart(s.substring(i)))
                     return true;
             }
         }
         return false;
     }
 
-    private static boolean isTextAttributeStart(String s) {
-        return isTextAttributeStart(s, false);
+    private static boolean beginsWithTextAttributeStart(String s) {
+        return beginsWithTextAttributeStart(s, false);
     }
 
     private static final String textAttributeStart = new String(new char[]{attributePrefix});
-    private static boolean isTextAttributeStart(String s, boolean ignoreLeadingWhitespace) {
+    private static boolean beginsWithTextAttributeStart(String s, boolean ignoreLeadingWhitespace) {
         if (ignoreLeadingWhitespace)
             s = trimLeadingWhitespace(s);
         if (!s.startsWith(textAttributeStart))
@@ -2604,12 +2619,22 @@ public class Converter implements ConverterContext {
         return s.lastIndexOf(textAttributeEnd) >= 0;
     }
 
-    private static boolean isTextAttributeEnd(String s) {
-        return isTextAttributeEnd(s, false);
+    private static boolean beginsWithTextAttributeEnd(String s) {
+        return beginsWithTextAttributeEnd(s, false);
     }
 
-    private static final String textAttributeEnd = new String(new char[]{'\uFF3D',attributePrefix});
-    private static boolean isTextAttributeEnd(String s, boolean ignoreTrailingWhitespace) {
+    private static final String textAttributeEnd = new String(new char[]{'\uFF3D', attributePrefix});
+    private static boolean beginsWithTextAttributeEnd(String s, boolean ignoreLeadingWhitespace) {
+        if (ignoreLeadingWhitespace)
+            s = trimLeadingWhitespace(s);
+        return s.startsWith(textAttributeEnd);
+    }
+
+    private static boolean endsWithTextAttributeEnd(String s) {
+        return endsWithTextAttributeEnd(s, false);
+    }
+
+    private static boolean endsWithTextAttributeEnd(String s, boolean ignoreTrailingWhitespace) {
         if (ignoreTrailingWhitespace)
             s = trimTrailingWhitespace(s);
         return s.endsWith(textAttributeEnd);
@@ -2707,7 +2732,7 @@ public class Converter implements ConverterContext {
         return true;
     }
 
-    private static Screen parseTextField(String field, Screen s) {
+    private Screen parseTextField(String field, Screen s) {
         if (field.length() == 0)
             return null;
         else {
@@ -2728,7 +2753,7 @@ public class Converter implements ConverterContext {
                 } else if ((t = parseText(part, true)) != null) {
                     sb.append(t);
                 } else {
-                    assert false;
+                    throw new IllegalStateException(getReporter().message("x.021", "unexpected text field parse state: part {0}", part).toText());
                 }
             }
             if (sb.length() > 0) {

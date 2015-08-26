@@ -158,6 +158,16 @@ public class ConverterTestCases {
         performConversionTest("test-022-multiple-spaces-issue-110.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion023SpaceInAnnotationIssue133Case1() throws Exception {
+        performConversionTest("test-023-space-in-annotation-issue-133-case-1.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion024SpaceInAnnotationIssue133Case2() throws Exception {
+        performConversionTest("test-024-space-in-annotation-issue-133-case-2.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
