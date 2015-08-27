@@ -107,7 +107,7 @@ public class FontState {
     private GlyphSubstitutionTable gsub;                        // glyph substitution table, if available
     private GlyphPositioningTable gpos;                         // glyph positioning table, if available
     private Map<GlyphMapping.Key,GlyphMapping> mappings;        // glyph mappings cache
-    private Map<Integer,Integer> gidMappings;                   // map from input character codes to glyph indices (gids)
+    private Map<Integer,Integer> gidMappings;                   // map from glyph indices (gids) to input character codes
     private Set<Integer> gidMappingFailures;                    // set of input character codes that don't map to any glyph index
     private int puaMappingNext;                                 // next pua assignment for glyphs with no corresponding character code
     private Map<Integer,Integer> puaMappings;                   // map from unmappable glyph indices to pua character codes
@@ -818,6 +818,8 @@ public class FontState {
     private int findCharacterFromGlyphIndex(int gi) {
         if ((forcePath != null) && forcePath.get(gi))
             return 0;
+        else if (gidMappings.containsKey(Integer.valueOf(gi)))
+            return gidMappings.get(gi);
         else if (cmapSubtable != null) {
             Integer c = cmapSubtable.getCharacterCode(gi);
             return (c != null) ? (int) c : 0;
