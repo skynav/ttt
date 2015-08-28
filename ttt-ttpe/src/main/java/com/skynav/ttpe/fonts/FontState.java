@@ -714,7 +714,7 @@ public class FontState {
         IntBuffer cb = IntBuffer.allocate(cs.length());
         IntBuffer gb = IntBuffer.allocate(cs.length());
         int gi;
-        int giMissing = getGlyphId(MISSING_GLYPH_CHAR);
+        int giMissing = getGlyphId(MISSING_GLYPH_CHAR, false);
         int[] retChar = new int[1];
         int[] retNext = new int[1];
         for (int i = 0, n = cs.length(); i < n; i = retNext[0]) {
@@ -725,7 +725,8 @@ public class FontState {
             }
             cb.put(retChar[0]);
             gb.put(gi);
-            gidMappings.put(gi, retChar[0]);
+            if (gi != 0)
+                gidMappings.put(gi, retChar[0]);
         }
         cb.flip();
         gb.flip();
@@ -759,15 +760,15 @@ public class FontState {
             retChar[0] = c;
         if (retNext != null)
             retNext[0] = index;
-        return getGlyphId(c);
+        return getGlyphId(c, true);
     }
 
-    private int getGlyphId(int c) {
+    private int getGlyphId(int c, boolean reportMappingFailure) {
         assert cmapSubtable != null;
         int gid = cmapSubtable.getGlyphId(c);
         if ((gid == 0) && inActivePUARange(c))
             gid = getPUAGlyph(c);
-        if (gid == 0)
+        if ((gid == 0) && reportMappingFailure)
             maybeReportMappingFailure(c);
         return gid;
     }
