@@ -396,7 +396,8 @@ public class LineLayout {
                         d = null;
                 }
                 if (f != null) {
-                    GlyphMapping gm = f.getGlyphMapping(t, makeGlyphMappingFeatures(script, language, f.getAxis(), f.isKerningEnabled(), run.orientation, run.combination));
+                    GlyphMapping gm =
+                        f.getGlyphMapping(t, makeGlyphMappingFeatures(script, language, run.bidiLevel, f.getAxis(), f.isKerningEnabled(), run.orientation, run.combination));
                     if (gm != null) {
                         double ipd = f.getScaledAdvance(gm);
                         boolean cross = !run.combination.isNone();
@@ -412,12 +413,15 @@ public class LineLayout {
         }
     }
 
-    private SortedSet<FontFeature> makeGlyphMappingFeatures(String script, String language, Axis axis, boolean kerned, Orientation orientation, Combination combination) {
+    private SortedSet<FontFeature>
+        makeGlyphMappingFeatures(String script, String language, int bidiLevel, Axis axis, boolean kerned, Orientation orientation, Combination combination) {
         SortedSet<FontFeature> features = new java.util.TreeSet<FontFeature>();
         if ((script != null) && !script.isEmpty())
             features.add(FontFeature.SCPT.parameterize(script));
         if ((language != null) && !language.isEmpty())
             features.add(FontFeature.LANG.parameterize(language));
+        if (bidiLevel >= 0)
+            features.add(FontFeature.BIDI.parameterize(bidiLevel));
         if (kerned)
             features.add(FontFeature.KERN.parameterize(Boolean.TRUE));
         if ((orientation != null) && orientation.isRotated())
@@ -446,16 +450,16 @@ public class LineLayout {
             if (annoStart == start) {
                 Phrase[] annotations = (Phrase[]) iterator.getAttribute(StyleAttribute.ANNOTATIONS);
                 if (annotations != null) {
-                    String[] baseInfo = new String[2];
+                    Object[] baseInfo = new Object[3];
                     String base = getAnnotationBase(annoStart, annoLimit, baseInfo);
                     Orientation[] baseOrientations = getAnnotationBaseOrientations(annoStart, annoLimit);
-                    addAnnotationAreas(l, base, baseInfo[0], baseInfo[1], baseOrientations, annotations, font, advance, lineHeight);
+                    addAnnotationAreas(l, base, (String) baseInfo[0], (String) baseInfo[1], (int) baseInfo[2], baseOrientations, annotations, font, advance, lineHeight);
                 }
             }
         }
     }
 
-    private String getAnnotationBase(int start, int end, String[] baseInfo) {
+    private String getAnnotationBase(int start, int end, Object[] baseInfo) {
         StringBuffer sb = new StringBuffer();
         int savedIndex = iterator.getIndex();
         for (int i = start, j = end; i < j; ++i) {
@@ -469,6 +473,7 @@ public class LineLayout {
         if (baseInfo != null) {
             baseInfo[0] = this.script;
             baseInfo[1] = this.language;
+            baseInfo[2] = Integer.valueOf(this.bidiLevel);
         }
         return sb.toString();
     }
@@ -501,7 +506,7 @@ public class LineLayout {
         return found ? orientations : null;
     }
 
-    private void addAnnotationAreas(LineArea l, String base, String baseScript, String baseLanguage, Orientation[] baseOrientations, Phrase[] annotations, Font font, double advance, double lineHeight) {
+    private void addAnnotationAreas(LineArea l, String base, String baseScript, String baseLanguage, int baseBidiLevel, Orientation[] baseOrientations, Phrase[] annotations, Font font, double advance, double lineHeight) {
         for (Phrase p : annotations) {
             InlineAlignment annotationAlign = p.getAnnotationAlign(-1, defaults);
             Double annotationOffset = p.getAnnotationOffset(-1, defaults);
@@ -510,13 +515,13 @@ public class LineLayout {
                 a.setAlignment(annotationAlign);
                 a.setOffset(annotationOffset);
                 a.setPosition(annotationPosition);
-                alignTextAreas(a, advance, annotationAlign, getBaseAdvances(base, baseScript, baseLanguage, baseOrientations, font));
+                alignTextAreas(a, advance, annotationAlign, getBaseAdvances(base, baseScript, baseLanguage, baseBidiLevel, baseOrientations, font));
                 l.addChild(a, LineArea.ENCLOSE_ALL);
             }
         }
     }
 
-    private double[] getBaseAdvances(String base, String baseScript, String baseLanguage, Orientation[] baseOrientations, Font font) {
+    private double[] getBaseAdvances(String base, String baseScript, String baseLanguage, int baseBidiLevel, Orientation[] baseOrientations, Font font) {
         if (base == null)
             return null;
         else {
@@ -532,7 +537,8 @@ public class LineLayout {
                 if (orientation == null)
                     orientation = Orientation.ROTATE000;
                 String baseText = base.substring(i, j);
-                GlyphMapping gm = font.getGlyphMapping(baseText, makeGlyphMappingFeatures(baseScript, baseLanguage, axis, kerningEnabled, orientation, Combination.NONE));
+                GlyphMapping gm =
+                    font.getGlyphMapping(baseText, makeGlyphMappingFeatures(baseScript, baseLanguage, baseBidiLevel, axis, kerningEnabled, orientation, Combination.NONE));
                 if (gm != null)
                     advances[i] = font.getScaledAdvance(gm);
             }
@@ -1002,7 +1008,8 @@ public class LineLayout {
             if (font.isVertical() && (orientation == Orientation.ROTATE090) && !combination.isNone())
                 return lineHeight;
             else {
-                GlyphMapping gm = font.getGlyphMapping(text, makeGlyphMappingFeatures(script, language, font.getAxis(), font.isKerningEnabled(), orientation, combination));
+                GlyphMapping gm =
+                    font.getGlyphMapping(text, makeGlyphMappingFeatures(script, language, bidiLevel, font.getAxis(), font.isKerningEnabled(), orientation, combination));
                 return (gm != null) ? font.getScaledAdvance(gm) : 0;
             }
         }

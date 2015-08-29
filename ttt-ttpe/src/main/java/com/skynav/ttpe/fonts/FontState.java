@@ -254,7 +254,7 @@ public class FontState {
         StringBuffer sb = new StringBuffer();
         int[] retNext = new int[1];
         for (int i = 0, n = glyphsAsText.length(); i < n; i = retNext[0]) {
-            int gi = getGlyphId(glyphsAsText, i, null, retNext);
+            int gi = getGlyphId(glyphsAsText, i, false, null, retNext);
             if (gi > 0) {
                 try {
                     GlyphData gd = glyphs.getGlyph(gi);
@@ -279,7 +279,7 @@ public class FontState {
             if (charset != null) {
                 int[] retNext = new int[1];
                 for (int i = 0, n = glyphsAsText.length(); i < n; i = retNext[0]) {
-                    int gi = getGlyphId(glyphsAsText, i, null, retNext);
+                    int gi = getGlyphId(glyphsAsText, i, false, null, retNext);
                     if (gi > 0) {
                         try {
                             int cid = charset.getCIDForGID(gi);
@@ -424,7 +424,7 @@ public class FontState {
     }
 
     private GlyphMapping mapGlyphsSimple(FontKey key, GlyphMapping.Key gmk) {
-        GlyphSequence ogs = mapCharsToGlyphs(gmk.getText(), null);
+        GlyphSequence ogs = mapCharsToGlyphs(gmk.getText(), false, null);
         return new GlyphMapping(gmk, ogs, getAdvances(key, gmk, ogs), null);
     }
 
@@ -464,7 +464,7 @@ public class FontState {
         mcs = reorderCombiningMarks(key, mcs, gpa, script, language, mappingFeatures, associations);
 
         // construct final output glyph sequence and mapping
-        GlyphSequence ogs = mapCharsToGlyphs(mcs, associations);
+        GlyphSequence ogs = mapCharsToGlyphs(mcs, false, associations);
         GlyphMapping gm =  new GlyphMapping(gmk, ogs, getAdvances(key, gmk, ogs), gpa);
         gm.setResolvedScript(script);
         gm.setResolvedLanguage(language);
@@ -486,6 +486,29 @@ public class FontState {
         return mappingFeatures;
     }
 
+    private boolean requiresMirror(Object[][] features) {
+        for (Object[] f : features) {
+            if (requiresMirror(f))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean requiresMirror(Object[] feature) {
+        if ((feature != null) && (feature.length > 1)) {
+            if (feature[0] instanceof String) {
+                String n = (String) feature[0];
+                if (n.equals(FontFeature.BIDI.getFeature())) {
+                    if (feature[1] instanceof Integer) {
+                        Integer i = (Integer) feature[1];
+                        return (i & 1) == 1;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private SortedSet<FontFeature> makeReversingFeatures(boolean mirror) {
         return new java.util.TreeSet<FontFeature>(mirror ? RVS_M1 : RVS_M0);
     }
@@ -501,11 +524,13 @@ public class FontState {
         int[] advances = new int[glyphs.length];
         for (int i = 0, n = advances.length; i < n; ++i) {
             int gi = glyphs[i];
-            int c = gidMappings.get(gi);
-            if (!Characters.isZeroWidthWhitespace(c)) {
-                int a = vertical ? getAdvanceHeight(gi) : getAdvanceWidth(gi);
-                int k = (kerning != null) ? kerning[i] : 0;
-                advances[i] = a + k;
+            if (gi != 0) {
+                int c = gidMappings.get(gi);
+                if (!Characters.isZeroWidthWhitespace(c)) {
+                    int a = vertical ? getAdvanceHeight(gi) : getAdvanceWidth(gi);
+                    int k = (kerning != null) ? kerning[i] : 0;
+                    advances[i] = a + k;
+                }
             }
         }
         return advances;
@@ -564,7 +589,7 @@ public class FontState {
     private CharSequence performSubstitution(FontKey key, CharSequence cs, String script, String language, Object[][] features, List associations, boolean retainControls) {
         if (gsub != null) {
             CharSequence  ncs = normalize(cs, associations);
-            GlyphSequence igs = mapCharsToGlyphs(ncs, associations);
+            GlyphSequence igs = mapCharsToGlyphs(ncs, requiresMirror(features), associations);
             GlyphSequence ogs = gsub.substitute(igs, script, language, features);
             if (associations != null) {
                 associations.clear();
@@ -582,7 +607,7 @@ public class FontState {
 
     private CharSequence reorderCombiningMarks(FontKey key, CharSequence cs, int[][] gpa, String script, String language, Object[][] features, List associations) {
         if (gdef != null) {
-            GlyphSequence igs = mapCharsToGlyphs(cs, associations);
+            GlyphSequence igs = mapCharsToGlyphs(cs, false, associations);
             GlyphSequence ogs = gdef.reorderCombiningMarks(igs, getUnscaledWidths(igs), gpa, script, language, features);
             if (associations != null) {
                 associations.clear();
@@ -703,7 +728,7 @@ public class FontState {
 
     private int[][] performPositioning(FontKey key, CharSequence cs, String script, String language, Object[][] features, int fontSize) {
         if (gpos != null) {
-            GlyphSequence gs = mapCharsToGlyphs(cs, null);
+            GlyphSequence gs = mapCharsToGlyphs(cs, false, null);
             int[][] adjustments = new int [ gs.getGlyphCount() ] [ 4 ];
             if (gpos.position(gs, script, language, features, fontSize, this.widths, adjustments)) {
                 return adjustments;
@@ -713,7 +738,7 @@ public class FontState {
             return null;
     }
 
-    private GlyphSequence mapCharsToGlyphs(CharSequence cs, List associations) {
+    private GlyphSequence mapCharsToGlyphs(CharSequence cs, boolean mirror, List associations) {
         IntBuffer cb = IntBuffer.allocate(cs.length());
         IntBuffer gb = IntBuffer.allocate(cs.length());
         int gi;
@@ -721,7 +746,7 @@ public class FontState {
         int[] retChar = new int[1];
         int[] retNext = new int[1];
         for (int i = 0, n = cs.length(); i < n; i = retNext[0]) {
-            gi = getGlyphId(cs, i, retChar, retNext);
+            gi = getGlyphId(cs, i, mirror, retChar, retNext);
             if (gi <= 0) {
                 maybeReportMappingFailure(retChar[0]);
                 gi = giMissing;
@@ -741,7 +766,7 @@ public class FontState {
         return new GlyphSequence(cb, gb, associations);
     }
 
-    private int getGlyphId(CharSequence cs, int index, int[] retChar, int[] retNext) {
+    private int getGlyphId(CharSequence cs, int index, boolean mirror, int[] retChar, int[] retNext) {
         int c = cs.charAt(index++);
         if ((c >= 0xD800) && (c < 0xDC00)) {
             int n = cs.length();
@@ -759,6 +784,8 @@ public class FontState {
         } else if ((c >= 0xDC00) && (c < 0xE000)) {
             throw new IllegalArgumentException("ill-formed UTF-16 sequence, contains isolated low surrogate at index " + (index - 1));
         }
+        if (mirror && Characters.hasMirror(c))
+            c = Characters.toMirror(c);
         if (retChar != null)
             retChar[0] = c;
         if (retNext != null)

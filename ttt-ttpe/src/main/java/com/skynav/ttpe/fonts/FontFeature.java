@@ -36,6 +36,7 @@ public class FontFeature implements Comparable<FontFeature> {
     public static final FontFeature     VERT            = new FontFeature("vert");              // vertical variant
 
     // private (non-standard) pseudo-features
+    public static final FontFeature     BIDI            = new FontFeature("BIDI");              // bidi level           (Integer level)
     public static final FontFeature     COMB            = new FontFeature("COMB");              // tate-chu-yoko        (Combine combination)
     public static final FontFeature     LANG            = new FontFeature("LANG");              // resolved language    (String language)
     public static final FontFeature     MIRR            = new FontFeature("MIRR");              // mirrored glyphs      (Boolean mirrored)

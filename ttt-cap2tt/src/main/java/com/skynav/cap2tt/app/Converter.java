@@ -2540,17 +2540,6 @@ public class Converter implements ConverterContext {
         return new int[] { ns, ne };
     }
 
-    private static boolean containsTextAttributeStart(String s) {
-        for (int i = 0, n = s.length(); i < n; ++i) {
-            char c = s.charAt(i);
-            if (c == attributePrefix) {
-                if (beginsWithTextAttributeStart(s.substring(i)))
-                    return true;
-            }
-        }
-        return false;
-    }
-
     private static boolean beginsWithTextAttributeStart(String s) {
         return beginsWithTextAttributeStart(s, false);
     }
@@ -2613,10 +2602,6 @@ public class Converter implements ConverterContext {
                 break;
         }
         return (i > 0) ? s.substring(i) : s;
-    }
-
-    private static boolean containsTextAttributeEnd(String s) {
-        return s.lastIndexOf(textAttributeEnd) >= 0;
     }
 
     private static boolean beginsWithTextAttributeEnd(String s) {

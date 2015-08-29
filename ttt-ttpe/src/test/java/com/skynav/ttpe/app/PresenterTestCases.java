@@ -66,8 +66,8 @@ public class PresenterTestCases {
     }
 
     @Test
-    public void test003SpanTextAlignJP() throws Exception {
-        performPresentationTest("test-003-span-text-align-jp.xml", 0, 0);
+    public void test003SpanTextAlignJA() throws Exception {
+        performPresentationTest("test-003-span-text-align-ja.xml", 0, 0);
     }
 
     @Test
@@ -403,6 +403,11 @@ public class PresenterTestCases {
     @Test
     public void test070KoranicArabic() throws Exception {
         performPresentationTest("test-070-koranic-arabic.xml", 0, 0);
+    }
+
+    @Test
+    public void test071BidiMirror() throws Exception {
+        performPresentationTest("test-071-bidi-mirror.xml", 0, 0);
     }
 
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
