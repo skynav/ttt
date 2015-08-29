@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="jp" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<tt xmlns="http://www.w3.org/ns/ttml" ttp:version="2" ttva:model="ttml2" xml:lang="ja" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
 <head>
 <ttm:item name="creationDate">2015-08-12T03:01:13Z</ttm:item>
 <ttm:item name="creationSystem">CAP2TT/1.0.0dev</ttm:item>

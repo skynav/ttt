@@ -347,8 +347,8 @@ public class FontState {
             int[] widths = null;
             int[] heights = null;
             boolean useLayoutTables = false;
+            File f = new File(source);
             try {
-                File f = new File(source);
                 if (f.exists()) {
                     otf = new OTFParser(false, true).parse(f);
                     nameTable = otf.getNaming();
@@ -366,8 +366,11 @@ public class FontState {
                     heights = otf.getAdvanceHeights();
                     useLayoutTables = useLayoutTables(key, otf);
                     reporter.logInfo(reporter.message("*KEY*", "Loaded font instance ''{0}''", f.getAbsolutePath()));
+                } else {
+                    reporter.logError(reporter.message("*KEY*", "Font instance ''{0}'' does not exist", f.getAbsolutePath()));
                 }
             } catch (IOException e) {
+                reporter.logError(reporter.message("*KEY*", "Failed to load font instance ''{0}'': {1}", f.getAbsolutePath(), e.getMessage()));
             }
             if ((nameTable != null) && (os2Table != null) && (cmapSubtable != null)) {
                 this.otf = otf;

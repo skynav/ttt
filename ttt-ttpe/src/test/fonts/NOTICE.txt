@@ -1,0 +1,23 @@
+
+********************************************************************************
+DROID FONTS
+********************************************************************************
+
+Copyright (c) 2007-2015, Google Corporation. Droid fonts are released under the
+Apache License, version 2.0, included herein as LICENSE.APACHE.txt.
+
+********************************************************************************
+NOTO FONTS
+********************************************************************************
+
+Copyright (c) 2012-2015, Google Corporation. Noto fonts are released under the
+Apache License, version 2.0, included herein as LICENSE.APACHE.txt.
+
+********************************************************************************
+SIL FONTS
+********************************************************************************
+
+Copyright (c) 2004-2015, SIL International (http://scripts.sil.org/) with
+Reserved Font Names "Lateef", "Scheherazade", and "SIL". SIL fonts are
+released under the Open Font License (OFL), Version 1.1, included herein as
+LICENSE.SILOFL.txt.

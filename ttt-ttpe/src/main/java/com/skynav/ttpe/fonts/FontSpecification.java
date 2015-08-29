@@ -74,6 +74,10 @@ public class FontSpecification {
         StringBuffer sb = new StringBuffer();
         sb.append('[');
         sb.append(family.toUpperCase());
+        if (!language.isEmpty()) {
+            sb.append(',');
+            sb.append(language);
+        }
         sb.append(',');
         sb.append(style);
         sb.append(',');

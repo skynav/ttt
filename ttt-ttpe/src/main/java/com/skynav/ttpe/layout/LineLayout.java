@@ -533,7 +533,8 @@ public class LineLayout {
                     orientation = Orientation.ROTATE000;
                 String baseText = base.substring(i, j);
                 GlyphMapping gm = font.getGlyphMapping(baseText, makeGlyphMappingFeatures(baseScript, baseLanguage, axis, kerningEnabled, orientation, Combination.NONE));
-                advances[i] = font.getScaledAdvance(gm);
+                if (gm != null)
+                    advances[i] = font.getScaledAdvance(gm);
             }
             return advances;
         }

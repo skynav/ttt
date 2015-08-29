@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xml:lang="" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
+<tt xml:lang="en" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
   <head>
     <styling>
@@ -13,7 +13,7 @@
       <region xml:id="r3" tts:extent="640px 45px" tts:position="center bottom 45px"/>
     </layout>
   </head>
-  <body tts:textAlign="center" tts:fontFamily="Arial" tts:fontSize="36px" tts:lineHeight="45px">
+  <body tts:textAlign="center" tts:fontFamily="Noto Sans" tts:fontSize="36px" tts:lineHeight="45px">
     <div begin="1s" end="2s">
       <p region="r0">ABC</p>
       <p region="r0">DEF</p>

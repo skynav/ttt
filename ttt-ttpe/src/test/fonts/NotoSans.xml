@@ -2,14 +2,42 @@
 <fonts version="1" xmlns="http://skynav.com/ns/ttpe">
   <font>
     <param name="family">Noto Sans</param>
-    <param name="language">JP</param>
+    <param name="language">EN</param>
+    <param name="source">NotoSans-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EN</param>
+    <param name="source">NotoSans-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EN</param>
+    <param name="source">NotoSans-BoldRegular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EN</param>
+    <param name="source">NotoSans-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">JA</param>
     <param name="source">NotoSansJP-Regular.otf</param>
     <param name="style">NORMAL</param>
     <param name="weight">NORMAL</param>
   </font>
   <font>
     <param name="family">Noto Sans</param>
-    <param name="language">JP</param>
+    <param name="language">JA</param>
     <param name="source">NotoSansJP-Bold.otf</param>
     <param name="style">NORMAL</param>
     <param name="weight">BOLD</param>
