@@ -1876,6 +1876,7 @@ public class Converter implements ConverterContext {
                     }
                 } else if (!line.isEmpty()) {
                     if (!parseContentLine(line, locator)) {
+                        reporter.logError(reporter.message(locator, "e.006", "Content line parse failure."));
                         fail = true;
                     }
                 }
@@ -2181,7 +2182,7 @@ public class Converter implements ConverterContext {
     }
 
     private static int hasScreenField(String[] parts, int partIndex) {
-        if (partIndex < parts.length) {
+        if ((partIndex == 0) && (partIndex < parts.length)) {
             if (isScreenField(parts[partIndex]))
                 return partIndex;
         }

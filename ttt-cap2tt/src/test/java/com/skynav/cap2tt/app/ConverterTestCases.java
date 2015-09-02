@@ -168,6 +168,21 @@ public class ConverterTestCases {
         performConversionTest("test-024-space-in-annotation-issue-133-case-2.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion025FalseScreenNumberIssue138Case1() throws Exception {
+        performConversionTest("test-025-false-screen-number-issue-138-case-1.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion026FalseScreenNumberIssue138Case2() throws Exception {
+        performConversionTest("test-026-false-screen-number-issue-138-case-2.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion027FalseScreenNumberIssue138Case3() throws Exception {
+        performConversionTest("test-027-false-screen-number-issue-138-case-3.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
