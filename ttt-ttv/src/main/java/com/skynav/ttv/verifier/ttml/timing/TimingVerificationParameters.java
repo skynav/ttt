@@ -26,6 +26,7 @@
 package com.skynav.ttv.verifier.ttml.timing;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 
 import javax.xml.namespace.QName;
@@ -41,6 +42,8 @@ import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class TimingVerificationParameters implements VerificationParameters {
+
+    public static final int frameRateMultiplierScale = 16;
 
     protected TimeBase timeBase;
     protected DropMode dropMode;
@@ -107,10 +110,10 @@ public class TimingVerificationParameters implements VerificationParameters {
     protected BigDecimal parseFrameRateMultiplier(String value) {
         String[] components = value.split("\\s+");
         if (components.length == 2) {
-            BigDecimal n = new BigDecimal(components[0]);
-            BigDecimal d = new BigDecimal(components[1]);
-            if (!d.equals(BigDecimal.ZERO))
-                return n.divide(d, RoundingMode.DOWN);
+            BigDecimal n = new BigDecimal(new BigInteger(components[0]), frameRateMultiplierScale);
+            BigDecimal d = new BigDecimal(new BigInteger(components[1]), frameRateMultiplierScale);
+            if (d.signum() != 0)
+                return n.divide(d, RoundingMode.HALF_EVEN);
             else
                 return BigDecimal.ONE;
         } else
