@@ -316,7 +316,7 @@ public class BasicLayoutState implements LayoutState {
                 }
             }
         }
-        return defaults.getExtent();
+        return getExternalExtent();
     }
 
     public Point getOrigin(Element e) {
