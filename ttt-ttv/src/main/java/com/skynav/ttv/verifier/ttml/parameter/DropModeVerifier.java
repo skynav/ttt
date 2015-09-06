@@ -30,7 +30,6 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml1.ttd.DropMode;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -38,7 +37,9 @@ public class DropModeVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         // Schema validation phase (3) reports invalid values.
-        if (valueObject instanceof DropMode)
+        if (model.isTTMLVersion(1) && (valueObject instanceof com.skynav.ttv.model.ttml1.ttd.DropMode))
+            return true;
+        else if (model.isTTMLVersion(2) && (valueObject instanceof com.skynav.ttv.model.ttml2.ttd.DropMode))
             return true;
         else
             throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());

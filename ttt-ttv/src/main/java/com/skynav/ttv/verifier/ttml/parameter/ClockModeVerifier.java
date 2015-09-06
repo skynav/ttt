@@ -30,7 +30,6 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml1.ttd.ClockMode;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -38,7 +37,9 @@ public class ClockModeVerifier implements ParameterValueVerifier {
 
     public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         // Schema validation phase (3) reports invalid values.
-        if (valueObject instanceof ClockMode)
+        if (model.isTTMLVersion(1) && (valueObject instanceof com.skynav.ttv.model.ttml1.ttd.ClockMode))
+            return true;
+        else if (model.isTTMLVersion(2) && (valueObject instanceof com.skynav.ttv.model.ttml2.ttd.ClockMode))
             return true;
         else
             throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());
