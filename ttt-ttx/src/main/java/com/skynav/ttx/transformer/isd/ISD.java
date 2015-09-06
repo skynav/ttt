@@ -1310,13 +1310,13 @@ public class ISD {
                 for (QName name : getDefinedStyleNames(context)) {
                     if (!sss.containsKey(name)) {
                         StyleSpecification s;
-                        if (!isInheritableStyle(elt, name, context) || isRootElement(elt))
+                        if (!isInheritableStyle(elt, name, context) || isRootStylingElement(elt))
                             s = getInitialStyle(elt, name, context, overrides);
                         else if (specialStyleInheritance(elt, name, sss, context))
                             s = getSpecialInheritedStyle(elt, name, sss, specifiedStyleSets, context);
                         else
                             s = getNearestAncestorStyle(elt, name, specifiedStyleSets);
-                        if ((s != null) && doesStyleApply(elt, name, context))
+                        if ((s != null) && (doesStyleApply(elt, name, context) || isRootStylingElement(elt)))
                             sss.merge(s);
                     }
                 }
@@ -1400,6 +1400,17 @@ public class ISD {
 
         private static boolean isInheritableStyle(QName eltName, QName styleName, TransformerContext context) {
             return context.getModel().isInheritableStyle(eltName, styleName);
+        }
+
+        private static boolean isRootStylingElement(Element elt) {
+            /* TBD - MIGRATE TO ROOT in TTML2
+            int version = getHelper(context).getVersion();
+            if (version == 1)
+                return isRegionElement(elt);
+            else
+                return isRootElement(elt);
+            */
+            return isRegionElement(elt);
         }
 
         private static boolean specialStyleInheritance(Element elt, QName styleName, StyleSet sss, TransformerContext context) {

@@ -60,6 +60,10 @@ public abstract class TTMLHelper {
             return null;
     }
 
+    public int getVersion() {
+        throw new UnsupportedOperationException();
+    }
+
     public void traverse(Object tt, Visitor v) throws Exception {
         throw new UnsupportedOperationException();
     }

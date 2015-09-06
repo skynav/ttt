@@ -624,14 +624,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
     }
 
     protected void setStyleInitialValue(Object content, StyleAccessor sa, Object initialValue, VerifierContext context) {
-        if (isRegion(content)) {
-            if (initialValue != null) {
-                Object initialOverride = getInitialOverride(sa.styleName, context);
-                if (initialOverride != null)
-                    initialValue = initialOverride;
-                setStyleValue(content, sa.setterName, sa.valueClass, initialValue);
-            }
-        }
+        // defer initial value setting to ISD generation (ttx)
     }
 
     protected void setStyleValue(Object content, String setterName, Class<?> valueClass, Object value) {

@@ -60,6 +60,11 @@ public class TTML2Helper extends TTMLHelper {
     private static final ObjectFactory spanFactory = new ObjectFactory();
 
     @Override
+    public int getVersion() {
+        return 2;
+    }
+
+    @Override
     public void traverse(Object root, Visitor v) throws Exception {
         assert root instanceof TimedText;
         traverse((TimedText) root, v);
