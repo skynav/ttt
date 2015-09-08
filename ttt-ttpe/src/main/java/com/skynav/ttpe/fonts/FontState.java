@@ -116,6 +116,7 @@ public class FontState {
     private double upem;                                        // units per em
     private int[] widths;                                       // array of glyph advances in horizontal axis
     private int[] heights;                                      // array of glyph advances in vertical axis
+    private Map<PathCacheKey,String> pathCache;                 // map from {font key, glyph id, advance} to glyph path string
 
     public FontState(String source, BitSet forcePath, Reporter reporter) {
         this.source = source;
@@ -256,19 +257,33 @@ public class FontState {
         for (int i = 0, n = glyphsAsText.length(); i < n; i = retNext[0]) {
             int gi = getGlyphId(glyphsAsText, i, false, null, retNext);
             if (gi > 0) {
-                try {
-                    GlyphData gd = glyphs.getGlyph(gi);
-                    if (gd != null) {
-                        GeneralPath p = gd.getPath();
-                        if (p != null) {
-                            sb.append(getGlyphsPathContours(key, p, advances[i]));
-                        }
-                    }
-                } catch (IOException e) {
-                }
+                String p = getGlyphPath(key, gi, advances[i], glyphs);
+                if (p != null)
+                    sb.append(p);
             }
         }
         return sb.toString();
+    }
+
+    private String getGlyphPath(FontKey key, int gi, double advance, GlyphTable glyphs) {
+        PathCacheKey pck = new PathCacheKey(key, gi, advance);
+        if (hasCachedGlyphPath(pck))
+            return getCachedGlyphPath(pck);
+        else
+            return putCachedGlyphPath(pck, getGlyphPath(pck, glyphs));
+    }
+
+    private String getGlyphPath(PathCacheKey pck, GlyphTable glyphs) {
+        try {
+            GlyphData gd = glyphs.getGlyph(pck.getGlyph());
+            if (gd != null) {
+                GeneralPath p = gd.getPath();
+                if (p != null)
+                    return getGlyphPath(pck.getFontKey(), p, pck.getAdvance());
+            }
+        } catch (IOException e) {
+        }
+        return null;
     }
 
     private String getGlyphsPathContours(FontKey key, String glyphsAsText, double[] advances, CFFTable glyphs) {
@@ -281,17 +296,9 @@ public class FontState {
                 for (int i = 0, n = glyphsAsText.length(); i < n; i = retNext[0]) {
                     int gi = getGlyphId(glyphsAsText, i, false, null, retNext);
                     if (gi > 0) {
-                        try {
-                            int cid = charset.getCIDForGID(gi);
-                            Type1CharString cs = cff.getType2CharString(cid);
-                            if (cs != null) {
-                                GeneralPath p = cs.getPath();
-                                if (p != null) {
-                                    sb.append(getGlyphsPathContours(key, p, advances[i]));
-                                }
-                            }
-                        } catch (IOException e) {
-                        }
+                        String p = getGlyphPath(key, gi, advances[i], cff, charset);
+                        if (p != null)
+                            sb.append(p);
                     }
                 }
             }
@@ -299,7 +306,29 @@ public class FontState {
         return sb.toString();
     }
 
-    private String getGlyphsPathContours(FontKey key, GeneralPath p, double advance) {
+    private String getGlyphPath(FontKey key, int gi, double advance, CFFFont cff, CFFCharset charset) {
+        PathCacheKey pck = new PathCacheKey(key, gi, advance);
+        if (hasCachedGlyphPath(pck))
+            return getCachedGlyphPath(pck);
+        else
+            return putCachedGlyphPath(pck, getGlyphPath(pck, cff, charset));
+    }
+
+    private String getGlyphPath(PathCacheKey pck, CFFFont cff, CFFCharset charset) {
+        try {
+            int cid = charset.getCIDForGID(pck.getGlyph());
+            Type1CharString cs = cff.getType2CharString(cid);
+            if (cs != null) {
+                GeneralPath p = cs.getPath();
+                if (p != null)
+                    return getGlyphPath(pck.getFontKey(), p, pck.getAdvance());
+            }
+        } catch (IOException e) {
+        }
+        return null;
+    }
+
+    private String getGlyphPath(FontKey key, GeneralPath p, double advance) {
         StringBuffer sb = new StringBuffer();
         double size = key.size.getHeight();
         double s = size / this.upem;
@@ -325,6 +354,21 @@ public class FontState {
             }
         }
         return sb.toString().trim();
+    }
+
+    private boolean hasCachedGlyphPath(PathCacheKey pck) {
+        return (pathCache != null) && pathCache.containsKey(pck);
+    }
+
+    private String getCachedGlyphPath(PathCacheKey pck) {
+        return pathCache.get(pck);
+    }
+
+    private String putCachedGlyphPath(PathCacheKey pck, String p) {
+        if (pathCache == null)
+            pathCache = new java.util.HashMap<PathCacheKey, String>();
+        pathCache.put(pck, p);
+        return p;
     }
 
     private void appendCoordinates(StringBuffer sb, double[] coordinates, int numCoordinates) {
@@ -891,6 +935,61 @@ public class FontState {
         if (!puaMappingFailures.contains(value)) {
             reporter.logWarning(reporter.message("*KEY*", "No PUA mapping available for glyph {0} in font resource ''{1}''.", String.format("0x%04X", gi), source));
             puaMappingFailures.add(value);
+        }
+    }
+
+    private static class PathCacheKey {
+        private FontKey key;
+        private int glyph;
+        private double advance;
+        public PathCacheKey(FontKey key, int glyph, double advance) {
+            this.glyph = glyph;
+            this.key = key;
+            this.advance = advance;
+        }
+        public FontKey getFontKey() {
+            return key;
+        }
+        public int getGlyph() {
+            return glyph;
+        }
+        public double getAdvance() {
+            return advance;
+        }
+        @Override
+        public int hashCode() {
+            int hc = 23;
+            hc = hc * 31 + key.hashCode();
+            hc = hc * 31 + Integer.valueOf(glyph).hashCode();
+            hc = hc * 31 + Double.valueOf(advance).hashCode();
+            return hc;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof PathCacheKey) {
+                PathCacheKey other = (PathCacheKey) o;
+                if (glyph != other.glyph)
+                    return false;
+                else if (advance != other.advance)
+                    return false;
+                else if (!key.equals(other.key))
+                    return false;
+                else
+                    return true;
+            } else
+                return false;
+        }
+        @Override
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append('[');
+            sb.append(key);
+            sb.append(',');
+            sb.append(glyph);
+            sb.append(',');
+            sb.append(advance);
+            sb.append(']');
+            return sb.toString();
         }
     }
 
