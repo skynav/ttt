@@ -410,6 +410,11 @@ public class PresenterTestCases {
         performPresentationTest("test-071-bidi-mirror.xml", 0, 0);
     }
 
+    @Test
+    public void test072RubyReserveIssue147() throws Exception {
+        performPresentationTest("test-072-ruby-reserve-issue-147.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

@@ -36,7 +36,8 @@ public class AnnotationReserve {
         AUTO,
         BEFORE,
         AFTER,
-        OUTSIDE;
+        OUTSIDE,
+        BOTH;
     }
 
     private Position position;
@@ -59,8 +60,12 @@ public class AnnotationReserve {
         Position p = this.position;
         if (p == Position.AUTO)
             p = (numLines == 2) ? Position.OUTSIDE : Position.BEFORE;
-        if (p == Position.OUTSIDE)
-            p = lastLine ? Position.AFTER : Position.BEFORE;
+        if (p == Position.OUTSIDE) {
+            if (numLines == 1)
+                p = Position.BOTH;
+            else
+                p = lastLine ?  Position.AFTER : Position.BEFORE;
+        }
         return p;
     }
 

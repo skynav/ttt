@@ -168,6 +168,10 @@ public class LineArea extends BlockArea {
                 adjustAnnotationBPD(AnnotationPosition.BEFORE, reserve);
             else if (position == AnnotationReserve.Position.AFTER)
                 adjustAnnotationBPD(AnnotationPosition.AFTER, reserve);
+            else if (position == AnnotationReserve.Position.BOTH) {
+                adjustAnnotationBPD(AnnotationPosition.BEFORE, reserve);
+                adjustAnnotationBPD(AnnotationPosition.AFTER, reserve);
+            }
         }
     }
 
