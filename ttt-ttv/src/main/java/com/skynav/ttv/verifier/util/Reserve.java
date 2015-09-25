@@ -95,7 +95,13 @@ public class Reserve {
             return true;
         else if (s.equals("after"))
             return true;
+        else if (s.equals("both"))
+            return true;
         else if (s.equals("outside"))
+            return true;
+        else if (s.equals("around"))
+            return true;
+        else if (s.equals("between"))
             return true;
         else
             return false;

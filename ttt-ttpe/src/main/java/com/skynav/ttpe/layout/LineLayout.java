@@ -801,12 +801,12 @@ public class LineLayout {
     private List<LineArea> maybeAddAnnotationReserve(List<LineArea> lines, AnnotationReserve annotationReserve) {
         int numLines = lines.size();
         for (LineArea l : lines)
-            maybeAddAnnotationReserve(l, annotationReserve, numLines, l.getLineNumber() == numLines);
+            maybeAddAnnotationReserve(l, annotationReserve, numLines, l.getLineNumber() == 1, l.getLineNumber() == numLines);
         return lines;
     }
 
-    private LineArea maybeAddAnnotationReserve(LineArea line, AnnotationReserve annotationReserve, int numLines, boolean lastLine) {
-        AnnotationReserve.Position p = annotationReserve.resolvePosition(numLines, lastLine);
+    private LineArea maybeAddAnnotationReserve(LineArea line, AnnotationReserve annotationReserve, int numLines, boolean firstLine, boolean lastLine) {
+        AnnotationReserve.Position p = annotationReserve.resolvePosition(numLines, firstLine, lastLine);
         double r = annotationReserve.getReserve();
         if (r < 0)
             r = lineHeight / 2;

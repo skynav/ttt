@@ -33,11 +33,13 @@ public class AnnotationReserve {
 
     public enum Position {
         NONE,
-        AUTO,
         BEFORE,
         AFTER,
+        BOTH,
         OUTSIDE,
-        BOTH;
+        AROUND,
+        BETWEEN,
+        AUTO;
     }
 
     private Position position;
@@ -56,15 +58,27 @@ public class AnnotationReserve {
         return position;
     }
 
-    public Position resolvePosition(int numLines, boolean lastLine) {
+    public Position resolvePosition(int numLines, boolean firstLine, boolean lastLine) {
         Position p = this.position;
         if (p == Position.AUTO)
-            p = (numLines == 2) ? Position.OUTSIDE : Position.BEFORE;
+            p = (numLines == 2) ? Position.OUTSIDE : Position.AROUND;
         if (p == Position.OUTSIDE) {
             if (numLines == 1)
                 p = Position.BOTH;
+            else if (firstLine)
+                p = Position.BEFORE;
+            else if (lastLine)
+                p = Position.AFTER;
+        } else if (p == Position.AROUND) {
+            if ((numLines == 1) || lastLine)
+                p = Position.BOTH;
             else
-                p = lastLine ?  Position.AFTER : Position.BEFORE;
+                p = Position.BEFORE;
+        } else if (p == Position.BETWEEN) {
+            if (numLines == 1)
+                p = Position.NONE;
+            else
+                p = firstLine ? Position.NONE : Position.BEFORE;
         }
         return p;
     }

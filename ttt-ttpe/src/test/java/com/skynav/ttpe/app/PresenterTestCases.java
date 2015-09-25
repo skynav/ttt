@@ -415,6 +415,21 @@ public class PresenterTestCases {
         performPresentationTest("test-072-ruby-reserve-issue-147.xml", 0, 0);
     }
 
+    @Test
+    public void test073RubyReserveOutside3Lines() throws Exception {
+        performPresentationTest("test-073-ruby-reserve-outside-3-lines.xml", 0, 0);
+    }
+
+    @Test
+    public void test074RubyReserveAround3Lines() throws Exception {
+        performPresentationTest("test-074-ruby-reserve-around-3-lines.xml", 0, 0);
+    }
+
+    @Test
+    public void test075RubyReserveBetween3Lines() throws Exception {
+        performPresentationTest("test-075-ruby-reserve-between-3-lines.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

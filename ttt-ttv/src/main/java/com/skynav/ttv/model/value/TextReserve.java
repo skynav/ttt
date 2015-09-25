@@ -29,10 +29,13 @@ public class TextReserve {
 
     public enum Position {
         NONE,
-        AUTO,
         BEFORE,
         AFTER,
-        OUTSIDE;
+        BOTH,
+        OUTSIDE,
+        AROUND,
+        BETWEEN,
+        AUTO;
         public static Position fromValue(String v) {
             return Position.valueOf(v.toUpperCase());
         }
