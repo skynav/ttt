@@ -4169,13 +4169,13 @@ public class Converter implements ConverterContext {
                     kerning = "normal";
                 attributes.put(ttsFontKerningAttrName, kerning);
             } else if (name.equals("幅広")) {
-                p.setFontSize("1.0em 1.5em");
+                p.setFontSize("1.5em 1.0em");
             } else if (name.equals("倍角")) {
-                p.setFontSize("1.0em 2.0em");
+                p.setFontSize("2.0em 1.0em");
             } else if (name.equals("半角")) {
-                p.setFontSize("1.0em 0.5em");
+                p.setFontSize("0.5em 1.0em");
             } else if (name.equals("拗音")) {
-                p.setFontSize("1.0em 0.9em");
+                p.setFontSize("0.9em 1.0em");
             } else if (name.equals("幅")) {
                 int stretch;
                 if (count < 0)
@@ -4186,7 +4186,7 @@ public class Converter implements ConverterContext {
                     stretch = count * 10;
                 else
                     stretch = 200;
-                p.setFontSize("1.0em " + Double.toString((double) stretch / 100.0) + "em");
+                p.setFontSize("" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
             } else if (name.equals("寸")) {
                 int scale;
                 if (count < 0)
@@ -4270,13 +4270,13 @@ public class Converter implements ConverterContext {
                     kerning = "normal";
                 attributes.put(ttsFontKerningAttrName, kerning);
             } else if (name.equals("幅広")) {
-                attributes.put(ttsFontSizeAttrName, "1.0em 1.5em");
+                attributes.put(ttsFontSizeAttrName, "1.5em 1.0em");
             } else if (name.equals("倍角")) {
-                attributes.put(ttsFontSizeAttrName, "1.0em 2.0em");
+                attributes.put(ttsFontSizeAttrName, "2.0em 1.0em");
             } else if (name.equals("半角")) {
-                attributes.put(ttsFontSizeAttrName, "1.0em 0.5em");
+                attributes.put(ttsFontSizeAttrName, "0.5em 1.0em");
             } else if (name.equals("拗音")) {
-                attributes.put(ttsFontSizeAttrName, "1.0em 0.9em");
+                attributes.put(ttsFontSizeAttrName, "0.9em 1.0em");
             } else if (name.equals("幅")) {
                 int stretch;
                 if (count < 0)
@@ -4287,7 +4287,7 @@ public class Converter implements ConverterContext {
                     stretch = count * 10;
                 else
                     stretch = 200;
-                attributes.put(ttsFontSizeAttrName, "1.0em " + Double.toString((double) stretch / 100.0) + "em");
+                attributes.put(ttsFontSizeAttrName, "" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
             } else if (name.equals("寸")) {
                 int scale;
                 if (count < 0)

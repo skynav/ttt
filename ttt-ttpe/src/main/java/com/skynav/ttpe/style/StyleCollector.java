@@ -666,11 +666,11 @@ public class StyleCollector {
         List<Length> lengths = new java.util.ArrayList<Length>();
         if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
-            Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
-            double h = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs);
             if (lengths.size() == 1)
                 lengths.add(lengths.get(0));
-            double w = Helpers.resolveLength(e, lengths.get(1), Axis.HORIZONTAL, extBounds, refBounds, fs);
+            Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+            double w = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs);
+            double h = Helpers.resolveLength(e, lengths.get(1), Axis.HORIZONTAL, extBounds, refBounds, fs);
             return new Extent(w, h);
         } else
             return null;

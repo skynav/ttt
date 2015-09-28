@@ -5,7 +5,7 @@
 <initial tts:fontSize="4vh"/>
 <initial tts:lineHeight="5vh"/>
 <initial tts:showBackground="whenActive"/>
-<style xml:id="s1" tts:fontSize="1.0em 1.5em"/>
+<style xml:id="s1" tts:fontSize="1.5em 1.0em"/>
 <style xml:id="s2" tts:textAlign="center"/>
 <style xml:id="s3" tts:textAlign="start"/>
 </styling>

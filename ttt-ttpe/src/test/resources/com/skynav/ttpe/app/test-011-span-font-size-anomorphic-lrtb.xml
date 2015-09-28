@@ -9,11 +9,11 @@
 <body tts:textAlign="center" tts:fontFamily="Noto Sans" tts:fontSize="36px" tts:lineHeight="45px">
 <div>
 <p region="r0" begin="1s" end="2s" tts:textAlign="center">
-<span tts:fontSize="1em 0.50em">ANAMORPHIC</span><br/>
-<span tts:fontSize="1em 0.75em">ANAMORPHIC</span><br/>
-<span tts:fontSize="1em 1.00em">ANAMORPHIC</span><br/>
-<span tts:fontSize="1em 1.50em">ANAMORPHIC</span><br/>
-<span tts:fontSize="1em 2.00em">ANAMORPHIC</span>
+<span tts:fontSize="0.50em 1em">ANAMORPHIC</span><br/>
+<span tts:fontSize="0.75em 1em">ANAMORPHIC</span><br/>
+<span tts:fontSize="1.00em 1em">ANAMORPHIC</span><br/>
+<span tts:fontSize="1.50em 1em">ANAMORPHIC</span><br/>
+<span tts:fontSize="2.00em 1em">ANAMORPHIC</span>
 </p>
 </div>
 </body>

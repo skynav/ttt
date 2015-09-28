@@ -9,7 +9,7 @@
 <initial tts:lineHeight="5vh"/>
 <initial tts:showBackground="whenActive"/>
 <style xml:id="s1" tts:fontShear="27%"/>
-<style xml:id="s2" tts:fontSize="1.0em 1.5em"/>
+<style xml:id="s2" tts:fontSize="1.5em 1.0em"/>
 <style xml:id="s3" tts:textEmphasis="dot"/>
 </styling>
 <layout>
