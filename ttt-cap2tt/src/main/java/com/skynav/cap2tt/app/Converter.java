@@ -2051,8 +2051,14 @@ public class Converter implements ConverterContext {
                     if ((j = hasTextField(locator, parts, i, NonTextAttributeTreatment.Warning)) >= 0) {
                         // insert encoded preceding separator text
                         if (sb.length() > 0) {
-                            if (i > 0)
-                                sb.append(parseText(parts[i - 1], false));
+                            if (i > 0) {
+                                String p = parts[i - 1];
+                                String t = parseText(p, false);
+                                if (t != null)
+                                    sb.append(t);
+                                else
+                                    throw new IllegalStateException(getReporter().message("x.021", "unexpected text field parse state: part {0}", p).toText());
+                            }
                         }
                         sb.append(parts[i]);
                         lastTextPartIndex = j;
@@ -2804,7 +2810,7 @@ public class Converter implements ConverterContext {
             if (c == attributePrefix)
                 return null;
             else if (c == '\t')
-                return null;
+                ++escapedSpaces;
             else if ((c == '\u005F') || (c == '\uFF3F'))
                 ++escapedSpaces;
         }
@@ -2813,6 +2819,8 @@ public class Converter implements ConverterContext {
         StringBuffer sb = new StringBuffer(text.length());
         for (int i = 0, n = text.length(); i < n; ++i) {
             char c = text.charAt(i);
+            if ( c == '\t')
+                c = '\u005F';
             if (c == '\u005F')
                 c = (mapInitialSpaceToNBSP && (sb.length() == 0)) ? '\u00A0' : '\u0020';
             else if (c == '\uFF3F')
@@ -3820,7 +3828,9 @@ public class Converter implements ConverterContext {
         }
         private static String normalize(String s, boolean trim) {
             if (s != null) {
-                s = parseText(s, false);
+                String t = parseText(s, false);
+                if (t != null)
+                    s = t;
                 if (trim)
                     s = s.trim();
                 return s;

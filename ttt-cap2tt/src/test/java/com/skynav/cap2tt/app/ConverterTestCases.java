@@ -183,6 +183,11 @@ public class ConverterTestCases {
         performConversionTest("test-027-false-screen-number-issue-138-case-3.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion028FalseAttributePrefixIssue145() throws Exception {
+        performConversionTest("test-028-false-attribute-prefix-issue-145.cap", 0, 0);
+    }
+
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
