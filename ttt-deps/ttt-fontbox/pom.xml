@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt-deps</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0</version>
   </parent>
 
   <properties>
@@ -59,9 +59,9 @@
             </goals>
             <configuration>
               <pomFile>pom.xml</pomFile>
-              <file>ttt-fontbox-2.0-SNAPSHOT.jar</file>
-              <sources>ttt-fontbox-2.0-SNAPSHOT-sources.jar</sources>
-              <javadoc>ttt-fontbox-2.0-SNAPSHOT-javadoc.jar</javadoc>
+              <file>ttt-fontbox-2.0.jar</file>
+              <sources>ttt-fontbox-2.0-sources.jar</sources>
+              <javadoc>ttt-fontbox-2.0-javadoc.jar</javadoc>
             </configuration>
           </execution>
         </executions>
