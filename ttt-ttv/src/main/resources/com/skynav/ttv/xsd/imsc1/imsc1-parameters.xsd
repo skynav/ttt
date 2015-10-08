@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml/profile/imsc1#parameter"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ittp="http://www.w3.org/ns/ttml/profile/imsc1#parameter" xmlns:ittd="http://www.w3.org/ns/ttml/profile/imsc1#datatype">
+  <xs:import namespace="http://www.w3.org/ns/ttml/profile/imsc1#datatype" schemaLocation="imsc1-datatypes.xsd"/>
+  <xs:attribute name="aspectRatio" type="ittd:aspectRatio"/>
+  <xs:attribute name="progressivelyDecodable" type="ittd:progressivelyDecodable"/>
+</xs:schema>

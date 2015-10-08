@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="qualified" version="2012-03-09">
+  <xs:import namespace="http://www.w3.org/ns/ttml/profile/imsc1#metadata" schemaLocation="imsc1-metadata.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml/profile/imsc1#parameter" schemaLocation="imsc1-parameters.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml/profile/imsc1#styling" schemaLocation="imsc1-styling.xsd"/>
+</xs:schema>

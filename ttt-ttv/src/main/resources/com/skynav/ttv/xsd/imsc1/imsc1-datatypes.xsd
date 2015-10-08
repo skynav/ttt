@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml/profile/imsc1#datatype"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ittd="http://www.w3.org/ns/ttml/profile/imsc1#datatype">
+  <xs:simpleType name="aspectRatio">
+    <xs:annotation>
+      <xs:documentation>positiveInteger positiveInteger</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="forcedDisplay">
+    <xs:restriction base="xs:boolean"/>
+  </xs:simpleType>
+  <xs:simpleType name="progressivelyDecodable">
+    <xs:restriction base="xs:boolean"/>
+  </xs:simpleType>
+</xs:schema>

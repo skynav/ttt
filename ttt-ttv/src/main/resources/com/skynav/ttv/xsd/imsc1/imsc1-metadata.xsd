@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml/profile/imsc1#metadata"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ittm="http://www.w3.org/ns/ttml/profile/imsc1#metadata">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:attributeGroup name="altText.attlist">
+    <xs:attribute ref="xml:id"/>
+    <xs:attribute ref="xml:lang"/>
+    <xs:attribute ref="xml:space"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:complexType name="altText.eltype" mixed="true">
+    <xs:attributeGroup ref="ittm:altText.attlist"/>
+  </xs:complexType>
+  <xs:element name="altText" type="ittm:altText.eltype"/>
+</xs:schema>
