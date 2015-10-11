@@ -1439,6 +1439,46 @@ public class InvalidTestCases {
         performInvalidityTest("nflxsdh-invalid-bad-region-geometry.xml", -1, -1);
     }
 
+    @Test
+    public void testInvalidIMSC1InvalidBadEncoding() throws Exception {
+        performInvalidityTest("imsc1-invalid-bad-encoding.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidMissingProfileAttribute() throws Exception {
+        performInvalidityTest("imsc1-invalid-missing-profile-attribute.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidBadProfileAttribute() throws Exception {
+        performInvalidityTest("imsc1-invalid-bad-profile-attribute.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidNotPermittedClockMode() throws Exception {
+        performInvalidityTest("imsc1-invalid-not-permitted-clock-mode.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidNotPermittedDropMode() throws Exception {
+        performInvalidityTest("imsc1-invalid-not-permitted-drop-mode.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidNotPermittedMarkerMode() throws Exception {
+        performInvalidityTest("imsc1-invalid-not-permitted-marker-mode.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidNotPermittedPixelAspectRatio() throws Exception {
+        performInvalidityTest("imsc1-invalid-not-permitted-pixel-aspect-ratio.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidNotPermittedSubFrameRate() throws Exception {
+        performInvalidityTest("imsc1-invalid-not-permitted-sub-frame-rate.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
@@ -1461,7 +1501,7 @@ public class InvalidTestCases {
         int resultCode = ttv.getResultCode(urlString);
         int resultFlags = ttv.getResultFlags(urlString);
         if (resultCode == TimedTextVerifier.RV_PASS) {
-            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MATCH) == 0) {
+            if (((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MATCH) == 0) && (expectedErrors >= 0)) {
                 fail("Unexpected success without expected error(s) match.");
             }
             if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0) {

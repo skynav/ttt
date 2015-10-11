@@ -37,6 +37,7 @@ import javax.xml.namespace.QName;
 import com.skynav.ttv.model.AbstractModel;
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.ttml1.tt.Body;
+import com.skynav.ttv.model.ttml1.tt.Break;
 import com.skynav.ttv.model.ttml1.tt.Division;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
@@ -91,6 +92,7 @@ public class TTML1 {
 
         public static final QName agentElementName = new com.skynav.ttv.model.ttml1.ttm.ObjectFactory().createAgent(new Agent()).getName();
         public static final QName bodyElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createBody(new Body()).getName();
+        public static final QName breakElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createBr(new Break()).getName();
         public static final QName divisionElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createDiv(new Division()).getName();
         public static final QName headElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createHead(new Head()).getName();
         public static final QName layoutElementName = new com.skynav.ttv.model.ttml1.tt.ObjectFactory().createLayout(new Layout()).getName();
@@ -357,8 +359,56 @@ public class TTML1 {
             return (namespaceUri == null) || (namespaceUri.length() == 0);
         }
 
+        protected boolean isTTElement(QName name) {
+            return name.equals(timedTextElementName);
+        }
+
+        protected boolean isTTBodyElement(QName name) {
+            return name.equals(bodyElementName);
+        }
+
         protected boolean isTTDivElement(QName name) {
             return name.equals(divisionElementName);
+        }
+
+        protected boolean isTTParagraphElement(QName name) {
+            return name.equals(paragraphElementName);
+        }
+
+        protected boolean isTTSpanElement(QName name) {
+            return name.equals(spanElementName);
+        }
+
+        protected boolean isTTBreakElement(QName name) {
+            return name.equals(breakElementName);
+        }
+
+        protected boolean isTTContentElement(QName name) {
+            if (isTTBodyElement(name))
+                return true;
+            else if (isTTDivElement(name))
+                return true;
+            else if (isTTParagraphElement(name))
+                return true;
+            else if (isTTSpanElement(name))
+                return true;
+            else if (isTTBreakElement(name))
+                return true;
+            else
+                return false;
+        }
+
+        protected boolean isTTRegionElement(QName name) {
+            return name.equals(regionElementName);
+        }
+
+        protected boolean isTTContentOrRegionElement(QName name) {
+            if (isTTContentElement(name))
+                return true;
+            else if (isTTRegionElement(name))
+                return true;
+            else
+                return false;
         }
 
         public Collection<QName> getDefinedStyleNames() {

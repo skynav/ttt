@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad ttp:profile attribute, must be one of http://www.w3.org/ns/ttml/profile/imsc1/{text,image} -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/unknown"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:noWarnOn="references-non-standard-profile" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head/>
+  <body/>
+</tt>
