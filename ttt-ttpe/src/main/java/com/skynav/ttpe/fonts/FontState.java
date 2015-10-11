@@ -142,9 +142,21 @@ public class FontState {
 
     public double getLeading(FontKey key) {
         if (maybeLoad(key))
-            return scaleFontUnits(key, os2Table.getTypoLineGap());
+            return scaleFontUnits(key, getLeading());
         else
             return 0;
+    }
+
+    public int getLeading() {
+        int l = os2Table.getTypoLineGap();
+        if (l == 0) {
+            int wa = os2Table.getWinAscent();
+            int wd = os2Table.getWinDescent();
+            int wl = (wa + wd) - (int) upem;
+            if (wl > 0)
+                l = wl;
+        }
+        return l;
     }
 
     public double getAscent(FontKey key) {
