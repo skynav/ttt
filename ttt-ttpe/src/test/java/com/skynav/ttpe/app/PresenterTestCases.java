@@ -430,6 +430,21 @@ public class PresenterTestCases {
         performPresentationTest("test-075-ruby-reserve-between-3-lines.xml", 0, 0);
     }
 
+    @Test
+    public void test076SpanTextAlignKO() throws Exception {
+        performPresentationTest("test-076-span-text-align-ko.xml", 0, 0);
+    }
+
+    @Test
+    public void test077SpanTextAlignZHS() throws Exception {
+        performPresentationTest("test-077-span-text-align-zhs.xml", 0, 0);
+    }
+
+    @Test
+    public void test078SpanTextAlignZHT() throws Exception {
+        performPresentationTest("test-078-span-text-align-zht.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

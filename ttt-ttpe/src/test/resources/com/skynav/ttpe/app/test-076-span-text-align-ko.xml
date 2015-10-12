@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="ko" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:displayAlign="after" tts:extent="768px 80px" tts:origin="256px 610px"/>
+      <region xml:id="r1" tts:displayAlign="after" tts:extent="80px 576px" tts:origin="20px 72px" tts:writingMode="tblr"/>
+      <region xml:id="r2" tts:displayAlign="after" tts:extent="80px 576px" tts:origin="1170px 72px" tts:writingMode="tbrl"/>
+    </layout>
+  </head>
+  <body tts:textAlign="center" tts:fontFamily="Noto Sans" tts:fontSize="30px" tts:lineHeight="40px">
+    <div>
+      <p region="r0" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center"><span tts:textAlign="center">키스의 고유조건은 입술끼리 만나야<br/>하고 특별한 기술은 필요치 않다</span></p>
+      <p region="r1" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center"><span tts:textAlign="start">키스의 고유조건은 입술끼리 만나야<br/>하고 특별한 기술은 필요치 않다</span></p>
+      <p region="r2" begin="10:00:07:20" end="10:00:09:02" tts:textAlign="center"><span tts:textAlign="end">키스의 고유조건은 입술끼리 만나야<br/>하고 특별한 기술은 필요치 않다</span></p>
+    </div>
+  </body>
+</tt>

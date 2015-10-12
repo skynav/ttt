@@ -30,6 +30,20 @@
   </font>
   <font>
     <param name="family">Noto Sans</param>
+    <param name="language">IW</param>
+    <param name="source">NotoSansHebrew-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">IW</param>
+    <param name="source">NotoSansHebrew-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
     <param name="language">JA</param>
     <param name="source">NotoSansJP-Regular.otf</param>
     <param name="style">NORMAL</param>
@@ -44,15 +58,57 @@
   </font>
   <font>
     <param name="family">Noto Sans</param>
-    <param name="language">IW</param>
-    <param name="source">NotoSansHebrew-Regular.ttf</param>
+    <param name="language">KO</param>
+    <param name="source">NotoSansKR-Regular.otf</param>
     <param name="style">NORMAL</param>
     <param name="weight">NORMAL</param>
   </font>
   <font>
     <param name="family">Noto Sans</param>
-    <param name="language">IW</param>
-    <param name="source">NotoSansHebrew-Bold.ttf</param>
+    <param name="language">KO</param>
+    <param name="source">NotoSansKR-Bold.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZH</param>
+    <param name="source">NotoSansSC-Regular.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZH</param>
+    <param name="source">NotoSansSC-Bold.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZHS</param>
+    <param name="source">NotoSansSC-Regular.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZHS</param>
+    <param name="source">NotoSansSC-Bold.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZHT</param>
+    <param name="source">NotoSansTC-Regular.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZHT</param>
+    <param name="source">NotoSansTC-Bold.otf</param>
     <param name="style">NORMAL</param>
     <param name="weight">BOLD</param>
   </font>
