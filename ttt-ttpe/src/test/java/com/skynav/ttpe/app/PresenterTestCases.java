@@ -445,6 +445,11 @@ public class PresenterTestCases {
         performPresentationTest("test-078-span-text-align-zht.xml", 0, 0);
     }
 
+    @Test
+    public void test079SpanTextAlignRU() throws Exception {
+        performPresentationTest("test-079-span-text-align-ru.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

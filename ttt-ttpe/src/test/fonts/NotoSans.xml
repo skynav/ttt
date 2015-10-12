@@ -72,6 +72,34 @@
   </font>
   <font>
     <param name="family">Noto Sans</param>
+    <param name="language">RU</param>
+    <param name="source">NotoSans-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">RU</param>
+    <param name="source">NotoSans-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">RU</param>
+    <param name="source">NotoSans-BoldRegular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">RU</param>
+    <param name="source">NotoSans-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
     <param name="language">ZH</param>
     <param name="source">NotoSansSC-Regular.otf</param>
     <param name="style">NORMAL</param>
