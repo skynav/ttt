@@ -32,8 +32,8 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Characters;
+import com.skynav.ttv.verifier.util.Keywords;
 
 public class RubyOverhangClassVerifier implements StyleValueVerifier {
 

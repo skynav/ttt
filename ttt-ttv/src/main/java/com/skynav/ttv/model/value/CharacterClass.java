@@ -106,7 +106,7 @@ public class CharacterClass {
             }
             cc.add(c[0], c[1]);
         }
-        if ((k = parseDelimiter(s, i, CLOSE_DELIMITER)) <= 0)
+        if (parseDelimiter(s, i, CLOSE_DELIMITER) <= 0)
             throw new IllegalArgumentException();
         return cc.isEmpty() ? EMPTY : cc;
     }
