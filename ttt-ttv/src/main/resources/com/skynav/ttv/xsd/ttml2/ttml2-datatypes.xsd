@@ -532,6 +532,27 @@
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
+  <xs:simpleType name="rubyOverflow">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="shiftRuby"/>
+      <xs:enumeration value="shiftBase"/>
+      <xs:enumeration value="overflow"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="rubyOverhang">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="allow"/>
+      <xs:enumeration value="always"/>
+      <xs:enumeration value="overlap"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="rubyOverhangClass">
+    <xs:annotation>
+      <xs:documentation>auto | (characterClassNamed | characterClass)+</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:simpleType name="rubyPosition">
     <xs:restriction base="xs:token">
       <xs:enumeration value="auto"/>
@@ -541,6 +562,9 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="rubyReserve">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="script">
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="showBackground">

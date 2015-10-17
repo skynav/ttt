@@ -51,6 +51,8 @@ import com.skynav.ttv.model.ttml2.ttd.FontWeight;
 import com.skynav.ttv.model.ttml2.ttd.Overflow;
 import com.skynav.ttv.model.ttml2.ttd.Ruby;
 import com.skynav.ttv.model.ttml2.ttd.RubyAlign;
+import com.skynav.ttv.model.ttml2.ttd.RubyOverflow;
+import com.skynav.ttv.model.ttml2.ttd.RubyOverhang;
 import com.skynav.ttv.model.ttml2.ttd.RubyPosition;
 import com.skynav.ttv.model.ttml2.ttd.ShowBackground;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
@@ -73,9 +75,13 @@ import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
+import com.skynav.ttv.verifier.ttml.style.RubyOverflowVerifier;
+import com.skynav.ttv.verifier.ttml.style.RubyOverhangVerifier;
+import com.skynav.ttv.verifier.ttml.style.RubyOverhangClassVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyReserveVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyVerifier;
+import com.skynav.ttv.verifier.ttml.style.ScriptVerifier;
 import com.skynav.ttv.verifier.ttml.style.ShowBackgroundVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextCombineVerifier;
@@ -246,6 +252,39 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             null
         },
         {
+            new QName(NAMESPACE,"rubyOverflow"),
+            "RubyOverflow",
+            RubyOverflow.class,
+            RubyOverflowVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            RubyOverflow.SHIFT_RUBY,
+            RubyOverflow.SHIFT_RUBY.value()
+        },
+        {
+            new QName(NAMESPACE,"rubyOverhang"),
+            "RubyOverhang",
+            RubyOverhang.class,
+            RubyOverhangVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            RubyOverhang.ALLOW,
+            RubyOverhang.ALLOW.value()
+        },
+        {
+            new QName(NAMESPACE,"rubyOverhangClass"),
+            "RubyOverhangClass",
+            String.class,
+            RubyOverhangClassVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "auto",
+            null
+        },
+        {
             new QName(NAMESPACE,"rubyPosition"),
             "RubyPosition",
             RubyPosition.class,
@@ -266,6 +305,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "none",
             null
+        },
+        {
+            new QName(NAMESPACE,"script"),
+            "Script",
+            String.class,
+            ScriptVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "auto",
+            null,
         },
         {
             new QName(NAMESPACE,"showBackground"),

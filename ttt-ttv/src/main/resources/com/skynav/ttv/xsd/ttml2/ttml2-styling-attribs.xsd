@@ -35,8 +35,12 @@
   <xs:attribute name="ruby" type="ttd:ruby"/>
   <xs:attribute name="rubyAlign" type="ttd:rubyAlign"/>
   <xs:attribute name="rubyOffset" type="ttd:rubyOffset"/>
+  <xs:attribute name="rubyOverhang" type="ttd:rubyOverhang"/>
+  <xs:attribute name="rubyOverhangClass" type="ttd:rubyOverhangClass"/>
+  <xs:attribute name="rubyOverflow" type="ttd:rubyOverflow"/>
   <xs:attribute name="rubyPosition" type="ttd:rubyPosition"/>
   <xs:attribute name="rubyReserve" type="ttd:rubyReserve"/>
+  <xs:attribute name="script" type="ttd:script"/>
   <xs:attribute name="showBackground" type="ttd:showBackground"/>
   <xs:attribute name="textAlign" type="ttd:textAlign"/>
   <xs:attribute name="textCombine" type="ttd:textCombine"/>
@@ -78,12 +82,16 @@
     <xs:attribute ref="tts:overflow"/>
     <xs:attribute ref="tts:padding"/>
     <xs:attribute ref="tts:position"/>
-    <xs:attribute ref="tts:showBackground"/>
     <xs:attribute ref="tts:ruby"/>
     <xs:attribute ref="tts:rubyAlign"/>
     <xs:attribute ref="tts:rubyOffset"/>
+    <xs:attribute ref="tts:rubyOverhang"/>
+    <xs:attribute ref="tts:rubyOverhangClass"/>
+    <xs:attribute ref="tts:rubyOverflow"/>
     <xs:attribute ref="tts:rubyPosition"/>
     <xs:attribute ref="tts:rubyReserve"/>
+    <xs:attribute ref="tts:script"/>
+    <xs:attribute ref="tts:showBackground"/>
     <xs:attribute ref="tts:textAlign"/>
     <xs:attribute ref="tts:textCombine"/>
     <xs:attribute ref="tts:textDecoration"/>
