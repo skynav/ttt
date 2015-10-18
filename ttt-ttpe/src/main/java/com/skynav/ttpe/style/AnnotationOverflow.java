@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-15 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,28 +23,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier.ttml.style;
+package com.skynav.ttpe.style;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.util.Characters;
-
-public class RubyOverhangClassVerifier implements StyleValueVerifier {
-
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
-        if (Characters.isCharacterClass(value, locator, context, null))
-            return true;
-        else {
-            Characters.badCharacterClass(value, locator, context);
-            return false;
-        }
+public enum AnnotationOverflow {
+    SHIFT_RUBY("shiftRuby"),
+    SHIFT_BASE("shiftBase"),
+    OVERFLOW("overflow");
+    private final String value;
+    AnnotationOverflow(String v) {
+        value = v;
     }
-
+    public String value() {
+        return value;
+    }
+    public static AnnotationOverflow fromValue(String v) {
+        for (AnnotationOverflow a: AnnotationOverflow.values()) {
+            if (a.value.equals(v)) {
+                return a;
+            }
+        }
+        throw new IllegalArgumentException(v);
+    }
 }

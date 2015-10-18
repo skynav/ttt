@@ -52,6 +52,10 @@ public class CharacterClass {
         return members.isEmpty();
     }
 
+    public boolean inClass(int c) {
+        return members.get(c);
+    }
+
     /**
      * Add code point range [C1,C2] to members.
      * @param c1 start code point
@@ -71,6 +75,20 @@ public class CharacterClass {
         if (this == EMPTY)
             throw new IllegalArgumentException();
         members.or(c.members);
+    }
+
+    @Override
+    public int hashCode() {
+        return members.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof CharacterClass) {
+            CharacterClass other = (CharacterClass) o;
+            return other.members.equals(members);
+        } else
+            return false;
     }
 
     @Override

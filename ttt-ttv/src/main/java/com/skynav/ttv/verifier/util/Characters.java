@@ -1797,7 +1797,9 @@ public class Characters {
     };
 
     private static final Map<String,CharacterClass> characterClasses;
+    private static final CharacterClass autoCharacterClass;
     static {
+        // named classes
         Map<String,CharacterClass> m = new java.util.HashMap<String,CharacterClass>();
         for (String[] ccs : characterClassSpecifications) {
             assert ccs.length == 2;
@@ -1806,6 +1808,17 @@ public class Characters {
             m.put(n,CharacterClass.parse(c));
         }
         characterClasses = Collections.unmodifiableMap(m);
+        // auto class
+        CharacterClass c = new CharacterClass(CharacterClass.EMPTY);
+        c.add(m.get("hiragana"));       // JLREQ cl-15
+        c.add(m.get("katakana"));       // JLREQ cl-16
+        c.add(m.get("soundMarks"));     // JLREQ cl-10
+        c.add(m.get("smallKana"));      // JLREQ cl-11
+        autoCharacterClass = c;
+    }
+
+    public static CharacterClass getAutoCharacterClass() {
+        return autoCharacterClass;
     }
 
     public static boolean isCharacterClass(String value, Locator locator, VerifierContext context, CharacterClass[] outputClass) {
@@ -1814,18 +1827,22 @@ public class Characters {
         if (numComponents < 1)
             return false;
         CharacterClass cc = (outputClass != null) ? new CharacterClass(CharacterClass.EMPTY) : null;
-        for (int i = 0, n = numComponents; i < n; ++i) {
-            String c = components[i];
-            if (isNamedCharacterClass(c)) {
-                if (cc != null)
-                    cc.add(getNamedCharacterClass(c));
-                continue;
-            } else if (isCharacterClass(c)) {
-                if (cc != null)
-                    cc.add(CharacterClass.parse(c));
-                continue;
-            } else
-                return false;
+        if ((numComponents == 1) && Keywords.isAuto(components[0])) {
+            cc.add(getAutoCharacterClass());
+        } else {
+            for (int i = 0, n = numComponents; i < n; ++i) {
+                String c = components[i];
+                if (isNamedCharacterClass(c)) {
+                    if (cc != null)
+                        cc.add(getNamedCharacterClass(c));
+                    continue;
+                } else if (isCharacterClass(c)) {
+                    if (cc != null)
+                        cc.add(CharacterClass.parse(c));
+                    continue;
+                } else
+                    return false;
+            }
         }
         if (outputClass != null)
             outputClass[0] = cc;

@@ -31,9 +31,11 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttv.model.value.CharacterClass;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
+import com.skynav.ttv.verifier.util.Characters;
 import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
@@ -105,6 +107,33 @@ public class AnnotationStyleCollector extends StyleCollector {
         }
         if (v != null)
             addAttribute(StyleAttribute.ANNOTATION_OFFSET, v, begin, end);
+
+        // ANNOTATION_OVERFLOW
+        s = styles.get(ttsRubyOverflowAttrName);
+        v = null;
+        if (s != null)
+            v = AnnotationOverflow.valueOf(s.getValue().toUpperCase());
+        if (v != null)
+            addAttribute(StyleAttribute.ANNOTATION_OVERFLOW, v, begin, end);
+
+        // ANNOTATION_OVERHANG
+        s = styles.get(ttsRubyOverhangAttrName);
+        v = null;
+        if (s != null)
+            v = AnnotationOverhang.valueOf(s.getValue().toUpperCase());
+        if (v != null)
+            addAttribute(StyleAttribute.ANNOTATION_OVERHANG, v, begin, end);
+
+        // ANNOTATION_OVERHANG_CLASS
+        s = styles.get(ttsRubyOverhangClassAttrName);
+        v = null;
+        if (s != null) {
+            CharacterClass[] cc = new CharacterClass[1];
+            if (Characters.isCharacterClass(s.getValue(), null, context, cc))
+                v = new AnnotationOverhangClass(cc[0]);
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.ANNOTATION_OVERHANG_CLASS, v, begin, end);
 
         // ANNOTATION_POSITION
         s = styles.get(ttsRubyPositionAttrName);

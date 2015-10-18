@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-15 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,28 +23,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier.ttml.style;
+package com.skynav.ttpe.style;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.model.value.CharacterClass;
 import com.skynav.ttv.verifier.util.Characters;
 
-public class RubyOverhangClassVerifier implements StyleValueVerifier {
-
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
-        if (Characters.isCharacterClass(value, locator, context, null))
-            return true;
-        else {
-            Characters.badCharacterClass(value, locator, context);
-            return false;
-        }
+public class AnnotationOverhangClass {
+    public static final AnnotationOverhangClass EMPTY = new AnnotationOverhangClass(CharacterClass.EMPTY);
+    public static final AnnotationOverhangClass AUTO = new AnnotationOverhangClass(Characters.getAutoCharacterClass());
+    private CharacterClass characterClass;
+    public AnnotationOverhangClass(CharacterClass characterClass) {
+        assert characterClass != null;
+        this.characterClass = characterClass;
     }
-
+    public boolean inClass(int c) {
+        return characterClass.inClass(c);
+    }
+    @Override
+    public int hashCode() {
+        return characterClass.hashCode();
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof AnnotationOverhangClass) {
+            AnnotationOverhangClass other = (AnnotationOverhangClass) o;
+            return other.characterClass.equals(characterClass);
+        } else
+            return false;
+    }
 }

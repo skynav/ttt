@@ -43,71 +43,77 @@ import com.skynav.ttpe.geometry.WritingMode;
 
 public class Defaults {
 
-    public static final Annotation defaultAnnotation                    = null;
-    public static final InlineAlignment defaultAnnotationAlign          = InlineAlignment.AUTO;
-    public static final double defaultAnnotationOffset                  = 0;
-    public static final AnnotationPosition defaultAnnotationPosition    = AnnotationPosition.AUTO;
-    public static final AnnotationReserve defaultAnnotationReserve      = AnnotationReserve.NONE;
-    public static final Color defaultBackgroundColor                    = Color.TRANSPARENT;
-    public static final Color defaultColor                              = Color.YELLOW;
-    public static final Combination defaultCombination                  = Combination.NONE;
-    public static final BlockAlignment defaultDisplayAlign              = BlockAlignment.BEFORE;
-    public static final Emphasis defaultEmphasis                        = Emphasis.NONE;
-    public static final Extent defaultExtent                            = Extent.EMPTY;
-    public static final Extent defaultExternalExtent                    = new Extent(1280, 720);
-    public static final List<String> defaultFontFamilies                = FontKey.DEFAULT_FAMILIES;
-    public static final Set<FontFeature> defaultFontFeatures            = FontKey.DEFAULT_FEATURES;
-    public static final FontKerning defaultFontKerning                  = FontKerning.NORMAL;
-    public static final double defaultFontShear                         = 0;
-    public static final Extent defaultFontSize                          = FontKey.DEFAULT_SIZE;
-    public static final FontStyle defaultFontStyle                      = FontKey.DEFAULT_STYLE;
-    public static final FontWeight defaultFontWeight                    = FontKey.DEFAULT_WEIGHT;
-    public static final String defaultLanguage                          = FontKey.DEFAULT_LANGUAGE;
-    public static final double defaultLineHeight                        = defaultFontSize.getHeight() * 1.25;
-    public static final String defaultPositionComponents                = "center";
-    public static final Point defaultOrigin                             = Point.ZERO;
-    public static final Orientation defaultOrientation                  = Orientation.ROTATE000;
-    public static final Outline defaultOutline                          = Outline.NONE;
-    public static final Overflow defaultOverflow                        = Overflow.HIDDEN;
-    public static final String defaultScript                            = "";
-    public static final Whitespace defaultWhitespace                    = Whitespace.DEFAULT;
-    public static final InlineAlignment defaultTextAlign                = InlineAlignment.START;
-    public static final TransformMatrix defaultTransform                = TransformMatrix.IDENTITY;
-    public static final WritingMode defaultWritingMode                  = WritingMode.LRTB;
-    public static final Wrap defaultWrap                                = Wrap.WRAP;
+    public static final Annotation defaultAnnotation                           = null;
+    public static final InlineAlignment defaultAnnotationAlign                 = InlineAlignment.AUTO;
+    public static final double defaultAnnotationOffset                         = 0;
+    public static final AnnotationOverflow defaultAnnotationOverflow           = AnnotationOverflow.SHIFT_RUBY;
+    public static final AnnotationOverhang defaultAnnotationOverhang           = AnnotationOverhang.ALLOW;
+    public static final AnnotationOverhangClass defaultAnnotationOverhangClass = AnnotationOverhangClass.AUTO;
+    public static final AnnotationPosition defaultAnnotationPosition           = AnnotationPosition.AUTO;
+    public static final AnnotationReserve defaultAnnotationReserve             = AnnotationReserve.NONE;
+    public static final Color defaultBackgroundColor                           = Color.TRANSPARENT;
+    public static final Color defaultColor                                     = Color.YELLOW;
+    public static final Combination defaultCombination                         = Combination.NONE;
+    public static final BlockAlignment defaultDisplayAlign                     = BlockAlignment.BEFORE;
+    public static final Emphasis defaultEmphasis                               = Emphasis.NONE;
+    public static final Extent defaultExtent                                   = Extent.EMPTY;
+    public static final Extent defaultExternalExtent                           = new Extent(1280, 720);
+    public static final List<String> defaultFontFamilies                       = FontKey.DEFAULT_FAMILIES;
+    public static final Set<FontFeature> defaultFontFeatures                   = FontKey.DEFAULT_FEATURES;
+    public static final FontKerning defaultFontKerning                         = FontKerning.NORMAL;
+    public static final double defaultFontShear                                = 0;
+    public static final Extent defaultFontSize                                 = FontKey.DEFAULT_SIZE;
+    public static final FontStyle defaultFontStyle                             = FontKey.DEFAULT_STYLE;
+    public static final FontWeight defaultFontWeight                           = FontKey.DEFAULT_WEIGHT;
+    public static final String defaultLanguage                                 = FontKey.DEFAULT_LANGUAGE;
+    public static final double defaultLineHeight                               = defaultFontSize.getHeight() * 1.25;
+    public static final String defaultPositionComponents                       = "center";
+    public static final Point defaultOrigin                                    = Point.ZERO;
+    public static final Orientation defaultOrientation                         = Orientation.ROTATE000;
+    public static final Outline defaultOutline                                 = Outline.NONE;
+    public static final Overflow defaultOverflow                               = Overflow.HIDDEN;
+    public static final String defaultScript                                   = "auto";
+    public static final Whitespace defaultWhitespace                           = Whitespace.DEFAULT;
+    public static final InlineAlignment defaultTextAlign                       = InlineAlignment.START;
+    public static final TransformMatrix defaultTransform                       = TransformMatrix.IDENTITY;
+    public static final WritingMode defaultWritingMode                         = WritingMode.LRTB;
+    public static final Wrap defaultWrap                                       = Wrap.WRAP;
 
-    private Annotation annotation                                       = defaultAnnotation;
-    private InlineAlignment annotationAlign                             = defaultAnnotationAlign;
-    private double annotationOffset                                     = defaultAnnotationOffset;
-    private AnnotationPosition annotationPosition                       = defaultAnnotationPosition;
-    private AnnotationReserve annotationReserve                         = defaultAnnotationReserve;
-    private Color backgroundColor                                       = defaultBackgroundColor;
-    private Color color                                                 = defaultColor;
-    private Combination combination                                     = defaultCombination;
-    private BlockAlignment displayAlign                                 = defaultDisplayAlign;
-    private Emphasis emphasis                                           = defaultEmphasis;
-    private Extent extent                                               = defaultExtent;
-    private Extent externalExtent                                       = defaultExternalExtent;
-    private List<String> fontFamilies                                   = defaultFontFamilies;
-    private Set<FontFeature> fontFeatures                               = defaultFontFeatures;
-    private FontKerning fontKerning                                     = defaultFontKerning;
-    private double fontShear                                            = defaultFontShear;
-    private Extent fontSize                                             = defaultFontSize;
-    private FontStyle fontStyle                                         = defaultFontStyle;
-    private FontWeight fontWeight                                       = defaultFontWeight;
-    private String language                                             = defaultLanguage;
-    private double lineHeight                                           = defaultLineHeight;
-    private String positionComponents                                   = defaultPositionComponents;
-    private Point origin                                                = defaultOrigin;
-    private Orientation orientation                                     = defaultOrientation;
-    private Outline outline                                             = defaultOutline;
-    private Overflow overflow                                           = defaultOverflow;
-    private String script                                               = defaultScript;
-    private Whitespace whitespace                                       = defaultWhitespace;
-    private InlineAlignment textAlign                                   = defaultTextAlign;
-    private TransformMatrix transform                                   = defaultTransform;
-    private WritingMode writingMode                                     = defaultWritingMode;
-    private Wrap wrap                                                   = defaultWrap;
+    private Annotation annotation                                              = defaultAnnotation;
+    private InlineAlignment annotationAlign                                    = defaultAnnotationAlign;
+    private double annotationOffset                                            = defaultAnnotationOffset;
+    private AnnotationOverflow annotationOverflow                              = defaultAnnotationOverflow;
+    private AnnotationOverhang annotationOverhang                              = defaultAnnotationOverhang;
+    private AnnotationOverhangClass annotationOverhangClass                    = defaultAnnotationOverhangClass;
+    private AnnotationPosition annotationPosition                              = defaultAnnotationPosition;
+    private AnnotationReserve annotationReserve                                = defaultAnnotationReserve;
+    private Color backgroundColor                                              = defaultBackgroundColor;
+    private Color color                                                        = defaultColor;
+    private Combination combination                                            = defaultCombination;
+    private BlockAlignment displayAlign                                        = defaultDisplayAlign;
+    private Emphasis emphasis                                                  = defaultEmphasis;
+    private Extent extent                                                      = defaultExtent;
+    private Extent externalExtent                                              = defaultExternalExtent;
+    private List<String> fontFamilies                                          = defaultFontFamilies;
+    private Set<FontFeature> fontFeatures                                      = defaultFontFeatures;
+    private FontKerning fontKerning                                            = defaultFontKerning;
+    private double fontShear                                                   = defaultFontShear;
+    private Extent fontSize                                                    = defaultFontSize;
+    private FontStyle fontStyle                                                = defaultFontStyle;
+    private FontWeight fontWeight                                              = defaultFontWeight;
+    private String language                                                    = defaultLanguage;
+    private double lineHeight                                                  = defaultLineHeight;
+    private String positionComponents                                          = defaultPositionComponents;
+    private Point origin                                                       = defaultOrigin;
+    private Orientation orientation                                            = defaultOrientation;
+    private Outline outline                                                    = defaultOutline;
+    private Overflow overflow                                                  = defaultOverflow;
+    private String script                                                      = defaultScript;
+    private Whitespace whitespace                                              = defaultWhitespace;
+    private InlineAlignment textAlign                                          = defaultTextAlign;
+    private TransformMatrix transform                                          = defaultTransform;
+    private WritingMode writingMode                                            = defaultWritingMode;
+    private Wrap wrap                                                          = defaultWrap;
 
     public Defaults() {
     }
@@ -134,6 +140,30 @@ public class Defaults {
 
     public double getAnnotationOffset() {
         return annotationOffset;
+    }
+
+    public void setAnnotationOverflow(AnnotationOverflow annotationOverflow) {
+        this.annotationOverflow = annotationOverflow;
+    }
+
+    public AnnotationOverflow getAnnotationOverflow() {
+        return annotationOverflow;
+    }
+
+    public void setAnnotationOverhang(AnnotationOverhang annotationOverhang) {
+        this.annotationOverhang = annotationOverhang;
+    }
+
+    public AnnotationOverhang getAnnotationOverhang() {
+        return annotationOverhang;
+    }
+
+    public void setAnnotationOverhangClass(AnnotationOverhangClass annotationOverhangClass) {
+        this.annotationOverhangClass = annotationOverhangClass;
+    }
+
+    public AnnotationOverhangClass getAnnotationOverhangClass() {
+        return annotationOverhangClass;
     }
 
     public void setAnnotationPosition(AnnotationPosition annotationPosition) {

@@ -59,6 +59,9 @@ public class Constants {
     public static final QName ttsRubyAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "rubyAlign");
     public static final QName ttsRubyAttrName                           = new QName(NAMESPACE_TT_STYLE, "ruby");
     public static final QName ttsRubyOffsetAttrName                     = new QName(NAMESPACE_TT_STYLE, "rubyOffset");
+    public static final QName ttsRubyOverflowAttrName                   = new QName(NAMESPACE_TT_STYLE, "rubyOverflow");
+    public static final QName ttsRubyOverhangAttrName                   = new QName(NAMESPACE_TT_STYLE, "rubyOverhang");
+    public static final QName ttsRubyOverhangClassAttrName              = new QName(NAMESPACE_TT_STYLE, "rubyOverhangClass");
     public static final QName ttsRubyPositionAttrName                   = new QName(NAMESPACE_TT_STYLE, "rubyPosition");
     public static final QName ttsRubyReserveAttrName                    = new QName(NAMESPACE_TT_STYLE, "rubyReserve");
     public static final QName ttsTextAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "textAlign");

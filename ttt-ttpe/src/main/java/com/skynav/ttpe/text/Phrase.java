@@ -33,6 +33,9 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.AnnotationOverflow;
+import com.skynav.ttpe.style.AnnotationOverhang;
+import com.skynav.ttpe.style.AnnotationOverhangClass;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.AnnotationReserve;
 import com.skynav.ttpe.style.Color;
@@ -187,6 +190,51 @@ public class Phrase {
             v = defaults.getAnnotationOffset();
         if (v instanceof Double)
             return (Double) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] annotationOverflowAttr = new StyleAttribute[] { StyleAttribute.ANNOTATION_OVERFLOW };
+    public AnnotationOverflow getAnnotationOverflow(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(annotationOverflowAttr[0]);
+        else
+            v = content.getIterator(annotationOverflowAttr, index, index + 1).getAttribute(annotationOverflowAttr[0]);
+        if (v == null)
+            v = defaults.getAnnotationOverflow();
+        if (v instanceof AnnotationOverflow)
+            return (AnnotationOverflow) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] annotationOverhangAttr = new StyleAttribute[] { StyleAttribute.ANNOTATION_OVERHANG };
+    public AnnotationOverhang getAnnotationOverhang(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(annotationOverhangAttr[0]);
+        else
+            v = content.getIterator(annotationOverhangAttr, index, index + 1).getAttribute(annotationOverhangAttr[0]);
+        if (v == null)
+            v = defaults.getAnnotationOverhang();
+        if (v instanceof AnnotationOverhang)
+            return (AnnotationOverhang) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] annotationOverhangClassAttr = new StyleAttribute[] { StyleAttribute.ANNOTATION_OVERHANG_CLASS };
+    public AnnotationOverhangClass getAnnotationOverhangClass(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(annotationOverhangClassAttr[0]);
+        else
+            v = content.getIterator(annotationOverhangClassAttr, index, index + 1).getAttribute(annotationOverhangClassAttr[0]);
+        if (v == null)
+            v = defaults.getAnnotationOverhangClass();
+        if (v instanceof AnnotationOverhangClass)
+            return (AnnotationOverhangClass) v;
         else
             return null;
     }
