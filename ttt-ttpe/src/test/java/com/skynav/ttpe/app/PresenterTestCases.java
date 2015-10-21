@@ -465,6 +465,11 @@ public class PresenterTestCases {
         performPresentationTest("test-082-smpte-30fps-drop-pal.xml", 0, 0);
     }
 
+    @Test
+    public void test083SMPTE30FPSNonDrop() throws Exception {
+        performPresentationTest("test-083-smpte-30fps-non-drop.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
