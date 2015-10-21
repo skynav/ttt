@@ -101,11 +101,11 @@ public class ClockTimeImpl implements ClockTime {
         long droppedFrames = 0;
         if (dropMode == DropMode.DROP_NTSC) {
             droppedFrames += (long) getHours() * 54;
-            droppedFrames += (long) Math.floor( (double) getMinutes() - (double) getMinutes() / 10 );
+            droppedFrames += getMinutes() - (long) Math.floor( (double) getMinutes() / 10 );
             droppedFrames *= 2;
         } else if (dropMode == DropMode.DROP_PAL) {
             droppedFrames += (long) getHours() * 27;
-            droppedFrames += (long) Math.floor( (double) getMinutes() / 2 - (double) getMinutes() / 20 );
+            droppedFrames += (long) Math.floor( (double) getMinutes() / 2 ) - (long) Math.floor( (double) getMinutes() / 20 );
             droppedFrames *= 4;
         }
         return droppedFrames;
