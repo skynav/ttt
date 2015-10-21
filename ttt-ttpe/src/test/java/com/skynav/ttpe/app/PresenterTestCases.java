@@ -450,6 +450,11 @@ public class PresenterTestCases {
         performPresentationTest("test-079-span-text-align-ru.xml", 0, 0);
     }
 
+    @Test
+    public void test080OffsetTimeMetricTicks() throws Exception {
+        performPresentationTest("test-080-offset-time-metric-ticks.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
