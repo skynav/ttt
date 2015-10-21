@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebutts="urn:ebu:tt:style" xmlns:ebuttdt="urn:ebu:tt:datatypes" targetNamespace="urn:ebu:tt:style">
+	<xs:import namespace="urn:ebu:tt:datatypes" schemaLocation="ebutt_datatypes.xsd"/>
+	<xs:attribute name="multiRowAlign">
+		<xs:annotation>
+			<xs:documentation>Alignment of multiple ‘rows’ of inline areas within a containing block area.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="start"/>
+				<xs:enumeration value="center"/>
+				<xs:enumeration value="end"/>
+				<xs:enumeration value="auto"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="linePadding" type="ebuttdt:linePaddingType">
+		<xs:annotation>
+			<xs:documentation>Padding (or inset) space on the start and end edges of each rendered line-area It may be specified by the block-level elements tt:body, tt:div and tt:p by reference to a style element and is inherited. Background color applies to the area including the line padding.</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+</xs:schema>

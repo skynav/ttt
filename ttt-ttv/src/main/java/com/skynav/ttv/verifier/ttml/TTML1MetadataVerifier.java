@@ -62,6 +62,8 @@ import com.skynav.ttv.verifier.util.IdReferences;
 import com.skynav.ttv.verifier.util.Strings;
 
 import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TTML1MetadataVerifier implements MetadataVerifier {
 
@@ -74,7 +76,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
     public static final QName nameElementName = new QName(NAMESPACE, "name");
     public static final QName roleAttributeName = new QName(NAMESPACE,"role");
 
-    private static final Object[][] metadataAccessorMap = new Object[][] {
+    protected static final List<Object[]> metadataAccessorMap = new ArrayList<>(Arrays.asList(new Object[][] {
         {
             agentAttributeName,                                 // attribute name
             "Agent",                                            // accessor method name suffix
@@ -91,7 +93,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
             Boolean.FALSE,
             null,
         },
-    };
+    }));
 
     private Model model;
     private Map<QName, MetadataAccessor> accessors;

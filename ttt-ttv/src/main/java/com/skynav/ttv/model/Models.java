@@ -35,6 +35,7 @@ import com.skynav.ttv.model.smpte.ST20522010;
 import com.skynav.ttv.model.smpte.ST20522013;
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml.TTML2;
+import com.skynav.ttv.model.ebuttd.EBUTTD;
 
 public class Models {
 
@@ -46,6 +47,7 @@ public class Models {
         m.put(ST20522010.MODEL_NAME, ST20522010.ST20522010Model.class);
         m.put(ST20522013.MODEL_NAME, ST20522013.ST20522013Model.class);
         m.put(NFLXTT.MODEL_NAME, NFLXTT.NFLXTTModel.class);
+        m.put(EBUTTD.MODEL_NAME, EBUTTD.EBUTTDModel.class);
         m.put(IMSC1.MODEL_NAME, IMSC1.IMSC1Model.class);
         modelMap = Collections.unmodifiableMap(m);
     }

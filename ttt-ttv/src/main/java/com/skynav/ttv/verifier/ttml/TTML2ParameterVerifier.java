@@ -45,6 +45,7 @@ import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.VersionVerifier;
 
 import com.skynav.xml.helpers.XML;
+import java.util.Arrays;
 
 
 public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
@@ -99,7 +100,7 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     @Override
     protected void populateAccessors(Map<QName, ParameterAccessor> accessors) {
         super.populateAccessors(accessors);
-        populateAccessors(accessors, parameterAccessorMap);
+        populateAccessors(accessors, Arrays.asList(parameterAccessorMap));
     }
 
     @Override

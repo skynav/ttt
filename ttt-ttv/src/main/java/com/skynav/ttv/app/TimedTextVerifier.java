@@ -1903,7 +1903,8 @@ public class TimedTextVerifier implements VerifierContext {
             SAXParserFactory pf = SAXParserFactory.newInstance();
             pf.setNamespaceAware(true);
             XMLReader reader = pf.newSAXParser().getXMLReader();
-            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(reader, getModel().getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
+            StripWhitespaceFilter filter0 = new StripWhitespaceFilter(reader);
+            ForeignVocabularyFilter filter1 = new ForeignVocabularyFilter(filter0, getModel().getNamespaceURIs(), extensionSchemas.keySet(), ForeignTreatment.Allow);
             LocationAnnotatingFilter filter2 = new LocationAnnotatingFilter(filter1);
             Charset encoding = getEncoding();
             InputSource is = new InputSource(new InputStreamReader(openStream(resourceBufferRaw), encoding));
@@ -2243,6 +2244,22 @@ public class TimedTextVerifier implements VerifierContext {
         }
     }
 
+    private class StripWhitespaceFilter extends XMLFilterImpl {
+
+        private StripWhitespaceFilter(XMLReader reader) {
+            super(reader);
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            String str = new String(ch, start, length);
+            String trimmed = str.trim();
+            super.characters(trimmed.toCharArray(), 0, trimmed.length());
+//            super.characters(ch, start, length); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+    }
+    
     private class ForeignVocabularyFilter extends XMLFilterImpl {
 
         private Set<String> standardNamespaces;

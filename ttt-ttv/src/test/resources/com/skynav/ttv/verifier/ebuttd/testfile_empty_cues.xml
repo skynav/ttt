@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt:tt xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:ebuttm="urn:ebu:tt:metadata" xmlns:ebutts="urn:ebu:tt:style" xmlns:ebuttdt="urn:ebu:tt:datatypes" xml:lang="en" ttp:cellResolution="46 14" ttp:timeBase="media" xmlns:tt="http://www.w3.org/ns/ttml">
+    <tt:head>
+        <tt:metadata>
+            <ttm:title>Translated title</ttm:title>
+            <ttm:desc>Mail title</ttm:desc>
+        </tt:metadata>
+        <tt:styling>
+            <tt:style xml:id="normal" tts:color="#CDCDCD" tts:backgroundColor="#000000" tts:fontFamily="Arial" tts:fontSize="100%" tts:lineHeight="100%" tts:textAlign="center" tts:wrapOption="noWrap" ebutts:linePadding="0.5c" />
+        </tt:styling>
+        <tt:layout>
+            <tt:region xml:id="bottom" tts:showBackground="whenActive" tts:origin="10% 70%" tts:extent="80% 20%" tts:displayAlign="after" />
+            <tt:region xml:id="middle" tts:showBackground="whenActive" tts:origin="10% 40%" tts:extent="80% 20%" tts:displayAlign="center" />
+            <tt:region xml:id="top"  tts:showBackground="whenActive" tts:origin="10% 10%" tts:extent="80% 20%" tts:displayAlign="before" />
+        </tt:layout>
+    </tt:head>
+    <tt:body>
+        <tt:div ttm:role="caption" region="bottom" style="normal">
+            <tt:p xml:id="sub2" begin="00:00:00.000" end="00:00:02.000">
+                <tt:span>
+                    <!--Empty-->
+                </tt:span>
+            </tt:p>
+            
+            <tt:p xml:id="sub3" begin="00:00:00.000" end="00:00:02.000"></tt:p>
+            <tt:p xml:id="sub4" begin="00:00:00.000" end="00:00:02.000">
+                <tt:span></tt:span>
+            </tt:p>
+            
+            <tt:p xml:id="sub5" begin="00:00:00.000" end="00:00:02.000">
+                <tt:span><tt:br/></tt:span>
+            </tt:p>
+            <tt:p xml:id="sub6" begin="00:00:00.000" end="00:00:02.000">
+                <tt:span>          <tt:br/>             </tt:span>
+            </tt:p>
+            
+            <tt:p xml:id="sub7" begin="00:00:00.000" end="00:00:02.000">
+                <tt:span>
+                    <tt:br/>             
+                </tt:span>
+            </tt:p>
+            
+        </tt:div>
+    </tt:body>
+</tt:tt>

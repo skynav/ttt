@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="urn:ebu:tt:metadata"
+    xmlns:ebuttm="urn:ebu:tt:metadata"
+    xmlns:ebuttdt="urn:ebu:tt:datatypes"
+    targetNamespace="urn:ebu:tt:metadata"
+    elementFormDefault="qualified">
+    
+    <xs:import namespace="urn:ebu:tt:datatypes" schemaLocation="ebutt_datatypes.xsd"/>
+    <xs:element name="documentMetadata" type="ebuttm:documentMetadata">
+        <xs:annotation>
+            <xs:documentation>EBU-TT-D specific metadata that applies to the whole EBU-TT-D document.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="documentMetadata">
+        <xs:sequence>
+            <xs:element name="conformsToStandard" type="xs:anyURI" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Indicates the conformance with a specific standard that is derived from TTML. For EBU-TT-D the following URI shall be used: “urn:ebu:tt:distribution:2014-01”</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="authoredFrameRate" type="xs:positiveInteger" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The ebuttm:authoredFrameRate element is used to specify the frame rate that was assumed (or measured) by the author of the document for the related media object when the EBU-TT-D document was created.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="authoredFrameRateMultiplier" type="ebuttdt:framerateMultiplierType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>The ebuttm:authoredFrameRate element is used to specify the frame rate that was assumed (or measured) by the author of the document for the related media object when the EBU-TT-D document was created.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentEbuttVersion" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The version of the EBU-TT-D standard used by the document instance.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:token">
+                        <xs:enumeration value="v1.0"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="documentIdentifier" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Identifier for an EBU-TT-D document that may be used as external reference to an EBU-TT-D document.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentOriginatingSystem" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Software and version used to create the EBU-TT-D document.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentReadingSpeed" type="xs:positiveInteger" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The intended reading speed for the subtitles in words per minute.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentTargetAspectRatio" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The aspect ratio of the video the EBU-TT-D document was authored for, in width by height.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentTargetActiveFormatDescriptor" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The code for the Active Format Descriptor (AFD) that specifies the active image in the active video (see “Definitions of terms”). The code shall be one of the AFD codes specified in SMPTE ST 2016 1:2009 “Format for Active Format Description and Bar Data” Table 1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentIntendedTargetBarData" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>When an ebuttm:documentTargetActiveFormatDescriptor element is used in an EBU-TT-D document, an ebuttm:documentIntendedTargetBarData element may be used whenever the AFD alone is insufficient to describe the extent of the image (i.e. AFD values 0000 and 0100). The Bar Data shall be specified in accordance with SMPTE ST 2016 1:2009 “Format for Active Format Description and Bar Data” Table 3.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="position" use="required">
+                                <xs:annotation>
+                                    <xs:documentation>Bar Data is defined in pairs, either top and bottom bars or left and right bars, but not both pairs at once. Bars may be unequal in size. One bar of a pair may be zero width or height.</xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="topBottom"/>
+                                        <xs:enumeration value="leftRight"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:attribute>
+                            <xs:attribute name="lineNumberEndOfTopBar" type="xs:nonNegativeInteger">
+                                <xs:annotation>
+                                    <xs:documentation>Last line of a horizontal letter box bar area at the top of the reconstructed frame. Designation of line numbers shall be based on the video standards and information specified in accordance with SMPTE ST 2016 1:2009. All Bar Data values shall be stated in values appropriate to a progressive frame system.</xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                            <xs:attribute name="lineNumberStartOfBottomBar" type="xs:nonNegativeInteger">
+                                <xs:annotation>
+                                    <xs:documentation>First line of a horizontal letter box bar area at the bottom of the reconstructed frame. Designation of line numbers shall be based on the video standards and information specified in accordance with SMPTE ST 2016 1:2009. All Bar Data values shall be stated in values appropriate to a progressive frame system.</xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                            <xs:attribute name="pixelNumberEndOfLeftBar" type="xs:nonNegativeInteger">
+                                <xs:annotation>
+                                    <xs:documentation>Last horizontal luminance sample of a vertical pillar box bar area at the left side of the reconstructed frame. Pixels shall be numbered from zero, starting with the leftmost pixel, based on the video standards and information specified in accordance with SMPTE ST 2016 1:2009.</xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                            <xs:attribute name="pixelNumberStartOfRightBar" type="xs:nonNegativeInteger">
+                                <xs:annotation>
+                                    <xs:documentation>First horizontal luminance sample of a vertical pillar box bar area at the right side of the reconstructed frame. Pixels shall be numbered from zero, starting with the leftmost pixel, based on the video standards and information specified in accordance with SMPTE ST 2016 1:2009.</xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="documentIntendedTargetFormat" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates the subtitle format an author had in mind when authoring an EBU-TT-D document or transforming another format to an EBU-TT-D document.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="link" type="xs:anyURI">
+                                <xs:annotation>
+                                    <xs:documentation>Reference to a term in a classification scheme.</xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="documentOriginalProgrammeTitle" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The programme title in the original language</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentOriginalEpisodeTitle" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The title of the episode of the programme in the original language.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentTranslatedProgrammeTitle" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The programme title in the local language.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentTranslatedEpisodeTitle" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The title of the episode of the programme in the local language.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentTranslatorsName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Name of the translator. STL mapping: Translator's Name (TN). </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentTranslatorsContactDetails" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The translator's contact details. STL mapping: Translator's Contact Details (TCD).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentSubtitleListReferenceCode" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Free-format character string which may be used to provide an additional reference for the subtitle list.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentCreationDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The date of creation of the EBU-TT-D document. STL mapping: Creation Date (CD). </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentRevisionDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The date of the most-recent modifications to the EBU-TT-D document. STL mapping: Revision Date (RD). </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentRevisionNumber" type="xs:nonNegativeInteger" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The revision number of the EBU-TT-D document may be used to specify a particular version of the subtitle list. STL mapping:  Revision Number (RN).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentTotalNumberOfSubtitles" type="xs:nonNegativeInteger" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The number of subtitles.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentMaximumNumberOfDisplayableCharacterInAnyRow" type="xs:nonNegativeInteger" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Maximum number of characters in any row.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentStartOfProgramme" type="ebuttdt:smpteTimingType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The time code of the first frame of the recorded video signal which is intended for transmission.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentCountryOfOrigin" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The country of origin of the subtitle list. STL mapping: Country of Origin (CO). </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentPublisher" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Name of the publisher of the subtitle list. STL mapping: Publisher (PUB).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentEditorsName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Name of the editor of the subtitle list. STL mapping: Editor's Name (EN).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentEditorsContactDetails" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Information about the editor named in the metadata element documentEditorsName. STL mapping: Editor's Contact Details (ECD). </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="documentUserDefinedArea" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>This field may be used to carry information about the programme or subtitle list, or other relevant details. STL mapping: User-Defined Area (UDA).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

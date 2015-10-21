@@ -91,10 +91,6 @@
         <Field name="model"/>
       </And>
       <And>
-        <Class name="com.skynav.ttv.verifier.ttml.TTML1StyleVerifier$StyleAccessor"/>
-        <Field name="setterName"/>
-      </And>
-      <And>
         <Class name="com.skynav.ttv.verifier.ttml.TTML1TimingVerifier$TimingAccessor"/>
         <Field name="setterName"/>
       </And>

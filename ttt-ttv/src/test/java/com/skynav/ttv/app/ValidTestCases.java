@@ -228,6 +228,8 @@ public class ValidTestCases {
         args.add("-v");
         args.add("--warn-on");
         args.add("all");
+        args.add("--model");
+        args.add("ttml1");
         if (expectedErrors >= 0) {
             args.add("--expect-errors");
             args.add(Integer.toString(expectedErrors));

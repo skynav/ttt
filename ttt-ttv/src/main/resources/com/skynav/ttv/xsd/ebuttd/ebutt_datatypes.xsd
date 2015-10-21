@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebuttdt="urn:ebu:tt:datatypes" targetNamespace="urn:ebu:tt:datatypes">
+    <xs:simpleType name="cellResolutionType">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="[1-9][0-9]*\s[1-9][0-9]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="framerateMultiplierType">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="[1-9][0-9]*\s[1-9][0-9]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="distributionExtentType">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="([+]?\d+(\.?\d+)?%)\s([+]?\d+(\.?\d+)?%)"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="fontFamilyType">
+        <xs:union memberTypes="ebuttdt:genericFamilyName ebuttdt:familyName"/>
+    </xs:simpleType>
+    <xs:simpleType name="distributionFontSizeType">
+        <xs:restriction base="ebuttdt:distributionLengthType"/>
+    </xs:simpleType>
+    <xs:simpleType name="distributionLineHeightType">
+        <xs:union memberTypes="ebuttdt:distributionLengthType">
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:enumeration value="normal"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+    <xs:simpleType name="distributionColorType">
+        <xs:union memberTypes="ebuttdt:rgbHexColorType ebuttdt:rgbaHexColorType"/>
+    </xs:simpleType>
+    <xs:simpleType name="distributionOriginType">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="([+]?\d+(\.?\d+)?%)\s([+]?\d+(\.?\d+)?%)"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="distributionPaddingType">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="([+]?\d+(\.?\d+)?%)"/>
+            <xs:pattern value="(([+]?\d+(\.?\d+)?%)\s([+]?\d+(\.?\d+)?%))"/>
+            <xs:pattern value="(([+]?\d+(\.?\d+)?%)\s([+]?\d+(\.?\d+)?%)\s([+]?\d+(\.?\d+)?%))"/>
+            <xs:pattern value="(([+]?\d+(\.?\d+)?%)\s([+]?\d+(\.?\d+)?%)\s([+]?\d+(\.?\d+)?%)\s([+]?\d+(\.?\d+)?%))"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="linePaddingType">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="[+]?([0-9]+(\.?[0-9]+)?c)"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="smpteTimingType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9][0-9][0-9]*:[0-5][0-9]:([0-5][0-9]|[0-6][0])(\.|:)[0-9][0-9]"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="distributionMediaTimingType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9][0-9][0-9]*:[0-5][0-9]:([0-5][0-9]|[0-6][0])(\.[0-9][0-9][0-9])?"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="distributionLengthType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([+]?\d+(\.?\d+)?%)"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="rgbHexColorType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="#[a-fA-F\d]{6}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="rgbaHexColorType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="#[a-fA-F\d]{8}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="genericFamilyName">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="default"/>
+            <xs:enumeration value="monospace"/>
+            <xs:enumeration value="sansSerif"/>
+            <xs:enumeration value="serif"/>
+            <xs:enumeration value="monospaceSansSerif"/>
+            <xs:enumeration value="monospaceSerif"/>
+            <xs:enumeration value="proportionalSansSerif"/>
+            <xs:enumeration value="proportionalSerif"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="familyName">
+        <xs:restriction base="xs:string">
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
