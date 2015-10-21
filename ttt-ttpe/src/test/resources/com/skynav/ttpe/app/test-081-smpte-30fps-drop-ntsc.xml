@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en" ttp:version="2" ttp:timeBase="smpte" ttp:markerMode="continuous" ttp:dropMode="dropNTSC" ttp:frameRate="30"
+    xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:displayAlign="after" tts:extent="768px 90px" tts:origin="256px 610px"/>
+    </layout>
+  </head>
+  <body tts:textAlign="center" tts:fontFamily="Noto Sans" tts:fontSize="36px" tts:lineHeight="45px">
+    <div>
+      <p region="r0" begin="01:08:59:28" end="01:08:59:29" tts:textAlign="center"><span tts:textAlign="start">The quick brown fox ...</span></p>
+      <p region="r0" begin="01:09:00:02" end="01:09:00:03" tts:textAlign="center"><span tts:textAlign="start">... jumps over the lazy dog.</span></p>
+    </div>
+  </body>
+</tt>

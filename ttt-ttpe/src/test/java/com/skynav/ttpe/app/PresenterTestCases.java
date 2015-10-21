@@ -455,6 +455,11 @@ public class PresenterTestCases {
         performPresentationTest("test-080-offset-time-metric-ticks.xml", 0, 0);
     }
 
+    @Test
+    public void test081SMPTE30FPSDropNTSC() throws Exception {
+        performPresentationTest("test-081-smpte-30fps-drop-ntsc.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
