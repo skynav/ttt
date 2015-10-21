@@ -45,15 +45,12 @@ import com.skynav.ttv.verifier.ttml.timing.TimeDurationVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters1;
 import com.skynav.ttv.verifier.util.Strings;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TTML1TimingVerifier implements TimingVerifier {
 
     private static final String timingNamespace                 = "";
 
-    protected static final List<Object[]> timingAccessorMap     = new ArrayList<>(Arrays.asList(new Object[][] {
+    private static final Object[][] timingAccessorMap           = new Object[][] {
         {
             new QName(timingNamespace,"begin"),                 // attribute name
             "Begin",                                            // accessor method name suffix
@@ -78,7 +75,7 @@ public class TTML1TimingVerifier implements TimingVerifier {
             Boolean.FALSE,
             null,
         },
-    }));
+    };
 
     private Model model;
     private Map<QName, TimingAccessor> accessors;

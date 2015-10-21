@@ -91,7 +91,6 @@ import com.skynav.ttv.verifier.ttml.style.UnicodeBidiVerifier;
 import com.skynav.ttv.verifier.ttml.style.VisibilityVerifier;
 import com.skynav.ttv.verifier.ttml.style.WrapOptionVerifier;
 import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
-import java.util.Arrays;
 
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
@@ -426,7 +425,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     @Override
     protected void populateAccessors(Map<QName, StyleAccessor> accessors) {
         super.populateAccessors(accessors);
-        populateAccessors(accessors, Arrays.asList(styleAccessorMap));
+        populateAccessors(accessors, styleAccessorMap);
     }
 
     @Override

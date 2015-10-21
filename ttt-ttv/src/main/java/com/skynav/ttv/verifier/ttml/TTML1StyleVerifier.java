@@ -97,8 +97,6 @@ import com.skynav.ttv.verifier.util.IdReferences;
 import com.skynav.ttv.verifier.util.Strings;
 
 import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class TTML1StyleVerifier implements StyleVerifier {
 
@@ -120,8 +118,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
     public static final QName regionAttributeName               = new QName("", "region");
     public static final QName styleAttributeName                = new QName("", "style");
     public static final QName textAlignAttributeName            = new QName(NAMESPACE,"textAlign");
-    
-    protected static final List<Object[]> styleAccessorMap      = new ArrayList<>(Arrays.asList(new Object[][] {
+
+    private static final Object[][] styleAccessorMap            = new Object[][] {
         {
             new QName(NAMESPACE,"backgroundColor"),             // attribute name
             "BackgroundColor",                                  // accessor method name suffix
@@ -408,7 +406,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
             "auto",
             null,
         },
-    }));
+    };
 
     protected Model model;
     protected Map<QName, StyleAccessor> accessors;
@@ -606,7 +604,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
         populateAccessors(accessors, styleAccessorMap);
     }
 
-    protected void populateAccessors(Map<QName, StyleAccessor> accessors, List<Object[]> accessorMap) {
+    protected void populateAccessors(Map<QName, StyleAccessor> accessors, Object[][] accessorMap) {
         for (Object[] styleAccessorEntry : accessorMap) {
             assert styleAccessorEntry.length >= 9;
             QName styleName = (QName) styleAccessorEntry[0];

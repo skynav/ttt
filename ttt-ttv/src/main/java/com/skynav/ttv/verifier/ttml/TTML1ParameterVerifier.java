@@ -67,9 +67,6 @@ import com.skynav.ttv.verifier.util.Strings;
 import com.skynav.xml.helpers.XML;
 
 import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TTML1ParameterVerifier implements ParameterVerifier {
 
@@ -77,7 +74,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
 
     public static final QName cellResolutionAttributeName = new QName(getParameterNamespaceUri(), "cellResolution");
 
-    protected static final List<Object[]> parameterAccessorMap  = new ArrayList<>(Arrays.asList(new Object[][] {
+    private static final Object[][] parameterAccessorMap = new Object[][] {
         {
             new QName(NAMESPACE,"cellResolution"),              // attribute name
             "CellResolution",                                   // accessor method name suffix
@@ -184,7 +181,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             Boolean.FALSE,
             null,
         },
-    }));
+    };
 
     private Model model;
     private Map<QName, ParameterAccessor> accessors;
@@ -282,7 +279,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         populateAccessors(accessors, parameterAccessorMap);
     }
 
-    protected void populateAccessors(Map<QName, ParameterAccessor> accessors, List<Object[]> accessorMap) {
+    protected void populateAccessors(Map<QName, ParameterAccessor> accessors, Object[][] accessorMap) {
         for (Object[] parameterAccessorEntry : accessorMap) {
             assert parameterAccessorEntry.length >= 6;
             QName parameterName = (QName) parameterAccessorEntry[0];
