@@ -73,10 +73,7 @@ public class EBUTTD {
         private ParameterVerifier parameterVerifier;
         private TimingVerifier timingVerifier;
         private StyleVerifier styleVerifier;
-        private Map<URI, Class<?>> profileSpecificationClasses;
         private URI profileNamespaceUri;
-        private List<QName> idAttributes;
-        private Map<Class<?>, String> rootClasses;
 
         public EBUTTDModel() {
             super();
@@ -86,7 +83,6 @@ public class EBUTTD {
         private void populate() {
             populateSchemaResourceNames();
             populateNamespaceURIs();
-            populateProfileSpecifications();
         }
 
         private void populateSchemaResourceNames() {
@@ -117,11 +113,6 @@ public class EBUTTD {
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        private void populateProfileSpecifications() {
-            profileSpecificationClasses = new HashMap<>();
-            profileSpecificationClasses.put(profileNamespaceUri, EBUTTDProfileSpecification.class);
         }
 
         @Override
