@@ -72,7 +72,7 @@ public interface LayoutState {
     LineBreakIterator getCharacterIterator();
     Defaults getDefaults();
     // area stack
-    NonLeafAreaNode pushCanvas(Element e, double begin, double end);
+    NonLeafAreaNode pushCanvas(Element e, double begin, double end, Extent cellResolution);
     NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
     NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm);
     NonLeafAreaNode pushBlock(Element e);
@@ -88,6 +88,7 @@ public interface LayoutState {
     int getBidiLevel();
     Font getFont();
     double getAvailable(Dimension dimension);
+    Extent getCellResolution();
     Extent getReferenceExtent();
     BlockAlignment getReferenceAlignment();
     // external supplied styles

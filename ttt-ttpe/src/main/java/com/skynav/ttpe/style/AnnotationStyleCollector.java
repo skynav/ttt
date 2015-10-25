@@ -101,7 +101,7 @@ public class AnnotationStyleCollector extends StyleCollector {
                 List<Length> lengths = new java.util.ArrayList<Length>();
                 if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
                     assert lengths.size() == 1;
-                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize()));
+                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize(), cellResolution));
                 }
             }
         }

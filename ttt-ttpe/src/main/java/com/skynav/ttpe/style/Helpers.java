@@ -42,7 +42,7 @@ public class Helpers {
 
     private Helpers() {}
 
-    public static Point resolvePosition(Element e, Length[] lengths, Extent external, Extent reference) {
+    public static Point resolvePosition(Element e, Length[] lengths, Extent external, Extent reference, Extent cellResolution) {
 
         assert external != null;
         assert reference != null;
@@ -58,7 +58,7 @@ public class Helpers {
         if (lx.getUnits() == Length.Unit.Percentage)
             x = (lx.getValue() / 100) * referencePercent.getWidth();
         else
-            x = resolveLength(e, lx, Axis.HORIZONTAL, external, reference, null);
+            x = resolveLength(e, lx, Axis.HORIZONTAL, external, reference, null, cellResolution);
 
         Length ly = lengths[1];
         if (ly == null)
@@ -67,7 +67,7 @@ public class Helpers {
         if (ly.getUnits() == Length.Unit.Percentage)
             y = (ly.getValue() / 100) * referencePercent.getHeight();
         else
-            y = resolveLength(e, ly, Axis.VERTICAL, external, reference, null);
+            y = resolveLength(e, ly, Axis.VERTICAL, external, reference, null, cellResolution);
 
         Length ox = lengths[2];
         if (ox == null)
@@ -76,7 +76,7 @@ public class Helpers {
         if (ox.getUnits() == Length.Unit.Percentage)
             xOffset = (ox.getValue() / 100) * referencePercent.getWidth();
         else
-            xOffset = resolveLength(e, ox, Axis.HORIZONTAL, external, reference, null);
+            xOffset = resolveLength(e, ox, Axis.HORIZONTAL, external, reference, null, cellResolution);
 
         Length oy = lengths[3];
         if (oy == null)
@@ -85,7 +85,7 @@ public class Helpers {
         if (oy.getUnits() == Length.Unit.Percentage)
             yOffset = (oy.getValue() / 100) * referencePercent.getHeight();
         else
-            yOffset = resolveLength(e, oy, Axis.VERTICAL, external, reference, null);
+            yOffset = resolveLength(e, oy, Axis.VERTICAL, external, reference, null, cellResolution);
 
         x -= xOffset;
         y -= yOffset;
@@ -96,11 +96,11 @@ public class Helpers {
             return new Point(x, y);
     }
 
-    public static double resolveLength(Element e, Length l, Axis axis, Extent external, Extent reference, Extent font) {
-        return (l != null) ? l.getValue() * getLengthReference(e, l.getUnits(), axis, external, reference, font) : 0;
+    public static double resolveLength(Element e, Length l, Axis axis, Extent external, Extent reference, Extent font, Extent cellResolution) {
+        return (l != null) ? l.getValue() * getLengthReference(e, l.getUnits(), axis, external, reference, font, cellResolution) : 0;
     }
 
-    private static double getLengthReference(Element e, Length.Unit units, Axis axis, Extent external, Extent reference, Extent font) {
+    private static double getLengthReference(Element e, Length.Unit units, Axis axis, Extent external, Extent reference, Extent font, Extent cellResolution) {
         if (units == Length.Unit.Pixel)
             return 1;
         else if (units == Length.Unit.Percentage)
@@ -108,7 +108,7 @@ public class Helpers {
         else if (units == Length.Unit.Em)
             return getFontSizeReference(e, axis, font);
         else if (units == Length.Unit.Cell)
-            return getCellSizeReference(axis, external);
+            return getCellSizeReference(axis, external, cellResolution);
         else if (units == Length.Unit.ViewportHeight)
             return getViewportReference(Axis.VERTICAL, external);
         else if (units == Length.Unit.ViewportWidth)
@@ -132,11 +132,11 @@ public class Helpers {
             return font.getWidth();
     }
 
-    private static double getCellSizeReference(Axis axis, Extent reference) {
+    private static double getCellSizeReference(Axis axis, Extent reference, Extent cellResolution) {
         if (axis == Axis.VERTICAL)
-            return getReference(axis, reference) / 15;          // [TBD] FIX ME - use ttp:cellResolution
+            return getReference(axis, reference) / cellResolution.getHeight();
         else
-            return getReference(axis, reference) / 32;          // [TBD] FIX ME - use ttp:cellResolution
+            return getReference(axis, reference) / cellResolution.getWidth();
     }
 
     private static double getViewportReference(Axis axis, Extent reference) {

@@ -41,7 +41,7 @@ import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 
-public class Defaults {
+public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public static final Annotation defaultAnnotation                           = null;
     public static final InlineAlignment defaultAnnotationAlign                 = InlineAlignment.AUTO;

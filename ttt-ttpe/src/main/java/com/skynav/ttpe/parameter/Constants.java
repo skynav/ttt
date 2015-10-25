@@ -23,55 +23,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.parameter;
 
-import org.w3c.dom.Element;
+import javax.xml.namespace.QName;
 
-import com.skynav.ttpe.geometry.Dimension;
-import com.skynav.ttpe.geometry.Extent;
-import com.skynav.ttpe.geometry.WritingMode;
+import static com.skynav.ttv.model.ttml.TTML.Constants.*;
 
-public class CanvasArea extends NonLeafAreaNode {
+public class Constants {
 
-    private double begin;
-    private double end;
-    private Extent cellResolution;
+    // Namespaces
+    public static final String ttpNamespace                             = NAMESPACE_TT_PARAMETER;
 
-    public CanvasArea(Element e, double begin, double end, Extent cellResolution) {
-        super(e);
-        this.begin = begin;
-        this.end = end;
-        this.cellResolution = cellResolution;
-    }
-
-    public double getBegin() {
-        return begin;
-    }
-
-    public double getEnd() {
-        return end;
-    }
-
-    public Extent getCellResolution() {
-        return cellResolution;
-    }
-
-    public Extent getExtent() {
-        AreaNode fc = firstChild();
-        if (fc instanceof ViewportArea)
-            return ((ViewportArea) fc).getExtent();
-        else
-            return Extent.EMPTY;
-    }
-
-    @Override
-    public WritingMode getWritingMode() {
-        return WritingMode.LRTB;
-    }
-
-    @Override
-    public double getAvailable(Dimension dimension) {
-        return Double.POSITIVE_INFINITY;
-    }
+    // TTML Style Attribute Names
+    public static final QName ttpCellResolutionAttrName                 = new QName(NAMESPACE_TT_PARAMETER, "cellResolution");
+    public static final QName ttpFrameRateAttrName                      = new QName(NAMESPACE_TT_PARAMETER, "frameRate");
+    public static final QName ttpFrameRateMultiplierAttrName            = new QName(NAMESPACE_TT_PARAMETER, "frameRateMultiplier");
+    public static final QName ttpVersionAttrName                        = new QName(NAMESPACE_TT_PARAMETER, "version");
 
 }

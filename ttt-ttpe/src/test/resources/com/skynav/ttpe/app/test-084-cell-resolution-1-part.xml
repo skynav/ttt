@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en" ttp:version="2" ttp:cellResolution="64 30" tts:extent="1280px 720px"
+    xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:displayAlign="after" tts:extent="768px 90px" tts:position="center top 240px" tts:fontSize="36px" tts:lineHeight="45px"/>
+      <region xml:id="r1" tts:displayAlign="before" tts:extent="768px 90px" tts:position="center bottom 240px" tts:fontSize="1.5c" tts:lineHeight="1.875c"/>
+    </layout>
+  </head>
+  <body tts:textAlign="center" tts:fontFamily="Noto Sans">
+    <div>
+      <p region="r0" begin="01:08:59:28" end="01:08:59:29" tts:textAlign="center"><span tts:textAlign="start">The quick brown fox ...</span></p>
+      <p region="r1" begin="01:08:59:28" end="01:08:59:29" tts:textAlign="center"><span tts:textAlign="start">The quick brown fox ...</span></p>
+      <p region="r0" begin="01:09:00:02" end="01:09:00:03" tts:textAlign="center"><span tts:textAlign="start">... jumps over the lazy dog.</span></p>
+      <p region="r1" begin="01:09:00:02" end="01:09:00:03" tts:textAlign="center"><span tts:textAlign="start">... jumps over the lazy dog.</span></p>
+    </div>
+  </body>
+</tt>

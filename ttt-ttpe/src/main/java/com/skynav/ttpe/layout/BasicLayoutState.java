@@ -115,8 +115,8 @@ public class BasicLayoutState implements LayoutState {
         return defaults;
     }
 
-    public NonLeafAreaNode pushCanvas(Element e, double begin, double end) {
-        return push(new CanvasArea(e, begin, end));
+    public NonLeafAreaNode pushCanvas(Element e, double begin, double end, Extent cellResolution) {
+        return push(new CanvasArea(e, begin, end, cellResolution));
     }
 
     public NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip) {
@@ -170,6 +170,18 @@ public class BasicLayoutState implements LayoutState {
 
     public NonLeafAreaNode peek() {
         return areas.peek();
+    }
+
+    public CanvasArea getCanvasArea() {
+        if (!areas.empty()) {
+            for (int i = 0, n = areas.size(); i < n; ++i) {
+                int k = n - i - 1;
+                NonLeafAreaNode a = areas.get(k);
+                if (a instanceof CanvasArea)
+                    return (CanvasArea) a;
+            }
+        }
+        return null;
     }
 
     public ReferenceArea getReferenceArea() {
@@ -231,12 +243,28 @@ public class BasicLayoutState implements LayoutState {
             return 0;
     }
 
+    public Extent getCellResolution() {
+        CanvasArea ca = getCanvasArea();
+        if (ca != null)
+            return ca.getCellResolution();
+        else
+            return defaults.getCellResolution();
+    }
+
     public Extent getReferenceExtent() {
-        return getReferenceArea().getExtent();
+        ReferenceArea ra = getReferenceArea();
+        if (ra != null)
+            return ra.getExtent();
+        else
+            return Extent.EMPTY;
     }
 
     public BlockAlignment getReferenceAlignment() {
-        return getDisplayAlign(getReferenceArea().getElement());
+        ReferenceArea ra = getReferenceArea();
+        if (ra != null)
+            return getDisplayAlign(ra.getElement());
+        else
+            return defaults.getDisplayAlign();
     }
 
     public Extent getExternalExtent() {
@@ -307,11 +335,12 @@ public class BasicLayoutState implements LayoutState {
                 List<Length> lengths = new java.util.ArrayList<Length>();
                 if (Lengths.isLengths(v, null, context, minMax, treatments, lengths)) {
                     assert lengths.size() == 2;
+                    Extent cellResolution = getCellResolution();
                     Extent externalExtent = getExternalExtent();
                     Extent referenceExtent = externalExtent;
                     Extent fontSize = Extent.EMPTY;
-                    double w = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, externalExtent, referenceExtent, fontSize);
-                    double h = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, externalExtent, referenceExtent, fontSize);
+                    double w = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, externalExtent, referenceExtent, fontSize, cellResolution);
+                    double h = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, externalExtent, referenceExtent, fontSize, cellResolution);
                     return new Extent(w, h);
                 }
             }
@@ -331,11 +360,12 @@ public class BasicLayoutState implements LayoutState {
                 List<Length> lengths = new java.util.ArrayList<Length>();
                 if (Lengths.isLengths(v, null, context, minMax, treatments, lengths)) {
                     assert lengths.size() == 2;
+                    Extent cellResolution = getCellResolution();
                     Extent externalExtent = getExternalExtent();
                     Extent referenceExtent = externalExtent;
                     Extent fontSize = Extent.EMPTY;
-                    double x = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, externalExtent, referenceExtent, fontSize);
-                    double y = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, externalExtent, referenceExtent, fontSize);
+                    double x = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, externalExtent, referenceExtent, fontSize, cellResolution);
+                    double y = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, externalExtent, referenceExtent, fontSize, cellResolution);
                     return new Point(x, y);
                 }
             }
@@ -351,8 +381,10 @@ public class BasicLayoutState implements LayoutState {
             String v = s.getValue();
             String [] components = v.split("[ \t\r\n]+");
             Length[] lengths = new Length[4];
-            if (Positions.isPosition(components, null, context, lengths))
-                return Helpers.resolvePosition(e, lengths, getExternalExtent(), extent);
+            if (Positions.isPosition(components, null, context, lengths)) {
+                Extent cellResolution = getCellResolution();
+                return Helpers.resolvePosition(e, lengths, getExternalExtent(), extent, cellResolution);
+            }
         }
         return getOrigin(e);
     }

@@ -23,55 +23,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.parameter;
 
-import org.w3c.dom.Element;
-
-import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.Extent;
-import com.skynav.ttpe.geometry.WritingMode;
 
-public class CanvasArea extends NonLeafAreaNode {
+public class Defaults {
 
-    private double begin;
-    private double end;
-    private Extent cellResolution;
+    public static final Extent defaultCellResolution                           = new Extent(32, 15);
+    public static final double defaultFrameRate                                = 30;
+    public static final double defaultFrameRateMultiplier                      = 1;
 
-    public CanvasArea(Element e, double begin, double end, Extent cellResolution) {
-        super(e);
-        this.begin = begin;
-        this.end = end;
+    private Extent cellResolution                                              = defaultCellResolution;
+    private double frameRate                                                   = defaultFrameRate;
+    private double frameRateMultiplier                                         = defaultFrameRateMultiplier;
+
+    public Defaults() {
+    }
+
+    public void setCellResolution(Extent cellResolution) {
         this.cellResolution = cellResolution;
-    }
-
-    public double getBegin() {
-        return begin;
-    }
-
-    public double getEnd() {
-        return end;
     }
 
     public Extent getCellResolution() {
         return cellResolution;
     }
 
-    public Extent getExtent() {
-        AreaNode fc = firstChild();
-        if (fc instanceof ViewportArea)
-            return ((ViewportArea) fc).getExtent();
-        else
-            return Extent.EMPTY;
+    public void setFrameRate(double frameRate) {
+        this.frameRate = frameRate;
     }
 
-    @Override
-    public WritingMode getWritingMode() {
-        return WritingMode.LRTB;
+    public double getFrameRate() {
+        return frameRate;
     }
 
-    @Override
-    public double getAvailable(Dimension dimension) {
-        return Double.POSITIVE_INFINITY;
+    public void setFrameRateMultiplier(double frameRateMultiplier) {
+        this.frameRateMultiplier = frameRateMultiplier;
+    }
+
+    public double getFrameRateMultiplier() {
+        return frameRateMultiplier;
     }
 
 }

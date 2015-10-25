@@ -73,6 +73,7 @@ public class StyleCollector {
     protected Defaults defaults;
     protected Extent extBounds;
     protected Extent refBounds;
+    protected Extent cellResolution;
     protected WritingMode writingMode;
     protected String language;
     protected Font font;
@@ -82,16 +83,17 @@ public class StyleCollector {
     private BidiLevelIterator bidi;
 
     public StyleCollector(StyleCollector sc) {
-        this(sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.writingMode, sc.language, sc.font, sc.styles);
+        this(sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.font, sc.styles);
     }
 
     public StyleCollector
-        (TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, WritingMode writingMode, String language, Font font, Map<String,StyleSet> styles) {
+        (TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, Extent cellResolution, WritingMode writingMode, String language, Font font, Map<String,StyleSet> styles) {
         this.context = context;
         this.fontCache = fontCache;
         this.defaults = defaults;
         this.extBounds = extBounds;
         this.refBounds = refBounds;
+        this.cellResolution = cellResolution;
         this.writingMode = writingMode;
         this.language = language;
         this.font = font;
@@ -169,7 +171,7 @@ public class StyleCollector {
                 com.skynav.ttv.model.value.TextReserve ar = retReserve[0];
                 Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
                 Length reserve = ar.getReserve();
-                double r = (reserve != null) ? Helpers.resolveLength(e, reserve, Axis.VERTICAL, extBounds, refBounds, fs) : -1;
+                double r = (reserve != null) ? Helpers.resolveLength(e, reserve, Axis.VERTICAL, extBounds, refBounds, fs, cellResolution) : -1;
                 v = new AnnotationReserve(ar.getPosition().name(), r);
             }
         }
@@ -448,9 +450,9 @@ public class StyleCollector {
                 Color c = (toColor != null) ? new Color(toColor.getRed(), toColor.getGreen(), toColor.getBlue(), toColor.getAlpha()) : color;
                 Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
                 Length thickness = to.getThickness();
-                double t = Helpers.resolveLength(e, thickness, Axis.VERTICAL, extBounds, refBounds, fs);
+                double t = Helpers.resolveLength(e, thickness, Axis.VERTICAL, extBounds, refBounds, fs, cellResolution);
                 Length blur = to.getBlur();
-                double b = Helpers.resolveLength(e, blur, Axis.VERTICAL, extBounds, refBounds, fs);
+                double b = Helpers.resolveLength(e, blur, Axis.VERTICAL, extBounds, refBounds, fs, cellResolution);
                 v = new Outline(c, t, b);
             }
         }
@@ -493,7 +495,7 @@ public class StyleCollector {
                 List<Length> lengths = new java.util.ArrayList<Length>();
                 if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
                     assert lengths.size() == 1;
-                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs));
+                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs, cellResolution));
                 }
             }
         }
@@ -666,11 +668,15 @@ public class StyleCollector {
         List<Length> lengths = new java.util.ArrayList<Length>();
         if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
-            if (lengths.size() == 1)
-                lengths.add(lengths.get(0));
             Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
-            double w = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs);
-            double h = Helpers.resolveLength(e, lengths.get(1), Axis.HORIZONTAL, extBounds, refBounds, fs);
+            double w, h;
+            if (lengths.size() == 1) {
+                h = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs, cellResolution);
+                w = h;
+            } else {
+                w = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, extBounds, refBounds, fs, cellResolution);
+                h = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, extBounds, refBounds, fs, cellResolution);
+            }
             return new Extent(w, h);
         } else
             return null;

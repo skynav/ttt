@@ -470,6 +470,16 @@ public class PresenterTestCases {
         performPresentationTest("test-083-smpte-30fps-non-drop.xml", 0, 0);
     }
 
+    @Test
+    public void test084CellResolution1Part() throws Exception {
+        performPresentationTest("test-084-cell-resolution-1-part.xml", 0, 0);
+    }
+
+    @Test
+    public void test085CellResolution2Part() throws Exception {
+        performPresentationTest("test-085-cell-resolution-2-part.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

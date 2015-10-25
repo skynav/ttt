@@ -59,9 +59,13 @@ import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.util.Integers;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.ZeroTreatment;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
 
+import static com.skynav.ttpe.parameter.Constants.*;
 import static com.skynav.ttpe.text.Constants.*;
 
 public class BasicLayoutProcessor extends LayoutProcessor {
@@ -369,7 +373,10 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         try {
             double begin = Double.parseDouble(e.getAttribute("begin"));
             double end = Double.parseDouble(e.getAttribute("end"));
-            ls.pushCanvas(e, begin, end);
+            Extent cellResolution = parseCellResolution(Documents.getAttribute(e, ttpCellResolutionAttrName, null));
+            if (cellResolution == null)
+                cellResolution = defaults.getCellResolution();
+            ls.pushCanvas(e, begin, end, cellResolution);
             Extent extent = ls.getExternalExtent();
             double w = extent.getWidth();
             double h = extent.getHeight();
@@ -390,6 +397,17 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         } catch (NumberFormatException x) {
         }
         return areas;
+    }
+
+    private Extent parseCellResolution(String value) {
+        if (value != null) {
+            Integer[] minMax = new Integer[] { 2, 2 };
+            Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
+            List<Integer> integers = new java.util.ArrayList<Integer>();
+            if (Integers.isIntegers(value, null, context, minMax, treatments, integers))
+                return new Extent(integers.get(0), integers.get(1));
+        }
+        return null;
     }
 
     protected void layoutRegion(Element e, LayoutState ls) {
@@ -441,7 +459,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     private StyleCollector newStyleCollector(LayoutState ls) {
-        return new StyleCollector(context, ls.getFontCache(), defaults, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getWritingMode(), ls.getLanguage(), ls.getFont(), ls.getStyles());
+        return new StyleCollector(context, ls.getFontCache(), defaults, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getCellResolution(), ls.getWritingMode(), ls.getLanguage(), ls.getFont(), ls.getStyles());
     }
 
     protected void layoutParagraphs(Element e, List<Paragraph> paragraphs, LayoutState ls) {
