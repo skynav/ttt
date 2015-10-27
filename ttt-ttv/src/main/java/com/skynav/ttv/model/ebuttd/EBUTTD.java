@@ -32,6 +32,7 @@ import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
+import com.skynav.ttv.verifier.ebuttd.EBUTTDTimingVerifier;
 import com.skynav.xml.helpers.XML;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -143,6 +144,14 @@ public class EBUTTD {
             prefixes.put(XML.xmlNamespace, "xml");
             prefixes.put(XML.xsiNamespace, "xsi");
             return prefixes;
+        }
+
+        @Override
+        public TimingVerifier getTimingVerifier() {
+            if (timingVerifier == null) {
+                timingVerifier = new EBUTTDTimingVerifier(this);
+            }
+            return timingVerifier;
         }
     }
 }
