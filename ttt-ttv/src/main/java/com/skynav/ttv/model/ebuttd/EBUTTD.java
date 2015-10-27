@@ -32,22 +32,17 @@ import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
-import com.skynav.ttv.verifier.ebuttd.EBUTTDParameterVerifier;
-import com.skynav.ttv.verifier.ebuttd.EBUTTDSemanticsVerifier;
-import com.skynav.ttv.verifier.ebuttd.EBUTTDStyleVerifier;
-import com.skynav.ttv.verifier.ebuttd.EBUTTDTimingVerifier;
 import com.skynav.xml.helpers.XML;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.namespace.QName;
 
 /**
  * Class adding integration for EBU-TT-D (3380).
  *
- * @author msamek
+ * @author Michal Samek, (Michal.Samek at at.redbullmediahouse.com)
  */
 public class EBUTTD {
 
@@ -73,7 +68,6 @@ public class EBUTTD {
         private ParameterVerifier parameterVerifier;
         private TimingVerifier timingVerifier;
         private StyleVerifier styleVerifier;
-        private URI profileNamespaceUri;
 
         public EBUTTDModel() {
             super();
@@ -108,8 +102,6 @@ public class EBUTTD {
                 namespaceUris.add(new URI(XML.xsiNamespace));
                 namespaceUris.add(new URI(Annotations.getNamespace()));
                 this.namespaceURIs = namespaceUris.toArray(new URI[namespaceUris.size()]);
-
-                profileNamespaceUri = new URI(Constants.EBUTTD_PROFILE_URI);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -136,8 +128,6 @@ public class EBUTTD {
             String ttmlContext = super.getJAXBContextPath();
             return ttmlContext + ":" + ebuttdContext;
         }
-        
-        
 
         @Override
         public Map<String, String> getNormalizedPrefixes() {
@@ -154,38 +144,5 @@ public class EBUTTD {
             prefixes.put(XML.xsiNamespace, "xsi");
             return prefixes;
         }
-
-        @Override
-        public SemanticsVerifier getSemanticsVerifier() {
-            if (semanticsVerifier == null) {
-                semanticsVerifier = new EBUTTDSemanticsVerifier(this);
-            }
-            return semanticsVerifier;
-        }
-
-        @Override
-        public TimingVerifier getTimingVerifier() {
-            if (timingVerifier == null) {
-                timingVerifier = new EBUTTDTimingVerifier(this);
-            }
-            return timingVerifier;
-        }
-
-        @Override
-        public StyleVerifier getStyleVerifier() {
-            if (styleVerifier == null) {
-                styleVerifier = new EBUTTDStyleVerifier(this);
-            }
-            return styleVerifier;
-        }
-
-        @Override
-        public ParameterVerifier getParameterVerifier() {
-            if (parameterVerifier == null) {
-                parameterVerifier = new EBUTTDParameterVerifier(this);
-            }
-            return parameterVerifier;
-        }
-
     }
 }
