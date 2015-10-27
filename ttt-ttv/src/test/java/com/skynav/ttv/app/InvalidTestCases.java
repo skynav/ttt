@@ -1487,8 +1487,6 @@ public class InvalidTestCases {
         List<String> args = new java.util.ArrayList<String>();
         args.add("-q");
         args.add("-v");
-        args.add("--model");
-        args.add("ttml1");
         if (expectedErrors >= 0) {
             args.add("--expect-errors");
             args.add(Integer.toString(expectedErrors));
