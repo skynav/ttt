@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" targetNamespace="http://www.w3.org/ns/ttml#metadata">
+	<xs:element name="copyright" type="xs:string" />
+	<xs:attribute name="agent" type="xs:IDREFS"/>
+	<xs:attribute name="role" type="xs:NMTOKENS"/>
+</xs:schema>

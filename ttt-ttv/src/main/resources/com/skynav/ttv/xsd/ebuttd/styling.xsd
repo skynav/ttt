@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2014, EBU-UER Technology & Innovation
+
+Licensed under the Apache License, Version 2.0 (the "License"); 
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License 
+
+at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, the subject work
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ebuttdt="urn:ebu:tt:datatypes" xmlns:ebutts="urn:ebu:tt:style" targetNamespace="http://www.w3.org/ns/ttml#styling">
+	<xs:import namespace="urn:ebu:tt:datatypes" schemaLocation="ebutt_datatypes.xsd"/>
+	<xs:attribute name="direction">
+		<xs:annotation>
+			<xs:documentation>Directionality if bi-directional text is used.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="ltr"/>
+				<xs:enumeration value="rtl"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="fontFamily" type="ebuttdt:fontFamilyType">
+		<xs:annotation>
+			<xs:documentation>Font-family from which glyphs are selected.</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+	<xs:attribute name="fontSize" type="ebuttdt:distributionFontSizeType">
+		<xs:annotation>
+			<xs:documentation>The font-size of a glyph.</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+	<xs:attribute name="lineHeight" type="ebuttdt:distributionLineHeightType">
+		<xs:annotation>
+			<xs:documentation>Inter-baseline separation between line areas.</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+	<xs:attribute name="textAlign">
+		<xs:annotation>
+			<xs:documentation>Alignment of inline areas in a containing block.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="left"/>
+				<xs:enumeration value="center"/>
+				<xs:enumeration value="right"/>
+				<xs:enumeration value="start"/>
+				<xs:enumeration value="end"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="color" type="ebuttdt:distributionColorType">
+		<xs:annotation>
+			<xs:documentation>Foreground colour of an area.</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+	<xs:attribute name="backgroundColor" type="ebuttdt:distributionColorType">
+		<xs:annotation>
+			<xs:documentation>Background colour of a subtitle or a region.</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+	<xs:attribute name="fontStyle">
+		<xs:annotation>
+			<xs:documentation>Font style that applies to glyphs.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="normal"/>
+				<xs:enumeration value="italic"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="fontWeight">
+		<xs:annotation>
+			<xs:documentation>Font weight that applies to glyphs.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="normal"/>
+				<xs:enumeration value="bold"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="textDecoration">
+		<xs:annotation>
+			<xs:documentation>Whether a glyph is underlined.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="none"/>
+				<xs:enumeration value="underline"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="unicodeBidi">
+		<xs:annotation>
+			<xs:documentation>Directional embedding or override according to the Unicode bidirectional algorithm.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="normal"/>
+				<xs:enumeration value="embed"/>
+				<xs:enumeration value="bidiOverride"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="wrapOption">
+		<xs:annotation>
+			<xs:documentation>Defines whether or not automatic line wrapping (breaking) applies within the context of the affected element.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="wrap"/>
+				<xs:enumeration value="noWrap"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="displayAlign">
+		<xs:annotation>
+			<xs:documentation>Alignment in the block progression direction.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="before"/>
+				<xs:enumeration value="center"/>
+				<xs:enumeration value="after"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="padding" type="ebuttdt:distributionPaddingType"/>
+	<xs:attribute name="writingMode">
+		<xs:annotation>
+			<xs:documentation>Writing mode of subtitle content.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="lrtb"/>
+				<xs:enumeration value="rltb"/>
+				<xs:enumeration value="tbrl"/>
+				<xs:enumeration value="tblr"/>
+				<xs:enumeration value="lr"/>
+				<xs:enumeration value="rl"/>
+				<xs:enumeration value="tb"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="showBackground">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="always"/>
+				<xs:enumeration value="whenActive"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="overflow">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="visible"/>
+				<xs:enumeration value="hidden"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="extent" type="ebuttdt:distributionExtentType"/>
+	<xs:attribute name="origin" type="ebuttdt:distributionOriginType">
+		<xs:annotation>
+			<xs:documentation>The x and y coordinates of the top left corner of a region with respect to the active video the document was authored for. The (0, 0) coordinate shall be assumed to be the top left corner of the active video.
+Values in percentage shall be relative to the width and height of the active video.
+oordinates of the origin of a region with respect to the active video the document was authored for. Values in percentage shall be relative to the width and height of the active video.</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+</xs:schema>
