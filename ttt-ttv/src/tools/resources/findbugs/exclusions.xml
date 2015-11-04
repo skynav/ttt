@@ -8,6 +8,14 @@
     <Bug pattern="EI_EXPOSE_REP"/>
     <Or>
       <And>
+        <Class name="com.skynav.ttv.model.ebuttd.EBUTTD$EBUTTDModel"/>
+        <Method name="getNamespaceURIs"/>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.ebuttd.EBUTTD$EBUTTDModel"/>
+        <Method name="getSchemaResourceNames"/>
+      </And>
+      <And>
         <Class name="com.skynav.ttv.model.imsc.IMSC1$IMSC1Model"/>
         <Method name="getIMSC1NamespaceURIs"/>
       </And>

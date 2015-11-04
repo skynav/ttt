@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:ebuttdt="urn:ebu:tt:datatypes" targetNamespace="http://www.w3.org/ns/ttml#parameter">
+	<xs:import namespace="urn:ebu:tt:datatypes" schemaLocation="ebutt_datatypes.xsd"/>
+	<xs:attribute name="timeBase">
+		<xs:annotation>
+			<xs:documentation>The timebase defines the time coordinate system for all time expressions in EBU-TT.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:token">
+				<xs:enumeration value="media"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="cellResolution" type="ebuttdt:cellResolutionType">
+		<xs:annotation>
+			<xs:documentation>Expresses a virtual visual grid composed of horizontal and vertical cells. This virtual grid shall divide the active video in rows and columns.</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+</xs:schema>

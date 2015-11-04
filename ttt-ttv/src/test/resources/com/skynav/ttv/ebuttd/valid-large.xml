@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt:tt xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:ebuttm="urn:ebu:tt:metadata" xmlns:ebutts="urn:ebu:tt:style" xmlns:ebuttdt="urn:ebu:tt:datatypes" xml:lang="en" ttp:cellResolution="46 14" ttp:timeBase="media" xmlns:tt="http://www.w3.org/ns/ttml">
+    <tt:head>
+        <tt:metadata>
+            <ttm:title>Translated title</ttm:title>
+            <ttm:desc>Mail title</ttm:desc>
+    
+            <ebuttm:documentMetadata>
+                <ebuttm:authoredFrameRate>24</ebuttm:authoredFrameRate>
+                <ebuttm:authoredFrameRateMultiplier>1000 1001</ebuttm:authoredFrameRateMultiplier>
+                <ebuttm:documentEbuttVersion>v1.0</ebuttm:documentEbuttVersion>
+                <ebuttm:documentIdentifier>BBC123456</ebuttm:documentIdentifier>
+                <ebuttm:documentOriginalProgrammeTitle>Mail title</ebuttm:documentOriginalProgrammeTitle>
+                <ebuttm:documentOriginalEpisodeTitle>Episode title</ebuttm:documentOriginalEpisodeTitle>
+                <ebuttm:documentTranslatedProgrammeTitle>Translated title</ebuttm:documentTranslatedProgrammeTitle>
+                <ebuttm:documentTranslatedEpisodeTitle>Translated episode title</ebuttm:documentTranslatedEpisodeTitle>
+                <ebuttm:documentTranslatorsName>Not available</ebuttm:documentTranslatorsName>
+                <ebuttm:documentSubtitleListReferenceCode>BBC123456</ebuttm:documentSubtitleListReferenceCode>
+                <ebuttm:documentCreationDate>2015-09-02</ebuttm:documentCreationDate>
+                <ebuttm:documentTotalNumberOfSubtitles>27</ebuttm:documentTotalNumberOfSubtitles>
+                <ebuttm:documentStartOfProgramme>00:00:00.00</ebuttm:documentStartOfProgramme>
+                <ebuttm:documentPublisher>www.bbc.co.uk</ebuttm:documentPublisher>
+            </ebuttm:documentMetadata>
+        </tt:metadata>
+        <tt:styling>
+            <tt:style xml:id="normal" tts:color="#CDCDCDFF" tts:backgroundColor="#000000FF" tts:fontFamily="Arial" tts:fontSize="100%" tts:lineHeight="100%" tts:textAlign="center" tts:wrapOption="noWrap" ebutts:linePadding="0.5c" />
+        </tt:styling>
+        <tt:layout>
+            <tt:region xml:id="bottom" tts:showBackground="whenActive" tts:origin="10% 70%" tts:extent="80% 20%" tts:displayAlign="after" />
+            <tt:region xml:id="middle" tts:showBackground="whenActive" tts:origin="10% 40%" tts:extent="80% 20%" tts:displayAlign="center" />
+            <tt:region xml:id="top" tts:showBackground="whenActive" tts:origin="10% 10%" tts:extent="80% 20%" tts:displayAlign="before" />
+        </tt:layout>
+    </tt:head>
+    <tt:body>
+        <tt:div ttm:role="caption" region="bottom" style="normal">
+            <tt:p xml:id="s1" begin="00:00:00.083" end="00:00:01.793">Accessing latest information.</tt:p>
+            <tt:p xml:id="s2" begin="00:00:02.294" end="00:00:05.005">Data files relating to<tt:br />Martin Truman and his ability</tt:p>
+            <tt:p xml:id="s3" begin="00:00:05.088" end="00:00:06.590">to predict the future<tt:br />through the use</tt:p>
+            <tt:p xml:id="s4" begin="00:00:06.715" end="00:00:09.801">of astrology shows evidence<tt:br />of unusually high accuracy.</tt:p>
+            <tt:p xml:id="s5" begin="00:00:10.093" end="00:00:13.096" region="top">Although initial scans reveal<tt:br />that self declared Messiah</tt:p>
+            <tt:p xml:id="s6" begin="00:00:13.222" end="00:00:16.308">of the Zodiac Martin Truman<tt:br />is, in fact, completely human,</tt:p>
+            <tt:p xml:id="s7" begin="00:00:16.600" end="00:00:18.227">it would seem that<tt:br />he has the ability</tt:p>
+            <tt:p xml:id="s8" begin="00:00:18.310" end="00:00:21.522">to demonstrate some unusual<tt:br />powers, including firing bursts</tt:p>
+            <tt:p xml:id="s9" begin="00:00:21.605" end="00:00:23.315">of unknown energy<tt:br />from his hands.</tt:p>
+            <tt:p xml:id="s10" begin="00:00:23.524" end="00:00:25.609" region="top">Described as "The<tt:br />Ancient Lights,"</tt:p>
+            <tt:p xml:id="s11" begin="00:00:25.734" end="00:00:27.736">the energy Truman<tt:br />harnesses seems to burn</tt:p>
+            <tt:p xml:id="s12" begin="00:00:27.819" end="00:00:29.238">with no detectable evidence.</tt:p>
+            <tt:p xml:id="s13" begin="00:00:29.530" end="00:00:31.114">
+                <tt:span>Additionally, Truman seems</tt:span>
+            </tt:p>
+            <tt:p xml:id="s14" begin="00:00:31.240" end="00:00:34.034">
+                <tt:span>to have hijacked the television</tt:span>
+                <tt:br />
+                <tt:span>show "Paranormal Planet"</tt:span>
+            </tt:p>
+            <tt:p xml:id="s15" begin="00:00:34.326" end="00:00:36.828" region="top">
+                <tt:span>and is broadcasting it</tt:span>
+                <tt:br />
+                <tt:span>worldwide on all channels</tt:span>
+            </tt:p>
+            <tt:p xml:id="s16" begin="00:00:36.954" end="00:00:39.623">
+                <tt:span>with no detectable interference</tt:span>
+                <tt:br />
+                <tt:span>to the television signal.</tt:span>
+            </tt:p>
+            <tt:p xml:id="s17" begin="00:00:40.249" end="00:00:43.043">A video fact file relating<tt:br />to this activity is stored</tt:p>
+            <tt:p xml:id="s18" begin="00:00:43.126" end="00:00:44.461">in the Video Updates module.</tt:p>
+            <tt:p xml:id="s19" begin="00:00:44.628" end="00:00:47.047">Other than the unusual<tt:br />activities already observed,</tt:p>
+            <tt:p xml:id="s20" begin="00:00:47.464" end="00:00:48.340" region="top">nothing is happening.</tt:p>
+            <tt:p xml:id="s21" begin="00:00:48.757" end="00:00:49.633">Nothing is happening.</tt:p>
+            <tt:p xml:id="s22" begin="00:00:50.259" end="00:00:51.134">Nothing is happening.</tt:p>
+            <tt:p xml:id="s23" begin="00:00:51.552" end="00:00:53.846">Nothing is happening.</tt:p>
+            <tt:p xml:id="s24" begin="00:00:54.847" end="00:00:57.975">Soon, all the signs will<tt:br />come under my power.</tt:p>
+            <tt:p xml:id="s25" begin="00:00:58.267" end="00:01:00.269" region="top">At the becoming of<tt:br />The Ancient Lights,</tt:p>
+            <tt:p xml:id="s26" begin="00:01:00.477" end="00:01:02.646">I will be King of the World!</tt:p>
+            <tt:p xml:id="s27" begin="00:01:02.980" end="00:01:04.481">Stand ready.</tt:p>
+        </tt:div>
+    </tt:body>
+</tt:tt>
