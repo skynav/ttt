@@ -2143,9 +2143,9 @@ public class TimedTextVerifier implements VerifierContext {
         OptionProcessor optionProcessor = (OptionProcessor) resultProcessor;
         try {
             List<String> argsPreProcessed = preProcessOptions(args, optionProcessor);
+            List<String> nonOptionArgs = parseArgs(argsPreProcessed, optionProcessor);
             showBanner(getShowOutput(), optionProcessor);
             getShowOutput().flush();
-            List<String> nonOptionArgs = parseArgs(argsPreProcessed, optionProcessor);
             if (showModels)
                 showModels();
             if (showRepository)
