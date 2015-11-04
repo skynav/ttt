@@ -292,6 +292,14 @@ public interface Model {
     boolean doesStyleApply(QName eltName, QName styleName);
 
     /**
+     * Determine if negative length expression is permitted or not.
+     * @param eltName name of element type
+     * @param styleName name of style
+     * @return true if negative length expression is permitted
+     */
+    boolean isNegativeLengthPermitted(QName eltName, QName styleName);
+
+    /**
      * Obtain semantics verifier for model.
      * @return semantics verifier instance
      */

@@ -44,6 +44,8 @@ public class OriginVerifier implements StyleValueVerifier {
         String value = (String) valueObject;
         Integer[] minMax = new Integer[] { 2, 2 };
         NegativeTreatment negativeTreatment = context.getReporter().isWarningEnabled("negative-origin") ? NegativeTreatment.Warning : NegativeTreatment.Allow;
+        if (!model.isNegativeLengthPermitted(context.getBindingElementName(content), name))
+            negativeTreatment = NegativeTreatment.Error;
         Object[] treatments = new Object[] { negativeTreatment, MixedUnitsTreatment.Allow };
         if (Keywords.isAuto(value))
             return true;

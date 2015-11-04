@@ -57,4 +57,9 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
         return super.permitsStyleAttribute(content, name);
     }
 
+    @Override
+    public boolean isNegativeLengthPermitted(QName eltName, QName styleName) {
+        return false;
+    }
+
 }

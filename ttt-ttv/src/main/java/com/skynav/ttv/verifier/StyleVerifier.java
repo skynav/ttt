@@ -90,4 +90,12 @@ public interface StyleVerifier extends ItemVerifier {
      */
     boolean doesStyleApply(QName eltName, QName styleName);
 
+    /**
+     * Determine if negative length is permitted.
+     * @param eltName name of element type
+     * @param styleName name of style
+     * @return true if negative length is permitted
+     */
+    boolean isNegativeLengthPermitted(QName eltName, QName styleName);
+
 }

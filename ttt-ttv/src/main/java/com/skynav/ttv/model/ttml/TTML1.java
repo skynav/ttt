@@ -431,6 +431,10 @@ public class TTML1 {
             return getStyleVerifier().doesStyleApply(eltName, styleName);
         }
 
+        public boolean isNegativeLengthPermitted(QName eltName, QName styleName) {
+            return getStyleVerifier().isNegativeLengthPermitted(eltName, styleName);
+        }
+
         public SemanticsVerifier getSemanticsVerifier() {
             if (semanticsVerifier == null) {
                 semanticsVerifier = new TTML1SemanticsVerifier(this);

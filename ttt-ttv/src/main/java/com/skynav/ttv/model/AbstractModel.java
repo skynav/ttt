@@ -186,6 +186,10 @@ public class AbstractModel implements Model {
         return false;
     }
 
+    public boolean isNegativeLengthPermitted(QName eltName, QName styleName) {
+        return true;
+    }
+
     public SemanticsVerifier getSemanticsVerifier() {
         throw new UnsupportedOperationException();
     }
