@@ -757,9 +757,9 @@ public class FontState {
                 return true;
             } else if ((ch >= 0x2028) && (ch <= 0x202E)) {
                 return true;
-            } else if ((ch == 0x2060) && (ch <= 0x2064)) {
+            } else if ((ch >= 0x2060) && (ch <= 0x2064)) {
                 return true;
-            } else if ((ch >= 0x2066) && (ch <= 0x206F)) {
+            } else if (ch >= 0x2066) {
                 return true;
             } else {
                 return false;

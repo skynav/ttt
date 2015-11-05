@@ -53,6 +53,7 @@
     <Or>
       <Class name="com.skynav.ttpe.app.Configuration"/>
       <Class name="com.skynav.ttpe.app.ConfigurationDefaults"/>
+      <Class name="com.skynav.ttpe.style.Defaults"/>
     </Or>
   </Match>
   <Match>
