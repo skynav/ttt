@@ -26,7 +26,7 @@ Prior to performing a build, the following requirements must be met:
     $ mvn -f ttt-deps install
 </pre>
 
-This last step installs snapshot copies of `batik`, `findbugs`, and `xmlgraphics-commons` libraries that contain modifications specific to `ttt`.
+This last step installs snapshot copies of `batik`, `fontbox`, and `xmlunit` dependencies that contain modifications specific to `ttt`.
 
 ## Build and Install
 
@@ -36,7 +36,7 @@ In order to build and install `ttt` in the local maven repository, run `mvn` (*m
 
 ## Site Construction
 
-In order to build the `ttt` site content, including findbugs reports, run `mvn` (*maven*) as follows **after performing the above build and install step**:
+In order to build the `ttt` site content, including checkstyle and findbugs reports, run `mvn` (*maven*) as follows **after performing the above build and install step**:
 
 `mvn site site:stage`
 
