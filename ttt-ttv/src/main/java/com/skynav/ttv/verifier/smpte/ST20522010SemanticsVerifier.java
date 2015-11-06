@@ -76,7 +76,15 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return inSMPTEPrimaryNamespace(name) || inSMPTESecondaryNamespace(name);
     }
 
+    @Override
     public boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context) {
+        if (!super.verifyNonTTOtherElement(content, locator, context))
+            return false;
+        else
+            return verifySMPTENonTTOtherElement(content, locator, context);
+    }
+
+    protected boolean verifySMPTENonTTOtherElement(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         assert context == getContext();
         Node node = context.getXMLNode(content);
@@ -238,7 +246,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return dataType.indexOf("x-") == 0;
     }
 
-    private boolean verifyAncestry(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifyAncestry(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Node node = context.getXMLNode(content);
         if (node == null) {
@@ -251,7 +259,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
             if (ancestors != null) {
                 if (!Nodes.hasAncestors(node, ancestors)) {
                     Reporter reporter = context.getReporter();
-                    reporter.logError(reporter.message(locator, "*KEY*", "SMPTE element ''{0}'' must have ancestors {1}.", name, ancestors));
+                    reporter.logError(reporter.message(locator, "*KEY*", "Element ''{0}'' must have ancestors {1}.", name, ancestors));
                     failed = true;
                 }
             }
@@ -272,7 +280,15 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return !failed;
     }
 
+    @Override
     public boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
+        if (!super.verifyNonTTOtherAttributes(content, locator, context))
+            return false;
+        else
+            return verifySMPTENonTTOtherAttributes(content, locator, context);
+    }
+
+    protected boolean verifySMPTENonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {
@@ -305,7 +321,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
                         reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
                         failedAttribute = true;
                     } else if (!verifySMPTEAttribute(content, locator, context, name, value)) {
-                        reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+                        reporter.logError(reporter.message(locator, "*KEY*", "Invalid or prohibited {0} attribute or attribute value ''{1}''.", name, value));
                         failedAttribute = true;
                     }
                 }
@@ -319,16 +335,16 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
     protected boolean verifySMPTEAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {
         boolean failed = false;
         if (isBackgroundImageAttribute(name)) {
-            if (!verifyBackgroundImage(content, name, value, locator, context))
+            if (!verifySMPTEBackgroundImage(content, name, value, locator, context))
                 failed = true;
         } else if (isBackgroundImageHVAttribute(name)) {
-            if (!verifyBackgroundImageHV(content, name, value, locator, context))
+            if (!verifySMPTEBackgroundImageHV(content, name, value, locator, context))
                 failed = true;
         }
         return !failed;
     }
 
-    private boolean verifyNonEmptyOrPadded(Object content, QName name, String value, Locator locator, VerifierContext context) {
+    protected boolean verifyNonEmptyOrPadded(Object content, QName name, String value, Locator locator, VerifierContext context) {
         Reporter reporter = context.getReporter();
         if (value.length() == 0) {
             reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", name, value));
@@ -348,7 +364,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return inSMPTEPrimaryNamespace(name) && ln.equals(ATTR_BACKGROUND_IMAGE);
     }
 
-    private boolean verifyBackgroundImage(Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    protected boolean verifySMPTEBackgroundImage(Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         boolean failed = false;
         assert valueObject instanceof String;
         String value = (String) valueObject;
@@ -408,7 +424,7 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return inSMPTEPrimaryNamespace(name) && (ln.equals(ATTR_BACKGROUND_IMAGE_HORIZONTAL) || ln.equals(ATTR_BACKGROUND_IMAGE_VERTICAL));
     }
 
-    private boolean verifyBackgroundImageHV(Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    protected boolean verifySMPTEBackgroundImageHV(Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
         Integer[] minMax = new Integer[] { 1, 1 };

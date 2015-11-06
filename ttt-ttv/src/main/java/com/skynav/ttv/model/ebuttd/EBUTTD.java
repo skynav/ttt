@@ -35,9 +35,6 @@ import java.util.Map;
 import com.skynav.ttv.model.ttml.TTML;
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.util.Annotations;
-import com.skynav.ttv.verifier.ParameterVerifier;
-import com.skynav.ttv.verifier.SemanticsVerifier;
-import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.ebuttd.EBUTTDTimingVerifier;
 import com.skynav.xml.helpers.XML;
@@ -67,10 +64,7 @@ public class EBUTTD {
 
         private URI[] namespaceURIs;
         private String[] schemaResourceNames;
-        private SemanticsVerifier semanticsVerifier;
-        private ParameterVerifier parameterVerifier;
         private TimingVerifier timingVerifier;
-        private StyleVerifier styleVerifier;
 
         public EBUTTDModel() {
             super();

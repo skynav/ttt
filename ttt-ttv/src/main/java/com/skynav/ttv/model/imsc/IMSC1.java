@@ -36,7 +36,9 @@ import javax.xml.namespace.QName;
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.imsc1.ittm.AltText;
 import com.skynav.ttv.model.smpte.ST20522010;
+import com.skynav.ttv.model.smpte.ST20522010.ST20522010Model;
 import com.skynav.ttv.model.ttml.TTML1;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
@@ -111,7 +113,7 @@ public class IMSC1 {
         return inIMSC1Namespace(name);
     }
 
-    public static class IMSC1Model extends TTML1.TTML1Model {
+    public static class IMSC1Model extends ST20522010Model {
 
         private static final QName altTextElementName = new com.skynav.ttv.model.imsc1.ittm.ObjectFactory().createAltText(new AltText()).getName();
         private static final String[] contextPaths = new String[] { "com.skynav.ttv.model.imsc1.ittm" };
@@ -302,6 +304,11 @@ public class IMSC1 {
                 styleVerifier = new IMSC1StyleVerifier(this);
             }
             return styleVerifier;
+        }
+
+        public void configureReporter(Reporter reporter) {
+            if (reporter.isWarningEnabled("references-external-image"))
+                reporter.disableWarning("references-external-image");
         }
 
     }

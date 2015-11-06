@@ -1485,6 +1485,41 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageHorizontalInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-horizontal-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageHorizontalInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-horizontal-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageVerticalInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-vertical-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageVerticalInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-vertical-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidProhibitedSMPTEImageInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-smpte-image-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidProhibitedSMPTEImageInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-smpte-image-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1InvalidProhibitedTimeBaseClock() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-time-base-clock.xml", -1, -1);
     }

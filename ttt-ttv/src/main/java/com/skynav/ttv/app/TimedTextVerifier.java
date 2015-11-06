@@ -1311,6 +1311,7 @@ public class TimedTextVerifier implements VerifierContext {
         rootBinding = null;
         rootName = null;
         getReporter().resetResourceState();
+        resourceModel.configureReporter(getReporter());
     }
 
     private void setResourceURI(String uri) {
@@ -1399,6 +1400,7 @@ public class TimedTextVerifier implements VerifierContext {
 
     private void processAnnotations(Attributes attributes) {
         Reporter reporter = getReporter();
+        boolean configureReporter = false;
         if (attributes != null) {
             String annotationsNamespace = Annotations.getNamespace();
             for (int i = 0, n = attributes.getLength(); i < n; ++i) {
@@ -1411,9 +1413,9 @@ public class TimedTextVerifier implements VerifierContext {
                         resourceExpectedWarnings = parseAnnotationAsInteger(value, -1);
                     } else if (localName.equals("model")) {
                         Model model = Models.getModel(value);
-                        if (model != null)
-                            resourceModel = model;
-                        else
+                        if (model != null) {
+                            resourceModel = model; configureReporter = true;
+                        } else
                             throw new InvalidAnnotationException(localName, "unknown model '" + value + "'");
                     } else if (localName.equals("warnOn")) {
                         String[] tokens = value.split("\\s+");
@@ -1435,6 +1437,8 @@ public class TimedTextVerifier implements VerifierContext {
                 }
             }
         }
+        if (configureReporter)
+            resourceModel.configureReporter(reporter);
     }
 
     private boolean verifyWellFormedness() {

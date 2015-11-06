@@ -33,6 +33,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
@@ -212,6 +213,9 @@ public class AbstractModel implements Model {
 
     public MetadataVerifier getMetadataVerifier() {
         throw new UnsupportedOperationException();
+    }
+
+    public void configureReporter(Reporter reporter) {
     }
 
 }

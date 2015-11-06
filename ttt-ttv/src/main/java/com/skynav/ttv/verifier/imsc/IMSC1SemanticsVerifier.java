@@ -26,7 +26,6 @@
 package com.skynav.ttv.verifier.imsc;
 
 import java.nio.charset.Charset;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -48,8 +47,6 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier;
-import com.skynav.ttv.verifier.util.Strings;
-import com.skynav.xml.helpers.Nodes;
 
 import static com.skynav.ttv.model.imsc.IMSC1.Constants.*;
 
@@ -79,24 +76,23 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
 
     @Override
     protected boolean verifyTimedText(Object root) {
-        if (!super.verifyTimedText(root))
-            return false;
-        else {
-            boolean failed = false;
-            assert root instanceof TimedText;
-            TimedText tt = (TimedText) root;
+        boolean failed = false;
+        assert root instanceof TimedText;
+        TimedText tt = (TimedText) root;
+        String profile = tt.getProfile();
+        if (profile == null) {
             Reporter reporter = getContext().getReporter();
-            String profile = tt.getProfile();
-            if (profile == null) {
-                Message message = reporter.message(getLocator(tt), "*KEY*", "Root element ''{0}'' should have a ''{1}'' attribute, but it is missing.",
-                    TTML1Model.timedTextElementName, TTML1ProfileVerifier.profileAttributeName);
-                if (reporter.logWarning(message)) {
-                    reporter.logError(message);
-                    failed = true;
-                }
+            Message message = reporter.message(getLocator(tt),
+                "*KEY*", "Root element ''{0}'' should have a ''{1}'' attribute, but it is missing.", TTML1Model.timedTextElementName, TTML1ProfileVerifier.profileAttributeName);
+            if (reporter.logWarning(message)) {
+                reporter.logError(message);
+                failed = true;
             }
-            return !failed;
-        }
+        } else
+            getContext().setResourceState(getModel().getName() + ".profile", profile);
+        if (!super.verifyTimedText(root))
+            failed = true;
+        return !failed;
     }
 
     @Override
@@ -110,6 +106,18 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 failed = true;
             return !failed;
         }
+    }
+
+    private boolean verifyRegionExtent(Region region, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        String extent = region.getExtent();
+        if (extent == null) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator,
+                "*KEY*", "Style attribute ''{0}'' required on ''{1}''.", IMSC1StyleVerifier.extentAttributeName, context.getBindingElementName(region)));
+            failed = true;
+        }
+        return !failed;
     }
 
     protected boolean verifyCharset(TimedText tt) {
@@ -135,7 +143,15 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         return IMSC1.inIMSCNamespace(name);
     }
 
+    @Override
     public boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context) {
+        if (!super.verifyNonTTOtherElement(content, locator, context))
+            return false;
+        else
+            return verifyIMSCNonTTOtherElement(content, locator, context);
+    }
+
+    private boolean verifyIMSCNonTTOtherElement(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         assert context == getContext();
         Node node = context.getXMLNode(content);
@@ -153,7 +169,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             if (inIMSCNamespace(name)) {
                 if (!model.isElement(name)) {
                     Reporter reporter = context.getReporter();
-                    reporter.logError(reporter.message(locator, "*KEY", "Unknown element in IMSC namespace ''{0}''.", name));
+                    reporter.logError(reporter.message(locator, "*KEY*", "Unknown element in IMSC namespace ''{0}''.", name));
                     failed = true;
                 } else if (isIMSCAltTextElement(content)) {
                     failed = !verifyIMSCAltText(content, locator, context);
@@ -163,6 +179,17 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             }
         }
         return !failed;
+    }
+
+    @Override
+    protected boolean verifySMPTEImage(Object image, Locator locator, VerifierContext context) {
+        if (!super.verifySMPTEImage(image, locator, context))
+            return false;
+        else {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "SMPTE element ''{0}'' prohibited.", context.getBindingElementName(image)));
+            return false;
+        }
     }
 
     protected boolean isIMSCAltTextElement(Object content) {
@@ -178,28 +205,41 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verifyAncestry(Object content, Locator locator, VerifierContext context) {
-        boolean failed = false;
-        Node node = context.getXMLNode(content);
-        if (node == null) {
-            if (content instanceof Element)
-                node = (Element) content;
-        }
-        if (node != null) {
-            QName name = context.getBindingElementName(content);
-            List<List<QName>> ancestors = getModel().getElementPermissibleAncestors(name);
-            if (ancestors != null) {
-                if (!Nodes.hasAncestors(node, ancestors)) {
-                    Reporter reporter = context.getReporter();
-                    reporter.logError(reporter.message(locator, "*KEY*", "IMSC element ''{0}'' must have ancestors {1}.", name, ancestors));
-                    failed = true;
-                }
-            }
-        }
-        return !failed;
+    @Override
+    public boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
+        if (!super.verifyNonTTOtherAttributes(content, locator, context))
+            return false;
+        else
+            return verifyIMSCNonTTOtherAttributes(content, locator, context);
     }
 
-    public boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
+    @Override
+    protected boolean verifySMPTEBackgroundImage(Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+        if (!super.verifySMPTEBackgroundImage(content, name, valueObject, locator, context)) {
+            return false;
+        } else if (isIMSCTextProfile(context)) {
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "SMPTE attribute ''{0}'' prohibited on ''{1}'' in {2} text profile.", name, context.getBindingElementName(content), getModel().getName()));
+            return false;
+        } else if (isIMSCImageProfile(context)) {
+            return true;
+        } else
+            throw new IllegalStateException();
+    }
+
+    @Override
+    protected boolean verifySMPTEBackgroundImageHV(Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+        if (!super.verifySMPTEBackgroundImageHV(content, name, valueObject, locator, context))
+            return false;
+        else {
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message(locator, "*KEY*", "SMPTE attribute ''{0}'' prohibited on ''{1}''.", name, context.getBindingElementName(content)));
+            return false;
+        }
+    }
+
+    private boolean verifyIMSCNonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {
@@ -243,77 +283,20 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         return !failed;
     }
 
-    private boolean verifyNonEmptyOrPadded(Object content, QName name, String value, Locator locator, VerifierContext context) {
-        Reporter reporter = context.getReporter();
-        if (value.length() == 0) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", name, value));
-            return false;
-        } else if (Strings.isAllXMLSpace(value)) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", name, value));
-            return false;
-        } else if (!value.equals(value.trim())) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", name, value));
-            return false;
-        } else
-            return true;
-    }
-
     protected boolean verifyIMSCAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {
         boolean failed = false;
-        /*
-        if (isAspectRatioAttribute(name)) {
-            if (!verifyAspectRatio(content, name, value, locator, context))
-                failed = true;
-        } else if (isForcedDisplayAttribute(name)) {
-            if (!verifyForcedDisplay(content, name, value, locator, context))
-                failed = true;
-        } else if (isProgressivelyDecodableAttribute(name)) {
-            if (!verifyProgressivelyDecodable(content, name, value, locator, context))
-                failed = true;
-        }
-        */
+        // [TBD] - IMPLEMENT ME
         return !failed;
     }
 
-    /*
-    private boolean isAspectRatioAttribute(QName name) {
-        String ln = name.getLocalPart();
-        return inIMSCStylingNamespace(name) && ln.equals(ATTR_ASPECT_RATIO);
+    private boolean isIMSCTextProfile(VerifierContext context) {
+        String profile = (String) context.getResourceState(getModel().getName() + ".profile");
+        return (profile != null) && profile.equals(PROFILE_TEXT_ABSOLUTE);
     }
 
-    private boolean isForcedDisplayAttribute(QName name) {
-        String ln = name.getLocalPart();
-        return inIMSCStyleNamespace(name) && ln.equals(ATTR_FORCED_DISPLAY);
-    }
-
-    protected boolean verifyEBUTTAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {
-        boolean failed = false;
-        if (isLinePaddingAttribute(name)) {
-            if (!verifyLinePadding(content, name, value, locator, context))
-                failed = true;
-        } else if (isMultiRowAlignAttribute(name)) {
-            if (!verifyMultiRowAlign(content, name, value, locator, context))
-                failed = true;
-        }
-        return !failed;
-    }
-
-    protected boolean verifySMPTEAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {
-        boolean failed = false;
-        return !failed;
-    }
-    */
-
-    private boolean verifyRegionExtent(Region region, Locator locator, VerifierContext context) {
-        boolean failed = false;
-        String extent = region.getExtent();
-        if (extent == null) {
-            Reporter reporter = context.getReporter();
-            reporter.logError(reporter.message(locator,
-                "*KEY*", "Style attribute ''{0}'' required on ''{1}''.", IMSC1StyleVerifier.extentAttributeName, context.getBindingElementName(region)));
-            failed = true;
-        }
-        return !failed;
+    private boolean isIMSCImageProfile(VerifierContext context) {
+        String profile = (String) context.getResourceState(getModel().getName() + ".profile");
+        return (profile != null) && profile.equals(PROFILE_IMAGE_ABSOLUTE);
     }
 
 }

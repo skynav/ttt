@@ -33,6 +33,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
@@ -334,4 +335,10 @@ public interface Model {
      * @return metadata verifier instance
      */
     MetadataVerifier getMetadataVerifier();
+
+    /**
+     * Apply per-model reporter configuration.
+     * @param reporter to configure
+     */
+    void configureReporter(Reporter reporter);
 }
