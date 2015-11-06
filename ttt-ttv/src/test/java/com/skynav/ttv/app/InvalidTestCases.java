@@ -1445,13 +1445,13 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidIMSC1InvalidMissingProfileAttribute() throws Exception {
-        performInvalidityTest("imsc1-invalid-missing-profile-attribute.xml", -1, -1);
+    public void testInvalidIMSC1InvalidBadProfileAttribute() throws Exception {
+        performInvalidityTest("imsc1-invalid-bad-profile-attribute.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidBadProfileAttribute() throws Exception {
-        performInvalidityTest("imsc1-invalid-bad-profile-attribute.xml", -1, -1);
+    public void testInvalidIMSC1InvalidMissingProfileAttribute() throws Exception {
+        performInvalidityTest("imsc1-invalid-missing-profile-attribute.xml", -1, -1);
     }
 
     @Test
@@ -1477,6 +1477,21 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC1InvalidNotPermittedSubFrameRate() throws Exception {
         performInvalidityTest("imsc1-invalid-not-permitted-sub-frame-rate.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidProhibitedTimeBaseClock() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-time-base-clock.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidProhibitedTimeBaseSMPTE() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-time-base-smpte.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidUsesNegativeLength() throws Exception {
+        performInvalidityTest("imsc1-invalid-uses-negative-length.xml", -1, -1);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

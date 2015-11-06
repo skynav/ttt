@@ -70,13 +70,25 @@ import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
 
 public class TTML1ParameterVerifier implements ParameterVerifier {
 
-    public static final String NAMESPACE = NAMESPACE_TT_PARAMETER;
+    public static final String NAMESPACE                        = NAMESPACE_TT_PARAMETER;
 
-    public static final QName cellResolutionAttributeName = new QName(getParameterNamespaceUri(), "cellResolution");
+    public static final QName cellResolutionAttributeName       = new QName(getParameterNamespaceUri(), "cellResolution");
+    public static final QName clockModeAttributeName            = new QName(getParameterNamespaceUri(), "clockMode");
+    public static final QName dropModeAttributeName             = new QName(getParameterNamespaceUri(), "dropMode");
+    public static final QName frameRateAttributeName            = new QName(getParameterNamespaceUri(), "frameRate");
+    public static final QName frameRateMultiplierAttributeName  = new QName(getParameterNamespaceUri(), "frameRateMultiplier");
+    public static final QName markerModeAttributeName           = new QName(getParameterNamespaceUri(), "markerMode");
+    public static final QName pixelAspectRatioAttributeName     = new QName(getParameterNamespaceUri(), "pixelAspectRatio");
+    public static final QName profileAttributeName              = new QName(getParameterNamespaceUri(), "profile");
+    public static final QName subFrameRateAttributeName         = new QName(getParameterNamespaceUri(), "subFrameRate");
+    public static final QName tickRateAttributeName             = new QName(getParameterNamespaceUri(), "tickRate");
+    public static final QName timeBaseAttributeName             = new QName(getParameterNamespaceUri(), "timeBase");
+    public static final QName useAttributeName                  = new QName("", "use");
+    public static final QName xmlBaseAttributeName              = XML.getBaseAttributeName();
 
-    private static final Object[][] parameterAccessorMap = new Object[][] {
+    private static final Object[][] parameterAccessorMap        = new Object[][] {
         {
-            new QName(NAMESPACE,"cellResolution"),              // attribute name
+            cellResolutionAttributeName,                        // attribute name
             "CellResolution",                                   // accessor method name suffix
             String.class,                                       // value type
             CellResolutionVerifier.class,                       // specialized verifier
@@ -84,7 +96,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             "32 15",                                            // default value
         },
         {
-            new QName(NAMESPACE,"clockMode"),
+            clockModeAttributeName,
             "ClockMode",
             ClockMode.class,
             ClockModeVerifier.class,
@@ -92,7 +104,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             ClockMode.UTC,
         },
         {
-            new QName(NAMESPACE,"dropMode"),
+            dropModeAttributeName,
             "DropMode",
             DropMode.class,
             DropModeVerifier.class,
@@ -100,7 +112,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             DropMode.NON_DROP,
         },
         {
-            new QName(NAMESPACE,"frameRate"),
+            frameRateAttributeName,
             "FrameRate",
             BigInteger.class,
             FrameRateVerifier.class,
@@ -108,7 +120,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(30),
         },
         {
-            new QName(NAMESPACE,"frameRateMultiplier"),
+            frameRateMultiplierAttributeName,
             "FrameRateMultiplier",
             String.class,
             FrameRateMultiplierVerifier.class,
@@ -116,7 +128,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             "1 1",
         },
         {
-            new QName(NAMESPACE,"markerMode"),
+            markerModeAttributeName,
             "MarkerMode",
             MarkerMode.class,
             MarkerModeVerifier.class,
@@ -124,7 +136,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             MarkerMode.DISCONTINUOUS,
         },
         {
-            new QName(NAMESPACE,"pixelAspectRatio"),
+            pixelAspectRatioAttributeName,
             "PixelAspectRatio",
             String.class,
             PixelAspectRatioVerifier.class,
@@ -132,7 +144,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             "1 1",
         },
         {
-            new QName(NAMESPACE,"profile"),
+            profileAttributeName,
             "Profile",
             String.class,
             ProfileVerifier.class,
@@ -140,7 +152,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             null,
         },
         {
-            new QName(NAMESPACE,"subFrameRate"),
+            subFrameRateAttributeName,
             "SubFrameRate",
             BigInteger.class,
             SubFrameRateVerifier.class,
@@ -148,7 +160,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(1),
         },
         {
-            new QName(NAMESPACE,"tickRate"),
+            tickRateAttributeName,
             "TickRate",
             BigInteger.class,
             TickRateVerifier.class,
@@ -156,7 +168,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             BigInteger.valueOf(1),
         },
         {
-            new QName(NAMESPACE,"timeBase"),
+            timeBaseAttributeName,
             "TimeBase",
             TimeBase.class,
             TimeBaseVerifier.class,
@@ -165,7 +177,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         },
         // 'use' attribute applies only to ttp:profile element
         {
-            new QName("","use"),
+            useAttributeName,
             "Use",
             String.class,
             ProfileVerifier.class,
@@ -174,7 +186,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         },
         // 'xml:base' attribute applies only to ttp:features and ttp:extensions elements
         {
-            XML.getBaseAttributeName(),
+            xmlBaseAttributeName,
             "Base",
             String.class,
             BaseVerifier.class,

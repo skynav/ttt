@@ -27,14 +27,35 @@ package com.skynav.ttv.verifier.imsc;
 
 import javax.xml.namespace.QName;
 
+import org.xml.sax.Locator;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
+import com.skynav.ttv.model.ttml1.ttd.TimeBase;
+import com.skynav.ttv.util.Message;
+import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010ParameterVerifier;
 
 public class IMSC1ParameterVerifier extends ST20522010ParameterVerifier {
 
     public IMSC1ParameterVerifier(Model model) {
         super(model);
+    }
+
+    @Override
+    public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        boolean failed = false;
+        if (!super.verify(content, locator, context, type)) {
+            failed = true;
+        } else if (type == ItemType.Attributes) {
+            if (content instanceof TimedText) {
+                if (!verifyParameters((TimedText) content, locator, context))
+                    failed = true;
+            }
+        }
+        return !failed;
     }
 
     protected boolean permitsParameterAttribute(Object content, QName name) {
@@ -52,6 +73,31 @@ public class IMSC1ParameterVerifier extends ST20522010ParameterVerifier {
                 return false;
         };
         return super.permitsParameterAttribute(content, name);
+    }
+
+    private boolean verifyParameters(TimedText tt, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (!verifyTimeBase(tt, locator, context))
+            failed = true;
+        return !failed;
+    }
+
+    private boolean verifyTimeBase(TimedText tt, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        TimeBase timeBase = tt.getTimeBase();
+        String key;
+        if (timeBase == TimeBase.CLOCK)
+            key = "*KEY*";
+        else if (timeBase == TimeBase.SMPTE)
+            key = "*KEY*";
+        else
+            key = null;
+        if (key != null) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, key, "Parameter value ''{0}'' is prohibited on ''{1}''.", timeBase.value(), timeBaseAttributeName));
+            failed = true;
+        }
+        return !failed;
     }
 
 }
