@@ -5,10 +5,10 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="3" ttva:expectedWarnings="0" ttva:model="imsc1">
   <head>
     <layout>
-        <region tts:origin="+1em +2em"/>
-        <region tts:origin="-1em +2em"/>
-        <region tts:origin="+1em -2em"/>
-        <region tts:origin="-1em -2em"/>
+        <region tts:extent="100% 100%" tts:origin="+1em +2em"/>
+        <region tts:extent="100% 100%" tts:origin="-1em +2em"/>
+        <region tts:extent="100% 100%" tts:origin="+1em -2em"/>
+        <region tts:extent="100% 100%" tts:origin="-1em -2em"/>
     </layout>
   </head>
   <body/>

@@ -42,6 +42,7 @@ import com.skynav.ttv.model.imsc.IMSC1;
 import com.skynav.ttv.model.imsc1.ittm.AltText;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
+import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -94,6 +95,19 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                     failed = true;
                 }
             }
+            return !failed;
+        }
+    }
+
+    @Override
+    protected boolean verifyRegion(Object region) {
+        if (!super.verifyRegion(region))
+            return false;
+        else {
+            boolean failed = false;
+            assert region instanceof Region;
+            if (!verifyRegionExtent((Region) region, getLocator(region), getContext()))
+                failed = true;
             return !failed;
         }
     }
@@ -289,5 +303,17 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         return !failed;
     }
     */
+
+    private boolean verifyRegionExtent(Region region, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        String extent = region.getExtent();
+        if (extent == null) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator,
+                "*KEY*", "Style attribute ''{0}'' required on ''{1}''.", IMSC1StyleVerifier.extentAttributeName, context.getBindingElementName(region)));
+            failed = true;
+        }
+        return !failed;
+    }
 
 }

@@ -1455,6 +1455,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1InvalidMissingRegionExtent() throws Exception {
+        performInvalidityTest("imsc1-invalid-missing-region-extent.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1InvalidNotPermittedClockMode() throws Exception {
         performInvalidityTest("imsc1-invalid-not-permitted-clock-mode.xml", -1, -1);
     }
