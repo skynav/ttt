@@ -1530,8 +1530,18 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1InvalidRegionNotInRootContainer() throws Exception {
+        performInvalidityTest("imsc1-invalid-region-not-in-root-container.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1InvalidUsesNegativeLength() throws Exception {
         performInvalidityTest("imsc1-invalid-uses-negative-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidUsesPixelUnitWithoutRootExtent() throws Exception {
+        performInvalidityTest("imsc1-invalid-uses-pixel-unit-without-root-extent.xml", -1, -1);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

@@ -25,12 +25,6 @@
 
 package com.skynav.ttv.verifier.netflix;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -38,33 +32,22 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.netflix.NFLXTT;
 import com.skynav.ttv.model.smpte.tt.rel2010.Image;
-import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
 import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.Length;
-import com.skynav.ttv.util.IOUtil;
-import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
-import com.skynav.ttv.util.Traverse;
-import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ParameterVerifier;
@@ -464,125 +447,21 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     @Override
-    public boolean verifyPostTransform(Object root, Object contentTransformed, VerifierContext context) {
-        boolean failed = false;
-        if (contentTransformed != null) {
-            if (contentTransformed instanceof List) {
-                List<?> isdDocuments = (List<?>) contentTransformed;
-                Reporter reporter = context.getReporter();
-                reporter.logInfo(reporter.message("*KEY*", "Verifying post-transform semantics phase {0} using ''{1}'' model...", 5, getModel().getName()));
-                for (Object isd : isdDocuments) {
-                    Document doc = readISD(isd);
-                    if (doc != null) {
-                        if (!verifyPostTransform(root, doc, context))
-                            failed = true;
-                    }
-                }
-            }
-        }
-        return !failed;
-    }
-
-    private Document readISD(Object isd) {
-        if (isd instanceof File)
-            return readISDAsFile((File) isd);
-        else if (isd instanceof byte[])
-            return readISDAsByteArray((byte[]) isd);
-        else
-            return null;
-    }
-
-    private Document readISDAsFile(File data) {
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        try {
-            fis = new FileInputStream(data);
-            bis = new BufferedInputStream(fis);
-            return readISDFromStream(bis);
-        } catch (IOException e) {
-            getContext().getReporter().logError(e);
-            return null;
-        } finally {
-            IOUtil.closeSafely(bis);
-            IOUtil.closeSafely(fis);
-        }
-    }
-
-    private Document readISDAsByteArray(byte[] data) {
-        ByteArrayInputStream bas = null;
-        BufferedInputStream bis = null;
-        try {
-            bas = new ByteArrayInputStream(data);
-            bis = new BufferedInputStream(bas);
-            return readISDFromStream(bis);
-        } finally {
-            IOUtil.closeSafely(bis);
-            IOUtil.closeSafely(bas);
-        }
-    }
-
-    private Document readISDFromStream(InputStream is) {
-        Reporter reporter = getContext().getReporter();
-        try {
-            SAXSource source = new SAXSource(new InputSource(is));
-            DOMResult result = new DOMResult();
-            TransformerFactory.newInstance().newTransformer().transform(source, result);
-            return (Document) result.getNode();
-        } catch (TransformerFactoryConfigurationError e) {
-            reporter.logError(new Exception(e));
-        } catch (TransformerException e) {
-            reporter.logError(e);
-        }
-        return null;
-    }
-
-    private boolean verifyPostTransform(Object root, Document isd, VerifierContext context) {
-        boolean failed = false;
-        int maxRegions = NFLXTT.Constants.MAX_REGIONS;
-        List<Element> regions = getISDRegionElements(isd);
-        if (regions.size() > maxRegions) {
-            Reporter reporter = context.getReporter();
-            reporter.logError(reporter.message(getLocator(root),
-                "*KEY*", "Maximum number of regions exceeded in ISD instance, expected no more than {0}, got {1}.", maxRegions, regions.size()));
-            failed = true;
-        }
-        return !failed;
-    }
-
-    private static List<Element> getISDRegionElements(Document doc) {
-        final List<Element> regions = new java.util.ArrayList<Element>();
-        try {
-            Traverse.traverseElements(doc, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element elt = (Element) content;
-                    if (isISDRegionElement(elt))
-                        regions.add(elt);
-                    return true;
-                }
-            });
-        } catch (Exception e) {
-        }
-        return regions;
-    }
-
-    private static boolean isISDRegionElement(Element elt) {
-        return isISDElement(elt, "region");
-    }
-
-    private static boolean isISDElement(Element elt, String localName) {
-        if (elt != null) {
-            String nsUri = elt.getNamespaceURI();
-            if ((nsUri == null) || !nsUri.equals(TTML1.Constants.NAMESPACE_TT_ISD))
-                return false;
-            else {
-                if (elt.getLocalName().equals(localName))
-                    return true;
-                else
-                    return false;
-            }
-        } else
+    protected boolean verifyPostTransform(Object root, Document isd, VerifierContext context) {
+        if (!super.verifyPostTransform(root, isd, context))
             return false;
+        else {
+            boolean failed = false;
+            int maxRegions = NFLXTT.Constants.MAX_REGIONS;
+            List<Element> regions = getISDRegionElements(isd);
+            if (regions.size() > maxRegions) {
+                Reporter reporter = context.getReporter();
+                reporter.logError(reporter.message(getLocator(root),
+                    "*KEY*", "Maximum number of regions exceeded in ISD instance, expected no more than {0}, got {1}.", maxRegions, regions.size()));
+                failed = true;
+            }
+            return !failed;
+        }
     }
 
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - region extends outside root container -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="640px 480px"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="7" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head>
+    <layout>
+      <region tts:origin="auto" tts:extent="auto"/>             <!-- no error -->
+      <region tts:origin="1px 0px" tts:extent="640px 480px"/>   <!-- error -->
+      <region tts:origin="1px 0px" tts:extent="auto"/>          <!-- error -->
+      <region tts:origin="0px 1px" tts:extent="640px 480px"/>   <!-- error -->
+      <region tts:origin="0px 1px" tts:extent="auto"/>          <!-- error -->
+      <region tts:origin="0px 0px" tts:extent="641px 480px"/>   <!-- error -->
+      <region tts:origin="0px 0px" tts:extent="640px 481px"/>   <!-- error -->
+      <region tts:origin="auto" tts:extent="100% 101%"/>        <!-- error -->
+    </layout>
+  </head>
+  <body/>
+</tt>
