@@ -25,6 +25,12 @@
 
 package com.skynav.ttv.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 public class Annotations {
 
     public static String getNamespace() {
@@ -33,6 +39,25 @@ public class Annotations {
 
     public static String getNamespacePrefix() {
         return "ttva";
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<QName,String> getOtherAttributes(Object content) {
+        try {
+            Class<?> contentClass = content.getClass();
+            Method m = contentClass.getMethod("getOtherAttributes", new Class<?>[]{});
+            return (Map<QName,String>) m.invoke(content, new Object[]{});
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            return null;
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

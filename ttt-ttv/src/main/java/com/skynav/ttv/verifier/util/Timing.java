@@ -25,6 +25,7 @@
 
 package com.skynav.ttv.verifier.util;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,6 +103,10 @@ public class Timing {
                 return false;
             if (outputTime != null)
                 outputTime[0] = t;
+            if (locator != null) {
+                if (frames != null)
+                    updateUsage(context, locator, OffsetTime.Metric.Frames);
+            }
             return true;
         } else
             return false;
@@ -293,15 +298,28 @@ public class Timing {
         if (m.matches()) {
             assert m.groupCount() == 2;
             String offset = m.group(1);
-            String units = m.group(2);
-            OffsetTime t = new OffsetTimeImpl(offset, units);
+            String metric = m.group(2);
+            OffsetTime t = new OffsetTimeImpl(offset, metric);
             if ((timeParameters.getTimeBase() == TimeBase.CLOCK) && (t.getMetric() == OffsetTime.Metric.Frames))
                 return false;
             if (outputTime != null)
                 outputTime[0] = t;
+            if (locator != null)
+                updateUsage(context, locator, t.getMetric());
             return true;
         } else
             return false;
+    }
+
+    private static void updateUsage(VerifierContext context, Locator locator, OffsetTime.Metric metric) {
+        String key = "usage" + metric.name();
+        @SuppressWarnings("unchecked")
+        Set<Locator> usage = (Set<Locator>) context.getResourceState(key);
+        if (usage == null) {
+            usage = new java.util.HashSet<Locator>();
+            context.setResourceState(key, usage);
+        }
+        usage.add(locator);
     }
 
     public static void badOffsetTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {

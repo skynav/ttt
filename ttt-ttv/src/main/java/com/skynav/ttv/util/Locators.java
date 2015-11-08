@@ -25,9 +25,6 @@
 
 package com.skynav.ttv.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,32 +73,13 @@ public class Locators {
     }
 
     private static String getLocatorAttribute(Object content) {
-        Map<QName,String> attrs = getOtherAttributes(content);
+        Map<QName,String> attrs = Annotations.getOtherAttributes(content);
         if ((attrs != null) && attrs.containsKey(getLocatorAttributeQName()))
             return attrs.get(getLocatorAttributeQName());
         else if (content instanceof Element)
             return getLocatorAttribute((Element) content);
         else
             return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<QName,String> getOtherAttributes(Object content) {
-        try {
-            Class<?> contentClass = content.getClass();
-            Method m = contentClass.getMethod("getOtherAttributes", new Class<?>[]{});
-            return (Map<QName,String>) m.invoke(content, new Object[]{});
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            return null;
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static String getLocatorAttribute(Element element) {

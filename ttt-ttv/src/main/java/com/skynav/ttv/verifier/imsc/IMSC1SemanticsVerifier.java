@@ -25,8 +25,10 @@
 
 package com.skynav.ttv.verifier.imsc;
 
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -77,6 +79,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 failed = true;
             if (!verifyExtentIfPixelUnitUsed(tt))
                 failed = true;
+            if (!verifyFrameRateIfFramesUsed(tt))
+                failed = true;
             if (!verifyRegionContainment(tt))
                 failed = true;
         } else {
@@ -112,7 +116,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     protected boolean verifyExtentIfPixelUnitUsed(TimedText tt) {
         boolean failed = false;
         @SuppressWarnings("unchecked")
-        List<Locator> usage = (List<Locator>) getContext().getResourceState("usagePixel");
+        Set<Locator> usage = (Set<Locator>) getContext().getResourceState("usagePixel");
         if ((usage != null) && (usage.size() > 0)) {
             String extent = tt.getExtent();
             if ((extent == null) || (extent.length() == 0)) {
@@ -121,6 +125,25 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                     reporter.logError(reporter.message(locator,
                         "*KEY*", "Uses ''px'' unit, but does not specify ''{0}'' attribute on ''{1}'' element.",
                         IMSC1StyleVerifier.extentAttributeName, TTML1Model.timedTextElementName));
+                }
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+
+    protected boolean verifyFrameRateIfFramesUsed(TimedText tt) {
+        boolean failed = false;
+        @SuppressWarnings("unchecked")
+        Set<Locator> usage = (Set<Locator>) getContext().getResourceState("usageFrames");
+        if ((usage != null) && (usage.size() > 0)) {
+            BigInteger frameRate = tt.getFrameRate();
+            if ((frameRate == null) || IMSC1ParameterVerifier.isFrameRateDefaulted(tt)) {
+                Reporter reporter = getContext().getReporter();
+                for (Locator locator : usage) {
+                    reporter.logError(reporter.message(locator,
+                        "*KEY*", "Uses ''f'' unit or frame component, but does not specify ''{0}'' attribute on ''{1}'' element.",
+                        IMSC1ParameterVerifier.frameRateAttributeName, TTML1Model.timedTextElementName));
                 }
                 failed = true;
             }

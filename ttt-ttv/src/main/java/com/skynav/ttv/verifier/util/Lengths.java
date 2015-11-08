@@ -135,11 +135,12 @@ public class Lengths {
     private static void updateUsage(VerifierContext context, Locator locator, Length.Unit unit) {
         String key = "usage" + unit.name();
         @SuppressWarnings("unchecked")
-        List<Locator> usage = (List<Locator>) context.getResourceState(key);
-        if (usage == null)
-            usage = new java.util.ArrayList<Locator>();
+        Set<Locator> usage = (Set<Locator>) context.getResourceState(key);
+        if (usage == null) {
+            usage = new java.util.HashSet<Locator>();
+            context.setResourceState(key, usage);
+        }
         usage.add(locator);
-        context.setResourceState(key, usage);
     }
 
     public static void badLength(String value, Locator locator, VerifierContext context, Object[] treatments) {

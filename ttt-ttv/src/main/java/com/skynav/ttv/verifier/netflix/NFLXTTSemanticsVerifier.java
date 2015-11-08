@@ -156,7 +156,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
     protected boolean verifyCellResolutionIfCellUnitUsed(TimedText tt) {
         boolean failed = false;
         @SuppressWarnings("unchecked")
-        List<Locator> usage = (List<Locator>) getContext().getResourceState("usageCell");
+        Set<Locator> usage = (Set<Locator>) getContext().getResourceState("usageCell");
         if ((usage != null) && (usage.size() > 0)) {
             Element ttElement = (Element) getContext().getXMLNode(tt);
             QName cellResolutionName = TTML1ParameterVerifier.cellResolutionAttributeName;
@@ -175,7 +175,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
     protected boolean verifyExtentIfPixelUnitUsed(TimedText tt) {
         boolean failed = false;
         @SuppressWarnings("unchecked")
-        List<Locator> usage = (List<Locator>) getContext().getResourceState("usagePixel");
+        Set<Locator> usage = (Set<Locator>) getContext().getResourceState("usagePixel");
         if ((usage != null) && (usage.size() > 0)) {
             String extent = tt.getExtent();
             if ((extent == null) || (extent.length() == 0)) {
@@ -193,7 +193,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
     protected boolean verifyLengthAvoidsEmUnit(TimedText tt) {
         boolean failed = false;
         @SuppressWarnings("unchecked")
-        List<Locator> usage = (List<Locator>) getContext().getResourceState("usageEm");
+        Set<Locator> usage = (Set<Locator>) getContext().getResourceState("usageEm");
         if ((usage != null) && (usage.size() > 0)) {
             Reporter reporter = getContext().getReporter();
             for (Locator locator : usage)

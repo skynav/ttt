@@ -111,10 +111,12 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     }
 
     @Override
-    protected void setParameterDefaultValue(Object content, ParameterAccessor pa, Object defaultValue) {
+    protected boolean setParameterDefaultValue(Object content, ParameterAccessor pa, Object defaultValue) {
         if (content instanceof TimedText) {
-            if (defaultValue != null)
+            if (defaultValue != null) {
                 setParameterValue(content, pa.setterName, pa.valueClass, defaultValue);
+                return true;
+            }
         } else if ((content instanceof Features) || (content instanceof Extensions)) {
             if (pa.parameterName.equals(XML.getBaseAttributeName())) {
                 Model model = getModel();
@@ -122,10 +124,13 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
                     defaultValue = model.getFeatureNamespaceUri().toString();
                 else if (content instanceof Extensions)
                     defaultValue = model.getExtensionNamespaceUri().toString();
-                if (defaultValue != null)
+                if (defaultValue != null) {
                     setParameterValue(content, pa.setterName, pa.valueClass, defaultValue);
+                    return true;
+                }
             }
         }
+        return false;
     }
 
 }

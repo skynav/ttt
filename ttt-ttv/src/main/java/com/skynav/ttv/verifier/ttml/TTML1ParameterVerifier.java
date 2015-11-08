@@ -29,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -46,6 +47,8 @@ import com.skynav.ttv.model.ttml1.ttd.MarkerMode;
 import com.skynav.ttv.model.ttml1.ttd.TimeBase;
 import com.skynav.ttv.model.ttml1.ttp.Extensions;
 import com.skynav.ttv.model.ttml1.ttp.Features;
+import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.ComparableQName;
 import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
@@ -85,6 +88,8 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
     public static final QName timeBaseAttributeName             = new QName(getParameterNamespaceUri(), "timeBase");
     public static final QName useAttributeName                  = new QName("", "use");
     public static final QName xmlBaseAttributeName              = XML.getBaseAttributeName();
+
+    public static final QName defaultedParametersAttributeName  = new QName(Annotations.getNamespace(), "defaultedParameters", Annotations.getNamespacePrefix());
 
     private static final Object[][] parameterAccessorMap        = new Object[][] {
         {
@@ -304,10 +309,12 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         }
     }
 
-    protected void setParameterDefaultValue(Object content, ParameterAccessor pa, Object defaultValue) {
+    protected boolean setParameterDefaultValue(Object content, ParameterAccessor pa, Object defaultValue) {
         if (content instanceof TimedText) {
-            if (defaultValue != null)
+            if (defaultValue != null) {
                 setParameterValue(content, pa.setterName, pa.valueClass, defaultValue);
+                return true;
+            }
         } else if ((content instanceof Features) || (content instanceof Extensions)) {
             if (pa.parameterName.equals(XML.getBaseAttributeName())) {
                 Model model = getModel();
@@ -315,10 +322,13 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
                     defaultValue = model.getFeatureNamespaceUri().toString();
                 else if (content instanceof Extensions)
                     defaultValue = model.getExtensionNamespaceUri().toString();
-                if (defaultValue != null)
+                if (defaultValue != null) {
                     setParameterValue(content, pa.setterName, pa.valueClass, defaultValue);
+                    return true;
+                }
             }
         }
+        return false;
     }
 
     protected void setParameterValue(Object content, String setterName, Class<?> valueClass, Object value) {
@@ -361,8 +371,8 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
                     success = verify(model, content, (String) value, locator, context);
                 else
                     success = verifier.verify(model, content, parameterName, value, locator, context);
-            } else
-                setParameterDefaultValue(content);
+            } else if (setParameterDefaultValue(content))
+                recordDefaultedParameter(model, content, parameterName, locator, context);
             if (!success) {
                 Reporter reporter = context.getReporter();
                 reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", parameterName, value));
@@ -422,8 +432,8 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             }
         }
 
-        private void setParameterDefaultValue(Object content) {
-            TTML1ParameterVerifier.this.setParameterDefaultValue(content, this, defaultValue);
+        private boolean setParameterDefaultValue(Object content) {
+            return TTML1ParameterVerifier.this.setParameterDefaultValue(content, this, defaultValue);
         }
 
         private Object convertType(Object value, Class<?> targetClass) {
@@ -458,6 +468,26 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
 
     public static final String getParameterNamespaceUri() {
         return NAMESPACE;
+    }
+
+    private static void recordDefaultedParameter(Model model, Object content, QName parameterName, Locator locator, VerifierContext context) {
+        Map<QName,String> otherAttributes = Annotations.getOtherAttributes(content);
+        Set<ComparableQName> defaulted = ComparableQName.parseNames(otherAttributes.get(defaultedParametersAttributeName));
+        ComparableQName pn = new ComparableQName(parameterName);
+        if (!defaulted.contains(pn)) {
+            defaulted.add(pn);
+            otherAttributes.put(defaultedParametersAttributeName, ComparableQName.toString(defaulted));
+        }
+    }
+
+    public static final boolean isParameterDefaulted(Object content, QName name) {
+        Map<QName,String> otherAttributes = Annotations.getOtherAttributes(content);
+        Set<ComparableQName> defaulted = ComparableQName.parseNames(otherAttributes.get(defaultedParametersAttributeName));
+        return defaulted.contains(name);
+    }
+
+    public static final boolean isFrameRateDefaulted(Object content) {
+        return isParameterDefaulted(content, new ComparableQName(frameRateAttributeName));
     }
 
 }

@@ -25,6 +25,10 @@
 
 package com.skynav.ttv.util;
 
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.xml.namespace.QName;
 
 public class ComparableQName extends QName implements Comparable<ComparableQName> {
@@ -54,6 +58,33 @@ public class ComparableQName extends QName implements Comparable<ComparableQName
         String n1 = getLocalPart();
         String n2 = other.getLocalPart();
         return n1.compareTo(n2);
+    }
+
+    private static final Pattern qnamePattern = Pattern.compile("\\{([^\\}]*)\\}(\\p{Alpha}+)");
+    public static final Set<ComparableQName> parseNames(String value) {
+        Set<ComparableQName> names = new java.util.TreeSet<ComparableQName>();
+        if ((value != null) && (value.length() > 0)) {
+            for (String n : value.split("[ \t]+")) {
+                Matcher m = qnamePattern.matcher(n);
+                if (m.matches()) {
+                    assert m.groupCount() == 2;
+                    String ns = m.group(1);
+                    String ln = m.group(2);
+                    names.add(new ComparableQName(ns, ln));
+                }
+            }
+        }
+        return names;
+    }
+
+    public static final String toString(Set<ComparableQName> names) {
+        StringBuffer sb = new StringBuffer();
+        for (ComparableQName qn : names) {
+            if (sb.length() > 0)
+                sb.append(' ');
+            sb.append(qn.toString());
+        }
+        return sb.toString();
     }
 
 }

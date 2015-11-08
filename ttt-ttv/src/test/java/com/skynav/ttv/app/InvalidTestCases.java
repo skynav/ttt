@@ -1535,6 +1535,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1InvalidUsesFramesComponentWithoutFrameRate() throws Exception {
+        performInvalidityTest("imsc1-invalid-uses-frames-component-without-frame-rate.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidUsesFramesMetricWithoutFrameRate() throws Exception {
+        performInvalidityTest("imsc1-invalid-uses-frames-metric-without-frame-rate.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1InvalidUsesNegativeLength() throws Exception {
         performInvalidityTest("imsc1-invalid-uses-negative-length.xml", -1, -1);
     }
