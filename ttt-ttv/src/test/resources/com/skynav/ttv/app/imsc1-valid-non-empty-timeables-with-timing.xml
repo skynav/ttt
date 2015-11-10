@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - non-empty timeables with timing -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head/>
+  <body>
+    <div>
+      <p begin="0s" end="1s">text</p>
+      <p begin="0s" end="1s"><br/></p>
+      <p><span begin="0s" end="1s">text</span></p>
+      <p><span begin="0s" end="1s"><br/></span></p>
+      <p begin="0s" end="1s"><span>text</span></p>
+      <p begin="0s" end="1s"><span><br/></span></p>
+    </div>
+  </body>
+</tt>

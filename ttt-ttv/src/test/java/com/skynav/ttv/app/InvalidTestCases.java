@@ -1355,217 +1355,207 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidBadEncoding() throws Exception {
+    public void testInvalidNFLXCCBadEncoding() throws Exception {
         performInvalidityTest("nflxcc-invalid-bad-encoding.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidBadProfileAttribute() throws Exception {
+    public void testInvalidNFLXCCBadProfileAttribute() throws Exception {
         performInvalidityTest("nflxcc-invalid-bad-profile-attribute.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidMissingBody() throws Exception {
+    public void testInvalidNFLXCCMissingBody() throws Exception {
         performInvalidityTest("nflxcc-invalid-missing-body.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidMissingHead() throws Exception {
+    public void testInvalidNFLXCCMissingHead() throws Exception {
         performInvalidityTest("nflxcc-invalid-missing-head.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidMissingProfileAttribute() throws Exception {
+    public void testInvalidNFLXCCMissingProfileAttribute() throws Exception {
         performInvalidityTest("nflxcc-invalid-missing-profile-attribute.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidNotPermittedBackgroundImageHorizontal() throws Exception {
+    public void testInvalidNFLXCCNotPermittedBackgroundImageHorizontal() throws Exception {
         performInvalidityTest("nflxcc-invalid-not-permitted-background-image-horizontal.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidNotPermittedBackgroundImageVertical() throws Exception {
+    public void testInvalidNFLXCCNotPermittedBackgroundImageVertical() throws Exception {
         performInvalidityTest("nflxcc-invalid-not-permitted-background-image-vertical.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidNotPermittedBackgroundImage() throws Exception {
+    public void testInvalidNFLXCCNotPermittedBackgroundImage() throws Exception {
         performInvalidityTest("nflxcc-invalid-not-permitted-background-image.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidNotPermittedImage() throws Exception {
+    public void testInvalidNFLXCCNotPermittedImage() throws Exception {
         performInvalidityTest("nflxcc-invalid-not-permitted-image.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidNotPermittedMarkerMode() throws Exception {
+    public void testInvalidNFLXCCNotPermittedMarkerMode() throws Exception {
         performInvalidityTest("nflxcc-invalid-not-permitted-marker-mode.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidNotPermittedOverflow() throws Exception {
+    public void testInvalidNFLXCCNotPermittedOverflow() throws Exception {
         performInvalidityTest("nflxcc-invalid-not-permitted-overflow.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidRegionNotInRootContainer() throws Exception {
+    public void testInvalidNFLXCCRegionNotInRootContainer() throws Exception {
         performInvalidityTest("nflxcc-invalid-region-not-in-root-container.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidRootProfile() throws Exception {
+    public void testInvalidNFLXCCRootProfile() throws Exception {
         performInvalidityTest("nflxcc-invalid-root-profile.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidUsesCellUnitWithoutCellResolution() throws Exception {
+    public void testInvalidNFLXCCUsesCellUnitWithoutCellResolution() throws Exception {
         performInvalidityTest("nflxcc-invalid-uses-cell-unit-without-cell-resolution.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidUsesEmUnit() throws Exception {
+    public void testInvalidNFLXCCUsesEmUnit() throws Exception {
         performInvalidityTest("nflxcc-invalid-uses-em-unit.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXCCInvalidUsesPixelUnitWithoutRootExtent() throws Exception {
+    public void testInvalidNFLXCCUsesPixelUnitWithoutRootExtent() throws Exception {
         performInvalidityTest("nflxcc-invalid-uses-pixel-unit-without-root-extent.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidNFLXSDHInvalidBadRegionGeometry() throws Exception {
+    public void testInvalidNFLXSDHBadRegionGeometry() throws Exception {
         performInvalidityTest("nflxsdh-invalid-bad-region-geometry.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidBadEncoding() throws Exception {
+    public void testInvalidIMSC1BadEncoding() throws Exception {
         performInvalidityTest("imsc1-invalid-bad-encoding.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidBadProfileAttribute() throws Exception {
+    public void testInvalidIMSC1BadProfileAttribute() throws Exception {
         performInvalidityTest("imsc1-invalid-bad-profile-attribute.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidMissingProfileAttribute() throws Exception {
+    public void testInvalidIMSC1MissingProfileAttribute() throws Exception {
         performInvalidityTest("imsc1-invalid-missing-profile-attribute.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidMissingRegionExtent() throws Exception {
+    public void testInvalidIMSC1MissingRegionExtent() throws Exception {
         performInvalidityTest("imsc1-invalid-missing-region-extent.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidNonEmptyParagraphMissingTiming() throws Exception {
-        performInvalidityTest("imsc1-invalid-non-empty-paragraph-missing-timing.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidIMSC1InvalidNonEmptySpanMissingTiming() throws Exception {
-        performInvalidityTest("imsc1-invalid-non-empty-span-missing-timing.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidIMSC1InvalidNotPermittedClockMode() throws Exception {
+    public void testInvalidIMSC1NotPermittedClockMode() throws Exception {
         performInvalidityTest("imsc1-invalid-not-permitted-clock-mode.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidNotPermittedDropMode() throws Exception {
+    public void testInvalidIMSC1NotPermittedDropMode() throws Exception {
         performInvalidityTest("imsc1-invalid-not-permitted-drop-mode.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidNotPermittedMarkerMode() throws Exception {
+    public void testInvalidIMSC1NotPermittedMarkerMode() throws Exception {
         performInvalidityTest("imsc1-invalid-not-permitted-marker-mode.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidNotPermittedPixelAspectRatio() throws Exception {
+    public void testInvalidIMSC1NotPermittedPixelAspectRatio() throws Exception {
         performInvalidityTest("imsc1-invalid-not-permitted-pixel-aspect-ratio.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidNotPermittedSubFrameRate() throws Exception {
+    public void testInvalidIMSC1NotPermittedSubFrameRate() throws Exception {
         performInvalidityTest("imsc1-invalid-not-permitted-sub-frame-rate.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageHorizontalInImageProfile() throws Exception {
+    public void testInvalidIMSC1ProhibitedSMPTEBackgroundImageHorizontalInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-horizontal-in-image-profile.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageHorizontalInTextProfile() throws Exception {
+    public void testInvalidIMSC1ProhibitedSMPTEBackgroundImageHorizontalInTextProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-horizontal-in-text-profile.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageInTextProfile() throws Exception {
+    public void testInvalidIMSC1ProhibitedSMPTEBackgroundImageInTextProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-in-text-profile.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageVerticalInImageProfile() throws Exception {
+    public void testInvalidIMSC1ProhibitedSMPTEBackgroundImageVerticalInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-vertical-in-image-profile.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedSMPTEBackgroundImageVerticalInTextProfile() throws Exception {
+    public void testInvalidIMSC1ProhibitedSMPTEBackgroundImageVerticalInTextProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-vertical-in-text-profile.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedSMPTEImageInImageProfile() throws Exception {
+    public void testInvalidIMSC1ProhibitedSMPTEImageInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-image-in-image-profile.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedSMPTEImageInTextProfile() throws Exception {
+    public void testInvalidIMSC1ProhibitedSMPTEImageInTextProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-image-in-text-profile.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedTimeBaseClock() throws Exception {
+    public void testInvalidIMSC1ProhibitedTimeBaseClock() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-time-base-clock.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidProhibitedTimeBaseSMPTE() throws Exception {
+    public void testInvalidIMSC1ProhibitedTimeBaseSMPTE() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-time-base-smpte.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidRegionNotInRootContainer() throws Exception {
+    public void testInvalidIMSC1RegionNotInRootContainer() throws Exception {
         performInvalidityTest("imsc1-invalid-region-not-in-root-container.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidUsesFramesComponentWithoutFrameRate() throws Exception {
+    public void testInvalidIMSC1UsesFramesComponentWithoutFrameRate() throws Exception {
         performInvalidityTest("imsc1-invalid-uses-frames-component-without-frame-rate.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidUsesFramesMetricWithoutFrameRate() throws Exception {
+    public void testInvalidIMSC1UsesFramesMetricWithoutFrameRate() throws Exception {
         performInvalidityTest("imsc1-invalid-uses-frames-metric-without-frame-rate.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidUsesNegativeLength() throws Exception {
+    public void testInvalidIMSC1UsesNegativeLength() throws Exception {
         performInvalidityTest("imsc1-invalid-uses-negative-length.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidUsesPixelUnitWithoutRootExtent() throws Exception {
+    public void testInvalidIMSC1UsesPixelUnitWithoutRootExtent() throws Exception {
         performInvalidityTest("imsc1-invalid-uses-pixel-unit-without-root-extent.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC1InvalidUsesTicksMetricWithoutTickRate() throws Exception {
+    public void testInvalidIMSC1UsesTicksMetricWithoutTickRate() throws Exception {
         performInvalidityTest("imsc1-invalid-uses-ticks-metric-without-tick-rate.xml", -1, -1);
     }
 

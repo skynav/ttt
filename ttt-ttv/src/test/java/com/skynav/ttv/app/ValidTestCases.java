@@ -34,6 +34,7 @@ import static org.junit.Assert.fail;
 import com.skynav.ttv.app.TimedTextVerifier;
 
 public class ValidTestCases {
+
     @Test
     public void testValidSimple() throws Exception {
         performValidityTest("ttml1-valid-simple.xml", 0, 0);
@@ -212,6 +213,21 @@ public class ValidTestCases {
     @Test
     public void testValidNFLXSDH() throws Exception {
         performValidityTest("nflxsdh-valid.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC1NonEmptyParagraphMissingTiming() throws Exception {
+        performValidityTest("imsc1-valid-non-empty-paragraph-missing-timing.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC1NonEmptySpanMissingTiming() throws Exception {
+        performValidityTest("imsc1-valid-non-empty-span-missing-timing.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC1NonEmptyTimeablesWithTiming() throws Exception {
+        performValidityTest("imsc1-valid-non-empty-timeables-with-timing.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

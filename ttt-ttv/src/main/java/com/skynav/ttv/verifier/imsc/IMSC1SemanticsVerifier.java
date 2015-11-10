@@ -380,9 +380,14 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         if (hasTimeableContent(children)) {
             if (!isSelfOrAncestorExplicitlyTimed(content, locator, context, parameters)) {
                 Reporter reporter = context.getReporter();
-                reporter.logError(reporter.message(locator,
-                    "*KEY*", "Timeable content ''{0}'' is not explicitly timed on self or ancestor.", context.getBindingElementName(content)));
-                failed = true;
+                if (reporter.isWarningEnabled("missing-timing")) {
+                    Message message = reporter.message(locator,
+                        "*KEY*", "Timeable content ''{0}'' is not explicitly timed on self or ancestor.", context.getBindingElementName(content));
+                    if (reporter.logWarning(message)) {
+                        reporter.logError(message);
+                        failed = true;
+                    }
+                }
             }
         }
         return !failed;

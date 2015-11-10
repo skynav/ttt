@@ -317,8 +317,8 @@ public class IMSC1 {
         }
 
         public void configureReporter(Reporter reporter) {
-            if (reporter.isWarningEnabled("references-external-image"))
-                reporter.disableWarning("references-external-image");
+            reporter.enableWarning("missing-timing");
+            reporter.disableWarning("references-external-image");
         }
 
     }
