@@ -1460,6 +1460,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1InvalidNonEmptyParagraphMissingTiming() throws Exception {
+        performInvalidityTest("imsc1-invalid-non-empty-paragraph-missing-timing.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1InvalidNonEmptySpanMissingTiming() throws Exception {
+        performInvalidityTest("imsc1-invalid-non-empty-span-missing-timing.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1InvalidNotPermittedClockMode() throws Exception {
         performInvalidityTest("imsc1-invalid-not-permitted-clock-mode.xml", -1, -1);
     }

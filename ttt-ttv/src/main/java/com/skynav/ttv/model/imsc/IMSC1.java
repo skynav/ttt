@@ -42,9 +42,11 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.imsc.IMSC1ParameterVerifier;
 import com.skynav.ttv.verifier.imsc.IMSC1SemanticsVerifier;
 import com.skynav.ttv.verifier.imsc.IMSC1StyleVerifier;
+import com.skynav.ttv.verifier.imsc.IMSC1TimingVerifier;
 
 public class IMSC1 {
 
@@ -124,9 +126,10 @@ public class IMSC1 {
         private URI extensionNamespaceUri;
         private Map<URI,Class<?>> profileSpecificationClasses;
         private Profile.StandardDesignations standardDesignations;
-        private SemanticsVerifier semanticsVerifier;
         private ParameterVerifier parameterVerifier;
+        private SemanticsVerifier semanticsVerifier;
         private StyleVerifier styleVerifier;
+        private TimingVerifier timingVerifier;
 
         public IMSC1Model() {
             populate();
@@ -304,6 +307,13 @@ public class IMSC1 {
                 styleVerifier = new IMSC1StyleVerifier(this);
             }
             return styleVerifier;
+        }
+
+        public TimingVerifier getTimingVerifier() {
+            if (timingVerifier == null) {
+                timingVerifier = new IMSC1TimingVerifier(this);
+            }
+            return timingVerifier;
         }
 
         public void configureReporter(Reporter reporter) {

@@ -218,4 +218,12 @@ public class AbstractModel implements Model {
     public void configureReporter(Reporter reporter) {
     }
 
+    public String makeResourceStateName(String name) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getName());
+        sb.append('.');
+        sb.append(name);
+        return sb.toString();
+    }
+
 }

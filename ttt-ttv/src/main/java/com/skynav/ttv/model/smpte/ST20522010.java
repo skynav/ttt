@@ -36,8 +36,14 @@ import javax.xml.namespace.QName;
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.smpte.tt.rel2010.Information;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
+import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
+import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.TimingVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010ParameterVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010StyleVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TimingVerifier;
 
 public class ST20522010 {
 
@@ -102,7 +108,10 @@ public class ST20522010 {
         private URI extensionNamespaceUri;
         private Map<URI,Class<?>> profileSpecificationClasses;
         private Profile.StandardDesignations standardDesignations;
+        private ParameterVerifier parameterVerifier;
         private SemanticsVerifier semanticsVerifier;
+        private StyleVerifier styleVerifier;
+        private TimingVerifier timingVerifier;
 
         public ST20522010Model() {
             populate();
@@ -301,11 +310,32 @@ public class ST20522010 {
             return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
         }
 
+        public ParameterVerifier getParameterVerifier() {
+            if (parameterVerifier == null) {
+                parameterVerifier = new ST20522010ParameterVerifier(this);
+            }
+            return parameterVerifier;
+        }
+
         public SemanticsVerifier getSemanticsVerifier() {
             if (semanticsVerifier == null) {
                 semanticsVerifier = new ST20522010SemanticsVerifier(this);
             }
             return semanticsVerifier;
+        }
+
+        public StyleVerifier getStyleVerifier() {
+            if (styleVerifier == null) {
+                styleVerifier = new ST20522010StyleVerifier(this);
+            }
+            return styleVerifier;
+        }
+
+        public TimingVerifier getTimingVerifier() {
+            if (timingVerifier == null) {
+                timingVerifier = new ST20522010TimingVerifier(this);
+            }
+            return timingVerifier;
         }
 
     }

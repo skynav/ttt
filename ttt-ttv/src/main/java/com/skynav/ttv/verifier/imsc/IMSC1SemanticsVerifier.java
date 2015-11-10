@@ -25,11 +25,15 @@
 
 package com.skynav.ttv.verifier.imsc;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Attr;
@@ -44,20 +48,30 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.imsc.IMSC1;
 import com.skynav.ttv.model.imsc1.ittm.AltText;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
+import com.skynav.ttv.model.ttml1.tt.Body;
+import com.skynav.ttv.model.ttml1.tt.Break;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
+import com.skynav.ttv.model.ttml1.tt.Paragraph;
+import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.Time;
+import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier;
+import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
+import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters1;
 import com.skynav.ttv.verifier.util.Integers;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.Timing;
 import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 import static com.skynav.ttv.model.imsc.IMSC1.Constants.*;
@@ -84,6 +98,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             if (!verifyRegionContainment(tt))
                 failed = true;
             if (!verifyTickRateIfTicksUsed(tt))
+                failed = true;
+            if (!verifyTimeableContentIsTimed(tt))
                 failed = true;
         } else {
             QName rootName = context.getBindingElementName(root);
@@ -331,6 +347,130 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             return 0;
     }
 
+    protected boolean verifyTimeableContentIsTimed(TimedText tt) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        VerificationParameters verificationParameters = makeTimingVerificationParameters(tt, context);
+        String timeablesKey = getModel().makeResourceStateName("timeables");
+        @SuppressWarnings("unchecked")
+        List<Object> timeables = (List<Object>) context.getResourceState(timeablesKey);
+        if (timeables != null) {
+            for (Object timeable : timeables) {
+                if (!verifyTimedContent(timeable, getLocator(timeable), context, verificationParameters))
+                    failed = true;
+            }
+        }
+        context.setResourceState(timeablesKey, null);
+        return !failed;
+    }
+
+    private static TimingVerificationParameters makeTimingVerificationParameters(Object content, VerifierContext context) {
+        return new TimingVerificationParameters1(content, context != null ? context.getExternalParameters() : null);
+    }
+
+    private boolean verifyTimedContent(Object content, Locator locator, VerifierContext context, VerificationParameters parameters) {
+        boolean failed = false;
+        List<Serializable> children;
+        if (content instanceof Paragraph)
+            children = ((Paragraph) content).getContent();
+        else if (content instanceof Span)
+            children = ((Span) content).getContent();
+        else
+            children = null;
+        if (hasTimeableContent(children)) {
+            if (!isSelfOrAncestorExplicitlyTimed(content, locator, context, parameters)) {
+                Reporter reporter = context.getReporter();
+                reporter.logError(reporter.message(locator,
+                    "*KEY*", "Timeable content ''{0}'' is not explicitly timed on self or ancestor.", context.getBindingElementName(content)));
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+
+    private boolean hasTimeableContent(List<Serializable> content) {
+        for (Serializable s : content) {
+            if (s instanceof JAXBElement<?>) {
+                Object c = ((JAXBElement<?>)s).getValue();
+                if (c instanceof Break)
+                    return true;
+            } else if (s instanceof String)
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isSelfOrAncestorExplicitlyTimed(Object content, Locator locator, VerifierContext context, VerificationParameters parameters) {
+        while (content != null) {
+            if (isExplicitlyTimed(content, locator, context, parameters))
+                return true;
+            else if (content instanceof Body)
+                break;
+            else
+                content = context.getBindingElementParent(content);
+        }
+        return false;
+    }
+
+    private boolean isExplicitlyTimed(Object content, Locator locator, VerifierContext context, VerificationParameters parameters) {
+        assert parameters instanceof TimingVerificationParameters;
+        TimeParameters timeParameters = ((TimingVerificationParameters) parameters).getTimeParameters();
+        Time b = getBegin(content, locator, context, timeParameters);
+        Time e = getEnd(content, locator, context, timeParameters);
+        return (b != null) && (e != null) && (b.getTime(timeParameters) <= e.getTime(timeParameters));
+    }
+
+    private Time getBegin(Object content, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+        Object value = getTimingValue(content, IMSC1TimingVerifier.beginAttributeName);
+        if (value instanceof String) {
+            return parseTimeCoordinate((String) value, locator, context, timeParameters);
+        } else
+            return null;
+    }
+
+    private Time getEnd(Object content, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+        Object value = getTimingValue(content, IMSC1TimingVerifier.endAttributeName);
+        if (value instanceof String) {
+            return parseTimeCoordinate((String) value, locator, context, timeParameters);
+        } else
+            return null;
+    }
+
+    private Object getTimingValue(Object content, QName timingAttributeName) {
+        try {
+            Class<?> contentClass = content.getClass();
+            Method m = contentClass.getMethod(makeGetterName(timingAttributeName), new Class<?>[]{});
+            return m.invoke(content, new Object[]{});
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String makeGetterName(QName name) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("get");
+        String ln = name.getLocalPart();
+        sb.append(Character.toUpperCase(ln.charAt(0)));
+        sb.append(ln.substring(1));
+        return sb.toString();
+    }
+
+    private Time parseTimeCoordinate(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+        Time[] time = new Time[1];
+        if (Timing.isCoordinate(value, locator, context, timeParameters, time))
+            return time[0];
+        else
+            return null;
+    }
+
     @Override
     protected boolean verifyTimedText(Object root) {
         boolean failed = false;
@@ -347,7 +487,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 failed = true;
             }
         } else
-            getContext().setResourceState(getModel().getName() + ".profile", profile);
+            getContext().setResourceState(getModel().makeResourceStateName("profile"), profile);
         if (!super.verifyTimedText(root))
             failed = true;
         return !failed;
@@ -377,6 +517,40 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             failed = true;
         }
         return !failed;
+    }
+
+    @Override
+    protected boolean verifyParagraph(Object paragraph) {
+        if (!super.verifyParagraph(paragraph))
+            return false;
+        else {
+            String timeablesKey = getModel().makeResourceStateName("timeables");
+            @SuppressWarnings("unchecked")
+            List<Object> timeables = (List<Object>) getContext().getResourceState(timeablesKey);
+            if (timeables == null) {
+                timeables = new java.util.ArrayList<Object>();
+                getContext().setResourceState(timeablesKey, timeables);
+            }
+            timeables.add(paragraph);
+            return true;
+        }
+    }
+
+    @Override
+    protected boolean verifySpan(Object span) {
+        if (!super.verifySpan(span))
+            return false;
+        else {
+            String timeablesKey = getModel().makeResourceStateName("timeables");
+            @SuppressWarnings("unchecked")
+            List<Object> timeables = (List<Object>) getContext().getResourceState(timeablesKey);
+            if (timeables == null) {
+                timeables = new java.util.ArrayList<Object>();
+                getContext().setResourceState(timeablesKey, timeables);
+            }
+            timeables.add(span);
+            return true;
+        }
     }
 
     public boolean inIMSCNamespace(QName name) {
@@ -545,12 +719,12 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     private boolean isIMSCTextProfile(VerifierContext context) {
-        String profile = (String) context.getResourceState(getModel().getName() + ".profile");
+        String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_TEXT_ABSOLUTE);
     }
 
     private boolean isIMSCImageProfile(VerifierContext context) {
-        String profile = (String) context.getResourceState(getModel().getName() + ".profile");
+        String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_IMAGE_ABSOLUTE);
     }
 

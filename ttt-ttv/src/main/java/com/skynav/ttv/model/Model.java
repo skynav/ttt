@@ -341,4 +341,11 @@ public interface Model {
      * @param reporter to configure
      */
     void configureReporter(Reporter reporter);
+
+    /**
+     * Make model specific resource state name.
+     * @param name
+     * @return model specific resource state name
+     */
+    String makeResourceStateName(String name);
 }

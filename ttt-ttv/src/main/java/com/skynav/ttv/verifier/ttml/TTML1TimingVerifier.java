@@ -50,9 +50,13 @@ public class TTML1TimingVerifier implements TimingVerifier {
 
     private static final String timingNamespace                 = "";
 
+    public static final QName beginAttributeName                = new QName(timingNamespace, "begin");
+    public static final QName durAttributeName                  = new QName(timingNamespace, "dur");
+    public static final QName endAttributeName                  = new QName(timingNamespace, "end");
+
     private static final Object[][] timingAccessorMap           = new Object[][] {
         {
-            new QName(timingNamespace,"begin"),                 // attribute name
+            beginAttributeName,                                 // attribute name
             "Begin",                                            // accessor method name suffix
             String.class,                                       // accessor method value type
             TimeCoordinateVerifier.class,                       // specialized verifier
@@ -60,7 +64,7 @@ public class TTML1TimingVerifier implements TimingVerifier {
             null,                                               // default value
         },
         {
-            new QName(timingNamespace,"dur"),
+            durAttributeName,
             "Dur",
             String.class,
             TimeDurationVerifier.class,
@@ -68,7 +72,7 @@ public class TTML1TimingVerifier implements TimingVerifier {
             null,
         },
         {
-            new QName(timingNamespace,"end"),
+            endAttributeName,
             "End",
             String.class,
             TimeCoordinateVerifier.class,
