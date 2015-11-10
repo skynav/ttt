@@ -83,6 +83,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 failed = true;
             if (!verifyRegionContainment(tt))
                 failed = true;
+            if (!verifyTickRateIfTicksUsed(tt))
+                failed = true;
         } else {
             QName rootName = context.getBindingElementName(root);
             Reporter reporter = context.getReporter();
@@ -142,8 +144,27 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 Reporter reporter = getContext().getReporter();
                 for (Locator locator : usage) {
                     reporter.logError(reporter.message(locator,
-                        "*KEY*", "Uses ''f'' unit or frame component, but does not specify ''{0}'' attribute on ''{1}'' element.",
+                        "*KEY*", "Uses frames (''f'') metric or frame component, but does not specify ''{0}'' attribute on ''{1}'' element.",
                         IMSC1ParameterVerifier.frameRateAttributeName, TTML1Model.timedTextElementName));
+                }
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+
+    protected boolean verifyTickRateIfTicksUsed(TimedText tt) {
+        boolean failed = false;
+        @SuppressWarnings("unchecked")
+        Set<Locator> usage = (Set<Locator>) getContext().getResourceState("usageTicks");
+        if ((usage != null) && (usage.size() > 0)) {
+            BigInteger tickRate = tt.getTickRate();
+            if ((tickRate == null) || IMSC1ParameterVerifier.isTickRateDefaulted(tt)) {
+                Reporter reporter = getContext().getReporter();
+                for (Locator locator : usage) {
+                    reporter.logError(reporter.message(locator,
+                        "*KEY*", "Uses ticks (''t'') metric, but does not specify ''{0}'' attribute on ''{1}'' element.",
+                        IMSC1ParameterVerifier.tickRateAttributeName, TTML1Model.timedTextElementName));
                 }
                 failed = true;
             }
@@ -269,7 +290,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 for (Length l : lengths) {
                     if (l.getUnits() != Length.Unit.Pixel) {
                         if (reporter != null)
-                            reporter.logError(reporter.message(locator, "*KEY*", "Invalid length pair component ''{0}'', must use pixel (px) unit only.", l));
+                            reporter.logError(reporter.message(locator, "*KEY*", "Invalid length pair component ''{0}'', must use pixel (''px'') unit only.", l));
                         return null;
                     }
                 }

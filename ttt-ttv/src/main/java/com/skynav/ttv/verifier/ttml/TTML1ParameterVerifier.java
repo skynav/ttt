@@ -490,4 +490,8 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         return isParameterDefaulted(content, new ComparableQName(frameRateAttributeName));
     }
 
+    public static final boolean isTickRateDefaulted(Object content) {
+        return isParameterDefaulted(content, new ComparableQName(tickRateAttributeName));
+    }
+
 }

@@ -1554,6 +1554,11 @@ public class InvalidTestCases {
         performInvalidityTest("imsc1-invalid-uses-pixel-unit-without-root-extent.xml", -1, -1);
     }
 
+    @Test
+    public void testInvalidIMSC1InvalidUsesTicksMetricWithoutTickRate() throws Exception {
+        performInvalidityTest("imsc1-invalid-uses-ticks-metric-without-tick-rate.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
