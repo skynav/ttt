@@ -25,6 +25,22 @@
 -->
 <jxb:bindings version="2.1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+  <jxb:bindings schemaLocation="ebutt-datatypes.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.imsc1.ebuttd"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+  </jxb:bindings>
+
+  <jxb:bindings schemaLocation="ebutt-styling.xsd">
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.imsc1.ebutts"/>
+      </jxb:schemaBindings>
+    </jxb:bindings>
+  </jxb:bindings>
+
   <jxb:bindings schemaLocation="imsc1-datatypes.xsd">
     <jxb:bindings node="/xs:schema">
       <jxb:schemaBindings>

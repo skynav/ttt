@@ -3,4 +3,5 @@
   <xs:import namespace="http://www.w3.org/ns/ttml/profile/imsc1#metadata" schemaLocation="imsc1-metadata.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml/profile/imsc1#parameter" schemaLocation="imsc1-parameters.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml/profile/imsc1#styling" schemaLocation="imsc1-styling.xsd"/>
+  <xs:import namespace="urn:ebu:tt:style" schemaLocation="ebutt-styling.xsd"/>
 </xs:schema>

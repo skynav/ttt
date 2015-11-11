@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ebuttdt="urn:ebu:tt:datatypes" targetNamespace="urn:ebu:tt:datatypes">
+  <xs:simpleType name="linePadding">
+      <xs:restriction base="xs:token">
+          <xs:pattern value="[+]?([0-9]+(\.?[0-9]+)?c)"/>
+      </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="multiRowAlign">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="start"/>
+      <xs:enumeration value="center"/>
+      <xs:enumeration value="end"/>
+      <xs:enumeration value="auto"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

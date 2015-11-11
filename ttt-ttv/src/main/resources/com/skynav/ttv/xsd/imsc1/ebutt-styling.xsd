@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:ebu:tt:style"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ebutts="urn:ebu:tt:style" xmlns:ebuttdt="urn:ebu:tt:datatypes">
+  <xs:import namespace="urn:ebu:tt:datatypes" schemaLocation="ebutt-datatypes.xsd"/>
+  <xs:attribute name="multiRowAlign" type="ebuttdt:multiRowAlign"/>
+  <xs:attribute name="linePadding" type="ebuttdt:linePadding"/>
+</xs:schema>

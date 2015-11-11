@@ -59,6 +59,8 @@ public class IMSC1 {
         public static final String NAMESPACE_PROFILE = NAMESPACE_PREFIX + "/";
         public static final String NAMESPACE_EXTENSION = NAMESPACE_PREFIX + "/extension/";
 
+        public static final String NAMESPACE_EBUTT_STYLING = "urn:ebu:tt:style";
+
         public static final String XSD_IMSC1 = "com/skynav/ttv/xsd/imsc1/imsc1.xsd";
 
         public static final String PROFILE_TEXT = "text";
@@ -156,6 +158,7 @@ public class IMSC1 {
                 namespaceURIs.add(new URI(Constants.NAMESPACE_METADATA));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_PARAMETER));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_STYLING));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_EBUTT_STYLING));
                 this.namespaceURIs = namespaceURIs.toArray(new URI[namespaceURIs.size()]);
                 this.profileNamespaceUri = new URI(Constants.NAMESPACE_PROFILE);
                 this.extensionNamespaceUri = new URI(Constants.NAMESPACE_EXTENSION);
