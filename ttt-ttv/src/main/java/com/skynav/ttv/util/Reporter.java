@@ -74,7 +74,9 @@ public interface Reporter {
     public void setTreatWarningAsError(boolean treatWarningAsError);
     public boolean isTreatingWarningAsError();
     public boolean isWarningEnabled(String token);
+    public boolean hasEnabledWarning(String token);
     public void enableWarning(String token);
+    public boolean hasDisabledWarning(String token);
     public void disableWarning(String token);
     public void disableWarnings();
     public boolean areWarningsDisabled();

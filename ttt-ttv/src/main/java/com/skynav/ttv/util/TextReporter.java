@@ -396,8 +396,16 @@ public class TextReporter implements Reporter {
         return enabled;
     }
 
+    public boolean hasEnabledWarning(String token) {
+        return getEnabledWarnings().contains(token);
+    }
+
     public void enableWarning(String token) {
         getEnabledWarnings().add(token);
+    }
+
+    public boolean hasDisabledWarning(String token) {
+        return getDisabledWarnings().contains(token);
     }
 
     public void disableWarning(String token) {

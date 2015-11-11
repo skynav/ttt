@@ -378,7 +378,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 Reporter reporter = context.getReporter();
                 if (reporter.isWarningEnabled("missing-timing")) {
                     Message message = reporter.message(locator,
-                        "*KEY*", "Timeable content ''{0}'' is not explicitly timed on self or ancestor.", context.getBindingElementName(content));
+                        "*KEY*", "Timeable content ''{0}'' is missing explicit @begin and/or @end on self or ancestor.", context.getBindingElementName(content));
                     if (reporter.logWarning(message)) {
                         reporter.logError(message);
                         failed = true;

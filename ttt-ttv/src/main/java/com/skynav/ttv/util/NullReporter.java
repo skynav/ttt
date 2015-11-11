@@ -168,7 +168,15 @@ public class NullReporter implements Reporter {
         return false;
     }
 
+    public boolean hasEnabledWarning(String token) {
+        return false;
+    }
+
     public void enableWarning(String token) {
+    }
+
+    public boolean hasDisabledWarning(String token) {
+        return false;
     }
 
     public void disableWarning(String token) {
