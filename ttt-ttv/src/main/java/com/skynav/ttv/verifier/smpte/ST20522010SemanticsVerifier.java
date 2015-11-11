@@ -359,9 +359,13 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
             return true;
     }
 
+    private static final QName backgroundImageAttributeName = new QName(NAMESPACE_2010, "backgroundImage");
+    protected QName getBackgroundImageAttributeName() {
+        return backgroundImageAttributeName;
+    }
+
     private boolean isBackgroundImageAttribute(QName name) {
-        String ln = name.getLocalPart();
-        return inSMPTEPrimaryNamespace(name) && ln.equals(ATTR_BACKGROUND_IMAGE);
+        return name.equals(getBackgroundImageAttributeName());
     }
 
     protected boolean verifySMPTEBackgroundImage(Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {

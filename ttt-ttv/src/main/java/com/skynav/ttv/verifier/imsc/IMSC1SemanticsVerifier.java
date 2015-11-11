@@ -29,6 +29,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +52,7 @@ import com.skynav.ttv.model.imsc1.ittm.AltText;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
+import com.skynav.ttv.model.ttml1.tt.Division;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
 import com.skynav.ttv.model.ttml1.tt.Paragraph;
@@ -370,14 +373,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
 
     private boolean verifyTimedContent(Object content, Locator locator, VerifierContext context, VerificationParameters parameters) {
         boolean failed = false;
-        List<Serializable> children;
-        if (content instanceof Paragraph)
-            children = ((Paragraph) content).getContent();
-        else if (content instanceof Span)
-            children = ((Span) content).getContent();
-        else
-            children = null;
-        if (hasTimeableContent(children)) {
+        if (hasTimeableContent(content)) {
             if (!isSelfOrAncestorExplicitlyTimed(content, locator, context, parameters)) {
                 Reporter reporter = context.getReporter();
                 if (reporter.isWarningEnabled("missing-timing")) {
@@ -391,6 +387,35 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             }
         }
         return !failed;
+    }
+
+    private boolean hasTimeableContent(Object content) {
+        if (content instanceof Division) {
+            return hasTimeableContent((Division) content);
+        } else {
+            List<Serializable> children;
+            if (content instanceof Paragraph)
+                children = ((Paragraph) content).getContent();
+            else if (content instanceof Span)
+                children = ((Span) content).getContent();
+            else
+                children = null;
+            return (children != null) ? hasTimeableContent(children) : null;
+        }
+    }
+
+    private boolean hasTimeableContent(Division div) {
+        String smpteBackgroundImage = div.getOtherAttributes().get(getBackgroundImageAttributeName());
+        if ((smpteBackgroundImage == null) || smpteBackgroundImage.isEmpty())
+            return false;
+        else {
+            try {
+                new URI(smpteBackgroundImage);
+                return true;
+            } catch (URISyntaxException e) {
+                return false;
+            }
+        }
     }
 
     private boolean hasTimeableContent(List<Serializable> content) {
@@ -522,6 +547,23 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             failed = true;
         }
         return !failed;
+    }
+
+    @Override
+    protected boolean verifyDivision(Object division) {
+        if (!super.verifyDivision(division))
+            return false;
+        else {
+            String timeablesKey = getModel().makeResourceStateName("timeables");
+            @SuppressWarnings("unchecked")
+            List<Object> timeables = (List<Object>) getContext().getResourceState(timeablesKey);
+            if (timeables == null) {
+                timeables = new java.util.ArrayList<Object>();
+                getContext().setResourceState(timeablesKey, timeables);
+            }
+            timeables.add(division);
+            return true;
+        }
     }
 
     @Override
