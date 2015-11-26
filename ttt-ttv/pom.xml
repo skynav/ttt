@@ -123,7 +123,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire.version}</version>
+        <version>${surefire.version}</version><!--$NO-MVN-MAN-VER$-->
         <configuration>
           <includes>
             <include>**/*TestCase.java</include>
