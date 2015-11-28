@@ -17,7 +17,7 @@ A collection of related tools that provide support for or make use of the W3C Ti
 
 Prior to performing a build, the following requirements must be met:
 
-- Install JDK 1.7.
+- Install Java JDK 7.
 - Install maven 3.
 - Perform one-time installation of third party library dependencies as follows, where `$TTT_HOME` is set to the directory where the `ttt` repository is cloned:
 
@@ -48,12 +48,12 @@ At present, `ttt` is being developed using the following versions of tools:
 
 <pre>
     $ java -version
-    java version "1.7.0_75"
-    Java(TM) SE Runtime Environment (build 1.7.0_75-b13)
-    Java HotSpot(TM) 64-Bit Server VM (build 24.75-b04, mixed mode)
+    java version "1.7.0_80"
+    Java(TM) SE Runtime Environment (build 1.7.0_80-b15)
+    Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)
 
     $ mvn -version
-    Apache Maven 3.3.1 (cab6659f9874fa96462afef40fcf6bc033d58c1c; 2015-03-13T14:10:27-06:00)
+    Apache Maven 3.3.3 (7994120775791599e205a5524ec3e0dfe41d4a06; 2015-04-22T05:57:37-06:00)
 </pre>
 
 Additional dependencies are managed by maven.
