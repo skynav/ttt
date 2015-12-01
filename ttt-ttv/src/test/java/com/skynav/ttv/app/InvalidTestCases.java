@@ -1495,6 +1495,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedFontSizeAnamorphic() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-font-size-anamorphic.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedSMPTEBackgroundImageHorizontalInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-background-image-horizontal-in-image-profile.xml", -1, -1);
     }

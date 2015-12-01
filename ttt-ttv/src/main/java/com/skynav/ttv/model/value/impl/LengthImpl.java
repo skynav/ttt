@@ -49,6 +49,26 @@ public class LengthImpl implements Length {
         return (value == 0) ? this : new LengthImpl(-value, units);
     }
     @Override
+    public int hashCode() {
+        int hc = 23;
+        hc = hc * 31 + units.hashCode();
+        hc = hc * 31 + Double.valueOf(value).hashCode();
+        return hc;
+    }
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Length) {
+            Length o = (Length) other;
+            if (!o.getUnits().equals(getUnits()))
+                return false;
+            else if (!Double.valueOf(o.getValue()).equals(Double.valueOf(getValue())))
+                return false;
+            else
+                return true;
+        } else
+            return false;
+    }
+    @Override
     public String toString() {
         return Double.toString(value) + units.shorthand();
     }

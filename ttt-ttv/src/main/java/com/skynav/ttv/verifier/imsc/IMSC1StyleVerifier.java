@@ -25,10 +25,20 @@
 
 package com.skynav.ttv.verifier.imsc;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
+import org.xml.sax.Locator;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010StyleVerifier;
+import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
 
@@ -36,30 +46,68 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
         super(model);
     }
 
-    protected boolean permitsStyleAttribute(Object content, QName name) {
-
-        // if image profile, exclude:
-        // color
-        // direction
-        // displayAlign
-        // fontFamily
-        // fontSize
-        // fontStyle
-        // fontWeight
-        // lineHeight
-        // padding
-        // textAlign
-        // textDecoration
-        // textOutline
-        // unicodeBidi
-        // wrapOption
-
-        return super.permitsStyleAttribute(content, name);
-    }
-
     @Override
     public boolean isNegativeLengthPermitted(QName eltName, QName styleName) {
         return false;
+    }
+
+    @Override
+    protected boolean verifyAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        if (!super.verifyAttributeItem(content, locator, sa, context))
+            return false;
+        else {
+            boolean failed = false;
+            QName sn = sa.getStyleName();
+            if (sn.equals(extentAttributeName))
+                failed = !verifyExtentAttributeItem(content, locator, sa, context);
+            else if (sn.equals(fontSizeAttributeName))
+                failed = !verifyFontSizeAttributeItem(content, locator, sa, context);
+            else if (sn.equals(lineHeightAttributeName))
+                failed = !verifyLineHeightAttributeItem(content, locator, sa, context);
+            else if (sn.equals(originAttributeName))
+                failed = !verifyOriginAttributeItem(content, locator, sa, context);
+            else if (sn.equals(textOutlineAttributeName))
+                failed = !verifyTextOutlineAttributeItem(content, locator, sa, context);
+            return !failed;
+        }
+    }
+
+    private boolean verifyExtentAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        return true;
+    }
+
+    private boolean verifyFontSizeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        Object value = sa.getStyleValue(content);
+        if (value != null) {
+            assert value instanceof String;
+            Integer[] minMax = new Integer[] { 1, 2 };
+            Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            if (Lengths.isLengths((String) value, locator, context, minMax, treatments, lengths)) {
+                if (lengths.size() > 1) {
+                    Length w = lengths.get(0);
+                    Length h = lengths.get(1);
+                    if (!w.equals(h)) {
+                        Reporter reporter = context.getReporter();
+                        reporter.logError(reporter.message(locator, "*KEY*", "Anamorphic font size ''{0}'' prohibited.", value));
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean verifyLineHeightAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        return true;
+    }
+
+    private boolean verifyOriginAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        return true;
+    }
+
+    private boolean verifyTextOutlineAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        return true;
     }
 
 }
