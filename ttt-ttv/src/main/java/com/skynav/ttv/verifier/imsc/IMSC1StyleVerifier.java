@@ -33,12 +33,14 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010StyleVerifier;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.Outline;
 
 public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
 
@@ -107,6 +109,21 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
     }
 
     private boolean verifyTextOutlineAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        Object value = sa.getStyleValue(content);
+        if (value != null) {
+            assert value instanceof String;
+            TextOutline[] outline = new TextOutline[1];
+            if (Outline.isOutline((String) value, locator, context, outline)) {
+                assert outline.length > 0;
+                assert outline[0] != null;
+                Length b = outline[0].getBlur();
+                if ((b != null) && (b.getValue() > 0)) {
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator, "*KEY*", "Non-zero blur ''{0}'' prohibited.", value));
+                    return false;
+                }
+            }
+        }
         return true;
     }
 

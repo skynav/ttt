@@ -1535,6 +1535,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedTextOutlineBlur() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-text-outline-blur.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedTimeBaseClock() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-time-base-clock.xml", -1, -1);
     }
