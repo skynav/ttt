@@ -1490,8 +1490,28 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedExtentLengthUnitInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-extent-length-unit-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedExtentLengthUnitInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-extent-length-unit-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedFontSizeAnamorphic() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-font-size-anamorphic.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedOriginLengthUnitInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-origin-length-unit-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedOriginLengthUnitInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-origin-length-unit-in-text-profile.xml", -1, -1);
     }
 
     @Test

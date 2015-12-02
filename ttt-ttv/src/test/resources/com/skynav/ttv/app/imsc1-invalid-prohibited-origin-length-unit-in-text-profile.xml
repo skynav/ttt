@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - uses prohibited length units on tts:origin in text profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="4" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:origin="10em 10%"/>
+      <region xml:id="r2" tts:origin="10% 10em"/>
+      <region xml:id="r3" tts:origin="10em 10em"/>
+    </layout>
+  </head>
+  <body/>
+</tt>

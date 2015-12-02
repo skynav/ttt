@@ -61,21 +61,43 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
             boolean failed = false;
             QName sn = sa.getStyleName();
             if (sn.equals(extentAttributeName))
-                failed = !verifyExtentAttributeItem(content, locator, sa, context);
+                failed = !verifyExtentOrOriginAttributeItem(content, locator, sa, context);
             else if (sn.equals(fontSizeAttributeName))
                 failed = !verifyFontSizeAttributeItem(content, locator, sa, context);
             else if (sn.equals(lineHeightAttributeName))
                 failed = !verifyLineHeightAttributeItem(content, locator, sa, context);
             else if (sn.equals(originAttributeName))
-                failed = !verifyOriginAttributeItem(content, locator, sa, context);
+                failed = !verifyExtentOrOriginAttributeItem(content, locator, sa, context);
             else if (sn.equals(textOutlineAttributeName))
                 failed = !verifyTextOutlineAttributeItem(content, locator, sa, context);
             return !failed;
         }
     }
 
-    private boolean verifyExtentAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
-        return true;
+    private boolean verifyExtentOrOriginAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        boolean failed = false;
+        Object value = sa.getStyleValue(content);
+        if (value != null) {
+            assert value instanceof String;
+            Integer[] minMax = new Integer[] { 2, 2 };
+            Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            if (Lengths.isLengths((String) value, locator, context, minMax, treatments, lengths)) {
+                for (int i = 0, n = lengths.size(); i < n; ++i) {
+                    Length l = lengths.get(i);
+                    if (l != null) {
+                        Length.Unit u = l.getUnits();
+                        if ((u != Length.Unit.Pixel) && (u != Length.Unit.Percentage)) {
+                            Reporter reporter = context.getReporter();
+                            reporter.logError(reporter.message(locator,
+                                "*KEY*", "Prohibited unit ''{0}'' used in length component ''{1}'' on {2}.", u, l, sa.getStyleName()));
+                            failed = true;
+                        }
+                    }
+                }
+            }
+        }
+        return !failed;
     }
 
     private boolean verifyFontSizeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
@@ -101,10 +123,6 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
     }
 
     private boolean verifyLineHeightAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
-        return true;
-    }
-
-    private boolean verifyOriginAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         return true;
     }
 
