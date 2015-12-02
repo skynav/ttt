@@ -1460,11 +1460,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidIMSC1MissingProfileAttribute() throws Exception {
-        performInvalidityTest("imsc1-invalid-missing-profile-attribute.xml", -1, -1);
-    }
-
-    @Test
     public void testInvalidIMSC1MissingRegionExtent() throws Exception {
         performInvalidityTest("imsc1-invalid-missing-region-extent.xml", -1, -1);
     }

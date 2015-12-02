@@ -226,6 +226,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC1MissingProfileAttribute() throws Exception {
+        performValidityTest("imsc1-valid-missing-profile-attribute.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC1NonEmptyParagraphMissingTiming() throws Exception {
         performValidityTest("imsc1-valid-non-empty-paragraph-missing-timing.xml", -1, -1);
     }
