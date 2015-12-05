@@ -226,4 +226,7 @@ public class AbstractModel implements Model {
         return sb.toString();
     }
 
+    public void initializeResourceState(URI uri, Map<String,Object> state) {
+    }
+
 }

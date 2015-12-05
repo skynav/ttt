@@ -35,6 +35,12 @@ import com.skynav.ttv.app.TimedTextVerifier;
 import com.skynav.ttxv.app.TimedTextTransformingVerifier;
 
 public class ValidTestCases {
+
+    @Test
+    public void testValidIMSCISDLineHeightNormal() throws Exception {
+        performTransformTest("imsc1-valid-isd-line-height-normal.xml", -1, -1);
+    }
+
     @Test
     public void testValidNFLXCCISD5Regions1PerISD() throws Exception {
         performTransformTest("nflxcc-valid-isd-5-regions-1-per-isd.xml", -1, -1);

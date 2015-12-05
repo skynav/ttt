@@ -348,4 +348,11 @@ public interface Model {
      * @return model specific resource state name
      */
     String makeResourceStateName(String name);
+
+    /**
+     * Apply model specific resource state initializations.
+     * @param uri URI of resource
+     * @param state resource state object
+     */
+    void initializeResourceState(URI uri, Map<String,Object> state);
 }

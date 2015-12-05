@@ -30,12 +30,14 @@ import com.skynav.ttv.verifier.VerifierContext;
 public interface TransformerContext extends VerifierContext {
 
     public enum ResourceState {
-        ttxTransformer,
+        ttxDontElideInitials,
         ttxInputUri,
         ttxOutput,
-        ttxSuppressOutputSerialization,
+        ttxRetainLocations,
         ttxRetainMetadata,
-        ttxRetainLocations
+        ttxSuppressOutputSerialization,
+        ttxTransformer,
+        ttxTransformingVerifier
     };
 
 }

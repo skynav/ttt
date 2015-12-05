@@ -324,6 +324,16 @@ public class IMSC1 {
                 reporter.enableWarning("missing-timing");
             if (!reporter.hasEnabledWarning("references-external-image"))
                 reporter.disableWarning("references-external-image");
+            if (!reporter.hasDisabledWarning("uses-line-height-normal"))
+                reporter.enableWarning("uses-line-height-normal");
+        }
+
+        public void initializeResourceState(URI uri, Map<String,Object> state) {
+            assert state != null;
+            /*
+            if (state.containsKey("ttxTransformingVerifier"))
+                state.put("ttxDontElideInitials", Boolean.TRUE);
+            */
         }
 
     }

@@ -49,7 +49,7 @@ public class Locators {
 
     public static Locator getLocator(Object content) {
         if (content instanceof JAXBElement<?>)
-            return getLocator(((JAXBElement<?>)content).getValue());
+            return getLocator(((JAXBElement<?>) content).getValue());
         else
             return getLocatorAttributeAsLocator(content);
     }

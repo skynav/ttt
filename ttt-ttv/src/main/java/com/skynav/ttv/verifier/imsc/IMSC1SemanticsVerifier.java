@@ -33,6 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
@@ -49,6 +50,7 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.imsc.IMSC1;
 import com.skynav.ttv.model.imsc1.ittm.AltText;
+import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml.TTML1.TTML1Model;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
@@ -63,7 +65,12 @@ import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Message;
+import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.StyleSet;
+import com.skynav.ttv.util.StyleSpecification;
+import com.skynav.ttv.util.Traverse;
+import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
@@ -76,6 +83,7 @@ import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.Timing;
 import com.skynav.ttv.verifier.util.ZeroTreatment;
+import com.skynav.xml.helpers.Documents;
 
 import static com.skynav.ttv.model.imsc.IMSC1.Constants.*;
 
@@ -756,15 +764,83 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     @Override
-    public boolean verifyPostTransform(Object root, Document isd, VerifierContext context) {
+    protected boolean verifyPostTransform(Object root, Document isd, VerifierContext context) {
         if (!super.verifyPostTransform(root, isd, context))
             return false;
         else {
             boolean failed = false;
+            if (!verifyPostTransformStyleConstraints(root, isd, context))
+                failed = true;
             return !failed;
         }
     }
 
+    private boolean verifyPostTransformStyleConstraints(final Object root, final Document isd, final VerifierContext context) {
+        final Map<String,StyleSet> styleSets = getISDStyleSets(isd);
+        try {
+            final boolean[] failed = new boolean[] { false };
+            Traverse.traverseElements(isd, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (!verifyPostTransformStyleConstraints(root, isd, elt, styleSets, context))
+                        failed[0] = true;
+                    return true;
+                }
+            });
+            return !failed[0];
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean verifyPostTransformStyleConstraints(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
+        boolean failed = false;
+        if (isTTParagraphElement(elt)) {
+            if (!verifyLineHeight(root, isd, elt, styleSets, context))
+                failed = true;
+            if (!verifyTextOutlineThickness(root, isd, elt, styleSets, context))
+                failed = true;
+        } else if (isTTSpanElement(elt)) {
+            if (!verifyTextOutlineThickness(root, isd, elt, styleSets, context))
+                failed = true;
+        }
+        return !failed;
+    }
+    
+    private QName isdCSSAttributeName = new QName(TTML1.Constants.NAMESPACE_TT_ISD, "css");
+
+    private boolean verifyLineHeight(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
+        boolean failed = false;
+        String style = Documents.getAttribute(elt, isdCSSAttributeName, null);
+        String av = null;
+        if (style != null) {
+            StyleSet css = styleSets.get(style);
+            if (css != null) {
+                StyleSpecification ss = css.get(IMSC1StyleVerifier.lineHeightAttributeName);
+                if (ss != null)
+                    av = ss.getValue();
+            }
+        }
+        if (av == null)
+            av = "normal";
+        if (av.equals("normal")) {
+            Reporter reporter = context.getReporter();
+            if (reporter.isWarningEnabled("uses-line-height-normal")) {
+                Message message = reporter.message(getLocator(elt), "*KEY*", "Computed value of line height is ''{0}''.", av);
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+    
+    private boolean verifyTextOutlineThickness(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
+        return true;
+    }
+    
     private boolean isIMSCTextProfile(VerifierContext context) {
         String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_TEXT_ABSOLUTE);

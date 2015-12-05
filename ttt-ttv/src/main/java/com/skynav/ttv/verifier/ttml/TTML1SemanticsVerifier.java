@@ -34,8 +34,10 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -76,6 +78,7 @@ import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.ItemVerifier.ItemType;
@@ -86,6 +89,8 @@ import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.xml.helpers.Documents;
+import com.skynav.xml.helpers.XML;
 
 public class TTML1SemanticsVerifier implements SemanticsVerifier {
 
@@ -229,14 +234,76 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         return regions;
     }
 
-    private static boolean isISDRegionElement(Element elt) {
+    protected static Map<String,StyleSet> getISDStyleSets(Document doc) {
+        final Map<String,StyleSet> styleSets = new java.util.HashMap<String,StyleSet>();
+        try {
+            Traverse.traverseElements(doc, new PreVisitor() {
+                public boolean visit(Object content, Object parent, Visitor.Order order) {
+                    assert content instanceof Element;
+                    Element elt = (Element) content;
+                    if (isISDCSSElement(elt)) {
+                        StyleSet css = getISDStyleSet(elt);
+                        if (css != null)
+                            styleSets.put(css.getId(), css);
+                    }
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+        }
+        return styleSets;
+    }
+
+    private static StyleSet getISDStyleSet(Element elt) {
+        Map<QName,String> attrs = Documents.getAttributes(elt);
+        QName qnId = XML.getIdAttributeName();
+        String id = attrs.get(qnId);
+        if ((id != null) && !id.isEmpty()) {
+            StyleSet css = new StyleSet(id);
+            for (QName qn : attrs.keySet()) {
+                if (!qn.equals(qnId))
+                    css.merge(qn, attrs.get(qn));
+            }
+            return css;
+        } else
+            return null;
+    }
+
+    protected static boolean isISDRegionElement(Element elt) {
         return isISDElement(elt, "region");
+    }
+
+    protected static boolean isISDCSSElement(Element elt) {
+        return isISDElement(elt, "css");
     }
 
     private static boolean isISDElement(Element elt, String localName) {
         if (elt != null) {
             String nsUri = elt.getNamespaceURI();
             if ((nsUri == null) || !nsUri.equals(TTML1.Constants.NAMESPACE_TT_ISD))
+                return false;
+            else {
+                if (elt.getLocalName().equals(localName))
+                    return true;
+                else
+                    return false;
+            }
+        } else
+            return false;
+    }
+
+    protected static boolean isTTParagraphElement(Element elt) {
+        return isTTElement(elt, "p");
+    }
+
+    protected static boolean isTTSpanElement(Element elt) {
+        return isTTElement(elt, "span");
+    }
+
+    private static boolean isTTElement(Element elt, String localName) {
+        if (elt != null) {
+            String nsUri = elt.getNamespaceURI();
+            if ((nsUri == null) || !nsUri.equals(TTML1.Constants.NAMESPACE_TT))
                 return false;
             else {
                 if (elt.getLocalName().equals(localName))

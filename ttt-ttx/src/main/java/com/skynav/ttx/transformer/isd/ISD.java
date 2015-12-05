@@ -1067,9 +1067,11 @@ public class ISD {
                 }
             }
 
-            // elide initial values
-            for (Map.Entry<Element, StyleSet> e : computedStyleSets.entrySet())
-                elideInitialValues(e.getValue(), e.getKey(), context);
+            // maybe elide initial values
+            if (!(Boolean) context.getResourceState(TransformerContext.ResourceState.ttxDontElideInitials.name())) {
+                for (Map.Entry<Element, StyleSet> e : computedStyleSets.entrySet())
+                    elideInitialValues(e.getValue(), e.getKey(), context);
+            }
 
             // compute set of unique CSSs
             Set<StyleSet> uniqueComputedStyleSets = new java.util.TreeSet<StyleSet>(StyleSet.getValuesComparator());

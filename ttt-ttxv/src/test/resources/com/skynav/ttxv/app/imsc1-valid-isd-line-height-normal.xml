@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:fontSize 'normal' etc -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="2" ttva:model="imsc1">
+  <head>
+  </head>
+  <body>
+    <div>
+      <p begin="1s" end="2s"/>                              <!-- warning - line height defaults to 'normal' -->
+      <p begin="3s" end="4s" tts:lineHeight="normal"/>      <!-- warning - line height specified as 'normal' -->
+      <p begin="5s" end="6s" tts:lineHeight="10%"/>         <!-- ok - no warning -->
+    </div>
+  </body>
+</tt>

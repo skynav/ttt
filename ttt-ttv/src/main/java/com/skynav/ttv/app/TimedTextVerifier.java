@@ -1314,6 +1314,10 @@ public class TimedTextVerifier implements VerifierContext {
         resourceModel.configureReporter(getReporter());
     }
 
+    public Map<String,Object> getResourceState() {
+        return resourceState;
+    }
+    
     private void setResourceURI(String uri) {
         resourceUriString = uri;
         getReporter().setResourceURI(uri);

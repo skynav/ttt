@@ -140,7 +140,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     @Override
     public void processResult(List<String> args, URI uri, Object root) {
         Reporter reporter = getReporter();
-        initializeResourceState(uri);
+        initializeResourceState(uri, getModel());
         if (transformer != null) {
             long preTransformMemory = 0;
             long postTransformMemory = 0;
@@ -156,13 +156,19 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         }
     }
 
+    protected void initializeResourceState(URI uri, Model model) {
+        this  .initializeResourceState(uri);
+        model .initializeResourceState(uri, verifier.getResourceState());
+    }
+
     protected void initializeResourceState(URI uri) {
-        setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), transformer);
+        setResourceState(TransformerContext.ResourceState.ttxDontElideInitials.name(), Boolean.FALSE);
         setResourceState(TransformerContext.ResourceState.ttxInputUri.name(), uri);
         setResourceState(TransformerContext.ResourceState.ttxOutput.name(), null);
-        setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.FALSE);
-        setResourceState(TransformerContext.ResourceState.ttxRetainMetadata.name(), Boolean.FALSE);
         setResourceState(TransformerContext.ResourceState.ttxRetainLocations.name(), Boolean.FALSE);
+        setResourceState(TransformerContext.ResourceState.ttxRetainMetadata.name(), Boolean.FALSE);
+        setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.FALSE);
+        setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), transformer);
     }
 
     @Override
