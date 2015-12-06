@@ -59,7 +59,8 @@ public class IMSC1 {
         public static final String NAMESPACE_PROFILE = NAMESPACE_PREFIX + "/";
         public static final String NAMESPACE_EXTENSION = NAMESPACE_PREFIX + "/extension/";
 
-        public static final String NAMESPACE_EBUTT_STYLING = "urn:ebu:tt:style";
+        public static final String NAMESPACE_EBUTT_PREFIX = "urn:ebu:tt";
+        public static final String NAMESPACE_EBUTT_STYLING = NAMESPACE_EBUTT_PREFIX + ":style";
 
         public static final String XSD_IMSC1 = "com/skynav/ttv/xsd/imsc1/imsc1.xsd";
 
@@ -72,6 +73,8 @@ public class IMSC1 {
 
         public static final String ATTR_ASPECT_RATIO = "aspectRatio";
         public static final String ATTR_FORCED_DISPLAY = "forcedDisplay";
+        public static final String ATTR_LINE_PADDING = "linePadding";
+        public static final String ATTR_MULTIROW_ALIGN = "multiRowAlign";
         public static final String ATTR_PROGRESSIVELY_DECODABLE = "progressivelyDecodable";
 
         public static final String CHARSET_REQUIRED = "UTF-8";
@@ -115,6 +118,25 @@ public class IMSC1 {
 
     public static boolean inIMSCNamespace(QName name) {
         return inIMSC1Namespace(name);
+    }
+
+    public static boolean inEBUTTStylingNamespace(QName name) {
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(Constants.NAMESPACE_EBUTT_STYLING);
+    }
+
+    public static boolean maybeInEBUTTNamespace(QName name) {
+        String nsUri = name.getNamespaceURI();
+        return nsUri.startsWith(Constants.NAMESPACE_EBUTT_PREFIX);
+    }
+
+    public static boolean inEBUTTNamespace(QName name) {
+        if (!maybeInEBUTTNamespace(name))
+            return false;
+        else if (inEBUTTStylingNamespace(name))
+            return true;
+        else
+            return false;
     }
 
     public static class IMSC1Model extends ST20522010Model {
@@ -224,6 +246,11 @@ public class IMSC1 {
                 } else if (inIMSC1StylingNamespace(name)) {
                     if (ln.equals(Constants.ATTR_FORCED_DISPLAY))
                         return true;
+                } else if (inEBUTTStylingNamespace(name)) {
+                    if (ln.equals(Constants.ATTR_LINE_PADDING))
+                        return true;
+                    else if (ln.equals(Constants.ATTR_MULTIROW_ALIGN))
+                        return true;
                 }
             }
             return false;
@@ -248,9 +275,29 @@ public class IMSC1 {
                 } else if (inIMSC1StylingNamespace(attributeName)) {
                     if (ln.equals(Constants.ATTR_FORCED_DISPLAY))
                         return isTTContentOrRegionElement(elementName);
+                } else if (inEBUTTStylingNamespace(attributeName)) {
+                    if (ln.equals(Constants.ATTR_LINE_PADDING))
+                        return isEBUTTStylingUsageContext(elementName);
+                    else if (ln.equals(Constants.ATTR_MULTIROW_ALIGN))
+                        return isEBUTTStylingUsageContext(elementName);
                 }
             }
             return false;
+        }
+
+        protected boolean isEBUTTStylingUsageContext(QName name) {
+            if (isTTBodyElement(name))
+                return true;
+            else if (isTTDivElement(name))
+                return true;
+            else if (isTTParagraphElement(name))
+                return true;
+            else if (isTTRegionElement(name))
+                return true;
+            else if (isTTStyleElement(name))
+                return true;
+            else
+                return false;
         }
 
         public boolean isElement(QName name) {

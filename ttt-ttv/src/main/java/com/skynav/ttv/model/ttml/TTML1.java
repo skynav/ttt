@@ -398,6 +398,10 @@ public class TTML1 {
                 return false;
         }
 
+        protected boolean isTTStyleElement(QName name) {
+            return name.equals(styleElementName);
+        }
+
         protected boolean isTTRegionElement(QName name) {
             return name.equals(regionElementName);
         }

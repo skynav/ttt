@@ -1441,12 +1441,22 @@ public class InvalidTestCases {
 
     @Test
     public void testInvalidIMSC1BadEBUTTSLinePadding() throws Exception {
-        performInvalidityTest("imsc1-invalid-bad-ebutts-linepadding.xml", -1, -1);
+        performInvalidityTest("imsc1-invalid-bad-ebutts-line-padding.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1BadEBUTTSLinePaddingUsageContext() throws Exception {
+        performInvalidityTest("imsc1-invalid-bad-ebutts-line-padding-usage-context.xml", -1, -1);
     }
 
     @Test
     public void testInvalidIMSC1BadEBUTTSMultiRowAlign() throws Exception {
-        performInvalidityTest("imsc1-invalid-bad-ebutts-multirowalign.xml", -1, -1);
+        performInvalidityTest("imsc1-invalid-bad-ebutts-multirow-align.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1BadEBUTTSMultiRowAlignUsageContext() throws Exception {
+        performInvalidityTest("imsc1-invalid-bad-ebutts-multirow-align-usage-context.xml", -1, -1);
     }
 
     @Test

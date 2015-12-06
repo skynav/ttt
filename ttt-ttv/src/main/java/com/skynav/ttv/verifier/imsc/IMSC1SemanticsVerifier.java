@@ -731,23 +731,37 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             QName name = new QName(nsUri != null ? nsUri : "", localName);
             Model model = getModel();
             if (model.isNamespace(name.getNamespaceURI())) {
-                if (name.getNamespaceURI().indexOf(NAMESPACE_PREFIX) == 0) {
+                String nsLabel;
+                if (name.getNamespaceURI().indexOf(NAMESPACE_PREFIX) == 0)
+                    nsLabel = "IMSC";
+                else if (name.getNamespaceURI().indexOf(NAMESPACE_EBUTT_PREFIX) == 0)
+                    nsLabel = "EBUTT";
+                else
+                    nsLabel = null;
+                if (nsLabel != null) {
                     Reporter reporter = context.getReporter();
                     String value = attribute.getValue();
                     if (!model.isGlobalAttribute(name)) {
-                        reporter.logError(reporter.message(locator, "*KEY*",
-                            "Unknown attribute in IMSC namespace ''{0}'' not permitted on ''{1}''.", name, context.getBindingElementName(content)));
+                        reporter.logError(reporter.message(locator, "*KEY*", "Unknown attribute in {0} namespace ''{1}'' not permitted on ''{2}''.",
+                            nsLabel, name, context.getBindingElementName(content)));
                         failedAttribute = true;
                     } else if (!model.isGlobalAttributePermitted(name, context.getBindingElementName(content))) {
-                        reporter.logError(reporter.message(locator, "*KEY*",
-                            "IMSC attribute ''{0}'' not permitted on ''{1}''.", name, context.getBindingElementName(content)));
+                        reporter.logError(reporter.message(locator, "*KEY*", "{0} attribute ''{1}'' not permitted on ''{2}''.",
+                            nsLabel, name, context.getBindingElementName(content)));
                         failedAttribute = true;
                     } else if (!verifyNonEmptyOrPadded(content, name, value, locator, context)) {
                         reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
                         failedAttribute = true;
-                    } else if (!verifyIMSCAttribute(content, locator, context, name, value)) {
-                        reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
-                        failedAttribute = true;
+                    } else if (nsLabel.equals("IMSC")) {
+                        if (!verifyIMSCAttribute(content, locator, context, name, value)) {
+                            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+                            failedAttribute = true;
+                        }
+                    } else if (nsLabel.equals("EBUTT")) {
+                        if (!verifyEBUTTAttribute(content, locator, context, name, value)) {
+                            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+                            failedAttribute = true;
+                        }
                     }
                 }
             }
@@ -758,6 +772,12 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     protected boolean verifyIMSCAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {
+        boolean failed = false;
+        // [TBD] - IMPLEMENT ME
+        return !failed;
+    }
+
+    protected boolean verifyEBUTTAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {
         boolean failed = false;
         // [TBD] - IMPLEMENT ME
         return !failed;

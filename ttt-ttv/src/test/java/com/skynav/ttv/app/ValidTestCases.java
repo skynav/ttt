@@ -217,12 +217,12 @@ public class ValidTestCases {
 
     @Test
     public void testValidIMSC1EBUTTSLinePadding() throws Exception {
-        performValidityTest("imsc1-valid-ebutts-linepadding.xml", -1, -1);
+        performValidityTest("imsc1-valid-ebutts-line-padding.xml", -1, -1);
     }
 
     @Test
     public void testValidIMSC1EBUTTSMultiRowAlign() throws Exception {
-        performValidityTest("imsc1-valid-ebutts-multirowalign.xml", -1, -1);
+        performValidityTest("imsc1-valid-ebutts-multirow-align.xml", -1, -1);
     }
 
     @Test
