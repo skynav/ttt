@@ -434,6 +434,10 @@ public class TTML1StyleVerifier implements StyleVerifier {
         populate(model);
     }
 
+    public Model getModel() {
+        return model;
+    }
+
     public QName getStyleAttributeName(String propertyName) {
         // assumes that property name is same as local part of qualified attribute name, which
         // is presently true in TTML1

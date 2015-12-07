@@ -42,6 +42,9 @@ public class Outline {
         String [] components = value.split("[ \t\r\n]+");
         int componentIndex = 0;
         int numComponents = components.length;
+        // none
+        if ((numComponents == 1) && Keywords.isNone(components[0]))
+            return true;
         // color
         String c = null;
         if (componentIndex < numComponents) {
@@ -94,6 +97,9 @@ public class Outline {
         String [] components = value.split("[ \t\r\n]+");
         int componentIndex = 0;
         int numComponents = components.length;
+        // none
+        if ((numComponents == 1) && Keywords.isNone(components[0]))
+            return;
         // color
         String c = null;
         if (componentIndex < numComponents) {

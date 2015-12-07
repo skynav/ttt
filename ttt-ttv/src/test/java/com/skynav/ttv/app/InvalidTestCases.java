@@ -1575,6 +1575,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedTTMLStylesInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-ttml-styles-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1RegionNotInRootContainer() throws Exception {
         performInvalidityTest("imsc1-invalid-region-not-in-root-container.xml", -1, -1);
     }

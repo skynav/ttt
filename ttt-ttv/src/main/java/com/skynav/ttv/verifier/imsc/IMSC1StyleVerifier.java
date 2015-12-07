@@ -42,6 +42,8 @@ import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.Outline;
 
+import static com.skynav.ttv.model.imsc.IMSC1.Constants.*;
+
 public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
 
     public IMSC1StyleVerifier(Model model) {
@@ -59,17 +61,41 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
             return false;
         else {
             boolean failed = false;
-            QName sn = sa.getStyleName();
-            if (sn.equals(extentAttributeName))
+            String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
+            if (profile == null)
+                profile = PROFILE_TEXT_ABSOLUTE;
+            QName name = sa.getStyleName();
+            if (name.equals(extentAttributeName)) {
                 failed = !verifyExtentOrOriginAttributeItem(content, locator, sa, context);
-            else if (sn.equals(fontSizeAttributeName))
-                failed = !verifyFontSizeAttributeItem(content, locator, sa, context);
-            else if (sn.equals(lineHeightAttributeName))
-                failed = !verifyLineHeightAttributeItem(content, locator, sa, context);
-            else if (sn.equals(originAttributeName))
+            } else if (name.equals(originAttributeName)) {
                 failed = !verifyExtentOrOriginAttributeItem(content, locator, sa, context);
-            else if (sn.equals(textOutlineAttributeName))
-                failed = !verifyTextOutlineAttributeItem(content, locator, sa, context);
+            } else if (profile.equals(PROFILE_TEXT_ABSOLUTE)) {
+                if (!verifyAttributePermittedInTextProfile(content, locator, sa, context)) {
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator,
+                        "*KEY*", "Attribute ''{0}'' prohibited on ''{1}'' in {2} text profile.",
+                        name, context.getBindingElementName(content), getModel().getName()));
+                    failed = true;
+                } else {
+                    if (name.equals(fontSizeAttributeName))
+                        failed = !verifyFontSizeAttributeItem(content, locator, sa, context);
+                    else if (name.equals(lineHeightAttributeName))
+                        failed = !verifyLineHeightAttributeItem(content, locator, sa, context);
+                    else if (name.equals(textOutlineAttributeName))
+                        failed = !verifyTextOutlineAttributeItem(content, locator, sa, context);
+                }
+            } else if (profile.equals(PROFILE_IMAGE_ABSOLUTE)) {
+                if (!verifyAttributePermittedInImageProfile(content, locator, sa, context)) {
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator,
+                        "*KEY*", "Attribute ''{0}'' prohibited on ''{1}'' in {2} image profile.",
+                        name, context.getBindingElementName(content), getModel().getName()));
+                    failed = true;
+                } else {
+                    if (name.equals(writingModeAttributeName))
+                        failed = !verifyWritingModeAttributeItem(content, locator, sa, context);
+                }
+            }
             return !failed;
         }
     }
@@ -100,6 +126,44 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
         return !failed;
     }
 
+    private boolean verifyAttributePermittedInImageProfile(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        Object value = sa.getStyleValue(content);
+        if (value != null) {
+            QName name = sa.getStyleName();
+            if (name.equals(colorAttributeName))
+                return false;
+            else if (name.equals(directionAttributeName))
+                return false;
+            else if (name.equals(fontFamilyAttributeName))
+                return false;
+            else if (name.equals(fontSizeAttributeName))
+                return false;
+            else if (name.equals(fontStyleAttributeName))
+                return false;
+            else if (name.equals(fontWeightAttributeName))
+                return false;
+            else if (name.equals(lineHeightAttributeName))
+                return false;
+            else if (name.equals(paddingAttributeName))
+                return false;
+            else if (name.equals(textAlignAttributeName))
+                return false;
+            else if (name.equals(textDecorationAttributeName))
+                return false;
+            else if (name.equals(textOutlineAttributeName))
+                return false;
+            else if (name.equals(unicodeBidiAttributeName))
+                return false;
+            else if (name.equals(wrapOptionAttributeName))
+                return false;
+        }
+        return true;
+    }
+    
+    private boolean verifyAttributePermittedInTextProfile(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        return true;
+    }
+    
     private boolean verifyFontSizeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         Object value = sa.getStyleValue(content);
         if (value != null) {
@@ -123,6 +187,8 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
     }
 
     private boolean verifyLineHeightAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        // use of 'normal' (either explicitly or by initial value assignment) cannot be performed here,
+        // but must be performed post-ISD transformation; see TTXV for this test logic
         return true;
     }
 
@@ -142,6 +208,11 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
                 }
             }
         }
+        return true;
+    }
+
+    private boolean verifyWritingModeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        // TBD - if image profile, prohibit 'vertical'
         return true;
     }
 
