@@ -559,9 +559,15 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
 
     @Override
     protected boolean verifyDivision(Object division) {
-        if (!super.verifyDivision(division))
+        VerifierContext context = getContext();
+        if (!super.verifyDivision(division)) {
             return false;
-        else {
+        } else if (isIMSCImageProfile(context) && isNestedDivision(division)) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(getLocator(division),
+                "*KEY*", "Nested ''{0}'' prohibited in image profile.", context.getBindingElementName(division)));
+            return false;
+        } else {
             String timeablesKey = getModel().makeResourceStateName("timeables");
             @SuppressWarnings("unchecked")
             List<Object> timeables = (List<Object>) getContext().getResourceState(timeablesKey);
@@ -574,17 +580,32 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         }
     }
 
+    private boolean isNestedDivision(Object division) {
+        VerifierContext context = getContext();
+        for (Object p = context.getBindingElementParent(division); p != null; p = context.getBindingElementParent(p)) {
+            if (p instanceof Division)
+                return true;
+        }
+        return false;
+    }
+
     @Override
     protected boolean verifyParagraph(Object paragraph) {
-        if (!super.verifyParagraph(paragraph))
+        VerifierContext context = getContext();
+        if (!super.verifyParagraph(paragraph)) {
             return false;
-        else {
+        } else if (isIMSCImageProfile(context)) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(getLocator(paragraph),
+                "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(paragraph)));
+            return false;
+        } else {
             String timeablesKey = getModel().makeResourceStateName("timeables");
             @SuppressWarnings("unchecked")
-            List<Object> timeables = (List<Object>) getContext().getResourceState(timeablesKey);
+            List<Object> timeables = (List<Object>) context.getResourceState(timeablesKey);
             if (timeables == null) {
                 timeables = new java.util.ArrayList<Object>();
-                getContext().setResourceState(timeablesKey, timeables);
+                context.setResourceState(timeablesKey, timeables);
             }
             timeables.add(paragraph);
             return true;
@@ -593,17 +614,38 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
 
     @Override
     protected boolean verifySpan(Object span) {
-        if (!super.verifySpan(span))
+        VerifierContext context = getContext();
+        if (!super.verifySpan(span)) {
             return false;
-        else {
+        } else if (isIMSCImageProfile(context)) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(getLocator(span),
+                "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(span)));
+            return false;
+        } else {
             String timeablesKey = getModel().makeResourceStateName("timeables");
             @SuppressWarnings("unchecked")
-            List<Object> timeables = (List<Object>) getContext().getResourceState(timeablesKey);
+            List<Object> timeables = (List<Object>) context.getResourceState(timeablesKey);
             if (timeables == null) {
                 timeables = new java.util.ArrayList<Object>();
-                getContext().setResourceState(timeablesKey, timeables);
+                context.setResourceState(timeablesKey, timeables);
             }
             timeables.add(span);
+            return true;
+        }
+    }
+
+    @Override
+    protected boolean verifyBreak(Object br) {
+        VerifierContext context = getContext();
+        if (!super.verifyBreak(br)) {
+            return false;
+        } else if (isIMSCImageProfile(context)) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(getLocator(br),
+                "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(br)));
+            return false;
+        } else {
             return true;
         }
     }

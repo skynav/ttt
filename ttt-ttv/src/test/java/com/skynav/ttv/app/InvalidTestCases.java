@@ -1500,6 +1500,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedBreakInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-break-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedExtentLengthUnitInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-extent-length-unit-in-image-profile.xml", -1, -1);
     }
@@ -1515,6 +1520,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedNestedDivisionInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-nested-division-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedOriginLengthUnitInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-origin-length-unit-in-image-profile.xml", -1, -1);
     }
@@ -1522,6 +1532,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC1ProhibitedOriginLengthUnitInTextProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-origin-length-unit-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedParagraphInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-paragraph-in-image-profile.xml", -1, -1);
     }
 
     @Test
@@ -1557,6 +1572,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC1ProhibitedSMPTEImageInTextProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-smpte-image-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedSpanInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-span-in-image-profile.xml", -1, -1);
     }
 
     @Test
