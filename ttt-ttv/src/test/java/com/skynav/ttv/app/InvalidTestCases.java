@@ -1525,6 +1525,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedNestedSpanInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-nested-span-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedOriginLengthUnitInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-origin-length-unit-in-image-profile.xml", -1, -1);
     }

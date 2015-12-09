@@ -236,6 +236,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC1NestedSpanInTextProfile() throws Exception {
+        performValidityTest("imsc1-valid-nested-span-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC1NonEmptyParagraphMissingTiming() throws Exception {
         performValidityTest("imsc1-valid-non-empty-paragraph-missing-timing.xml", -1, -1);
     }

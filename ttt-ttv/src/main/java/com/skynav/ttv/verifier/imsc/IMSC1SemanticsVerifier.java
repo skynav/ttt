@@ -621,6 +621,10 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             Reporter reporter = context.getReporter();
             reporter.logError(reporter.message(getLocator(span),
                 "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(span)));
+            if (isNestedSpan(span)) {
+                reporter.logError(reporter.message(getLocator(span),
+                    "*KEY*", "Nested ''{0}'' prohibited in image profile.", context.getBindingElementName(span)));
+            }
             return false;
         } else {
             String timeablesKey = getModel().makeResourceStateName("timeables");
@@ -633,6 +637,17 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             timeables.add(span);
             return true;
         }
+    }
+
+    private boolean isNestedSpan(Object span) {
+        VerifierContext context = getContext();
+        for (Object p = context.getBindingElementParent(span); p != null; p = context.getBindingElementParent(p)) {
+            if (p instanceof JAXBElement<?>)
+                p = ((JAXBElement<?>)p).getValue();
+            if (p instanceof Span)
+                return true;
+        }
+        return false;
     }
 
     @Override
