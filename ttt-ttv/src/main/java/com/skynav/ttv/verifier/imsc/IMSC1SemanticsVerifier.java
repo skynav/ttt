@@ -102,6 +102,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             TimedText tt = (TimedText) root;
             if (!verifyCharset(tt))
                 failed = true;
+            if (!verifyEmUsage(tt))
+                failed = true;
             if (!verifyExtentIfPixelUnitUsed(tt))
                 failed = true;
             if (!verifyFrameRateIfFramesUsed(tt))
@@ -138,6 +140,22 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         } catch (Exception e) {
             reporter.logError(e);
             failed = true;
+        }
+        return !failed;
+    }
+
+    protected boolean verifyEmUsage(TimedText tt) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        if (isIMSCImageProfile(context)) {
+            @SuppressWarnings("unchecked")
+            Set<Locator> usage = (Set<Locator>) context.getResourceState("usageEm");
+            if ((usage != null) && (usage.size() > 0)) {
+                Reporter reporter = context.getReporter();
+                for (Locator locator : usage)
+                    reporter.logError(reporter.message(locator, "*KEY*", "Use of ''em'' unit prohibited in image profile."));
+                failed = true;
+            }
         }
         return !failed;
     }

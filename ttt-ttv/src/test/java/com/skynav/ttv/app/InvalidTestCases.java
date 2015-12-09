@@ -1505,6 +1505,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedEmUnitkInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-em-unit-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedExtentLengthUnitInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-extent-length-unit-in-image-profile.xml", -1, -1);
     }
