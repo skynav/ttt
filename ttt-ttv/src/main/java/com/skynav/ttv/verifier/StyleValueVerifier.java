@@ -25,24 +25,17 @@
 
 package com.skynav.ttv.verifier;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 
 public interface StyleValueVerifier {
 
     /**
      * Verify style property's value.
-     * @param model the model that governs this verifier
-     * @param content binding content object
-     * @param name style name
-     * @param valueObject style value
-     * @param locator a locator that corresponds to the lexical location of the content object
+     * @param value style value
+     * @param location location context
      * @param context verifier context
      * @return true if validation succeeds without error
      */
-    boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context);
+    boolean verify(Object value, Location location, VerifierContext context);
 
 }

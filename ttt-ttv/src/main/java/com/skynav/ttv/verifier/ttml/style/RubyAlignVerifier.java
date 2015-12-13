@@ -30,12 +30,17 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class RubyAlignVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
+    }
+    
+    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         // Schema validation phase (3) reports invalid values.
         if (model.isTTMLVersion(2) && (valueObject instanceof com.skynav.ttv.model.ttml2.ttd.RubyAlign))
             return true;

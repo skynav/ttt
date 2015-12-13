@@ -63,6 +63,7 @@ import com.skynav.ttv.model.ttml1.ttd.Visibility;
 import com.skynav.ttv.model.ttml1.ttd.WrapOption;
 import com.skynav.ttv.model.ttml1.ttd.WritingMode;
 import com.skynav.ttv.util.Enums;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
@@ -748,10 +749,11 @@ public class TTML1StyleVerifier implements StyleVerifier {
             boolean success = true;
             Object value = getStyleValue(content);
             if (value != null) {
+                Location location = new Location(content, context.getBindingElementName(content), styleName, locator);
                 if (value instanceof String)
-                    success = verify(model, content, (String) value, locator, context);
+                    success = verify((String) value, location, context);
                 else
-                    success = verifier.verify(model, content, styleName, value, locator, context);
+                    success = verifier.verify(value, location, context);
             } else if (!isInitial(content))
                 setStyleInitialValue(content, context);
             if (!success) {
@@ -769,9 +771,10 @@ public class TTML1StyleVerifier implements StyleVerifier {
             return success;
         }
 
-        protected boolean verify(Model model, Object content, String value, Locator locator, VerifierContext context) {
+        protected boolean verify(String value, Location location, VerifierContext context) {
             boolean success = false;
             Reporter reporter = context.getReporter();
+            Locator locator = location.getLocator();
             if (value.length() == 0)
                 reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", styleName, value));
             else if (Strings.isAllXMLSpace(value))
@@ -779,7 +782,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
             else if (!paddingPermitted && !value.equals(value.trim()))
                 reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", styleName, value));
             else
-                success = verifier.verify(model, content, styleName, value, locator, context);
+                success = verifier.verify(value, location, context);
             return success;
         }
 

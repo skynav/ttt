@@ -30,29 +30,39 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class OpacityVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
+    }
+    
+    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         Reporter reporter = context.getReporter();
         assert valueObject instanceof Float;
         Float value = (Float) valueObject;
         float opacity = value.floatValue();
         if (reporter.isWarningEnabled("out-of-range-opacity")) {
             if (value.isNaN()) {
-                reporter.logWarning(reporter.message(locator, "*KEY*", "Not a Number ''NaN'' should not be used with {0}; use ''0'' instead.", name));
+                reporter.logWarning(reporter.message(locator,
+                    "*KEY*", "Not a Number ''NaN'' should not be used with {0}; use ''0'' instead.", name));
             } else if (value.isInfinite()) {
                 if (opacity < 0)
-                    reporter.logWarning(reporter.message(locator, "*KEY*", "Negative Infinity ''-INF'' should not be used with {0}; use ''0'' instead.", name));
+                    reporter.logWarning(reporter.message(locator,
+                        "*KEY*", "Negative Infinity ''-INF'' should not be used with {0}; use ''0'' instead.", name));
                 else
-                    reporter.logWarning(reporter.message(locator, "*KEY*", "Positive Infinity ''INF'' should not be used with {0}; use ''1'' instead.", name));
+                    reporter.logWarning(reporter.message(locator,
+                        "*KEY*", "Positive Infinity ''INF'' should not be used with {0}; use ''1'' instead.", name));
             } else if (opacity < 0) {
-                reporter.logWarning(reporter.message(locator, "*KEY*", "Negative values should not be used with {0}; use ''0'' instead.", name));
+                reporter.logWarning(reporter.message(locator,
+                    "*KEY*", "Negative values should not be used with {0}; use ''0'' instead.", name));
             } else if (opacity > 1) {
-                reporter.logWarning(reporter.message(locator, "*KEY*", "Positive values greater than 1 should not be used with {0}; use ''1'' instead.", name));
+                reporter.logWarning(reporter.message(locator,
+                    "*KEY*", "Positive values greater than 1 should not be used with {0}; use ''1'' instead.", name));
             }
         }
         return true;

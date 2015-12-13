@@ -34,13 +34,18 @@ import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Regions;
 
 public class RegionAttributeVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
+    }
+    
+    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
         List<List<QName>> ancestors = model.getIdReferencePermissibleAncestors(name);

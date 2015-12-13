@@ -33,6 +33,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -44,7 +45,11 @@ public class FontShearVerifier implements StyleValueVerifier {
 
     private static Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
+    }
+    
+    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         Reporter reporter = context.getReporter();
         boolean failed = false;
         assert valueObject instanceof String;

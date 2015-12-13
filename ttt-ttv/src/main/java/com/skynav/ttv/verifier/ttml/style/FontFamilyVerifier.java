@@ -30,6 +30,7 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Fonts;
@@ -37,11 +38,16 @@ import com.skynav.ttv.verifier.util.QuotedGenericFontFamilyTreatment;
 
 public class FontFamilyVerifier implements StyleValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
+    }
+    
+    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         assert valueObject instanceof String;
         String value = (String) valueObject;
         QuotedGenericFontFamilyTreatment quotedGenericTreatment =
-            context.getReporter().isWarningEnabled("quoted-generic-font-family") ? QuotedGenericFontFamilyTreatment.Warning : QuotedGenericFontFamilyTreatment.Allow;
+            context.getReporter().isWarningEnabled("quoted-generic-font-family") ?
+                QuotedGenericFontFamilyTreatment.Warning : QuotedGenericFontFamilyTreatment.Allow;
         Object[] treatments = new Object[] { quotedGenericTreatment };
         if (Fonts.isFontFamilies(value, locator, context, treatments, null))
             return true;

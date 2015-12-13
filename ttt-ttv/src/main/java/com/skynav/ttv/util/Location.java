@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,31 +23,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier.ttml.style;
+package com.skynav.ttv.util;
 
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.model.Model;
-import com.skynav.ttv.util.Location;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-
-public class DisplayAlignVerifier implements StyleValueVerifier {
-
-    public boolean verify(Object value, Location location, VerifierContext context) {
-        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
+public class Location {
+    private Object content;
+    private QName elementName;
+    private QName attributeName;
+    private Locator locator;
+    public Location(Object content, QName elementName, QName attributeName, Locator locator) {
+        this.content = content;
+        this.elementName = elementName;
+        this.attributeName = attributeName;
+        this.locator = locator;
     }
-    
-    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        // Schema validation phase (3) reports invalid values.
-        if (model.isTTMLVersion(1) && (valueObject instanceof com.skynav.ttv.model.ttml1.ttd.DisplayAlign))
-            return true;
-        else if (model.isTTMLVersion(2) && (valueObject instanceof com.skynav.ttv.model.ttml2.ttd.DisplayAlign))
-            return true;
-        else
-            throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());
+    public Object getContent() {
+        return content;
     }
-
+    public QName getElementName() {
+        return elementName;
+    }
+    public QName getAttributeName() {
+        return attributeName;
+    }
+    public Locator getLocator() {
+        return locator;
+    }
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('[');
+        if (elementName != null)
+            sb.append(elementName);
+        sb.append(',');
+        if (attributeName != null)
+            sb.append(attributeName);
+        sb.append(',');
+        if (locator != null)
+            sb.append(locator);
+        sb.append(']');
+        return sb.toString();
+    }
 }
