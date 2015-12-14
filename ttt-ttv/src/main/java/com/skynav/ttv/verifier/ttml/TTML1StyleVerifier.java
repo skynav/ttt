@@ -62,6 +62,7 @@ import com.skynav.ttv.model.ttml1.ttd.UnicodeBidi;
 import com.skynav.ttv.model.ttml1.ttd.Visibility;
 import com.skynav.ttv.model.ttml1.ttd.WrapOption;
 import com.skynav.ttv.model.ttml1.ttd.WritingMode;
+import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
@@ -484,6 +485,10 @@ public class TTML1StyleVerifier implements StyleVerifier {
     }
 
     public boolean isNegativeLengthPermitted(QName eltName, QName styleName) {
+        return true;
+    }
+
+    public boolean isLengthUnitsPermitted(QName eltName, QName styleName, Length.Unit units) {
         return true;
     }
 

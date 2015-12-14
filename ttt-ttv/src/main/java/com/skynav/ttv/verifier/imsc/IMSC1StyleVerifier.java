@@ -47,6 +47,10 @@ import static com.skynav.ttv.model.imsc.IMSC1.Constants.*;
 
 public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
 
+    public static final QName forcedDisplayAttributeName        = new QName(NAMESPACE,"forcedDisplay");
+    public static final QName linePaddingAttributeName          = new QName(NAMESPACE_EBUTT_STYLING,"linePadding");
+    public static final QName multiRowAlignAttributeName        = new QName(NAMESPACE_EBUTT_STYLING,"multiRowAlign");
+
     public IMSC1StyleVerifier(Model model) {
         super(model);
     }
@@ -54,6 +58,14 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
     @Override
     public boolean isNegativeLengthPermitted(QName eltName, QName styleName) {
         return false;
+    }
+
+    @Override
+    public boolean isLengthUnitsPermitted(QName eltName, QName styleName, Length.Unit units) {
+        if (units == Length.Unit.Cell)
+            return styleName.equals(linePaddingAttributeName);
+        else
+            return true;
     }
 
     @Override

@@ -125,6 +125,8 @@ public class Lengths {
                 }
             } else
                 return false;
+            if (!isUnitsPermitted(unitsValue, location, context))
+                return false;
             if (outputLength != null)
                 outputLength[0] = new LengthImpl(numberValue, unitsValue);
             if (locator != null)
@@ -342,8 +344,22 @@ public class Lengths {
                     "Bad <length> expression, missing or unknown units, expected one of {0}.", Length.Unit.shorthands()));
             }
         }
+
+        if (!isUnitsPermitted(units, location, context))
+            unitsNotPermitted(units, location, context);
+
     }
 
+    private static boolean isUnitsPermitted(Length.Unit units, Location location, VerifierContext context) {
+        return context.getModel().getStyleVerifier().isLengthUnitsPermitted(location.getElementName(), location.getAttributeName(), units);
+    }
+
+    private static void unitsNotPermitted(Length.Unit units, Location location, VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message(location.getLocator(),
+            "*KEY*", "Bad <length> expression, units value {0} not permitted on {1}.", units.shorthand(), location.getAttributeName()));
+    }
+    
     public static boolean isLengths(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {
         Reporter reporter = (context != null) ? context.getReporter() : null;
         Locator locator = location.getLocator();

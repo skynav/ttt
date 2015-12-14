@@ -29,6 +29,8 @@ import java.util.Collection;
 
 import javax.xml.namespace.QName;
 
+import com.skynav.ttv.model.value.Length;
+
 public interface StyleVerifier extends ItemVerifier {
 
     /**
@@ -97,5 +99,14 @@ public interface StyleVerifier extends ItemVerifier {
      * @return true if negative length is permitted
      */
     boolean isNegativeLengthPermitted(QName eltName, QName styleName);
+
+    /**
+     * Determine if length units is permitted.
+     * @param eltName name of element type
+     * @param styleName name of style
+     * @param units length unit
+     * @return true if length unit is permitted
+     */
+    boolean isLengthUnitsPermitted(QName eltName, QName styleName, Length.Unit units);
 
 }
