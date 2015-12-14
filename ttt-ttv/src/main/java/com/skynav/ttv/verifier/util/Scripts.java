@@ -28,8 +28,6 @@ package com.skynav.ttv.verifier.util;
 import java.util.Collections;
 import java.util.Set;
 
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;

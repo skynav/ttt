@@ -25,8 +25,6 @@
 
 package com.skynav.ttv.verifier.ttml.parameter;
 
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.ParameterValueVerifier;

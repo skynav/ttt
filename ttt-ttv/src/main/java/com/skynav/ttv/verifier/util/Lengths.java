@@ -67,13 +67,10 @@ public class Lengths {
         }
     }
 
-    public static boolean isLength(String value, Location location, VerifierContext context, Object[] treatments, Length[] outputLength) {
-        return isLength(value, location.getLocator(), context, treatments, outputLength);
-    }
-
     private static final Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*.\\d+|\\d+))(\\w+|%)?");
-    private static boolean isLength(String value, Locator locator, VerifierContext context, Object[] treatments, Length[] outputLength) {
+    public static boolean isLength(String value, Location location, VerifierContext context, Object[] treatments, Length[] outputLength) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         Matcher m = lengthPattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() > 0;
@@ -149,11 +146,8 @@ public class Lengths {
     }
 
     public static void badLength(String value, Location location, VerifierContext context, Object[] treatments) {
-        badLength(value, location.getLocator(), context, treatments);
-    }
-    
-    private static void badLength(String value, Locator locator, VerifierContext context, Object[] treatments) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         boolean negative = false;
         double numberValue = 0;
         Length.Unit units = null;
@@ -351,17 +345,14 @@ public class Lengths {
     }
 
     public static boolean isLengths(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {
-        return isLengths(value, location.getLocator(), context, minMax, treatments, outputLengths);
-    }
-    
-    public static boolean isLengths(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {
         Reporter reporter = (context != null) ? context.getReporter() : null;
+        Locator locator = location.getLocator();
         List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
         for (String component : lengthComponents) {
             Length[] length = new Length[1];
-            if (isLength(component, locator, context, treatments, length))
+            if (isLength(component, location, context, treatments, length))
                 lengths.add(length[0]);
             else
                 return false;
@@ -400,21 +391,18 @@ public class Lengths {
     }
 
     public static void badLengths(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments) {
-        badLengths(value, location.getLocator(), context, minMax, treatments);
-    }
-
-    public static void badLengths(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         List<Length> lengths = new java.util.ArrayList<Length>();
         String [] lengthComponents = value.split("[ \t\r\n]+");
         int numComponents = lengthComponents.length;
         Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0], treatments[1] } : null;
         for (String component : lengthComponents) {
             Length[] length = new Length[1];
-            if (isLength(component, locator, context, treatmentsInner, length))
+            if (isLength(component, location, context, treatmentsInner, length))
                 lengths.add(length[0]);
             else
-                badLength(component, locator, context, treatmentsInner);
+                badLength(component, location, context, treatmentsInner);
         }
         if (numComponents < minMax[0]) {
             reporter.logInfo(reporter.message(locator, "*KEY*",

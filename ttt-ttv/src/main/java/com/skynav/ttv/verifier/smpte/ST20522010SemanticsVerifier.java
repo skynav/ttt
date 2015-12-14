@@ -435,12 +435,13 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         String value = (String) valueObject;
         Integer[] minMax = new Integer[] { 1, 1 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
+        Location location = new Location(content, context.getBindingElementName(content), name, locator);
         if (Keywords.isKeyword(value)) {
             return isBackgroundImageHVKeyword(name, value);
-        } else if (Lengths.isLengths(value, locator, context, minMax, treatments, null)) {
+        } else if (Lengths.isLengths(value, location, context, minMax, treatments, null)) {
             return true;
         } else {
-            Lengths.badLengths(value, locator, context, minMax, treatments);
+            Lengths.badLengths(value, location, context, minMax, treatments);
             return false;
         }
     }

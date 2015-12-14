@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -102,6 +102,7 @@ import com.skynav.ttv.util.Configuration;
 import com.skynav.ttv.util.ConfigurationDefaults;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
@@ -950,7 +951,8 @@ public class TimedTextVerifier implements VerifierContext {
             Integer[] minMax = new Integer[] { 2, 2 };
             Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
             List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths(externalExtent, (Locator) null, this, minMax, treatments, lengths)) {
+            Location location = new Location(null, null, null, null);
+            if (Lengths.isLengths(externalExtent, location, this, minMax, treatments, lengths)) {
                 for (Length l : lengths) {
                     if (l.getUnits() != Length.Unit.Pixel)
                         throw new InvalidOptionUsageException("external-extent", "must use pixel (px) unit only: " + externalExtent);
