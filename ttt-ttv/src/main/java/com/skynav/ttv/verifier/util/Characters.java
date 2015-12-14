@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,9 +28,8 @@ package com.skynav.ttv.verifier.util;
 import java.util.Collections;
 import java.util.Map;
 
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.model.value.CharacterClass;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -1821,7 +1820,7 @@ public class Characters {
         return autoCharacterClass;
     }
 
-    public static boolean isCharacterClass(String value, Locator locator, VerifierContext context, CharacterClass[] outputClass) {
+    public static boolean isCharacterClass(String value, Location location, VerifierContext context, CharacterClass[] outputClass) {
         String[] components = splitComponents(value);
         int numComponents = components.length;
         if (numComponents < 1)
@@ -1870,9 +1869,9 @@ public class Characters {
         }
     }
 
-    public static void badCharacterClass(String value, Locator locator, VerifierContext context) {
+    public static void badCharacterClass(String value, Location location, VerifierContext context) {
         Reporter reporter = context.getReporter();
-        reporter.logInfo(reporter.message(locator, "*KEY*", "Bad character class expression ''{0}''.", value));
+        reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Bad character class expression ''{0}''.", value));
     }
 
     public static boolean isXMLSpace(char c) {

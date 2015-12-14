@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,13 +32,14 @@ import java.util.Set;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Profiles {
 
-    public static boolean isFeatureDesignation(String value, Locator locator, VerifierContext context, String base) {
+    public static boolean isFeatureDesignation(String value, Location location, VerifierContext context, String base) {
         try {
             URI featureUri = new URI(base).resolve(value);
             String uriString = featureUri.toString();
@@ -61,8 +62,9 @@ public class Profiles {
         }
     }
 
-    public static void badFeatureDesignation(String value, Locator locator, VerifierContext context, String base) {
+    public static void badFeatureDesignation(String value, Location location, VerifierContext context, String base) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         Message message = null;
         try {
             URI featureUri = new URI(base).resolve(value);
@@ -90,8 +92,9 @@ public class Profiles {
             reporter.logInfo(message);
     }
 
-    public static boolean isExtensionDesignation(String value, Locator locator, VerifierContext context, String base) {
+    public static boolean isExtensionDesignation(String value, Location location, VerifierContext context, String base) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         try {
             URI extensionUri = new URI(base).resolve(value);
             String uriString = extensionUri.toString();
@@ -124,8 +127,9 @@ public class Profiles {
         }
     }
 
-    public static void badExtensionDesignation(String value, Locator locator, VerifierContext context, String base) {
+    public static void badExtensionDesignation(String value, Location location, VerifierContext context, String base) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         Message message = null;
         try {
             URI extensionUri = new URI(base).resolve(value);
@@ -160,7 +164,7 @@ public class Profiles {
             reporter.logInfo(message);
     }
 
-    public static boolean isProfileDesignator(String value, Locator locator, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
+    public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
         try {
             URI uri = new URI(value);
             if (!uri.isAbsolute())
@@ -173,7 +177,7 @@ public class Profiles {
             } else {
                 Reporter reporter = context.getReporter();
                 if (reporter.isWarningEnabled("references-non-standard-profile")) {
-                    if (reporter.logWarning(reporter.message(locator, "*KEY*", "Non-standard profile designator ''{0}''.", uri)))
+                    if (reporter.logWarning(reporter.message(location.getLocator(), "*KEY*", "Non-standard profile designator ''{0}''.", uri)))
                         return false;
                 }
                 return true;
@@ -184,8 +188,9 @@ public class Profiles {
         }
     }
 
-    public static void badProfileDesignator(String value, Locator locator, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
+    public static void badProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         try {
             URI uri = new URI(value);
             if (!uri.isAbsolute())

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,13 +33,14 @@ import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.xml.helpers.Nodes;
 
 public class Agents {
 
-    public static boolean isAgentReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
+    public static boolean isAgentReference(Node node, Object value, Location location, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
             return false;
         if (!isSignificantAgent(node, value, ancestors))
@@ -47,22 +48,22 @@ public class Agents {
         return true;
     }
 
-    public static void badAgentReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+    public static void badAgentReference(Node node, Object value, Location location, VerifierContext context, QName referencingAttribute,
         QName targetName, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
-            IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
+            IdReferences.badReference(value, location, context, referencingAttribute, targetName);
         else if (!isSignificantAgent(node, value, ancestors))
-            badAgentSignificance(node, value, locator, context, referencingAttribute, targetName, ancestors);
+            badAgentSignificance(node, value, location, context, referencingAttribute, targetName, ancestors);
     }
 
     private static boolean isSignificantAgent(Node node, Object value, List<List<QName>> ancestors) {
         return Nodes.hasAncestors(node, ancestors);
     }
 
-    private static void badAgentSignificance(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+    private static void badAgentSignificance(Node node, Object value, Location location, VerifierContext context, QName referencingAttribute,
         QName targetName, List<List<QName>> ancestors) {
         Reporter reporter = context.getReporter();
-        reporter.logInfo(reporter.message(locator, "*KEY*",
+        reporter.logInfo(reporter.message(location.getLocator(), "*KEY*",
             "Bad IDREF ''{0}'', must reference significant ''{1}'' which ancestors are one of {2}.",
             IdReferences.getId(value), targetName, ancestors));
     }

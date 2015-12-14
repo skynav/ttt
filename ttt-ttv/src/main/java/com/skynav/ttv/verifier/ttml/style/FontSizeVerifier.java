@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,11 +25,6 @@
 
 package com.skynav.ttv.verifier.ttml.style;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -40,18 +35,14 @@ import com.skynav.ttv.verifier.util.NegativeTreatment;
 public class FontSizeVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
-    }
-    
-    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
+        assert value instanceof String;
+        String s = (String) value;
         Integer[] minMax = new Integer[] { 1, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
-        if (Lengths.isLengths(value, locator, context, minMax, treatments, null))
+        if (Lengths.isLengths(s, location, context, minMax, treatments, null))
             return true;
         else {
-            Lengths.badLengths(value, locator, context, minMax, treatments);
+            Lengths.badLengths(s, location, context, minMax, treatments);
             return false;
         }
     }

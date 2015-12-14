@@ -27,22 +27,19 @@ package com.skynav.ttv.verifier.ttml.parameter;
 
 import java.math.BigInteger;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class SubFrameRateVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        int value = ((BigInteger) valueObject).intValue();
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        assert value instanceof BigInteger;
+        int rate = ((BigInteger) value).intValue();
         // Schema validation phase (3) detects and reports non-positive values.
-        if (value < 0)
+        if (rate < 0)
             throw new IllegalStateException("Unexpected negative value.");
-        else if (value == 0)
+        else if (rate == 0)
             throw new IllegalStateException("Unexpected zero value.");
         else
             return true;

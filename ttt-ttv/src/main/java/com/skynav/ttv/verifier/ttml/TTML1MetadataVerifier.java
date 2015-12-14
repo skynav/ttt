@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@ import com.skynav.ttv.model.ttml1.ttm.Actor;
 import com.skynav.ttv.model.ttml1.ttm.Agent;
 import com.skynav.ttv.model.ttml1.ttm.Name;
 import com.skynav.ttv.util.Enums;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
@@ -206,10 +207,11 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         List<List<QName>> ancestors = model.getIdReferencePermissibleAncestors(name);
         Object agent = content.getAgent();
         Node node = context.getXMLNode(agent);
-        if (Agents.isAgentReference(node, agent, locator, context, targetClass, ancestors))
+        Location location = new Location(content, context.getBindingElementName(content), null, locator);
+        if (Agents.isAgentReference(node, agent, location, context, targetClass, ancestors))
             return true;
         else {
-            Agents.badAgentReference(node, agent, locator, context, name, targetName, targetClass, ancestors);
+            Agents.badAgentReference(node, agent, location, context, name, targetName, targetClass, ancestors);
             return false;
         }
     }
@@ -281,10 +283,11 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
             boolean success = true;
             Object value = getMetadataValue(content);
             if (value != null) {
+                Location location = new Location(content, context.getBindingElementName(content), metadataName, locator);
                 if (value instanceof String)
-                    success = verify(model, content, (String) value, locator, context);
+                    success = verify((String) value, location, context);
                 else
-                    success = verifier.verify(model, content, metadataName, value, locator, context);
+                    success = verifier.verify(value, location, context);
             } else
                 setMetadataDefaultValue(content);
             if (!success) {
@@ -293,22 +296,27 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
                 } else
                     value = value.toString();
                 Reporter reporter = context.getReporter();
-                reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", metadataName, value));
+                reporter.logError(reporter.message(locator,
+                    "*KEY*", "Invalid {0} value ''{1}''.", metadataName, value));
             }
             return success;
         }
 
-        private boolean verify(Model model, Object content, String value, Locator locator, VerifierContext context) {
+        private boolean verify(String value, Location location, VerifierContext context) {
             boolean success = false;
             Reporter reporter = context.getReporter();
-            if (value.length() == 0)
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", metadataName, value));
-            else if (Strings.isAllXMLSpace(value))
-                reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", metadataName, value));
-            else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", metadataName, value));
-            else
-                success = verifier.verify(model, content, metadataName, value, locator, context);
+            Locator locator = location.getLocator();
+            if (value.length() == 0) {
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Empty {0} not permitted, got ''{1}''.", metadataName, value));
+            } else if (Strings.isAllXMLSpace(value)) {
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", metadataName, value));
+            } else if (!paddingPermitted && !value.equals(value.trim())) {
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", metadataName, value));
+            } else
+                success = verifier.verify(value, location, context);
             return success;
         }
 

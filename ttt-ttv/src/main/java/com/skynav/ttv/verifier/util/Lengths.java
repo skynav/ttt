@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,6 +36,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.impl.LengthImpl;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
@@ -66,8 +67,12 @@ public class Lengths {
         }
     }
 
+    public static boolean isLength(String value, Location location, VerifierContext context, Object[] treatments, Length[] outputLength) {
+        return isLength(value, location.getLocator(), context, treatments, outputLength);
+    }
+
     private static final Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*.\\d+|\\d+))(\\w+|%)?");
-    public static boolean isLength(String value, Locator locator, VerifierContext context, Object[] treatments, Length[] outputLength) {
+    private static boolean isLength(String value, Locator locator, VerifierContext context, Object[] treatments, Length[] outputLength) {
         Reporter reporter = context.getReporter();
         Matcher m = lengthPattern.matcher(value);
         if (m.matches()) {
@@ -143,7 +148,11 @@ public class Lengths {
         usage.add(locator);
     }
 
-    public static void badLength(String value, Locator locator, VerifierContext context, Object[] treatments) {
+    public static void badLength(String value, Location location, VerifierContext context, Object[] treatments) {
+        badLength(value, location.getLocator(), context, treatments);
+    }
+    
+    private static void badLength(String value, Locator locator, VerifierContext context, Object[] treatments) {
         Reporter reporter = context.getReporter();
         boolean negative = false;
         double numberValue = 0;
@@ -341,6 +350,10 @@ public class Lengths {
         }
     }
 
+    public static boolean isLengths(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {
+        return isLengths(value, location.getLocator(), context, minMax, treatments, outputLengths);
+    }
+    
     public static boolean isLengths(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {
         Reporter reporter = (context != null) ? context.getReporter() : null;
         List<Length> lengths = new java.util.ArrayList<Length>();
@@ -384,6 +397,10 @@ public class Lengths {
             outputLengths.addAll(lengths);
         }
         return true;
+    }
+
+    public static void badLengths(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments) {
+        badLengths(value, location.getLocator(), context, minMax, treatments);
     }
 
     public static void badLengths(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments) {

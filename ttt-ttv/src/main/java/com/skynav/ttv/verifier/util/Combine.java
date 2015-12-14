@@ -25,14 +25,13 @@
 
 package com.skynav.ttv.verifier.util;
 
-import org.xml.sax.Locator;
-
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.model.value.TextCombine;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Combine {
 
-    public static boolean isCombine(String value, Locator locator, VerifierContext context, TextCombine[] outputCombine) {
+    public static boolean isCombine(String value, Location location, VerifierContext context, TextCombine[] outputCombine) {
         String[] components = splitComponents(value);
         int numComponents = components.length;
         if (numComponents < 1)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
@@ -40,8 +41,9 @@ import com.skynav.ttv.verifier.util.ZeroTreatment;
 public class Integers {
 
     private static final Pattern integerPattern = Pattern.compile("([\\+\\-]?)(\\d+)");
-    private static boolean isInteger(String value, Locator locator, VerifierContext context, Object[] treatments, Integer[] outputInteger) {
+    private static boolean isInteger(String value, Location location, VerifierContext context, Object[] treatments, Integer[] outputInteger) {
         Reporter reporter = (context != null) ? context.getReporter() : null;
+        Locator locator = location.getLocator();
         Matcher m = integerPattern.matcher(value);
         if (m.matches()) {
             String number = m.group(0);
@@ -66,7 +68,8 @@ public class Integers {
                                 return false;
                             }
                         } else if (negativeTreatment == NegativeTreatment.Info) {
-                            reporter.logInfo(reporter.message(locator, "*KEY*", "Negative <integer> expression {0} used.", Numbers.normalize(numberValue)));
+                            reporter.logInfo(reporter.message(locator,
+                                "*KEY*", "Negative <integer> expression {0} used.", Numbers.normalize(numberValue)));
                         }
                     }
                 } else if (numberValue == 0) {
@@ -76,12 +79,14 @@ public class Integers {
                         return false;
                     else if (reporter != null) {
                         if (zeroTreatment == ZeroTreatment.Warning) {
-                            if (reporter.logWarning(reporter.message(locator, "*KEY*", "Zero <integer> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
+                            if (reporter.logWarning(reporter.message(locator,
+                                "*KEY*", "Zero <integer> expression {0} should not be used.", Numbers.normalize(numberValue)))) {
                                 treatments[1] = ZeroTreatment.Allow;                            // suppress second warning
                                 return false;
                             }
                         } else if (zeroTreatment == ZeroTreatment.Info) {
-                            reporter.logInfo(reporter.message(locator, "*KEY*", "Zero <integer> expression {0} used.", Numbers.normalize(numberValue)));
+                            reporter.logInfo(reporter.message(locator,
+                                "*KEY*", "Zero <integer> expression {0} used.", Numbers.normalize(numberValue)));
                         }
                     }
                 }
@@ -93,8 +98,9 @@ public class Integers {
             return false;
     }
 
-    private static void badInteger(String value, Locator locator, VerifierContext context, Object[] treatments) {
+    private static void badInteger(String value, Location location, VerifierContext context, Object[] treatments) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         boolean negative = false;
         int numberValue = 0;
 
@@ -114,7 +120,8 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <integer> expression, XML space padding not permitted before integer."));
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Bad <integer> expression, XML space padding not permitted before integer."));
             }
 
             // optional sign before non-negative-integer
@@ -138,7 +145,8 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <integer> expression, XML space padding not permitted between sign and non-negative-integer."));
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Bad <integer> expression, XML space padding not permitted between sign and non-negative-integer."));
             }
 
             // non-negative-number (integral part only)
@@ -163,7 +171,8 @@ public class Integers {
 
             // non-negative-number
             if (integralPart == null) {
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <integer> expression, missing non-negative integer after optional sign."));
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Bad <integer> expression, missing non-negative integer after optional sign."));
             } else {
                 numberValue = integralPart.intValue();
             }
@@ -178,7 +187,8 @@ public class Integers {
                         break;
                     c = value.charAt(valueIndex);
                 }
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <integer> expression, XML space padding not permitted after integer."));
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Bad <integer> expression, XML space padding not permitted after integer."));
             }
 
             // garbage after (number S*)
@@ -206,13 +216,13 @@ public class Integers {
         }
     }
 
-    public static boolean isIntegers(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments, List<Integer> outputIntegers) {
+    public static boolean isIntegers(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments, List<Integer> outputIntegers) {
         List<Integer> integers = new java.util.ArrayList<Integer>();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
         for (String component : integerComponents) {
             Integer[] integer = new Integer[1];
-            if (isInteger(component, locator, context, treatments, integer))
+            if (isInteger(component, location, context, treatments, integer))
                 integers.add(integer[0]);
             else
                 return false;
@@ -228,14 +238,15 @@ public class Integers {
         return true;
     }
 
-    public static void badIntegers(String value, Locator locator, VerifierContext context, Integer[] minMax, Object[] treatments) {
+    public static void badIntegers(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         String [] integerComponents = value.split("[ \t\r\n]+");
         int numComponents = integerComponents.length;
         Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0], treatments[1] } : null;
         for (String component : integerComponents) {
-            if (!isInteger(component, locator, context, treatmentsInner, null))
-                badInteger(component, locator, context, treatmentsInner);
+            if (!isInteger(component, location, context, treatmentsInner, null))
+                badInteger(component, location, context, treatmentsInner);
         }
         if (minMax != null) {
             if (numComponents < minMax[0]) {

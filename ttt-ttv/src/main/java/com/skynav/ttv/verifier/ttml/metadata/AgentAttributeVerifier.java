@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,9 +32,8 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Node;
 
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -43,27 +42,31 @@ import com.skynav.ttv.verifier.util.IdReferences;
 
 public class AgentAttributeVerifier implements MetadataValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Object value, Location location, VerifierContext context) {
         boolean failed = false;
+        Model model = context.getModel();
+        QName name = location.getAttributeName();
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
         List<List<QName>> ancestors = model.getIdReferencePermissibleAncestors(name);
-        assert valueObject instanceof List<?>;
-        List<?> agents = (List<?>) valueObject;
+        assert value instanceof List<?>;
+        List<?> agents = (List<?>) value;
         if (agents.size() > 0) {
             Set<String> agentIdentifiers = new java.util.HashSet<String>();
             for (Object agent : agents) {
                 Node node = context.getXMLNode(agent);
-                if (!Agents.isAgentReference(node, agent, locator, context, targetClass, ancestors)) {
-                    Agents.badAgentReference(node, agent, locator, context, name, targetName, targetClass, ancestors);
+                if (!Agents.isAgentReference(node, agent, location, context, targetClass, ancestors)) {
+                    Agents.badAgentReference(node, agent, location, context, name, targetName, targetClass, ancestors);
                     failed = true;
                 }
                 String id = IdReferences.getId(agent);
                 if (agentIdentifiers.contains(id)) {
                     Reporter reporter = context.getReporter();
                     if (reporter.isWarningEnabled("duplicate-idref-in-agent")) {
-                        if (reporter.logWarning(reporter.message(locator, "*KEY*", "Duplicate IDREF ''{0}'' in ''{1}''.", IdReferences.getId(agent), name)))
+                        if (reporter.logWarning(reporter.message(location.getLocator(),
+                            "*KEY*", "Duplicate IDREF ''{0}'' in ''{1}''.", IdReferences.getId(agent), name))) {
                             failed = true;
+                        }
                     }
                 } else
                     agentIdentifiers.add(id);

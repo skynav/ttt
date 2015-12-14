@@ -64,6 +64,7 @@ import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
@@ -330,7 +331,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
         List<Length> lengths = new java.util.ArrayList<Length>();
-        if (Lengths.isLengths(pair, null, getContext(), minMax, treatments, lengths)) {
+        if (Lengths.isLengths(pair, (Locator) null, getContext(), minMax, treatments, lengths)) {
             if (enforcePixelsOnly) {
                 for (Length l : lengths) {
                     if (l.getUnits() != Length.Unit.Pixel) {
@@ -352,7 +353,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
         List<Integer> integers = new java.util.ArrayList<Integer>();
-        if (Integers.isIntegers(pair, null, null, minMax, treatments, integers)) {
+        Location location = new Location(null, null, null, locator);
+        if (Integers.isIntegers(pair, location, null, minMax, treatments, integers)) {
             return integers.toArray(new Integer[2]);
         } else {
             if (reporter != null)
@@ -477,17 +479,21 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     private Time getBegin(Object content, Locator locator, VerifierContext context, TimeParameters timeParameters) {
-        Object value = getTimingValue(content, IMSC1TimingVerifier.beginAttributeName);
+        QName name = IMSC1TimingVerifier.beginAttributeName;
+        Object value = getTimingValue(content, name);
         if (value instanceof String) {
-            return parseTimeCoordinate((String) value, locator, context, timeParameters);
+            Location location = new Location(content, context.getBindingElementName(content), name, locator);
+            return parseTimeCoordinate((String) value, location, context, timeParameters);
         } else
             return null;
     }
 
     private Time getEnd(Object content, Locator locator, VerifierContext context, TimeParameters timeParameters) {
-        Object value = getTimingValue(content, IMSC1TimingVerifier.endAttributeName);
+        QName name = IMSC1TimingVerifier.endAttributeName;
+        Object value = getTimingValue(content, name);
         if (value instanceof String) {
-            return parseTimeCoordinate((String) value, locator, context, timeParameters);
+            Location location = new Location(content, context.getBindingElementName(content), name, locator);
+            return parseTimeCoordinate((String) value, location, context, timeParameters);
         } else
             return null;
     }
@@ -519,9 +525,9 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         return sb.toString();
     }
 
-    private Time parseTimeCoordinate(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+    private Time parseTimeCoordinate(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
         Time[] time = new Time[1];
-        if (Timing.isCoordinate(value, locator, context, timeParameters, time))
+        if (Timing.isCoordinate(value, location, context, timeParameters, time))
             return time[0];
         else
             return null;

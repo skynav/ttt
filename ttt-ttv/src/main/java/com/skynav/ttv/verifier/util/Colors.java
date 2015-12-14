@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.value.Color;
 import com.skynav.ttv.model.value.impl.ColorImpl;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -52,7 +53,7 @@ public class Colors {
             return false;
     }
 
-    public static boolean isColor(String value, Locator locator, VerifierContext context, Color[] outputColor) {
+    public static boolean isColor(String value, Location location, VerifierContext context, Color[] outputColor) {
         if (isRGBHash(value, outputColor))
             return true;
         else if (isRGBFunction(value, outputColor))
@@ -63,16 +64,16 @@ public class Colors {
             return false;
     }
 
-    public static void badColor(String value, Locator locator, VerifierContext context) {
+    public static void badColor(String value, Location location, VerifierContext context) {
         if (value.charAt(0) == '#')
-            badRGBHash(value, locator, context);
+            badRGBHash(value, location, context);
         else if (value.indexOf("rgb") == 0)
-            badRGBFunction(value, locator, context);
+            badRGBFunction(value, location, context);
         else if (Strings.isLetters(value))
-            badNamedColor(value, locator, context);
+            badNamedColor(value, location, context);
         else {
             Reporter reporter = context.getReporter();
-            reporter.logInfo(reporter.message(locator, "*KEY*",
+            reporter.logInfo(reporter.message(location.getLocator(), "*KEY*",
                 "Bad <color> expression, got ''{0}'', but expected <#rrggbb>, #<rrggbbaa>, <rgb(...)>, <rgba(...)>, or <named color>.", value));
         }
     }
@@ -118,10 +119,10 @@ public class Colors {
             return false;
     }
 
-    private static void badNamedColor(String value, Locator locator, VerifierContext context) {
+    private static void badNamedColor(String value, Location location, VerifierContext context) {
         assert Strings.isLetters(value);
         Reporter reporter = context.getReporter();
-        reporter.logInfo(reporter.message(locator, "*KEY*", "Unknown named color, got ''{0}''.", value));
+        reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Unknown named color, got ''{0}''.", value));
     }
 
     private static boolean isRGBComponent(String value, int minValue, int maxValue, Double[] outputValue) {
@@ -139,8 +140,9 @@ public class Colors {
         }
     }
 
-    private static void badRGBComponent(String value, Locator locator, VerifierContext context, int minValue, int maxValue) {
+    private static void badRGBComponent(String value, Location location, VerifierContext context, int minValue, int maxValue) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         try {
             int componentValue = Integer.parseInt(value);
             if ((componentValue < minValue) || (componentValue > maxValue) ) {
@@ -197,11 +199,12 @@ public class Colors {
         return true;
     }
 
-    private static void badRGBComponents(String components, Locator locator, VerifierContext context, int[][] valueLimits) {
+    private static void badRGBComponents(String components, Location location, VerifierContext context, int[][] valueLimits) {
         String[] colorComponents = components.split(",");
         int numComponents = valueLimits.length;
         if (colorComponents.length != numComponents) {
             Reporter reporter = context.getReporter();
+            Locator locator = location.getLocator();
             Message message;
             if (colorComponents.length < numComponents) {
                 message = reporter.message(locator, "*KEY*",
@@ -221,7 +224,7 @@ public class Colors {
             int minValue = limits[0];
             int maxValue = limits[1];
             if (!isRGBComponent(component, minValue, maxValue, null))
-                badRGBComponent(component, locator, context, minValue, maxValue);
+                badRGBComponent(component, location, context, minValue, maxValue);
         }
     }
 
@@ -243,8 +246,9 @@ public class Colors {
         return isRGBComponents(value.substring(componentsStart, value.length() - 1), valueLimits, outputColor);
     }
 
-    private static void badRGBFunction(String value, Locator locator, VerifierContext context) {
+    private static void badRGBFunction(String value, Location location, VerifierContext context) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         assert value.indexOf("rgb") == 0;
         int opIndex = value.indexOf("(");
         if (opIndex < 0) {
@@ -274,7 +278,7 @@ public class Colors {
                 else
                     valueLimits = null;
                 if (valueLimits != null)
-                    badRGBComponents(value.substring(componentsStart, componentsEnd), locator, context, valueLimits);
+                    badRGBComponents(value.substring(componentsStart, componentsEnd), location, context, valueLimits);
             }
         }
     }
@@ -299,9 +303,10 @@ public class Colors {
         }
     }
 
-    private static void badRGBHash(String value, Locator locator, VerifierContext context) {
+    private static void badRGBHash(String value, Location location, VerifierContext context) {
 
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         String hexDigits = null;
 
         do {

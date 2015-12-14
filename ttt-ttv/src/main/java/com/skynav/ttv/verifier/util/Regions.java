@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,13 +33,14 @@ import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.xml.helpers.Nodes;
 
 public class Regions {
 
-    public static boolean isRegionReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
+    public static boolean isRegionReference(Node node, Object value, Location location, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
             return false;
         if (!isSignificantRegion(node, value, ancestors))
@@ -47,12 +48,12 @@ public class Regions {
         return true;
     }
 
-    public static void badRegionReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+    public static void badRegionReference(Node node, Object value, Location location, VerifierContext context, QName referencingAttribute,
         QName targetName, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
-            IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
+            IdReferences.badReference(value, location, context, referencingAttribute, targetName);
         else if (!isSignificantRegion(node, value, ancestors))
-            badRegionSignificance(node, value, locator, context, referencingAttribute, targetName, ancestors);
+            badRegionSignificance(node, value, location, context, referencingAttribute, targetName, ancestors);
     }
 
     private static boolean isSignificantRegion(Node node, Object value, List<List<QName>> ancestors) {
@@ -61,12 +62,12 @@ public class Regions {
         return Nodes.hasAncestors(node, ancestors);
     }
 
-    private static void badRegionSignificance(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+    private static void badRegionSignificance(Node node, Object value, Location location, VerifierContext context, QName referencingAttribute,
         QName targetName, List<List<QName>> ancestors) {
         // N.B. that this is not possible to test with TTML1.0 since no "insignificant" region can be validly specified.
         Reporter reporter = context.getReporter();
-        reporter.logInfo(reporter.message(locator, "*KEY*",
-            "Bad IDREF ''{0}'', must reference significant ''{1}'' which ancestors are one of {2}.",
+        reporter.logInfo(reporter.message(location.getLocator(),
+            "*KEY*", "Bad IDREF ''{0}'', must reference significant ''{1}'' which ancestors are one of {2}.",
             IdReferences.getId(value), targetName, ancestors));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,21 +25,20 @@
 
 package com.skynav.ttv.verifier.util;
 
-import org.xml.sax.Locator;
-
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Strings {
 
-    public static boolean isDoubleQuotedString(String value, Locator locator, VerifierContext context, String[] outputString) {
-        return isQuotedString(value, locator, context, '\"', outputString);
+    public static boolean isDoubleQuotedString(String value, Location location, VerifierContext context, String[] outputString) {
+        return isQuotedString(value, location, context, '\"', outputString);
     }
 
-    public static boolean isSingleQuotedString(String value, Locator locator, VerifierContext context, String[] outputString) {
-        return isQuotedString(value, locator, context, '\'', outputString);
+    public static boolean isSingleQuotedString(String value, Location location, VerifierContext context, String[] outputString) {
+        return isQuotedString(value, location, context, '\'', outputString);
     }
 
-    private static boolean isQuotedString(String value, Locator locator, VerifierContext context, char quote, String[] outputString) {
+    private static boolean isQuotedString(String value, Location location, VerifierContext context, char quote, String[] outputString) {
         if (value.length() < 2)
             return false;
         else if (value.charAt(0) != quote)

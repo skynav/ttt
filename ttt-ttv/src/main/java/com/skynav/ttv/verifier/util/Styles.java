@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,13 +36,14 @@ import org.w3c.dom.Node;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.xml.helpers.Nodes;
 
 public class Styles {
 
-    public static boolean isStyleReference(Node node, Object value, Locator locator, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
+    public static boolean isStyleReference(Node node, Object value, Location location, VerifierContext context, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
             return false;
         if (!isSignificantStyle(node, value, ancestors))
@@ -52,15 +53,15 @@ public class Styles {
         return true;
     }
 
-    public static void badStyleReference(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+    public static void badStyleReference(Node node, Object value, Location location, VerifierContext context, QName referencingAttribute,
         QName targetName, Class<?> targetClass, List<List<QName>> ancestors) {
         if (!targetClass.isInstance(value))
-            IdReferences.badReference(value, locator, context, referencingAttribute, targetName);
+            IdReferences.badReference(value, location, context, referencingAttribute, targetName);
         else {
             if (!isSignificantStyle(node, value, ancestors))
-                badStyleSignificance(node, value, locator, context, referencingAttribute, targetName, ancestors);
+                badStyleSignificance(node, value, location, context, referencingAttribute, targetName, ancestors);
             if (hasStyleChainLoop(node))
-                badStyleChainLoop(node, value, locator, context);
+                badStyleChainLoop(node, value, location, context);
         }
     }
 
@@ -91,17 +92,17 @@ public class Styles {
         return false;
     }
 
-    private static void badStyleSignificance(Node node, Object value, Locator locator, VerifierContext context, QName referencingAttribute,
+    private static void badStyleSignificance(Node node, Object value, Location location, VerifierContext context, QName referencingAttribute,
         QName targetName, List<List<QName>> ancestors) {
         Reporter reporter = context.getReporter();
-        reporter.logInfo(reporter.message(locator, "*KEY*",
+        reporter.logInfo(reporter.message(location.getLocator(), "*KEY*",
             "Bad IDREF ''{0}'', must reference significant ''{1}'' which ancestors are one of {2}.",
             IdReferences.getId(value), targetName, ancestors));
     }
 
-    private static void badStyleChainLoop(Node node, Object value, Locator locator, VerifierContext context) {
+    private static void badStyleChainLoop(Node node, Object value, Location location, VerifierContext context) {
         Reporter reporter = context.getReporter();
-        reporter.logInfo(reporter.message(locator, "*KEY*", "Loop in style chain from IDREF ''{0}''.", IdReferences.getId(value)));
+        reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Loop in style chain from IDREF ''{0}''.", IdReferences.getId(value)));
     }
 
 }

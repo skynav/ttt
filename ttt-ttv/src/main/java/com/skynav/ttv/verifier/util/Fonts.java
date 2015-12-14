@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,24 +34,25 @@ import com.skynav.ttv.model.value.FontFamily;
 import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.GenericFontFamily;
 import com.skynav.ttv.model.value.impl.FontFamilyImpl;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Fonts {
 
-    public static boolean isFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
-        if (isGenericFontFamily(value, locator, context, treatments, outputFamily))
+    public static boolean isFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
+        if (isGenericFontFamily(value, location, context, treatments, outputFamily))
             return true;
-        else if (isUnquotedFontFamily(value, locator, context, treatments, outputFamily))
+        else if (isUnquotedFontFamily(value, location, context, treatments, outputFamily))
             return true;
-        else if (isQuotedFontFamily(value, locator, context, treatments, outputFamily))
+        else if (isQuotedFontFamily(value, location, context, treatments, outputFamily))
             return true;
         else
             return false;
     }
 
-    private static boolean isGenericFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
+    private static boolean isGenericFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         FontFamily family = FontFamilyImpl.getGenericFamily(trimmedValue);
         if (family != null) {
@@ -62,13 +63,13 @@ public class Fonts {
             return false;
     }
 
-    private static boolean isUnquotedFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
+    private static boolean isUnquotedFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0)
             return false;
         else {
             List<String> identifiers = new java.util.ArrayList<String>();
-            if (Identifiers.isIdentifiers(trimmedValue, locator, context, identifiers)) {
+            if (Identifiers.isIdentifiers(trimmedValue, location, context, identifiers)) {
                 if (outputFamily != null)
                     outputFamily[0] = new FontFamilyImpl(FontFamily.Type.Unquoted, Identifiers.joinIdentifiersUnescaping(identifiers));
                 return true;
@@ -77,19 +78,19 @@ public class Fonts {
         }
     }
 
-    private static boolean isQuotedFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
+    private static boolean isQuotedFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0)
             return false;
         else {
             Reporter reporter = context.getReporter();
             String[] string = new String[1];
-            if (Strings.isDoubleQuotedString(trimmedValue, locator, context, string) || Strings.isSingleQuotedString(trimmedValue, locator, context, string)) {
+            if (Strings.isDoubleQuotedString(trimmedValue, location, context, string) || Strings.isSingleQuotedString(trimmedValue, location, context, string)) {
                 String stringContent = Strings.unescapeUnquoted(string[0]);
                 if (treatments != null) {
                     if (GenericFontFamily.isToken(stringContent)) {
                         QuotedGenericFontFamilyTreatment quotedGenericTreatment = (QuotedGenericFontFamilyTreatment) treatments[0];
-                        Message message = reporter.message(locator, "*KEY*",
+                        Message message = reporter.message(location.getLocator(), "*KEY*",
                             "Quoted <familyName> expression is a generic font family, but will be treated as a non-generic family name.");
                         if (quotedGenericTreatment == QuotedGenericFontFamilyTreatment.Warning) {
                             if (reporter.logWarning(message)) {
@@ -109,27 +110,29 @@ public class Fonts {
         }
     }
 
-    public static void badFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments) {
+    public static void badFontFamily(String value, Location location, VerifierContext context, Object[] treatments) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0) {
             Reporter reporter = context.getReporter();
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <familyName> of <genericFamilyName> expression, value is empty or only XML space characters."));
+            reporter.logInfo(reporter.message(location.getLocator(),
+                "*KEY*", "Bad <familyName> of <genericFamilyName> expression, value is empty or only XML space characters."));
         } else {
             char c = trimmedValue.charAt(0);
             if ((c != '\"') && (c != '\''))
-                badUnquotedFontFamily(trimmedValue, locator, context, treatments);
+                badUnquotedFontFamily(trimmedValue, location, context, treatments);
             else
-                badQuotedFontFamily(trimmedValue, locator, context, treatments);
+                badQuotedFontFamily(trimmedValue, location, context, treatments);
         }
     }
 
-    public static void badUnquotedFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments) {
+    public static void badUnquotedFontFamily(String value, Location location, VerifierContext context, Object[] treatments) {
         assert value.length() > 0;
-        Identifiers.badIdentifiers(value, locator, context);
+        Identifiers.badIdentifiers(value, location, context);
     }
 
-    public static void badQuotedFontFamily(String value, Locator locator, VerifierContext context, Object[] treatments) {
+    public static void badQuotedFontFamily(String value, Location location, VerifierContext context, Object[] treatments) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         assert value.length() > 0;
         char quote = value.charAt(0);
         int valueIndex = 1;
@@ -139,29 +142,33 @@ public class Fonts {
             c = value.charAt(valueIndex++);
             if (c == '\\') {
                 if (valueIndex == valueLength) {
-                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad quoted string in <familyName> expression, incomplete escape."));
+                    reporter.logInfo(reporter.message(locator,
+                        "*KEY*", "Bad quoted string in <familyName> expression, incomplete escape."));
                     return;
                 } else
                     ++valueIndex;
             } else if (c == quote)
                 break;
         }
-        if (c != quote)
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad quoted string in <familyName> expression, not terminated."));
-        else if (valueIndex < valueLength) {
-            reporter.logInfo(reporter.message(locator, "*KEY*",
-                "Bad quoted string in <familyName> expression, unrecognized characters following string, got ''{0}''.", value.substring(valueIndex)));
+        if (c != quote) {
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "Bad quoted string in <familyName> expression, not terminated."));
+        } else if (valueIndex < valueLength) {
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "Bad quoted string in <familyName> expression, unrecognized characters following string, got ''{0}''.",
+                value.substring(valueIndex)));
         } else if (valueLength < 3) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad quoted string in <familyName> expression, empty string."));
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "Bad quoted string in <familyName> expression, empty string."));
         }
     }
 
-    public static boolean isFontFamilies(String value, Locator locator, VerifierContext context, Object[] treatments, List<FontFamily> outputFamilies) {
+    public static boolean isFontFamilies(String value, Location location, VerifierContext context, Object[] treatments, List<FontFamily> outputFamilies) {
         List<FontFamily> families = new java.util.ArrayList<FontFamily>();
         String [] familyItems = splitFontFamilies(value);
         for (String item : familyItems) {
             FontFamily[] family = new FontFamily[1];
-            if (isFontFamily(item, locator, context, treatments, family))
+            if (isFontFamily(item, location, context, treatments, family))
                 families.add(family[0]);
             else
                 return false;
@@ -173,12 +180,12 @@ public class Fonts {
         return true;
     }
 
-    public static void badFontFamilies(String value, Locator locator, VerifierContext context, Object[] treatments) {
+    public static void badFontFamilies(String value, Location location, VerifierContext context, Object[] treatments) {
         String [] familyItems = splitFontFamilies(value);
         Object[] treatmentsInner = (treatments != null) ? new Object[] { treatments[0] } : null;
         for (String item : familyItems) {
-            if (!isFontFamily(item, locator, context, treatmentsInner, null))
-                badFontFamily(item, locator, context, treatmentsInner);
+            if (!isFontFamily(item, location, context, treatmentsInner, null))
+                badFontFamily(item, location, context, treatmentsInner);
         }
     }
 
@@ -218,7 +225,7 @@ public class Fonts {
         return items.toArray(new String[items.size()]);
     }
 
-    public static boolean isFontVariant(String value, Locator locator, VerifierContext context, FontVariant[] outputVariant) {
+    public static boolean isFontVariant(String value, Location location, VerifierContext context, FontVariant[] outputVariant) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0)
             return false;
@@ -234,26 +241,29 @@ public class Fonts {
         }
     }
 
-    public static void badFontVariant(String value, Locator locator, VerifierContext context) {
+    public static void badFontVariant(String value, Location location, VerifierContext context) {
         String trimmedValue = value.trim();
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         if (trimmedValue.length() == 0) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad token of <font-variant> expression, value is empty or only XML space characters."));
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "Bad token of <font-variant> expression, value is empty or only XML space characters."));
         } else {
             try {
                 FontVariant.fromValue(trimmedValue);
             } catch (IllegalArgumentException e) {
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad token of <font-variant> expression, unknown token ''{0}''.", trimmedValue));
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Bad token of <font-variant> expression, unknown token ''{0}''.", trimmedValue));
             }
         }
     }
 
-    public static boolean isFontVariants(String value, Locator locator, VerifierContext context, Set<FontVariant> outputVariants) {
+    public static boolean isFontVariants(String value, Location location, VerifierContext context, Set<FontVariant> outputVariants) {
         Set<FontVariant> variants = new java.util.HashSet<FontVariant>();
         String [] variantTokens = splitFontVariants(value);
         for (String token : variantTokens) {
             FontVariant[] variant = new FontVariant[1];
-            if (isFontVariant(token, locator, context, variant)) {
+            if (isFontVariant(token, location, context, variant)) {
                 if (variants.contains(variant[0]))
                     return false;
                 else
@@ -276,26 +286,31 @@ public class Fonts {
         return true;
     }
 
-    public static void badFontVariants(String value, Locator locator, VerifierContext context) {
+    public static void badFontVariants(String value, Location location, VerifierContext context) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         Set<FontVariant> variants = new java.util.HashSet<FontVariant>();
         String [] variantTokens = splitFontVariants(value);
         for (String token : variantTokens) {
             FontVariant[] variant = new FontVariant[1];
-            if (!isFontVariant(token, locator, context, variant))
-                badFontVariant(token, locator, context);
-            else if (variants.contains(variant[0])) {
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Duplicate token of <font-variant> expression ''{0}''.", token.trim()));
+            if (!isFontVariant(token, location, context, variant)) {
+                badFontVariant(token, location, context);
+            } else if (variants.contains(variant[0])) {
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Duplicate token of <font-variant> expression ''{0}''.", token.trim()));
             } else {
                 variants.add(variant[0]);
             }
         }
         if (variants.contains(FontVariant.NORMAL) && (variants.size() > 1)) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <font-variant> expression ''{0}'', no other token permitted when ''normal'' is present.", value));
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "Bad <font-variant> expression ''{0}'', no other token permitted when ''normal'' is present.", value));
         } else if (variants.contains(FontVariant.SUPER) && variants.contains(FontVariant.SUB)) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <font-variant> expression ''{0}'', cannot include both ''super'' and ''sub''.", value));
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "Bad <font-variant> expression ''{0}'', cannot include both ''super'' and ''sub''.", value));
         } else if (variants.contains(FontVariant.HALF) && variants.contains(FontVariant.FULL)) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <font-variant> expression ''{0}'', cannot include both ''halfWidth'' and ''fullWidth''.", value));
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "Bad <font-variant> expression ''{0}'', cannot include both ''halfWidth'' and ''fullWidth''.", value));
         }
     }
 

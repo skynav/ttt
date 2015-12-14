@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ import com.skynav.ttv.model.ttml1.ttp.Extensions;
 import com.skynav.ttv.model.ttml1.ttp.Feature;
 import com.skynav.ttv.model.ttml1.ttp.Features;
 import com.skynav.ttv.model.ttml1.ttp.Profile;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ProfileVerifier;
@@ -75,7 +76,8 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
             failed = !verify((Extension) content, locator, context);
         if (failed) {
             Reporter reporter = context.getReporter();
-            reporter.logError(reporter.message(locator, "*KEY*", "Invalid ''{0}'' profile related parameter item.", context.getBindingElementName(content)));
+            reporter.logError(reporter.message(locator,
+                "*KEY*", "Invalid ''{0}'' profile related parameter item.", context.getBindingElementName(content)));
         }
         return !failed;
     }
@@ -117,8 +119,9 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
         if (features != null) {
             String base = features.getBase();
             String designation = content.getValue();
-            if (!Profiles.isFeatureDesignation(designation, locator, context, base)) {
-                Profiles.badFeatureDesignation(designation, locator, context, base);
+            Location location = new Location(content, context.getBindingElementName(content), null, locator);
+            if (!Profiles.isFeatureDesignation(designation, location, context, base)) {
+                Profiles.badFeatureDesignation(designation, location, context, base);
                 failed = true;
             }
         } else
@@ -132,8 +135,9 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
         if (extensions != null) {
             String base = extensions.getBase();
             String designation = content.getValue();
-            if (!Profiles.isExtensionDesignation(designation, locator, context, base)) {
-                Profiles.badExtensionDesignation(designation, locator, context, base);
+            Location location = new Location(content, context.getBindingElementName(content), null, locator);
+            if (!Profiles.isExtensionDesignation(designation, location, context, base)) {
+                Profiles.badExtensionDesignation(designation, location, context, base);
                 failed = true;
             }
         } else

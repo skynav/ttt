@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,14 +29,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.model.value.DropMode;
 import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.ExternalParameters;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -76,9 +73,10 @@ public class TimingVerificationParameters implements VerificationParameters {
         return allowDuration;
     }
 
-    public void badDuration(QName name, String value, Locator locator, VerifierContext context) {
+    public void badDuration(String value, Location location, VerifierContext context) {
         Reporter reporter = context.getReporter();
-        reporter.logInfo(reporter.message(locator, "*KEY*", "Duration not allowed when using ''smpte'' time base with ''discontinuous'' marker mode."));
+        reporter.logInfo(reporter.message(location.getLocator(),
+            "*KEY*", "Duration not allowed when using ''smpte'' time base with ''discontinuous'' marker mode."));
     }
 
     public int getFrameRate() {

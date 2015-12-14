@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,18 +32,20 @@ import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class RoleAttributeVerifier implements MetadataValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Object value, Location location, VerifierContext context) {
         boolean failed = false;
-        assert valueObject instanceof List<?>;
-        List<?> roles = (List<?>) valueObject;
+        assert value instanceof List<?>;
+        List<?> roles = (List<?>) value;
         Reporter reporter = context.getReporter();
+        QName name = location.getAttributeName();
+        Locator locator = location.getLocator();
         if (roles.size() > 0) {
             Set<String> tokens = new java.util.HashSet<String>();
             for (Object role : roles) {

@@ -25,11 +25,6 @@
 
 package com.skynav.ttv.verifier.ttml.style;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
@@ -39,16 +34,12 @@ import com.skynav.ttv.verifier.util.Emphasis;
 public class TextEmphasisVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
-    }
-    
-    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         Reporter reporter = context.getReporter();
         boolean failed = false;
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
-        if (!Emphasis.isEmphasis(value, locator, context, null)) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <emphasis> expression ''{0}''.", value));
+        assert value instanceof String;
+        String s = (String) value;
+        if (!Emphasis.isEmphasis(s, location, context, null)) {
+            reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Bad <emphasis> expression ''{0}''.", s));
             failed = true;
         }
         return !failed;

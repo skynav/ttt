@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,10 +25,9 @@
 
 package com.skynav.ttv.verifier.util;
 
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.impl.LengthImpl;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Positions {
@@ -39,30 +38,30 @@ public class Positions {
 
     private static final Object[]       TREATMENTS      = new Object[] { NegativeTreatment.Allow };
 
-    public static boolean isPosition(String[] components, Locator locator, VerifierContext context, Length[] outputLengths) {
-        if (is1ComponentPosition(components, locator, context, outputLengths))
+    public static boolean isPosition(String[] components, Location location, VerifierContext context, Length[] outputLengths) {
+        if (is1ComponentPosition(components, location, context, outputLengths))
             return true;
-        else if (is2ComponentPosition(components, locator, context, outputLengths))
+        else if (is2ComponentPosition(components, location, context, outputLengths))
             return true;
-        else if (is3ComponentPosition(components, locator, context, outputLengths))
+        else if (is3ComponentPosition(components, location, context, outputLengths))
             return true;
-        else if (is4ComponentPosition(components, locator, context, outputLengths))
+        else if (is4ComponentPosition(components, location, context, outputLengths))
             return true;
         else
             return false;
     }
 
-    private static boolean is1ComponentPosition(String[] components, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean is1ComponentPosition(String[] components, Location location, VerifierContext context, Length[] outputLengths) {
         if (components.length == 1) {
             Length[] lengths = new Length[2];
-            if (isOffsetPositionHorizontal(components, 0, locator, context, lengths)) {
+            if (isOffsetPositionHorizontal(components, 0, location, context, lengths)) {
                 if (outputLengths != null) {
                     assert outputLengths.length >= 2;
                     outputLengths[0] = lengths[0];
                     outputLengths[1] = PCT_50;
                 }
                 return true;
-            } else if (isOffsetPositionVertical(components, 0, locator, context, lengths)) {
+            } else if (isOffsetPositionVertical(components, 0, location, context, lengths)) {
                 if (outputLengths != null) {
                     assert outputLengths.length >= 2;
                     outputLengths[0] = PCT_50;
@@ -74,42 +73,42 @@ public class Positions {
         return false;
     }
 
-    private static boolean is2ComponentPosition(String[] components, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean is2ComponentPosition(String[] components, Location location, VerifierContext context, Length[] outputLengths) {
         if (components.length == 2) {
             Length[] lengths = new Length[4];
-            if (isOffsetPositionHorizontal(components, 0, locator, context, lengths) && isOffsetPositionVertical(components, 0, locator, context, lengths))
+            if (isOffsetPositionHorizontal(components, 0, location, context, lengths) && isOffsetPositionVertical(components, 0, location, context, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
         }
         return false;
     }
 
-    private static boolean is3ComponentPosition(String[] components, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean is3ComponentPosition(String[] components, Location location, VerifierContext context, Length[] outputLengths) {
         if (components.length == 3) {
             Length[] lengths;
             lengths = new Length[4];
-            if (isPositionKeywordHorizontal(components, 0, lengths) && isEdgeOffsetVertical(components, 1, locator, context, lengths))
+            if (isPositionKeywordHorizontal(components, 0, lengths) && isEdgeOffsetVertical(components, 1, location, context, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
             lengths = new Length[4];
-            if (isPositionKeywordVertical(components, 0, lengths) && isEdgeOffsetHorizontal(components, 1, locator, context, lengths))
+            if (isPositionKeywordVertical(components, 0, lengths) && isEdgeOffsetHorizontal(components, 1, location, context, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
             lengths = new Length[4];
-            if (isEdgeOffsetHorizontal(components, 0, locator, context, lengths) && isPositionKeywordVertical(components, 2, lengths))
+            if (isEdgeOffsetHorizontal(components, 0, location, context, lengths) && isPositionKeywordVertical(components, 2, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
             lengths = new Length[4];
-            if (isEdgeOffsetVertical(components, 0, locator, context, lengths) && isPositionKeywordHorizontal(components, 2, lengths))
+            if (isEdgeOffsetVertical(components, 0, location, context, lengths) && isPositionKeywordHorizontal(components, 2, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
         }
         return false;
     }
 
-    private static boolean is4ComponentPosition(String[] components, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean is4ComponentPosition(String[] components, Location location, VerifierContext context, Length[] outputLengths) {
         if (components.length == 4) {
             Length[] lengths;
             lengths = new Length[4];
-            if (isEdgeOffsetHorizontal(components, 0, locator, context, outputLengths) && isEdgeOffsetVertical(components, 2, locator, context, outputLengths))
+            if (isEdgeOffsetHorizontal(components, 0, location, context, outputLengths) && isEdgeOffsetVertical(components, 2, location, context, outputLengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
             lengths = new Length[4];
-            if (isEdgeOffsetVertical(components, 0, locator, context, outputLengths) && isEdgeOffsetHorizontal(components, 2, locator, context, outputLengths))
+            if (isEdgeOffsetVertical(components, 0, location, context, outputLengths) && isEdgeOffsetHorizontal(components, 2, location, context, outputLengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
         }
         return false;
@@ -126,24 +125,24 @@ public class Positions {
         return rv;
     }
 
-    private static boolean isOffsetPositionHorizontal(String[] components, int index, Locator locator, VerifierContext context, Length[] outputLengths) {
-        return isOffsetPositionHorizontal(components[index], locator, context, outputLengths);
+    private static boolean isOffsetPositionHorizontal(String[] components, int index, Location location, VerifierContext context, Length[] outputLengths) {
+        return isOffsetPositionHorizontal(components[index], location, context, outputLengths);
     }
 
-    private static boolean isOffsetPositionVertical(String[] components, int index, Locator locator, VerifierContext context, Length[] outputLengths) {
-        return isOffsetPositionVertical(components[index], locator, context, outputLengths);
+    private static boolean isOffsetPositionVertical(String[] components, int index, Location location, VerifierContext context, Length[] outputLengths) {
+        return isOffsetPositionVertical(components[index], location, context, outputLengths);
     }
 
-    private static boolean isEdgeOffsetHorizontal(String[] components, int index, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean isEdgeOffsetHorizontal(String[] components, int index, Location location, VerifierContext context, Length[] outputLengths) {
         if ((index + 2) <= components.length)
-            return isEdgeOffsetHorizontal(components[index + 0], components[index + 1], locator, context, outputLengths);
+            return isEdgeOffsetHorizontal(components[index + 0], components[index + 1], location, context, outputLengths);
         else
             return false;
     }
 
-    private static boolean isEdgeOffsetVertical(String[] components, int index, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean isEdgeOffsetVertical(String[] components, int index, Location location, VerifierContext context, Length[] outputLengths) {
         if ((index + 2) <= components.length)
-            return isEdgeOffsetVertical(components[index + 0], components[index + 1], locator, context, outputLengths);
+            return isEdgeOffsetVertical(components[index + 0], components[index + 1], location, context, outputLengths);
         else
             return false;
     }
@@ -156,12 +155,12 @@ public class Positions {
         return isPositionKeywordVertical(components[index], outputLengths);
     }
 
-    private static boolean isOffsetPositionHorizontal(String component, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean isOffsetPositionHorizontal(String component, Location location, VerifierContext context, Length[] outputLengths) {
         if (isPositionKeywordHorizontal(component, outputLengths))
             return true;
         else {
             Length[] length = new Length[1];
-            if (Lengths.isLength(component, locator, context, TREATMENTS, length)) {
+            if (Lengths.isLength(component, location, context, TREATMENTS, length)) {
                 if (outputLengths != null) {
                     assert outputLengths.length >= 2;
                     outputLengths[0] = length[0];
@@ -185,11 +184,11 @@ public class Positions {
             return false;
     }
 
-    private static boolean isEdgeOffsetHorizontal(String c1, String c2, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean isEdgeOffsetHorizontal(String c1, String c2, Location location, VerifierContext context, Length[] outputLengths) {
         Length[] lengths = new Length[2];
         if (isEdgeKeywordHorizontal(c1, lengths)) {
             Length[] offset = new Length[1];
-            if (Lengths.isLength(c2, locator, context, TREATMENTS, offset)) {
+            if (Lengths.isLength(c2, location, context, TREATMENTS, offset)) {
                 if (outputLengths != null) {
                     assert outputLengths.length >= 4;
                     outputLengths[0] = lengths[0];
@@ -218,12 +217,12 @@ public class Positions {
             return false;
     }
 
-    private static boolean isOffsetPositionVertical(String component, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean isOffsetPositionVertical(String component, Location location, VerifierContext context, Length[] outputLengths) {
         if (isPositionKeywordVertical(component, outputLengths))
             return true;
         else {
             Length[] length = new Length[1];
-            if (Lengths.isLength(component, locator, context, TREATMENTS, length)) {
+            if (Lengths.isLength(component, location, context, TREATMENTS, length)) {
                 if (outputLengths != null) {
                     assert outputLengths.length >= 2;
                     outputLengths[1] = length[0];
@@ -247,11 +246,11 @@ public class Positions {
             return false;
     }
 
-    private static boolean isEdgeOffsetVertical(String c1, String c2, Locator locator, VerifierContext context, Length[] outputLengths) {
+    private static boolean isEdgeOffsetVertical(String c1, String c2, Location location, VerifierContext context, Length[] outputLengths) {
         Length[] lengths = new Length[2];
         if (isEdgeKeywordVertical(c1, lengths)) {
             Length[] offset = new Length[1];
-            if (Lengths.isLength(c2, locator, context, TREATMENTS, offset)) {
+            if (Lengths.isLength(c2, location, context, TREATMENTS, offset)) {
                 if (outputLengths != null) {
                     assert outputLengths.length >= 4;
                     outputLengths[1] = lengths[1];

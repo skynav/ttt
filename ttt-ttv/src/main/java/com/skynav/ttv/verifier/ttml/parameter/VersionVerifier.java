@@ -27,22 +27,18 @@ package com.skynav.ttv.verifier.ttml.parameter;
 
 import java.math.BigInteger;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class VersionVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        assert valueObject instanceof BigInteger;
-        int value = ((BigInteger) valueObject).intValue();
-        if (value < 0)
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        assert value instanceof BigInteger;
+        int version = ((BigInteger) value).intValue();
+        if (version < 0)
             throw new IllegalStateException("Unexpected negative value.");
-        else if (value == 0)
+        else if (version == 0)
             throw new IllegalStateException("Unexpected zero value.");
         else
             return true;

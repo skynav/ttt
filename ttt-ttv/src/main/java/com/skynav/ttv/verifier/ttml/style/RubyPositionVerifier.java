@@ -37,15 +37,12 @@ import com.skynav.ttv.verifier.VerifierContext;
 public class RubyPositionVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
-    }
-    
-    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         // Schema validation phase (3) reports invalid values.
-        if (model.isTTMLVersion(2) && (valueObject instanceof com.skynav.ttv.model.ttml2.ttd.RubyPosition))
+        Model model = context.getModel();
+        if (model.isTTMLVersion(2) && (value instanceof com.skynav.ttv.model.ttml2.ttd.RubyPosition))
             return true;
         else
-            throw new IllegalStateException("Unexpected value of type '" + valueObject.getClass().getName());
+            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
     }
 
 }

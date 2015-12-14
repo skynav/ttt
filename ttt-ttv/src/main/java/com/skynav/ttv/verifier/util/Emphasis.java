@@ -25,15 +25,14 @@
 
 package com.skynav.ttv.verifier.util;
 
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.model.value.Color;
 import com.skynav.ttv.model.value.TextEmphasis;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Emphasis {
 
-    public static boolean isEmphasis(String value, Locator locator, VerifierContext context, TextEmphasis[] outputEmphasis) {
+    public static boolean isEmphasis(String value, Location location, VerifierContext context, TextEmphasis[] outputEmphasis) {
         String[] components = splitComponents(value);
         if (components.length < 1)
             return false;
@@ -45,11 +44,11 @@ public class Emphasis {
         for (int i = 0, k, n = components.length; i < n; ) {
             if (Keywords.isAuto(components[i]))
                 ++numAuto;
-            else if ((k = isStyle(components, i, locator, context, style, text)) > i)
+            else if ((k = isStyle(components, i, location, context, style, text)) > i)
                 i = k;
-            else if ((k = isPosition(components, i, locator, context, position)) > i)
+            else if ((k = isPosition(components, i, location, context, position)) > i)
                 i = k;
-            else if ((k = isColor(components, i, locator, context, color)) > i)
+            else if ((k = isColor(components, i, location, context, color)) > i)
                 i = k;
             else
                 return false;
@@ -79,7 +78,7 @@ public class Emphasis {
         return value.split("[ \t\r\n]+");
     }
 
-    private static int isStyle(String[] components, int index, Locator locator, VerifierContext context, TextEmphasis.Style[] outputStyle, String[] outputText) {
+    private static int isStyle(String[] components, int index, Location location, VerifierContext context, TextEmphasis.Style[] outputStyle, String[] outputText) {
         String s = null;
         String f = null;
         if (index < 0)
@@ -156,20 +155,20 @@ public class Emphasis {
             return false;
     }
 
-    private static int isColor(String[] components, int index, Locator locator, VerifierContext context, Color[] outputColor) {
+    private static int isColor(String[] components, int index, Location location, VerifierContext context, Color[] outputColor) {
         if (index < 0)
             return index;
         String c = (index < components.length) ? components[index] : null;
         if (c != null) {
             if (Colors.maybeColor(c)) {
-                if (Colors.isColor(c, locator, context, outputColor))
+                if (Colors.isColor(c, location, context, outputColor))
                     return ++index;
             }
         }
         return -1;
     }
 
-    private static int isPosition(String[] components, int index, Locator locator, VerifierContext context, TextEmphasis.Position[] outputPosition) {
+    private static int isPosition(String[] components, int index, Location location, VerifierContext context, TextEmphasis.Position[] outputPosition) {
         String p = null;
         if (index < 0)
             return -1;

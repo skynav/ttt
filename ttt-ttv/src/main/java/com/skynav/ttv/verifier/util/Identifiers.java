@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,12 +29,13 @@ import java.util.List;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Identifiers {
 
-    public static boolean isIdentifiers(String value, Locator locator, VerifierContext context, List<String> outputIdentifiers) {
+    public static boolean isIdentifiers(String value, Location location, VerifierContext context, List<String> outputIdentifiers) {
         List<String> identifiers = new java.util.ArrayList<String>();
         int valueIndex = 0;
         int valueLength = value.length();
@@ -43,7 +44,7 @@ public class Identifiers {
             if ((identStart = startOfPossibleIdent(value, valueIndex)) >= 0) {
                 int identEnd = endOfPossibleIdent(value, identStart);
                 String[] identifier = new String[1];
-                if (isIdentifier(value.substring(identStart, identEnd), locator, context, identifier)) {
+                if (isIdentifier(value.substring(identStart, identEnd), location, context, identifier)) {
                     identifiers.add(identifier[0]);
                     valueIndex = identEnd;
                 } else
@@ -57,15 +58,15 @@ public class Identifiers {
         return true;
     }
 
-    public static void badIdentifiers(String value, Locator locator, VerifierContext context) {
+    public static void badIdentifiers(String value, Location location, VerifierContext context) {
         int valueIndex = 0;
         int valueLength = value.length();
         while (valueIndex < valueLength) {
             int identStart;
             if ((identStart = startOfPossibleIdent(value, valueIndex)) >= 0) {
                 int identEnd = endOfPossibleIdent(value, identStart);
-                if (!isIdentifier(value.substring(identStart, identEnd), locator, context, null))
-                    badIdentifier(value.substring(identStart, identEnd), locator, context);
+                if (!isIdentifier(value.substring(identStart, identEnd), location, context, null))
+                    badIdentifier(value.substring(identStart, identEnd), location, context);
                 valueIndex = identEnd;
             }
         }
@@ -95,7 +96,7 @@ public class Identifiers {
         return value.length();
     }
 
-    private static boolean isIdentifier(String value, Locator locator, VerifierContext context, String[] outputIdentifier) {
+    private static boolean isIdentifier(String value, Location location, VerifierContext context, String[] outputIdentifier) {
         int valueIndex = 0;
         int valueLength = value.length();
 
@@ -151,8 +152,9 @@ public class Identifiers {
         return true;
     }
 
-    public static void badIdentifier(String value, Locator locator, VerifierContext context) {
+    public static void badIdentifier(String value, Location location, VerifierContext context) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         int valueIndex = 0;
         int valueLength = value.length();
 
@@ -168,20 +170,23 @@ public class Identifiers {
 
             // ident-start
             if (valueIndex == valueLength) {
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, missing ident-start."));
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Bad identifier in <familyName> expression, missing ident-start."));
                 break;
             }
             c = value.charAt(valueIndex);
             if (c == '\\') {
                 if (valueIndex + 1 == valueLength) {
-                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, incomplete escape in ident-start."));
+                    reporter.logInfo(reporter.message(locator,
+                        "*KEY*", "Bad identifier in <familyName> expression, incomplete escape in ident-start."));
                     valueIndex = valueLength;
                 } else
                     valueIndex += 2;
             } else if (isIdentStart(c)) {
                 ++valueIndex;
             } else {
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, unexpected ident-start character ''{0}''.", c));
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Bad identifier in <familyName> expression, unexpected ident-start character ''{0}''.", c));
                 valueIndex = valueLength;
             }
 
@@ -190,26 +195,31 @@ public class Identifiers {
                 c = value.charAt(valueIndex);
                 if (c == '\\') {
                     if (valueIndex + 1 == valueLength) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, incomplete escape in ident-following."));
+                        reporter.logInfo(reporter.message(locator,
+                            "*KEY*", "Bad identifier in <familyName> expression, incomplete escape in ident-following."));
                         valueIndex = valueLength;
                     } else
                         valueIndex += 2;
                 } else if (isIdentFollowing(c)) {
                     ++valueIndex;
                 } else {
-                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, unexpected ident-following character ''{0}''.", c));
+                    reporter.logInfo(reporter.message(locator,
+                        "*KEY*", "Bad identifier in <familyName> expression, unexpected ident-following character ''{0}''.", c));
                     valueIndex = valueLength;
                 }
             }
 
             // don't allow subsequent characters that are not ident-following
             if (valueIndex < valueLength)
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, unexpected character ''{0}'' following last ident-following character.", c));
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Bad identifier in <familyName> expression, unexpected character ''{0}'' following last ident-following character.", c));
 
         } while (false);
 
-        if (isReservedKeyword(value))
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad identifier in <familyName> expression, reserved keyword ''{0}'' used.", value));
+        if (isReservedKeyword(value)) {
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "Bad identifier in <familyName> expression, reserved keyword ''{0}'' used.", value));
+        }
     }
 
     private static boolean isReservedKeyword(String value) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,25 +25,18 @@
 
 package com.skynav.ttv.verifier;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 
 public interface TimingValueVerifier {
 
     /**
      * Verify timing attribute's value.
-     * @param model the model that governs this verifier
-     * @param content binding content object
-     * @param name timing name
-     * @param valueObject timing value
-     * @param locator a locator that corresponds to the lexical location of the content object
+     * @param value timing value
+     * @param location location context
      * @param context verifier context
-     * @param parameters verification parameters
+     * @param parameters verifier parameters
      * @return true if validation succeeds without error
      */
-    boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context, VerificationParameters parameters);
+    boolean verify(Object value, Location location, VerifierContext context, VerificationParameters parameters);
 
 }

@@ -47,6 +47,7 @@ import com.skynav.ttv.model.ttml1.tt.Layout;
 import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
@@ -335,7 +336,7 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
         List<Length> lengths = new java.util.ArrayList<Length>();
-        if (Lengths.isLengths(pair, null, getContext(), minMax, treatments, lengths)) {
+        if (Lengths.isLengths(pair, (Locator) null, getContext(), minMax, treatments, lengths)) {
             if (enforcePixelsOnly) {
                 for (Length l : lengths) {
                     if (l.getUnits() != Length.Unit.Pixel) {
@@ -357,7 +358,8 @@ public class NFLXTTSemanticsVerifier extends ST20522010SemanticsVerifier {
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
         List<Integer> integers = new java.util.ArrayList<Integer>();
-        if (Integers.isIntegers(pair, null, null, minMax, treatments, integers)) {
+        Location location = new Location(null, null, null, locator);
+        if (Integers.isIntegers(pair, location, null, minMax, treatments, integers)) {
             return integers.toArray(new Integer[2]);
         } else {
             if (reporter != null)

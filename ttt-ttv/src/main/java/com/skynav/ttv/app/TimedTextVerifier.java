@@ -950,7 +950,7 @@ public class TimedTextVerifier implements VerifierContext {
             Integer[] minMax = new Integer[] { 2, 2 };
             Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
             List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths(externalExtent, null, this, minMax, treatments, lengths)) {
+            if (Lengths.isLengths(externalExtent, (Locator) null, this, minMax, treatments, lengths)) {
                 for (Length l : lengths) {
                     if (l.getUnits() != Length.Unit.Pixel)
                         throw new InvalidOptionUsageException("external-extent", "must use pixel (px) unit only: " + externalExtent);

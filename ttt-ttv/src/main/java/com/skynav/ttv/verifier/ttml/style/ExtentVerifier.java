@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -46,42 +46,40 @@ import com.skynav.ttv.verifier.util.NegativeTreatment;
 public class ExtentVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
-    }
-    
-    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         boolean failed;
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
+        assert value instanceof String;
+        String s = (String) value;
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
-        if (Keywords.isAuto(value))
+        if (Keywords.isAuto(s))
             failed = false;
-        else if (Lengths.isLengths(value, locator, context, minMax, treatments, null))
+        else if (Lengths.isLengths(s, location, context, minMax, treatments, null))
             failed = false;
         else {
-            Lengths.badLengths(value, locator, context, minMax, treatments);
+            Lengths.badLengths(s, location, context, minMax, treatments);
             failed = true;
         }
+        Object content = location.getContent();
         if (!failed && (content instanceof TimedText))
-            failed = !verify(model, (TimedText) content, name, valueObject, locator, context);
+            failed = !verifyRootExtent(value, location, context);
         return !failed;
     }
 
-    private boolean verify(Model model, TimedText content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    private boolean verifyRootExtent(Object value, Location location, VerifierContext context) {
         boolean failed = false;
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
+        assert value instanceof String;
+        String s = (String) value;
         List<Length> lengths = new java.util.ArrayList<Length>();
-        if (Lengths.isLengths(value, locator, context, null, null, lengths)) {
+        if (Lengths.isLengths(s, location, context, null, null, lengths)) {
             if (lengths.size() == 2) {
                 Reporter reporter = context.getReporter();
-                QName styleName = name;
                 Length w = lengths.get(0);
                 Length.Unit wUnits = w.getUnits();
                 Length h = lengths.get(1);
                 Length.Unit hUnits = h.getUnits();
                 Length.Unit pxUnits = Length.Unit.Pixel;
+                QName styleName = location.getAttributeName();
+                Locator locator = location.getLocator();
                 if (w.getUnits() != pxUnits) {
                     reporter.logInfo(reporter.message(locator, "*KEY*",
                         "Bad units on {0} width on root element, got ''{1}'', expected ''{2}''.",

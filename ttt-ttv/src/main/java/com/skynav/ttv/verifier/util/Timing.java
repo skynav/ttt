@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,37 +38,38 @@ import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
 import com.skynav.ttv.model.value.impl.OffsetTimeImpl;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Timing {
 
-    public static boolean isCoordinate(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
-        if (isClockTime(value, locator, context, timeParameters, outputTime))
+    public static boolean isCoordinate(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+        if (isClockTime(value, location, context, timeParameters, outputTime))
             return true;
-        else if (isOffsetTime(value, locator, context, timeParameters, outputTime))
+        else if (isOffsetTime(value, location, context, timeParameters, outputTime))
             return true;
         else
             return false;
     }
 
-    public static void badCoordinate(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+    public static void badCoordinate(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
         if (value.indexOf(':') >= 0)
-            badClockTime(value, locator, context, timeParameters);
+            badClockTime(value, location, context, timeParameters);
         else
-            badOffsetTime(value, locator, context, timeParameters);
+            badOffsetTime(value, location, context, timeParameters);
     }
 
-    public static boolean isDuration(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
-        return isCoordinate(value, locator, context, timeParameters, outputTime);
+    public static boolean isDuration(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+        return isCoordinate(value, location, context, timeParameters, outputTime);
     }
 
-    public static void badDuration(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
-        badCoordinate(value, locator, context, timeParameters);
+    public static void badDuration(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
+        badCoordinate(value, location, context, timeParameters);
     }
 
     private static final Pattern clockTimePattern = Pattern.compile("(\\d{2,3}):(\\d{2}):(\\d{2})(\\.\\d+|:\\d{2,}(?:\\.\\d+)?)?");
-    public static boolean isClockTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+    public static boolean isClockTime(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
         Matcher m = clockTimePattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() >= 3;
@@ -103,17 +104,18 @@ public class Timing {
                 return false;
             if (outputTime != null)
                 outputTime[0] = t;
-            if (locator != null) {
+            if (location != null) {
                 if (frames != null)
-                    updateUsage(context, locator, OffsetTime.Metric.Frames);
+                    updateUsage(context, location, OffsetTime.Metric.Frames);
             }
             return true;
         } else
             return false;
     }
 
-    public static void badClockTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+    public static void badClockTime(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         assert value.indexOf(':') >= 0;
         String[] parts = value.split("\\:", 5);
         int numParts = parts.length;
@@ -293,7 +295,7 @@ public class Timing {
     }
 
     private static final Pattern offsetTimePattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(h|m|s|ms|f|t)");
-    public static boolean isOffsetTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+    public static boolean isOffsetTime(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
         Matcher m = offsetTimePattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() == 2;
@@ -304,14 +306,14 @@ public class Timing {
                 return false;
             if (outputTime != null)
                 outputTime[0] = t;
-            if (locator != null)
-                updateUsage(context, locator, t.getMetric());
+            if (location != null)
+                updateUsage(context, location, t.getMetric());
             return true;
         } else
             return false;
     }
 
-    private static void updateUsage(VerifierContext context, Locator locator, OffsetTime.Metric metric) {
+    private static void updateUsage(VerifierContext context, Location location, OffsetTime.Metric metric) {
         String key = "usage" + metric.name();
         @SuppressWarnings("unchecked")
         Set<Locator> usage = (Set<Locator>) context.getResourceState(key);
@@ -319,11 +321,12 @@ public class Timing {
             usage = new java.util.HashSet<Locator>();
             context.setResourceState(key, usage);
         }
-        usage.add(locator);
+        usage.add(location.getLocator());
     }
 
-    public static void badOffsetTime(String value, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+    public static void badOffsetTime(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         int valueIndex = 0;
         int valueLength = value.length();
         char c;

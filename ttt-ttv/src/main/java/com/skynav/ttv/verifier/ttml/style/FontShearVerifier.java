@@ -27,11 +27,6 @@ package com.skynav.ttv.verifier.ttml.style;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
@@ -46,25 +41,21 @@ public class FontShearVerifier implements StyleValueVerifier {
     private static Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        return verify(context.getModel(), location.getContent(), location.getAttributeName(), value, location.getLocator(), context);
-    }
-    
-    private boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         Reporter reporter = context.getReporter();
         boolean failed = false;
-        assert valueObject instanceof String;
-        String value = (String) valueObject;
+        assert value instanceof String;
+        String s = (String) value;
         Integer[] minMax = new Integer[] { 1, 1 };
         List<Length> outputLengths = new java.util.ArrayList<Length>();
-        if (Lengths.isLengths(value, locator, context, minMax, treatments, outputLengths)) {
+        if (Lengths.isLengths(s, location, context, minMax, treatments, outputLengths)) {
             assert outputLengths.size() == 1;
             Length length = outputLengths.get(0);
             if (length.getUnits() != Length.Unit.Percentage) {
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad <percentage> expression ''{0}''.", value));
+                reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Bad <percentage> expression ''{0}''.", s));
                 failed = true;
             }
         } else {
-            Lengths.badLengths(value, locator, context, minMax, treatments);
+            Lengths.badLengths(s, location, context, minMax, treatments);
             failed = true;
         }
         return !failed;

@@ -765,7 +765,8 @@ public class TTML1StyleVerifier implements StyleVerifier {
                     } else
                         value = value.toString();
                     Reporter reporter = context.getReporter();
-                    reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", styleName, value));
+                    reporter.logError(reporter.message(locator,
+                        "*KEY*", "Invalid {0} value ''{1}''.", styleName, value));
                 }
             }
             return success;
@@ -775,13 +776,16 @@ public class TTML1StyleVerifier implements StyleVerifier {
             boolean success = false;
             Reporter reporter = context.getReporter();
             Locator locator = location.getLocator();
-            if (value.length() == 0)
-                reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", styleName, value));
-            else if (Strings.isAllXMLSpace(value))
-                reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", styleName, value));
-            else if (!paddingPermitted && !value.equals(value.trim()))
-                reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", styleName, value));
-            else
+            if (value.length() == 0) {
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "Empty {0} not permitted, got ''{1}''.", styleName, value));
+            } else if (Strings.isAllXMLSpace(value)) {
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", styleName, value));
+            } else if (!paddingPermitted && !value.equals(value.trim())) {
+                reporter.logInfo(reporter.message(locator,
+                    "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", styleName, value));
+            } else
                 success = verifier.verify(value, location, context);
             return success;
         }

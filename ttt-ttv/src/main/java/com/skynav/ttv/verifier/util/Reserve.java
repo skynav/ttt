@@ -25,15 +25,14 @@
 
 package com.skynav.ttv.verifier.util;
 
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextReserve;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Reserve {
 
-    public static boolean isReserve(String value, Locator locator, VerifierContext context, TextReserve[] outputReserve) {
+    public static boolean isReserve(String value, Location location, VerifierContext context, TextReserve[] outputReserve) {
         String[] components = splitComponents(value);
         if (components.length < 1)
             return false;
@@ -41,7 +40,7 @@ public class Reserve {
         // position
         TextReserve.Position[] position = new TextReserve.Position[1];
         if ((index + 1) <= components.length) {
-            if (!isPosition(components, index, locator, context, position))
+            if (!isPosition(components, index, location, context, position))
                 return false;
             else
                 ++index;
@@ -49,7 +48,7 @@ public class Reserve {
         // reserve
         Length[] reserve = new Length[1];
         if ((index + 1) <= components.length) {
-            if (!isLength(components, index, locator, context, reserve))
+            if (!isLength(components, index, location, context, reserve))
                 return false;
             else
                 ++index;
@@ -68,7 +67,7 @@ public class Reserve {
         return value.split("[ \t\r\n]+");
     }
 
-    private static boolean isPosition(String[] components, int index, Locator locator, VerifierContext context, TextReserve.Position[] outputPosition) {
+    private static boolean isPosition(String[] components, int index, Location location, VerifierContext context, TextReserve.Position[] outputPosition) {
         String p = null;
         if (index < 0)
             return false;
@@ -107,7 +106,7 @@ public class Reserve {
             return false;
     }
 
-    private static boolean isLength(String[] components, int index, Locator locator, VerifierContext context, Length[] outputLength) {
+    private static boolean isLength(String[] components, int index, Location location, VerifierContext context, Length[] outputLength) {
         Length l = null;
         if (index < 0)
             return false;
@@ -115,7 +114,7 @@ public class Reserve {
         if (c != null) {
             Object[] treatments = new Object[] { NegativeTreatment.Error };
             Length[] length = new Length[1];
-            if (!Lengths.isLength(c, locator, context, treatments, length))
+            if (!Lengths.isLength(c, location, context, treatments, length))
                 return false;
             else
                 l = length[0];

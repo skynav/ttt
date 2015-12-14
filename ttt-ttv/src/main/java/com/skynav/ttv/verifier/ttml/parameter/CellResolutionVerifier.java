@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,11 +25,7 @@
 
 package com.skynav.ttv.verifier.ttml.parameter;
 
-import javax.xml.namespace.QName;
-
-import org.xml.sax.Locator;
-
-import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Integers;
@@ -38,14 +34,15 @@ import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class CellResolutionVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
-        String value = (String) valueObject;
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        assert value instanceof String;
+        String s = (String) value;
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
-        if (Integers.isIntegers(value, locator, context, minMax, treatments, null))
+        if (Integers.isIntegers(s, location, context, minMax, treatments, null))
             return true;
         else {
-            Integers.badIntegers(value, locator, context, minMax, treatments);
+            Integers.badIntegers(s, location, context, minMax, treatments);
             return false;
         }
     }

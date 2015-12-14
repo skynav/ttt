@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,43 +28,48 @@ package com.skynav.ttv.verifier.ttml.parameter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.xml.namespace.QName;
-
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml1.ttp.Extensions;
 import com.skynav.ttv.model.ttml1.ttp.Features;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class BaseVerifier implements ParameterValueVerifier {
 
-    public boolean verify(Model model, Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
+    public boolean verify(Object value, Location location, VerifierContext context) {
         boolean failed = false;
-        String base = (String) valueObject;
+        assert value instanceof String;
+        String base = (String) value;
         try {
             URI baseUri = new URI(base);
             Reporter reporter = context.getReporter();
-            if (content instanceof Features) {
-                URI featureNamespaceUri = model.getFeatureNamespaceUri();
+            Locator locator = location.getLocator();
+            if (location.getContent() instanceof Features) {
+                URI featureNamespaceUri = context.getModel().getFeatureNamespaceUri();
                 if (!baseUri.isAbsolute()) {
-                    reporter.logInfo(reporter.message(locator, "*KEY*", "Non-absolute feature namespace ''{0}''.", baseUri));
+                    reporter.logInfo(reporter.message(locator,
+                        "*KEY*", "Non-absolute feature namespace ''{0}''.", baseUri));
                     failed = true;
                 } else if (!baseUri.equals(featureNamespaceUri)) {
-                    reporter.logInfo(reporter.message(locator, "*KEY*", "Unknown feature namespace ''{0}'', expected ''{1}''.", base, featureNamespaceUri));
+                    reporter.logInfo(reporter.message(locator,
+                        "*KEY*", "Unknown feature namespace ''{0}'', expected ''{1}''.", base, featureNamespaceUri));
                     failed = true;
                 }
-            } else if (content instanceof Extensions) {
-                URI extensionNamespaceUri = model.getExtensionNamespaceUri();
+            } else if (location.getContent() instanceof Extensions) {
+                URI extensionNamespaceUri = context.getModel().getExtensionNamespaceUri();
                 if (!baseUri.equals(extensionNamespaceUri)) {
                     if (!baseUri.isAbsolute()) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*", "Non-absolute extension namespace ''{0}''.", baseUri));
+                        reporter.logInfo(reporter.message(locator,
+                            "*KEY*", "Non-absolute extension namespace ''{0}''.", baseUri));
                         failed = true;
                     } else if (reporter.isWarningEnabled("references-other-extension-namespace")) {
-                        if (reporter.logWarning(reporter.message(locator, "*KEY*", "Other extension namespace ''{0}''.", baseUri)))
+                        if (reporter.logWarning(reporter.message(locator,
+                            "*KEY*", "Other extension namespace ''{0}''.", baseUri))) {
                             failed = true;
+                        }
                     }
                 }
             }

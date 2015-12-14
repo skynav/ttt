@@ -34,6 +34,7 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010StyleVerifier;
@@ -103,12 +104,15 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
     private boolean verifyExtentOrOriginAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         boolean failed = false;
         Object value = sa.getStyleValue(content);
+        QName name = sa.getStyleName();
         if (value != null) {
             assert value instanceof String;
+            String s = (String) value;
+            Location location = new Location(content, context.getBindingElementName(content), name, locator);
             Integer[] minMax = new Integer[] { 2, 2 };
             Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
             List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths((String) value, locator, context, minMax, treatments, lengths)) {
+            if (Lengths.isLengths(s, location, context, minMax, treatments, lengths)) {
                 for (int i = 0, n = lengths.size(); i < n; ++i) {
                     Length l = lengths.get(i);
                     if (l != null) {
@@ -116,7 +120,7 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
                         if ((u != Length.Unit.Pixel) && (u != Length.Unit.Percentage)) {
                             Reporter reporter = context.getReporter();
                             reporter.logError(reporter.message(locator,
-                                "*KEY*", "Prohibited unit ''{0}'' used in length component ''{1}'' on {2}.", u, l, sa.getStyleName()));
+                                "*KEY*", "Prohibited unit ''{0}'' used in length component ''{1}'' on {2}.", u, l, name));
                             failed = true;
                         }
                     }
@@ -166,18 +170,21 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
     
     private boolean verifyFontSizeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         Object value = sa.getStyleValue(content);
+        QName name = sa.getStyleName();
         if (value != null) {
             assert value instanceof String;
+            String s = (String) value;
+            Location location = new Location(content, context.getBindingElementName(content), name, locator);
             Integer[] minMax = new Integer[] { 1, 2 };
             Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
             List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths((String) value, locator, context, minMax, treatments, lengths)) {
+            if (Lengths.isLengths(s, location, context, minMax, treatments, lengths)) {
                 if (lengths.size() > 1) {
                     Length w = lengths.get(0);
                     Length h = lengths.get(1);
                     if (!w.equals(h)) {
                         Reporter reporter = context.getReporter();
-                        reporter.logError(reporter.message(locator, "*KEY*", "Anamorphic font size ''{0}'' prohibited.", value));
+                        reporter.logError(reporter.message(locator, "*KEY*", "Anamorphic font size ''{0}'' prohibited.", s));
                         return false;
                     }
                 }
@@ -194,16 +201,19 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
 
     private boolean verifyTextOutlineAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         Object value = sa.getStyleValue(content);
+        QName name = sa.getStyleName();
         if (value != null) {
             assert value instanceof String;
+            String s = (String) value;
+            Location location = new Location(content, context.getBindingElementName(content), name, locator);
             TextOutline[] outline = new TextOutline[1];
-            if (Outline.isOutline((String) value, locator, context, outline)) {
+            if (Outline.isOutline(s, location, context, outline)) {
                 assert outline.length > 0;
                 assert outline[0] != null;
                 Length b = outline[0].getBlur();
                 if ((b != null) && (b.getValue() > 0)) {
                     Reporter reporter = context.getReporter();
-                    reporter.logError(reporter.message(locator, "*KEY*", "Non-zero blur ''{0}'' prohibited.", value));
+                    reporter.logError(reporter.message(locator, "*Key*", "Non-zero blur ''{0}'' prohibited.", s));
                     return false;
                 }
             }
