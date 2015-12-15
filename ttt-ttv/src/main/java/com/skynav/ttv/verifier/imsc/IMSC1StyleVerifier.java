@@ -150,6 +150,8 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
                 return false;
             else if (name.equals(directionAttributeName))
                 return false;
+            else if (name.equals(displayAlignAttributeName))
+                return false;
             else if (name.equals(fontFamilyAttributeName))
                 return false;
             else if (name.equals(fontSizeAttributeName))

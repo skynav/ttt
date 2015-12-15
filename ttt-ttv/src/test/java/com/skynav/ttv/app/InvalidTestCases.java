@@ -1505,7 +1505,52 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidIMSC1ProhibitedEmUnitkInImageProfile() throws Exception {
+    public void testInvalidIMSC1ProhibitedCellUnitInExtentInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-cell-unit-in-extent-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedCellUnitInFontSizeInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-cell-unit-in-font-size-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedCellUnitInLineHeightInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-cell-unit-in-line-height-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedCellUnitInOriginInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-cell-unit-in-origin-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedCellUnitInPaddingInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-cell-unit-in-padding-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedCellUnitInTextOutlineInTextProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-cell-unit-in-text-outline-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedColorInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-color-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedDirectionInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-direction-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedDisplayAlignInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-display-align-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedEmUnitInImageProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-em-unit-in-image-profile.xml", -1, -1);
     }
 
@@ -1520,8 +1565,33 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedFontFamilyInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-font-family-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedFontSizeAnamorphic() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-font-size-anamorphic.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedFontSizeInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-font-size-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedFontStyleInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-font-style-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedFontWeightInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-font-weight-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedLineHeightInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-line-height-in-image-profile.xml", -1, -1);
     }
 
     @Test
@@ -1542,6 +1612,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC1ProhibitedOriginLengthUnitInTextProfile() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-origin-length-unit-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedPaddingInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-padding-in-image-profile.xml", -1, -1);
     }
 
     @Test
@@ -1590,8 +1665,23 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedTextAlignInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-text-align-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedTextDecorationInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-text-decoration-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedTextOutlineBlur() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-text-outline-blur.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedTextOutlineInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-text-outline-in-image-profile.xml", -1, -1);
     }
 
     @Test
@@ -1605,8 +1695,13 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidIMSC1ProhibitedTTMLStylesInImageProfile() throws Exception {
-        performInvalidityTest("imsc1-invalid-prohibited-ttml-styles-in-image-profile.xml", -1, -1);
+    public void testInvalidIMSC1ProhibitedUnicodeBidiInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-unicode-bidi-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC1ProhibitedWrapOptionInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-wrap-option-in-image-profile.xml", -1, -1);
     }
 
     @Test
