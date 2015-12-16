@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,13 +23,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.ttml1;
+package com.skynav.ttv.imsc;
 
-import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-public class UnmarshalContentTestCase {
-    @Test
-    public void testTTML1UnmarshalContent() throws Exception {
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+    ValidTestCases.class,
+    InvalidTestCases.class
+})
+public class VerifierTestSuite {
 }
 

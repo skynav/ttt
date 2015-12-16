@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2015 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.app;
+package com.skynav.ttv.ttml;
 
 import java.net.URL;
 import java.util.List;
@@ -163,106 +163,6 @@ public class ValidTestCases {
     @Test
     public void testValidForcedEncodingUTF8() throws Exception {
         performValidityTest("ttml1-valid-forced-encoding-utf8.xml", 0, 0, new String[] { "--force-encoding", "utf-8" });
-    }
-
-    @Test
-    public void testValidST20522010() throws Exception {
-        performValidityTest("st2052-2010-valid.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidST20522010AllStyles() throws Exception {
-        performValidityTest("st2052-2010-valid-all-styles.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidST20522010BackgroundImageExternal() throws Exception {
-        performValidityTest("st2052-2010-valid-background-image-external.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidST20522013With608Extensions() throws Exception {
-        performValidityTest("st2052-2013-valid-with-608.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidST20522013With708Extensions() throws Exception {
-        performValidityTest("st2052-2013-valid-with-708.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidST20522013AllStyles() throws Exception {
-        performValidityTest("st2052-2013-valid-all-styles.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidNFLXCC() throws Exception {
-        performValidityTest("nflxcc-valid.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidNFLXCCUsesCellUnitWithCellResolution() throws Exception {
-        performValidityTest("nflxcc-valid-uses-cell-unit-with-cell-resolution.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidNFLXCCUsesPixelUnitWithRootExtent() throws Exception {
-        performValidityTest("nflxcc-valid-uses-pixel-unit-with-root-extent.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidNFLXSDH() throws Exception {
-        performValidityTest("nflxsdh-valid.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1EBUTTSLinePadding() throws Exception {
-        performValidityTest("imsc1-valid-ebutts-line-padding.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1EBUTTSMultiRowAlign() throws Exception {
-        performValidityTest("imsc1-valid-ebutts-multirow-align.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1MissingProfileAttribute() throws Exception {
-        performValidityTest("imsc1-valid-missing-profile-attribute.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1NestedDivisionInTextProfile() throws Exception {
-        performValidityTest("imsc1-valid-nested-division-in-text-profile.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1NestedSpanInTextProfile() throws Exception {
-        performValidityTest("imsc1-valid-nested-span-in-text-profile.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1NonEmptyParagraphMissingTiming() throws Exception {
-        performValidityTest("imsc1-valid-non-empty-paragraph-missing-timing.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1NonEmptySpanMissingTiming() throws Exception {
-        performValidityTest("imsc1-valid-non-empty-span-missing-timing.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1NonEmptyTimeablesWithTiming() throws Exception {
-        performValidityTest("imsc1-valid-non-empty-timeables-with-timing.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1TimeablesWithBackgroundImageWithTimingOnAncestor() throws Exception {
-        performValidityTest("imsc1-valid-timeables-with-background-image-with-timing-on-ancestor.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC1TimeablesWithBackgroundImageWithTimingOnSelf() throws Exception {
-        performValidityTest("imsc1-valid-timeables-with-background-image-with-timing-on-self.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
