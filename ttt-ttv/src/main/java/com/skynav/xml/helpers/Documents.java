@@ -103,6 +103,16 @@ public class Documents {
             return null;
     }
 
+    public static QName getName(Element e) {
+        String ns = e.getNamespaceURI();
+        String ln;
+        if ((ns == null) || (ns.length() == 0))
+            ln = e.getNodeName();
+        else
+            ln = e.getLocalName();
+        return new QName(ns != null ? ns : "", ln);
+    }
+
     public static List<Element> getChildElements(Element e) {
         List<Element> elts = new java.util.ArrayList<Element>();
         for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {

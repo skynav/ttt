@@ -34,6 +34,9 @@ public class Location {
     private QName elementName;
     private QName attributeName;
     private Locator locator;
+    public Location() {
+        this(null, null, null, null);
+    }
     public Location(Object content, QName elementName, QName attributeName, Locator locator) {
         this.content = content;
         this.elementName = elementName;

@@ -33,6 +33,7 @@ import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttv.model.value.CharacterClass;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.verifier.util.Characters;
@@ -99,7 +100,7 @@ public class AnnotationStyleCollector extends StyleCollector {
                 Integer[] minMax = new Integer[] { 1, 1 };
                 Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
                 List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+                if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
                     assert lengths.size() == 1;
                     v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize(), cellResolution));
                 }

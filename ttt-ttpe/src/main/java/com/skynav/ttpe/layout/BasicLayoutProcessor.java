@@ -58,6 +58,7 @@ import com.skynav.ttpe.text.ParagraphCollector;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.util.Integers;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
@@ -271,14 +272,14 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         this.defaults = new Defaults();
         if (defaultBackgroundColor != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
-            if (com.skynav.ttv.verifier.util.Colors.isColor(defaultBackgroundColor, null, null, retColor))
+            if (com.skynav.ttv.verifier.util.Colors.isColor(defaultBackgroundColor, new Location(), context, retColor))
                 defaults.setBackgroundColor(new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha()));
             else
                 throw new InvalidOptionUsageException("default-background-color", "invalid color syntax:  " + defaultBackgroundColor);
         }
         if (defaultColor != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
-            if (com.skynav.ttv.verifier.util.Colors.isColor(defaultColor, null, null, retColor))
+            if (com.skynav.ttv.verifier.util.Colors.isColor(defaultColor, new Location(), context, retColor))
                 defaults.setColor(new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha()));
             else
                 throw new InvalidOptionUsageException("default-color", "invalid color syntax:  " + defaultColor);
@@ -404,7 +405,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             Integer[] minMax = new Integer[] { 2, 2 };
             Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
             List<Integer> integers = new java.util.ArrayList<Integer>();
-            if (Integers.isIntegers(value, null, context, minMax, treatments, integers))
+            if (Integers.isIntegers(value, new Location(), context, minMax, treatments, integers))
                 return new Extent(integers.get(0), integers.get(1));
         }
         return null;

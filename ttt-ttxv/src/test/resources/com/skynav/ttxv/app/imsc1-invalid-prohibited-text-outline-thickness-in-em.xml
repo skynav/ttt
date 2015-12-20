@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - tts:textOutline using em unit greater than 10% font size -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="100px 100px"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head/>
+  <body begin="1s" end="2s">
+    <div tts:fontSize="12px" tts:lineHeight="1.2em">
+      <p><span tts:textOutline="0.09em">X</span></p>    <!-- ok - less than 10% font size -->
+      <p><span tts:textOutline="0.10em">Y</span></p>    <!-- ok - equal to 10% font size -->
+      <p><span tts:textOutline="0.11em">Z</span></p>    <!-- not ok - greater than 10% font size -->
+    </div>
+  </body>
+</tt>

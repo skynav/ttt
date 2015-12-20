@@ -51,6 +51,7 @@ import com.skynav.ttpe.util.Characters;
 import com.skynav.ttv.model.value.FontFamily;
 import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.verifier.util.Fonts;
@@ -167,7 +168,7 @@ public class StyleCollector {
         v = null;
         if (s != null) {
             com.skynav.ttv.model.value.TextReserve[] retReserve = new com.skynav.ttv.model.value.TextReserve[1];
-            if (com.skynav.ttv.verifier.util.Reserve.isReserve(s.getValue(), null, context, retReserve)) {
+            if (com.skynav.ttv.verifier.util.Reserve.isReserve(s.getValue(), new Location(), context, retReserve)) {
                 com.skynav.ttv.model.value.TextReserve ar = retReserve[0];
                 Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
                 Length reserve = ar.getReserve();
@@ -394,7 +395,7 @@ public class StyleCollector {
         v = null;
         if (s != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
-            if (com.skynav.ttv.verifier.util.Colors.isColor(s.getValue(), null, null, retColor))
+            if (com.skynav.ttv.verifier.util.Colors.isColor(s.getValue(), new Location(), context, retColor))
                 v = color = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
         }
         if (v != null)
@@ -416,7 +417,7 @@ public class StyleCollector {
         v = null;
         if (s != null) {
             com.skynav.ttv.model.value.TextCombine[] retCombine = new com.skynav.ttv.model.value.TextCombine[1];
-            if (com.skynav.ttv.verifier.util.Combine.isCombine(s.getValue(), null, null, retCombine)) {
+            if (com.skynav.ttv.verifier.util.Combine.isCombine(s.getValue(), new Location(), context, retCombine)) {
                 com.skynav.ttv.model.value.TextCombine tc = retCombine[0];
                 v = new Combination(tc.getStyle().name(), tc.getCount());
             }
@@ -429,7 +430,7 @@ public class StyleCollector {
         v = null;
         if (s != null) {
             com.skynav.ttv.model.value.TextEmphasis[] retEmphasis = new com.skynav.ttv.model.value.TextEmphasis[1];
-            if (com.skynav.ttv.verifier.util.Emphasis.isEmphasis(s.getValue(), null, null, retEmphasis)) {
+            if (com.skynav.ttv.verifier.util.Emphasis.isEmphasis(s.getValue(), new Location(), context, retEmphasis)) {
                 com.skynav.ttv.model.value.TextEmphasis te = retEmphasis[0];
                 com.skynav.ttv.model.value.Color teColor = te.getColor();
                 Color c = (teColor != null) ? new Color(teColor.getRed(), teColor.getGreen(), teColor.getBlue(), teColor.getAlpha()) : color;
@@ -444,7 +445,7 @@ public class StyleCollector {
         v = null;
         if (s != null) {
             com.skynav.ttv.model.value.TextOutline[] retOutline = new com.skynav.ttv.model.value.TextOutline[1];
-            if (com.skynav.ttv.verifier.util.Outline.isOutline(s.getValue(), null, context, retOutline)) {
+            if (com.skynav.ttv.verifier.util.Outline.isOutline(s.getValue(), new Location(), context, retOutline)) {
                 com.skynav.ttv.model.value.TextOutline to = retOutline[0];
                 com.skynav.ttv.model.value.Color toColor = to.getColor();
                 Color c = (toColor != null) ? new Color(toColor.getRed(), toColor.getGreen(), toColor.getBlue(), toColor.getAlpha()) : color;
@@ -493,7 +494,7 @@ public class StyleCollector {
                 Integer[] minMax = new Integer[] { 1, 1 };
                 Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
                 List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+                if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
                     assert lengths.size() == 1;
                     v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs, cellResolution));
                 }
@@ -511,7 +512,7 @@ public class StyleCollector {
         if (s != null) {
             List<FontFamily> families = new java.util.ArrayList<FontFamily>();
             Object[] treatments = new Object[] { QuotedGenericFontFamilyTreatment.Allow };
-            if (Fonts.isFontFamilies(s.getValue(), null, context, treatments, families)) {
+            if (Fonts.isFontFamilies(s.getValue(), new Location(), context, treatments, families)) {
                 if (!families.isEmpty()) {
                     List<String> familyNames =  new java.util.ArrayList<String>();
                     for (FontFamily family : families)
@@ -552,7 +553,7 @@ public class StyleCollector {
         s = styles.get(ttsFontVariantAttrName);
         if (s != null) {
             Set<FontVariant> variants = new java.util.HashSet<FontVariant>();
-            if (Fonts.isFontVariants(s.getValue(), null, context, variants)) {
+            if (Fonts.isFontVariants(s.getValue(), new Location(), context, variants)) {
                 if (!variants.isEmpty()) {
                     for (FontVariant fv : variants) {
                         FontFeature f = FontFeature.fromVariant(fv);
@@ -568,7 +569,7 @@ public class StyleCollector {
             Integer[] minMax = new Integer[] { 1, 1 };
             Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
             List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+            if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
                 assert lengths.size() == 1;
                 Length length = lengths.get(0);
                 if (length.getUnits() == Length.Unit.Percentage)
@@ -666,7 +667,7 @@ public class StyleCollector {
         Integer[] minMax = new Integer[] { 1, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
         List<Length> lengths = new java.util.ArrayList<Length>();
-        if (Lengths.isLengths(s.getValue(), null, context, minMax, treatments, lengths)) {
+        if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
             Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
             double w, h;

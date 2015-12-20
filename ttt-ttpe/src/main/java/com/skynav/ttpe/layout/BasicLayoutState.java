@@ -58,6 +58,7 @@ import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.verifier.util.Keywords;
@@ -333,7 +334,7 @@ public class BasicLayoutState implements LayoutState {
                 Integer[] minMax = new Integer[] { 2, 2 };
                 Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
                 List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(v, null, context, minMax, treatments, lengths)) {
+                if (Lengths.isLengths(v, new Location(), context, minMax, treatments, lengths)) {
                     assert lengths.size() == 2;
                     Extent cellResolution = getCellResolution();
                     Extent externalExtent = getExternalExtent();
@@ -358,7 +359,7 @@ public class BasicLayoutState implements LayoutState {
                 Integer[] minMax = new Integer[] { 2, 2 };
                 Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
                 List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(v, null, context, minMax, treatments, lengths)) {
+                if (Lengths.isLengths(v, new Location(), context, minMax, treatments, lengths)) {
                     assert lengths.size() == 2;
                     Extent cellResolution = getCellResolution();
                     Extent externalExtent = getExternalExtent();
@@ -381,7 +382,7 @@ public class BasicLayoutState implements LayoutState {
             String v = s.getValue();
             String [] components = v.split("[ \t\r\n]+");
             Length[] lengths = new Length[4];
-            if (Positions.isPosition(components, null, context, lengths)) {
+            if (Positions.isPosition(components, new Location(), context, lengths)) {
                 Extent cellResolution = getCellResolution();
                 return Helpers.resolvePosition(e, lengths, getExternalExtent(), extent, cellResolution);
             }

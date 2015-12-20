@@ -62,6 +62,7 @@ import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.Region;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Location;
@@ -82,6 +83,7 @@ import com.skynav.ttv.verifier.util.Integers;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.Outline;
 import com.skynav.ttv.verifier.util.Timing;
 import com.skynav.ttv.verifier.util.ZeroTreatment;
 import com.skynav.xml.helpers.Documents;
@@ -236,25 +238,31 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     private double[] getRootExtent(TimedText tt) {
+        return getRootExtent(tt.getExtent(), getLocator(tt));
+    }
+
+    private double[] getRootExtent(String extent, Locator locator) {
         double[] externalExtent = (double[]) getContext().getResourceState("externalExtent");
-        String extent = tt.getExtent();
         if (extent != null) {
             extent = extent.trim();
             if (extent.equals("auto"))
                 return externalExtent;
             else {
-                Length[] lengths = parseLengthPair(extent, getLocator(tt), getContext().getReporter(), true);
-                return new double[] { getPixels(lengths[0], 1, 1), getPixels(lengths[1], 1, 1) };
+                Length[] lengths = parseLengthPair(extent, locator, getContext().getReporter(), true);
+                return new double[] { getPixels(lengths[0], 0, 1, 1, 1), getPixels(lengths[1], 0, 1, 1, 1) };
             }
         } else
             return externalExtent;
     }
 
     private double[] getCellResolution(TimedText tt) {
-        String cellResolution = tt.getCellResolution();
+        return getCellResolution(tt.getCellResolution(), getLocator(tt));
+    }
+
+    private double[] getCellResolution(String cellResolution, Locator locator) {
         if (cellResolution != null) {
             cellResolution = cellResolution.trim();
-            Integer[] integers = parseIntegerPair(cellResolution, getLocator(tt), getContext().getReporter());
+            Integer[] integers = parseIntegerPair(cellResolution, locator, getContext().getReporter());
             return new double[] { integers[0], integers[1] };
         } else
             return null;
@@ -282,8 +290,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             if (!origin.equals("auto")) {
                 Length[] lengths = parseLengthPair(origin, locator, reporter, false);
                 if (lengths != null) {
-                    x = getPixels(lengths[0], rootExtent[0], cellResolution[0]);
-                    y = getPixels(lengths[1], rootExtent[1], cellResolution[1]);
+                    x = getPixels(lengths[0], 0, wRoot, wRoot, cellResolution[0]);
+                    y = getPixels(lengths[1], 0, hRoot, wRoot, cellResolution[1]);
                 } else
                     failed = true;
             }
@@ -297,8 +305,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             if (!extent.equals("auto")) {
                 Length[] lengths = parseLengthPair(extent, locator, reporter, false);
                 if (lengths != null) {
-                    w = getPixels(lengths[0], rootExtent[0], cellResolution[0]);
-                    h = getPixels(lengths[1], rootExtent[1], cellResolution[1]);
+                    w = getPixels(lengths[0], 0, wRoot, wRoot, cellResolution[0]);
+                    h = getPixels(lengths[1], 0, hRoot, hRoot, cellResolution[1]);
                 } else
                     failed = true;
             }
@@ -364,17 +372,21 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         }
     }
 
-    private double getPixels(Length length, double rootExtent, double cellResolution) {
+    private double getPixels(Length length, double fSize, double pSize, double rSize, double cSize) {
         double value = length.getValue();
         Length.Unit units = length.getUnits();
-        if (rootExtent < 0)
-            rootExtent = 0;
+        if (pSize < 0)
+            pSize = 0;
+        if (rSize < 0)
+            rSize = 0;
         if (units == Length.Unit.Pixel)
             return value;
         else if (units == Length.Unit.Cell)
-            return value * (rootExtent / cellResolution);
+            return value * (rSize / cSize);
         else if (units == Length.Unit.Percentage)
-            return value * (rootExtent / 100);
+            return value * (pSize / 100);
+        else if (units == Length.Unit.Em)
+            return value * fSize;
         else
             return 0;
     }
@@ -901,8 +913,6 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         if (isTTParagraphElement(elt)) {
             if (!verifyLineHeight(root, isd, elt, styleSets, context))
                 failed = true;
-            if (!verifyTextOutlineThickness(root, isd, elt, styleSets, context))
-                failed = true;
         } else if (isTTSpanElement(elt)) {
             if (!verifyTextOutlineThickness(root, isd, elt, styleSets, context))
                 failed = true;
@@ -940,9 +950,86 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
     
     private boolean verifyTextOutlineThickness(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
-        return true;
+        boolean failed = false;
+        String style = Documents.getAttribute(elt, isdCSSAttributeName, null);
+        String fs = null;
+        String to = null;
+        if (style != null) {
+            StyleSet css = styleSets.get(style);
+            if (css != null) {
+                StyleSpecification ss;
+                if ((ss = css.get(IMSC1StyleVerifier.textOutlineAttributeName)) != null)
+                    to = ss.getValue();
+                if ((to != null) && ((ss = css.get(IMSC1StyleVerifier.fontSizeAttributeName)) != null))
+                    fs = ss.getValue();
+            }
+        }
+        if ((to != null) && !to.equals("none")) {
+            if (fs == null)
+                fs = "1c";
+            if (root instanceof TimedText) {
+                TimedText tt = (TimedText) root;
+                Locator locator = getLocator(elt);
+                QName eltName = Documents.getName(elt);
+                double[] rootExtent = getRootExtent(tt);
+                if (rootExtent == null)
+                    rootExtent = new double[] { -1, -1 };
+                double[] cellResolution = getCellResolution(tt);
+                if (cellResolution == null)
+                    cellResolution = new double[] { 1, 1 };
+                double hRoot, hCell;
+                if ((rootExtent != null) && (rootExtent.length > 1))
+                    hRoot = rootExtent[1];
+                else
+                    hRoot = 1;
+                if ((cellResolution != null) && (cellResolution.length > 1))
+                    hCell = cellResolution[1];
+                else
+                    hCell = 1;
+                Location fsLocation = new Location(elt, eltName, IMSC1StyleVerifier.fontSizeAttributeName, locator);
+                double fsInPixels = getFontSizeInPixels(fs, fsLocation, hRoot, hCell, context);
+                Location toLocation = new Location(elt, eltName, IMSC1StyleVerifier.textOutlineAttributeName, locator);
+                double toInPixels = getTextOutlineThicknessInPixels(to, toLocation, fsInPixels, hRoot, hCell, context);
+                if (toInPixels > 0.1 * fsInPixels) {
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(getLocator(elt),
+                        "*KEY*",
+                        "Computed value {0}px of text outline thickness must be less than or equal to 10% of computed value {1}px of font size.",
+                        toInPixels, fsInPixels));
+                }
+            }
+        }
+        return !failed;
     }
     
+    private double getFontSizeInPixels(String value, Location location, double hRoot, double hCell, VerifierContext context) {
+        Integer[] minMax = new Integer[] { 1, 2 };
+        Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
+        List<Length> lengths = new java.util.ArrayList<Length>();
+        if (Lengths.isLengths(value, location, context, minMax, treatments, lengths)) {
+            Length fs;
+            if (lengths.size() > 1)
+                fs = lengths.get(1);
+            else if (lengths.size() > 0)
+                fs = lengths.get(0);
+            else
+                fs = null;
+            if (fs != null)
+                return getPixels(fs, 0, hRoot / hCell, hRoot, hCell);
+        }
+        return 1;
+    }
+
+    private double getTextOutlineThicknessInPixels(String value, Location location, double hFont, double hRoot, double hCell, VerifierContext context) {
+        TextOutline[] outline = new TextOutline[1];
+        if (Outline.isOutline(value, location, context, outline)) {
+            Length to = outline[0].getThickness();
+            if (to != null)
+                return getPixels(to, hFont, hFont, hRoot, hCell);
+        }
+        return 0;
+    }
+
     private boolean isIMSCTextProfile(VerifierContext context) {
         String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_TEXT_ABSOLUTE);
