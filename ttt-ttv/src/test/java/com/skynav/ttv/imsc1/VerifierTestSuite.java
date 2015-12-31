@@ -23,13 +23,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.ttml;
+package com.skynav.ttv.imsc1;
 
-import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-public class SchemaContentModuleTestCase {
-    @Test
-    public void testTTML1SchemaContentModule() throws Exception {
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+    ValidTestCases.class,
+    InvalidTestCases.class
+})
+public class VerifierTestSuite {
 }
 

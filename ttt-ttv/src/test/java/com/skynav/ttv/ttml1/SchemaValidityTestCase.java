@@ -23,13 +23,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.ttml;
+package com.skynav.ttv.ttml1;
 
 import org.junit.Test;
 
-public class UnmarshalContentTestCase {
+public class SchemaValidityTestCase {
     @Test
-    public void testTTML1UnmarshalContent() throws Exception {
+    public void testTTML1SchemaValidity() throws Exception {
     }
 }
 

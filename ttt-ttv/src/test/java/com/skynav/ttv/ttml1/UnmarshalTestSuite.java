@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.imsc;
+package com.skynav.ttv.ttml1;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -31,9 +31,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    ValidTestCases.class,
-    InvalidTestCases.class
+    UnmarshalContentTestCase.class
 })
-public class VerifierTestSuite {
+public class UnmarshalTestSuite {
 }
 

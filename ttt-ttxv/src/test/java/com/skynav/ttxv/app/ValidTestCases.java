@@ -28,6 +28,7 @@ package com.skynav.ttxv.app;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 
@@ -36,6 +37,7 @@ import com.skynav.ttxv.app.TimedTextTransformingVerifier;
 
 public class ValidTestCases {
 
+    @Ignore
     @Test
     public void testValidIMSCISDLineHeightNormal() throws Exception {
         performTransformTest("imsc1-valid-isd-line-height-normal.xml", -1, -1);
