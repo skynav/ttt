@@ -864,20 +864,18 @@ public class Presenter extends TimedTextTransformer {
         }
     }
 
-    private void writeFrameEntry(ZipOutputStream zos, File f) {
+    private void writeFrameEntry(ZipOutputStream zos, File f) throws IOException {
         BufferedInputStream bis = null;
         try {
             bis = new BufferedInputStream(new FileInputStream(f));
             byte[] buffer = new byte[4096];
             int nb;
             while ((nb = bis.read(buffer, 0, buffer.length)) >= 0) {
-                if (nb > 0) {
+                if (nb > 0)
                     zos.write(buffer, 0, nb);
-                } else
-                    Thread.sleep(0);
+                else
+                    throw new IOException("BufferedInputStream.read returned zero (0) in violation of its contract");
             }
-        } catch (InterruptedException e) {
-        } catch (IOException e) {
         } finally {
             IOUtil.closeSafely(bis);
         }
