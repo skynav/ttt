@@ -93,10 +93,13 @@ public class SVGRenderProcessor extends RenderProcessor {
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
         { "svg-background",             "COLOR",    "paint background of specified color into root region (default: transparent)" },
-        { "svg-decorate-all",           "",         "decorate regions, lines, glyphs, etc., for debugging purposes" },
-        { "svg-decorate-glyphs",        "",         "decorate glyphs with bounding box, etc., for debugging purposes" },
-        { "svg-decorate-lines",         "",         "decorate lines with bounding box, etc., for debugging purposes" },
-        { "svg-decorate-regions",       "",         "decorate regions with bounding box, etc., for debugging purposes" },
+        { "svg-decorate-all",           "",         "decorate regions, lines, glyphs" },
+        { "svg-decorate-glyphs",        "",         "decorate glyphs with bounding box" },
+        { "svg-decorate-line-baselines","",         "decorate line baselines" },
+        { "svg-decorate-line-bounds",   "",         "decorate line bounding boxes" },
+        { "svg-decorate-line-labels",   "",         "decorate line labels" },
+        { "svg-decorate-lines",         "",         "decorate line features (bounding baselines, boxes, labels)" },
+        { "svg-decorate-regions",       "",         "decorate regions with bounding box" },
         { "svg-decoration",             "COLOR",    "paint decorations using specified color (default: color contrasting with specified background or black)" },
     };
     private static final Map<String,OptionSpecification> longOptions;
@@ -116,7 +119,9 @@ public class SVGRenderProcessor extends RenderProcessor {
     private String backgroundOption;
     @SuppressWarnings("unused")
     private boolean decorateGlyphs;
-    private boolean decorateLines;
+    private boolean decorateLineBaselines;
+    private boolean decorateLineBounds;
+    private boolean decorateLineLabels;
     private boolean decorateRegions;
     private String decorationOption;
     private String outputPattern;
@@ -168,12 +173,22 @@ public class SVGRenderProcessor extends RenderProcessor {
             backgroundOption = args.get(++index);
         } else if (option.equals("svg-decorate-all")) {
             // decorateGlyphs = true;
-            decorateLines = true;
+            decorateLineBaselines = true;
+            decorateLineBounds = true;
+            decorateLineLabels = true;
             decorateRegions = true;
         } else if (option.equals("svg-decorate-glyphs")) {
             decorateGlyphs = true;
+        } else if (option.equals("svg-decorate-line-baselines")) {
+            decorateLineBaselines = true;
+        } else if (option.equals("svg-decorate-line-bounds")) {
+            decorateLineBounds = true;
+        } else if (option.equals("svg-decorate-line-labels")) {
+            decorateLineLabels = true;
         } else if (option.equals("svg-decorate-lines")) {
-            decorateLines = true;
+            decorateLineBaselines = true;
+            decorateLineBounds = true;
+            decorateLineLabels = true;
         } else if (option.equals("svg-decorate-regions")) {
             decorateRegions = true;
         } else if (option.equals("svg-decoration")) {
@@ -417,7 +432,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
         xCurrent = 0;
         yCurrent = 0;
-        if (decorateLines)
+        if (hasLineDecoration())
             decorateLine(e, a, d, vertical, bpdDirection, ipdDirection, true);
         maybeStyleLineGroup(e, a);
         e = renderChildren(e, a, d);
@@ -438,7 +453,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
         xCurrent = 0;
         yCurrent = 0;
-        if (decorateLines)
+        if (hasLineDecoration())
             decorateLine(e, a, d, vertical, bpdDirection, ipdDirection, false);
         maybeStyleLineGroup(e, a);
         e = renderChildren(e, a, d);
@@ -456,9 +471,13 @@ public class SVGRenderProcessor extends RenderProcessor {
         return e;
     }
 
+    private boolean hasLineDecoration() {
+        return decorateLineBaselines || decorateLineBounds || decorateLineLabels;
+    }
+
     private void decorateLine(Element e, LineArea a, Document d, boolean vertical, Direction bpdDirection, Direction ipdDirection, boolean annotation) {
-        boolean showBoundingBox = true;
-        boolean showLabel = !annotation;
+        boolean showBoundingBox = decorateLineBounds;
+        boolean showLabel = decorateLineLabels && !annotation;
         double w, h;
         if (vertical) {
             h = a.getIPD();
@@ -475,6 +494,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             x = xCurrent;
             y = yCurrent;
         }
+        // baseline [TBD]
         // bounding box
         if (showBoundingBox) {
             Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
@@ -488,7 +508,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Double[] {y}));
             e.appendChild(eDecoration);
         }
-        // crop marks
+        // crop marks [TBD]
         // label
         if (showLabel) {
             Element eDecorationLabel = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);

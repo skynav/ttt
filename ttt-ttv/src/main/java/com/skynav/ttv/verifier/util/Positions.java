@@ -105,10 +105,10 @@ public class Positions {
         if (components.length == 4) {
             Length[] lengths;
             lengths = new Length[4];
-            if (isEdgeOffsetHorizontal(components, 0, location, context, outputLengths) && isEdgeOffsetVertical(components, 2, location, context, outputLengths))
+            if (isEdgeOffsetHorizontal(components, 0, location, context, lengths) && isEdgeOffsetVertical(components, 2, location, context, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
             lengths = new Length[4];
-            if (isEdgeOffsetVertical(components, 0, location, context, outputLengths) && isEdgeOffsetHorizontal(components, 2, location, context, outputLengths))
+            if (isEdgeOffsetVertical(components, 0, location, context, lengths) && isEdgeOffsetHorizontal(components, 2, location, context, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
         }
         return false;
@@ -193,8 +193,8 @@ public class Positions {
                     assert outputLengths.length >= 4;
                     outputLengths[0] = lengths[0];
                     outputLengths[2] = c1.equals("left") ? offset[0].negate() : offset[0];
-                    return true;
                 }
+                return true;
             }
         }
         return false;
@@ -255,8 +255,8 @@ public class Positions {
                     assert outputLengths.length >= 4;
                     outputLengths[1] = lengths[1];
                     outputLengths[3] = c1.equals("top") ? offset[0].negate() : offset[0];
-                    return true;
                 }
+                return true;
             }
         }
         return false;

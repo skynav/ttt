@@ -35,9 +35,9 @@
   <xs:attribute name="ruby" type="ttd:ruby"/>
   <xs:attribute name="rubyAlign" type="ttd:rubyAlign"/>
   <xs:attribute name="rubyOffset" type="ttd:rubyOffset"/>
+  <xs:attribute name="rubyOverflow" type="ttd:rubyOverflow"/>
   <xs:attribute name="rubyOverhang" type="ttd:rubyOverhang"/>
   <xs:attribute name="rubyOverhangClass" type="ttd:rubyOverhangClass"/>
-  <xs:attribute name="rubyOverflow" type="ttd:rubyOverflow"/>
   <xs:attribute name="rubyPosition" type="ttd:rubyPosition"/>
   <xs:attribute name="rubyReserve" type="ttd:rubyReserve"/>
   <xs:attribute name="script" type="ttd:script"/>
@@ -85,9 +85,9 @@
     <xs:attribute ref="tts:ruby"/>
     <xs:attribute ref="tts:rubyAlign"/>
     <xs:attribute ref="tts:rubyOffset"/>
+    <xs:attribute ref="tts:rubyOverflow"/>
     <xs:attribute ref="tts:rubyOverhang"/>
     <xs:attribute ref="tts:rubyOverhangClass"/>
-    <xs:attribute ref="tts:rubyOverflow"/>
     <xs:attribute ref="tts:rubyPosition"/>
     <xs:attribute ref="tts:rubyReserve"/>
     <xs:attribute ref="tts:script"/>
