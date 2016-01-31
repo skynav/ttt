@@ -25,8 +25,8 @@
 
 package com.skynav.ttv.verifier.util;
 
-import com.skynav.ttv.util.Location;
 import com.skynav.ttv.model.value.TextCombine;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Combine {

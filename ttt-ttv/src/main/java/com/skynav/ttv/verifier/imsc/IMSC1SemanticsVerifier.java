@@ -25,9 +25,9 @@
 
 package com.skynav.ttv.verifier.imsc;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -58,8 +58,8 @@ import com.skynav.ttv.model.ttml1.tt.Division;
 import com.skynav.ttv.model.ttml1.tt.Head;
 import com.skynav.ttv.model.ttml1.tt.Layout;
 import com.skynav.ttv.model.ttml1.tt.Paragraph;
-import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.Region;
+import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
@@ -441,7 +441,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 children = ((Span) content).getContent();
             else
                 children = null;
-            return (children != null) ? hasTimeableContent(children) : null;
+            return (children == null) ? false : hasTimeableContent(children);
         }
     }
 
@@ -919,7 +919,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         }
         return !failed;
     }
-    
+
     private QName isdCSSAttributeName = new QName(TTML1.Constants.NAMESPACE_TT_ISD, "css");
 
     private boolean verifyLineHeight(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
@@ -948,7 +948,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         }
         return !failed;
     }
-    
+
     private boolean verifyTextOutlineThickness(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
         boolean failed = false;
         String style = Documents.getAttribute(elt, isdCSSAttributeName, null);
@@ -972,17 +972,15 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
                 Locator locator = getLocator(elt);
                 QName eltName = Documents.getName(elt);
                 double[] rootExtent = getRootExtent(tt);
-                if (rootExtent == null)
-                    rootExtent = new double[] { -1, -1 };
                 double[] cellResolution = getCellResolution(tt);
-                if (cellResolution == null)
-                    cellResolution = new double[] { 1, 1 };
                 double hRoot, hCell;
-                if ((rootExtent != null) && (rootExtent.length > 1))
+                assert rootExtent != null;
+                if (rootExtent.length > 1)
                     hRoot = rootExtent[1];
                 else
                     hRoot = 1;
-                if ((cellResolution != null) && (cellResolution.length > 1))
+                assert cellResolution != null;
+                if (cellResolution.length > 1)
                     hCell = cellResolution[1];
                 else
                     hCell = 1;
@@ -1001,7 +999,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         }
         return !failed;
     }
-    
+
     private double getFontSizeInPixels(String value, Location location, double hRoot, double hCell, VerifierContext context) {
         Integer[] minMax = new Integer[] { 1, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };

@@ -177,11 +177,11 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
         }
         return true;
     }
-    
+
     private boolean verifyAttributePermittedInTextProfile(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         return true;
     }
-    
+
     private boolean verifyFontSizeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         Object value = sa.getStyleValue(content);
         QName name = sa.getStyleName();

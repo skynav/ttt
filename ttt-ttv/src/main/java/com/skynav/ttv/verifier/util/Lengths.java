@@ -359,7 +359,7 @@ public class Lengths {
         reporter.logInfo(reporter.message(location.getLocator(),
             "*KEY*", "Bad <length> expression, units value {0} not permitted on {1}.", units.shorthand(), location.getAttributeName()));
     }
-    
+
     public static boolean isLengths(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {
         Reporter reporter = (context != null) ? context.getReporter() : null;
         Locator locator = location.getLocator();

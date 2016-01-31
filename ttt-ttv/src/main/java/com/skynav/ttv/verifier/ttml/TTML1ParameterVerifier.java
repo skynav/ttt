@@ -486,7 +486,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
             otherAttributes.put(defaultedParametersAttributeName, ComparableQName.toString(defaulted));
         }
     }
-    
+
     public static final boolean isParameterDefaulted(Object content, QName name) {
         Map<QName,String> otherAttributes = Annotations.getOtherAttributes(content);
         Set<ComparableQName> defaulted = ComparableQName.parseNames(otherAttributes.get(defaultedParametersAttributeName));

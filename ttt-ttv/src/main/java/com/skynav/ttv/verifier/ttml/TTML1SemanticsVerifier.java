@@ -260,9 +260,10 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
         String id = attrs.get(qnId);
         if ((id != null) && !id.isEmpty()) {
             StyleSet css = new StyleSet(id);
-            for (QName qn : attrs.keySet()) {
+            for (Map.Entry<QName,String> e : attrs.entrySet()) {
+                QName qn = e.getKey();
                 if (!qn.equals(qnId))
-                    css.merge(qn, attrs.get(qn));
+                    css.merge(qn, e.getValue());
             }
             return css;
         } else

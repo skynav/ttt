@@ -522,7 +522,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
     protected boolean verifyAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         return sa.verify(model, content, locator, context);
     }
-    
+
     protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (isSet(content))
