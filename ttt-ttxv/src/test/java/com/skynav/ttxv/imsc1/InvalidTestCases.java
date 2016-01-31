@@ -37,6 +37,11 @@ import com.skynav.ttxv.app.TimedTextTransformingVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidIMSC1Prohibited5Regions5PerISD() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-5-regions-5-per-isd.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1ProhibitedTextOutlineThicknessInEm() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-text-outline-thickness-in-em.xml", -1, -1);
     }

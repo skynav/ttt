@@ -78,6 +78,7 @@ public class IMSC1 {
         public static final String ATTR_PROGRESSIVELY_DECODABLE = "progressivelyDecodable";
 
         public static final String CHARSET_REQUIRED = "UTF-8";
+        public static final int    MAX_REGIONS_PER_ISD = 4;
 
     }
 

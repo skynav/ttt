@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - region count in isd exceeds maximum (4) -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="640px 480px"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:extent="600px 24px" tts:origin="20px 156px"/>
+      <region xml:id="r1" tts:extent="600px 24px" tts:origin="20px 192px"/>
+      <region xml:id="r2" tts:extent="600px 24px" tts:origin="20px 228px"/>
+      <region xml:id="r3" tts:extent="600px 24px" tts:origin="20px 264px"/>
+      <region xml:id="r4" tts:extent="600px 24px" tts:origin="20px 300px"/>
+    </layout>
+  </head>
+  <body tts:fontSize="20px" tts:lineHeight="24px">
+    <div>
+      <p begin="1s" end="2s" region="r0">Cue 0 in Region 0</p>
+      <p begin="1s" end="2s" region="r1">Cue 1 in Region 1</p>
+      <p begin="1s" end="2s" region="r2">Cue 2 in Region 2</p>
+      <p begin="1s" end="2s" region="r3">Cue 3 in Region 3</p>
+      <p begin="1s" end="2s" region="r4">Cue 4 in Region 4</p>
+    </div>
+  </body>
+</tt>

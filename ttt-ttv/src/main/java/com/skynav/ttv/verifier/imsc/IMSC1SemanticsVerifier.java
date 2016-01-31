@@ -131,7 +131,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         boolean failed = false;
         Reporter reporter = getContext().getReporter();
         try {
-            Charset charsetRequired = Charset.forName(IMSC1.Constants.CHARSET_REQUIRED);
+            Charset charsetRequired = Charset.forName(CHARSET_REQUIRED);
             String charsetRequiredName = charsetRequired.name();
             Charset charset = (Charset) getContext().getResourceState("encoding");
             String charsetName = (charset != null) ? charset.name() : "unknown";
@@ -885,6 +885,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             boolean failed = false;
             if (!verifyPostTransformStyleConstraints(root, isd, context))
                 failed = true;
+            if (!verifyMaximumRegionCount(root, isd, context))
+                failed = true;
             return !failed;
         }
     }
@@ -1028,6 +1030,19 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         return 0;
     }
 
+    private boolean verifyMaximumRegionCount(final Object root, final Document isd, final VerifierContext context) {
+        boolean failed = false;
+        int maxRegions = MAX_REGIONS_PER_ISD;
+        List<Element> regions = getISDRegionElements(isd);
+        if (regions.size() > maxRegions) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(getLocator(root),
+                "*KEY*", "Maximum number of regions exceeded in ISD instance, expected no more than {0}, got {1}.", maxRegions, regions.size()));
+            failed = true;
+        }
+        return !failed;
+    }
+    
     private boolean isIMSCTextProfile(VerifierContext context) {
         String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_TEXT_ABSOLUTE);
