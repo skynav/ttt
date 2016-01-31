@@ -32,6 +32,7 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml1.ttd.WritingMode;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.util.Location;
@@ -236,8 +237,36 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
     }
 
     private boolean verifyWritingModeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
-        // TBD - if image profile, prohibit 'vertical'
-        return true;
+        boolean failed = false;
+        String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
+        if (profile == null)
+            profile = PROFILE_TEXT_ABSOLUTE;
+        Object value = sa.getStyleValue(content);
+        QName name = sa.getStyleName();
+        if (value != null) {
+            assert value instanceof WritingMode;
+            WritingMode wm = (WritingMode) value;
+            if (profile.equals(PROFILE_IMAGE_ABSOLUTE)) {
+                if (isVertical(wm)) {
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator,
+                        "*Key*", "Prohibited value ''{0}'' on ''{1}'' in {2} image profile.", wm.value(), name, getModel().getName()));
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    private static final boolean isVertical(WritingMode wm) {
+        if (wm == WritingMode.LRTB)
+            return true;
+        else if (wm == WritingMode.RLTB)
+            return true;
+        else if (wm == WritingMode.TB)
+            return true;
+        else
+            return false;
     }
 
 }

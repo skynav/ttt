@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:writingMode attribute values in text profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:extent="auto" tts:writingMode="tblr"/>     <!-- ok -->
+      <region xml:id="r1" tts:extent="auto" tts:writingMode="tbrl"/>     <!-- ok -->
+      <region xml:id="r2" tts:extent="auto" tts:writingMode="tb"/>       <!-- ok -->
+      <region xml:id="r3" tts:extent="auto" tts:writingMode="lrtb"/>     <!-- ok -->
+      <region xml:id="r4" tts:extent="auto" tts:writingMode="rltb"/>     <!-- ok -->
+      <region xml:id="r5" tts:extent="auto" tts:writingMode="lr"/>       <!-- ok -->
+      <region xml:id="r6" tts:extent="auto" tts:writingMode="rl"/>       <!-- ok -->
+    </layout>
+  </head>
+  <body/>
+</tt>

@@ -301,6 +301,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC1ProhibitedWritingModeInImageProfile() throws Exception {
+        performInvalidityTest("imsc1-invalid-prohibited-writing-mode-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC1RegionNotInRootContainer() throws Exception {
         performInvalidityTest("imsc1-invalid-region-not-in-root-container.xml", -1, -1);
     }

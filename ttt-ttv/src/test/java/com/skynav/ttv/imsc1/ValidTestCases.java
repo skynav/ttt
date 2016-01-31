@@ -90,6 +90,11 @@ public class ValidTestCases {
         performValidityTest("imsc1-valid-timeables-with-background-image-with-timing-on-self.xml", -1, -1);
     }
 
+    @Test
+    public void testValidIMSC1WritingModeInTextProfile() throws Exception {
+        performValidityTest("imsc1-valid-writing-mode-in-text-profile.xml", -1, -1);
+    }
+
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performValidityTest(resourceName, expectedErrors, expectedWarnings, null);
     }
