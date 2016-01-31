@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-14 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttxv.imsc1;
+package com.skynav.ttxv.netflix;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -31,11 +31,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    // ttt originated test content
     ValidTestCases.class,
-    // InvalidTestCases.class,
-    // w3c originated test content
-    // com.skynav.ttxv.imsc1.w3c.ValidTestCases.class,
+    InvalidTestCases.class
 })
 public class VerifierTestSuite {
 }

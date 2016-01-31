@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttxv.imsc1;
+package com.skynav.ttxv.netflix;
 
 import java.net.URL;
 import java.util.List;
@@ -37,8 +37,8 @@ import com.skynav.ttxv.app.TimedTextTransformingVerifier;
 public class ValidTestCases {
 
     @Test
-    public void testValidIMSCISDLineHeightNormal() throws Exception {
-        performTransformTest("imsc1-valid-isd-line-height-normal.xml", -1, -1);
+    public void testValidNFLXCCISD5Regions1PerISD() throws Exception {
+        performTransformTest("nflxcc-valid-isd-5-regions-1-per-isd.xml", -1, -1);
     }
 
     private void performTransformTest(String resourceName, int expectedErrors, int expectedWarnings) {

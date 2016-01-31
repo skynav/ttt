@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tt xmlns:itts="http://www.w3.org/ns/ttml/profile/imsc1#styling" xmlns:ittp="http://www.w3.org/ns/ttml/profile/imsc1#parameter" xmlns:ittm="http://www.w3.org/ns/ttml/profile/imsc1#metadata" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt" xmlns="http://www.w3.org/ns/ttml" xmlns:tt="http://www.w3.org/ns/ttml" xml:lang="en" tts:extent="1920px 1080px" ttp:frameRate="24" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/image">
+	<head>
+		<metadata>
+			<ttm:title>HD Image Subtitles</ttm:title>
+			<ttm:copyright>(c) DECE LLC 2012, all rights reserved.</ttm:copyright>
+			<ttm:desc>These HD Image Subtitles can be used in a test for subtitle placement and synchronization.</ttm:desc>
+		</metadata> 
+		<layout>
+			<region xml:id="subtitleArea1" tts:origin="350px 450px" tts:extent="1400px 400px" tts:showBackground="whenActive"/>
+			<region xml:id="subtitleArea2" tts:origin="350px 450px" tts:extent="1400px 400px" tts:showBackground="whenActive"/>
+			<region xml:id="subtitleArea3" tts:origin="350px 450px" tts:extent="1400px 400px" tts:showBackground="whenActive"/>
+			<region xml:id="subtitleArea4" tts:origin="350px 450px" tts:extent="1400px 400px" tts:showBackground="whenActive"/>
+			</layout>
+	</head>  
+	<body>
+		<div region="subtitleArea1" begin="00:00:01:02" end="00:00:06:02" smpte:backgroundImage="track3-frag0-sample1-subs1.png"/>
+		<div region="subtitleArea2" begin="00:00:07:23" end="00:00:13:02" smpte:backgroundImage="track3-frag0-sample1-subs2.png"/>
+		<div region="subtitleArea3" begin="00:00:15:01" end="00:00:20:01" smpte:backgroundImage="track3-frag0-sample1-subs1.png"/>
+		<div region="subtitleArea4" begin="00:00:22:22" end="00:00:27:20" smpte:backgroundImage="track3-frag0-sample1-subs2.png"/>
+	</body>
+</tt>

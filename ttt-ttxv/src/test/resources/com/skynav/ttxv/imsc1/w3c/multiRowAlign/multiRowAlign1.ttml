@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en" 
+	xmlns="http://www.w3.org/ns/ttml" 
+	xmlns:ttm="http://www.w3.org/ns/ttml#metadata" 
+	xmlns:tts="http://www.w3.org/ns/ttml#styling"
+        xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+	xmlns:ebutts="urn:ebu:tt:style"
+	ttp:timeBase="media">
+	<head>
+		<styling>
+            <style xml:id="baseStyle" tts:color="#FFFFFF"/>
+            <style xml:id="blackBackground" tts:backgroundColor="#000000"/>
+            <style xml:id="greenBackground" tts:backgroundColor="#00FF00"/>
+			<style xml:id="startEnd" tts:textAlign="start" ebutts:multiRowAlign="end"/>
+			<style xml:id="centerStart" tts:textAlign="center" ebutts:multiRowAlign="start"/>
+		</styling>
+		<layout>
+			<region xml:id="area1" tts:origin="15% 10%" tts:extent="70% 20%" style="greenBackground" tts:displayAlign="center"/>
+			<region xml:id="area2" tts:origin="15% 70%" tts:extent="70% 20%" style="blackBackground" tts:displayAlign="center"/>
+		</layout>
+	</head>
+	<body tts:lineHeight="100%">
+		<div style="baseStyle">			
+			<p xml:id="s1" region="area1" style="startEnd" begin="00:00:01" end="00:00:09">
+multiRowAlign="end"<br/>textAlign="start"
+			</p>
+			<p xml:id="s2" region="area2" style="centerStart" begin="00:00:01" end="00:00:09">
+multiRowAlign="start"<br/>textAlign="center"
+			</p>
+		</div>
+	</body>
+</tt>

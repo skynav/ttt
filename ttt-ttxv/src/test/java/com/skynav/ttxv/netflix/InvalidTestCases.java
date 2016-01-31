@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttxv.imsc1;
+package com.skynav.ttxv.netflix;
 
 import java.net.URL;
 import java.util.List;
@@ -34,18 +34,14 @@ import static org.junit.Assert.fail;
 import com.skynav.ttv.app.TimedTextVerifier;
 import com.skynav.ttxv.app.TimedTextTransformingVerifier;
 
-public class ValidTestCases {
+public class InvalidTestCases {
 
     @Test
-    public void testValidIMSCISDLineHeightNormal() throws Exception {
-        performTransformTest("imsc1-valid-isd-line-height-normal.xml", -1, -1);
+    public void testInvalidNFLXCCISD5Regions5PerISD() throws Exception {
+        performInvalidityTest("nflxcc-invalid-isd-5-regions-5-per-isd.xml", -1, -1);
     }
 
-    private void performTransformTest(String resourceName, int expectedErrors, int expectedWarnings) {
-        performTransformTest(resourceName, expectedErrors, expectedWarnings, null);
-    }
-
-    private void performTransformTest(String resourceName, int expectedErrors, int expectedWarnings, String[] additionalOptions) {
+    private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
@@ -53,8 +49,6 @@ public class ValidTestCases {
         List<String> args = new java.util.ArrayList<String>();
         args.add("-q");
         args.add("-v");
-        args.add("--warn-on");
-        args.add("all");
         args.add("--external-duration");
         args.add("1h");
         if (expectedErrors >= 0) {
@@ -65,17 +59,14 @@ public class ValidTestCases {
             args.add("--expect-warnings");
             args.add(Integer.toString(expectedWarnings));
         }
-        if (additionalOptions != null) {
-            args.addAll(java.util.Arrays.asList(additionalOptions));
-        }
         args.add(urlString);
         TimedTextTransformingVerifier ttxv = new TimedTextTransformingVerifier();
         ttxv.run(args.toArray(new String[args.size()]));
         int resultCode = ttxv.getResultCode(urlString);
         int resultFlags = ttxv.getResultFlags(urlString);
         if (resultCode == TimedTextVerifier.RV_PASS) {
-            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MATCH) != 0) {
-                fail("Unexpected success with expected error(s) match.");
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MATCH) == 0) {
+                fail("Unexpected success without expected error(s) match.");
             }
             if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0) {
                 fail("Unexpected success with unexpected warning(s).");
@@ -95,4 +86,3 @@ public class ValidTestCases {
     }
 
 }
-

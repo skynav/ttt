@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tt xmlns:itts="http://www.w3.org/ns/ttml/profile/imsc1#styling" xmlns:ittp="http://www.w3.org/ns/ttml/profile/imsc1#parameter" xmlns:ittm="http://www.w3.org/ns/ttml/profile/imsc1#metadata" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt" xmlns="http://www.w3.org/ns/ttml" xmlns:tt="http://www.w3.org/ns/ttml" xml:lang="es" tts:extent="1920px 1080px" ttp:frameRate="24" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text">
+	<head>
+		<metadata>
+			<ttm:title>High-Rate Sample Subtitles</ttm:title>
+			<ttm:copyright>
+        (c) DECE LLC 2013, all rights reserved.
+      </ttm:copyright>
+			<ttm:desc>These are test subtitles for the use of DECE Members and Licensees. These are subtitles at the maximum allowed rendering rates.
+      </ttm:desc>
+		</metadata>
+		
+		<styling>
+			<style xml:id="white_8" tts:color="white" tts:fontFamily="proportionalSerif" tts:fontSize="8px" tts:textAlign="left"/>
+			<style xml:id="black_30" tts:color="black" tts:fontFamily="proportionalSansSerif" tts:fontSize="30px" tts:textAlign="center"/>
+			<style xml:id="black_72" tts:color="black" tts:fontFamily="proportionalSerif" tts:fontSize="72px" tts:textAlign="center"/>
+			<style xml:id="white_73" tts:color="white" tts:fontFamily="proportionalSansSerif" tts:fontSize="73px" tts:textAlign="right"/>
+			<style xml:id="black_144" tts:color="black" tts:fontFamily="proportionalSansSerif" tts:fontSize="144px" tts:textAlign="center"/>
+		</styling>
+		<layout>
+			<region xml:id="subtitleArea1" style="black_72" tts:origin="100px 200px" tts:extent="1024px 690px" tts:padding="5px 5px" tts:opacity="0.85" tts:textAlign="center" tts:showBackground="whenActive" tts:wrapOption="noWrap"/>
+			<region xml:id="subtitleArea2" style="white_73" tts:origin="800px 100px" tts:extent="500px 100px" tts:padding="5px 5px" tts:backgroundColor="#FFF067" tts:displayAlign="center" tts:showBackground="whenActive" tts:wrapOption="wrap"/>
+			<region xml:id="subtitleArea3" style="black_144" tts:origin="800px 50px" tts:extent="1100px 980px" tts:padding="5px 5px" tts:backgroundColor="#aaaaaa" tts:opacity="0.75" tts:displayAlign="center" tts:showBackground="whenActive" tts:wrapOption="wrap"/>
+			<region xml:id="extra" style="black_72" tts:origin="5px 5px" tts:extent="10px 20px" tts:opacity="0.0" tts:textAlign="center" tts:showBackground="whenActive" tts:wrapOption="noWrap"/>
+			<region xml:id="extra2" style="black_72" tts:origin="25px 5px" tts:extent="10px 20px" tts:visibility="hidden" tts:textAlign="center" tts:showBackground="whenActive" tts:wrapOption="noWrap"/>
+			<region xml:id="alwaysHidden" style="black_72" tts:origin="45px 5px" tts:extent="10px 20px" tts:visibility="hidden" tts:textAlign="center" tts:showBackground="whenActive" tts:wrapOption="noWrap" tts:backgroundColor="#aaaaaa"/>
+			<region xml:id="defaultHidden" style="black_72" tts:origin="65px 5px" tts:extent="10px 20px" tts:visibility="hidden" tts:textAlign="center" tts:wrapOption="noWrap" tts:backgroundColor="#aaaaaa"/>
+			<region xml:id="alwaysVisible" style="black_72" tts:origin="45px 5px" tts:extent="10px 20px" tts:textAlign="center" tts:showBackground="always" tts:wrapOption="noWrap" tts:backgroundColor="#aaaaaa"/>
+		</layout>
+	</head>
+	<body tts:lineHeight="100%">
+		
+		<div region="subtitleArea1">
+			<p begin="00:00:00:10" end="00:00:00:13" tts:backgroundColor="#97BF0D" style="white_73" tts:wrapOption="wrap" tts:fontSize="24px">Start</p>
+			<p begin="00:00:00:13" end="00:00:00:16" tts:backgroundColor="#000000" style="white_73" tts:wrapOption="wrap" tts:fontSize="24px">Start by</p>
+			<p begin="00:00:00:16" end="00:00:00:19" tts:backgroundColor="#97BF0D" style="white_73" tts:wrapOption="wrap" tts:fontSize="24px">Start by adding</p>
+			<p begin="00:00:00:19" end="00:00:00:22" tts:backgroundColor="#000000" style="white_73" tts:wrapOption="wrap" tts:fontSize="24px">Start by adding one</p>
+			<p begin="00:00:00:22" end="00:00:01:01" tts:backgroundColor="#97BF0D" style="white_73" tts:wrapOption="wrap" tts:fontSize="24px">Start by adding one word</p>
+			<p begin="00:00:01:01" end="00:00:01:04" tts:backgroundColor="#000000" style="white_73" tts:wrapOption="wrap" tts:fontSize="24px">Start by adding one word at</p>
+			<p begin="00:00:01:04" end="00:00:01:07" tts:backgroundColor="#97BF0D" style="white_73" tts:wrapOption="wrap" tts:fontSize="24px">Start by adding one word at a</p>
+			<p begin="00:00:01:07" end="00:00:01:11" tts:backgroundColor="#000000" style="white_73" tts:wrapOption="wrap" tts:fontSize="24px">Start by adding one word at a time.</p>
+		</div>
+		
+		<div region="subtitleArea1">
+			<p begin="00:00:01:11" end="00:00:01:14" tts:backgroundColor="#000000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:01:14" end="00:00:01:17" tts:backgroundColor="#100000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:01:17" end="00:00:01:20" tts:backgroundColor="#200000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:01:20" end="00:00:01:23" tts:backgroundColor="#300000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:01:23" end="00:00:02:02" tts:backgroundColor="#400000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:02:02" end="00:00:02:05" tts:backgroundColor="#500000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:02:05" end="00:00:02:08" tts:backgroundColor="#600000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:02:08" end="00:00:02:11" tts:backgroundColor="#700000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:02:11" end="00:00:02:14" tts:backgroundColor="#800000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:02:14" end="00:00:02:17" tts:backgroundColor="#900000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:02:17" end="00:00:02:20" tts:backgroundColor="#a00000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:02:20" end="00:00:02:23" tts:backgroundColor="#b00000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:02:23" end="00:00:03:02" tts:backgroundColor="#c00000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:03:02" end="00:00:03:05" tts:backgroundColor="#d00000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:03:05" end="00:00:03:08" tts:backgroundColor="#e00000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+			<p begin="00:00:03:08" end="00:00:03:18" tts:backgroundColor="#f00000" style="white_73" tts:wrapOption="wrap" tts:fontSize="48px">Repeated subtitle with different background colors.</p>
+		</div>
+		<div region="subtitleArea2" tts:backgroundColor="#7D67BD">
+			<p begin="00:00:03:19" end="00:00:04:07" tts:backgroundColor="white" style="black_30">Another <span tts:backgroundColor="green">short</span> subtitle with <span tts:backgroundColor="blue">small</span> text.</p>
+			<p begin="00:00:04:07" end="00:00:04:13" style="black_30">A small-text subtitle that is fairly short.</p>
+			<p begin="00:00:04:13" end="00:00:04:23" tts:backgroundColor="#58BFCF" style="black_144" tts:fontSize="73px">
+				<span tts:backgroundColor="blue">Large </span>
+				<span tts:backgroundColor="green">text</span>.</p>
+		</div>
+		<div region="subtitleArea2">
+			<p begin="00:00:04:23" end="00:00:05:10" style="black_30" tts:fontSize="10px">Small text subtitles flash by fast.</p>
+			<p begin="00:00:05:10" end="00:00:06:00" style="black_30">These subtitles have gaps between them.</p>
+			<p begin="00:00:06:04" end="00:00:06:10" style="black_30">There should have been a gap between the previous subtitle and this subtitle.</p>
+			<p begin="00:00:06:14" end="00:00:07:05" style="black_30">Another gap preceded this subtitle.</p>
+		</div>
+		<div region="subtitleArea3">
+			<p begin="00:00:07:05" end="00:00:08:05" tts:backgroundColor="#58BFCF">This subtitle is large,<br/>
+				<span tts:unicodeBidi="bidiOverride" tts:direction="rtl">.tnof egral a gnisu</span>
+			</p>
+			<p begin="00:00:08:05" end="00:00:09:01" tts:textAlign="left" tts:wrapOption="wrap" tts:fontSize="73px" tts:lineHeight="100px">This subtitle uses a <span tts:fontSize="95px">large font</span> and a <span tts:textDecoration="overline">lot of inline styles</span> like <span tts:fontStyle="italic">italic</span> and <span tts:fontWeight="bold">bold.</span>
+			</p>
+			<p begin="00:00:09:01" end="00:00:10:11" style="black_72">This subtitle uses a <span tts:fontSize="58px">small font</span> and a <span tts:fontFamily="monospaceSerif">lot</span> of <span tts:textDecoration="lineThrough">inline</span> styles like <span tts:fontStyle="italic">italic</span> and <span tts:fontWeight="bold">bold.</span>
+			</p>
+			<p begin="00:00:10:11" end="00:00:11:18" style="white_73">This <span tts:backgroundColor="blue">subtitle</span> makes <span tts:backgroundColor="red">much</span> use of the <span tts:backgroundColor="blue">&lt;span&gt;</span> attribute, and should be <span tts:backgroundColor="red">difficult</span> to render <span tts:backgroundColor="blue">correctly</span>.</p>
+			<p begin="00:00:11:18" end="00:00:13:04" style="black_144" tts:fontSize="80px">This <span tts:backgroundColor="blue">subtitle</span> uses a <span tts:backgroundColor="blue">large</span>
+				<span tts:fontSize="90px">font</span>, a <span tts:backgroundColor="blue">number</span> of <span tts:fontStyle="oblique">inline</span>
+				<span tts:color="white" tts:fontWeight="bold">styles</span>, and <span tts:textDecoration="underline">many</span>
+				<span tts:backgroundColor="blue">&lt;span&gt;</span>
+				<span tts:backgroundColor="blue">elements</span>.</p>
+		</div>
+		<div region="subtitleArea3">
+			<p begin="00:00:13:04" end="00:00:14:13" style="black_72">A simple subtitle in a medium-sized font that uses a number of characters that may show up in a subtitle, such as ' ( ) &amp; % ! @ # $ % ^ * _ - + = : ;</p>
+			<p begin="00:00:14:13" end="00:00:16:20" style="white_73">A subtitle in a medium-sized font that uses a number of "special" characters such as ' ( ) &amp; % ! @ # $ % ^ * _ - + = : ;</p>
+		</div>
+		<div region="subtitleArea3">
+			<p begin="00:00:16:20" end="00:00:20:08" style="black_30" tts:fontSize="60px">This is a subtitle that has a very large number of characters in order to test text wrapping and general formatting of text. It even has multiple sentences to make it longer, which will help test the rendering of text-based subtitles in more extreme cases.</p>
+			<p begin="00:00:20:08" end="00:00:23:20" style="black_30" tts:fontSize="60px" tts:textAlign="start">This is another subtitle that has a very large number of characters, primarily so that the previous long subtitle might be displayed long enough that someone could possibly be able to read it. This subtitle also has multiple sentences in order to lengthen it appropriately. The rendering rate for text subtitles is quite high, especially if only using text and not using a number of background colors.</p>
+		</div>
+		<div region="subtitleArea3" tts:backgroundColor="#DA0046">
+			<p begin="00:00:23:20" end="00:00:28:04" style="white_73" tts:backgroundColor="#58BFCF">This subtitle uses a <span tts:backgroundColor="red">number</span> of <span tts:backgroundColor="yellow">different</span>
+				<span tts:backgroundColor="green"> background </span>
+				<span tts:backgroundColor="blue">colors</span> for each <span tts:backgroundColor="purple">layer</span>, including the &lt;div&gt;, &lt;p&gt;, and several &lt;span&gt; elements. The only option not tested in this subtitle is &lt;body&gt;. In addition to rendering a number of different background colors, this subtitle has a large number of characters.</p>
+			<p begin="00:00:28:04" end="00:00:29:20" style="white_73" tts:backgroundColor="#58BFCF" tts:fontSize="60px">This subtitle uses a <span tts:backgroundColor="red">number</span> of <span tts:backgroundColor="yellow">different</span>
+				<span tts:backgroundColor="green"> background </span>
+				<span tts:backgroundColor="blue">colors</span> for each <span tts:backgroundColor="purple">layer</span>, including the &lt;div&gt;, &lt;p&gt;, and several &lt;span&gt; elements. The only option not tested in this subtitle is &lt;body&gt;. In addition to rendering a number of different background colors, this subtitle has a large number of characters. This subtitle is the same as the previous subtitle, but in a small font. When using a small font on a large region, an author could use a lot of characters.</p>
+		</div>
+	</body>
+</tt>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" 
+xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+xmlns:tts="http://www.w3.org/ns/ttml#styling" ttp:frameRate="24">
+	<head>
+		<layout>
+			<region xml:id="area1" tts:origin="10% 70%" tts:extent="80% 20%" tts:showBackground="whenActive" tts:backgroundColor="red" tts:displayAlign="center" tts:color="white"/>
+		</layout>
+	</head>
+	<body tts:lineHeight="100%">
+		<div>			
+			<p region="area1" begin="00:00:01.01" end="00:00:03">This should appear on frame 25.</p>
+            <p region="area1" begin="00:00:04" end="00:00:06">This should appear on frame 96.</p>
+            <p region="area1" begin="00:00:07.33" end="00:00:09">This should appear on frame 176.</p>
+		</div>
+	</body>
+</tt>

@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tt xmlns:itts="http://www.w3.org/ns/ttml/profile/imsc1#styling" xmlns:ittp="http://www.w3.org/ns/ttml/profile/imsc1#parameter" xmlns:ittm="http://www.w3.org/ns/ttml/profile/imsc1#metadata" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt" xmlns="http://www.w3.org/ns/ttml" xmlns:tt="http://www.w3.org/ns/ttml" xml:lang="fr" tts:extent="1920px 1080px" ttp:frameRate="24" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/image">
+	<head>
+		<metadata>
+
+			<ttm:title>Sample Subtitles: Images at maximum rate</ttm:title>
+			<ttm:copyright>
+        (c) DECE LLC 2013, all rights reserved.
+      </ttm:copyright>
+			<ttm:desc>These are test subtitles for the use of DECE Members and Licensees.
+      </ttm:desc>
+		</metadata>
+		
+		<layout>
+			<region xml:id="region1" tts:origin="700px 350px" tts:extent="1024px 690px" tts:showBackground="whenActive"/>
+			<region xml:id="region2" tts:origin="700px 350px" tts:extent="900px 300px" tts:showBackground="whenActive"/>
+			<region xml:id="region3" tts:origin="700px 350px" tts:extent="680px 200px" tts:showBackground="whenActive"/>
+		</layout>
+	</head>
+	<body>
+		
+		
+		
+		<div region="region2" begin="00:00:04:05" end="00:00:04:08" smpte:backgroundImage="track5-frag1-sample1-subs1.png"/>
+		<div region="region2" begin="00:00:04:08" end="00:00:04:11" smpte:backgroundImage="track5-frag1-sample1-subs2.png"/>
+		<div region="region2" begin="00:00:04:11" end="00:00:04:14" smpte:backgroundImage="track5-frag1-sample1-subs3.png"/>
+		<div region="region2" begin="00:00:04:14" end="00:00:04:17" smpte:backgroundImage="track5-frag1-sample1-subs4.png"/>
+		<div region="region2" begin="00:00:04:17" end="00:00:04:20" smpte:backgroundImage="track5-frag1-sample1-subs3.png"/>
+		<div region="region2" begin="00:00:04:20" end="00:00:04:23" smpte:backgroundImage="track5-frag1-sample1-subs2.png"/>
+		<div region="region2" begin="00:00:04:23" end="00:00:05:02" smpte:backgroundImage="track5-frag1-sample1-subs1.png"/>
+		<div region="region2" begin="00:00:05:02" end="00:00:05:05" smpte:backgroundImage="track5-frag1-sample1-subs2.png"/>
+		<div region="region2" begin="00:00:05:05" end="00:00:05:08" smpte:backgroundImage="track5-frag1-sample1-subs3.png"/>
+		<div region="region2" begin="00:00:05:08" end="00:00:05:11" smpte:backgroundImage="track5-frag1-sample1-subs4.png"/>
+		<div region="region2" begin="00:00:05:11" end="00:00:05:14" smpte:backgroundImage="track5-frag1-sample1-subs3.png"/>
+		<div region="region2" begin="00:00:05:14" end="00:00:05:17" smpte:backgroundImage="track5-frag1-sample1-subs2.png"/>
+		<div region="region2" begin="00:00:05:17" end="00:00:05:20" smpte:backgroundImage="track5-frag1-sample1-subs1.png"/>
+		
+		
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:05:20" end="00:00:05:23" smpte:backgroundImage="track5-frag1-sample1-subs5.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:05:23" end="00:00:06:02" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:06:02" end="00:00:06:05" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:06:05" end="00:00:06:08" smpte:backgroundImage="track5-frag1-sample1-subs8.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:06:08" end="00:00:06:11" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:06:11" end="00:00:06:14" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:06:14" end="00:00:06:17" smpte:backgroundImage="track5-frag1-sample1-subs5.png"/>
+		
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:06:17" end="00:00:06:20" smpte:backgroundImage="track5-frag1-sample1-subs5.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:06:20" end="00:00:06:23" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:06:23" end="00:00:07:02" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:07:02" end="00:00:07:05" smpte:backgroundImage="track5-frag1-sample1-subs8.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:07:05" end="00:00:07:08" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:07:08" end="00:00:07:11" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:07:11" end="00:00:07:14" smpte:backgroundImage="track5-frag1-sample1-subs5.png"/>
+		
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:07:14" end="00:00:07:17" smpte:backgroundImage="track5-frag1-sample1-subs5.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:07:17" end="00:00:07:20" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:07:20" end="00:00:07:23" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:07:23" end="00:00:08:02" smpte:backgroundImage="track5-frag1-sample1-subs8.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:08:02" end="00:00:08:05" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="yellow" begin="00:00:08:05" end="00:00:08:08" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:08:08" end="00:00:08:11" smpte:backgroundImage="track5-frag1-sample1-subs5.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:08:11" end="00:00:08:14" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:08:14" end="00:00:08:17" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:08:17" end="00:00:08:20" smpte:backgroundImage="track5-frag1-sample1-subs8.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:08:20" end="00:00:08:23" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="blue" begin="00:00:08:23" end="00:00:09:02" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		
+		<div region="region3" tts:backgroundColor="transparent" begin="00:00:09:02" end="00:00:09:05" smpte:backgroundImage="track5-frag1-sample1-subs5.png"/>
+		<div region="region3" tts:backgroundColor="transparent" begin="00:00:09:05" end="00:00:09:08" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+		<div region="region3" tts:backgroundColor="transparent" begin="00:00:09:08" end="00:00:09:11" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="transparent" begin="00:00:09:11" end="00:00:09:14" smpte:backgroundImage="track5-frag1-sample1-subs8.png"/>
+		<div region="region3" tts:backgroundColor="transparent" begin="00:00:09:14" end="00:00:09:17" smpte:backgroundImage="track5-frag1-sample1-subs7.png"/>
+		<div region="region3" tts:backgroundColor="transparent" begin="00:00:09:20" end="00:00:09:23" smpte:backgroundImage="track5-frag1-sample1-subs6.png"/>
+	</body>
+</tt>

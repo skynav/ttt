@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tt xmlns:itts="http://www.w3.org/ns/ttml/profile/imsc1#styling" xmlns:ittp="http://www.w3.org/ns/ttml/profile/imsc1#parameter" xmlns:ittm="http://www.w3.org/ns/ttml/profile/imsc1#metadata" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt" xmlns="http://www.w3.org/ns/ttml" xmlns:tt="http://www.w3.org/ns/ttml" xml:lang="fr" ttp:frameRate="30" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/image">
+	<head>
+		<metadata>
+			<ttm:title>Sample Subtitles: Images at maximum rate</ttm:title>
+			<ttm:copyright>
+        (c) DECE LLC 2013, all rights reserved.
+      </ttm:copyright>
+			<ttm:desc>These are test subtitles for the use of DECE Members and Licensees.
+      </ttm:desc>
+		</metadata>
+		
+		<layout>
+			<region xml:id="region1" tts:origin="12.88% 0.417%" tts:extent="70.4918% 99.167%" tts:showBackground="whenActive"/>
+		</layout>
+	</head>
+	<body tts:showBackground="whenActive">
+		<div region="region1" begin="00:00:20:05" end="00:00:20:11" smpte:backgroundImage="track5-frag4-sample1-subs1.png"/>
+		<div region="region1" begin="00:00:20:11" end="00:00:20:17" smpte:backgroundImage="track5-frag4-sample1-subs2.png"/>
+		<div region="region1" begin="00:00:20:17" end="00:00:20:23" smpte:backgroundImage="track5-frag4-sample1-subs3.png"/>
+		<div region="region1" begin="00:00:20:23" end="00:00:20:29" smpte:backgroundImage="track5-frag4-sample1-subs4.png"/>
+		<div region="region1" begin="00:00:20:29" end="00:00:21:05" smpte:backgroundImage="track5-frag4-sample1-subs5.png"/>
+		<div region="region1" begin="00:00:21:05" end="00:00:21:11" smpte:backgroundImage="track5-frag4-sample1-subs4.png"/>
+		<div region="region1" begin="00:00:21:11" end="00:00:21:17" smpte:backgroundImage="track5-frag4-sample1-subs3.png"/>
+		<div region="region1" begin="00:00:21:17" end="00:00:21:23" smpte:backgroundImage="track5-frag4-sample1-subs2.png"/>
+		<div region="region1" begin="00:00:21:23" end="00:00:21:29" smpte:backgroundImage="track5-frag4-sample1-subs1.png"/>
+		<div region="region1" begin="00:00:21:29" end="00:00:22:05" smpte:backgroundImage="track5-frag4-sample1-subs2.png"/>
+		<div region="region1" begin="00:00:22:05" end="00:00:22:11" smpte:backgroundImage="track5-frag4-sample1-subs3.png"/>
+		<div region="region1" begin="00:00:22:11" end="00:00:22:17" smpte:backgroundImage="track5-frag4-sample1-subs4.png"/>
+		<div region="region1" begin="00:00:22:17" end="00:00:22:23" smpte:backgroundImage="track5-frag4-sample1-subs5.png"/>
+		<div region="region1" begin="00:00:22:23" end="00:00:22:29" smpte:backgroundImage="track5-frag4-sample1-subs4.png"/>
+		<div region="region1" begin="00:00:22:29" end="00:00:23:05" smpte:backgroundImage="track5-frag4-sample1-subs3.png"/>
+		<div region="region1" begin="00:00:23:05" end="00:00:23:11" smpte:backgroundImage="track5-frag4-sample1-subs2.png"/>
+		<div region="region1" begin="00:00:23:11" end="00:00:23:17" smpte:backgroundImage="track5-frag4-sample1-subs1.png"/>
+		<div region="region1" begin="00:00:23:17" end="00:00:23:23" smpte:backgroundImage="track5-frag4-sample1-subs2.png"/>
+		<div region="region1" begin="00:00:23:23" end="00:00:23:29" smpte:backgroundImage="track5-frag4-sample1-subs3.png"/>
+		<div region="region1" begin="00:00:23:29" end="00:00:24:05" smpte:backgroundImage="track5-frag4-sample1-subs4.png"/>
+		<div region="region1" begin="00:00:24:05" end="00:00:24:11" smpte:backgroundImage="track5-frag4-sample1-subs5.png"/>
+		<div region="region1" begin="00:00:24:11" end="00:00:24:17" smpte:backgroundImage="track5-frag4-sample1-subs4.png"/>
+		<div region="region1" begin="00:00:24:17" end="00:00:24:23" smpte:backgroundImage="track5-frag4-sample1-subs3.png"/>
+	</body>
+</tt>

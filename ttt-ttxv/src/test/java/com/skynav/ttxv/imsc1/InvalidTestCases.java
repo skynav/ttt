@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-15 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttxv.app;
+package com.skynav.ttxv.imsc1;
 
 import java.net.URL;
 import java.util.List;
@@ -44,11 +44,6 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC1ProhibitedTextOutlineThicknessInPx() throws Exception {
         performInvalidityTest("imsc1-invalid-prohibited-text-outline-thickness-in-px.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidNFLXCCISD5Regions5PerISD() throws Exception {
-        performInvalidityTest("nflxcc-invalid-isd-5-regions-5-per-isd.xml", -1, -1);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
