@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:fontFamily not 'default', 'monospaceSerif', or 'proportionalSansSerif' -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="5" ttva:model="imsc1">
+  <head>
+  </head>
+  <body tts:lineHeight="100%">
+    <div begin="1s" end="2s">
+      <p tts:fontFamily="default">X</p>                 <!-- ok - no warning -->
+      <p tts:fontFamily="monospace">X</p>               <!-- not ok -->
+      <p tts:fontFamily="monospaceSansSerif">X</p>      <!-- not ok -->
+      <p tts:fontFamily="monospaceSerif">X</p>          <!-- ok - no warning -->
+      <p tts:fontFamily="proportionalSansSerif">X</p>   <!-- ok - no warning -->
+      <p tts:fontFamily="proportionalSerif">X</p>       <!-- not ok -->
+      <p tts:fontFamily="sansSerif">X</p>               <!-- not ok -->
+      <p tts:fontFamily="serif">X</p>                   <!-- not ok -->
+    </div>
+  </body>
+</tt>

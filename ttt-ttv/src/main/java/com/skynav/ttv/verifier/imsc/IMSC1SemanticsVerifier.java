@@ -916,6 +916,8 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             if (!verifyLineHeight(root, isd, elt, styleSets, context))
                 failed = true;
         } else if (isTTSpanElement(elt)) {
+            if (!verifyFontFamily(root, isd, elt, styleSets, context))
+                failed = true;
             if (!verifyTextOutlineThickness(root, isd, elt, styleSets, context))
                 failed = true;
         }
@@ -923,6 +925,45 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     private QName isdCSSAttributeName = new QName(TTML1.Constants.NAMESPACE_TT_ISD, "css");
+
+    private boolean verifyFontFamily(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
+        boolean failed = false;
+        String style = Documents.getAttribute(elt, isdCSSAttributeName, null);
+        String av = null;
+        if (style != null) {
+            StyleSet css = styleSets.get(style);
+            if (css != null) {
+                StyleSpecification ss = css.get(IMSC1StyleVerifier.fontFamilyAttributeName);
+                if (ss != null)
+                    av = ss.getValue();
+            }
+        }
+        if (av == null)
+            av = "default";
+        if (!isRecommendedFontFamily(av)) {
+            Reporter reporter = context.getReporter();
+            if (reporter.isWarningEnabled("uses-non-recommended-font-family")) {
+                Message message = reporter.message(getLocator(elt), "*KEY*", "Computed value of font family is ''{0}''.", av);
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
+    private boolean isRecommendedFontFamily(String family) {
+        assert family != null;
+        if (family.equals("default"))
+            return true;
+        else if (family.equals("monospaceSerif"))
+            return true;
+        else if (family.equals("proportionalSansSerif"))
+            return true;
+        else
+            return false;
+    }
 
     private boolean verifyLineHeight(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
         boolean failed = false;

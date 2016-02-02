@@ -37,8 +37,13 @@ import com.skynav.ttxv.app.TimedTextTransformingVerifier;
 public class ValidTestCases {
 
     @Test
-    public void testValidIMSCISDLineHeightNormal() throws Exception {
-        performTransformTest("imsc1-valid-isd-line-height-normal.xml", -1, -1);
+    public void testValidIMSCISDFontFamily() throws Exception {
+        performTransformTest("imsc1-valid-isd-font-family.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSCISDLineHeight() throws Exception {
+        performTransformTest("imsc1-valid-isd-line-height.xml", -1, -1);
     }
 
     private void performTransformTest(String resourceName, int expectedErrors, int expectedWarnings) {

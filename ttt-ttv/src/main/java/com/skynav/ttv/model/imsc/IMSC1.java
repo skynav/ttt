@@ -374,6 +374,8 @@ public class IMSC1 {
                 reporter.disableWarning("references-external-image");
             if (!reporter.hasDisabledWarning("uses-line-height-normal"))
                 reporter.enableWarning("uses-line-height-normal");
+            if (!reporter.hasDisabledWarning("uses-non-recommended-font-family"))
+                reporter.enableWarning("uses-non-recommended-font-family");
         }
 
         public void initializeResourceState(URI uri, Map<String,Object> state) {

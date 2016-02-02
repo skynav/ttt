@@ -332,7 +332,24 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
     }
 
     protected Locator getLocator(Object content) {
-        return Locators.getLocator(content);
+        Locator locator = null;
+        while (content != null) {
+            if ((locator = Locators.getLocator(content)) != null)
+                break;
+            else
+                content = getLocatableParent(content);
+        }
+        return locator;
+    }
+
+    private Object getLocatableParent(Object content) {
+        if (content instanceof Element) {
+            Node n = ((Element) content).getParentNode();
+            return (n instanceof Element) ? n : null;
+        } else if (content instanceof JAXBElement<?>) {
+            return context.getBindingElementParent(((JAXBElement<?>)content).getValue());
+        } else
+            return context.getBindingElementParent(content);
     }
 
     protected boolean verifyTimedText(Object tt) {
