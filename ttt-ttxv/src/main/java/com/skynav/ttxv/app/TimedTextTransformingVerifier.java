@@ -37,7 +37,7 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
 
     // banner text
     private static final String title = "Timed Text Transforming Verifier (TTXV) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-14 Skynav, Inc.";
+    private static final String copyright = "Copyright 2013-16 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     private static final String DEFAULT_TRANSFORMER = Transformers.getDefaultTransformerName();
@@ -57,7 +57,6 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
         setResourceState(TransformerContext.ResourceState.ttxRetainLocations.name(), Boolean.TRUE);
         setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.TRUE);
         setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), Transformers.getTransformer(DEFAULT_TRANSFORMER));
-        // setResourceState(TransformerContext.ResourceState.ttxTransformingVerifier.name(), this);
     }
 
     @Override

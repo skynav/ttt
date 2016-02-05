@@ -46,7 +46,7 @@ public class TimingState {
 
     // contextual state
     private TransformerContext context;                 // transformer context object
-    private TTMLHelper helper;                          // ttml helper
+    private ISDHelper helper;                           // helper
     private Object content;                             // (jaxb) content object
     private TimeParameters timeParameters;              // timing parameters
     // explicit timing state
@@ -61,7 +61,7 @@ public class TimingState {
 
     public TimingState(TransformerContext context, Object content, TimeParameters timeParameters) {
         this.context = context;
-        this.helper = (TTMLHelper) context.getResourceState(ResourceState.isdHelper.name());
+        this.helper = (ISDHelper) context.getResourceState(ResourceState.isdHelper.name());
         this.content = content;
         this.timeParameters = timeParameters;
     }
@@ -289,7 +289,7 @@ public class TimingState {
         }
         debug(2, "Resolve active", getActiveBegin() + "," + getActiveEnd());
         // record active interval attributes
-        Map<QName,String> otherAttributes = TTMLHelper.getOtherAttributes(content);
+        Map<QName,String> otherAttributes = ISDHelper.getOtherAttributes(content);
         if (otherAttributes != null) {
             otherAttributes.put(beginAttributeName, beginActive.toString().toLowerCase());
             otherAttributes.put(endAttributeName, endActive.toString().toLowerCase());
@@ -344,7 +344,7 @@ public class TimingState {
     }
 
     public static TimeCoordinate getTimeCoordinateAttribute(Object content, String name, TimeParameters timeParameters) {
-        String value = TTMLHelper.getStringValuedAttribute(content, name);
+        String value = ISDHelper.getStringValuedAttribute(content, name);
         if (value != null) {
             Time[] times = new Time[1];
             if (Timing.isCoordinate(value, null, null, timeParameters, times)) {

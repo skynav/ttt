@@ -431,8 +431,8 @@ public class TTML2Helper extends TTMLHelper {
     private static boolean isRuby(Element elt, StyleSet sss, String ruby) {
         if (isSpanElement(elt)) {
             String r = null;
-            if (elt.hasAttributeNS(TTMLHelper.NAMESPACE_TT_STYLE, "ruby"))
-                r = elt.getAttributeNS(TTMLHelper.NAMESPACE_TT_STYLE, "ruby");
+            if (elt.hasAttributeNS(NAMESPACE_TT_STYLE, "ruby"))
+                r = elt.getAttributeNS(NAMESPACE_TT_STYLE, "ruby");
             if (r == null)
                 r = getStyleValue(sss, TTML2StyleVerifier.rubyAttributeName);
             if (r != null) {
@@ -450,7 +450,7 @@ public class TTML2Helper extends TTMLHelper {
     private static boolean isTimedTextElement(Element elt, String localName) {
         if (elt != null) {
             String nsUri = elt.getNamespaceURI();
-            if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT) && elt.getLocalName().equals(localName))
+            if ((nsUri != null) && nsUri.equals(NAMESPACE_TT) && elt.getLocalName().equals(localName))
                 return true;
         }
         return false;

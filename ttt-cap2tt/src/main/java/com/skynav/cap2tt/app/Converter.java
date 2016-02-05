@@ -223,7 +223,7 @@ public class Converter implements ConverterContext {
 
     // banner text
     private static final String title = "CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2014 Skynav, Inc.";
+    private static final String copyright = "Copyright 2014-16 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
     private static final String creationSystem = "CAP2TT/" + Version.CURRENT;
 

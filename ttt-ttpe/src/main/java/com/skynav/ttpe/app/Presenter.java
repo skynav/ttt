@@ -85,7 +85,7 @@ public class Presenter extends TimedTextTransformer {
 
     // banner text
     private static final String title = "Timed Text Presentation Engine (TTPE) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-15 Skynav, Inc.";
+    private static final String copyright = "Copyright 2014-16 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     // option and usage info

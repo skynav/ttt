@@ -58,7 +58,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
 
     // banner text
     private static final String title = "Timed Text Transformer (TTX) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-14 Skynav, Inc.";
+    private static final String copyright = "Copyright 2013-16 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     // option and usage info
@@ -171,52 +171,44 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), transformer);
     }
 
-    @Override
+    // TransformerContext implementation
+
     public ExternalParameters getExternalParameters() {
         return verifier.getExternalParameters();
     }
 
-    @Override
     public Reporter getReporter() {
         return verifier.getReporter();
     }
 
-    @Override
     public Model getModel() {
         return verifier.getModel();
     }
 
-    @Override
     public QName getBindingElementName(Object value) {
         return verifier.getBindingElementName(value);
     }
 
-    @Override
     public Object getBindingElementParent(Object value) {
         return verifier.getBindingElementParent(value);
     }
 
-    @Override
     public Object getBindingElement(Node node) {
         return verifier.getBindingElement(node);
     }
 
-    @Override
     public Node getXMLNode(Object value) {
         return verifier.getXMLNode(value);
     }
 
-    @Override
     public void setResourceState(String key, Object value) {
         verifier.setResourceState(key, value);
     }
 
-    @Override
     public Object getResourceState(String key) {
         return verifier.getResourceState(key);
     }
 
-    @Override
     public Object extractResourceState(String key) {
         return verifier.extractResourceState(key);
     }

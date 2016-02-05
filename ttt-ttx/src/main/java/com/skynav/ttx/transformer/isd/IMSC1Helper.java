@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Skynav, Inc. All rights reserved.
+ * Copyright 2013-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,20 +23,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttx.transformer;
+package com.skynav.ttx.transformer.isd;
 
-import com.skynav.ttv.verifier.VerifierContext;
+import org.w3c.dom.Element;
 
-public interface TransformerContext extends VerifierContext {
+public class IMSC1Helper extends TTML1Helper {
 
-    public enum ResourceState {
-        ttxDontElideInitials,
-        ttxInputUri,
-        ttxOutput,
-        ttxRetainLocations,
-        ttxRetainMetadata,
-        ttxSuppressOutputSerialization,
-        ttxTransformer
-    };
+    @Override
+    public boolean hasUsableContent(Object content) {
+        if (content instanceof Element)
+            return hasUsableContent((Element) content);
+        else
+            return false;
+    }
+
+    private boolean hasUsableContent(Element elt) {
+        return false;
+    }
 
 }

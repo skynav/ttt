@@ -3,8 +3,7 @@
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="5" ttva:model="imsc1">
-  <head>
-  </head>
+  <head/>
   <body tts:lineHeight="100%">
     <div begin="1s" end="2s">
       <p tts:fontFamily="default">X</p>                 <!-- ok - no warning -->

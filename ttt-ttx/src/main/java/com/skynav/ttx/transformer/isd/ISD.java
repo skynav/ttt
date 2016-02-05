@@ -128,8 +128,8 @@ public class ISD {
         longOptions = Collections.unmodifiableSet(s);
     }
 
-    public static TTMLHelper getHelper(TransformerContext context) {
-        return (TTMLHelper) context.getResourceState(ResourceState.isdHelper.name());
+    public static ISDHelper getHelper(TransformerContext context) {
+        return (ISDHelper) context.getResourceState(ResourceState.isdHelper.name());
     }
 
     @SuppressWarnings("unchecked")
@@ -266,7 +266,7 @@ public class ISD {
         }
 
         private void populateContext(TransformerContext context) {
-            context.setResourceState(ResourceState.isdHelper.name(), TTMLHelper.makeInstance(context.getModel().getTTMLVersion()));
+            context.setResourceState(ResourceState.isdHelper.name(), ISDHelper.makeInstance(context.getModel()));
             context.setResourceState(ResourceState.isdParents.name(), new java.util.HashMap<Object, Object>());
             context.setResourceState(ResourceState.isdTimingStates.name(), new java.util.HashMap<Object, TimingState>());
             context.setResourceState(ResourceState.isdGenerationIndices.name(), new int[GenerationIndex.values().length]);
@@ -555,13 +555,17 @@ public class ISD {
         }
 
         private static boolean hasUsableContent(Element elt, TransformerContext context) {
+            final ISDHelper helper = getHelper(context);
             final boolean returnUsable[] = new boolean[1];
             try {
                 Traverse.traverseElements(elt, null, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isParagraphElement(elt)) {
+                        if (helper.hasUsableContent(elt)) {
+                            returnUsable[0] = true;
+                            return false;
+                        } else if (isParagraphElement(elt)) {
                             if (hasUsableContentInParagraph(elt)) {
                                 returnUsable[0] = true;
                                 return false;

@@ -378,14 +378,6 @@ public class IMSC1 {
                 reporter.enableWarning("uses-non-recommended-font-family");
         }
 
-        public void initializeResourceState(URI uri, Map<String,Object> state) {
-            assert state != null;
-            /*
-            if (state.containsKey("ttxTransformingVerifier"))
-                state.put("ttxDontElideInitials", Boolean.TRUE);
-            */
-        }
-
     }
 
 }
