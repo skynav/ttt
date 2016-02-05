@@ -23,7 +23,7 @@ Prior to performing a build, the following requirements must be met:
 
 <pre>
     $ cd $TTT_HOME
-    $ mvn -f ttt-deps install
+    $ mvn -f ttt-deps/pom.xml install
 </pre>
 
 This last step installs snapshot copies of `batik`, `fontbox`, and `xmlunit` dependencies that contain modifications specific to `ttt`.
