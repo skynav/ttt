@@ -471,7 +471,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isTimedElement(elt)) {
+                        if (TTMLHelper.isTimedElement(elt)) {
                             TimeInterval eltInterval = getActiveInterval(elt);
                             if (eltInterval.isEmpty() || !eltInterval.intersects(interval)) {
                                 assert parent instanceof Element;
@@ -484,33 +484,6 @@ public class ISD {
                 });
             } catch (Exception e) {
                 context.getReporter().logError(e);
-            }
-        }
-
-        private static boolean isTimedElement(Element elt) {
-            String nsUri = elt.getNamespaceURI();
-            if ((nsUri == null) || !nsUri.equals(TTMLHelper.NAMESPACE_TT))
-                return false;
-            else {
-                String localName = elt.getLocalName();
-                if (localName.equals("animate"))
-                    return true;
-                else if (localName.equals("body"))
-                    return true;
-                else if (localName.equals("div"))
-                    return true;
-                else if (localName.equals("p"))
-                    return true;
-                else if (localName.equals("span"))
-                    return true;
-                else if (localName.equals("br"))
-                    return true;
-                else if (localName.equals("region"))
-                    return true;
-                else if (localName.equals("set"))
-                    return true;
-                else
-                    return false;
             }
         }
 
@@ -565,12 +538,6 @@ public class ISD {
                         if (helper.hasUsableContent(elt)) {
                             returnUsable[0] = true;
                             return false;
-                        } else if (isParagraphElement(elt)) {
-                            if (hasUsableContentInParagraph(elt)) {
-                                returnUsable[0] = true;
-                                return false;
-                            } else
-                                return true;
                         } else
                             return true;
                     }
@@ -579,15 +546,6 @@ public class ISD {
                 context.getReporter().logError(e);
             }
             return returnUsable[0];
-        }
-
-        private static boolean hasUsableContentInParagraph(Element elt) {
-            String content = elt.getTextContent();
-            for (int i = 0, n = content.length(); i < n; ++i) {
-                if (!Character.isWhitespace(content.charAt(i)))
-                    return true;
-            }
-            return false;
         }
 
         private static void pruneUnselectedContent(final Element body, TransformerContext context, final Element region) {
@@ -616,18 +574,18 @@ public class ISD {
         private static boolean isSelectedContent(Element elt, Element region) {
             String id = getAssociatedRegionIdentifier(elt);
             if (id != null) {
-                String idRegion = getXmlIdentifier(region);
+                String idRegion = TTMLHelper.getXmlIdentifier(region);
                 if (idRegion != null)
                     return id.equals(idRegion);
                 else
                     return false;
             } else
-                return isAnonymousRegionElement(region);
+                return TTMLHelper.isAnonymousRegionElement(region);
         }
 
         private static String getAssociatedRegionIdentifier(Element elt) {
             String id;
-            id = getRegionIdentifier(elt);
+            id = TTMLHelper.getRegionIdentifier(elt);
             if (id != null)
                 return id;
             // use descendant before ancestor since we are doing post-traversal visit
@@ -644,7 +602,7 @@ public class ISD {
         private static String getNearestAncestorRegionIdentifier(Element elt) {
             for (Node a = elt.getParentNode(); a != null; a = a.getParentNode()) {
                 if (a instanceof Element) {
-                    String id = getRegionIdentifier((Element) a);
+                    String id = TTMLHelper.getRegionIdentifier((Element) a);
                     if (id != null)
                         return id;
                 } else
@@ -661,7 +619,7 @@ public class ISD {
                 for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
                     if (n instanceof Element) {
                         Element c = (Element) n;
-                        String id = getRegionIdentifier(c);
+                        String id = TTMLHelper.getRegionIdentifier(c);
                         if (id != null)
                             return id;
                         descendants.add(c);
@@ -671,20 +629,6 @@ public class ISD {
             return null;
         }
 
-        private static String getRegionIdentifier(Element elt) {
-            if (elt.hasAttributeNS(null, "region"))
-                return elt.getAttributeNS(null, "region");
-            else
-                return null;
-        }
-
-        private static String getXmlIdentifier(Element elt) {
-            if (elt.hasAttributeNS(XML.xmlNamespace, "id"))
-                return elt.getAttributeNS(XML.xmlNamespace, "id");
-            else
-                return null;
-        }
-
         private static List<Element> getRegionElements(Document doc, TransformerContext context) {
             final List<Element> regions = new java.util.ArrayList<Element>();
             try {
@@ -692,7 +636,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isOutOfLineRegionElement(elt))
+                        if (TTMLHelper.isOutOfLineRegionElement(elt))
                             regions.add(elt);
                         return true;
                     }
@@ -701,10 +645,6 @@ public class ISD {
                 context.getReporter().logError(e);
             }
             return regions;
-        }
-
-        private static boolean isOutOfLineRegionElement(Element elt) {
-            return isRegionElement(elt) && isLayoutElement((Element) elt.getParentNode());
         }
 
         private static Element maybeImplyHeadElement(Document document, TransformerContext context) {
@@ -777,19 +717,6 @@ public class ISD {
             return null;
         }
 
-        private static boolean isTimedTextElement(Element elt, String localName) {
-            if (elt != null) {
-                String nsUri = elt.getNamespaceURI();
-                if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT) && elt.getLocalName().equals(localName))
-                    return true;
-            }
-            return false;
-        }
-
-        private static boolean isRootElement(Element elt) {
-            return isTimedTextElement(elt, "tt");
-        }
-
         private static Element getHeadElement(Document document, TransformerContext context) {
             final Element[] retHead = new Element[1];
             try {
@@ -797,7 +724,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isHeadElement(elt)) {
+                        if (TTMLHelper.isHeadElement(elt)) {
                             retHead[0] = elt;
                             return false;
                         } else
@@ -810,10 +737,6 @@ public class ISD {
             return retHead[0];
         }
 
-        private static boolean isHeadElement(Element elt) {
-            return isTimedTextElement(elt, "head");
-        }
-
         private static Element getBodyElement(Document document, TransformerContext context) {
             final Element[] retBody = new Element[1];
             try {
@@ -822,7 +745,7 @@ public class ISD {
                         assert content instanceof Element;
                         Element elt = (Element) content;
                         Element eltParent = (Element) parent;
-                        if (isBodyElement(elt) && isRootElement(eltParent)) {
+                        if (TTMLHelper.isBodyElement(elt) && TTMLHelper.isRootElement(eltParent)) {
                             retBody[0] = elt;
                             return false;
                         } else
@@ -835,10 +758,6 @@ public class ISD {
             return retBody[0];
         }
 
-        private static boolean isBodyElement(Element elt) {
-            return isTimedTextElement(elt, "body");
-        }
-
         private static Element getLayoutElement(Document document, TransformerContext context) {
             final Element[] retLayout = new Element[1];
             try {
@@ -846,7 +765,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isLayoutElement(elt)) {
+                        if (TTMLHelper.isLayoutElement(elt)) {
                             retLayout[0] = elt;
                             return false;
                         } else
@@ -859,80 +778,13 @@ public class ISD {
             return retLayout[0];
         }
 
-        private static boolean isLayoutElement(Element elt) {
-            return isTimedTextElement(elt, "layout");
-        }
-
-        private static boolean isRegionElement(Element elt) {
-            return isTimedTextElement(elt, "region");
-        }
-
-        private static boolean isAnonymousRegionElement(Element elt) {
-            if (!isRegionElement(elt))
-                return false;
-            else {
-                String id = getXmlIdentifier(elt);
-                return (id != null) && (id.indexOf("isdRegion") == 0);
-            }
-        }
-
-        private static boolean isParagraphElement(Element elt) {
-            return isTimedTextElement(elt, "p");
-        }
-
-        private static boolean isSpanElement(Element elt) {
-            return isTimedTextElement(elt, "span");
-        }
-
-        private static boolean isAnonymousSpanElement(Element elt) {
-            if (!isSpanElement(elt))
-                return false;
-            else {
-                String id = getXmlIdentifier(elt);
-                return (id != null) && (id.indexOf("isdSpan") == 0);
-            }
-        }
-
-        private static boolean isStyleElement(Element elt) {
-            return isTimedTextElement(elt, "style");
-        }
-
-        private static boolean isAnimationElement(Element elt) {
-            return isTimedTextElement(elt, "set");
-        }
-
-        private static boolean isContentElement(Element elt) {
-            String nsUri = elt.getNamespaceURI();
-            if ((nsUri == null) || !nsUri.equals(TTMLHelper.NAMESPACE_TT))
-                return false;
-            else {
-                String localName = elt.getLocalName();
-                if (localName.equals("body"))
-                    return true;
-                else if (localName.equals("div"))
-                    return true;
-                else if (localName.equals("p"))
-                    return true;
-                else if (localName.equals("span"))
-                    return true;
-                else if (localName.equals("br"))
-                    return true;
-                else
-                    return false;
-            }
-        }
-
-        private static boolean isRegionOrContentElement(Element elt) {
-            return isRegionElement(elt) || isContentElement(elt);
-        }
-
         private static void pruneTimingAndRegionAttributes(Document document, TransformerContext context) {
             try {
                 Traverse.traverseElements(document, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isTimedElement(elt)) {
+                        if (TTMLHelper.isTimedElement(elt)) {
                             pruneTimingAttributes(elt);
                             pruneRegionAttributes(elt);
                         }
@@ -1063,10 +915,10 @@ public class ISD {
             Map<Element, StyleSet> computedStyleSets = new java.util.HashMap<Element, StyleSet>();
             for (Map.Entry<Element, StyleSet> e : specifiedStyleSets.entrySet()) {
                 Element elt = e.getKey();
-                if (isRegionElement(elt)) {
+                if (TTMLHelper.isRegionElement(elt)) {
                     if (findChildElement(elt, TTMLHelper.NAMESPACE_TT, "body") != null)
                         computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
-                } else if (isContentElement(elt)) {
+                } else if (TTMLHelper.isContentElement(elt)) {
                     computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
                 }
             }
@@ -1121,7 +973,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isInitialElement(elt))
+                        if (TTMLHelper.isInitialElement(elt))
                             initials.add(elt);
                         return true;
                     }
@@ -1130,10 +982,6 @@ public class ISD {
                 context.getReporter().logError(e);
             }
             return initials;
-        }
-
-        private static boolean isInitialElement(Element elt) {
-            return isTimedTextElement(elt, "initial");
         }
 
         private static Map<Element, StyleSet> resolveSpecifiedStyles(Element root, TransformerContext context, StyleSet overrides) {
@@ -1151,7 +999,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isStyleElement(elt)) {
+                        if (TTMLHelper.isStyleElement(elt)) {
                             elts.add(elt);
                         }
                         return true;
@@ -1191,7 +1039,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isAnimationElement(elt)) {
+                        if (TTMLHelper.isAnimationElement(elt)) {
                             elts.add(elt);
                         }
                         return true;
@@ -1210,7 +1058,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isRegionOrContentElement(elt))
+                        if (TTMLHelper.isRegionOrContentElement(elt))
                             elts.add(elt);
                         return true;
                     }
@@ -1307,22 +1155,22 @@ public class ISD {
             // 4. inline styling
             sss.merge(getInlineStyles(elt));
             // 5. animation styling
-            if (!isAnimationElement(elt)) {
+            if (!TTMLHelper.isAnimationElement(elt)) {
                 for (StyleSet ss : getSpecifiedStyleSets(getChildAnimationElements(elt), specifiedStyleSets))
                     sss.merge(ss);
             }
             // 6. implicit inheritance and initial value fallback
-            if (!isAnimationElement(elt) && !isStyleElement(elt)) {
+            if (!TTMLHelper.isAnimationElement(elt) && !TTMLHelper.isStyleElement(elt)) {
                 for (QName name : getDefinedStyleNames(context)) {
                     if (!sss.containsKey(name)) {
                         StyleSpecification s;
-                        if (!isInheritableStyle(elt, name, context) || isRootStylingElement(elt))
+                        if (!isInheritableStyle(elt, name, context) || TTMLHelper.isRootStylingElement(elt))
                             s = getInitialStyle(elt, name, context, overrides);
                         else if (specialStyleInheritance(elt, name, sss, context))
                             s = getSpecialInheritedStyle(elt, name, sss, specifiedStyleSets, context);
                         else
                             s = getNearestAncestorStyle(elt, name, specifiedStyleSets);
-                        if ((s != null) && (doesStyleApply(elt, name, context) || isRootStylingElement(elt)))
+                        if ((s != null) && (doesStyleApply(elt, name, context) || TTMLHelper.isRootStylingElement(elt)))
                             sss.merge(s);
                     }
                 }
@@ -1352,7 +1200,7 @@ public class ISD {
             for (Node n = elt.getFirstChild(); n != null; n = n.getNextSibling()) {
                 if (n instanceof Element) {
                     Element c = (Element) n;
-                    if (isStyleElement(c))
+                    if (TTMLHelper.isStyleElement(c))
                         elts.add(c);
                 }
             }
@@ -1364,7 +1212,7 @@ public class ISD {
             for (Node n = elt.getFirstChild(); n != null; n = n.getNextSibling()) {
                 if (n instanceof Element) {
                     Element c = (Element) n;
-                    if (isAnimationElement(c))
+                    if (TTMLHelper.isAnimationElement(c))
                         elts.add(c);
                 }
             }
@@ -1408,17 +1256,6 @@ public class ISD {
             return context.getModel().isInheritableStyle(eltName, styleName);
         }
 
-        private static boolean isRootStylingElement(Element elt) {
-            /* TBD - MIGRATE TO ROOT in TTML2
-            int version = getHelper(context).getVersion();
-            if (version == 1)
-                return isRegionElement(elt);
-            else
-                return isRootElement(elt);
-            */
-            return isRegionElement(elt);
-        }
-
         private static boolean specialStyleInheritance(Element elt, QName styleName, StyleSet sss, TransformerContext context) {
             return getHelper(context).specialStyleInheritance(elt, styleName, sss, context);
         }
@@ -1447,7 +1284,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isRegionElement(elt)) {
+                        if (TTMLHelper.isRegionElement(elt)) {
                             generateISDRegion(isd, elt, context);
                         }
                         return true;
@@ -1518,7 +1355,7 @@ public class ISD {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
-                        if (isAnonymousSpanElement(elt)) {
+                        if (TTMLHelper.isAnonymousSpanElement(elt)) {
                             if (parent instanceof Element) {
                                 if (hasSameComputedStyleSet(elt, (Element) parent))
                                     unwrapAnonymousSpan(elt, (Element) parent);

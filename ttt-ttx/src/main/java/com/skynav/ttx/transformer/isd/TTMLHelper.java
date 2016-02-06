@@ -25,7 +25,11 @@
 
 package com.skynav.ttx.transformer.isd;
 
+import org.w3c.dom.Element;
+
 import com.skynav.ttv.model.ttml.TTML;
+
+import com.skynav.xml.helpers.XML;
 
 public abstract class TTMLHelper extends ISDHelper {
 
@@ -34,5 +38,170 @@ public abstract class TTMLHelper extends ISDHelper {
     public static final String NAMESPACE_TT_STYLE               = TTML.Constants.NAMESPACE_TT_STYLE;
     public static final String NAMESPACE_TT_PARAMETER           = TTML.Constants.NAMESPACE_TT_PARAMETER;
     public static final String NAMESPACE_ISD                    = TTML.Constants.NAMESPACE_TT_ISD;
+
+    public boolean hasUsableContent(Element elt) {
+        return isParagraphElement(elt) && hasUsableContentInParagraph(elt);
+    }
+
+    public static boolean isRootElement(Element elt) {
+        return isTimedTextElement(elt, "tt");
+    }
+
+    public static boolean isHeadElement(Element elt) {
+        return isTimedTextElement(elt, "head");
+    }
+
+    public static boolean isLayoutElement(Element elt) {
+        return isTimedTextElement(elt, "layout");
+    }
+
+    public static boolean isRegionElement(Element elt) {
+        return isTimedTextElement(elt, "region");
+    }
+
+    public static boolean isAnonymousRegionElement(Element elt) {
+        if (!isRegionElement(elt))
+            return false;
+        else {
+            String id = getXmlIdentifier(elt);
+            return (id != null) && (id.indexOf("isdRegion") == 0);
+        }
+    }
+
+    public static boolean isOutOfLineRegionElement(Element elt) {
+        return isRegionElement(elt) && isLayoutElement((Element) elt.getParentNode());
+    }
+
+    public static boolean isInitialElement(Element elt) {
+        return isTimedTextElement(elt, "initial");
+    }
+
+    public static boolean isStyleElement(Element elt) {
+        return isTimedTextElement(elt, "style");
+    }
+
+    public static boolean isRootStylingElement(Element elt) {
+        /* TBD - MIGRATE TO ROOT in TTML2
+           int version = getHelper(context).getVersion();
+           if (version == 1)
+           return TTMLHelper.isRegionElement(elt);
+           else
+           return TTMLHelper.isRootElement(elt);
+        */
+        return TTMLHelper.isRegionElement(elt);
+    }
+
+    public static boolean isBodyElement(Element elt) {
+        return isTimedTextElement(elt, "body");
+    }
+
+    public static boolean isDivisionElement(Element elt) {
+        return isTimedTextElement(elt, "div");
+    }
+
+    public static boolean isParagraphElement(Element elt) {
+        return isTimedTextElement(elt, "p");
+    }
+
+    public static boolean isSpanElement(Element elt) {
+        return isTimedTextElement(elt, "span");
+    }
+
+    public static boolean isAnonymousSpanElement(Element elt) {
+        if (!isSpanElement(elt))
+            return false;
+        else {
+            String id = getXmlIdentifier(elt);
+            return (id != null) && (id.indexOf("isdSpan") == 0);
+        }
+    }
+
+    public static boolean isAnimationElement(Element elt) {
+        return isTimedTextElement(elt, "set");
+    }
+
+    public static boolean isContentElement(Element elt) {
+        String nsUri = elt.getNamespaceURI();
+        if ((nsUri == null) || !nsUri.equals(TTMLHelper.NAMESPACE_TT))
+            return false;
+        else {
+            String localName = elt.getLocalName();
+            if (localName.equals("body"))
+                return true;
+            else if (localName.equals("div"))
+                return true;
+            else if (localName.equals("p"))
+                return true;
+            else if (localName.equals("span"))
+                return true;
+            else if (localName.equals("br"))
+                return true;
+            else
+                return false;
+        }
+    }
+
+    public static boolean isRegionOrContentElement(Element elt) {
+        return isRegionElement(elt) || isContentElement(elt);
+    }
+
+    public static boolean isTimedTextElement(Element elt, String localName) {
+        if (elt != null) {
+            String nsUri = elt.getNamespaceURI();
+            if ((nsUri != null) && nsUri.equals(NAMESPACE_TT) && elt.getLocalName().equals(localName))
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean isTimedElement(Element elt) {
+        String nsUri = elt.getNamespaceURI();
+        if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT))
+            return false;
+        else {
+            String localName = elt.getLocalName();
+            if (localName.equals("animate"))
+                return true;
+            else if (localName.equals("body"))
+                return true;
+            else if (localName.equals("div"))
+                return true;
+            else if (localName.equals("p"))
+                return true;
+            else if (localName.equals("span"))
+                return true;
+            else if (localName.equals("br"))
+                return true;
+            else if (localName.equals("region"))
+                return true;
+            else if (localName.equals("set"))
+                return true;
+            else
+                return false;
+        }
+    }
+
+    public static String getRegionIdentifier(Element elt) {
+        if (elt.hasAttributeNS(null, "region"))
+            return elt.getAttributeNS(null, "region");
+        else
+            return null;
+    }
+
+    public static String getXmlIdentifier(Element elt) {
+        if (elt.hasAttributeNS(XML.xmlNamespace, "id"))
+            return elt.getAttributeNS(XML.xmlNamespace, "id");
+        else
+            return null;
+    }
+
+    private static boolean hasUsableContentInParagraph(Element elt) {
+        String content = elt.getTextContent();
+        for (int i = 0, n = content.length(); i < n; ++i) {
+            if (!Character.isWhitespace(content.charAt(i)))
+                return true;
+        }
+        return false;
+    }
 
 }

@@ -443,19 +443,6 @@ public class TTML2Helper extends TTMLHelper {
         return false;
     }
 
-    private static boolean isSpanElement(Element elt) {
-        return isTimedTextElement(elt, "span");
-    }
-
-    private static boolean isTimedTextElement(Element elt, String localName) {
-        if (elt != null) {
-            String nsUri = elt.getNamespaceURI();
-            if ((nsUri != null) && nsUri.equals(NAMESPACE_TT) && elt.getLocalName().equals(localName))
-                return true;
-        }
-        return false;
-    }
-
     @Override
     public StyleSpecification getSpecialInheritedStyle(Element elt, QName styleName, StyleSet sss, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
         if (isRubyText(elt, sss)) {

@@ -27,18 +27,28 @@ package com.skynav.ttx.transformer.isd;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttv.model.smpte.ST20522010;
+
 public class IMSC1Helper extends TTML1Helper {
 
+    public static final String NAMESPACE_ST20522010             = ST20522010.Constants.NAMESPACE_2010;
+
     @Override
-    public boolean hasUsableContent(Object content) {
-        if (content instanceof Element)
-            return hasUsableContent((Element) content);
+    public boolean hasUsableContent(Element elt) {
+        if (super.hasUsableContent(elt))
+            return true;
+        else if (isDivisionElement(elt) && hasUsableBackgroundImage(elt))
+            return true;
         else
             return false;
     }
 
-    private boolean hasUsableContent(Element elt) {
-        return false;
+    private boolean hasUsableBackgroundImage(Element elt) {
+        if (elt.hasAttributeNS(NAMESPACE_ST20522010, "backgroundImage")) {
+            String backgroundImage = elt.getAttributeNS(NAMESPACE_ST20522010, "backgroundImage");
+            return (backgroundImage != null) && !backgroundImage.isEmpty();
+        } else
+            return false;
     }
 
 }

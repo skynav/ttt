@@ -113,7 +113,7 @@ public abstract class ISDHelper {
         return null;
     }
 
-    public boolean hasUsableContent(Object content) {
+    public boolean hasUsableContent(Element elt) {
         return false;
     }
 
