@@ -56,7 +56,7 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
         super.initializeResourceState(uri);
         setResourceState(TransformerContext.ResourceState.ttxRetainLocations.name(), Boolean.TRUE);
         setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.TRUE);
-        setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), Transformers.getTransformer(DEFAULT_TRANSFORMER));
+        setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), Transformers.getTransformer(DEFAULT_TRANSFORMER, this));
     }
 
     @Override

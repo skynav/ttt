@@ -41,9 +41,8 @@ public interface Transformer extends TransformerOptions {
      * into an output stream.
      * @param args command line arguments
      * @param root root content element
-     * @param context state for transformation
      * @param out stream to which to write transformed output
      */
-    void transform(List<String> args, Object root, TransformerContext context, OutputStream out);
+    void transform(List<String> args, Object root, OutputStream out);
 
 }

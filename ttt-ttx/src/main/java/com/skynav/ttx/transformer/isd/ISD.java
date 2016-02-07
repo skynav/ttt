@@ -155,7 +155,8 @@ public class ISD {
         private File outputDirectory;
         private Charset outputEncoding;
 
-        public ISDTransformer() {
+        public ISDTransformer(TransformerContext context) {
+            super(context);
         }
 
         public String getName() {
@@ -245,7 +246,7 @@ public class ISD {
         }
 
         @Override
-        public void transform(List<String> args, Object root, TransformerContext context, OutputStream out) {
+        public void transform(List<String> args, Object root, OutputStream out) {
             assert root != null;
             assert context != null;
             populateContext(context);

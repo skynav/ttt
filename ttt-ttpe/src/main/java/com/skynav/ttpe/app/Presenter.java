@@ -40,6 +40,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -79,7 +80,6 @@ import com.skynav.ttv.util.TextTransformer;
 import com.skynav.ttx.app.TimedTextTransformer;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.ttx.transformer.TransformerOptions;
-import com.skynav.ttx.transformer.Transformers;
 
 public class Presenter extends TimedTextTransformer {
 
@@ -211,19 +211,6 @@ public class Presenter extends TimedTextTransformer {
     }
 
     @Override
-    public Object getResourceState(String key) {
-        if (key.equals(TransformerContext.ResourceState.ttxTransformer.name()))
-            return Transformers.getTransformer("isd");
-        else
-            return super.getResourceState(key);
-    }
-
-    @Override
-    protected boolean doMergeTransformerOptions() {
-        return false;
-    }
-
-    @Override
     protected int parseLongOption(List<String> args, int index) {
         String arg = args.get(index);
         int numArgs = args.size();
@@ -311,7 +298,12 @@ public class Presenter extends TimedTextTransformer {
 
     @Override
     public List<String> preProcessOptions(List<String> args,
-        com.skynav.ttv.util.Configuration configuration, Collection<OptionSpecification> baseShortOptions, Collection<OptionSpecification> baseLongOptions) {
+        com.skynav.ttv.util.Configuration configuration,
+        Collection<OptionSpecification> baseShortOptions,
+        Collection<OptionSpecification> baseLongOptions) {
+        // handle ttx pre-processing
+        super.preProcessOptions(args, configuration, baseShortOptions, baseLongOptions);
+        // now handle layout and renderer pre-processing
         String layoutName = null;
         String rendererName = null;
         // extract layout and renderer names from configuration options if present
@@ -366,8 +358,9 @@ public class Presenter extends TimedTextTransformer {
         }
         this.renderer = renderer;
         // merge layout and renderer option specifications in option maps
-        TransformerOptions[] transformerOptions = new TransformerOptions[] { layout, renderer };
-        populateMergedOptionsMaps(baseShortOptions, baseLongOptions, transformerOptions, shortOptions, longOptions);
+        List<TransformerOptions> transformerOptions =
+            new java.util.ArrayList<TransformerOptions>(Arrays.asList(new TransformerOptions[] { layout, renderer }));
+        populateMergedOptionsMaps(null, null, transformerOptions, shortOptions, longOptions);
         return skippedArgs;
     }
 

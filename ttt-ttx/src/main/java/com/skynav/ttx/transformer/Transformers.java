@@ -25,6 +25,8 @@
 
 package com.skynav.ttx.transformer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -33,37 +35,42 @@ import com.skynav.ttx.transformer.isd.ISD;
 
 public class Transformers {
 
-    private static Map<String,Class<? extends Transformer>> transformerMap;
+    private static Map<String,Class<? extends AbstractTransformer>> transformerMap;
     static {
-        Map<String,Class<? extends Transformer>> m = new java.util.TreeMap<String,Class<? extends Transformer>>();
+        Map<String,Class<? extends AbstractTransformer>> m = new java.util.TreeMap<String,Class<? extends AbstractTransformer>>();
         m.put(ISD.TRANSFORMER_NAME, ISD.ISDTransformer.class);
         transformerMap = Collections.unmodifiableMap(m);
-    }
-
-    public static Transformer getDefaultTransformer() {
-        return getTransformer(getDefaultTransformerName());
-    }
-
-    public static String getDefaultTransformerName() {
-        return ISD.TRANSFORMER_NAME;
     }
 
     public static Set<String> getTransformerNames() {
         return transformerMap.keySet();
     }
 
-    public static Transformer getTransformer(String name) {
-        Class<? extends Transformer> transformerClass = transformerMap.get(name);
-        if (transformerClass != null) {
+    public static Transformer getTransformer(String name, TransformerContext context) {
+        Class<? extends AbstractTransformer> cls = transformerMap.get(name);
+        if (cls != null) {
             try {
-                return transformerClass.newInstance();
+                Constructor<? extends AbstractTransformer> constructor = cls.getDeclaredConstructor(new Class<?>[] { TransformerContext.class });
+                return constructor.newInstance(new Object[] { context });
+            } catch (NoSuchMethodException e) {
+                return null;
             } catch (IllegalAccessException e) {
+                return null;
+            } catch (InvocationTargetException e) {
                 return null;
             } catch (InstantiationException e) {
                 return null;
             }
         } else
             return null;
+    }
+
+    public static String getDefaultTransformerName() {
+        return ISD.TRANSFORMER_NAME;
+    }
+
+    public static Transformer getDefaultTransformer(TransformerContext context) {
+        return getTransformer(getDefaultTransformerName(), context);
     }
 
 }

@@ -26,5 +26,13 @@
 package com.skynav.ttx.transformer;
 
 public abstract class AbstractTransformer implements Transformer {
+
     public static final String DEFAULT_OUTPUT_ENCODING = "UTF-8";
+
+    protected TransformerContext context;
+
+    protected AbstractTransformer(TransformerContext context) {
+        this.context = context;
+    }
+
 }
