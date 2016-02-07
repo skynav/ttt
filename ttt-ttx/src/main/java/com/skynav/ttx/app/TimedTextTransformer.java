@@ -264,7 +264,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         }
         this.transformer = transformer;
         populateMergedOptionMaps(baseShortOptions, baseLongOptions);
-        return args;
+        return skippedArgs;
     }
 
     protected boolean doMergeTransformerOptions() {

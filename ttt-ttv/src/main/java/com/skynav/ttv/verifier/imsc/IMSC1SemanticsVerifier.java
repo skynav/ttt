@@ -1083,7 +1083,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         }
         return !failed;
     }
-    
+
     private boolean isIMSCTextProfile(VerifierContext context) {
         String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_TEXT_ABSOLUTE);

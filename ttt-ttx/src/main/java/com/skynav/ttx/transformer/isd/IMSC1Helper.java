@@ -44,10 +44,9 @@ public class IMSC1Helper extends TTML1Helper {
     }
 
     private boolean hasUsableBackgroundImage(Element elt) {
-        if (elt.hasAttributeNS(NAMESPACE_ST20522010, "backgroundImage")) {
-            String backgroundImage = elt.getAttributeNS(NAMESPACE_ST20522010, "backgroundImage");
-            return (backgroundImage != null) && !backgroundImage.isEmpty();
-        } else
+        if (elt.hasAttributeNS(NAMESPACE_ST20522010, "backgroundImage"))
+            return !elt.getAttributeNS(NAMESPACE_ST20522010, "backgroundImage").isEmpty();
+        else
             return false;
     }
 
