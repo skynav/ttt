@@ -48,7 +48,7 @@ import static com.skynav.ttv.model.imsc.IMSC1.Constants.*;
 
 public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
 
-    public static final QName forcedDisplayAttributeName        = new QName(NAMESPACE,"forcedDisplay");
+    public static final QName forcedDisplayAttributeName        = new QName(NAMESPACE_IMSC_STYLING,"forcedDisplay");
     public static final QName linePaddingAttributeName          = new QName(NAMESPACE_EBUTT_STYLING,"linePadding");
     public static final QName multiRowAlignAttributeName        = new QName(NAMESPACE_EBUTT_STYLING,"multiRowAlign");
 

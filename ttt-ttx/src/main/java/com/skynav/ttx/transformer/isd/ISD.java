@@ -271,6 +271,7 @@ public class ISD {
             context.setResourceState(ResourceState.isdParents.name(), new java.util.HashMap<Object, Object>());
             context.setResourceState(ResourceState.isdTimingStates.name(), new java.util.HashMap<Object, TimingState>());
             context.setResourceState(ResourceState.isdGenerationIndices.name(), new int[GenerationIndex.values().length]);
+            context.setResourceState(ResourceState.isdUsesForcedVisibility.name(), Boolean.FALSE);
         }
 
         private Set<TimeInterval> extractISDIntervals(Object root, TransformerContext context) {
@@ -425,6 +426,7 @@ public class ISD {
                     pruneTimingAndRegionAttributes(docCopy, context);
                     generateISDWrapper(docCopy, interval, context);
                     pruneISDExclusions(docCopy, context);
+                    enactISDPostTransforms(docCopy, context);
                     Namespaces.normalize(docCopy, model.getNormalizedPrefixes());
                     if (hasUsableContent(docCopy, context)) {
                         Object isd = writeISD(docCopy, isdSequence.size() + 1, suppressOutput, context);
@@ -1526,6 +1528,10 @@ public class ISD {
                 return value.equals("media");
             else
                 return false;
+        }
+
+        private void enactISDPostTransforms(Document document, TransformerContext context) {
+            getHelper(context).enactISDPostTransforms(document, context);
         }
 
         private static boolean hasUsableContent(Document document, TransformerContext context) {

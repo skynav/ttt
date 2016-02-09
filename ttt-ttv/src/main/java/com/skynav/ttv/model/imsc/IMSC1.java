@@ -52,12 +52,12 @@ public class IMSC1 {
 
     public static class Constants {
 
-        public static final String NAMESPACE_PREFIX = TTML1.Constants.NAMESPACE_TT + "/profile/imsc1";
-        public static final String NAMESPACE_METADATA = NAMESPACE_PREFIX + "#metadata";
-        public static final String NAMESPACE_PARAMETER = NAMESPACE_PREFIX + "#parameter";
-        public static final String NAMESPACE_STYLING = NAMESPACE_PREFIX + "#styling";
-        public static final String NAMESPACE_PROFILE = NAMESPACE_PREFIX + "/";
-        public static final String NAMESPACE_EXTENSION = NAMESPACE_PREFIX + "/extension/";
+        public static final String NAMESPACE_IMSC_PREFIX = TTML1.Constants.NAMESPACE_TT + "/profile/imsc1";
+        public static final String NAMESPACE_IMSC_METADATA = NAMESPACE_IMSC_PREFIX + "#metadata";
+        public static final String NAMESPACE_IMSC_PARAMETER = NAMESPACE_IMSC_PREFIX + "#parameter";
+        public static final String NAMESPACE_IMSC_STYLING = NAMESPACE_IMSC_PREFIX + "#styling";
+        public static final String NAMESPACE_IMSC_PROFILE = NAMESPACE_IMSC_PREFIX + "/";
+        public static final String NAMESPACE_IMSC_EXTENSION = NAMESPACE_IMSC_PREFIX + "/extension/";
 
         public static final String NAMESPACE_EBUTT_PREFIX = "urn:ebu:tt";
         public static final String NAMESPACE_EBUTT_STYLING = NAMESPACE_EBUTT_PREFIX + ":style";
@@ -65,9 +65,9 @@ public class IMSC1 {
         public static final String XSD_IMSC1 = "com/skynav/ttv/xsd/imsc1/imsc1.xsd";
 
         public static final String PROFILE_TEXT = "text";
-        public static final String PROFILE_TEXT_ABSOLUTE = NAMESPACE_PROFILE + PROFILE_TEXT;
+        public static final String PROFILE_TEXT_ABSOLUTE = NAMESPACE_IMSC_PROFILE + PROFILE_TEXT;
         public static final String PROFILE_IMAGE = "image";
-        public static final String PROFILE_IMAGE_ABSOLUTE = NAMESPACE_PROFILE + PROFILE_IMAGE;
+        public static final String PROFILE_IMAGE_ABSOLUTE = NAMESPACE_IMSC_PROFILE + PROFILE_IMAGE;
 
         public static final String ELT_ALT_TEXT = "altText";
 
@@ -86,22 +86,22 @@ public class IMSC1 {
 
     public static boolean inIMSC1MetadataNamespace(QName name) {
         String nsUri = name.getNamespaceURI();
-        return nsUri.equals(Constants.NAMESPACE_METADATA);
+        return nsUri.equals(Constants.NAMESPACE_IMSC_METADATA);
     }
 
     public static boolean inIMSC1ParameterNamespace(QName name) {
         String nsUri = name.getNamespaceURI();
-        return nsUri.equals(Constants.NAMESPACE_PARAMETER);
+        return nsUri.equals(Constants.NAMESPACE_IMSC_PARAMETER);
     }
 
     public static boolean inIMSC1StylingNamespace(QName name) {
         String nsUri = name.getNamespaceURI();
-        return nsUri.equals(Constants.NAMESPACE_STYLING);
+        return nsUri.equals(Constants.NAMESPACE_IMSC_STYLING);
     }
 
     public static boolean maybeInIMSC1Namespace(QName name) {
         String nsUri = name.getNamespaceURI();
-        return nsUri.startsWith(Constants.NAMESPACE_PREFIX);
+        return nsUri.startsWith(Constants.NAMESPACE_IMSC_PREFIX);
     }
 
     public static boolean inIMSC1Namespace(QName name) {
@@ -178,13 +178,13 @@ public class IMSC1 {
             namespaceURIs.addAll(Arrays.asList(super.getTTNamespaceURIs()));
             try {
                 namespaceURIs.add(new URI(ST20522010.Constants.NAMESPACE_2010));
-                namespaceURIs.add(new URI(Constants.NAMESPACE_METADATA));
-                namespaceURIs.add(new URI(Constants.NAMESPACE_PARAMETER));
-                namespaceURIs.add(new URI(Constants.NAMESPACE_STYLING));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_IMSC_METADATA));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_IMSC_PARAMETER));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_IMSC_STYLING));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_EBUTT_STYLING));
                 this.namespaceURIs = namespaceURIs.toArray(new URI[namespaceURIs.size()]);
-                this.profileNamespaceUri = new URI(Constants.NAMESPACE_PROFILE);
-                this.extensionNamespaceUri = new URI(Constants.NAMESPACE_EXTENSION);
+                this.profileNamespaceUri = new URI(Constants.NAMESPACE_IMSC_PROFILE);
+                this.extensionNamespaceUri = new URI(Constants.NAMESPACE_IMSC_EXTENSION);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -216,6 +216,14 @@ public class IMSC1 {
 
         public URI getExtensionNamespaceUri() {
             return this.extensionNamespaceUri;
+        }
+
+        public Map<String,String> getNormalizedPrefixes() {
+            Map<String,String> normalizedPrefixes = super.getNormalizedPrefixes();
+            normalizedPrefixes.put(Constants.NAMESPACE_IMSC_METADATA, "ittm");
+            normalizedPrefixes.put(Constants.NAMESPACE_IMSC_PARAMETER, "ittp");
+            normalizedPrefixes.put(Constants.NAMESPACE_IMSC_STYLING, "itts");
+            return normalizedPrefixes;
         }
 
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {

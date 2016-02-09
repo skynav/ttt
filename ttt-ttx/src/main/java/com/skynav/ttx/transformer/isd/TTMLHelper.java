@@ -29,15 +29,12 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttv.model.ttml.TTML;
 
-import com.skynav.xml.helpers.XML;
-
 public abstract class TTMLHelper extends ISDHelper {
 
     public static final String NAMESPACE_TT                     = TTML.Constants.NAMESPACE_TT;
     public static final String NAMESPACE_TT_METADATA            = TTML.Constants.NAMESPACE_TT_METADATA;
     public static final String NAMESPACE_TT_STYLE               = TTML.Constants.NAMESPACE_TT_STYLE;
     public static final String NAMESPACE_TT_PARAMETER           = TTML.Constants.NAMESPACE_TT_PARAMETER;
-    public static final String NAMESPACE_ISD                    = TTML.Constants.NAMESPACE_TT_ISD;
 
     public boolean hasUsableContent(Element elt) {
         return isParagraphElement(elt) && hasUsableContentInParagraph(elt);
@@ -184,13 +181,6 @@ public abstract class TTMLHelper extends ISDHelper {
     public static String getRegionIdentifier(Element elt) {
         if (elt.hasAttributeNS(null, "region"))
             return elt.getAttributeNS(null, "region");
-        else
-            return null;
-    }
-
-    public static String getXmlIdentifier(Element elt) {
-        if (elt.hasAttributeNS(XML.xmlNamespace, "id"))
-            return elt.getAttributeNS(XML.xmlNamespace, "id");
         else
             return null;
     }

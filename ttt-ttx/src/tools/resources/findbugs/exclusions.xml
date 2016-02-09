@@ -35,6 +35,7 @@
   <Match>
     <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
     <Or>
+      <Class name="com.skynav.ttx.transformer.isd.IMSC1Helper$1"/>
       <Class name="com.skynav.ttx.transformer.isd.ISD$ISDTransformer$1"/>
       <Class name="com.skynav.ttx.transformer.isd.ISD$ISDTransformer$22"/>
     </Or>

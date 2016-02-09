@@ -57,6 +57,21 @@ import com.skynav.ttx.transformer.TransformerContext;
 
 public class TTML2Helper extends TTMLHelper {
 
+    public static final QName animateElementName                = new QName(NAMESPACE_TT,               "animate");
+    public static final QName animationElementName              = new QName(NAMESPACE_TT,               "animation");
+    public static final QName audioElementName                  = new QName(NAMESPACE_TT,               "audio");
+    public static final QName chunkElementName                  = new QName(NAMESPACE_TT,               "chunk");
+    public static final QName dataElementName                   = new QName(NAMESPACE_TT,               "data");
+    public static final QName fontElementName                   = new QName(NAMESPACE_TT,               "font");
+    public static final QName imageElementName                  = new QName(NAMESPACE_TT,               "image");
+    public static final QName initialElementName                = new QName(NAMESPACE_TT,               "initial");
+    public static final QName itemElementName                   = new QName(NAMESPACE_TT_METADATA,      "item");
+    public static final QName resourcesElementName              = new QName(NAMESPACE_TT,               "resources");
+    public static final QName sourceElementName                 = new QName(NAMESPACE_TT,               "source");
+
+    public static final QName conditionAttributeName            = new QName("",                         "condition");
+    public static final QName sourceAttributeName               = new QName("",                         "src");
+
     private static final ObjectFactory spanFactory = new ObjectFactory();
 
     @Override

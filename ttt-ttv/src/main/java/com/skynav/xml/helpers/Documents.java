@@ -151,6 +151,20 @@ public class Documents {
         }
     }
 
+    public static void insertFirst(Element e, Element f) {
+        Node n = e.getFirstChild();
+        e.insertBefore(f, n);
+    }
+
+    public static boolean hasAttribute(Element e, QName qn) {
+        String ns       = qn.getNamespaceURI();
+        String ln       = qn.getLocalPart();
+        if ((ns == null) || (ns.length() == 0))
+            return e.hasAttribute(ln);
+        else
+            return e.hasAttributeNS(ns, ln);
+    }
+
     public static Map<QName,String> getAttributes(Element e) {
         Map<QName,String> attributes = new java.util.HashMap<QName,String>();
         NamedNodeMap attrs = e.getAttributes();
@@ -168,6 +182,10 @@ public class Documents {
             }
         }
         return attributes;
+    }
+
+    public static String getAttribute(Element e, QName qn) {
+        return getAttribute(e, qn, null);
     }
 
     public static String getAttribute(Element e, QName qn, String defaultValue) {
@@ -195,6 +213,15 @@ public class Documents {
             e.setAttribute(ln, value);
         else
             e.setAttributeNS(ns, ln, value);
+    }
+
+    public static void removeAttribute(Element e, QName qn) {
+        String ns       = qn.getNamespaceURI();
+        String ln       = qn.getLocalPart();
+        if ((ns == null) || (ns.length() == 0))
+            e.removeAttribute(ln);
+        else
+            e.removeAttributeNS(ns, ln);
     }
 
 }

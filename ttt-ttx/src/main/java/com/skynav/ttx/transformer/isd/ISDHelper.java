@@ -32,15 +32,28 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml.TTML;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.xml.helpers.Documents;
+import com.skynav.xml.helpers.XML;
 
 public abstract class ISDHelper {
+
+    public static final String NAMESPACE_ISD                    = TTML.Constants.NAMESPACE_TT_ISD;
+
+    public static final QName isdElementName                    = new QName(NAMESPACE_ISD,"isd");
+    public static final QName isdSequenceElementName            = new QName(NAMESPACE_ISD,"sequence");
+    public static final QName isdStyleElementName               = new QName(NAMESPACE_ISD,"css");
+    public static final QName isdRegionElementName              = new QName(NAMESPACE_ISD,"region");
+
+    public static final QName isdStyleAttributeName             = new QName(NAMESPACE_ISD,"css");
 
     protected ISDHelper() {
     }
@@ -105,12 +118,35 @@ public abstract class ISDHelper {
         throw new UnsupportedOperationException();
     }
 
+    public boolean isISDElement(Element elt) {
+        return Documents.isElement(elt, isdElementName);
+    }
+
+    public boolean isISDSequenceElement(Element elt) {
+        return Documents.isElement(elt, isdSequenceElementName);
+    }
+
+    public boolean isISDStyleElement(Element elt) {
+        return Documents.isElement(elt, isdStyleElementName);
+    }
+
+    public boolean isISDRegionElement(Element elt) {
+        return Documents.isElement(elt, isdRegionElementName);
+    }
+
+    public static String getXmlIdentifier(Element elt) {
+        return Documents.getAttribute(elt, XML.xmlIdentifierAttributeName, null);
+    }
+
     public boolean specialStyleInheritance(Element elt, QName styleName, StyleSet sss, TransformerContext context) {
         return false;
     }
 
     public StyleSpecification getSpecialInheritedStyle(Element elt, QName styleName, StyleSet sss, Map<Element, StyleSet> specifiedStyleSets, TransformerContext context) {
         return null;
+    }
+
+    public void enactISDPostTransforms(Document document, TransformerContext context) {
     }
 
     public boolean hasUsableContent(Element elt) {

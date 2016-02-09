@@ -154,6 +154,12 @@ public class ST20522013 {
             return this.extensionNamespaceUri;
         }
 
+        public Map<String,String> getNormalizedPrefixes() {
+            Map<String,String> normalizedPrefixes = super.getNormalizedPrefixes();
+            normalizedPrefixes.put(Constants.NAMESPACE_2013, "smpte");
+            return normalizedPrefixes;
+        }
+
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {
             if (profileSpecificationClasses == null) {
                 profileSpecificationClasses = new java.util.HashMap<URI,Class<?>>(super.getProfileSpecificationClasses());

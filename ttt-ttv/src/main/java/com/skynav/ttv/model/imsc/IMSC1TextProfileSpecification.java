@@ -33,7 +33,7 @@ import com.skynav.ttv.model.Profile.Usage;
 import com.skynav.ttv.model.smpte.ST20522010;
 import com.skynav.ttv.model.ttml.TTML1;
 
-import static com.skynav.ttv.model.imsc.IMSC1.Constants.NAMESPACE_EXTENSION;
+import static com.skynav.ttv.model.imsc.IMSC1.Constants.NAMESPACE_IMSC_EXTENSION;
 
 public class IMSC1TextProfileSpecification extends Specification {
 
@@ -174,7 +174,7 @@ public class IMSC1TextProfileSpecification extends Specification {
     private static Map<URI,Usage> makeExtensionsMap() {
         Map<URI,Usage> fm = new java.util.HashMap<URI,Usage>();
         fm.putAll(featuresMap(ST20522010.Constants.NAMESPACE_2010_EXTENSION, smpteExtensionMapEntries));
-        fm.putAll(featuresMap(NAMESPACE_EXTENSION, imsc1ExtensionMapEntries));
+        fm.putAll(featuresMap(NAMESPACE_IMSC_EXTENSION, imsc1ExtensionMapEntries));
         return fm;
     }
 

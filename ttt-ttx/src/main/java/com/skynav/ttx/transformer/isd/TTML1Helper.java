@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
@@ -47,6 +48,33 @@ import com.skynav.ttv.util.Visitor;
 import com.skynav.ttx.transformer.TransformerContext;
 
 public class TTML1Helper extends TTMLHelper {
+
+    public static final QName actorElementName                  = new QName(NAMESPACE_TT_METADATA,      "actor");
+    public static final QName agentElementName                  = new QName(NAMESPACE_TT_METADATA,      "agent");
+    public static final QName bodyElementName                   = new QName(NAMESPACE_TT,               "body");
+    public static final QName breakElementName                  = new QName(NAMESPACE_TT,               "br");
+    public static final QName copyrightElementName              = new QName(NAMESPACE_TT_METADATA,      "copyright");
+    public static final QName descriptionElementName            = new QName(NAMESPACE_TT_METADATA,      "desc");
+    public static final QName divisionElementName               = new QName(NAMESPACE_TT,               "div");
+    public static final QName extensionElementName              = new QName(NAMESPACE_TT_PARAMETER,     "extension");
+    public static final QName extensionsElementName             = new QName(NAMESPACE_TT_PARAMETER,     "extensions");
+    public static final QName featureElementName                = new QName(NAMESPACE_TT_PARAMETER,     "feature");
+    public static final QName featuresElementName               = new QName(NAMESPACE_TT_PARAMETER,     "features");
+    public static final QName headElementName                   = new QName(NAMESPACE_TT,               "head");
+    public static final QName layoutElementName                 = new QName(NAMESPACE_TT,               "layout");
+    public static final QName metadataElementName               = new QName(NAMESPACE_TT,               "metadata");
+    public static final QName nameElementName                   = new QName(NAMESPACE_TT_METADATA,      "name");
+    public static final QName paragraphElementName              = new QName(NAMESPACE_TT,               "p");
+    public static final QName profileElementName                = new QName(NAMESPACE_TT_PARAMETER,     "profile");
+    public static final QName regionElementName                 = new QName(NAMESPACE_TT,               "region");
+    public static final QName setElementName                    = new QName(NAMESPACE_TT,               "set");
+    public static final QName spanElementName                   = new QName(NAMESPACE_TT,               "span");
+    public static final QName styleElementName                  = new QName(NAMESPACE_TT,               "style");
+    public static final QName stylingElementName                = new QName(NAMESPACE_TT,               "styling");
+    public static final QName timedTextElementName              = new QName(NAMESPACE_TT,               "tt");
+    public static final QName titleElementName                  = new QName(NAMESPACE_TT_METADATA,      "title");
+
+    public static final QName nameAttributeName                 = new QName("",                         "name");
 
     private static final ObjectFactory spanFactory = new ObjectFactory();
 

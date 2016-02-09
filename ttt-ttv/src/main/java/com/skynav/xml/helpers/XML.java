@@ -29,13 +29,15 @@ import javax.xml.namespace.QName;
 
 public class XML {
 
-    public static final String xmlNamespace = "http://www.w3.org/XML/1998/namespace";
-    public static final String xmlnsNamespace = "http://www.w3.org/2000/xmlns/";
-    public static final String xsiNamespace = "http://www.w3.org/2001/XMLSchema-instance";
+    public static final String xmlNamespace                     = "http://www.w3.org/XML/1998/namespace";
+    public static final String xmlnsNamespace                   = "http://www.w3.org/2000/xmlns/";
+    public static final String xsiNamespace                     = "http://www.w3.org/2001/XMLSchema-instance";
 
-    public static final String xmlPrefix = "xml";
-    public static final String xmlnsPrefix = "xmlns";
-    public static final String xsiPrefix = "xsi";
+    public static final String xmlPrefix                        = "xml";
+    public static final String xmlnsPrefix                      = "xmlns";
+    public static final String xsiPrefix                        = "xsi";
+
+    public static final QName xmlIdentifierAttributeName        = new QName(xmlNamespace, "id");
 
     private XML() {
     }

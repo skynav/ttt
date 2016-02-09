@@ -31,7 +31,7 @@ import java.util.Set;
 import com.skynav.ttv.model.ttml.TTML1StandardDesignations;
 import com.skynav.ttv.util.URIs;
 
-import static com.skynav.ttv.model.imsc.IMSC1.Constants.NAMESPACE_EXTENSION;
+import static com.skynav.ttv.model.imsc.IMSC1.Constants.NAMESPACE_IMSC_EXTENSION;
 
 public class IMSC1StandardDesignations extends TTML1StandardDesignations {
 
@@ -51,7 +51,7 @@ public class IMSC1StandardDesignations extends TTML1StandardDesignations {
     }
 
     private void populateExtensionDesignations() {
-        URI extensionNamespaceUri = URIs.makeURISafely(NAMESPACE_EXTENSION);
+        URI extensionNamespaceUri = URIs.makeURISafely(NAMESPACE_IMSC_EXTENSION);
         if (extensionNamespaceUri != null) {
             Set<URI> extensionDesignations = new java.util.HashSet<URI>(extensionDesignationStrings.length);
             for (String designation : extensionDesignationStrings) {

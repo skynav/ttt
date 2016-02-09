@@ -826,7 +826,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             Model model = getModel();
             if (model.isNamespace(name.getNamespaceURI())) {
                 String nsLabel;
-                if (name.getNamespaceURI().indexOf(NAMESPACE_PREFIX) == 0)
+                if (name.getNamespaceURI().indexOf(NAMESPACE_IMSC_PREFIX) == 0)
                     nsLabel = "IMSC";
                 else if (name.getNamespaceURI().indexOf(NAMESPACE_EBUTT_PREFIX) == 0)
                     nsLabel = "EBUTT";
@@ -1084,13 +1084,13 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         return !failed;
     }
 
-    private boolean isIMSCTextProfile(VerifierContext context) {
-        String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
+    public static boolean isIMSCTextProfile(VerifierContext context) {
+        String profile = (String) context.getResourceState(context.getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_TEXT_ABSOLUTE);
     }
 
-    private boolean isIMSCImageProfile(VerifierContext context) {
-        String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
+    public static boolean isIMSCImageProfile(VerifierContext context) {
+        String profile = (String) context.getResourceState(context.getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_IMAGE_ABSOLUTE);
     }
 

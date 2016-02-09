@@ -29,5 +29,6 @@ public enum ResourceState {
     isdHelper,
     isdParents,
     isdTimingStates,
-    isdGenerationIndices;
+    isdGenerationIndices,
+    isdUsesForcedVisibility;
 };
