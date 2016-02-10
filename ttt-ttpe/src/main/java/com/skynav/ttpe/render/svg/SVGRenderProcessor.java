@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -111,9 +112,9 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     // miscellaneous statics
-    public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
-    public static final MessageFormat matrixFormatter          = new MessageFormat("matrix({0})");
-    public static final MessageFormat translateFormatter       = new MessageFormat("translate({0,number,#.####},{1,number,#.####})");
+    public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}", Locale.US);
+    public static final MessageFormat matrixFormatter          = new MessageFormat("matrix({0})", Locale.US);
+    public static final MessageFormat translateFormatter       = new MessageFormat("translate({0,number,#.####},{1,number,#.####})", Locale.US);
 
     // options state
     private String backgroundOption;

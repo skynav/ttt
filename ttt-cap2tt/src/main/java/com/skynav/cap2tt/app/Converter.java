@@ -176,6 +176,7 @@ public class Converter implements ConverterContext {
     private static Charset defaultEncoding;
     private static Charset defaultOutputEncoding;
     private static final String defaultOutputFileNamePattern    = "tt{0,number,0000}.xml";
+    private static final String defaultStyleIdPattern           = "s{0}";
 
     static {
         try {
@@ -466,9 +467,11 @@ public class Converter implements ConverterContext {
     private File outputDirectory;
     private Charset outputEncoding;
     private File outputFile;
+    private MessageFormat outputPatternFormatter;
     private double parsedExternalFrameRate;
     private double parsedExternalDuration;
     private double[] parsedExternalExtent;
+    private MessageFormat styleIdPatternFormatter;
 
     // global processing state
     private SimpleDateFormat gmtDateTimeFormat;
@@ -1132,6 +1135,12 @@ public class Converter implements ConverterContext {
         if (outputPattern == null)
             outputPattern = defaultOutputFileNamePattern;
         this.outputPattern = outputPattern;
+        this.outputPatternFormatter = new MessageFormat(outputPattern, Locale.US);
+        // style id pattern formatter
+        if (styleIdPattern == null)
+            styleIdPattern = defaultStyleIdPattern;
+        this.styleIdPatternFormatter = new MessageFormat(styleIdPattern, Locale.US);
+        // handle eoption processor's derived options
         if (optionProcessor != null)
             optionProcessor.processDerivedOptions();
     }
@@ -3178,7 +3187,7 @@ public class Converter implements ConverterContext {
 
     private void mergeStyles(final Document d, int[] indices) {
         try {
-            final Map<Element,StyleSet> styleSets = getUniqueSpecifiedStyles(d, indices, styleIdPattern, styleIdSequenceStart);
+            final Map<Element,StyleSet> styleSets = getUniqueSpecifiedStyles(d, indices, styleIdPatternFormatter, styleIdSequenceStart);
             final Set<String> styleIds = new java.util.HashSet<String>();
             final Element styling = Documents.findElementByName(d, ttStylingEltName);
             if (styling != null) {
@@ -3292,7 +3301,7 @@ public class Converter implements ConverterContext {
         return Nodes.matchesName(a, ttsTextAlignAttrName);
     }
 
-    private static Map<Element, StyleSet> getUniqueSpecifiedStyles(Document d, int[] indices, String styleIdPattern, int styleIdStart) {
+    private static Map<Element, StyleSet> getUniqueSpecifiedStyles(Document d, int[] indices, MessageFormat styleIdPatternFormatter, int styleIdStart) {
         // get specified style sets
         Map<Element, StyleSet> specifiedStyleSets = getSpecifiedStyles(d, indices);
 
@@ -3312,7 +3321,7 @@ public class Converter implements ConverterContext {
         // assign identifiers to unique SSs
         int uniqueStyleIndex = styleIdStart;
         for (StyleSet ss : styles)
-            ss.setId(MessageFormat.format(styleIdPattern, uniqueStyleIndex++));
+            ss.setId(styleIdPatternFormatter.format(new Object[]{Integer.valueOf(uniqueStyleIndex++)}));
 
         // remap SS map entries to unique SSs
         for (Map.Entry<Element,StyleSet> e : specifiedStyleSets.entrySet()) {
@@ -3491,7 +3500,7 @@ public class Converter implements ConverterContext {
             sb.append(path.substring(s, e));
             sb.append(".xml");
         } else {
-            sb.append(MessageFormat.format(outputPattern, ++outputFileSequence));
+            sb.append(outputPatternFormatter.format(new Object[]{Integer.valueOf(++outputFileSequence)}));
         }
         String outputFileName = sb.toString();
         if (isStandardOutput(outputFileName))

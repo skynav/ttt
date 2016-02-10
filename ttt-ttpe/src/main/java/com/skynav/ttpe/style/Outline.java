@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 package com.skynav.ttpe.style;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 public class Outline {
 
@@ -85,7 +86,7 @@ public class Outline {
             return false;
     }
 
-    private static final MessageFormat doubleFormatter = new MessageFormat("{0,number,#.####}");
+    private static final MessageFormat doubleFormatter = new MessageFormat("{0,number,#.####}", Locale.US);
     public String toTextOutlineString() {
         StringBuffer sb = new StringBuffer();
         if (color != null) {

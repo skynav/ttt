@@ -34,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -88,7 +89,7 @@ public class Manifest {
     }
 
     // miscellaneous statics
-    public static final MessageFormat timeFormatter             = new MessageFormat("{0,number,00}:{1,number,00}:{2,number,00.###}");
+    public static final MessageFormat timeFormatter             = new MessageFormat("{0,number,00}:{1,number,00}:{2,number,00.###}", Locale.US);
 
     public Manifest() {
     }

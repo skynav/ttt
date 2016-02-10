@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@ package com.skynav.ttpe.render.xml;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -85,7 +86,7 @@ public class XMLRenderProcessor extends RenderProcessor {
     }
 
     // miscellaneous statics
-    public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
+    public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}", Locale.US);
 
     // options state
     private boolean includeGenerator;

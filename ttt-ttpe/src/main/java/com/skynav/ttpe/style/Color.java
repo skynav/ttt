@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@ package com.skynav.ttpe.style;
 
 import java.awt.Paint;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.Map;
 
 public class Color {
@@ -53,7 +54,8 @@ public class Color {
 
     public static final String rgbFormat                        = "#%02X%02X%02X";
     public static final String rgbaFormat                       = "#%02X%02X%02X%02X";
-    public static final MessageFormat tupleFormatter            = new MessageFormat("[{0,number,0.0},{1,number,0.0},{2,number,0.0},{3,number,0.0}]");
+    public static final MessageFormat tupleFormatter            =
+        new MessageFormat("[{0,number,0.0},{1,number,0.0},{2,number,0.0},{3,number,0.0}]", Locale.US);
 
     private double red;
     private double green;

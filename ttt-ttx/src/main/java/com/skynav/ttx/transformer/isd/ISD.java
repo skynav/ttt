@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -154,6 +155,7 @@ public class ISD {
         // derived option state
         private File outputDirectory;
         private Charset outputEncoding;
+        private MessageFormat outputPatternFormatter;
 
         public ISDTransformer(TransformerContext context) {
             super(context);
@@ -243,6 +245,7 @@ public class ISD {
             if (outputPattern == null)
                 outputPattern = defaultOutputFileNamePattern;
             this.outputPattern = outputPattern;
+            this.outputPatternFormatter = new MessageFormat(outputPattern, Locale.US);
         }
 
         @Override
@@ -1568,7 +1571,7 @@ public class ISD {
            FileOutputStream fos = null;
            BufferedOutputStream bos = null;
            try {
-               String outputFileName = MessageFormat.format(outputPattern, sequenceIndex);
+               String outputFileName = outputPatternFormatter.format(sequenceIndex);
                File outputFile = new File(outputDirectory, outputFileName);
                fos = new FileOutputStream(outputFile);
                bos = new BufferedOutputStream(fos);

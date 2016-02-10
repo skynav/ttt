@@ -36,6 +36,7 @@ import java.text.MessageFormat;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -69,7 +70,7 @@ import com.skynav.ttv.util.Reporter;
 @SuppressWarnings({"unchecked","rawtypes"})
 public class FontState {
 
-    private static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}");
+    private static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}", Locale.US);
 
     private static final int MISSING_GLYPH_CHAR = '#';          // character for missing glyph
     private static final int PUA_LOWER_LIMIT    = 0xE000;       // lower limit (inclusive) of bmp pua

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -168,6 +169,8 @@ public class Presenter extends TimedTextTransformer {
     private File outputDirectory;
     private File outputDirectoryRetained;
     private Charset outputEncoding;
+    private MessageFormat outputPatternFormatter;
+    private MessageFormat outputPatternISDFormatter;
     private RenderProcessor renderer;
 
     // processing state
@@ -425,11 +428,13 @@ public class Presenter extends TimedTextTransformer {
         if (outputPattern == null)
             outputPattern = defaultOutputFileNamePattern;
         this.outputPattern = outputPattern;
+        this.outputPatternFormatter = new MessageFormat(outputPattern, Locale.US);
         // output pattern for isd
         String outputPatternISD = this.outputPatternISD;
         if (outputPatternISD == null)
             outputPatternISD = defaultOutputFileNamePatternISD;
         this.outputPatternISD = outputPatternISD;
+        this.outputPatternISDFormatter = new MessageFormat(outputPatternISD, Locale.US);
         // show memory
         setShowMemory(showMemory);
     }
@@ -676,7 +681,7 @@ public class Presenter extends TimedTextTransformer {
                 return null;
         }
         if (d.exists()) {
-            String outputFileName = MessageFormat.format(outputPatternISD, ++outputFileSequenceISD);
+            String outputFileName = outputPatternISDFormatter.format(new Object[]{Integer.valueOf(++outputFileSequenceISD)});
             File outputFile = new File(d, outputFileName).getCanonicalFile();
             if (retOutputFile != null)
                 retOutputFile[0] = outputFile;
@@ -771,7 +776,7 @@ public class Presenter extends TimedTextTransformer {
                 return null;
         }
         if (d.exists()) {
-            String outputFileName = MessageFormat.format(outputPattern, ++outputFileSequence);
+            String outputFileName = outputPatternFormatter.format(new Object[]{Integer.valueOf(++outputFileSequence)});
             File outputFile = new File(d, outputFileName).getCanonicalFile();
             if (retOutputFile != null)
                 retOutputFile[0] = outputFile;

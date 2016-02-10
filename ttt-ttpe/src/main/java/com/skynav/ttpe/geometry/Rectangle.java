@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 package com.skynav.ttpe.geometry;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 public class Rectangle {
 
@@ -81,7 +82,8 @@ public class Rectangle {
         return new java.awt.geom.Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
     }
 
-    private static final MessageFormat rectangleFormatter = new MessageFormat("[{0,number,#.####},{1,number,#.####},{2,number,#.####},{3,number,#.####}]");
+    private static final MessageFormat rectangleFormatter =
+        new MessageFormat("[{0,number,#.####},{1,number,#.####},{2,number,#.####},{3,number,#.####}]", Locale.US);
 
     @Override
     public String toString() {

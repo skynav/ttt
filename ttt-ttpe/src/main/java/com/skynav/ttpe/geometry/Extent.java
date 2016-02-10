@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 package com.skynav.ttpe.geometry;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 public class Extent {
 
@@ -82,7 +83,7 @@ public class Extent {
         return sb.toString();
     }
 
-    private static final MessageFormat extentFormatter = new MessageFormat("[{0,number,#.####},{1,number,#.####}]");
+    private static final MessageFormat extentFormatter = new MessageFormat("[{0,number,#.####},{1,number,#.####}]", Locale.US);
     @Override
     public String toString() {
         return extentFormatter.format(new Object[] {width, height});
