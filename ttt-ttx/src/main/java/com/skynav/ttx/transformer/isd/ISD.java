@@ -1571,7 +1571,7 @@ public class ISD {
            FileOutputStream fos = null;
            BufferedOutputStream bos = null;
            try {
-               String outputFileName = outputPatternFormatter.format(sequenceIndex);
+               String outputFileName = outputPatternFormatter.format(new Object[]{Integer.valueOf(sequenceIndex)});
                File outputFile = new File(outputDirectory, outputFileName);
                fos = new FileOutputStream(outputFile);
                bos = new BufferedOutputStream(fos);
