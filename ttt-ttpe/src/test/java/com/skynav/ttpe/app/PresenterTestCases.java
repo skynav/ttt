@@ -485,6 +485,11 @@ public class PresenterTestCases {
         performPresentationTest("test-086-display-1.xml", 0, 0);
     }
 
+    @Test
+    public void test086Display2() throws Exception {
+        performPresentationTest("test-087-display-2.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
