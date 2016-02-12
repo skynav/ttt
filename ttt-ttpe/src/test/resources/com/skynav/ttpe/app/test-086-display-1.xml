@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0"
+    ttva:noWarnOn="missing-profile" ttva:model="ttml1">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:extent="80% 20%" tts:origin="10% 10%" tts:textAlign="center"/>
+    </layout>
+  </head>
+  <body begin="0s" end="1s" region="r0">
+    <div tts:display="auto">
+      <p tts:display="auto">
+        <span tts:display="auto">display: auto</span>
+        <span tts:display="none">display: none</span>
+        <span tts:display="auto">display: auto</span>
+      </p>
+      <p tts:display="none">
+        <span tts:display="auto">display: auto</span>
+        <span tts:display="none">display: none</span>
+        <span tts:display="auto">display: auto</span>
+      </p>
+    </div>
+    <div tts:display="none">
+      <p tts:display="auto">
+        <span tts:display="auto">display: auto</span>
+        <span tts:display="none">display: none</span>
+        <span tts:display="auto">display: auto</span>
+      </p>
+      <p tts:display="none">
+        <span tts:display="auto">display: auto</span>
+        <span tts:display="none">display: none</span>
+        <span tts:display="auto">display: auto</span>
+      </p>
+    </div>
+  </body>
+</tt>

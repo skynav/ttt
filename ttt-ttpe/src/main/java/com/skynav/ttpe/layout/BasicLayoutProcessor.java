@@ -48,6 +48,7 @@ import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.Display;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.StyleCollector;
 import com.skynav.ttpe.style.Whitespace;
@@ -412,6 +413,9 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutRegion(Element e, LayoutState ls) {
+        Display display = ls.getDisplay(e);
+        if (display == Display.NONE)
+            return;
         Extent extent = ls.getExtent(e);
         double w = extent.getWidth();
         double h = extent.getHeight();
@@ -435,6 +439,9 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutBody(Element e, LayoutState ls) {
+        Display display = ls.getDisplay(e);
+        if (display == Display.NONE)
+            return;
         ls.pushBlock(e);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttDivisionElementName))
@@ -444,6 +451,9 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutDivision(Element e, LayoutState ls) {
+        Display display = ls.getDisplay(e);
+        if (display == Display.NONE)
+            return;
         ls.pushBlock(e);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttDivisionElementName)) {
@@ -456,6 +466,9 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutParagraph(Element e, LayoutState ls) {
+        Display display = ls.getDisplay(e);
+        if (display == Display.NONE)
+            return;
         layoutParagraphs(e, new ParagraphCollector(newStyleCollector(ls)).collect(e), ls);
     }
 

@@ -54,6 +54,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     public static final Color defaultBackgroundColor                           = Color.TRANSPARENT;
     public static final Color defaultColor                                     = Color.YELLOW;
     public static final Combination defaultCombination                         = Combination.NONE;
+    public static final Display defaultDisplay                                 = Display.AUTO;
     public static final BlockAlignment defaultDisplayAlign                     = BlockAlignment.BEFORE;
     public static final Emphasis defaultEmphasis                               = Emphasis.NONE;
     public static final Extent defaultExtent                                   = Extent.EMPTY;
@@ -90,6 +91,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private Color backgroundColor                                              = defaultBackgroundColor;
     private Color color                                                        = defaultColor;
     private Combination combination                                            = defaultCombination;
+    private Display display                                                    = defaultDisplay;
     private BlockAlignment displayAlign                                        = defaultDisplayAlign;
     private Emphasis emphasis                                                  = defaultEmphasis;
     private Extent extent                                                      = defaultExtent;
@@ -204,6 +206,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public Combination getCombination() {
         return combination;
+    }
+
+    public void setDisplay(Display display) {
+        this.display = display;
+    }
+
+    public Display getDisplay() {
+        return display;
     }
 
     public void setDisplayAlign(BlockAlignment displayAlign) {

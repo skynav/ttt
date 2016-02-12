@@ -42,6 +42,7 @@ public class Constants {
     public static final QName ttsBPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "bpd");
     public static final QName ttsColorAttrName                          = new QName(NAMESPACE_TT_STYLE, "color");
     public static final QName ttsDirectionAttrName                      = new QName(NAMESPACE_TT_STYLE, "direction");
+    public static final QName ttsDisplayAttrName                        = new QName(NAMESPACE_TT_STYLE, "display");
     public static final QName ttsDisplayAlignAttrName                   = new QName(NAMESPACE_TT_STYLE, "displayAlign");
     public static final QName ttsExtentAttrName                         = new QName(NAMESPACE_TT_STYLE, "extent");
     public static final QName ttsFontFamilyAttrName                     = new QName(NAMESPACE_TT_STYLE, "fontFamily");

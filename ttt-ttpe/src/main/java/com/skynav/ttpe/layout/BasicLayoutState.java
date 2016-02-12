@@ -53,6 +53,7 @@ import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Defaults;
+import com.skynav.ttpe.style.Display;
 import com.skynav.ttpe.style.Helpers;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
@@ -313,6 +314,15 @@ public class BasicLayoutState implements LayoutState {
                 return styles;
         }
         return StyleSet.EMPTY;
+    }
+
+    public Display getDisplay(Element e) {
+        StyleSpecification s = getStyles(e).get(ttsDisplayAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            return Display.valueOf(v.toUpperCase());
+        } else
+            return defaults.getDisplay();
     }
 
     public BlockAlignment getDisplayAlign(Element e) {

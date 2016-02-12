@@ -115,6 +115,17 @@ public class StyleCollector {
             attributes.clear();
     }
 
+    public boolean isDisplayed(Element e) {
+        Display display;
+        StyleSpecification s = getStyles(e).get(ttsDisplayAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            display = Display.valueOf(v.toUpperCase());
+        } else
+            display = defaults.getDisplay();
+        return display != Display.NONE;
+    }
+
     public boolean generatesAnnotationBlock(Element e) {
         if (Documents.isElement(e, ttSpanElementName)) {
             Annotation r = getAnnotation(e);

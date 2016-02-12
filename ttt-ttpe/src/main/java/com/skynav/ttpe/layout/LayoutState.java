@@ -43,6 +43,7 @@ import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Defaults;
+import com.skynav.ttpe.style.Display;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
@@ -101,6 +102,7 @@ public interface LayoutState {
     void saveStyles(Element e);
     Map<String,StyleSet> getStyles();
     StyleSet getStyles(Element e);
+    Display getDisplay(Element e);
     BlockAlignment getDisplayAlign(Element e);
     Extent getExtent(Element e);
     Point getOrigin(Element e);

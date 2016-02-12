@@ -64,16 +64,20 @@ public class PhraseCollector {
     }
 
     protected void collectParagraph(Element e) {
-        collectChildren(e);
-        emit(e);
+        if (styleCollector.isDisplayed(e)) {
+            collectChildren(e);
+            emit(e);
+        }
     }
 
     protected void collectSpan(Element e) {
-        int begin = text.length();
-        styleCollector.maybeWrapWithBidiControls(e);
-        collectChildren(e);
-        styleCollector.collectSpanStyles(e, begin, text.length());
-        emit(e);
+        if (styleCollector.isDisplayed(e)) {
+            int begin = text.length();
+            styleCollector.maybeWrapWithBidiControls(e);
+            collectChildren(e);
+            styleCollector.collectSpanStyles(e, begin, text.length());
+            emit(e);
+        }
     }
 
     protected void collectChildren(Element e) {
@@ -112,8 +116,10 @@ public class PhraseCollector {
     }
 
     protected void collectBreak(Element e) {
-        text.append((char) Characters.UC_LINE_SEPARATOR);
-        emit(e);
+        if (styleCollector.isDisplayed(e)) {
+            text.append((char) Characters.UC_LINE_SEPARATOR);
+            emit(e);
+        }
     }
 
     protected void clear() {
