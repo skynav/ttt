@@ -35,6 +35,7 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.ttv.model.ttml2.tt.Animate;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
@@ -71,12 +72,15 @@ public class TTML2Helper extends TTMLHelper {
 
     public static final QName conditionAttributeName            = new QName("",                         "condition");
     public static final QName sourceAttributeName               = new QName("",                         "src");
+    public static final QName versionAttributeName              = new QName(NAMESPACE_TT_PARAMETER,     "version");
+
+    public static final int   ttml2Version                      = TTML2.MODEL_VERSION;
 
     private static final ObjectFactory spanFactory = new ObjectFactory();
 
     @Override
     public int getVersion() {
-        return 2;
+        return ttml2Version;
     }
 
     @Override

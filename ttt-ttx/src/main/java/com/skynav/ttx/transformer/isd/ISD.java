@@ -275,6 +275,7 @@ public class ISD {
             context.setResourceState(ResourceState.isdTimingStates.name(), new java.util.HashMap<Object, TimingState>());
             context.setResourceState(ResourceState.isdGenerationIndices.name(), new int[GenerationIndex.values().length]);
             context.setResourceState(ResourceState.isdUsesForcedVisibility.name(), Boolean.FALSE);
+            context.setResourceState(ResourceState.isdUsesTTML2Feature.name(), Boolean.FALSE);
         }
 
         private Set<TimeInterval> extractISDIntervals(Object root, TransformerContext context) {

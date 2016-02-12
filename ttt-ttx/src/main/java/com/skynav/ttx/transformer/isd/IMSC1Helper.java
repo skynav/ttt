@@ -73,7 +73,7 @@ public class IMSC1Helper extends TTML1Helper {
         transformMultiRowAlign(doc, context);
     }
 
-    private void transformBackgroundImage(final Document doc, TransformerContext context) {
+    private void transformBackgroundImage(final Document doc, final TransformerContext context) {
         if (IMSC1SemanticsVerifier.isIMSCImageProfile(context)) {
             try {
                 Traverse.traverseElements(doc, new PreVisitor() {
@@ -89,6 +89,8 @@ public class IMSC1Helper extends TTML1Helper {
                                     Documents.setAttribute(image, TTML2Helper.sourceAttributeName, source);
                                     // [TBD] ensure that no image child is already present
                                     elt.appendChild(image);
+                                    // record uses of ttml2 feature
+                                    context.setResourceState(ResourceState.isdUsesTTML2Feature.name(), Boolean.TRUE);
                                 }
                                 Documents.removeAttribute(elt, backgroundImageAttributeName);
                             }
@@ -188,6 +190,8 @@ public class IMSC1Helper extends TTML1Helper {
         }
         // record uses forced status
         context.setResourceState(ResourceState.isdUsesForcedVisibility.name(), Boolean.TRUE);
+        // record uses of ttml2 feature
+        context.setResourceState(ResourceState.isdUsesTTML2Feature.name(), Boolean.TRUE);
     }
 
     private String getCondition(Element elt) {
@@ -206,6 +210,7 @@ public class IMSC1Helper extends TTML1Helper {
 
     private void maybeRecordTransformMetadata(Document doc, TransformerContext context) {
         maybeRecordUsesForcedVisibility(doc, context);
+        maybeRecordRequiresTTML2(doc, context);
     }
 
     private void maybeRecordUsesForcedVisibility(Document doc, TransformerContext context) {
@@ -220,6 +225,27 @@ public class IMSC1Helper extends TTML1Helper {
         }
     }
 
+    private void maybeRecordRequiresTTML2(Document doc, TransformerContext context) {
+        Boolean usesTTML2Feature = (Boolean) context.getResourceState(ResourceState.isdUsesTTML2Feature.name());
+        if ((usesTTML2Feature != null) && usesTTML2Feature) {
+            Element root = doc.getDocumentElement();
+            boolean needsVersion = false;
+            if (!Documents.hasAttribute(root, TTML2Helper.versionAttributeName)) {
+                needsVersion = true;
+            } else {
+                String value = Documents.getAttribute(root, TTML2Helper.versionAttributeName);
+                try {
+                    int version = Integer.parseInt(value);
+                    if (version < TTML2Helper.ttml2Version)
+                        needsVersion = true;
+                } catch (NumberFormatException e) {
+                }
+            }
+            if (needsVersion)
+                Documents.setAttribute(root, TTML2Helper.versionAttributeName, Integer.valueOf(TTML2Helper.ttml2Version).toString());
+        }
+    }
+    
     @Override
     public boolean hasUsableContent(Element elt) {
         if (super.hasUsableContent(elt))

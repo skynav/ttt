@@ -30,5 +30,6 @@ public enum ResourceState {
     isdParents,
     isdTimingStates,
     isdGenerationIndices,
-    isdUsesForcedVisibility;
+    isdUsesForcedVisibility,
+    isdUsesTTML2Feature;
 };

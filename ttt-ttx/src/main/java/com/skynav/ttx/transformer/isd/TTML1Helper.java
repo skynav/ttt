@@ -31,6 +31,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
 import com.skynav.ttv.model.ttml1.tt.Division;
@@ -76,11 +77,13 @@ public class TTML1Helper extends TTMLHelper {
 
     public static final QName nameAttributeName                 = new QName("",                         "name");
 
+    public static final int   ttml1Version                      = TTML1.MODEL_VERSION;
+
     private static final ObjectFactory spanFactory = new ObjectFactory();
 
     @Override
     public int getVersion() {
-        return 1;
+        return ttml1Version;
     }
 
     @Override
