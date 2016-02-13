@@ -32,6 +32,7 @@ import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.text.Phrase;
 
 public class AnnotationLayout extends LineLayout {
@@ -50,8 +51,8 @@ public class AnnotationLayout extends LineLayout {
     }
 
     @Override
-    protected LineArea newLine(Phrase p, double ipd, double bpd, int level, InlineAlignment textAlign, Color color, Font font) {
-        return new AnnotationArea(p.getElement(), ipd, bpd, level, textAlign, color, font, getNextAnnotationNumber());
+    protected LineArea newLine(Phrase p, double ipd, double bpd, int level, Visibility visibility, InlineAlignment textAlign, Color color, Font font) {
+        return new AnnotationArea(p.getElement(), ipd, bpd, level, visibility, textAlign, color, font, getNextAnnotationNumber());
     }
 
     private int getNextAnnotationNumber() {

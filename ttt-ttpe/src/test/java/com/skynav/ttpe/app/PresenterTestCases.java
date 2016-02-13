@@ -486,8 +486,18 @@ public class PresenterTestCases {
     }
 
     @Test
-    public void test086Display2() throws Exception {
+    public void test087Display2() throws Exception {
         performPresentationTest("test-087-display-2.xml", 0, 0);
+    }
+
+    @Test
+    public void test088Visibility1() throws Exception {
+        performPresentationTest("test-088-visibility-1.xml", 0, 0);
+    }
+
+    @Test
+    public void test089Visibility2() throws Exception {
+        performPresentationTest("test-089-visibility-2.xml", 0, 0);
     }
 
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {

@@ -471,6 +471,16 @@ public class StyleCollector {
         if (v != null)
             addAttribute(StyleAttribute.OUTLINE, v, begin, end);
 
+        // VISIBILITY
+        s = styles.get(ttsVisibilityAttrName);
+        v = null;
+        if (s != null)
+            v = Visibility.valueOf(s.getValue().toUpperCase());
+        else
+            v = defaults.getVisibility();
+        if (v != null)
+            addAttribute(StyleAttribute.VISIBILITY, v, begin, end);
+
         // WRAP
         s = styles.get(ttsWrapOptionAttrName);
         v = null;

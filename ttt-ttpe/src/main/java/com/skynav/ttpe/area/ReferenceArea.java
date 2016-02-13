@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.Visibility;
 
 public class ReferenceArea extends PositionedBlockArea {
 
@@ -37,8 +38,8 @@ public class ReferenceArea extends PositionedBlockArea {
     private TransformMatrix ctm;
     private double overflow;
 
-    public ReferenceArea(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
-        super(e, x, y, width, height);
+    public ReferenceArea(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, Visibility visibility) {
+        super(e, x, y, width, height, visibility);
         assert wm != null;
         this.wm = wm;
         assert ctm != null;

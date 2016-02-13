@@ -60,6 +60,7 @@ import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
 import com.skynav.ttpe.style.SuppressAtLineBreakTreatment;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.style.WhitespaceTreatment;
 import com.skynav.ttpe.style.Wrap;
@@ -106,6 +107,7 @@ public class LineLayout {
     private Color color;
     private Outline outline;
     private InlineAlignment textAlign;
+    private Visibility visibility;
     private Wrap wrap;
     private WritingMode writingMode;
 
@@ -132,6 +134,7 @@ public class LineLayout {
         this.color = content.getColor(-1, defaults);
         this.outline = content.getOutline(-1, defaults);
         this.textAlign = relativizeAlignment(content.getTextAlign(-1, defaults), this.writingMode);
+        this.visibility = content.getVisibility(-1, defaults);
         this.wrap = content.getWrapOption(-1, defaults);
         // derived styles
         this.font = content.getFont(-1, defaults);
@@ -286,11 +289,12 @@ public class LineLayout {
     private LineArea emit(double available, double consumed, Consume consume, List<InlineBreakOpportunity> breaks) {
         consumed = maybeRemoveLeadingWhitespace(breaks, consumed);
         consumed = maybeRemoveTrailingWhitespace(breaks, consumed);
-        return addTextAreas(newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, bidiLevel, textAlign, color, font), breaks);
+        LineArea la = newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, bidiLevel, visibility, textAlign, color, font);
+        return addTextAreas(la, breaks);
     }
 
-    protected LineArea newLine(Phrase p, double ipd, double bpd, int bidiLevel, InlineAlignment textAlign, Color color, Font font) {
-        return new LineArea(p.getElement(), ipd, bpd, bidiLevel, textAlign, color, font, ++lineNumber, p.isEmbedding());
+    protected LineArea newLine(Phrase p, double ipd, double bpd, int bidiLevel, Visibility visibility, InlineAlignment textAlign, Color color, Font font) {
+        return new LineArea(p.getElement(), ipd, bpd, bidiLevel, visibility, textAlign, color, font, ++lineNumber, p.isEmbedding());
     }
 
     protected int getNextLineNumber() {
@@ -952,6 +956,7 @@ public class LineLayout {
             Set<StyleAttributeInterval> intervals = new java.util.TreeSet<StyleAttributeInterval>();
             intervals.addAll(getColorIntervals(from, to));
             intervals.addAll(getOutlineIntervals(from, to));
+            intervals.addAll(getVisibilityIntervals(from, to));
             List<Decoration> decorations = new java.util.ArrayList<Decoration>();
             for (StyleAttributeInterval i : intervals) {
                 Decoration.Type t;
@@ -961,6 +966,8 @@ public class LineLayout {
                         t = Decoration.Type.COLOR;
                     else if (v instanceof Outline)
                         t = Decoration.Type.OUTLINE;
+                    else if (v instanceof Visibility)
+                        t = Decoration.Type.VISIBILITY;
                     else
                         t = null;
                     decorations.add(new Decoration(i.getBegin() - start, i.getEnd() - start, t, v));
@@ -1099,6 +1106,26 @@ public class LineLayout {
             if (outlines.isEmpty() && (outline != null) && !outline.equals(defaults.getOutline()))
                 outlines.add(new StyleAttributeInterval(outlineAttr, outline, start + from, start + to));
             return outlines;
+        }
+        // obtain visibility for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getVisibilityIntervals(int from, int to) {
+            StyleAttribute visibilityAttr = StyleAttribute.VISIBILITY;
+            List<StyleAttributeInterval> visibilities = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, visibilityAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                aci.setIndex(s);
+                Object v = aci.getAttribute(visibilityAttr);
+                if (v != null)
+                    visibilities.add(new StyleAttributeInterval(visibilityAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            if (visibilities.isEmpty() && (visibility != null) && !visibility.equals(defaults.getVisibility()))
+                visibilities.add(new StyleAttributeInterval(visibilityAttr, visibility, start + from, start + to));
+            return visibilities;
         }
         // obtain dominant orientation for specified interval FROM to TO of run
         private Orientation getDominantOrientation(int from, int to, Orientation defaultOrientation) {

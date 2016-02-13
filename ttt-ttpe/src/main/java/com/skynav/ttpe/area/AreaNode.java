@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
 
 public class AreaNode extends AbstractArea {
@@ -90,6 +91,20 @@ public class AreaNode extends AbstractArea {
                 return p.getAvailable(dimension);
         }
         return super.getAvailable(dimension);
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        Visibility visibility = super.getVisibility();
+        if (visibility != null) {
+            return visibility;
+        } else {
+            AreaNode p = getParent();
+            if (p != null)
+                return p.getVisibility();
+            else
+                return null;
+        }
     }
 
     public void setParent(NonLeafAreaNode parent) {

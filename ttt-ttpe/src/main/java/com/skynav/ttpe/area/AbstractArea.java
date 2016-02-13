@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
 
 import com.skynav.xml.helpers.XML;
@@ -99,6 +100,15 @@ public abstract class AbstractArea implements Area {
             return e.getAttributeNS(XML.xmlNamespace, "lang");
         else
             return null;
+    }
+
+    public Visibility getVisibility() {
+        return null;
+    }
+
+    public boolean isVisible() {
+        Visibility visibility = getVisibility();
+        return (visibility == null) || (visibility != Visibility.HIDDEN);
     }
 
     public Font getFont() {

@@ -31,12 +31,14 @@ import java.util.Set;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.style.Visibility;
 
 public class BlockArea extends NonLeafAreaNode implements Block {
 
     private double bpd;
     private double ipd;
     private int level;
+    private Visibility visibility;
     private int reversals;
     private double overflow;
 
@@ -45,19 +47,29 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public BlockArea(Element e) {
-        this(e, Double.NaN, Double.NaN, -1);
+        this(e, null);
     }
 
-    public BlockArea(Element e, double ipd, double bpd, int level) {
+    public BlockArea(Element e, Visibility visibility) {
+        this(e, Double.NaN, Double.NaN, -1, visibility);
+    }
+
+    public BlockArea(Element e, double ipd, double bpd, int level, Visibility visibility) {
         super(e);
         this.ipd = ipd;
         this.bpd = bpd;
         this.level = level;
+        this.visibility = visibility;
     }
 
     @Override
     public int getBidiLevel() {
         return level;
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return visibility;
     }
 
     @Override

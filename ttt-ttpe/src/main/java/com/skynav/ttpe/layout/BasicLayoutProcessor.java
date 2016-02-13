@@ -51,6 +51,7 @@ import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Display;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.StyleCollector;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttpe.text.LineBreaker;
@@ -386,7 +387,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             ls.pushViewport(e, w, h, clip);
             WritingMode wm = ls.getExternalWritingMode();
             TransformMatrix ctm = ls.getExternalTransform();
-            ls.pushReference(e, 0, 0, w, h, wm, ctm);
+            Visibility visibility = ls.getVisibility(e);
+            ls.pushReference(e, 0, 0, w, h, wm, ctm, visibility);
             for (Element c : getChildElements(e)) {
                 if (isElement(c, isdRegionElementName))
                     layoutRegion(c, ls);
@@ -426,7 +428,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         ls.pushViewport(e, w, h, clip);
         WritingMode wm = ls.getWritingMode(e);
         TransformMatrix ctm = ls.getTransform(e);
-        ls.pushReference(e, x, y, w, h, wm, ctm);
+        Visibility visibility = ls.getVisibility(e);
+        ls.pushReference(e, x, y, w, h, wm, ctm, visibility);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttBodyElementName))
                 layoutBody(c, ls);
@@ -442,7 +445,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         Display display = ls.getDisplay(e);
         if (display == Display.NONE)
             return;
-        ls.pushBlock(e);
+        Visibility visibility = ls.getVisibility(e);
+        ls.pushBlock(e, visibility);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttDivisionElementName))
                 layoutDivision(c, ls);
@@ -454,7 +458,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         Display display = ls.getDisplay(e);
         if (display == Display.NONE)
             return;
-        ls.pushBlock(e);
+        Visibility visibility = ls.getVisibility(e);
+        ls.pushBlock(e, visibility);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttDivisionElementName)) {
                 layoutDivision(c, ls);
@@ -483,7 +488,9 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutParagraph(Paragraph p, LayoutState ls) {
-        ls.pushBlock(p.getElement());
+        Element e = p.getElement();
+        Visibility visibility = ls.getVisibility(e);
+        ls.pushBlock(e, visibility);
         for (LineArea l : new ParagraphLayout(p, ls).layout()) {
             ls.addLine(l);
         }

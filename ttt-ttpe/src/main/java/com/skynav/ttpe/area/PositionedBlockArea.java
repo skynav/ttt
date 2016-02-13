@@ -28,13 +28,14 @@ package com.skynav.ttpe.area;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Point;
+import com.skynav.ttpe.style.Visibility;
 
 public class PositionedBlockArea extends BoundedBlockArea {
 
     private Point origin;
 
-    public PositionedBlockArea(Element e, double x, double y, double width, double height) {
-        super(e, width, height);
+    public PositionedBlockArea(Element e, double x, double y, double width, double height, Visibility visibility) {
+        super(e, width, height, visibility);
         this.origin = new Point(x, y);
     }
 

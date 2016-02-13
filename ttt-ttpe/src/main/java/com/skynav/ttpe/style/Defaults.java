@@ -74,6 +74,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     public static final Outline defaultOutline                                 = Outline.NONE;
     public static final Overflow defaultOverflow                               = Overflow.HIDDEN;
     public static final String defaultScript                                   = "auto";
+    public static final Visibility defaultVisibility                           = Visibility.VISIBLE;
     public static final Whitespace defaultWhitespace                           = Whitespace.DEFAULT;
     public static final InlineAlignment defaultTextAlign                       = InlineAlignment.START;
     public static final TransformMatrix defaultTransform                       = TransformMatrix.IDENTITY;
@@ -114,6 +115,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private Whitespace whitespace                                              = defaultWhitespace;
     private InlineAlignment textAlign                                          = defaultTextAlign;
     private TransformMatrix transform                                          = defaultTransform;
+    private Visibility visibility                                              = defaultVisibility;
     private WritingMode writingMode                                            = defaultWritingMode;
     private Wrap wrap                                                          = defaultWrap;
 
@@ -390,6 +392,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public TransformMatrix getTransform() {
         return transform;
+    }
+
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
+    }
+
+    public Visibility getVisibility() {
+        return visibility;
     }
 
     public void setWritingMode(WritingMode writingMode) {

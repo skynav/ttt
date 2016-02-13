@@ -29,6 +29,7 @@ import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.geometry.WritingMode;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
 
 public interface Area extends AreaGeometry {
@@ -57,6 +58,16 @@ public interface Area extends AreaGeometry {
      * Determine if writing mode of area is vertical; if no writing mode defined, then false.
      */
     boolean isVertical();
+
+    /**
+     * Obtain visibility, or null if none defined.
+     */
+    Visibility getVisibility();
+
+    /**
+     * Determine if is (or should be) visible, based on visibility.
+     */
+    boolean isVisible();
 
     /**
      * Obtain font of area, or null if none defined.

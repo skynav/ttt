@@ -34,6 +34,7 @@ import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.AnnotationReserve;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
+import com.skynav.ttpe.style.Visibility;
 
 public class LineArea extends BlockArea {
 
@@ -46,11 +47,11 @@ public class LineArea extends BlockArea {
     private double bpdAnnotationAfter;
 
     public LineArea() {
-        this(null, 0, 0, -1, null, null, null, 0, false);
+        this(null, 0, 0, -1, null, null, null, null, 0, false);
     }
 
-    public LineArea(Element e, double ipd, double bpd, int level, InlineAlignment alignment, Color color, Font font, int lineNumber, boolean embedding) {
-        super(e, ipd, bpd, level);
+    public LineArea(Element e, double ipd, double bpd, int level, Visibility visibility, InlineAlignment alignment, Color color, Font font, int lineNumber, boolean embedding) {
+        super(e, ipd, bpd, level, visibility);
         this.alignment = alignment;
         this.color = color;
         this.font = font;

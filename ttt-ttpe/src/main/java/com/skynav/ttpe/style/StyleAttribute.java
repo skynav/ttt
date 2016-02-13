@@ -52,6 +52,7 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   ORIENTATION               = new StyleAttribute("ORIENTATION");               // com.skynav.ttpe.style.Orientation
     public static final StyleAttribute   OUTLINE                   = new StyleAttribute("OUTLINE");                   // com.skynav.ttpe.style.Outline
     public static final StyleAttribute   SCRIPT                    = new StyleAttribute("SCRIPT");                    // String
+    public static final StyleAttribute   VISIBILITY                = new StyleAttribute("VISIBILITY");                // com.skynav.ttpe.style.Visibility
     public static final StyleAttribute   WHITESPACE                = new StyleAttribute("WHITESPACE");                // com.skynav.ttpe.style.Whitespace
     public static final StyleAttribute   WRAP                      = new StyleAttribute("WRAP");                      // com.skynav.ttpe.style.Wrap
 

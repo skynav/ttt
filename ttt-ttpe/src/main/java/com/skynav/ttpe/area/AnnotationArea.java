@@ -31,14 +31,15 @@ import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.InlineAlignment;
+import com.skynav.ttpe.style.Visibility;
 
 public class AnnotationArea extends LineArea implements Inline {
 
     private double offset;
     private AnnotationPosition position;
 
-    public AnnotationArea(Element e, double ipd, double bpd, int level, InlineAlignment alignment, Color color, Font font, int annotationNumber) {
-        super(e, ipd, bpd, level, alignment, color, font, annotationNumber, false);
+    public AnnotationArea(Element e, double ipd, double bpd, int level, Visibility visibility, InlineAlignment alignment, Color color, Font font, int annotationNumber) {
+        super(e, ipd, bpd, level, visibility, alignment, color, font, annotationNumber, false);
     }
 
     public void setOffset(double offset) {

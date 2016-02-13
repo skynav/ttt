@@ -44,6 +44,7 @@ import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Display;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
@@ -75,8 +76,8 @@ public interface LayoutState {
     // area stack
     NonLeafAreaNode pushCanvas(Element e, double begin, double end, Extent cellResolution);
     NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
-    NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm);
-    NonLeafAreaNode pushBlock(Element e);
+    NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, Visibility visibility);
+    NonLeafAreaNode pushBlock(Element e, Visibility visibility);
     NonLeafAreaNode push(NonLeafAreaNode a);
     NonLeafAreaNode addLine(LineArea l);
     NonLeafAreaNode pop();
@@ -109,6 +110,7 @@ public interface LayoutState {
     Point getPosition(Element e, Extent extent);
     Overflow getOverflow(Element e);
     TransformMatrix getTransform(Element e);
+    Visibility getVisibility(Element e);
     WritingMode getWritingMode(Element e);
     // statistics
     void incrementCounters(CounterEvent event, Area a);

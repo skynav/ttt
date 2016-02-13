@@ -32,7 +32,8 @@ public class Decoration implements Cloneable {
         EMPHASIS,
         HIGHLIGHT,
         LINING,
-        OUTLINE;
+        OUTLINE,
+        VISIBILITY;
     }
 
     private int begin;
@@ -97,6 +98,14 @@ public class Decoration implements Cloneable {
 
     public Outline getOutline() {
         return isOutline() ? (Outline) getValue() : null;
+    }
+
+    public boolean isVisibility() {
+        return getType() == Type.VISIBILITY;
+    }
+
+    public Visibility getVisibility() {
+        return isVisibility() ? (Visibility) getValue() : null;
     }
 
     public Object getValue() {

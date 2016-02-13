@@ -28,13 +28,14 @@ package com.skynav.ttpe.area;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.style.Visibility;
 
 public class BoundedBlockArea extends BlockArea {
 
     private Extent extent;
 
-    public BoundedBlockArea(Element e, double width, double height) {
-        super(e);
+    public BoundedBlockArea(Element e, double width, double height, Visibility visibility) {
+        super(e, visibility);
         this.extent = new Extent(width, height);
     }
 

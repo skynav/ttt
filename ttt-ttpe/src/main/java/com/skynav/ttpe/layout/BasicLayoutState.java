@@ -55,6 +55,7 @@ import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Display;
 import com.skynav.ttpe.style.Helpers;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
@@ -130,14 +131,14 @@ public class BasicLayoutState implements LayoutState {
         return a;
     }
 
-    public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm) {
-        return push(new ReferenceArea(e, x, y, width, height, wm, ctm));
+    public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, Visibility visibility) {
+        return push(new ReferenceArea(e, x, y, width, height, wm, ctm, visibility));
     }
 
-    public NonLeafAreaNode pushBlock(Element e) {
+    public NonLeafAreaNode pushBlock(Element e, Visibility visibility) {
         ReferenceArea ra = getReferenceArea();
         if (ra != null)
-            return push(new BlockArea(e, ra.getIPD(), ra.getBPD(), getBidiLevel()));
+            return push(new BlockArea(e, ra.getIPD(), ra.getBPD(), getBidiLevel(), visibility));
         else
             throw new IllegalStateException();
     }
@@ -412,6 +413,15 @@ public class BasicLayoutState implements LayoutState {
 
     public TransformMatrix getTransform(Element e) {
         return defaults.getTransform();
+    }
+
+    public Visibility getVisibility(Element e) {
+        StyleSpecification s = getStyles(e).get(ttsVisibilityAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            return Visibility.valueOf(v.toUpperCase());
+        } else
+            return defaults.getVisibility();
     }
 
     public WritingMode getWritingMode(Element e) {

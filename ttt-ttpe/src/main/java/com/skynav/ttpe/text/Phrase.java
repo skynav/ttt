@@ -45,6 +45,7 @@ import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
+import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Wrap;
 import com.skynav.ttpe.util.AttributedStrings;
 import com.skynav.ttpe.util.Characters;
@@ -385,6 +386,21 @@ public class Phrase {
             v = defaults.getTextAlign();
         if (v instanceof InlineAlignment)
             return (InlineAlignment) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] visibilityAttr = new StyleAttribute[] { StyleAttribute.VISIBILITY };
+    public Visibility getVisibility(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(visibilityAttr[0]);
+        else
+            v = content.getIterator(visibilityAttr, index, index + 1).getAttribute(visibilityAttr[0]);
+        if (v == null)
+            v = defaults.getVisibility();
+        if (v instanceof Visibility)
+            return (Visibility) v;
         else
             return null;
     }
