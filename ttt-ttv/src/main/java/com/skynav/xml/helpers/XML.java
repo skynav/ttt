@@ -135,4 +135,102 @@ public class XML {
         sb.append(';');
     }
 
+    public static boolean isNCNameCharStart(char c) {
+        if (c == '_')
+            return true;
+        else
+            return isLetter(c);
+    }
+
+    public static boolean isNCNameCharPart(char c) {
+        if (c == '_')
+            return true;
+        else if (c == '-')
+            return true;
+        else if (c == '.')
+            return true;
+        else if (isLetter(c))
+            return true;
+        else if (isDigit(c))
+            return true;
+        else if (isCombiningChar(c))
+            return true;
+        else if (isExtender(c))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isLetter(char c) {
+        if (isBaseChar(c))
+            return true;
+        else if (isIdeographic(c))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isBaseChar(char c) {
+        if ((c >= 0x0041) && (c <= 0x005A))
+            return true;
+        else if ((c >= 0x0061) && (c <= 0x007A))
+            return true;
+        else    // [TBD] include all base chars per XML 1.0
+            return false;
+    }
+
+    public static boolean isIdeographic(char c) {
+        if (c == 0x3007)
+            return true;
+        else if ((c >= 0x3021) && (c <= 0x3029))
+            return true;
+        else if ((c >= 0x4E00) && (c <= 0x9FA5))
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isDigit(char c) {
+        if ((c >= 0x0030) && (c <= 0x0039))
+            return true;
+        else    // [TBD] include all digit chars per XML 1.0
+            return false;
+    }
+
+    public static boolean isCombiningChar(char c) {
+        if ((c >= 0x0300) && (c <= 0x0345))
+            return true;
+        else if ((c >= 0x0360) && (c <= 0x0361))
+            return true;
+        else    // [TBD] include all combining chars per XML 1.0
+            return false;
+    }
+
+    public static boolean isExtender(char c) {
+        if (c == 0x00B7)
+            return true;
+        else if (c == 0x02D0)
+            return true;
+        else if (c == 0x02D1)
+            return true;
+        else if (c == 0x0387)
+            return true;
+        else if (c == 0x0640)
+            return true;
+        else if (c == 0x0E46)
+            return true;
+        else if (c == 0x0EC6)
+            return true;
+        else if (c == 0x3005)
+            return true;
+        else if ((c >= 0x3031) && (c <= 0x3035))
+            return true;
+        else if ((c >= 0x309D) && (c <= 0x309E))
+            return true;
+        else if ((c >= 0x30FC) && (c <= 0x30FE))
+            return true;
+        else
+            return false;
+    }
+
 }
