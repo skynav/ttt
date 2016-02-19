@@ -29,11 +29,22 @@ import java.nio.CharBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import com.skynav.xml.helpers.XML;
 
 public class Condition {
+
+    public interface EvaluatorState {
+        boolean hasBinding(String identifier);
+        Object getBinding(String identifier);
+        void setBinding(String identifier, Object value);
+    }
+
+    public interface Evaluator {
+        Object evaluate(ExpressionEvaluator ee, Expression e);
+    }
 
     private Expression expression;
 
@@ -42,20 +53,31 @@ public class Condition {
         this.expression = expression;
     }
 
-    /*
-    public boolean evaluate() {
-        return false; // [TBD] - IMPLEMENT ME
+    public boolean evaluate(EvaluatorState state) {
+        Object o = new ExpressionEvaluator(state).evaluate(expression);
+        Class<?> operandClass = Boolean.class;
+        if (checkCompatibleOperand(o, operandClass)) {
+            o = convertCompatibleOperand(o, operandClass);
+            if (o instanceof Boolean)
+                return ((Boolean) o).booleanValue();
+            else
+                throw new IllegalStateException();
+        } else
+            throw new EvaluatorException("condition expression evaluates to non-boolean compatible value " + o);
     }
-    */
 
     @Override
     public String toString() {
         return expression.toString();
     }
 
-    public static Condition fromValue(String condition) throws ParserException {
+    public static Condition valueOf(String condition) throws ParserException {
         Parser p = new Parser();
         return p.parse(CharBuffer.wrap(condition.trim()));
+    }
+
+    public static EvaluatorState makeEvaluatorState() {
+        return new EvaluatorBindingState();
     }
 
     /**
@@ -81,7 +103,7 @@ public class Condition {
         Condition parse(CharBuffer cb) {
             if (cb.hasRemaining()) {
                 state.setInput(cb, skipWhitespace);
-                state.pushOperator(Operator.SENTINEL);
+                state.operators().push(Operator.SENTINEL);
                 parseExpression();
                 state.expect(Token.EOS);
                 return new Condition(state.topOperand());
@@ -114,10 +136,10 @@ public class Condition {
                 state.pushOperand(t);
             } else if (t == Token.OPEN) {
                 state.consume();
-                state.pushOperator(Operator.SENTINEL);
+                state.operators().push(Operator.SENTINEL);
                 parseExpression();
                 state.expect(Token.CLOSE);
-                state.popOperator();
+                state.operators.pop();
             } else if (t.isUnaryOp()) {
                 state.consume();
                 state.pushOperator(Operator.fromToken(t, OperatorContext.UNARY));
@@ -127,7 +149,7 @@ public class Condition {
         }
 
     }
-    
+
     private static class State {
 
         Tokenizer tokenizer;            // input tokenizer
@@ -139,10 +161,18 @@ public class Condition {
             this.operands = new Stack<Expression>();
         }
 
+        Stack<Operator> operators() {
+            return operators;
+        }
+
+        Stack<Expression> operands() {
+            return operands;
+        }
+
         void setInput(CharBuffer cb, boolean skipWhitespace) {
             this.tokenizer = new Tokenizer(cb, skipWhitespace);
-            this.operators.clear();
-            this.operands.clear();
+            operators().clear();
+            operands().clear();
         }
 
         Token next() {
@@ -176,24 +206,24 @@ public class Condition {
                 else
                     break;
             }
-            this.operators.push(op);
+            operators().push(op);
         }
 
         Operator popOperator() {
-            assert !operators.empty();
+            assert !operators().empty();
             Operator top = topOperator();
             if (top != null) {
                 if (top.isBinary()) {
-                    assert operators.size() > 0;
-                    assert operands.size() > 1;
-                    Object o1 = operands.pop();
-                    Object o0 = operands.pop();
-                    pushOperand(new Expression(operators.pop(), Arrays.asList(new Object[]{ o0, o1 })));
+                    assert operators().size() > 0;
+                    assert operands().size() > 1;
+                    Object o1 = operands().pop();
+                    Object o0 = operands().pop();
+                    pushOperand(new Expression(operators().pop(), Arrays.asList(new Object[]{ o0, o1 })));
                     return top;
                 } else if (top.isUnary()) {
-                    assert operands.size() > 0;
-                    Object o0 = operands.pop();
-                    pushOperand(new Expression(operators.pop(), o0));
+                    assert operands().size() > 0;
+                    Object o0 = operands().pop();
+                    pushOperand(new Expression(operators().pop(), o0));
                     return top;
                 } else {
                     assert false;
@@ -204,7 +234,7 @@ public class Condition {
         }
 
         Operator topOperator() {
-            return operators.empty() ? null : operators.peek();
+            return operators().empty() ? null : operators().peek();
         }
 
         void pushOperand(Token t) {
@@ -213,11 +243,11 @@ public class Condition {
         }
 
         void pushOperand(Expression e) {
-            this.operands.push(e);
+            operands().push(e);
         }
 
         Expression topOperand() {
-            return operands.empty() ? null : operands.peek();
+            return operands().empty() ? null : operands().peek();
         }
 
     }
@@ -325,6 +355,25 @@ public class Condition {
             return value;
         }
 
+        public Object getLiteralValue(EvaluatorState state) {
+            assert isLiteral();
+            if (type == Type.IDENT) {
+                return state.getBinding(value);
+            } else if (type == Type.STRING) {
+                return value;
+            } else if (type == Type.NUMERIC) {
+                try {
+                    return Double.valueOf(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalStateException(e);
+                }
+            } else if (type == Type.BOOLEAN) {
+                return Boolean.valueOf(value);
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+
         public int length() {
             if (isLiteral()) {
                 assert value != null;
@@ -360,7 +409,7 @@ public class Condition {
         }
 
     }
-    
+
     private static class Tokenizer {
 
         private CharBuffer cb;
@@ -371,14 +420,12 @@ public class Condition {
             this.skipWhitespace = skipWhitespace;
         }
 
-        private Token expect(Token token) {
+        private void expect(Token token) {
             Token next = next();
             if ((next != null) && next.equals(token))
-                return next;
-            else {
+                consume();
+            else
                 error(token, next);
-                return null;
-            }
         }
 
         private Token next() {
@@ -817,14 +864,16 @@ public class Condition {
     public static class Expression {
 
         private Operator operator;
-        private List<Object> operands;
+        private List<Object> operands;          // (Expression|Token)*
 
         Expression(Operator operator, Object operand) {
             this(operator, Arrays.asList(new Object[]{operand}));
         }
 
         Expression(Operator operator, List<Object> operands) {
+            assert operator != null;
             this.operator = operator;
+            assert operands != null;
             this.operands = operands;
         }
 
@@ -832,15 +881,24 @@ public class Condition {
             return operator;
         }
 
+        public int getOperandCount() {
+            return operands.size();
+        }
+
+        public Object getOperand(int index) {
+            if ((index < 0) || (index >= operands.size()))
+                throw new IllegalArgumentException();
+            else
+                return operands.get(index);
+        }
+
         public List<Object> getOperands() {
             return Collections.unmodifiableList(operands);
         }
 
-        /*
-        boolean evaluate() {
-            return false; // [TBD] - IMPLEMENT ME
+        public Object evaluate(ExpressionEvaluator ee) {
+            return ee.evaluate(this);
         }
-        */
 
         public String toString() {
             StringBuffer sb = new StringBuffer();
@@ -858,6 +916,587 @@ public class Condition {
             return sb.toString();
         }
 
+    }
+
+    private static class EvaluatorBindingState implements EvaluatorState {
+
+        private Map<String,Object> bindings;
+
+        public EvaluatorBindingState() {
+            this.bindings = new java.util.HashMap<String,Object>();
+        }
+
+        public boolean hasBinding(String identifier) {
+            return bindings.containsKey(identifier);
+        }
+
+        public Object getBinding(String identifier) {
+            return bindings.get(identifier);
+        }
+
+        public void setBinding(String identifier, Object value) {
+            bindings.put(identifier, value);
+        }
+
+    }
+
+    private static class ExpressionEvaluator {
+
+        private static final Map<Operator,Evaluator> evaluators;
+        static {
+            Map<Operator,Evaluator> m = new java.util.HashMap<Operator,Evaluator>();
+            Evaluator e;
+            e = new BinaryArithmeticEvaluator();
+            m.put(Operator.ADD, e);
+            m.put(Operator.SUBTRACT, e);
+            m.put(Operator.MULTIPLY, e);
+            m.put(Operator.DIVIDE, e);
+            m.put(Operator.MODULO, e);
+            e = new BinaryLogicEvaluator();
+            m.put(Operator.AND, e);
+            m.put(Operator.OR, e);
+            e = new BinaryRelationEvaluator();
+            m.put(Operator.EQ, e);
+            m.put(Operator.GEQ, e);
+            m.put(Operator.GT, e);
+            m.put(Operator.LEQ, e);
+            m.put(Operator.LT, e);
+            m.put(Operator.NEQ, e);
+            e = new GroupEvaluator();
+            m.put(Operator.GROUP, e);
+            e = new LiteralEvaluator();
+            m.put(Operator.LITERAL, e);
+            e = new UnaryLogicEvaluator();
+            m.put(Operator.NOT, e);
+            e = new UnaryArithmeticEvaluator();
+            m.put(Operator.MINUS, e);
+            m.put(Operator.PLUS, e);
+            evaluators = Collections.unmodifiableMap(m);
+        }
+
+        EvaluatorState state;
+
+        public ExpressionEvaluator(EvaluatorState state) {
+            assert state != null;
+            this.state = state;
+        }
+
+        private EvaluatorState getState() {
+            return state;
+        }
+
+        public Object evaluate(Object o) {
+            if (o == null) {
+                throw new IllegalArgumentException();
+            } else if (o instanceof Expression) {
+                Expression e = (Expression) o;
+                Operator operator = e.getOperator();
+                Evaluator evaluator = evaluators.get(operator);
+                if (evaluator != null)
+                    return evaluator.evaluate(this, e);
+                else
+                    throw new IllegalArgumentException(o.toString());
+            } else if (o instanceof Number) {
+                return o;
+            } else if (o instanceof String) {
+                return o;
+            } else if (o instanceof Boolean) {
+                return o;
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
+    }
+
+    private static class BinaryArithmeticEvaluator implements Evaluator {
+
+        public Object evaluate(ExpressionEvaluator ee, Expression e) {
+            if (checkOperator(e)) {
+                final int minCount = 2;
+                final int maxCount = 2;
+                if (checkOperandCount(e, minCount, maxCount)) {
+                    Class<?> operandClass = Number.class;
+                    Object o0 = ee.evaluate(e.getOperand(0));
+                    if (!checkCompatibleOperand(o0, operandClass))
+                        throw new IncompatibleOperandException(e, o0, operandClass);
+                    else
+                        o0 = convertCompatibleOperand(o0, operandClass);
+                    Object o1 = ee.evaluate(e.getOperand(1));
+                    if (!checkCompatibleOperand(o1, operandClass))
+                        throw new IncompatibleOperandException(e, o1, operandClass);
+                    else
+                        o1 = convertCompatibleOperand(o1, operandClass);
+                    return evaluate(ee.getState(), e.getOperator(), o0, o1);
+                } else
+                    throw new BadOperandCountException(e, minCount, maxCount);
+            } else
+                throw new BadOperatorException(e, "binary arithmetic");
+        }
+
+        private boolean checkOperator(Expression e) {
+            Operator operator = e.getOperator();
+            if (operator == Operator.ADD)
+                return true;
+            else if (operator == Operator.SUBTRACT)
+                return true;
+            else if (operator == Operator.MULTIPLY)
+                return true;
+            else if (operator == Operator.DIVIDE)
+                return true;
+            else if (operator == Operator.MODULO)
+                return true;
+            else
+                return false;
+        }
+
+        private Object evaluate(EvaluatorState state, Operator operator, Object o0, Object o1) {
+            assert o0 instanceof Number;
+            double d0 = ((Number) o0).doubleValue();
+            assert o1 instanceof Number;
+            double d1 = ((Number) o1).doubleValue();
+            if (operator == Operator.ADD) {
+                return (Double) (d0 + d1);
+            } else if (operator == Operator.SUBTRACT) {
+                return (Double) (d0 - d1);
+            } else if (operator == Operator.MULTIPLY) {
+                return (Double) (d0 * d1);
+            } else if (operator == Operator.DIVIDE) {
+                return (Double) (d0 / d1);
+            } else if (operator == Operator.MODULO) {
+                return (Double) (d0 % d1);
+            } else
+                throw new IllegalStateException();
+        }
+
+    }
+
+    private static class BinaryLogicEvaluator implements Evaluator {
+
+        public Object evaluate(ExpressionEvaluator ee, Expression e) {
+            if (checkOperator(e)) {
+                final int minCount = 2;
+                final int maxCount = 2;
+                if (checkOperandCount(e, minCount, maxCount)) {
+                    Class<?> operandClass = Boolean.class;
+                    Object o0 = ee.evaluate(e.getOperand(0));
+                    if (!checkCompatibleOperand(o0, operandClass))
+                        throw new IncompatibleOperandException(e, o0, operandClass);
+                    else
+                        o0 = convertCompatibleOperand(o0, operandClass);
+                    Object o1 = ee.evaluate(e.getOperand(1));
+                    if (!checkCompatibleOperand(o1, operandClass))
+                        throw new IncompatibleOperandException(e, o1, operandClass);
+                    else
+                        o1 = convertCompatibleOperand(o1, operandClass);
+                    return evaluate(ee.getState(), e.getOperator(), o0, o1);
+                } else
+                    throw new BadOperandCountException(e, minCount, maxCount);
+            } else
+                throw new BadOperatorException(e, "binary logic");
+        }
+
+        private boolean checkOperator(Expression e) {
+            Operator operator = e.getOperator();
+            if (operator == Operator.AND)
+                return true;
+            else if (operator == Operator.OR)
+                return true;
+            else
+                return false;
+        }
+
+        private Object evaluate(EvaluatorState state, Operator operator, Object o0, Object o1) {
+            assert o0 instanceof Boolean;
+            boolean b0 = ((Boolean) o0).booleanValue();
+            assert o1 instanceof Boolean;
+            boolean b1 = ((Boolean) o1).booleanValue();
+            if (operator == Operator.AND) {
+                return (Boolean) (b0 && b1);
+            } else if (operator == Operator.OR) {
+                return (Boolean) (b0 || b1);
+            } else
+                throw new IllegalStateException();
+        }
+
+    }
+
+    private static class BinaryRelationEvaluator implements Evaluator {
+
+        public Object evaluate(ExpressionEvaluator ee, Expression e) {
+            if (checkOperator(e)) {
+                Operator operator = e.getOperator();
+                final int minCount = 2;
+                final int maxCount = 2;
+                if (checkOperandCount(e, minCount, maxCount)) {
+                    Object o0 = ee.evaluate(e.getOperand(0));
+                    Object o1 = ee.evaluate(e.getOperand(1));
+                    if (o0 instanceof Number) {
+                        Class<?> operandClass = Number.class;
+                        if (o1 instanceof Number) {
+                            return evaluate(ee.getState(), e, operator, (Number) o0, (Number) o1);
+                        } else if (checkCompatibleOperand(o1, operandClass)) {
+                            return evaluate(ee.getState(), e, operator, (Number) o0, (Number) convertCompatibleOperand(o1, operandClass));
+                        } else {
+                            throw new IncompatibleOperandException(e, o1, operandClass);
+                        }
+                    } else if (o0 instanceof String) {
+                        Class<?> operandClass = String.class;
+                        if (o1 instanceof String) {
+                            return evaluate(ee.getState(), e, operator, (String) o0, (String) o1);
+                        } else if (checkCompatibleOperand(o1, operandClass)) {
+                            return evaluate(ee.getState(), e, operator, (String) o0, (String) convertCompatibleOperand(o1, operandClass));
+                        } else {
+                            throw new IncompatibleOperandException(e, o1, operandClass);
+                        }
+                    } else if (o0 instanceof Boolean) {
+                        Class<?> operandClass = Boolean.class;
+                        if (o1 instanceof Boolean) {
+                            return evaluate(ee.getState(), e, operator, (Boolean) o0, (Boolean) o1);
+                        } else if (checkCompatibleOperand(o1, operandClass)) {
+                            return evaluate(ee.getState(), e, operator, (Boolean) o0, (Boolean) convertCompatibleOperand(o1, operandClass));
+                        } else {
+                            throw new IncompatibleOperandException(e, o1, operandClass);
+                        }
+                    } else {
+                        throw new IllegalStateException();
+                    }
+                } else
+                    throw new BadOperandCountException(e, minCount, maxCount);
+            } else
+                throw new BadOperatorException(e, "binary arithmetic");
+        }
+
+        private boolean checkOperator(Expression e) {
+            Operator operator = e.getOperator();
+            if (operator == Operator.EQ)
+                return true;
+            else if (operator == Operator.GEQ)
+                return true;
+            else if (operator == Operator.GT)
+                return true;
+            else if (operator == Operator.LEQ)
+                return true;
+            else if (operator == Operator.LT)
+                return true;
+            else if (operator == Operator.NEQ)
+                return true;
+            else
+                return false;
+        }
+
+        private Object evaluate(EvaluatorState state, Expression e, Operator operator, Number n0, Number n1) {
+            Double d0 = Double.valueOf(n0.doubleValue());
+            Double d1 = Double.valueOf(n1.doubleValue());
+            int d = d0.compareTo(d1);
+            if (operator == Operator.EQ) {
+                return (Boolean) (d == 0);
+            } else if (operator == Operator.GEQ) {
+                return (Boolean) (d >= 0);
+            } else if (operator == Operator.GT) {
+                return (Boolean) (d > 0);
+            } else if (operator == Operator.LEQ) {
+                return (Boolean) (d <= 0);
+            } else if (operator == Operator.LT) {
+                return (Boolean) (d < 0);
+            } else if (operator == Operator.NEQ) {
+                return (Boolean) (d != 0);
+            } else
+                throw new IllegalStateException();
+        }
+
+        private Object evaluate(EvaluatorState state, Expression e, Operator operator, String s0, String s1) {
+            int d = s0.compareTo(s1);
+            if (operator == Operator.EQ) {
+                return (Boolean) (d == 0);
+            } else if (operator == Operator.GEQ) {
+                return (Boolean) (d >= 0);
+            } else if (operator == Operator.GT) {
+                return (Boolean) (d > 0);
+            } else if (operator == Operator.LEQ) {
+                return (Boolean) (d <= 0);
+            } else if (operator == Operator.LT) {
+                return (Boolean) (d < 0);
+            } else if (operator == Operator.NEQ) {
+                return (Boolean) (d != 0);
+            } else
+                throw new IllegalStateException();
+        }
+
+        private Object evaluate(EvaluatorState state, Expression e, Operator operator, Boolean b0, Boolean b1) {
+            if (operator == Operator.EQ) {
+                return (Boolean) b0.equals(b1);
+            } else if (operator == Operator.GEQ) {
+                throw new IncompatibleOperatorException(e, operator, Boolean.class);
+            } else if (operator == Operator.GT) {
+                throw new IncompatibleOperatorException(e, operator, Boolean.class);
+            } else if (operator == Operator.LEQ) {
+                throw new IncompatibleOperatorException(e, operator, Boolean.class);
+            } else if (operator == Operator.LT) {
+                throw new IncompatibleOperatorException(e, operator, Boolean.class);
+            } else if (operator == Operator.NEQ) {
+                return (Boolean) !b0.equals(b1);
+            } else
+                throw new IllegalStateException();
+        }
+
+    }
+
+    private static class GroupEvaluator implements Evaluator {
+
+        public Object evaluate(ExpressionEvaluator ee, Expression e) {
+            if (checkOperator(e)) {
+                final int count = 1;
+                if (checkOperandCount(e, count)) {
+                    return ee.evaluate(e.getOperand(0));
+                } else
+                    throw new BadOperandCountException(e, count, count);
+            } else
+                throw new BadOperatorException(e, "group");
+        }
+
+        private boolean checkOperator(Expression e) {
+            Operator operator = e.getOperator();
+            if (operator == Operator.GROUP)
+                return true;
+            else
+                return false;
+        }
+
+    }
+
+    private static class LiteralEvaluator implements Evaluator {
+
+        public Object evaluate(ExpressionEvaluator ee, Expression e) {
+            if (checkOperator(e)) {
+                final int count = 1;
+                if (checkOperandCount(e, count)) {
+                    Object o0 = e.getOperand(0);
+                    if (!(o0 instanceof Token))
+                        throw new IncompatibleOperandException(e, o0, Token.class);
+                    else
+                        return evaluate(ee.getState(), e.getOperator(), o0);
+                } else
+                    throw new BadOperandCountException(e, count, count);
+            } else
+                throw new BadOperatorException(e, "literal");
+        }
+
+        private boolean checkOperator(Expression e) {
+            Operator operator = e.getOperator();
+            if (operator == Operator.LITERAL)
+                return true;
+            else
+                return false;
+        }
+
+        private Object evaluate(EvaluatorState state, Operator operator, Object o0) {
+            assert o0 instanceof Token;
+            Token t = (Token) o0;
+            if (operator == Operator.LITERAL) {
+                assert t.isLiteral();
+                return t.getLiteralValue(state);
+            } else
+                throw new IllegalStateException();
+        }
+
+    }
+
+    private static class UnaryArithmeticEvaluator implements Evaluator {
+
+        public Object evaluate(ExpressionEvaluator ee, Expression e) {
+            if (checkOperator(e)) {
+                final int minCount = 1;
+                final int maxCount = 1;
+                if (checkOperandCount(e, minCount, maxCount)) {
+                    Class<?> operandClass = Number.class;
+                    Object o0 = ee.evaluate(e.getOperand(0));
+                    if (!checkCompatibleOperand(o0, operandClass))
+                        throw new IncompatibleOperandException(e, o0, operandClass);
+                    else
+                        o0 = convertCompatibleOperand(o0, operandClass);
+                    return evaluate(ee.getState(), e.getOperator(), o0);
+                } else
+                    throw new BadOperandCountException(e, minCount, maxCount);
+            } else
+                throw new BadOperatorException(e, "unary arithmetic");
+        }
+
+        private boolean checkOperator(Expression e) {
+            Operator operator = e.getOperator();
+            if (operator == Operator.MINUS)
+                return true;
+            else if (operator == Operator.PLUS)
+                return true;
+            else
+                return false;
+        }
+
+        private Object evaluate(EvaluatorState state, Operator operator, Object o0) {
+            assert o0 instanceof Number;
+            double d0 = ((Number) o0).doubleValue();
+            if (operator == Operator.MINUS) {
+                return (Double) (-d0);
+            } else if (operator == Operator.PLUS) {
+                return (Double) (+d0);
+            } else
+                throw new IllegalStateException();
+        }
+
+    }
+
+    private static class UnaryLogicEvaluator implements Evaluator {
+
+        public Object evaluate(ExpressionEvaluator ee, Expression e) {
+            if (checkOperator(e)) {
+                final int minCount = 1;
+                final int maxCount = 1;
+                if (checkOperandCount(e, minCount, maxCount)) {
+                    Class<?> operandClass = Boolean.class;
+                    Object o0 = ee.evaluate(e.getOperand(0));
+                    if (!checkCompatibleOperand(o0, operandClass))
+                        throw new IncompatibleOperandException(e, o0, operandClass);
+                    else
+                        o0 = convertCompatibleOperand(o0, operandClass);
+                    return evaluate(ee.getState(), e.getOperator(), o0);
+                } else
+                    throw new BadOperandCountException(e, minCount, maxCount);
+            } else
+                throw new BadOperatorException(e, "unary logic");
+        }
+
+        private boolean checkOperator(Expression e) {
+            Operator operator = e.getOperator();
+            if (operator == Operator.NOT)
+                return true;
+            else
+                return false;
+        }
+
+        private Object evaluate(EvaluatorState state, Operator operator, Object o0) {
+            assert o0 instanceof Boolean;
+            boolean b0 = ((Boolean) o0).booleanValue();
+            if (operator == Operator.NOT) {
+                return (Boolean) (!b0);
+            } else
+                throw new IllegalStateException();
+        }
+
+    }
+
+    private static boolean checkOperandCount(Expression e, int count) {
+        return checkOperandCount(e, count, count);
+    }
+
+    private static boolean checkOperandCount(Expression e, int minCount, int maxCount) {
+        List<Object> operands = e.getOperands();
+        if (operands.size() < minCount) {
+            return false;
+        } else if (operands.size() > maxCount) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private static boolean checkCompatibleOperand(Object o, Class<?> compatibleClass) {
+        if (o instanceof Number) {
+            if (compatibleClass == Number.class)
+                return true;
+            else if (compatibleClass == String.class)
+                return true;
+            else if (compatibleClass == Boolean.class)
+                return false;
+            else
+                throw new IllegalArgumentException();
+        } else if (o instanceof String) {
+            if (compatibleClass == Number.class) {
+                try {
+                    Double d = Double.valueOf((String) o);
+                    return !d.isNaN();
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            } else if (compatibleClass == String.class) {
+                return true;
+            } else if (compatibleClass == Boolean.class) {
+                String s = (String) o;
+                if (s.equals("true"))
+                    return true;
+                else if (s.equals("false"))
+                    return true;
+                else
+                    return false;
+            } else
+                throw new IllegalArgumentException();
+        } else if (o instanceof Boolean) {
+            if (compatibleClass == Number.class)
+                return false;
+            else if (compatibleClass == String.class)
+                return true;
+            else if (compatibleClass == Boolean.class)
+                return true;
+            else
+                throw new IllegalArgumentException();
+        } else
+            throw new IllegalStateException();
+    }
+
+    private static Object convertCompatibleOperand(Object o, Class<?> compatibleClass) {
+        if (o == null)
+            throw new IllegalStateException();
+        else if (o instanceof Number)
+            return convertCompatibleOperand((Number) o, compatibleClass);
+        else if (o instanceof String)
+            return convertCompatibleOperand((String) o, compatibleClass);
+        else if (o instanceof Boolean)
+            return convertCompatibleOperand((Boolean) o, compatibleClass);
+        else
+            throw new IllegalStateException();
+    }
+
+    private static Object convertCompatibleOperand(Number n, Class<?> compatibleClass) {
+        if (n == null) {
+            throw new IllegalStateException();
+        } else if (compatibleClass == Number.class) {
+            return n;
+        } else if (compatibleClass == String.class) {
+            return n.toString();
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    private static Object convertCompatibleOperand(String s, Class<?> compatibleClass) {
+        if (s == null) {
+            throw new IllegalStateException();
+        } else if (compatibleClass == Number.class) {
+            try {
+                return Double.valueOf(s);
+            } catch (NumberFormatException e) {
+                throw new IllegalStateException();
+            }
+        } else if (compatibleClass == String.class) {
+            return s;
+        } else if (s.equals("true")) {
+            return Boolean.TRUE;
+        } else if (s.equals("false")) {
+            return Boolean.FALSE;
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    private static Object convertCompatibleOperand(Boolean b, Class<?> compatibleClass) {
+        if (b == null) {
+            throw new IllegalStateException();
+        } else if (compatibleClass == String.class) {
+            return b.toString();
+        } else if (compatibleClass == Boolean.class) {
+            return b;
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     public static class UnexpectedTokenException extends ParserException {
@@ -893,8 +1532,46 @@ public class Condition {
 
     public static class ParserException extends RuntimeException {
         static final long serialVersionUID = 0;
-        ParserException(String message) {
+        public ParserException(String message) {
             super(message);
+        }
+    }
+
+    public static class EvaluatorException extends RuntimeException {
+        static final long serialVersionUID = 0;
+        public EvaluatorException(String message) {
+            super(message);
+        }
+    }
+
+    public static class BadOperatorException extends EvaluatorException {
+        static final long serialVersionUID = 0;
+        public BadOperatorException(Expression e, String expectation) {
+            this(e.getOperator(), expectation);
+        }
+        public BadOperatorException(Operator operator, String expectation) {
+            super("expected " + expectation + ", got" + operator);
+        }
+    }
+
+    public static class BadOperandCountException extends EvaluatorException {
+        static final long serialVersionUID = 0;
+        public BadOperandCountException(Expression e, int minCount, int maxCount) {
+            super("expected from " + minCount + " to " + maxCount + " operands, got" + e.getOperandCount());
+        }
+    }
+
+    public static class IncompatibleOperatorException extends EvaluatorException {
+        static final long serialVersionUID = 0;
+        public IncompatibleOperatorException(Expression e, Operator operator, Class<?> operandClass) {
+            super("operator " + operator + " incompabitle with " + operandClass);
+        }
+    }
+
+    public static class IncompatibleOperandException extends EvaluatorException {
+        static final long serialVersionUID = 0;
+        public IncompatibleOperandException(Expression e, Object operand, Class<?> operandClass) {
+            super("operand " + operand + " incompabitle with " + operandClass);
         }
     }
 

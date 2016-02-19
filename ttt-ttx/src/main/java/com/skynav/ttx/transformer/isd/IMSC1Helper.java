@@ -242,10 +242,10 @@ public class IMSC1Helper extends TTML1Helper {
                 }
             }
             if (needsVersion)
-                Documents.setAttribute(root, TTML2Helper.versionAttributeName, Integer.valueOf(TTML2Helper.ttml2Version).toString());
+                Documents.setAttribute(root, TTML2Helper.versionAttributeName, Integer.toString(TTML2Helper.ttml2Version));
         }
     }
-    
+
     @Override
     public boolean hasUsableContent(Element elt) {
         if (super.hasUsableContent(elt))

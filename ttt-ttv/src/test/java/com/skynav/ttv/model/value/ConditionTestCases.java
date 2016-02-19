@@ -64,12 +64,78 @@ public class ConditionTestCases {
             String condition = spec[0];
             String expected = spec[1];
             try {
-                Condition c = Condition.fromValue(condition);
+                Condition c = Condition.valueOf(condition);
                 assertNotNull(c);
                 if (expected != null)
                     assertEquals(expected, c.toString());
             } catch (Condition.ParserException e) {
                 fail("unexpected condition invalidity: \"" + condition + "\": " + e.getMessage());
+            }
+        }
+    }
+
+    private static final Object[][] evaluatedConditionBindings = {
+        { "i",          Integer.valueOf(1)              },
+        { "j",          Integer.valueOf(2)              },
+        { "k",          Integer.valueOf(3)              },
+        { "p",          Boolean.FALSE                   },
+        { "q",          Boolean.TRUE                    },
+        { "s",          "s"                             },
+        { "u",          "u u"                           },
+        { "v",          "v v v"                         },
+        { "x",          Double.valueOf(1.1)             },
+        { "y",          Double.valueOf(2.2)             },
+        { "z",          Double.valueOf(3.3)             },
+        { "PI",         Double.valueOf(Math.PI)         },
+        { "ZERO",       Integer.valueOf(0)              },
+    };
+        
+    private static final Object[][] evaluatedConditions = {
+        { "i == 1",                             Boolean.TRUE                  },
+        { "j == 2",                             Boolean.TRUE                  },
+        { "k == 3",                             Boolean.TRUE                  },
+        { "p",                                  Boolean.FALSE                 },
+        { "p == false",                         Boolean.TRUE                  },
+        { "q",                                  Boolean.TRUE                  },
+        { "q == true",                          Boolean.TRUE                  },
+        { "s == 's'",                           Boolean.TRUE                  },
+        { "u == 'u u'",                         Boolean.TRUE                  },
+        { "v == 'v v v'",                       Boolean.TRUE                  },
+        { "x == 1.1",                           Boolean.TRUE                  },
+        { "y == 2.2",                           Boolean.TRUE                  },
+        { "z == 3.3",                           Boolean.TRUE                  },
+        { "PI > 3",                             Boolean.TRUE                  },
+        { "PI < 22/7",                          Boolean.TRUE                  },
+        { "PI - 3.141592653589792 < 1.5E-15",   Boolean.TRUE                  },
+        { "ZERO == 0",                          Boolean.TRUE                  },
+        { "ZERO == 0.0",                        Boolean.TRUE                  },
+        { "ZERO != 0",                          Boolean.FALSE                 },
+        { "ZERO != 0.0",                        Boolean.FALSE                 },
+        { "ZERO != 1",                          Boolean.TRUE                  },
+        { "ZERO != 0.1",                        Boolean.TRUE                  },
+        { "(0) == 0",                           Boolean.TRUE                  },
+    };
+        
+    @Test
+    public void testEvaluatedConditions() throws Exception {
+        Condition.EvaluatorState state = Condition.makeEvaluatorState();
+        for (Object[] spec : evaluatedConditionBindings) {
+            String identifier = (String) spec[0];
+            Object value = spec[1];
+            state.setBinding(identifier, value);
+        }
+        for (Object[] spec : evaluatedConditions) {
+            String condition = (String) spec[0];
+            Boolean expected = (Boolean) spec[1];
+            try {
+                Condition c = Condition.valueOf(condition);
+                assertNotNull(c);
+                boolean actual = c.evaluate(state);
+                assertEquals(condition, expected, actual);
+            } catch (Condition.ParserException e) {
+                fail("unexpected condition invalidity: \"" + condition + "\": " + e.getMessage());
+            } catch (Condition.EvaluatorException e) {
+                fail("unexpected condition evaluation: \"" + condition + "\": " + e.getMessage());
             }
         }
     }
@@ -87,7 +153,7 @@ public class ConditionTestCases {
             String condition = spec[0];
             String expected = spec[1];
             try {
-                Condition c = Condition.fromValue(condition);
+                Condition c = Condition.valueOf(condition);
                 assertNull(c);
                 fail("unexpected condition validity: \"" + condition + "\"");
             } catch (Condition.ParserException e) {
