@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import com.skynav.xml.helpers.XML;
@@ -80,8 +81,12 @@ public class Condition {
         return p.parse(CharBuffer.wrap(condition.trim()));
     }
 
-    public static EvaluatorState makeEvaluatorState() {
-        return new EvaluatorBindingState();
+    public static EvaluatorState makeEvaluatorState(Map<String,Object> mediaParams, Map<String,Object> boundParams, Set<String> supportFeatures) {
+        EvaluatorState state = new EvaluatorBindingState();
+        state.setBinding("media", new MediaFunction(mediaParams));
+        state.setBinding("parameter", new ParameterFunction(boundParams));
+        state.setBinding("supports", new SupportsFunction(supportFeatures));
+        return state;
     }
 
     /**
@@ -234,7 +239,7 @@ public class Condition {
         void error(Token actual) {
             error(null, actual);
         }
-        
+
         void error(Token expected, Token actual) {
             tokenizer.error(expected, actual);
         }
@@ -1459,6 +1464,83 @@ public class Condition {
 
     }
 
+    private static class MediaFunction implements EvaluatorFunction {
+        private Map<String,Object> parameters;
+        public MediaFunction(Map<String,Object> parameters) {
+            assert parameters != null;
+            this.parameters = parameters;
+        }
+        public Object apply(EvaluatorState state, List<Object> arguments) {
+            if (arguments.size() < 1)
+                throw new BadOperandCountException(arguments.size(), 1, 1);
+            else {
+                Class<?> operandClass = String.class;
+                Object o0 = arguments.get(0);
+                if (checkCompatibleOperand(o0, operandClass)) {
+                    o0 = convertCompatibleOperand(o0, operandClass);
+                    assert o0 instanceof String;
+                    String query = (String) o0;
+                    try {
+                        MediaQuery mq = MediaQuery.valueOf(query);
+                        return mq.evaluate(parameters);
+                    } catch (MediaQuery.ParserException e) {
+                        throw new BuiltinFunctionException(e);
+                    }
+                } else
+                    throw new IncompatibleOperandException(o0, operandClass);
+            }
+        }
+    }
+
+    private static class ParameterFunction implements EvaluatorFunction {
+        private Map<String,Object> parameters;
+        public ParameterFunction(Map<String,Object> parameters) {
+            assert parameters != null;
+            this.parameters = parameters;
+        }
+        public Object apply(EvaluatorState state, List<Object> arguments) {
+            if (arguments.size() < 1)
+                throw new BadOperandCountException(arguments.size(), 1, 1);
+            else {
+                Class<?> operandClass = String.class;
+                Object o0 = arguments.get(0);
+                if (checkCompatibleOperand(o0, operandClass)) {
+                    o0 = convertCompatibleOperand(o0, operandClass);
+                    assert o0 instanceof String;
+                    String name = (String) o0;
+                    if (parameters.containsKey(name))
+                        return parameters.get(name);
+                    else
+                        throw new UnknownParameterException(name);
+                } else
+                    throw new IncompatibleOperandException(o0, operandClass);
+            }
+        }
+    }
+
+    private static class SupportsFunction implements EvaluatorFunction {
+        private Set<String> features;
+        public SupportsFunction(Set<String> features) {
+            assert features != null;
+            this.features = features;
+        }
+        public Object apply(EvaluatorState state, List<Object> arguments) {
+            if (arguments.size() < 1)
+                throw new BadOperandCountException(arguments.size(), 1, 1);
+            else {
+                Class<?> operandClass = String.class;
+                Object o0 = arguments.get(0);
+                if (checkCompatibleOperand(o0, operandClass)) {
+                    o0 = convertCompatibleOperand(o0, operandClass);
+                    assert o0 instanceof String;
+                    String designator = (String) o0;
+                    return Boolean.valueOf(features.contains(designator));
+                } else
+                    throw new IncompatibleOperandException(o0, operandClass);
+            }
+        }
+    }
+
     private static boolean checkOperandCount(Expression e, int count) {
         return checkOperandCount(e, count, count);
     }
@@ -1598,16 +1680,16 @@ public class Condition {
         }
     }
 
-    public static class ParserStateException extends ParserException {
+    public static class ParserException extends RuntimeException {
         static final long serialVersionUID = 0;
-        ParserStateException(String message) {
+        public ParserException(String message) {
             super(message);
         }
     }
 
-    public static class ParserException extends RuntimeException {
+    public static class ParserStateException extends ParserException {
         static final long serialVersionUID = 0;
-        public ParserException(String message) {
+        ParserStateException(String message) {
             super(message);
         }
     }
@@ -1653,6 +1735,23 @@ public class Condition {
         }
         public IncompatibleOperandException(Expression e, Object operand, Class<?> operandClass) {
             super("operand " + operand + " incompabitle with " + operandClass);
+        }
+    }
+
+    public static class BuiltinFunctionException extends EvaluatorException {
+        static final long serialVersionUID = 0;
+        public BuiltinFunctionException(Exception e) {
+            this(e.getMessage());
+        }
+        public BuiltinFunctionException(String message) {
+            super(message);
+        }
+    }
+
+    public static class UnknownParameterException extends BuiltinFunctionException {
+        static final long serialVersionUID = 0;
+        public UnknownParameterException(String name) {
+            super("unknown parameter '" + name + "'");
         }
     }
 

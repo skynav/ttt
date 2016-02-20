@@ -26,6 +26,8 @@
 package com.skynav.ttv.model.value;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -83,6 +85,13 @@ public class ConditionTestCases {
         }
     }
 
+    private static final Object[][] boundParameterBindings = {
+        { "forced",                             Boolean.FALSE                   },
+        { "mediaAspectRatio",                   Double.valueOf(16.0/9.0)        },
+        { "mediaLanguage",                      "en"                            },
+        { "userLanguage",                       "en"                            },
+    };
+        
     private static final Object[][] evaluatedConditionBindings = {
         // constant bindings
         { "i",                                  Integer.valueOf(1)              },
@@ -138,38 +147,50 @@ public class ConditionTestCases {
     }
 
     private static final Object[][] evaluatedConditions = {
-        { "i == 1",                             Boolean.TRUE                    },
-        { "j == 2",                             Boolean.TRUE                    },
-        { "k == 3",                             Boolean.TRUE                    },
-        { "p",                                  Boolean.FALSE                   },
-        { "p == false",                         Boolean.TRUE                    },
-        { "q",                                  Boolean.TRUE                    },
-        { "q == true",                          Boolean.TRUE                    },
-        { "s == 's'",                           Boolean.TRUE                    },
-        { "u == 'u u'",                         Boolean.TRUE                    },
-        { "v == 'v v v'",                       Boolean.TRUE                    },
-        { "x == 1.1",                           Boolean.TRUE                    },
-        { "y == 2.2",                           Boolean.TRUE                    },
-        { "z == 3.3",                           Boolean.TRUE                    },
-        { "PI > 3",                             Boolean.TRUE                    },
-        { "PI < 22/7",                          Boolean.TRUE                    },
-        { "PI - 3.141592653589792 < 1.5E-15",   Boolean.TRUE                    },
-        { "ZERO == 0",                          Boolean.TRUE                    },
-        { "ZERO == 0.0",                        Boolean.TRUE                    },
-        { "ZERO != 0",                          Boolean.FALSE                   },
-        { "ZERO != 0.0",                        Boolean.FALSE                   },
-        { "ZERO != 1",                          Boolean.TRUE                    },
-        { "ZERO != 0.1",                        Boolean.TRUE                    },
-        { "(0) == 0",                           Boolean.TRUE                    },
-        { "log10(1000) == 3",                   Boolean.TRUE                    },
-        { "log10(pow10(3)) == 3",               Boolean.TRUE                    },
-        { "pow10(3) == 1000",                   Boolean.TRUE                    },
-        { "pow10(log10(1000)) == 1000",         Boolean.TRUE                    },
+        { "i == 1",                                     Boolean.TRUE            },
+        { "j == 2",                                     Boolean.TRUE            },
+        { "k == 3",                                     Boolean.TRUE            },
+        { "p",                                          Boolean.FALSE           },
+        { "p == false",                                 Boolean.TRUE            },
+        { "q",                                          Boolean.TRUE            },
+        { "q == true",                                  Boolean.TRUE            },
+        { "s == 's'",                                   Boolean.TRUE            },
+        { "u == 'u u'",                                 Boolean.TRUE            },
+        { "v == 'v v v'",                               Boolean.TRUE            },
+        { "x == 1.1",                                   Boolean.TRUE            },
+        { "y == 2.2",                                   Boolean.TRUE            },
+        { "z == 3.3",                                   Boolean.TRUE            },
+        { "PI > 3",                                     Boolean.TRUE            },
+        { "PI < 22/7",                                  Boolean.TRUE            },
+        { "PI - 3.141592653589792 < 1.5E-15",           Boolean.TRUE            },
+        { "ZERO == 0",                                  Boolean.TRUE            },
+        { "ZERO == 0.0",                                Boolean.TRUE            },
+        { "ZERO != 0",                                  Boolean.FALSE           },
+        { "ZERO != 0.0",                                Boolean.FALSE           },
+        { "ZERO != 1",                                  Boolean.TRUE            },
+        { "ZERO != 0.1",                                Boolean.TRUE            },
+        { "(0) == 0",                                   Boolean.TRUE            },
+        { "log10(1000) == 3",                           Boolean.TRUE            },
+        { "log10(pow10(3)) == 3",                       Boolean.TRUE            },
+        { "pow10(3) == 1000",                           Boolean.TRUE            },
+        { "pow10(log10(1000)) == 1000",                 Boolean.TRUE            },
+        { "parameter('forced') == false",               Boolean.TRUE            },
+        { "parameter('mediaAspectRatio') == 16/9",      Boolean.TRUE            },
+        { "parameter('mediaLanguage') == 'en'",         Boolean.TRUE            },
+        { "parameter('userLanguage') == 'en'",          Boolean.TRUE            },
     };
         
     @Test
     public void testEvaluatedConditions() throws Exception {
-        Condition.EvaluatorState state = Condition.makeEvaluatorState();
+        Map<String,Object> mp = new java.util.HashMap<String,Object>();
+        Map<String,Object> bp = new java.util.HashMap<String,Object>();
+        for (Object[] spec : boundParameterBindings) {
+            String name = (String) spec[0];
+            Object value = spec[1];
+            bp.put(name, value);
+        }
+        Set<String> sf = new java.util.HashSet<String>();
+        Condition.EvaluatorState state = Condition.makeEvaluatorState(mp, bp, sf);
         for (Object[] spec : evaluatedConditionBindings) {
             String identifier = (String) spec[0];
             Object value = spec[1];
