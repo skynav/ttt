@@ -42,6 +42,10 @@ public class Condition {
         void setBinding(String identifier, Object value);
     }
 
+    public interface EvaluatorFunction {
+        Object apply(EvaluatorState state, List<Object> arguments);
+    }
+
     public interface Evaluator {
         Object evaluate(ExpressionEvaluator ee, Expression e);
     }
@@ -128,25 +132,58 @@ public class Condition {
         }
 
         private void parsePrimary() {
-            Token t = state.next();
-            if (t == null) {
+            Token t0 = state.next();
+            if (t0 == null) {
                 state.error();
-            } if (t.isLiteral()) {
+            } if (t0.isLiteral()) {
                 state.consume();
-                state.pushOperand(t);
-            } else if (t == Token.OPEN) {
+                Token t1 = state.next();
+                if (t1 == Token.OPEN) {
+                    state.pushOperator(Operator.APPLY);
+                    state.pushOperand(t0);
+                    parseArguments();
+                } else
+                    state.pushOperand(t0);
+            } else if (t0 == Token.OPEN) {
                 state.consume();
                 state.operators().push(Operator.SENTINEL);
                 parseExpression();
                 state.expect(Token.CLOSE);
                 state.operators.pop();
-            } else if (t.isUnaryOp()) {
+            } else if (t0.isUnaryOp()) {
                 state.consume();
-                state.pushOperator(Operator.fromToken(t, OperatorContext.UNARY));
+                state.pushOperator(Operator.fromToken(t0, OperatorContext.UNARY));
                 parsePrimary();
             } else
-                state.error(t);
+                state.error(t0);
         }
+
+        private void parseArguments() {
+            assert state.next() == Token.OPEN;
+            state.consume();
+            state.operators().push(Operator.SENTINEL);
+            int na = 0;
+            Token t;
+            while ((t = state.next()) != Token.CLOSE) {
+                if (na > 0) {
+                    if (t == Token.COMMA)
+                        state.consume();
+                    else
+                        state.error(Token.COMMA, t);
+                }
+                parseExpression();
+                ++na;
+            }
+            state.expect(Token.CLOSE);
+            state.operators.pop();
+            List<Object> args = new java.util.ArrayList<Object>();
+            while (na > 0) {
+                args.add(state.operands.pop());
+                --na;
+            }
+            state.operands.push(new Expression(Operator.GROUP, args));
+        }
+
 
     }
 
@@ -191,11 +228,15 @@ public class Condition {
         }
 
         void error() {
-            tokenizer.error();
+            error(null);
         }
 
-        void error(Token t) {
-            tokenizer.error(t);
+        void error(Token actual) {
+            error(null, actual);
+        }
+        
+        void error(Token expected, Token actual) {
+            tokenizer.error(expected, actual);
         }
 
         void pushOperator(Operator op) {
@@ -213,8 +254,7 @@ public class Condition {
             assert !operators().empty();
             Operator top = topOperator();
             if (top != null) {
-                if (top.isBinary()) {
-                    assert operators().size() > 0;
+                if (top.isBinary() || (top == Operator.APPLY)) {
                     assert operands().size() > 1;
                     Object o1 = operands().pop();
                     Object o0 = operands().pop();
@@ -434,14 +474,6 @@ public class Condition {
 
         private void consume() {
             getToken(cb, true, skipWhitespace);
-        }
-
-        private void error() {
-            error(null, null);
-        }
-
-        private void error(Token actual) {
-            error(null, actual);
         }
 
         private void error(Token expected, Token actual) {
@@ -771,10 +803,10 @@ public class Condition {
 
         ADD             ( 5, Associativity.LEFT  ),
         AND             ( 2, Associativity.LEFT  ),
+        APPLY           ( 9, Associativity.NONE  ),
         COMMA           ( 0, Associativity.LEFT  ),
         DIVIDE          ( 6, Associativity.LEFT  ),
         EQ              ( 3, Associativity.LEFT  ),
-        FUNCTION        ( 7, Associativity.NONE  ),
         GEQ             ( 4, Associativity.LEFT  ),
         GROUP           ( 8, Associativity.NONE  ),
         GT              ( 4, Associativity.LEFT  ),
@@ -946,6 +978,8 @@ public class Condition {
         static {
             Map<Operator,Evaluator> m = new java.util.HashMap<Operator,Evaluator>();
             Evaluator e;
+            e = new ApplyEvaluator();
+            m.put(Operator.APPLY, e);
             e = new BinaryArithmeticEvaluator();
             m.put(Operator.ADD, e);
             m.put(Operator.SUBTRACT, e);
@@ -1005,6 +1039,47 @@ public class Condition {
             } else {
                 throw new IllegalArgumentException();
             }
+        }
+
+    }
+
+    private static class ApplyEvaluator implements Evaluator {
+
+        public Object evaluate(ExpressionEvaluator ee, Expression e) {
+            if (checkOperator(e)) {
+                final int minCount = 1;
+                final int maxCount = -1;
+                if (checkOperandCount(e, minCount, maxCount)) {
+                    Object o0 = ee.evaluate(e.getOperand(0));
+                    if (o0 instanceof EvaluatorFunction) {
+                        EvaluatorFunction f = (EvaluatorFunction) o0;
+                        Object o1 = e.getOperand(1);
+                        if (o1 instanceof Expression) {
+                            Expression eArguments = (Expression) o1;
+                            if (eArguments.getOperator() == Operator.GROUP) {
+                                List<Object> arguments = new java.util.ArrayList<Object>();
+                                for (Object operand : eArguments.getOperands()) {
+                                    arguments.add(ee.evaluate(operand));
+                                }
+                                return f.apply(ee.getState(), arguments);
+                            } else
+                                throw new IllegalStateException();
+                        } else
+                            throw new IllegalStateException();
+                    } else
+                        throw new IncompatibleOperandException(e, o0, EvaluatorFunction.class);
+                } else
+                    throw new BadOperandCountException(e, minCount, maxCount);
+            } else
+                throw new BadOperatorException(e, "apply");
+        }
+
+        private boolean checkOperator(Expression e) {
+            Operator operator = e.getOperator();
+            if (operator == Operator.APPLY)
+                return true;
+            else
+                return false;
         }
 
     }
@@ -1392,14 +1467,14 @@ public class Condition {
         List<Object> operands = e.getOperands();
         if (operands.size() < minCount) {
             return false;
-        } else if (operands.size() > maxCount) {
+        } else if ((maxCount >= 0) && (operands.size() > maxCount)) {
             return false;
         } else {
             return true;
         }
     }
 
-    private static boolean checkCompatibleOperand(Object o, Class<?> compatibleClass) {
+    public static boolean checkCompatibleOperand(Object o, Class<?> compatibleClass) {
         if (o instanceof Number) {
             if (compatibleClass == Number.class)
                 return true;
@@ -1442,7 +1517,7 @@ public class Condition {
             throw new IllegalStateException();
     }
 
-    private static Object convertCompatibleOperand(Object o, Class<?> compatibleClass) {
+    public static Object convertCompatibleOperand(Object o, Class<?> compatibleClass) {
         if (o == null)
             throw new IllegalStateException();
         else if (o instanceof Number)
@@ -1557,7 +1632,10 @@ public class Condition {
     public static class BadOperandCountException extends EvaluatorException {
         static final long serialVersionUID = 0;
         public BadOperandCountException(Expression e, int minCount, int maxCount) {
-            super("expected from " + minCount + " to " + maxCount + " operands, got" + e.getOperandCount());
+            this(e.getOperandCount(), minCount, maxCount);
+        }
+        public BadOperandCountException(int count, int minCount, int maxCount) {
+            super("expected from " + minCount + " to " + (maxCount >= 0 ? Integer.toString(maxCount) : "...") + " operands, got" + count);
         }
     }
 
@@ -1570,6 +1648,9 @@ public class Condition {
 
     public static class IncompatibleOperandException extends EvaluatorException {
         static final long serialVersionUID = 0;
+        public IncompatibleOperandException(Object operand, Class<?> operandClass) {
+            this(null, operand, operandClass);
+        }
         public IncompatibleOperandException(Expression e, Object operand, Class<?> operandClass) {
             super("operand " + operand + " incompabitle with " + operandClass);
         }

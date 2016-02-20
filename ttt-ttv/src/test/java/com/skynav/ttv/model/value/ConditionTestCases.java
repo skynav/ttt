@@ -25,37 +25,46 @@
  
 package com.skynav.ttv.model.value;
 
+import java.util.List;
+
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ConditionTestCases {
 
     private static final String[][] validConditions = {
-        { "0",                  "LITERAL(#N(0))" },
-        { "0.",                 "LITERAL(#N(0.))" },
-        { ".0",                 "LITERAL(#N(.0))" },
-        { "0.0",                "LITERAL(#N(0.0))" },
-        { "0.0E0",              "LITERAL(#N(0.0E0))" },
-        { "0.0E+0",             "LITERAL(#N(0.0E+0))" },
-        { "0.0E-0",             "LITERAL(#N(0.0E-0))" },
-        { "1",                  "LITERAL(#N(1))" },
-        { "123",                "LITERAL(#N(123))" },
-        { "123.",               "LITERAL(#N(123.))" },
-        { "123.456",            "LITERAL(#N(123.456))" },
-        { "true",               "LITERAL(#B(true))" },
-        { "false",              "LITERAL(#B(false))" },
-        { "\"a b c\"",          "LITERAL(#S(a b c))" },
-        { "\'a b c\'",          "LITERAL(#S(a b c))" },
-        { "\'\\\'\'",           "LITERAL(#S(\'))" },
-        { "\'\\\"\'",           "LITERAL(#S(\"))" }, 
-        { "x",                  "LITERAL(#I(x))" },
-        { "x*y+z",              "ADD(MULTIPLY(LITERAL(#I(x)),LITERAL(#I(y))),LITERAL(#I(z)))" },
-        { "x * y + z",          "ADD(MULTIPLY(LITERAL(#I(x)),LITERAL(#I(y))),LITERAL(#I(z)))" },
-        { "x+y*z",              "ADD(LITERAL(#I(x)),MULTIPLY(LITERAL(#I(y)),LITERAL(#I(z))))" },
-        { "x + y * z",          "ADD(LITERAL(#I(x)),MULTIPLY(LITERAL(#I(y)),LITERAL(#I(z))))" },
+        { "0",                                  "LITERAL(#N(0))" },
+        { "0.",                                 "LITERAL(#N(0.))" },
+        { ".0",                                 "LITERAL(#N(.0))" },
+        { "0.0",                                "LITERAL(#N(0.0))" },
+        { "0.0E0",                              "LITERAL(#N(0.0E0))" },
+        { "0.0E+0",                             "LITERAL(#N(0.0E+0))" },
+        { "0.0E-0",                             "LITERAL(#N(0.0E-0))" },
+        { "1",                                  "LITERAL(#N(1))" },
+        { "123",                                "LITERAL(#N(123))" },
+        { "123.",                               "LITERAL(#N(123.))" },
+        { "123.456",                            "LITERAL(#N(123.456))" },
+        { "true",                               "LITERAL(#B(true))" },
+        { "false",                              "LITERAL(#B(false))" },
+        { "\"a b c\"",                          "LITERAL(#S(a b c))" },
+        { "\'a b c\'",                          "LITERAL(#S(a b c))" },
+        { "\'\\\'\'",                           "LITERAL(#S(\'))" },
+        { "\'\\\"\'",                           "LITERAL(#S(\"))" }, 
+        { "x",                                  "LITERAL(#I(x))" },
+        { "x*y+z",                              "ADD(MULTIPLY(LITERAL(#I(x)),LITERAL(#I(y))),LITERAL(#I(z)))" },
+        { "x * y + z",                          "ADD(MULTIPLY(LITERAL(#I(x)),LITERAL(#I(y))),LITERAL(#I(z)))" },
+        { "x+y*z",                              "ADD(LITERAL(#I(x)),MULTIPLY(LITERAL(#I(y)),LITERAL(#I(z))))" },
+        { "x + y * z",                          "ADD(LITERAL(#I(x)),MULTIPLY(LITERAL(#I(y)),LITERAL(#I(z))))" },
+        { "f(x)",                               "APPLY(LITERAL(#I(f)),GROUP(LITERAL(#I(x))))" },
+        { "f ( x )",                            "APPLY(LITERAL(#I(f)),GROUP(LITERAL(#I(x))))" },
+        { "f(x,y,z)",                           "APPLY(LITERAL(#I(f)),GROUP(LITERAL(#I(z)),LITERAL(#I(y)),LITERAL(#I(x))))" },
+        { "f ( x, y, z )",                      "APPLY(LITERAL(#I(f)),GROUP(LITERAL(#I(z)),LITERAL(#I(y)),LITERAL(#I(x))))" },
+        { "f(g(x))",                            "APPLY(LITERAL(#I(f)),GROUP(APPLY(LITERAL(#I(g)),GROUP(LITERAL(#I(x))))))" },
+        { "f ( g ( x ) )",                      "APPLY(LITERAL(#I(f)),GROUP(APPLY(LITERAL(#I(g)),GROUP(LITERAL(#I(x))))))" },
     };
 
     @Test
@@ -75,45 +84,87 @@ public class ConditionTestCases {
     }
 
     private static final Object[][] evaluatedConditionBindings = {
-        { "i",          Integer.valueOf(1)              },
-        { "j",          Integer.valueOf(2)              },
-        { "k",          Integer.valueOf(3)              },
-        { "p",          Boolean.FALSE                   },
-        { "q",          Boolean.TRUE                    },
-        { "s",          "s"                             },
-        { "u",          "u u"                           },
-        { "v",          "v v v"                         },
-        { "x",          Double.valueOf(1.1)             },
-        { "y",          Double.valueOf(2.2)             },
-        { "z",          Double.valueOf(3.3)             },
-        { "PI",         Double.valueOf(Math.PI)         },
-        { "ZERO",       Integer.valueOf(0)              },
+        // constant bindings
+        { "i",                                  Integer.valueOf(1)              },
+        { "j",                                  Integer.valueOf(2)              },
+        { "k",                                  Integer.valueOf(3)              },
+        { "p",                                  Boolean.FALSE                   },
+        { "q",                                  Boolean.TRUE                    },
+        { "s",                                  "s"                             },
+        { "u",                                  "u u"                           },
+        { "v",                                  "v v v"                         },
+        { "x",                                  Double.valueOf(1.1)             },
+        { "y",                                  Double.valueOf(2.2)             },
+        { "z",                                  Double.valueOf(3.3)             },
+        { "PI",                                 Double.valueOf(Math.PI)         },
+        { "ZERO",                               Integer.valueOf(0)              },
+        // function bindings
+        { "log10",                              new TestFunctionLog10()         },
+        { "pow10",                              new TestFunctionPow10()         },
     };
         
+    private static class TestFunctionLog10 implements Condition.EvaluatorFunction {
+        public Object apply(Condition.EvaluatorState state, List<Object> arguments) {
+            if (arguments.size() < 1)
+                throw new Condition.BadOperandCountException(arguments.size(), 1, 1);
+            else {
+                Class<?> operandClass = Number.class;
+                Object o0 = arguments.get(0);
+                if (Condition.checkCompatibleOperand(o0, operandClass)) {
+                    o0 = Condition.convertCompatibleOperand(o0, operandClass);
+                    assertTrue(o0 instanceof Number);
+                    return Double.valueOf(Math.log10(((Number) o0).doubleValue()));
+                } else
+                    throw new Condition.IncompatibleOperandException(o0, operandClass);
+            }
+        }
+    }
+
+    private static class TestFunctionPow10 implements Condition.EvaluatorFunction {
+        public Object apply(Condition.EvaluatorState state, List<Object> arguments) {
+            if (arguments.size() < 1)
+                throw new Condition.BadOperandCountException(arguments.size(), 1, 1);
+            else {
+                Class<?> operandClass = Number.class;
+                Object o0 = arguments.get(0);
+                if (Condition.checkCompatibleOperand(o0, operandClass)) {
+                    o0 = Condition.convertCompatibleOperand(o0, operandClass);
+                    assertTrue(o0 instanceof Number);
+                    return Double.valueOf(Math.pow(10, ((Number) o0).doubleValue()));
+                } else
+                    throw new Condition.IncompatibleOperandException(o0, operandClass);
+            }
+        }
+    }
+
     private static final Object[][] evaluatedConditions = {
-        { "i == 1",                             Boolean.TRUE                  },
-        { "j == 2",                             Boolean.TRUE                  },
-        { "k == 3",                             Boolean.TRUE                  },
-        { "p",                                  Boolean.FALSE                 },
-        { "p == false",                         Boolean.TRUE                  },
-        { "q",                                  Boolean.TRUE                  },
-        { "q == true",                          Boolean.TRUE                  },
-        { "s == 's'",                           Boolean.TRUE                  },
-        { "u == 'u u'",                         Boolean.TRUE                  },
-        { "v == 'v v v'",                       Boolean.TRUE                  },
-        { "x == 1.1",                           Boolean.TRUE                  },
-        { "y == 2.2",                           Boolean.TRUE                  },
-        { "z == 3.3",                           Boolean.TRUE                  },
-        { "PI > 3",                             Boolean.TRUE                  },
-        { "PI < 22/7",                          Boolean.TRUE                  },
-        { "PI - 3.141592653589792 < 1.5E-15",   Boolean.TRUE                  },
-        { "ZERO == 0",                          Boolean.TRUE                  },
-        { "ZERO == 0.0",                        Boolean.TRUE                  },
-        { "ZERO != 0",                          Boolean.FALSE                 },
-        { "ZERO != 0.0",                        Boolean.FALSE                 },
-        { "ZERO != 1",                          Boolean.TRUE                  },
-        { "ZERO != 0.1",                        Boolean.TRUE                  },
-        { "(0) == 0",                           Boolean.TRUE                  },
+        { "i == 1",                             Boolean.TRUE                    },
+        { "j == 2",                             Boolean.TRUE                    },
+        { "k == 3",                             Boolean.TRUE                    },
+        { "p",                                  Boolean.FALSE                   },
+        { "p == false",                         Boolean.TRUE                    },
+        { "q",                                  Boolean.TRUE                    },
+        { "q == true",                          Boolean.TRUE                    },
+        { "s == 's'",                           Boolean.TRUE                    },
+        { "u == 'u u'",                         Boolean.TRUE                    },
+        { "v == 'v v v'",                       Boolean.TRUE                    },
+        { "x == 1.1",                           Boolean.TRUE                    },
+        { "y == 2.2",                           Boolean.TRUE                    },
+        { "z == 3.3",                           Boolean.TRUE                    },
+        { "PI > 3",                             Boolean.TRUE                    },
+        { "PI < 22/7",                          Boolean.TRUE                    },
+        { "PI - 3.141592653589792 < 1.5E-15",   Boolean.TRUE                    },
+        { "ZERO == 0",                          Boolean.TRUE                    },
+        { "ZERO == 0.0",                        Boolean.TRUE                    },
+        { "ZERO != 0",                          Boolean.FALSE                   },
+        { "ZERO != 0.0",                        Boolean.FALSE                   },
+        { "ZERO != 1",                          Boolean.TRUE                    },
+        { "ZERO != 0.1",                        Boolean.TRUE                    },
+        { "(0) == 0",                           Boolean.TRUE                    },
+        { "log10(1000) == 3",                   Boolean.TRUE                    },
+        { "log10(pow10(3)) == 3",               Boolean.TRUE                    },
+        { "pow10(3) == 1000",                   Boolean.TRUE                    },
+        { "pow10(log10(1000)) == 1000",         Boolean.TRUE                    },
     };
         
     @Test
@@ -141,10 +192,10 @@ public class ConditionTestCases {
     }
 
     private static final String[][] invalidConditions = {
-        { "~",                  "remaining input \"~\"" },
-        { "00",                 "expected #E, got #N(0), remaining input \"0\"" },
-        { "\"a b c",            "remaining input \"\"a b c\"" },
-        { "\'a b c",            "remaining input \"\'a b c\"" },
+        { "~",                                  "remaining input \"~\"" },
+        { "00",                                 "expected #E, got #N(0), remaining input \"0\"" },
+        { "\"a b c",                            "remaining input \"\"a b c\"" },
+        { "\'a b c",                            "remaining input \"\'a b c\"" },
     };
 
     @Test
