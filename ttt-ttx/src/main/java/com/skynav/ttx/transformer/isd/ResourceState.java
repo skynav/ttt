@@ -26,10 +26,10 @@
 package com.skynav.ttx.transformer.isd;
 
 public enum ResourceState {
+    isdGenerationIndices,
     isdHelper,
     isdParents,
     isdTimingStates,
-    isdGenerationIndices,
     isdUsesForcedVisibility,
     isdUsesTTML2Feature;
 };

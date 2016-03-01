@@ -165,7 +165,7 @@ public class IMSC1Helper extends TTML1Helper {
         if (cssIndex < 0) {
             forcedStyleIdentifier = "s" + (maxIndex + 1);
             Element css = Documents.createElement(doc, isdStyleElementName);
-            Documents.setAttribute(css, TTML1StyleVerifier.visibilityAttributeName, "true");
+            Documents.setAttribute(css, TTML1StyleVerifier.visibilityAttributeName, "visible");
             Documents.setAttribute(css, XML.xmlIdentifierAttributeName, forcedStyleIdentifier);
             Documents.setAttribute(css, TTML2Helper.conditionAttributeName, forcedParameterCondition);
             if (!regions.isEmpty()) {

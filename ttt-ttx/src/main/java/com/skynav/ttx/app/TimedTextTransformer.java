@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,6 +47,7 @@ import com.skynav.ttv.app.ResultProcessor;
 import com.skynav.ttv.app.TimedTextVerifier;
 import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Condition;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.Reporter;
 
@@ -160,6 +162,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     protected void initializeResourceState(URI uri) {
+        setResourceState(TransformerContext.ResourceState.ttxConditionEvaluatorState.name(), makeConditionEvaluatorState());
         setResourceState(TransformerContext.ResourceState.ttxDontElideInitials.name(), Boolean.FALSE);
         setResourceState(TransformerContext.ResourceState.ttxInputUri.name(), uri);
         setResourceState(TransformerContext.ResourceState.ttxOutput.name(), null);
@@ -167,6 +170,27 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         setResourceState(TransformerContext.ResourceState.ttxRetainMetadata.name(), Boolean.FALSE);
         setResourceState(TransformerContext.ResourceState.ttxSuppressOutputSerialization.name(), Boolean.FALSE);
         setResourceState(TransformerContext.ResourceState.ttxTransformer.name(), transformer);
+    }
+
+    protected Condition.EvaluatorState makeConditionEvaluatorState() {
+        return Condition.makeEvaluatorState(getConditionMediaParameters(), getConditionBoundParameters(), getConditionSupportedFeatures());
+    }
+
+    protected Map<String,Object> getConditionBoundParameters() {
+        Map<String,Object> parameters = new java.util.HashMap<String,Object>();
+        parameters.put("forced", Boolean.FALSE);
+        parameters.put("mediaAspectRatio", null);
+        parameters.put("mediaLanguage", null);
+        parameters.put("userLanguage", Locale.getDefault().getLanguage());
+        return parameters;
+    }
+
+    protected Map<String,Object> getConditionMediaParameters() {
+        return new java.util.HashMap<String,Object>();
+    }
+
+    protected Set<String> getConditionSupportedFeatures() {
+        return new java.util.HashSet<String>();
     }
 
     // TransformerContext implementation
@@ -209,6 +233,10 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
 
     public Object extractResourceState(String key) {
         return verifier.extractResourceState(key);
+    }
+
+    public Condition.EvaluatorState getConditionEvaluatorState() {
+        return (Condition.EvaluatorState) getResourceState(ResourceState.ttxConditionEvaluatorState.name());
     }
 
     public URL getDefaultConfigurationLocator() {

@@ -610,17 +610,28 @@ public class StyleCollector {
     }
 
     protected StyleSet getStyles(Element e) {
-        String style = Documents.getAttribute(e, isdCSSAttrName, null);
-        if (style != null) {
-            StyleSet styles = this.styles.get(style);
-            if (styles != null)
-                return styles;
-            else
-                return StyleSet.EMPTY;
-        } else
-            return StyleSet.EMPTY;
+        String css = Documents.getAttribute(e, isdCSSAttrName, null);
+        return (css != null) ? getStyles(css) : StyleSet.EMPTY;
     }
 
+    protected StyleSet getStyles(String css) {
+        assert css != null;
+        String[] ids = css.trim().split("\\s+");
+        if (ids.length < 1)
+            return StyleSet.EMPTY;
+        else if (ids.length < 2)
+            return this.styles.get(ids[0]);
+        else
+            return mergeStyles(ids);
+    }
+    
+    private StyleSet mergeStyles(String[] ids) {
+        StyleSet styles = new StyleSet();
+        for (String id : ids)
+            styles.merge(getStyles(id), context.getConditionEvaluatorState());
+        return styles;
+    }
+    
     protected StyleSet newStyles(Element e) {
         StyleSet styles = new StyleSet();
         String id = generateSynthesizedStylesId();

@@ -117,6 +117,7 @@ public class Presenter extends TimedTextTransformer {
 
     private static final String[][] longOptionSpecifications = new String[][] {
         { "layout",                     "NAME",     "specify layout name (default: " + LayoutProcessor.getDefaultName() + ")" },
+        { "forced-display",             "",         "enable forced display mode" },
         { "output-archive",             "",         "combine output frames into frames archive file" },
         { "output-archive-file",        "NAME",     "specify path of frames archive file" },
         { "output-directory",           "DIRECTORY","specify path to directory where output is to be written" },
@@ -148,6 +149,7 @@ public class Presenter extends TimedTextTransformer {
     private static final String uriFileScheme                   = "file";
 
     // options state
+    private boolean forcedDisplay;
     private boolean outputArchive;
     private String outputArchiveFilePath;
     private String outputDirectoryPath;
@@ -214,6 +216,28 @@ public class Presenter extends TimedTextTransformer {
     }
 
     @Override
+    protected Map<String,Object> getConditionBoundParameters() {
+        Map<String,Object> parameters = super.getConditionBoundParameters();
+        parameters.put("forced", Boolean.valueOf(forcedDisplay));
+        parameters.put("mediaAspectRatio", Double.valueOf(getExternalExtentAspectRatio()));
+        parameters.put("mediaLanguage", "");
+        return parameters;
+    }
+
+    private double getExternalExtentAspectRatio() {
+        Object value = getExternalParameters().getParameter("externalExtent");
+        if (value instanceof double[]) {
+            double[] parsedExternalExtent = (double[]) value;
+            assert parsedExternalExtent.length >= 2;
+            if (parsedExternalExtent[1] == 0)
+                return 1;
+            else
+                return parsedExternalExtent[0] / parsedExternalExtent[1];
+        } else
+            return 1;
+    }
+
+    @Override
     protected int parseLongOption(List<String> args, int index) {
         String arg = args.get(index);
         int numArgs = args.size();
@@ -224,6 +248,8 @@ public class Presenter extends TimedTextTransformer {
             if (index + 1 >= numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             ++index; // ignore - already processed by #preProcessOptions
+        } else if (option.equals("forced-display")) {
+            forcedDisplay = true;
         } else if (option.equals("output-archive")) {
             outputArchive = true;
         } else if (option.equals("output-archive-file")) {
@@ -375,6 +401,9 @@ public class Presenter extends TimedTextTransformer {
         layout.processDerivedOptions();
         assert renderer != null;
         renderer.processDerivedOptions();
+        // forced display mode
+        if (forcedDisplay)
+            getExternalParameters().setParameter("forcedDisplay", Boolean.TRUE);
         // output archive file
         File outputArchiveFile;
         if (outputArchive && (outputArchiveFilePath != null)) {

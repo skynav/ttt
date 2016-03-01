@@ -72,6 +72,7 @@ import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.Condition;
 import com.skynav.ttv.util.ComparableQName;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Namespaces;
@@ -270,10 +271,10 @@ public class ISD {
         }
 
         private void populateContext(TransformerContext context) {
+            context.setResourceState(ResourceState.isdGenerationIndices.name(), new int[GenerationIndex.values().length]);
             context.setResourceState(ResourceState.isdHelper.name(), ISDHelper.makeInstance(context.getModel()));
             context.setResourceState(ResourceState.isdParents.name(), new java.util.HashMap<Object, Object>());
             context.setResourceState(ResourceState.isdTimingStates.name(), new java.util.HashMap<Object, TimingState>());
-            context.setResourceState(ResourceState.isdGenerationIndices.name(), new int[GenerationIndex.values().length]);
             context.setResourceState(ResourceState.isdUsesForcedVisibility.name(), Boolean.FALSE);
             context.setResourceState(ResourceState.isdUsesTTML2Feature.name(), Boolean.FALSE);
         }
@@ -968,7 +969,7 @@ public class ISD {
         private static StyleSet computeInitialStyleOverrides(Document doc, TransformerContext context) {
             StyleSet overrides = new StyleSet();
             for (Element initial : getInitialElements(doc, context)) {
-                overrides.merge(getInlineStyles(initial));
+                overrides.merge(getInlineStyles(initial, context), context.getConditionEvaluatorState());
             }
             return overrides;
         }
@@ -1153,18 +1154,19 @@ public class ISD {
             // See TTML2, Section 8.4.4.2
             // 1. initialization
             StyleSet sss = new StyleSet(getHelper(context).generateStyleSetIndex(context));
+            Condition.EvaluatorState ces = context.getConditionEvaluatorState();
             // 2. referential and chained referential styling
             for (StyleSet ss : getSpecifiedStyleSets(getReferencedStyleElements(elt), specifiedStyleSets))
-                sss.merge(ss);
+                sss.merge(ss, ces);
             // 3. nested styling
             for (StyleSet ss : getSpecifiedStyleSets(getChildStyleElements(elt), specifiedStyleSets))
-                sss.merge(ss);
+                sss.merge(ss, ces);
             // 4. inline styling
-            sss.merge(getInlineStyles(elt));
+            sss.merge(getInlineStyles(elt, context), ces);
             // 5. animation styling
             if (!TTMLHelper.isAnimationElement(elt)) {
                 for (StyleSet ss : getSpecifiedStyleSets(getChildAnimationElements(elt), specifiedStyleSets))
-                    sss.merge(ss);
+                    sss.merge(ss, ces);
             }
             // 6. implicit inheritance and initial value fallback
             if (!TTMLHelper.isAnimationElement(elt) && !TTMLHelper.isStyleElement(elt)) {
@@ -1235,7 +1237,7 @@ public class ISD {
             return styleSets;
         }
 
-        private static StyleSet getInlineStyles(Element elt) {
+        private static StyleSet getInlineStyles(Element elt, TransformerContext context) {
             StyleSet styles = new StyleSet();
             NamedNodeMap attrs = elt.getAttributes();
             for (int i = 0, n = attrs.getLength(); i < n; ++i) {
@@ -1243,9 +1245,8 @@ public class ISD {
                 if (node instanceof Attr) {
                     Attr a = (Attr) node;
                     String nsUri = a.getNamespaceURI();
-                    if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT_STYLE)) {
+                    if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT_STYLE))
                         styles.merge(new StyleSpecification(new ComparableQName(a.getNamespaceURI(), a.getLocalName()), a.getValue()));
-                    }
                 }
             }
             return styles;

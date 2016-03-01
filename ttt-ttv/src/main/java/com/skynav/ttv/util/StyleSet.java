@@ -41,6 +41,7 @@ public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> i
     private int generation;
     private String id;
     private Map<ComparableQName, StyleSpecification> styles;
+    private Condition condition;
 
     public StyleSet() {
         this(-1);
@@ -88,16 +89,25 @@ public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> i
         return id;
     }
 
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public boolean isCondition(Condition.EvaluatorState state) {
+        return (condition == null) || condition.evaluate(state);
+    }
+
     public boolean isEmpty() {
         return styles.isEmpty();
     }
 
-    public void merge(StyleSet styles) {
-        merge(styles.styles);
-    }
-
-    public void merge(Map<ComparableQName, StyleSpecification> styles) {
-        this.styles.putAll(styles);
+    public void merge(StyleSet styles, Condition.EvaluatorState state) {
+        if (styles.isCondition(state))
+            this.styles.putAll(styles);
     }
 
     public void merge(QName name, String value) {

@@ -25,11 +25,13 @@
 
 package com.skynav.ttx.transformer;
 
+import com.skynav.ttv.util.Condition;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public interface TransformerContext extends VerifierContext {
 
     public enum ResourceState {
+        ttxConditionEvaluatorState,
         ttxDontElideInitials,
         ttxInputUri,
         ttxOutput,
@@ -38,5 +40,11 @@ public interface TransformerContext extends VerifierContext {
         ttxSuppressOutputSerialization,
         ttxTransformer
     };
+
+    /**
+     * Obtain condition verifier state.
+     * @return reference to condition verifier state or null (if none defined)
+     */
+    public Condition.EvaluatorState getConditionEvaluatorState();
 
 }

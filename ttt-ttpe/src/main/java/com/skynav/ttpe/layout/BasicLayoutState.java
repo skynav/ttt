@@ -60,6 +60,7 @@ import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
 
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.util.Condition;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
@@ -520,6 +521,13 @@ public class BasicLayoutState implements LayoutState {
             if (ns != null) {
                 if (ns.equals(ttsNamespace) || qn.equals(xmlLanguageAttrName))
                     styles.merge(new StyleSpecification(ns, qn.getLocalPart(), a.getValue()));
+            }
+        }
+        String condition = Documents.getAttribute(e, conditionAttrName, null);
+        if (condition != null) {
+            try {
+                styles.setCondition(Condition.valueOf(condition));
+            } catch (Condition.ParserException x) {
             }
         }
         return styles;

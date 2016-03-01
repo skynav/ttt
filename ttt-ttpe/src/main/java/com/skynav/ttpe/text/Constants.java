@@ -50,6 +50,9 @@ public class Constants {
     public static final QName ttSpanElementName                         = new QName(NAMESPACE_TT, "span");
     public static final QName ttBreakElementName                        = new QName(NAMESPACE_TT, "br");
 
+    // TTML Attribute Names
+    public static final QName conditionAttrName                         = new QName("", "condition");
+
     // XML Attribute Names
     public static final QName xmlIdAttrName                             = new QName(XML.xmlNamespace, "id");
     public static final QName xmlLanguageAttrName                       = new QName(XML.xmlNamespace, "lang");

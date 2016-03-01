@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.model.value;
+package com.skynav.ttv.util;
 
 import java.nio.CharBuffer;
 import java.util.Arrays;
