@@ -128,8 +128,15 @@ public class BasicLayoutState implements LayoutState {
         if (areas.size() > 2) {
             incrementCounters(CounterEvent.ADD_REGION, a);
             ((ViewportArea) a).setId(generateRegionIdentifier());
+        } else {
+            updateDefaultFontSizeWithCellResolution(width, height);
         }
         return a;
+    }
+
+    private void updateDefaultFontSizeWithCellResolution(double width, double height) {
+        Extent cellResolution = getCellResolution();
+        defaults.setFontSize(new Extent(width/cellResolution.getWidth(), height/cellResolution.getHeight()));
     }
 
     public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, Visibility visibility) {

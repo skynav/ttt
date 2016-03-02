@@ -511,6 +511,21 @@ public class PresenterTestCases {
         performPresentationTest("test-091-forced-display-disabled.xml", 0, 0);
     }
 
+    @Test
+    public void test092InitialFontSize1() throws Exception {
+        performPresentationTest("test-092-initial-font-size-1.xml", 0, 0);
+    }
+
+    @Test
+    public void test093InitialFontSize2() throws Exception {
+        performPresentationTest("test-093-initial-font-size-2.xml", 0, 0);
+    }
+
+    @Test
+    public void test094InitialFontSize3() throws Exception {
+        performPresentationTest("test-094-initial-font-size-3.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }
