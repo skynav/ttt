@@ -500,6 +500,16 @@ public class PresenterTestCases {
         performPresentationTest("test-089-visibility-2.xml", 0, 0);
     }
 
+    @Test
+    public void test090ForcedDisplayEnabled() throws Exception {
+        performPresentationTest("test-090-forced-display-enabled.xml", 0, 0, new String[]{"--forced-display"});
+    }
+
+    @Test
+    public void test091ForcedDisplayEnabled() throws Exception {
+        performPresentationTest("test-091-forced-display-disabled.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

@@ -69,29 +69,31 @@ import static com.skynav.ttpe.text.Constants.*;
 
 public class StyleCollector {
 
-    protected TransformerContext context;
-    protected FontCache fontCache;
-    protected Defaults defaults;
-    protected Extent extBounds;
-    protected Extent refBounds;
-    protected Extent cellResolution;
-    protected WritingMode writingMode;
-    protected String language;
-    protected Font font;
+    private StyleCollector parent;
+    private TransformerContext context;
+    private FontCache fontCache;
+    private Defaults defaults;
+    private Extent extBounds;
+    private Extent refBounds;
+    private Extent cellResolution;
+    private WritingMode writingMode;
+    private String language;
+    private Font font;
     private int synthesizedStylesIndex;
     private Map<String,StyleSet> styles;
     private List<StyleAttributeInterval> attributes;
     private BidiLevelIterator bidi;
 
     public StyleCollector(StyleCollector sc) {
-        this(sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.font, sc.styles);
+        this(sc, sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.font, sc.styles);
     }
 
     public StyleCollector
-        (TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, Extent cellResolution, WritingMode writingMode, String language, Font font, Map<String,StyleSet> styles) {
+        (StyleCollector parent, TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, Extent cellResolution, WritingMode writingMode, String language, Font font, Map<String,StyleSet> styles) {
+        this.parent = parent;
         this.context = context;
-        this.fontCache = fontCache;
         this.defaults = defaults;
+        this.fontCache = fontCache;
         this.extBounds = extBounds;
         this.refBounds = refBounds;
         this.cellResolution = cellResolution;
@@ -102,12 +104,44 @@ public class StyleCollector {
         this.bidi = new BidiLevelIterator();
     }
 
+    public StyleCollector getParent() {
+        return parent;
+    }
+
+    public TransformerContext getContext() {
+        for (StyleCollector sc = this; sc != null; sc = sc.getParent()) {
+            if (sc.context != null)
+                return sc.context;
+        }
+        return null;
+    }
+
+    public FontCache getFontCache() {
+        return fontCache;
+    }
+
     public Defaults getDefaults() {
         return defaults;
     }
 
     protected void setFont(Font font) {
         this.font = font;
+    }
+
+    public Font getFont() {
+        return this.font;
+    }
+    
+    public Extent getExternalBounds() {
+        return extBounds;
+    }
+
+    public Extent getReferenceBounds() {
+        return refBounds;
+    }
+
+    public Extent getCellResolution() {
+        return cellResolution;
     }
 
     public void clear() {
@@ -122,7 +156,7 @@ public class StyleCollector {
             String v = s.getValue();
             display = Display.valueOf(v.toUpperCase());
         } else
-            display = defaults.getDisplay();
+            display = getDefaults().getDisplay();
         return display != Display.NONE;
     }
 
@@ -287,7 +321,7 @@ public class StyleCollector {
                 int c = content.charAt(i);
                 Orientation o = Orientation.fromCharacter(c);
                 if (o != lastOrientation) {
-                    if ((lastOrientation != null) && (lastOrientation != defaults.getOrientation()) && (lastEnd > lastBegin))
+                    if ((lastOrientation != null) && (lastOrientation != getDefaults().getOrientation()) && (lastEnd > lastBegin))
                         addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, i);
                     lastOrientation = o;
                     lastBegin = i;
@@ -295,7 +329,7 @@ public class StyleCollector {
                 lastEnd = i + 1;
             }
             if (lastBegin < end) {
-                if ((lastOrientation != null) && (lastOrientation != defaults.getOrientation()) && (lastEnd > lastBegin))
+                if ((lastOrientation != null) && (lastOrientation != getDefaults().getOrientation()) && (lastEnd > lastBegin))
                     addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, lastEnd);
             }
         }
@@ -477,7 +511,7 @@ public class StyleCollector {
         if (s != null)
             v = Visibility.valueOf(s.getValue().toUpperCase());
         else
-            v = defaults.getVisibility();
+            v = getDefaultVisibility(e, styles);
         if (v != null)
             addAttribute(StyleAttribute.VISIBILITY, v, begin, end);
 
@@ -606,7 +640,7 @@ public class StyleCollector {
         }
         if (fontFeatures.isEmpty())
             fontFeatures = getDefaultFontFeatures(e, styles);
-        return fontCache.mapFont(fontFamilies, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
+        return getFontCache().mapFont(fontFamilies, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
     }
 
     protected StyleSet getStyles(Element e) {
@@ -628,7 +662,7 @@ public class StyleCollector {
     private StyleSet mergeStyles(String[] ids) {
         StyleSet styles = new StyleSet();
         for (String id : ids)
-            styles.merge(getStyles(id), context.getConditionEvaluatorState());
+            styles.merge(getStyles(id), getContext().getConditionEvaluatorState());
         return styles;
     }
     
@@ -676,23 +710,49 @@ public class StyleCollector {
     }
 
     protected List<String> getDefaultFontFamilies(Element e, StyleSet styles) {
-        return defaults.getFontFamilies();
+        return getDefaults().getFontFamilies();
     }
 
     protected FontStyle getDefaultFontStyle(Element e, StyleSet styles) {
-        return defaults.getFontStyle();
+        return getDefaults().getFontStyle();
     }
 
     protected FontWeight getDefaultFontWeight(Element e, StyleSet styles) {
-        return defaults.getFontWeight();
+        return getDefaults().getFontWeight();
     }
 
     protected Extent getDefaultFontSize(Element e, StyleSet styles) {
-        return defaults.getFontSize();
+        return getDefaults().getFontSize();
     }
 
     protected Set<FontFeature> getDefaultFontFeatures(Element e, StyleSet styles) {
-        return defaults.getFontFeatures();
+        return getDefaults().getFontFeatures();
+    }
+
+    protected Visibility getDefaultVisibility(Element e, StyleSet styles) {
+        Visibility v = null;
+        boolean forcedDisplay = (Boolean) getContext().getExternalParameters().getParameter("forcedDisplay");
+        if (forcedDisplay) {
+            if (Documents.isElement(e, ttSpanElementName)) {
+                for (Node n = e.getParentNode(); n != null; n = n.getParentNode()) {
+                    if (n instanceof Element) {
+                        Element p = (Element) n;
+                        styles = getStyles(p);
+                        StyleSpecification s = styles.get(ttsVisibilityAttrName);
+                        if (s != null)
+                            return Visibility.valueOf(s.getValue().toUpperCase());
+                        else if (Documents.isElement(p, ttSpanElementName))
+                            continue;
+                        else
+                            break;
+
+                    }
+                }
+            }
+        }
+        if (v == null)
+            v = getDefaults().getVisibility();
+        return v;
     }
 
     protected Extent parseFontSize(Element e, StyleSpecification s) {

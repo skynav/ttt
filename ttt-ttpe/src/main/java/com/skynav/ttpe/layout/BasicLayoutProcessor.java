@@ -238,6 +238,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
 
     @Override
     public void processDerivedOptions() {
+        // font specification directory
         File fontSpecificationDirectory = null;
         if (fontSpecificationDirectoryPath != null) {
             fontSpecificationDirectory = new File(fontSpecificationDirectoryPath);
@@ -246,6 +247,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             else if (!fontSpecificationDirectory.isDirectory())
                 throw new InvalidOptionUsageException("font-directory", "not a directory: " + fontSpecificationDirectoryPath);
         }
+        // font specification files
         List<File> fontSpecificationFiles = null;
         if ((fontSpecificationFileNames != null) && !fontSpecificationFileNames.isEmpty()) {
             for (String name : fontSpecificationFileNames) {
@@ -261,6 +263,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
                 }
             }
         }
+        // line and character breakers
         Reporter reporter = context.getReporter();
         this.fontCache = new FontCache(fontSpecificationDirectory, fontSpecificationFiles, reporter);
         if (lineBreakerName == null)
@@ -271,7 +274,9 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             charBreakerName = defaultCharacterBreakerName;
         LineBreaker cb = LineBreaker.getInstance(charBreakerName);
         this.charBreaker = cb;
+        // defaults
         this.defaults = new Defaults();
+        // default background color
         if (defaultBackgroundColor != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
             if (com.skynav.ttv.verifier.util.Colors.isColor(defaultBackgroundColor, new Location(), context, retColor))
@@ -279,6 +284,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             else
                 throw new InvalidOptionUsageException("default-background-color", "invalid color syntax:  " + defaultBackgroundColor);
         }
+        // default color
         if (defaultColor != null) {
             com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
             if (com.skynav.ttv.verifier.util.Colors.isColor(defaultColor, new Location(), context, retColor))
@@ -286,6 +292,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             else
                 throw new InvalidOptionUsageException("default-color", "invalid color syntax:  " + defaultColor);
         }
+        // default font families
         if (defaultFontFamilies != null) {
             List<com.skynav.ttv.model.value.FontFamily> families = new java.util.ArrayList<com.skynav.ttv.model.value.FontFamily>();
             Object[] treatments = new Object[] { com.skynav.ttv.verifier.util.QuotedGenericFontFamilyTreatment.Allow };
@@ -297,6 +304,10 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             } else
                 throw new InvalidOptionUsageException("default-font-families", "invalid font families syntax:  " + defaultFontFamilies);
         }
+        // default visibility
+        if ((Boolean) context.getExternalParameters().getParameter("forcedDisplay"))
+            defaults.setVisibility(Visibility.HIDDEN);
+        // default whitespace
         if (defaultWhitespace != null) {
             try {
                 defaults.setWhitespace(Whitespace.valueOf(defaultWhitespace.toUpperCase()));
@@ -478,7 +489,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     private StyleCollector newStyleCollector(LayoutState ls) {
-        return new StyleCollector(context, ls.getFontCache(), defaults, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getCellResolution(), ls.getWritingMode(), ls.getLanguage(), ls.getFont(), ls.getStyles());
+        return new StyleCollector(null, context, ls.getFontCache(), defaults, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getCellResolution(), ls.getWritingMode(), ls.getLanguage(), ls.getFont(), ls.getStyles());
     }
 
     protected void layoutParagraphs(Element e, List<Paragraph> paragraphs, LayoutState ls) {

@@ -75,7 +75,7 @@ public class AnnotationStyleCollector extends StyleCollector {
                     return new Extent(fs.getWidth() * 0.5, fs.getHeight() * 0.5);
             }
         }
-        return defaults.getFontSize();
+        return getDefaults().getFontSize();
     }
 
     private void collectCommonAnnotationStyles(Element e, int begin, int end, StyleSet styles) {
@@ -100,9 +100,9 @@ public class AnnotationStyleCollector extends StyleCollector {
                 Integer[] minMax = new Integer[] { 1, 1 };
                 Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
                 List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
+                if (Lengths.isLengths(s.getValue(), new Location(), getContext(), minMax, treatments, lengths)) {
                     assert lengths.size() == 1;
-                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, font.getSize(), cellResolution));
+                    v = Double.valueOf(Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, getExternalBounds(), getReferenceBounds(), getFont().getSize(), getCellResolution()));
                 }
             }
         }
@@ -130,7 +130,7 @@ public class AnnotationStyleCollector extends StyleCollector {
         v = null;
         if (s != null) {
             CharacterClass[] cc = new CharacterClass[1];
-            if (Characters.isCharacterClass(s.getValue(), null, context, cc))
+            if (Characters.isCharacterClass(s.getValue(), null, getContext(), cc))
                 v = new AnnotationOverhangClass(cc[0]);
         }
         if (v != null)

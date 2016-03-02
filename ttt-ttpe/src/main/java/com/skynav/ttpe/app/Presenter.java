@@ -395,15 +395,10 @@ public class Presenter extends TimedTextTransformer {
 
     @Override
     public void processDerivedOptions() {
-        // first handle ttx derived options, then layout, then renderer
+        // first handle ttx derived options, our options, then layout, then renderer
         super.processDerivedOptions();
-        assert layout != null;
-        layout.processDerivedOptions();
-        assert renderer != null;
-        renderer.processDerivedOptions();
         // forced display mode
-        if (forcedDisplay)
-            getExternalParameters().setParameter("forcedDisplay", Boolean.TRUE);
+        getExternalParameters().setParameter("forcedDisplay", Boolean.valueOf(forcedDisplay));
         // output archive file
         File outputArchiveFile;
         if (outputArchive && (outputArchiveFilePath != null)) {
@@ -466,6 +461,17 @@ public class Presenter extends TimedTextTransformer {
         this.outputPatternISDFormatter = new MessageFormat(outputPatternISD, Locale.US);
         // show memory
         setShowMemory(showMemory);
+        // layout and renderer derived options - N.B. must follow the above
+        assert layout != null;
+        layout.processDerivedOptions();
+        assert renderer != null;
+        renderer.processDerivedOptions();
+        // override output pattern if needed
+        String rendererOutputPattern = renderer.getOutputPattern();
+        if ((rendererOutputPattern != null) && !rendererOutputPattern.equals(outputPattern)) {
+            this.outputPattern = rendererOutputPattern;
+            this.outputPatternFormatter = new MessageFormat(this.outputPattern, Locale.US);
+        }
     }
 
     @Override

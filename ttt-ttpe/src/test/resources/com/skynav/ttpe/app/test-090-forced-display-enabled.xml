@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:itts="http://www.w3.org/ns/ttml/profile/imsc1#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:extent="80% 20%" tts:origin="10% 10%" tts:textAlign="center"/>
+    </layout>
+  </head>
+  <body begin="0s" end="1s" region="r0">
+    <div tts:color="yellow">
+      <p itts:forcedDisplay="false">Force display false when forced display mode is enabled.</p>
+      <p itts:forcedDisplay="true">Force display true when forced display mode is enabled.</p>
+    </div>
+  </body>
+</tt>
