@@ -42,6 +42,7 @@ import java.util.zip.ZipInputStream;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -547,6 +548,7 @@ public class PresenterTestCases {
         args.add(urlString);
         Presenter ttpe = new Presenter();
         URI output = ttpe.present(args, new TextReporter());
+        assertNotNull("Presentation failed, no output produced.", output);
         maybeCheckDifferences(output, input);
         TimedTextVerifier.Results r = ttpe.getResults(urlString);
         int resultCode = r.getCode();

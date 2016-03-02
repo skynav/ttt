@@ -4,6 +4,7 @@
 <ttm:item name="creationDate">2015-05-11T14:50:08Z</ttm:item>
 <ttm:item name="creationSystem">CAP2TT/1.0.0dev</ttm:item>
 <styling>
+<initial tts:fontFamily="Noto Sans"/>
 <initial tts:fontSize="4vh"/>
 <initial tts:lineHeight="5vh"/>
 <initial tts:showBackground="whenActive"/>

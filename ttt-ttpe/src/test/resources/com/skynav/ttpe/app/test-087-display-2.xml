@@ -10,7 +10,7 @@
       <region xml:id="r1" tts:extent="80% 20%" tts:origin="10% 70%" tts:textAlign="center" tts:display="none"/>
     </layout>
   </head>
-  <body begin="0s" end="1s">
+  <body begin="0s" end="1s" tts:fontFamily="Noto Sans" tts:fontSize="24px">
     <div region="r0">
       <p>
         <span>This region has display: auto.</span>
