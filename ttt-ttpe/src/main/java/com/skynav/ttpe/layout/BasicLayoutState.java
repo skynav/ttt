@@ -135,8 +135,8 @@ public class BasicLayoutState implements LayoutState {
     }
 
     private void updateDefaultFontSizeWithCellResolution(double width, double height) {
-        Extent cellResolution = getCellResolution();
-        defaults.setFontSize(new Extent(width/cellResolution.getWidth(), height/cellResolution.getHeight()));
+        double h = height / getCellResolution().getHeight();
+        defaults.setFontSize(new Extent(h, h));
     }
 
     public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, Visibility visibility) {

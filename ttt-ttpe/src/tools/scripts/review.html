@@ -1,0 +1,115 @@
+<html>
+<head>
+<script src="files.js"></script>
+<script>
+var h = document.createElement("h3");
+var i = document.createElement("img");
+var fileIndex = -1;
+var fileCount = files.length;
+var testIndices = [];
+var option = false;
+function setFile(f) {
+  h.textContent = f;
+  i.src = f;
+}
+function goto(i) {
+  if (i < 0)
+    i = 0;
+  else if (i > fileCount - 2)
+    i = fileCount - 2;
+  if (i != fileIndex) {
+    setFile(files[i]);
+    fileIndex = i;
+  }
+}
+function first() {
+  var k = !option ? 0 : firstTest();
+  goto(k);
+}
+function last() {
+  var k = !option ? fileCount - 2 : lastTest();
+  goto(k);
+}
+function next() {
+  var k = !option ? fileIndex + 1 : nextTest(fileIndex);
+  if (k < fileCount - 1)
+    goto(k);
+}
+function prev() {
+  var k = !option ? fileIndex - 1 : prevTest(fileIndex);
+  if (k >= 0)
+    goto(k);
+}
+function createTestIndices() {
+  var indices = [];
+  var lastTest;
+  for (var i = 0, n = files.length; i < n; ++i) {
+    var f = files[i];
+    if (f) {
+      var t = f.substr(0,f.indexOf("/"));
+      if (!lastTest || (lastTest != t)) {
+        indices.push(i);
+        lastTest = t;
+      }
+    }
+  }
+  testIndices = indices;
+}
+function firstTest() {
+  if (testIndices.length > 0)
+    return testIndices[0];
+  else
+    return 0;
+}
+function lastTest() {
+  if (testIndices.length > 0)
+    return testIndices[testIndices.length - 1];
+  else
+    return fileCount - 2;
+}
+function nextTest(index) {
+  for (var i = 0, n = testIndices.length; i < n; ++i) {
+    var k = testIndices[i];
+    if (k > index)
+      return k;
+  }
+  return lastTest();
+}
+function prevTest(index) {
+  for (var i = 0, n = testIndices.length; i < n; ++i) {
+    var k = testIndices[n - i - 1];
+    if (k < index)
+      return k;
+  }
+  return firstTest();
+}
+function load() {
+  var b = document.body;
+  b.appendChild(h);
+  b.appendChild(i);
+  b.addEventListener("keydown",
+    function(e) {
+      if (e.keyCode == 18) {
+        option = true;
+      } else if (e.keyCode == 39) {
+        next();
+      } else if (e.keyCode == 37) {
+        prev();
+      } else if (e.keyCode == 38) {
+        first();
+      } else if (e.keyCode == 40) {
+        last();
+      }
+    });
+  b.addEventListener("keyup",
+    function(e) {
+      if (e.keyCode == 18)
+        option = false;
+    });
+  createTestIndices();
+  first();
+}
+</script>
+</head>
+<body onload="load()"></body>
+</html>

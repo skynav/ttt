@@ -171,8 +171,12 @@
                 <argument>${test.basedir}/test.config.xml</argument>
                 <argument>--font-directory</argument>
                 <argument>${test.basedir}/fonts</argument>
+                <argument>--output-directory</argument>
+                <argument>${test.basedir}/out</argument>
                 <argument>--warn-on</argument>
                 <argument>all</argument>
+                <argument>--verbose-level</argument>
+                <argument>2</argument>
                 <argument>${test.basedir}/test.xml</argument>
               </arguments>
             </configuration>

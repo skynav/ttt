@@ -526,6 +526,11 @@ public class PresenterTestCases {
         performPresentationTest("test-094-initial-font-size-3.xml", 0, 0);
     }
 
+    @Test
+    public void test095FontSizePercentageOfInitialFontSize() throws Exception {
+        performPresentationTest("test-095-font-size-percentage-of-initial-font-size.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

@@ -43,6 +43,7 @@ import com.skynav.ttpe.fonts.FontKerning;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.fonts.Orientation;
+
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.Extent;
@@ -69,20 +70,20 @@ import static com.skynav.ttpe.text.Constants.*;
 
 public class StyleCollector {
 
-    private StyleCollector parent;
-    private TransformerContext context;
-    private FontCache fontCache;
-    private Defaults defaults;
-    private Extent extBounds;
-    private Extent refBounds;
-    private Extent cellResolution;
-    private WritingMode writingMode;
-    private String language;
-    private Font font;
-    private int synthesizedStylesIndex;
-    private Map<String,StyleSet> styles;
-    private List<StyleAttributeInterval> attributes;
-    private BidiLevelIterator bidi;
+    private StyleCollector parent;                      // parent style collector (or null if no parent)
+    private TransformerContext context;                 // transformation context
+    private FontCache fontCache;                        // font state cache
+    private Defaults defaults;                          // style defaults state
+    private Extent extBounds;                           // extent of outer (canvas) viewport context, remains constant during collection
+    private Extent refBounds;                           // extent of nearest viewport context, remains constant during collection
+    private Extent cellResolution;                      // cell resolution of collector context, remains constant during collection
+    private WritingMode writingMode;                    // writing mode of collector context, remains constant during collection
+    private String language;                            // language of collector context, remains constant during collection
+    private Font font;                                  // font of current element being collected
+    private int synthesizedStylesIndex;                 // index of next synthesized style identifier
+    private Map<String,StyleSet> styles;                // map of all isd:css style sets, identified by id string
+    private List<StyleAttributeInterval> attributes;    // text attributes being collected
+    private BidiLevelIterator bidi;                     // bidi iterator, reused as needed
 
     public StyleCollector(StyleCollector sc) {
         this(sc, sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.font, sc.styles);
@@ -762,6 +763,9 @@ public class StyleCollector {
         if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
             Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+            Extent refBounds = this.refBounds;
+            if (!Documents.isElement(e, isdRegionElementName))
+                refBounds = fs;
             double w, h;
             if (lengths.size() == 1) {
                 h = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs, cellResolution);

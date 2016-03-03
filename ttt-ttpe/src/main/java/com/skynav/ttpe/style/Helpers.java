@@ -121,7 +121,7 @@ public class Helpers {
         if (Documents.isElement(e, isdRegionElementName)) {
             return getReference(axis, external) / 100;
         } else {
-            return 0.01;                                        // [TBD] FIX ME - use element specific definition
+            return getReference(axis, reference) / 100;
         }
     }
 
