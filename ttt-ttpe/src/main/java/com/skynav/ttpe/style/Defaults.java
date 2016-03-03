@@ -52,7 +52,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     public static final AnnotationPosition defaultAnnotationPosition           = AnnotationPosition.AUTO;
     public static final AnnotationReserve defaultAnnotationReserve             = AnnotationReserve.NONE;
     public static final Color defaultBackgroundColor                           = Color.TRANSPARENT;
-    public static final Color defaultColor                                     = Color.YELLOW;
+    public static final Color defaultColor                                     = Color.WHITE;
     public static final Combination defaultCombination                         = Combination.NONE;
     public static final Display defaultDisplay                                 = Display.AUTO;
     public static final BlockAlignment defaultDisplayAlign                     = BlockAlignment.BEFORE;
