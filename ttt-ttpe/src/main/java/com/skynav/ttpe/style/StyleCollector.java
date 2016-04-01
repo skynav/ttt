@@ -132,7 +132,7 @@ public class StyleCollector {
     public Font getFont() {
         return this.font;
     }
-    
+
     public Extent getExternalBounds() {
         return extBounds;
     }
@@ -659,14 +659,14 @@ public class StyleCollector {
         else
             return mergeStyles(ids);
     }
-    
+
     private StyleSet mergeStyles(String[] ids) {
         StyleSet styles = new StyleSet();
         for (String id : ids)
             styles.merge(getStyles(id), getContext().getConditionEvaluatorState());
         return styles;
     }
-    
+
     protected StyleSet newStyles(Element e) {
         StyleSet styles = new StyleSet();
         String id = generateSynthesizedStylesId();
@@ -738,15 +738,16 @@ public class StyleCollector {
                 for (Node n = e.getParentNode(); n != null; n = n.getParentNode()) {
                     if (n instanceof Element) {
                         Element p = (Element) n;
-                        styles = getStyles(p);
-                        StyleSpecification s = styles.get(ttsVisibilityAttrName);
-                        if (s != null)
-                            return Visibility.valueOf(s.getValue().toUpperCase());
-                        else if (Documents.isElement(p, ttSpanElementName))
-                            continue;
-                        else
+                        StyleSet pStyles = getStyles(p);
+                        StyleSpecification s = pStyles.get(ttsVisibilityAttrName);
+                        if (s != null) {
+                            v = Visibility.valueOf(s.getValue().toUpperCase());
                             break;
-
+                        } else if (Documents.isElement(p, ttSpanElementName)) {
+                            continue;
+                        } else {
+                            break;
+                        }
                     }
                 }
             }

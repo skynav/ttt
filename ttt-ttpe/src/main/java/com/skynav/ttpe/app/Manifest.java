@@ -79,10 +79,10 @@ public abstract class Manifest {
         } catch (ParserConfigurationException e) {
             reporter.logError(e);
         }
-    }    
+    }
 
     protected abstract Element addFrames(Document d, List<Frame> frames, String format);
-    
+
     protected String formatTime(double time) {
         int hh = (int) (time / 3600);
         int mm = (int) ((time - (hh * 3600)) / 60);
@@ -118,7 +118,7 @@ public abstract class Manifest {
     public static String getDefaultManifestFormat() {
         return SimpleManifest.getManifestFormat();
     }
-    
+
     public static boolean isManifestFormat(String manifestFormat) {
         if (manifestFormat == null)
             return false;
