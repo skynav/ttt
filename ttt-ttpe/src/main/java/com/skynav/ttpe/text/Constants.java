@@ -46,7 +46,9 @@ public class Constants {
     // TTML Element Names
     public static final QName ttBodyElementName                         = new QName(NAMESPACE_TT, "body");
     public static final QName ttDivisionElementName                     = new QName(NAMESPACE_TT, "div");
+    public static final QName ttImageElementName                        = new QName(NAMESPACE_TT, "image");
     public static final QName ttParagraphElementName                    = new QName(NAMESPACE_TT, "p");
+    public static final QName ttRootElementName                         = new QName(NAMESPACE_TT, "tt");
     public static final QName ttSpanElementName                         = new QName(NAMESPACE_TT, "span");
     public static final QName ttBreakElementName                        = new QName(NAMESPACE_TT, "br");
 

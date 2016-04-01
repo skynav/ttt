@@ -36,8 +36,10 @@ public class Constants {
 
     // TTML Style Attribute Names
     public static final QName ttpCellResolutionAttrName                 = new QName(NAMESPACE_TT_PARAMETER, "cellResolution");
+    public static final QName ttpContentProfileAttrName                 = new QName(NAMESPACE_TT_PARAMETER, "contentProfile");
     public static final QName ttpFrameRateAttrName                      = new QName(NAMESPACE_TT_PARAMETER, "frameRate");
     public static final QName ttpFrameRateMultiplierAttrName            = new QName(NAMESPACE_TT_PARAMETER, "frameRateMultiplier");
+    public static final QName ttpProfileAttrName                        = new QName(NAMESPACE_TT_PARAMETER, "profile");
     public static final QName ttpVersionAttrName                        = new QName(NAMESPACE_TT_PARAMETER, "version");
 
 }

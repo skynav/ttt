@@ -106,6 +106,7 @@ public class Presenter extends TimedTextTransformer {
     private static Charset defaultOutputEncoding;
     private static final String defaultOutputFileNamePattern    = "ttpe{0,number,000000}.dat";
     private static final String defaultOutputFileNamePatternISD = "isdi{0,number,000000}.xml";
+    private static String defaultOutputManifestFormat;
 
     static {
         try {
@@ -113,6 +114,7 @@ public class Presenter extends TimedTextTransformer {
         } catch (RuntimeException e) {
             defaultOutputEncoding = Charset.defaultCharset();
         }
+        defaultOutputManifestFormat = Manifest.getDefaultManifestFormat();
     }
 
     private static final String[][] longOptionSpecifications = new String[][] {
@@ -125,6 +127,7 @@ public class Presenter extends TimedTextTransformer {
         { "output-encoding",            "ENCODING", "specify character encoding of output (default: " + defaultOutputEncoding.name() + ")" },
         { "output-format",              "NAME",     "specify output format name (default: " + RenderProcessor.getDefaultName() + ")" },
         { "output-indent",              "",         "indent output (default: no indent)" },
+        { "output-manifest-format",     "NAME",     "specify output manifest format name (default: " + defaultOutputManifestFormat + ")" },
         { "output-pattern",             "PATTERN",  "specify output file name pattern" },
         { "output-pattern-isd",         "PATTERN",  "specify output ISD file name pattern" },
         { "output-retain-frames",       "",         "retain individual frame files after archiving" },
@@ -156,6 +159,7 @@ public class Presenter extends TimedTextTransformer {
     private String outputDirectoryRetainedPath;
     private String outputEncodingName;
     private boolean outputIndent;
+    private String outputManifestFormat;
     private String outputPattern;
     private String outputPatternISD;
     private boolean outputRetainFrames;
@@ -274,6 +278,12 @@ public class Presenter extends TimedTextTransformer {
             ++index; // ignore - already processed by #preProcessOptions
         } else if (option.equals("output-indent")) {
             outputIndent = true;
+        } else if (option.equals("output-manifest-format")) {
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputManifestFormat = args.get(++index);
+            if (!Manifest.isManifestFormat(outputManifestFormat))
+                throw new InvalidOptionUsageException(option, "unknown format: " + outputManifestFormat);
         } else if (option.equals("output-pattern")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
@@ -459,6 +469,9 @@ public class Presenter extends TimedTextTransformer {
             outputPatternISD = defaultOutputFileNamePatternISD;
         this.outputPatternISD = outputPatternISD;
         this.outputPatternISDFormatter = new MessageFormat(outputPatternISD, Locale.US);
+        // output manifest format
+        if (outputManifestFormat == null)
+            outputManifestFormat = defaultOutputManifestFormat;
         // show memory
         setShowMemory(showMemory);
         // layout and renderer derived options - N.B. must follow the above
@@ -887,7 +900,7 @@ public class Presenter extends TimedTextTransformer {
 
     private void writeManifestEntry(ZipOutputStream zos, Date now, List<Frame> frames) {
         try {
-            Manifest manifest = new Manifest();
+            Manifest manifest = Manifest.createManifest(outputManifestFormat);
             ZipEntry ze = new ZipEntry(manifest.getName());
             ze.setTime(now.getTime());
             zos.putNextEntry(ze);
@@ -934,7 +947,7 @@ public class Presenter extends TimedTextTransformer {
         Reporter reporter = getReporter();
         BufferedOutputStream bos = null;
         try {
-            Manifest manifest = new Manifest();
+            Manifest manifest = Manifest.createManifest(outputManifestFormat);
             File[] retOutputFile = new File[1];
             if ((bos = getManifestOutputStream(uri, manifest, retOutputFile)) != null) {
                 File outputFile = retOutputFile[0];

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -49,54 +48,23 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.app.Namespace;
 import com.skynav.ttpe.render.Frame;
-import com.skynav.ttpe.render.FrameImage;
 import com.skynav.ttv.util.Namespaces;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.TextTransformer;
 import com.skynav.ttx.transformer.TransformerContext;
-import com.skynav.xml.helpers.Documents;
-import com.skynav.xml.helpers.XML;
 
-public class Manifest {
-
-    private static final String NAME                            = "manifest.xml";
-    private static final String NAMESPACE                       = Namespace.NAMESPACE + "#manifest";
-    private static final int VERSION                            = 1;
-
-    // element name constants
-    public static final QName framesEltName                     = new QName(NAMESPACE, "frames");
-    public static final QName frameEltName                      = new QName(NAMESPACE, "frame");
-    public static final QName imageEltName                      = new QName(NAMESPACE, "image");
-
-    // attribute name constants
-    public static final QName beginAttrName                     = new QName("", "b");
-    public static final QName endAttrName                       = new QName("", "e");
-    public static final QName extentAttrName                    = new QName("", "x");
-    public static final QName formatAttrName                    = new QName("", "format");
-    public static final QName originAttrName                    = new QName("", "o");
-    public static final QName sourceAttrName                    = new QName("", "s");
-    public static final QName versionAttrName                   = new QName("", "version");
-
-    // namespace prefixes
-    static final Map<String, String> prefixes;
-    static {
-        prefixes = new java.util.HashMap<String,String>();
-        prefixes.put(XML.xmlNamespace, "xml");
-        prefixes.put(XML.xmlnsNamespace, "xmlns");
-        prefixes.put(NAMESPACE, "");
-    }
+public abstract class Manifest {
 
     // miscellaneous statics
     public static final MessageFormat timeFormatter             = new MessageFormat("{0,number,00}:{1,number,00}:{2,number,00.###}", Locale.US);
 
-    public Manifest() {
+    protected Manifest() {
     }
 
-    public String getName() {
-        return NAME;
-    }
+    public abstract String getName();
+
+    public abstract Map<String,String> getPrefixes();
 
     public void write(OutputStream os, List<Frame> frames, String format, Charset encoding, boolean indent, TransformerContext context) throws IOException {
         Reporter reporter = context.getReporter();
@@ -106,53 +74,23 @@ public class Manifest {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document d = db.newDocument();
             d.appendChild(addFrames(d, frames, format));
-            Namespaces.normalize(d, prefixes);
+            Namespaces.normalize(d, getPrefixes());
             write(os, d, encoding, indent, context);
         } catch (ParserConfigurationException e) {
             reporter.logError(e);
         }
-    }
+    }    
 
-    private Element addFrames(Document d, List<Frame> frames, String format) {
-        Element e = Documents.createElement(d, framesEltName);
-        Documents.setAttribute(e, versionAttrName, Integer.toString(VERSION));
-        Documents.setAttribute(e, formatAttrName, format);
-        for (Frame f : frames) {
-            e.appendChild(addFrame(d, f));
-        }
-        return e;
-    }
-
-    private Element addFrame(Document d, Frame f) {
-        Element e = Documents.createElement(d, frameEltName);
-        Documents.setAttribute(e, beginAttrName, formatTime(f.getBegin()));
-        Documents.setAttribute(e, endAttrName, formatTime(f.getEnd()));
-        Documents.setAttribute(e, extentAttrName, f.getExtent().toStringAsPixels());
-        if (f.hasImages()) {
-            for (FrameImage i : f.getImages())
-                e.appendChild(addImage(d, i));
-        } else {
-            Documents.setAttribute(e, sourceAttrName, f.getFile().getName());
-        }
-        return e;
-    }
-
-    private Element addImage(Document d, FrameImage i) {
-        Element e = Documents.createElement(d, imageEltName);
-        Documents.setAttribute(e, sourceAttrName, i.getFile().getName());
-        Documents.setAttribute(e, extentAttrName, i.getExtent().toStringAsPixels());
-        Documents.setAttribute(e, originAttrName, i.getOrigin().toStringAsPixels());
-        return e;
-    }
-
-    private String formatTime(double time) {
+    protected abstract Element addFrames(Document d, List<Frame> frames, String format);
+    
+    protected String formatTime(double time) {
         int hh = (int) (time / 3600);
         int mm = (int) ((time - (hh * 3600)) / 60);
         double ss = time - ((hh * 60) + mm) * 60;
         return timeFormatter.format(new Object[] {hh, mm, ss});
     }
 
-    public void write(OutputStream os, Document d, Charset encoding, boolean indent, TransformerContext context) throws IOException {
+    private void write(OutputStream os, Document d, Charset encoding, boolean indent, TransformerContext context) throws IOException {
         Reporter reporter = context.getReporter();
         ByteArrayOutputStream bas = null;
         BufferedOutputStream bos = null;
@@ -163,7 +101,7 @@ public class Manifest {
             bos = new BufferedOutputStream(bas);
             bw = new BufferedWriter(new OutputStreamWriter(bos, encoding));
             StreamResult result = new StreamResult(bw);
-            Transformer t = new TextTransformer(encoding.name(), indent, prefixes, null, null);
+            Transformer t = new TextTransformer(encoding.name(), indent, getPrefixes(), null, null);
             t.transform(source, result);
             bw.close();
             byte[] bytes = bas.toByteArray();
@@ -175,6 +113,30 @@ public class Manifest {
                 try { bw.close(); } catch (IOException e) {}
             }
         }
+    }
+
+    public static String getDefaultManifestFormat() {
+        return SimpleManifest.getManifestFormat();
+    }
+    
+    public static boolean isManifestFormat(String manifestFormat) {
+        if (manifestFormat == null)
+            return false;
+        else if (manifestFormat.equals(SimpleManifest.getManifestFormat()))
+            return true;
+        else if (manifestFormat.equals(TTMLManifest.getManifestFormat()))
+            return true;
+        else
+            return false;
+    }
+
+    public static Manifest createManifest(String manifestFormat) {
+        if ((manifestFormat == null) || manifestFormat.equals(SimpleManifest.getManifestFormat()))
+            return new SimpleManifest();
+        else if (manifestFormat.equals(TTMLManifest.getManifestFormat()))
+            return new TTMLManifest();
+        else
+            throw new IllegalArgumentException();
     }
 
 }
