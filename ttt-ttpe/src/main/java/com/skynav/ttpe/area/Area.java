@@ -40,12 +40,12 @@ public interface Area extends AreaGeometry {
     Element getElement();
 
     /**
-     * Obtain (xml) whitespace treatment of area, or null if none defined.
+     * Obtain (xml) whitespace treatment of area's content, or null if none defined.
      */
     Whitespace getWhitespace();
 
     /**
-     * Obtain (xml) language of area, or null if none defined.
+     * Obtain (xml) language of area's content, or null if none defined.
      */
     String getLanguage();
 

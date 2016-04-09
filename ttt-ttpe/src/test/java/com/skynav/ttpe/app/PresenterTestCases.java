@@ -536,6 +536,11 @@ public class PresenterTestCases {
         performPresentationTest("test-096-foreground-color.xml", 0, 0);
     }
 
+    @Test
+    public void test097SpanXMLSpace() throws Exception {
+        performPresentationTest("test-097-span-xml-space.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

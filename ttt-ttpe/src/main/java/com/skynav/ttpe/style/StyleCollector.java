@@ -235,7 +235,29 @@ public class StyleCollector {
     }
 
     public void collectSpanStyles(Element e, int begin, int end) {
+
+        // collect common styles
         collectCommonStyles(e, begin, end);
+
+        // collect non-common span styles
+        Object v;
+
+        // LANGUAGE
+        String xmlLang = Documents.getAttribute(e, xmlLanguageAttrName, null);
+        v = null;
+        if (xmlLang != null)
+            v = xmlLang;
+        if (v != null)
+            addAttribute(StyleAttribute.LANGUAGE, v, begin, end);
+
+        // WHITESPACE
+        String xmlSpace = Documents.getAttribute(e, xmlSpaceAttrName, null);
+        v = null;
+        if (xmlSpace != null)
+            v = Whitespace.valueOf(xmlSpace.toUpperCase());
+        if (v != null)
+            addAttribute(StyleAttribute.WHITESPACE, v, begin, end);
+
     }
 
     public void maybeWrapWithBidiControls(Element e) {

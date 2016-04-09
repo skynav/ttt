@@ -233,7 +233,7 @@ public class LineLayout {
                 break;
         }
         int e = iterator.getIndex();
-        return inBreakingWhitespace ? new WhitespaceRun(s, e, whitespace) : new NonWhitespaceRun(s, e);
+        return inBreakingWhitespace ? new WhitespaceRun(s, e, getWhitespaceState(s, e)) : new NonWhitespaceRun(s, e);
     }
 
     private static boolean isIgnoredControl(int c) {
@@ -251,6 +251,7 @@ public class LineLayout {
         s.add(StyleAttribute.BIDI);
         s.add(StyleAttribute.COMBINATION);
         s.add(StyleAttribute.ORIENTATION);
+        s.add(StyleAttribute.WHITESPACE);
         textRunBreakingAttributes = Collections.unmodifiableSet(s);
     }
 
@@ -262,6 +263,21 @@ public class LineLayout {
         if (index != s)
             iterator.setIndex(s);
         return k == index;
+    }
+
+    private WhitespaceState getWhitespaceState(int s, int e) {
+        WhitespaceState ws = this.whitespace;
+        int savedIndex = iterator.getIndex();
+        iterator.setIndex(s);
+        Whitespace w = (Whitespace) iterator.getAttribute(StyleAttribute.WHITESPACE);
+        if (w != null) {
+            if (w.equals(Whitespace.DEFAULT))
+                ws = WhitespaceState.DEFAULT;
+            else if (w.equals(Whitespace.PRESERVE))
+                ws = WhitespaceState.PRESERVE;
+        }
+        iterator.setIndex(savedIndex);
+        return ws;
     }
 
     private LineBreakIterator updateIterator(LineBreakIterator bi, TextRun r) {
@@ -820,6 +836,7 @@ public class LineLayout {
 
     private static class WhitespaceState {
         static final WhitespaceState DEFAULT = new WhitespaceState(Whitespace.DEFAULT);
+        static final WhitespaceState PRESERVE = new WhitespaceState(Whitespace.PRESERVE);
         LineFeedTreatment lineFeedTreatment;
         SuppressAtLineBreakTreatment suppressAtLineBreakTreatment;
         boolean whitespaceCollapse;
