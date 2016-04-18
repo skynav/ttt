@@ -62,6 +62,7 @@ import com.skynav.ttv.model.ttml2.ttd.Visibility;
 import com.skynav.ttv.model.ttml2.ttd.WrapOption;
 import com.skynav.ttv.model.ttml2.ttd.WritingMode;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.style.BackgroundImageVerifier;
 import com.skynav.ttv.verifier.ttml.style.DirectionVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisplayAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisplayVerifier;
@@ -96,6 +97,7 @@ import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
+    public static final QName backgroundImageAttributeName      = new QName(NAMESPACE,"backgroundImage");
     public static final QName fontKerningAttributeName          = new QName(NAMESPACE,"fontKerning");
     public static final QName fontShearAttributeName            = new QName(NAMESPACE,"fontShear");
     public static final QName fontVariantAttributeName          = new QName(NAMESPACE,"fontVariant");
@@ -113,6 +115,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName textEmphasisAttributeName         = new QName(NAMESPACE,"textEmphasis");
 
     private static final Object[][] styleAccessorMap            = new Object[][] {
+        {
+            backgroundImageAttributeName,
+            "BackgroundImage",
+            String.class,
+            BackgroundImageVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "none",
+            null
+        },
         {
             directionAttributeName,
             "Direction",

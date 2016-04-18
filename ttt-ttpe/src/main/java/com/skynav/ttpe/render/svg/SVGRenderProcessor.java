@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.render.svg;
 
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +45,7 @@ import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.BlockFillerArea;
+import com.skynav.ttpe.area.BoundedBlockArea;
 import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.Inline;
@@ -66,10 +68,12 @@ import com.skynav.ttpe.geometry.Rectangle;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.render.Frame;
+import com.skynav.ttpe.render.FrameResource;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
+import com.skynav.ttpe.style.Image;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.style.Visibility;
@@ -87,13 +91,15 @@ import static com.skynav.ttpe.text.Constants.*;
 
 public class SVGRenderProcessor extends RenderProcessor {
 
-    public static final String NAME                             = "svg";
+    public static final String NAME                                     = "svg";
 
     // static defaults
-    private static final String defaultOutputFileNamePattern    = "ttps{0,number,000000}.svg";
+    private static final String defaultOutputFileNamePattern            = "ttps{0,number,000000}.svg";
+    private static final String defaultOutputFileNamePatternResource    = "ttpr{0,number,000000}.dat";
 
     // option and usage info
     private static final String[][] longOptionSpecifications = new String[][] {
+        { "output-pattern-resource",    "PATTERN",  "specify output resource file name pattern" },
         { "svg-background",             "COLOR",    "paint background of specified color into root region (default: transparent)" },
         { "svg-decorate-all",           "",         "decorate regions, lines, glyphs" },
         { "svg-decorate-glyphs",        "",         "decorate glyphs with bounding box" },
@@ -126,11 +132,13 @@ public class SVGRenderProcessor extends RenderProcessor {
     private boolean decorateLineLabels;
     private boolean decorateRegions;
     private String decorationOption;
+    private String outputPatternResource;
     private String outputPattern;
 
     // derived options state
     private Color backgroundColor;
     private Color decorationColor;
+    private MessageFormat outputPatternResourceFormatter;
 
     // render state
     private double xCurrent;
@@ -138,6 +146,8 @@ public class SVGRenderProcessor extends RenderProcessor {
     private List<SVGFrameRegion> regions;
     private int paragraphGenerationIndex;
     private int lineGenerationIndex;
+    private List<FrameResource> resources;
+    private int resourceGenerationIndex;
 
     public SVGRenderProcessor(TransformerContext context) {
         super(context);
@@ -169,6 +179,10 @@ public class SVGRenderProcessor extends RenderProcessor {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             outputPattern = args.get(++index);
+        } else if (option.equals("output-pattern-resource")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputPatternResource = args.get(++index);
         } else if (option.equals("svg-background")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
@@ -233,6 +247,12 @@ public class SVGRenderProcessor extends RenderProcessor {
         if (outputPattern == null)
             outputPattern = defaultOutputFileNamePattern;
         this.outputPattern = outputPattern;
+        // output pattern for resources
+        String outputPatternResource = this.outputPatternResource;
+        if (outputPatternResource == null)
+            outputPatternResource = defaultOutputFileNamePatternResource;
+        this.outputPatternResource = outputPatternResource;
+        this.outputPatternResourceFormatter = new MessageFormat(outputPatternResource, Locale.US);
     }
 
     @Override
@@ -253,6 +273,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         xCurrent = 0;
         yCurrent = 0;
         regions = null;
+        resources = null;
     }
 
     protected Frame renderCanvas(CanvasArea a) {
@@ -264,7 +285,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             Document d = db.newDocument();
             d.appendChild(renderCanvas(null, a, d));
             Namespaces.normalize(d, SVGDocumentFrame.prefixes);
-            return new SVGDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d, regions);
+            return new SVGDocumentFrame(a.getBegin(), a.getEnd(), a.getExtent(), d, resources, regions);
         } catch (ParserConfigurationException e) {
             reporter.logError(e);
         }
@@ -352,10 +373,49 @@ public class SVGRenderProcessor extends RenderProcessor {
         regions.add(new SVGFrameRegion(id, new Rectangle(origin, extent)));
     }
 
+    private FrameResource addResource(Image image) {
+        return addResource(FrameResource.Type.IMAGE, generateResourceName(), image.getSource());
+    }
+
+    private String generateResourceName() {
+        return outputPatternResourceFormatter.format(new Object[]{Integer.valueOf(++resourceGenerationIndex)});
+    }
+    
+    private FrameResource addResource(FrameResource.Type type, String name, URI source) {
+        if (resources == null)
+            resources = new java.util.ArrayList<FrameResource>();
+        FrameResource resource = new FrameResource(type, name, source);
+        resources.add(resource);
+        return resource;
+    }
+
     private Element renderBlock(Element parent, BlockArea a, Document d) {
-        Element e = parent;
+        Element e = hasBlockPresentationTraits(a) ? Documents.createElement(d, SVGDocumentFrame.svgGroupEltName) : parent;
         double xSaved = xCurrent;
         double ySaved = yCurrent;
+        // render block presentation traits
+        Extent extent = (a instanceof BoundedBlockArea) ? ((BoundedBlockArea) a).getExtent() : null;
+        if (extent == null)
+            extent = new Extent(a.getIPD(), a.getBPD());
+        Color bColor = a.getBackgroundColor();
+        if ((bColor != null) && !bColor.isTransparent()) {
+            Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, bColor.toRGBString());
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
+            e.appendChild(eBackgroundColor);
+        }
+        Image bImage = a.getBackgroundImage();
+        if ((bImage != null) && !bImage.isNone()) {
+            FrameResource resource = addResource(bImage);
+            Element eBackgroundImage = Documents.createElement(d, SVGDocumentFrame.svgImageEltName);
+            Documents.setAttribute(eBackgroundImage, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
+            Documents.setAttribute(eBackgroundImage, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
+            Documents.setAttribute(eBackgroundImage, SVGDocumentFrame.preserveAspectRatioAttrName, "xMinYMin slice");
+            Documents.setAttribute(eBackgroundImage, SVGDocumentFrame.xlinkHrefAttrName, resource.getName());
+            e.appendChild(eBackgroundImage);
+        }
         // render children
         Element eBlockGroup = renderChildren(e, a, d);
         // update current position
@@ -379,6 +439,16 @@ public class SVGRenderProcessor extends RenderProcessor {
             lineGenerationIndex = 0;
         }
         return eBlockGroup;
+    }
+
+    private boolean hasBlockPresentationTraits(BlockArea a) {
+        Color c = a.getBackgroundColor();
+        if ((c != null) && !c.isTransparent())
+            return true;
+        Image i = a.getBackgroundImage();
+        if ((i != null) && !i.isNone())
+            return true;
+        return false;
     }
 
     private Element renderFiller(Element parent, BlockFillerArea a, Document d) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -1341,6 +1341,9 @@ public class TimedTextVerifier implements VerifierContext {
 
     private void setResourceURI(URI uri) {
         resourceUri = uri;
+        // record as resource state
+        setResourceState("sysid", uri);
+        // record in reporter
         getReporter().setResourceURI(uri);
     }
 
@@ -1901,7 +1904,7 @@ public class TimedTextVerifier implements VerifierContext {
             if (rootClass.isInstance(contentObject))
                 return true;
         }
-        reporter.logError(reporter.message(Locators.getLocator(contentObject), "*KEY*",
+        reporter.logError(reporter.message(Locators.getLocator(contentObject, resourceUriString), "*KEY*",
             "Unexpected root element <{0}>, expected one of {1}.", root.getName(), getContentClassNames(rootClasses)));
         return false;
     }

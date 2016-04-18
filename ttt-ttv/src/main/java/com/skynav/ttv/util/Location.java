@@ -25,6 +25,8 @@
 
 package com.skynav.ttv.util;
 
+import java.net.URI;
+
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
@@ -43,6 +45,7 @@ public class Location {
         this.attributeName = attributeName;
         this.locator = locator;
     }
+    // state accessors
     public Object getContent() {
         return content;
     }
@@ -54,6 +57,17 @@ public class Location {
     }
     public Locator getLocator() {
         return locator;
+    }
+    // helper accessors
+    public URI getSystemIdAsURI() {
+        if (locator != null) {
+            String sysid = locator.getSystemId();
+            if (sysid != null)
+                return URIs.makeURISafely(sysid);
+            else
+                return null;
+        } else
+            return null;
     }
     @Override
     public String toString() {

@@ -541,6 +541,11 @@ public class PresenterTestCases {
         performPresentationTest("test-097-span-xml-space.xml", 0, 0);
     }
 
+    @Test
+    public void test098DivisionBackgroundImage1() throws Exception {
+        performPresentationTest("test-098-div-background-image-1.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

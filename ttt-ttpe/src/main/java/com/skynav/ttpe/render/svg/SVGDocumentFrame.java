@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -35,15 +35,18 @@ import org.w3c.dom.Document;
 
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.render.AbstractDocumentFrame;
+import com.skynav.ttpe.render.FrameResource;
 import com.skynav.xml.helpers.XML;
 
 public class SVGDocumentFrame extends AbstractDocumentFrame {
 
     private static final String NAMESPACE                       = "http://www.w3.org/2000/svg";
+    private static final String NAMESPACE_XLINK                 = "http://www.w3.org/1999/xlink";
 
     // element name constants
     public static final QName svgSVGEltName                     = new QName(NAMESPACE, "svg");
     public static final QName svgGroupEltName                   = new QName(NAMESPACE, "g");
+    public static final QName svgImageEltName                   = new QName(NAMESPACE, "image");
     public static final QName svgRectEltName                    = new QName(NAMESPACE, "rect");
     public static final QName svgTextEltName                    = new QName(NAMESPACE, "text");
     public static final QName svgPathEltName                    = new QName(NAMESPACE, "path");
@@ -61,6 +64,7 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     public static final QName heightAttrName                    = new QName("", "height");
     public static final QName idAttrName                        = new QName("", "id");
     public static final QName opacityAttrName                   = new QName("", "opacity");
+    public static final QName preserveAspectRatioAttrName       = new QName("", "preserveAspectRatio");
     public static final QName strokeAttrName                    = new QName("", "stroke");
     public static final QName strokeWidthAttrName               = new QName("", "stroke-width");
     public static final QName transformAttrName                 = new QName("", "transform");
@@ -68,6 +72,7 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     public static final QName widthAttrName                     = new QName("", "width");
     public static final QName writingModeAttrName               = new QName("", "writing-mode");
     public static final QName xAttrName                         = new QName("", "x");
+    public static final QName xlinkHrefAttrName                 = new QName(NAMESPACE_XLINK, "href");
     public static final QName yAttrName                         = new QName("", "y");
 
     // namespace prefixes
@@ -77,6 +82,7 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
         prefixes.put(XML.xmlNamespace, "xml");
         prefixes.put(XML.xmlnsNamespace, "xmlns");
         prefixes.put(NAMESPACE, "");
+        prefixes.put(NAMESPACE_XLINK, "xlink");
     }
 
     // serialization exclusions
@@ -86,15 +92,23 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
         startTagIndentExclusions.add(svgTextEltName);
     }
 
+    private List<FrameResource> resources;
     private List<SVGFrameRegion> regions;
 
-    public SVGDocumentFrame(double begin, double end, Extent extent, Document d, List<SVGFrameRegion> regions) {
+    public SVGDocumentFrame(double begin, double end, Extent extent, Document d, List<FrameResource> resources, List<SVGFrameRegion> regions) {
         super(begin, end, extent, d);
         this.regions = regions;
+        this.resources = resources;
     }
 
-    public List<SVGFrameRegion> getRegions() {
-        return regions;
+    @Override
+    public boolean hasResources() {
+        return (resources != null) && !resources.isEmpty();
+    }
+
+    @Override
+    public List<FrameResource> getResources() {
+        return resources;
     }
 
     @Override
@@ -105,6 +119,10 @@ public class SVGDocumentFrame extends AbstractDocumentFrame {
     @Override
     public Set<QName> getStartExclusions() {
         return startTagIndentExclusions;
+    }
+
+    public List<SVGFrameRegion> getRegions() {
+        return regions;
     }
 
 }

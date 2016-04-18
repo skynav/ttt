@@ -52,6 +52,10 @@ public abstract class RenderProcessor implements TransformerOptions, Render {
         return null;
     }
 
+    public String getOutputPatternResource() {
+        return null;
+    }
+
     @Override
     public Collection<OptionSpecification> getShortOptionSpecs() {
         return new java.util.ArrayList<OptionSpecification>();

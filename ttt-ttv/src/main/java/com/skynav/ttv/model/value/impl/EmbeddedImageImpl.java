@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,24 +23,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.render;
+package com.skynav.ttv.model.value.impl;
 
-import java.io.File;
-import java.util.List;
+import java.net.URI;
 
-import com.skynav.ttpe.geometry.Extent;
-
-public interface Frame {
-    double getBegin();
-    double getEnd();
-    Extent getExtent();
-    File getFile();
-    void setFile(File f);
-    boolean hasImages();
-    List<FrameImage> getImages();
-    boolean hasResources();
-    List<FrameResource> getResources();
-    void addResourceFile(File f);
-    boolean hasResourceFiles();
-    List<File> getResourceFiles();
+public class EmbeddedImageImpl extends AbstractImageImpl {
+    @SuppressWarnings("unused")
+    private Object target;
+    public EmbeddedImageImpl(URI uri, Object target) {
+        super(uri);
+        this.target = target;
+    }
+    public boolean resolve() {
+        throw new UnsupportedOperationException();
+    }
 }

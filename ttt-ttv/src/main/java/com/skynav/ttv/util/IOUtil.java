@@ -67,7 +67,7 @@ public class IOUtil {
         return deleted;
     }
 
-    public static void write(InputStream is, OutputStream os) throws IOException {
+    public static void copy(InputStream is, OutputStream os) throws IOException {
         byte[] buf = new byte[4096];
         int nb;
         while ((nb = is.read(buf)) >= 0) {

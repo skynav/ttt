@@ -31,8 +31,13 @@ import java.net.URISyntaxException;
 public class URIs {
 
     public static URI makeURISafely(String uriString) {
+        return makeURISafely(uriString, null);
+    }
+
+    public static URI makeURISafely(String uriString, URI base) {
         try {
-            return new URI(uriString);
+            URI uri = new URI(uriString);
+            return (base == null) ? uri : base.resolve(uri);
         } catch (URISyntaxException e) {
             return null;
         }

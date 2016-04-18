@@ -36,12 +36,14 @@ public abstract class AbstractFrame implements Frame {
     private double end;
     private Extent extent;
     private File file;
+    private List<File> resourceFiles;
 
     protected AbstractFrame(double begin, double end, Extent extent) {
         this.begin = begin;
         this.end = end;
         assert extent != null;
         this.extent = extent;
+        this.resourceFiles = new java.util.ArrayList<File>();
     }
 
     public double getBegin() {
@@ -72,4 +74,24 @@ public abstract class AbstractFrame implements Frame {
         return new java.util.ArrayList<FrameImage>();
     }
 
+    public boolean hasResources() {
+        return false;
+    }
+
+    public List<FrameResource> getResources() {
+        return new java.util.ArrayList<FrameResource>();
+    }
+
+    public void addResourceFile(File f) {
+        resourceFiles.add(f);
+    }
+
+    public boolean hasResourceFiles() {
+        return (resourceFiles != null) && !resourceFiles.isEmpty();
+    }
+    
+    public List<File> getResourceFiles() {
+        return resourceFiles;
+    }
+    
 }

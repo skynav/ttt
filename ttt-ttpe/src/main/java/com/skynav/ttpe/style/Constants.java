@@ -39,6 +39,7 @@ public class Constants {
 
     // TTML Style Attribute Names
     public static final QName ttsBackgroundColorAttrName                = new QName(NAMESPACE_TT_STYLE, "backgroundColor");
+    public static final QName ttsBackgroundImageAttrName                = new QName(NAMESPACE_TT_STYLE, "backgroundImage");
     public static final QName ttsBPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "bpd");
     public static final QName ttsColorAttrName                          = new QName(NAMESPACE_TT_STYLE, "color");
     public static final QName ttsDirectionAttrName                      = new QName(NAMESPACE_TT_STYLE, "direction");

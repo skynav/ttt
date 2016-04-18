@@ -31,6 +31,8 @@ import java.util.Set;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.style.Color;
+import com.skynav.ttpe.style.Image;
 import com.skynav.ttpe.style.Visibility;
 
 public class BlockArea extends NonLeafAreaNode implements Block {
@@ -41,6 +43,8 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     private Visibility visibility;
     private int reversals;
     private double overflow;
+    private Color backgroundColor;
+    private Image backgroundImage;
 
     public BlockArea() {
         this(null);
@@ -142,6 +146,22 @@ public class BlockArea extends NonLeafAreaNode implements Block {
 
     public double getOverflow() {
         return overflow;
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundImage(Image backgroundImage) {
+        this.backgroundImage = backgroundImage;
+    }
+
+    public Image getBackgroundImage() {
+        return backgroundImage;
     }
 
     @Override

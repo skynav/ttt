@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,24 +23,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.render;
+package com.skynav.ttv.verifier.ttml.style;
 
-import java.io.File;
-import java.util.List;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Images;
+import com.skynav.ttv.verifier.util.Keywords;
 
-import com.skynav.ttpe.geometry.Extent;
+public class BackgroundImageVerifier implements StyleValueVerifier {
 
-public interface Frame {
-    double getBegin();
-    double getEnd();
-    Extent getExtent();
-    File getFile();
-    void setFile(File f);
-    boolean hasImages();
-    List<FrameImage> getImages();
-    boolean hasResources();
-    List<FrameResource> getResources();
-    void addResourceFile(File f);
-    boolean hasResourceFiles();
-    List<File> getResourceFiles();
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        assert value instanceof String;
+        String s = (String) value;
+        if (Keywords.isNone(s))
+            return true;
+        else if (Images.isImage(s, location, context, null))
+            return true;
+        else {
+            Images.badImage(s, location, context);
+            return false;
+        }
+    }
+
 }

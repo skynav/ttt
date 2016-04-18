@@ -51,6 +51,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     public static final AnnotationOverhangClass defaultAnnotationOverhangClass = AnnotationOverhangClass.AUTO;
     public static final AnnotationPosition defaultAnnotationPosition           = AnnotationPosition.AUTO;
     public static final AnnotationReserve defaultAnnotationReserve             = AnnotationReserve.NONE;
+    public static final Image defaultBackgroundImage                           = Image.NONE;
     public static final Color defaultBackgroundColor                           = Color.TRANSPARENT;
     public static final Color defaultColor                                     = Color.WHITE;
     public static final Combination defaultCombination                         = Combination.NONE;
@@ -89,6 +90,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private AnnotationOverhangClass annotationOverhangClass                    = defaultAnnotationOverhangClass;
     private AnnotationPosition annotationPosition                              = defaultAnnotationPosition;
     private AnnotationReserve annotationReserve                                = defaultAnnotationReserve;
+    private Image backgroundImage                                              = defaultBackgroundImage;
     private Color backgroundColor                                              = defaultBackgroundColor;
     private Color color                                                        = defaultColor;
     private Combination combination                                            = defaultCombination;
@@ -192,6 +194,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public Color getBackgroundColor() {
         return backgroundColor;
+    }
+
+    public void setBackgroundImage(Image backgroundImage) {
+        this.backgroundImage = backgroundImage;
+    }
+
+    public Image getBackgroundImage() {
+        return backgroundImage;
     }
 
     public void setColor(Color color) {

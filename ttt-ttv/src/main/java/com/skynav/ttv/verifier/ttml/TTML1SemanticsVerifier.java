@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -332,9 +333,21 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
     }
 
     protected Locator getLocator(Object content) {
+        return getLocator(content, getSysidDefault());
+    }
+    
+    private String getSysidDefault() {
+        URI uri = (URI) getContext().getResourceState("sysid");
+        if (uri != null)
+            return uri.toString();
+        else
+            return null;
+    }
+
+    private Locator getLocator(Object content, String sysidDefault) {
         Locator locator = null;
         while (content != null) {
-            if ((locator = Locators.getLocator(content)) != null)
+            if ((locator = Locators.getLocator(content, sysidDefault)) != null)
                 break;
             else
                 content = getLocatableParent(content);

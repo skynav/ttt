@@ -47,22 +47,31 @@ public class Locators {
         return locatorQName;
     }
 
-    public static Locator getLocator(Object content) {
+    public static Locator getLocator(String sysid) {
+        LocatorImpl locator = new LocatorImpl();
+        locator.setSystemId(sysid);
+        return locator;
+    }
+
+    public static Locator getLocator(Object content, String sysid) {
         if (content instanceof JAXBElement<?>)
-            return getLocator(((JAXBElement<?>) content).getValue());
+            return getLocator(((JAXBElement<?>) content).getValue(), sysid);
         else
-            return getLocatorAttributeAsLocator(content);
+            return getLocatorAttributeAsLocator(content, sysid);
     }
 
     private static final Pattern locPattern = Pattern.compile("\\{([^\\}]*)\\}:([-]?\\d+):([-]?\\d+)");
-    private static Locator getLocatorAttributeAsLocator(Object content) {
+    private static Locator getLocatorAttributeAsLocator(Object content, String sysid) {
         String locatorAttribute = getLocatorAttribute(content);
         if (locatorAttribute != null) {
             Matcher m = locPattern.matcher(locatorAttribute);
             if (m.matches()) {
                 LocatorImpl locator = new LocatorImpl();
                 assert m.groupCount() == 3;
-                locator.setSystemId(m.group(1));
+                String sid = m.group(1);
+                if ((sid == null) || sid.isEmpty())
+                    sid = sysid;
+                locator.setSystemId(sid);
                 locator.setLineNumber(Integer.parseInt(m.group(2)));
                 locator.setColumnNumber(Integer.parseInt(m.group(3)));
                 return locator;

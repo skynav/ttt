@@ -111,6 +111,10 @@ public class Color {
         return (max() - min())/max();
     }
 
+    public boolean isTransparent() {
+        return alpha == 0;
+    }
+
     private double max() {
         double m1 = Math.max(red, green);
         double m2 = Math.max(green, blue);

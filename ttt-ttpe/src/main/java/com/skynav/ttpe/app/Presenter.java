@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -68,6 +69,7 @@ import com.skynav.ttpe.layout.LayoutProcessor;
 import com.skynav.ttpe.render.DocumentFrame;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.FrameImage;
+import com.skynav.ttpe.render.FrameResource;
 import com.skynav.ttpe.render.ImageFrame;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttv.app.InvalidOptionUsageException;
@@ -102,10 +104,10 @@ public class Presenter extends TimedTextTransformer {
     private static final String usageCommand =
         "java -jar ttpe.jar [options] URL*";
 
-    private static final String DEFAULT_OUTPUT_ENCODING         = "utf-8";
+    private static final String DEFAULT_OUTPUT_ENCODING                 = "utf-8";
     private static Charset defaultOutputEncoding;
-    private static final String defaultOutputFileNamePattern    = "ttpe{0,number,000000}.dat";
-    private static final String defaultOutputFileNamePatternISD = "isdi{0,number,000000}.xml";
+    private static final String defaultOutputFileNamePattern            = "ttpe{0,number,000000}.dat";
+    private static final String defaultOutputFileNamePatternISD         = "isdi{0,number,000000}.xml";
     private static String defaultOutputManifestFormat;
 
     static {
@@ -711,7 +713,7 @@ public class Presenter extends TimedTextTransformer {
             File[] retOutputFile = new File[1];
             if ((bos = getISDOutputStream(uri, retOutputFile)) != null) {
                 File outputFile = retOutputFile[0];
-                IOUtil.write(is, bos);
+                IOUtil.copy(is, bos);
                 bos.close(); bos = null;
                 reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
             }
@@ -768,6 +770,8 @@ public class Presenter extends TimedTextTransformer {
                 reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
                 f.setFile(outputFile);
             }
+            if (!writeFrameResources(uri, f))
+                fail = true;
         } catch (TransformerException e) {
             reporter.logError(e);
         } catch (IOException e) {
@@ -782,6 +786,45 @@ public class Presenter extends TimedTextTransformer {
         return !fail && (reporter.getResourceErrors() == 0);
     }
 
+    private boolean writeFrameResources(URI uri, DocumentFrame f) {
+        boolean fail = false;
+        Reporter reporter = getReporter();
+        if (f.hasResources()) {
+            for (FrameResource r : f.getResources()) {
+                if (!writeFrameResource(uri, f, r))
+                    fail = true;
+            }
+        }
+        return !fail && (reporter.getResourceErrors() == 0);
+    }
+    
+    private boolean writeFrameResource(URI uri, DocumentFrame f, FrameResource r) {
+        boolean fail = false;
+        Reporter reporter = getReporter();
+        BufferedOutputStream bos = null;
+        InputStream is = null;
+        try {
+            File[] retResourceFile = new File[1];
+            if ((bos = getFrameResourceStream(uri, r, retResourceFile)) != null) {
+                File resourceFile = retResourceFile[0];
+                if (resourceFile != null) {
+                    is = r.getSource().toURL().openStream();
+                    IOUtil.copy(is, bos);
+                    reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", resourceFile.getAbsolutePath()));
+                    f.addResourceFile(resourceFile);
+                }
+            }
+        } catch (MalformedURLException e) {
+            reporter.logError(e);
+        } catch (IOException e) {
+            reporter.logError(e);
+        } finally {
+            IOUtil.closeSafely(is);
+            IOUtil.closeSafely(bos);
+        }
+        return !fail && (reporter.getResourceErrors() == 0);
+    }
+    
     private boolean writeImageFrame(URI uri, ImageFrame f) {
         boolean fail = false;
         Reporter reporter = getReporter();
@@ -833,6 +876,22 @@ public class Presenter extends TimedTextTransformer {
             return null;
     }
 
+    private BufferedOutputStream getFrameResourceStream(URI uri, FrameResource r, File[] retResourceFile) throws IOException {
+        File d = getOutputDirectoryRetained(uri);
+        if (!d.exists()) {
+            if (!d.mkdir())
+                return null;
+        }
+        if (d.exists()) {
+            String resourceFileName = r.getName();
+            File resourceFile = new File(d, resourceFileName).getCanonicalFile();
+            if (retResourceFile != null)
+                retResourceFile[0] = resourceFile;
+            return new BufferedOutputStream(new FileOutputStream(resourceFile));
+        } else
+            return null;
+    }
+
     private String getResourceNameComponent(URI uri) {
         if (isFile(uri)) {
             String path = uri.getPath();
@@ -871,9 +930,13 @@ public class Presenter extends TimedTextTransformer {
                 for (Frame f : frames) {
                     if (f.hasImages()) {
                         for (FrameImage i : f.getImages())
-                            archiveFrame(i.getFile(), now, zos);
+                            archiveFile(i.getFile(), now, zos);
                     } else {
-                        archiveFrame(f.getFile(), now, zos);
+                        archiveFile(f.getFile(), now, zos);
+                        if (f.hasResourceFiles()) {
+                            for (File fResource : f.getResourceFiles())
+                                archiveFile(fResource, now, zos);
+                        }
                     }
                 }
             }
@@ -888,7 +951,7 @@ public class Presenter extends TimedTextTransformer {
         }
     }
 
-    private void archiveFrame(File f, Date now, ZipOutputStream zos) throws IOException {
+    private void archiveFile(File f, Date now, ZipOutputStream zos) throws IOException {
         if (f != null) {
             ZipEntry ze = new ZipEntry(f.getName());
             ze.setTime(now.getTime());
@@ -984,6 +1047,10 @@ public class Presenter extends TimedTextTransformer {
             for (Frame f : frames) {
                 if (f instanceof DocumentFrame) {
                     removeFrameFile(f.getFile(), directories);
+                    if (f.hasResourceFiles()) {
+                        for (File fResource : f.getResourceFiles())
+                            removeFrameFile(fResource, directories);
+                    }
                 } else if (f instanceof ImageFrame) {
                     if (f.hasImages()) {
                         for (FrameImage fi : f.getImages())

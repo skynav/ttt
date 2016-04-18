@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.layout;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,8 @@ import java.util.Stack;
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
+
+import org.xml.sax.Locator;
 
 import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
@@ -52,9 +55,11 @@ import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
+import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Display;
 import com.skynav.ttpe.style.Helpers;
+import com.skynav.ttpe.style.Image;
 import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.text.LineBreakIterator;
@@ -62,6 +67,7 @@ import com.skynav.ttpe.text.LineBreakIterator;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.Condition;
 import com.skynav.ttv.util.Location;
+import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.verifier.util.Keywords;
@@ -87,6 +93,7 @@ public class BasicLayoutState implements LayoutState {
     private Stack<NonLeafAreaNode> areas;
     private Map<String, StyleSet> styles;
     private int[] counters;
+    private Locator baseLocator;
 
     public BasicLayoutState(TransformerContext context) {
         this.context = context;
@@ -100,7 +107,13 @@ public class BasicLayoutState implements LayoutState {
         this.defaults = defaults;
         this.areas = new java.util.Stack<NonLeafAreaNode>();
         this.styles = new java.util.HashMap<String,StyleSet>();
+        this.baseLocator = makeBaseLocator(context);
         return this;
+    }
+
+    private static Locator makeBaseLocator(TransformerContext context) {
+        URI uri = (URI) context.getResourceState("sysid");
+        return Locators.getLocator(uri != null ? uri.toString() : null);
     }
 
     public FontCache getFontCache() {
@@ -140,14 +153,18 @@ public class BasicLayoutState implements LayoutState {
     }
 
     public NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, Visibility visibility) {
-        return push(new ReferenceArea(e, x, y, width, height, wm, ctm, visibility));
+        ReferenceArea ra = new ReferenceArea(e, x, y, width, height, wm, ctm, visibility);
+        processBlockPresentationTraits(ra, e);
+        return push(ra);
     }
 
     public NonLeafAreaNode pushBlock(Element e, Visibility visibility) {
         ReferenceArea ra = getReferenceArea();
-        if (ra != null)
-            return push(new BlockArea(e, ra.getIPD(), ra.getBPD(), getBidiLevel(), visibility));
-        else
+        if (ra != null) {
+            BlockArea ba = new BlockArea(e, ra.getIPD(), ra.getBPD(), getBidiLevel(), visibility);
+            processBlockPresentationTraits(ba, e);
+            return push(ba);
+        } else
             throw new IllegalStateException();
     }
 
@@ -325,6 +342,30 @@ public class BasicLayoutState implements LayoutState {
         return StyleSet.EMPTY;
     }
 
+    public Color getBackgroundColor(Element e) {
+        StyleSpecification s = getStyles(e).get(ttsBackgroundColorAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
+            if (com.skynav.ttv.verifier.util.Colors.isColor(v, getLocation(e, ttsBackgroundColorAttrName), context, retColor))
+                return new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
+        }
+        return defaults.getBackgroundColor();
+    }
+
+    public Image getBackgroundImage(Element e) {
+        StyleSpecification s = getStyles(e).get(ttsBackgroundImageAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            com.skynav.ttv.model.value.Image[] retImage = new com.skynav.ttv.model.value.Image[1];
+            if (com.skynav.ttv.verifier.util.Images.isImage(v, getLocation(e, ttsBackgroundImageAttrName), context, retImage)) {
+                com.skynav.ttv.model.value.Image i = retImage[0];
+                return new Image(i.getURI(), i.getSpecifiedType(), i.getSpecifiedFormat());
+            }
+        }
+        return defaults.getBackgroundImage();
+    }
+
     public Display getDisplay(Element e) {
         StyleSpecification s = getStyles(e).get(ttsDisplayAttrName);
         if (s != null) {
@@ -353,7 +394,7 @@ public class BasicLayoutState implements LayoutState {
                 Integer[] minMax = new Integer[] { 2, 2 };
                 Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
                 List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(v, new Location(), context, minMax, treatments, lengths)) {
+                if (Lengths.isLengths(v, getLocation(e, ttsExtentAttrName), context, minMax, treatments, lengths)) {
                     assert lengths.size() == 2;
                     Extent cellResolution = getCellResolution();
                     Extent externalExtent = getExternalExtent();
@@ -378,7 +419,7 @@ public class BasicLayoutState implements LayoutState {
                 Integer[] minMax = new Integer[] { 2, 2 };
                 Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
                 List<Length> lengths = new java.util.ArrayList<Length>();
-                if (Lengths.isLengths(v, new Location(), context, minMax, treatments, lengths)) {
+                if (Lengths.isLengths(v, getLocation(e, ttsOriginAttrName), context, minMax, treatments, lengths)) {
                     assert lengths.size() == 2;
                     Extent cellResolution = getCellResolution();
                     Extent externalExtent = getExternalExtent();
@@ -401,7 +442,7 @@ public class BasicLayoutState implements LayoutState {
             String v = s.getValue();
             String [] components = v.split("[ \t\r\n]+");
             Length[] lengths = new Length[4];
-            if (Positions.isPosition(components, new Location(), context, lengths)) {
+            if (Positions.isPosition(components, getLocation(e, ttsPositionAttrName), context, lengths)) {
                 Extent cellResolution = getCellResolution();
                 return Helpers.resolvePosition(e, lengths, getExternalExtent(), extent, cellResolution);
             }
@@ -564,6 +605,32 @@ public class BasicLayoutState implements LayoutState {
                 consumed += c.getBPD();
         }
         return consumed;
+    }
+
+    private Location getLocation(Element e, QName attributeName) {
+        return new Location(e, Documents.getName(e), attributeName, baseLocator);
+    }
+
+    /**
+     * Assign block presentation traits to block area A from styles on
+     * element E. These include:
+     *
+     * 1. background color
+     * 2. background image and related properties
+     * 3. border properties
+     * 4. padding properties
+     */
+    private void processBlockPresentationTraits(BlockArea a, Element e) {
+        // background color
+        Color c = getBackgroundColor(e);
+        if ((c != null) && !c.isTransparent())
+            a.setBackgroundColor(c);
+        // background image
+        Image i = getBackgroundImage(e);
+        if ((i != null) && !i.isNone())
+            a.setBackgroundImage(i);
+        // border [TBD]
+        // padding [TBD]
     }
 
 }
