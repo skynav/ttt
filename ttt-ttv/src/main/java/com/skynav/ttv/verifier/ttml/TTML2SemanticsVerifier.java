@@ -36,14 +36,18 @@ import org.w3c.dom.Node;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
+import com.skynav.ttv.model.ttml2.tt.Chunk;
+import com.skynav.ttv.model.ttml2.tt.Data;
 import com.skynav.ttv.model.ttml2.tt.Division;
 import com.skynav.ttv.model.ttml2.tt.Head;
+import com.skynav.ttv.model.ttml2.tt.Image;
 import com.skynav.ttv.model.ttml2.tt.Initial;
 import com.skynav.ttv.model.ttml2.tt.Layout;
 import com.skynav.ttv.model.ttml2.tt.Metadata;
 import com.skynav.ttv.model.ttml2.tt.Paragraph;
 import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.Set;
+import com.skynav.ttv.model.ttml2.tt.Source;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
@@ -152,6 +156,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return verifyDivision(block);
         else if (block instanceof Paragraph)
             return verifyParagraph(block);
+        else if (block instanceof Image)
+            return verifyImage(block);
         else
             return unexpectedContent(block);
     }
@@ -168,12 +174,36 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
                 return verifySpan(element);
             else if (element instanceof Break)
                 return verifyBreak(element);
+            else if (element instanceof Image)
+                return verifyImage(element);
             else
                 return unexpectedContent(element);
         } else if (content instanceof String) {
             return true;
         } else
             return unexpectedContent(content);
+    }
+
+    @Override
+    protected Object findBlockBindingElement(Object block, Node node) {
+        if (getContext().getXMLNode(block) == node)
+            return block;
+        else if (block instanceof Image)
+            return findBindingElement((Image) block, node);
+        else
+            return super.findBlockBindingElement(block, node);
+    }
+
+    @Override
+    protected Object findContentBindingElement(Serializable content, Node node) {
+        if (content instanceof JAXBElement<?>) {
+            Object element = ((JAXBElement<?>)content).getValue();
+            if (getContext().getXMLNode(element) == node)
+                return element;
+            else if (element instanceof Image)
+                return findBindingElement((Image) element, node);
+        }
+        return super.findContentBindingElement(content, node);
     }
 
     // metadata overrides
@@ -435,6 +465,138 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     // new elements
+
+    protected boolean verifyImage(Object image) {
+        boolean failed = false;
+        if (!verifyStyleAttributes(image))
+            failed = true;
+        if (!verifyImageAttributes(image))
+            failed = true;
+        if (!verifyOtherAttributes(image))
+            failed = true;
+        for (Object m : getImageMetadata(image)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Object s : getImageSource(image)) {
+            if (!verifySource(s))
+                failed = true;
+        }
+        if (!verifyStyledItem(image))
+            failed = true;
+        return !failed;
+    }
+
+    protected boolean verifyImageAttributes(Object image) {
+        // [TBD] - src
+        // [TBD] - type
+        // [TBD] - format
+        return true;
+    }
+
+    protected Collection<? extends Object> getImageMetadata(Object image) {
+        assert image instanceof Image;
+        return ((Image) image).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getImageSource(Object image) {
+        assert image instanceof Image;
+        return ((Image) image).getSource();
+    }
+
+    protected boolean verifySource(Object source) {
+        boolean failed = false;
+        if (!verifySourceAttributes(source))
+            failed = true;
+        if (!verifyOtherAttributes(source))
+            failed = true;
+        for (Object m : getSourceMetadata(source)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        Object data = getSourceData(source);
+        if (data != null) {
+            if (!verifyData(data))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected boolean verifySourceAttributes(Object source) {
+        // [TBD] - src
+        // [TBD] - type
+        // [TBD] - format
+        return true;
+    }
+
+    protected Collection<? extends Object> getSourceMetadata(Object source) {
+        assert source instanceof Source;
+        return ((Source) source).getMetadataClass();
+    }
+
+    protected Data getSourceData(Object source) {
+        assert source instanceof Source;
+        return ((Source) source).getData();
+    }
+
+    protected boolean verifyData(Object data) {
+        boolean failed = false;
+        if (!verifyDataAttributes(data))
+            failed = true;
+        if (!verifyOtherAttributes(data))
+            failed = true;
+        for (Serializable s : getDataContent(data)) {
+            if (!verifyDataContent(s))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected boolean verifyDataAttributes(Object data) {
+        // [TBD] - src
+        // [TBD] - type
+        // [TBD] - format
+        // [TBD] - length
+        // [TBD] - encoding
+        return true;
+    }
+
+    protected Collection<Serializable> getDataContent(Object data) {
+        assert data instanceof Data;
+        return ((Data) data).getContent();
+    }
+
+    protected boolean verifyDataContent(Serializable content) {
+        if (content instanceof JAXBElement<?>) {
+            Object element = ((JAXBElement<?>)content).getValue();
+            if (isMetadataItem(element))
+                return verifyMetadata(element);
+            else if (element instanceof Chunk)
+                return verifyChunk(element);
+            else if (element instanceof Source)
+                return verifySource(element);
+            else
+                return unexpectedContent(element);
+        } else if (content instanceof String) {
+            return true;
+        } else
+            return unexpectedContent(content);
+    }
+
+    protected boolean verifyChunk(Object chunk) {
+        boolean failed = false;
+        if (!verifyChunkAttributes(chunk))
+            failed = true;
+        if (!verifyOtherAttributes(chunk))
+            failed = true;
+        return !failed;
+    }
+
+    protected boolean verifyChunkAttributes(Object chunk) {
+        // [TBD] - length
+        // [TBD] - encoding
+        return true;
+    }
 
     protected boolean verifyItem(Object item) {
         boolean failed = false;

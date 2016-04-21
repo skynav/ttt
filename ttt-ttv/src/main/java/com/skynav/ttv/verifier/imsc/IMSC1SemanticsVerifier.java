@@ -707,14 +707,14 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     @Override
-    public boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context) {
-        if (!super.verifyNonTTOtherElement(content, locator, context))
+    public boolean verifyOtherElement(Object content, Locator locator, VerifierContext context) {
+        if (!super.verifyOtherElement(content, locator, context))
             return false;
         else
-            return verifyIMSCNonTTOtherElement(content, locator, context);
+            return verifyIMSCOtherElement(content, locator, context);
     }
 
-    private boolean verifyIMSCNonTTOtherElement(Object content, Locator locator, VerifierContext context) {
+    private boolean verifyIMSCOtherElement(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         assert context == getContext();
         Node node = context.getXMLNode(content);
@@ -771,11 +771,11 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     @Override
-    public boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
-        if (!super.verifyNonTTOtherAttributes(content, locator, context))
+    public boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
+        if (!super.verifyOtherAttributes(content, locator, context))
             return false;
         else
-            return verifyIMSCNonTTOtherAttributes(content, locator, context);
+            return verifyIMSCOtherAttributes(content, locator, context);
     }
 
     @Override
@@ -807,7 +807,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         }
     }
 
-    private boolean verifyIMSCNonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
+    private boolean verifyIMSCOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {

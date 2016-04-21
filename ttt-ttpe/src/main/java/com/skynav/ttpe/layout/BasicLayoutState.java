@@ -354,16 +354,37 @@ public class BasicLayoutState implements LayoutState {
     }
 
     public Image getBackgroundImage(Element e) {
-        StyleSpecification s = getStyles(e).get(ttsBackgroundImageAttrName);
+        QName an = ttsBackgroundImageAttrName;
+        StyleSpecification s = getStyles(e).get(an);
         if (s != null) {
-            String v = s.getValue();
+            Image image;
+            if ((image = getImage(e, an, s.getValue())) != null)
+                return image;
+        }
+        return defaults.getBackgroundImage();
+    }
+
+    public Image getForegroundImage(Element e) {
+        // [TBD] - implement support for all source categories, at present only support 'src' attribute
+        QName an = sourceAttrName;
+        String s = Documents.getAttribute(e, an);
+        if (s != null) {
+            Image image;
+            if ((image = getImage(e, an, s)) != null)
+                return image;
+        }
+        return Image.NONE;
+    }
+
+    private Image getImage(Element e, QName attrName, String attrValue) {
+        if ((attrValue != null) && !attrValue.isEmpty()) {
             com.skynav.ttv.model.value.Image[] retImage = new com.skynav.ttv.model.value.Image[1];
-            if (com.skynav.ttv.verifier.util.Images.isImage(v, getLocation(e, ttsBackgroundImageAttrName), context, retImage)) {
+            if (com.skynav.ttv.verifier.util.Images.isImage(attrValue, getLocation(e, attrName), context, retImage)) {
                 com.skynav.ttv.model.value.Image i = retImage[0];
                 return new Image(i.getURI(), i.getSpecifiedType(), i.getSpecifiedFormat());
             }
         }
-        return defaults.getBackgroundImage();
+        return null;
     }
 
     public Display getDisplay(Element e) {

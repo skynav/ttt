@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Portions Copyright 2009 Extensible Formatting Systems, Inc (XFSI).
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SKYNAV, INC. AND ITS CONTRIBUTORS “AS IS” AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL SKYNAV, INC. OR ITS CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!-- JPEG Image Format Validator -->
+<properties>   
+    <entry key="msg.JPG01I001">Starting JPEG file validator</entry>
+    <entry key="msg.JPG01I002">Ending JPEG file validator</entry>
+    <entry key="msg.JPG01I003">No extraneous bytes at end of file</entry>
+    <entry key="ref.JPG01I003">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I003">B.2.1</entry>
+    <entry key="msg.JPG01I004">Parsed segment marker: code=0x%1$04X, index=%2$d</entry>
+    <entry key="ref.JPG01I004">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I004">B.1.1.2</entry>
+    <entry key="msg.JPG01I005">Found application segment: code=0x%1$04X, symbol=%2$s, size=%3$d</entry>
+    <entry key="ref.JPG01I005">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I005">B.2.4.6</entry>
+    <entry key="msg.JPG01I006">Valid frame header length (Lf) in SOFn segment (Lf = 8 + 3xNf): symbol=%1$s, Lf=%2$d, Nf=%3$d</entry>
+    <entry key="ref.JPG01I006">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I006">B.2.2</entry>
+    <entry key="msg.JPG01I007">Valid sample precision (P) in SOFn segment: symbol=%1$s, P=%2$d</entry>
+    <entry key="ref.JPG01I007">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I007">B.2.2</entry>
+    <entry key="msg.JPG01I008">Valid number of lines (Y) in SOFn segment: symbol=%1$s, Y=%2$d</entry>
+    <entry key="ref.JPG01I008">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I008">B.2.2</entry>
+    <entry key="msg.JPG01I009">Valid number of image components (Nf) in SOFn segment: symbol=%1$s, Nf=%2$d</entry>
+    <entry key="ref.JPG01I009">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I009">B.2.2</entry>
+    <entry key="msg.JPG01I010">Valid number of samples per line (X) in SOFn segment: symbol=%1$s, X=%2$d</entry>
+    <entry key="ref.JPG01I010">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I010">B.2.2</entry>
+    <entry key="msg.JPG01I011">Unique component identifier (Ci) in SOFn segment: symbol=%1$s, i=%2$d, Ci=%3$d</entry>
+    <entry key="ref.JPG01I011">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I011">B.2.2</entry>
+    <entry key="msg.JPG01I012">Valid horizontal sampling factor (Hi) in SOFn segment: symbol=%1$s, i=%2$d, Hi=%3$d</entry>
+    <entry key="ref.JPG01I012">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I012">B.2.2</entry>
+    <entry key="msg.JPG01I013">Valid vertical sampling factor (Vi) in SOFn segment: symbol=%1$s, i=%2$d, Vi=%3$d</entry>
+    <entry key="ref.JPG01I013">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I013">B.2.2</entry>
+    <entry key="msg.JPG01I014">Valid quantization table destination selector (Tqi) in SOFn segment: symbol=%1$s, i=%2$d, Tqi=%3$d</entry>
+    <entry key="ref.JPG01I014">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I014">B.2.2</entry>
+    <entry key="msg.JPG01I015">First APP0 segment follows SOI segment</entry>
+    <entry key="ref.JPG01I015">JFIF 1.02</entry>
+    <entry key="msg.JPG01I016">Found mandatory APP0 segment</entry>
+    <entry key="ref.JPG01I016">JFIF 1.02</entry>
+    <entry key="msg.JPG01I017">First APP0 segment identifies resource as JFIF</entry>
+    <entry key="ref.JPG01I017">JFIF 1.02</entry>
+    <entry key="msg.JPG01I018">APP0 segment is JFIF extension: code=0x%1$x</entry>
+    <entry key="ref.JPG01I018">JFIF 1.02</entry>
+    <entry key="msg.JPG01I019">Found DHT segment: code=0x%1$04X, size=%2$d</entry>
+    <entry key="ref.JPG01I019">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I019">B.2.4.2</entry>
+    <entry key="msg.JPG01I020">Tc value in DHT segment is valid: actual=%1$d</entry>
+    <entry key="ref.JPG01I020">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I020">B.2.4.2</entry>
+    <entry key="msg.JPG01I021">Th value in DHT segment is valid: actual=%1$d</entry>
+    <entry key="ref.JPG01I021">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I021">B.2.4.2</entry>
+    <entry key="msg.JPG01I022">Found SOI segment: code=0x%1$04X</entry>
+    <entry key="ref.JPG01I022">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I022">B.2.1</entry>
+    <entry key="msg.JPG01I023">Found EOI segment: code=0x%1$04X</entry>
+    <entry key="ref.JPG01I023">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I023">B.2.1</entry>
+    <entry key="msg.JPG01I024">Found DQT segment: code=0x%1$04X</entry>
+    <entry key="ref.JPG01I024">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I024">B.2.4.1</entry>
+    <entry key="msg.JPG01I025">Pq value in DHT segment is valid: table index=%1$d, actual=%2$d</entry>
+    <entry key="ref.JPG01I025">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I025">B.2.4.1</entry>
+    <entry key="msg.JPG01I026">Tq value in DHT segment is valid: table index=%1$d, actual=%2$d</entry>
+    <entry key="ref.JPG01I026">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I026">B.2.4.1</entry>
+    <entry key="msg.JPG01I027">Found DNL segment: code=0x%1$04X</entry>
+    <entry key="ref.JPG01I027">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I027">B.2.5</entry>
+    <entry key="msg.JPG01I028">Found DRI segment: code=0x%1$04X</entry>
+    <entry key="ref.JPG01I028">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I028">B.2.4.4</entry>
+    <entry key="msg.JPG01I029">Found COM segment: code=0x%1$04X</entry>
+    <entry key="ref.JPG01I029">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I029">B.2.4.5</entry>
+    <entry key="msg.JPG01I030">Found RST segment: code=0x%1$04X</entry>
+    <entry key="ref.JPG01I030">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I030">B.1.1.3</entry>
+    <entry key="msg.JPG01I031">SOS segment found after a SOFn segment: index=%1$d, frame code=0x%2$04X</entry>
+    <entry key="ref.JPG01I031">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I031">B.2.1</entry>
+    <entry key="msg.JPG01I032">SOS segment length is valid (6 + 2 x Ns): value=%1$d, index=%2$d</entry>
+    <entry key="ref.JPG01I032">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I032">B.2.3</entry>
+    <entry key="msg.JPG01I033">Valid Ns value in SOS segment: value=%1$d, index=%2$d</entry>
+    <entry key="ref.JPG01I033">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I033">B.2.3</entry>
+    <entry key="msg.JPG01I034">Valid Td value in SOS segment: component index=%1$d, value=%2$d, frame type=%3$s, segment index=%4$d</entry>
+    <entry key="ref.JPG01I034">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I034">B.2.3</entry>
+    <entry key="msg.JPG01I035">Valid Ta value in SOS segment: component index=%1$d, value=%2$d, frame type=%3$s, segment index=%4$d</entry>
+    <entry key="ref.JPG01I035">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I035">B.2.3</entry>
+    <entry key="msg.JPG01I036">Valid Ss value in SOS segment: value=%1$d, frame type=%2$s, segment index=%3$d</entry>
+    <entry key="ref.JPG01I036">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I036">B.2.3</entry>
+    <entry key="msg.JPG01I037">Valid Se value in SOS segment: value=%1$d, frame type=%2$s, segment index=%3$d</entry>
+    <entry key="ref.JPG01I037">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I037">B.2.3</entry>
+    <entry key="msg.JPG01I038">Valid Ah value in SOS segment: value=%1$d, frame type=%2$s, segment index=%3$d</entry>
+    <entry key="ref.JPG01I038">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I038">B.2.3</entry>
+    <entry key="msg.JPG01I039">Valid Al value in SOS segment: value=%1$d, frame type=%2$s, segment index=%3$d</entry>
+    <entry key="ref.JPG01I039">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01I039">B.2.3</entry>
+    <entry key="msg.JPG01X001">Assertion failed: msg=%1$s, bytes read=%2$d</entry>
+    <entry key="msg.JPG01X002">Null input stream</entry>
+    <entry key="msg.JPG01X003">I/O exception: method=%1$s, msg=%2$s</entry>
+    <entry key="msg.JPG01X004">Out-of-memory exception: method=%1$s, msg=%2$s</entry>
+    <entry key="msg.JPG01X005">Illegal access exception: method=%1$s, new instance of=%2$s, msg=%3$s, bytes read=%4$d</entry>
+    <entry key="msg.JPG01X006">Instantiation exception: method=%1$s, new instance of=%2$s, msg=%3$s, bytes read=%4$d</entry>
+    <entry key="msg.JPG01W001">DHT segment found, but frame marker specifies arithmetic coding: segment count=%1$d, frame code=0x%2$04X</entry>
+    <entry key="ref.JPG01W001">ISO/IEC 10918-1</entry>
+    <entry key="msg.JPG01W002">DAC segment found, but frame marker specifies Huffman coding: segment count=%1$d, frame code=0x%2$04X</entry>
+    <entry key="ref.JPG01W002">ISO/IEC 10918-1</entry>
+    <entry key="msg.JPG01W003">JPEG hierarchical encoding mode segment not supported: code=0x%1$04X, segment count=%2$d</entry>
+    <entry key="ref.JPG01W003">MHP 1.0.3</entry>
+    <entry key="sec.JPG01W003">7.1.1.2</entry>
+    <entry key="msg.JPG01W004">JPEG lossless encoding mode segment not supported: code=0x%1$04X, segment count=%2$d</entry>
+    <entry key="ref.JPG01W004">MHP 1.0.3</entry>
+    <entry key="sec.JPG01W004">7.1.1.2</entry>
+    <entry key="msg.JPG01W005">JPEG abbreviated format is not supported</entry>
+    <entry key="ref.JPG01W005">MHP 1.0.3</entry>
+    <entry key="sec.JPG01W005">7.1.1.2</entry>
+    <entry key="msg.JPG01W006">Invalid version in JFIF identifier APP0 segment: actual=%1$d.%2$02d, expected=%3$d.%4$02d</entry>
+    <entry key="ref.JPG01W006">JFIF 1.02</entry>
+    <entry key="msg.JPG01W007">Units field value out of range in JFIF identifier APP0 segment: actual=%1$d, minimum=%2$d, maximum=%3$d</entry>
+    <entry key="ref.JPG01W007">JFIF 1.02</entry>
+    <entry key="msg.JPG01W008">Invalid number of image components (Nf) in SOFn segment: symbol=%1$s, Nf=%2$d, expected=%3$s</entry>
+    <entry key="ref.JPG01W008">JFIF 1.02</entry>
+    <entry key="msg.JPG01W009">Xdensity should always be non-zero in JFIF identifier APP0 segment</entry>
+    <entry key="ref.JPG01W009">JFIF 1.02</entry>
+    <entry key="msg.JPG01W010">Ydensity should always be non-zero in JFIF identifier APP0 segment</entry>
+    <entry key="ref.JPG01W010">JFIF 1.02</entry>
+    <entry key="msg.JPG01W011">JFIF extension APP0 segment only allowed in JFIF 1.02 or higher: actual=%1$d.%2$02d</entry>
+    <entry key="ref.JPG01W011">JFIF 1.02</entry>
+    <entry key="msg.JPG01W012">APP0 segment is unknown JFIF extension: code=0x%1$x</entry>
+    <entry key="ref.JPG01W012">JFIF 1.02</entry>
+    <entry key="msg.JPG01W013">Incorrect byte count in length field of JFIF identifier APP0 segment: difference=%1$d</entry>
+    <entry key="ref.JPG01W013">JFIF 1.02</entry>
+    <entry key="msg.JPG01W014">Incorrect byte count in length field of JFIF extension APP0 segment: difference=%1$d</entry>
+    <entry key="ref.JPG01W014">JFIF 1.02</entry>
+    <entry key="msg.JPG01W015">Number of samples per line (X) in SOFn segment is greater than supported by typical resolution: symbol=%1$s, X=%2$d</entry>
+    <entry key="cat.JPG01W015">interoperability</entry>
+    <entry key="msg.JPG01W016">Number of lines (Y) in SOFn segment is greater than supported by typical resolution: symbol=%1$s, Y=%2$d</entry>
+    <entry key="cat.JPG01W016">interoperability</entry>
+    <entry key="msg.JPG01E001">Extraneous bytes at end of file</entry>
+    <entry key="ref.JPG01E001">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E001">B.2.1</entry>
+    <entry key="msg.JPG01E002">Segment marker is reserved: code=0x%1$04X, symbol=RES, bytes read=%2$d</entry>
+    <entry key="ref.JPG01E002">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E002">B.1.1.3</entry>
+    <entry key="msg.JPG01F001">Unexpected end of file encountered while reading segment marker code: bytes read=%1$d</entry>
+    <entry key="ref.JPG01F001">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01F001">B.2.1</entry>
+    <entry key="msg.JPG01E004">SOI segment (marker code=0xFFD8) must be first: found=0x%1$04X, bytes read=%2$d</entry>
+    <entry key="ref.JPG01E004">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E004">B.2.1</entry>
+    <entry key="msg.JPG01E005">EOI segment (marker code=0xFFD9) must be last: found=0x%1$04X, bytes read=%2$d</entry>
+    <entry key="ref.JPG01E005">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E005">B.2.1</entry>
+    <entry key="msg.JPG01E006">Segment marker reserved for JPEG extensions: code=0x%1$04X, symbol=%2$s, bytes read=%3$d</entry>
+    <entry key="ref.JPG01E006">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E006">B.1.1.3</entry>
+    <entry key="msg.JPG01E007">Segment marker reserved for temporary private use in arithmetic coding: code=0xFF01, symbol=TEM, bytes read=%1$d</entry>
+    <entry key="ref.JPG01E007">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E007">B.1.1.3</entry>
+    <entry key="msg.JPG01F002">Unexpected end of file encountered while parsing application segment: code=0x%1$04X, symbol=%2$s, bytes read=%3$d</entry>
+    <entry key="ref.JPG01F002">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01F002">B.2.1</entry>
+    <entry key="msg.JPG01E009">Multiple frame segments not allowed: previous code=0x%1$04X, previous symbol=%2$s, code=0x%3$04X, symbol=%4$s, bytes read=%5$d</entry>
+    <entry key="ref.JPG01E009">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E009">B.2.1</entry>
+    <entry key="msg.JPG01E010">No frame (SOFn) segment found. One frame segment must exist: bytes read=%1$d</entry>
+    <entry key="ref.JPG01E010">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E010">B.2.1</entry>
+    <entry key="msg.JPG01E011">DNL segment can only occur at end of first scan: segment count=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.JPG01E011">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E011">B.2.5</entry>
+    <entry key="msg.JPG01E012">No scan (SOS) segments found. One or more must exist: bytes read=%1$d</entry>
+    <entry key="ref.JPG01E012">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E012">B.2.1</entry>
+    <entry key="msg.JPG01E013">No entropy-coded data segments found after scan header. One or more must exist: segment count=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.JPG01E013">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E013">B.2.1</entry>
+    <entry key="msg.JPG01E014">Invalid segment marker (must be two bytes: 0xff followed by a byte not equal to 0xff or 0x00): found=0x%1$04X, bytes read=%2$d</entry>
+    <entry key="ref.JPG01E014">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E014">B.1.1.2</entry>
+    <entry key="msg.JPG01E015">Duplicate component identifier (Ci) in SOFn segment: symbol=%1$s, i=%2$d, Ci=%3$d, already found=%4$s</entry>
+    <entry key="ref.JPG01E015">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E015">B.2.2</entry>
+    <entry key="msg.JPG01E016">Number of lines (Y) in SOFn segment is zero, a DNL segment is required but none was found: SOFn segment code=0x%1$04X</entry>
+    <entry key="ref.JPG01E016">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E016">B.2.2</entry>
+    <entry key="msg.JPG01E017">First APP0 segment must follow SOI segment: APP0 segment index=%1$d</entry>
+    <entry key="ref.JPG01E017">JFIF 1.02</entry>
+    <entry key="msg.JPG01E018">Mandatory APP0 segment not found</entry>
+    <entry key="ref.JPG01E018">JFIF 1.02</entry>
+    <entry key="msg.JPG01E019">First APP0 segment does not identify resource as JFIF: segment index=%1$d</entry>
+    <entry key="ref.JPG01E019">JFIF 1.02</entry>
+    <entry key="msg.JPG01E020">JFIF identifier APP0 segment must be second segment in resource: index=%1$d</entry>
+    <entry key="ref.JPG01E020">JFIF 1.02</entry>
+    <entry key="msg.JPG01E021">JFIF identifier APP0 segment must be first APP0 segment (possible duplicate): index=%1$d, APP0 segment count=%2$d</entry>
+    <entry key="ref.JPG01E021">JFIF 1.02</entry>
+    <entry key="msg.JPG01E022">JFIF extension APP0 segment does not follow JFIF or JFXX APP0 segment, they must be consecutive: index=%1$d, last JFIF APP0 segment index=%2$d</entry>
+    <entry key="ref.JPG01E022">JFIF 1.02</entry>
+    <entry key="msg.JPG01F003">Unexpected end of file encountered while reading segment data: code=0x%1$04X, index=%2$d, bytes read=%3$d</entry>
+    <entry key="ref.JPG01F003">ISO/IEC 10918-1</entry>
+    <entry key="msg.JPG01E024">SOS segments must be after an SOFn segment: index=%1$d</entry>
+    <entry key="ref.JPG01E024">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E024">B.2.1</entry>
+    <entry key="msg.JPG01E025">Invalid segment length in SOS segment: actual=%1$d, expected=%2$d, index=%3$d</entry>
+    <entry key="ref.JPG01E025">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E025">B.2.3</entry>
+    <entry key="msg.JPG01E026">Invalid Ns value in SOS segment: actual=%1$d, expected=%2$s, index=%3$d</entry>
+    <entry key="ref.JPG01E026">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E026">B.2.3</entry>
+    <entry key="msg.JPG01E027">Invalid Td value in SOS segment: component index=%1$d, actual=%2$d, expected=%3$s, frame type=%4$s, segment index=%5$d</entry>
+    <entry key="ref.JPG01E027">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E027">B.2.3</entry>
+    <entry key="msg.JPG01E028">Invalid Ta value in SOS segment: component index=%1$d, actual=%2$d, expected=%3$s, frame type=%4$s, segment index=%5$d</entry>
+    <entry key="ref.JPG01E028">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E028">B.2.3</entry>
+    <entry key="msg.JPG01E029">Invalid Ss value in SOS segment: actual=%1$d, expected=%2$s, frame type=%3$s, segment index=%4$d</entry>
+    <entry key="ref.JPG01E029">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E029">B.2.3</entry>
+    <entry key="msg.JPG01E030">Invalid Se value in SOS segment: actual=%1$d, expected=%2$s, frame type=%3$s, segment index=%4$d</entry>
+    <entry key="ref.JPG01E030">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E030">B.2.3</entry>
+    <entry key="msg.JPG01E031">Invalid Ah value in SOS segment: actual=%1$d, expected=%2$s, frame type=%3$s, segment index=%4$d</entry>
+    <entry key="ref.JPG01E031">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E031">B.2.3</entry>
+    <entry key="msg.JPG01E032">Invalid Al value in SOS segment: actual=%1$d, expected=%2$s, frame type=%3$s, segment index=%4$d</entry>
+    <entry key="ref.JPG01E032">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E032">B.2.3</entry>
+    <entry key="msg.JPG01E033">Invalid frame header length (Lf) in SOFn segment, Lf should equal 8 + 3xNf: symbol=%1$s, Lf=%2$d, Nf=%3$d</entry>
+    <entry key="ref.JPG01E033">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E033">B.2.2</entry>
+    <entry key="msg.JPG01E034">Invalid sample precision (P) in SOFn segment: symbol=%1$s, P=%2$d, expected=%3$s</entry>
+    <entry key="ref.JPG01E034">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E034">B.2.2</entry>
+    <entry key="msg.JPG01E035">Invalid number of image components (Nf) in SOFn segment: symbol=%1$s, Nf=%2$d, expected=%3$d-%4$d</entry>
+    <entry key="ref.JPG01E035">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E035">B.2.2</entry>
+    <entry key="msg.JPG01E036">Invalid number of samples per line (X) in SOFn segment: symbol=%1$s, X=%2$d, expected=%3$d-%4$d</entry>
+    <entry key="ref.JPG01E036">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E036">B.2.2</entry>
+    <entry key="msg.JPG01E037">Invalid horizontal sampling factor (Hi) in SOFn segment: symbol=%1$s, i=%2$d, Hi=%3$d, expected=%4$d-%5$d</entry>
+    <entry key="ref.JPG01E037">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E037">B.2.2</entry>
+    <entry key="msg.JPG01E038">Invalid vertical sampling factor (Vi) in SOFn segment: symbol=%1$s, i=%2$d, Vi=%3$d, expected=%4$d-%5$d</entry>
+    <entry key="ref.JPG01E038">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E038">B.2.2</entry>
+    <entry key="msg.JPG01E039">Invalid quantization table destination selector (Tqi) in SOFn segment: symbol=%1$s, i=%2$d, Tqi=%3$d, expected=%4$d-%5$d</entry>
+    <entry key="ref.JPG01E039">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E039">B.2.2</entry>
+    <entry key="msg.JPG01E040">Invalid Tc value in DHT segment: actual=%1$d, expected=%2$s</entry>
+    <entry key="ref.JPG01E040">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E040">B.2.4.2</entry>
+    <entry key="msg.JPG01E041">Invalid Th value in DHT segment: actual=%1$d, expected=%2$s</entry>
+    <entry key="ref.JPG01E041">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E041">B.2.4.2</entry>
+    <entry key="msg.JPG01E042">Invalid Pq value in DQT segment: table index=%1$d, actual=%2$d, expected=%3$s</entry>
+    <entry key="ref.JPG01E042">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E042">B.2.4.1</entry>
+    <entry key="msg.JPG01E043">Invalid Tq value in DQT segment: table index=%1$d, actual=%2$d, expected=%3$s</entry>
+    <entry key="ref.JPG01E043">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E043">B.2.4.1</entry>
+    <entry key="msg.JPG01E044">Quantization table element in DQT segment cannot be zero: table index=%1$d, k=%2$d</entry>
+    <entry key="ref.JPG01E044">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E044">B.2.4.1</entry>
+    <entry key="msg.JPG01E045">Invalid DNL segment length: actual=%1$d, expected=%2$d</entry>
+    <entry key="ref.JPG01E045">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E045">B.2.5</entry>
+    <entry key="msg.JPG01E046">Number of lines specified in DNL segment cannot be zero</entry>
+    <entry key="ref.JPG01E046">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E046">B.2.5</entry>
+    <entry key="msg.JPG01E047">Invalid DRI segment length: actual=%1$d, expected=%2$d</entry>
+    <entry key="ref.JPG01E047">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E047">B.2.4.4</entry>
+    <entry key="msg.JPG01E048">Invalid COM segment length, must be at least 2 bytes: actual=%1$d</entry>
+    <entry key="ref.JPG01E048">ISO/IEC 10918-1</entry>
+    <entry key="sec.JPG01E048">B.2.4.5</entry>
+</properties>

@@ -89,9 +89,9 @@ public abstract class AbstractFrame implements Frame {
     public boolean hasResourceFiles() {
         return (resourceFiles != null) && !resourceFiles.isEmpty();
     }
-    
+
     public List<File> getResourceFiles() {
         return resourceFiles;
     }
-    
+
 }

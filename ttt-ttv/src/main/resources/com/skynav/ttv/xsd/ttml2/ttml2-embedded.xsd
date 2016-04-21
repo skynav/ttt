@@ -69,11 +69,15 @@
     <xs:attributeGroup ref="tt:chunk.attlist"/>
   </xs:complexType>
   <xs:complexType name="data.eltype" mixed="true">
+    <xs:annotation>
+      <xs:documentation>#PCDATA | (Metadata.class*, chunk+) | (Metadata.class*, source+)</xs:documentation>
+      <xs:documentation>The following is an over-generalization of the above content model.</xs:documentation>
+    </xs:annotation>
     <xs:sequence>
       <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
       <xs:choice>
-        <xs:element ref="tt:chunk" minOccurs="1" maxOccurs="unbounded"/>
-        <xs:element ref="tt:source" minOccurs="1" maxOccurs="unbounded"/>
+        <xs:element ref="tt:chunk" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="tt:source" minOccurs="0" maxOccurs="unbounded"/>
       </xs:choice>
     </xs:sequence>
     <xs:attributeGroup ref="tt:data.attlist"/>

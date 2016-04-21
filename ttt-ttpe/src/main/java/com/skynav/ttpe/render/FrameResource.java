@@ -39,7 +39,7 @@ public class FrameResource {
     private Type type;
     private String name;
     private URI source;
-    
+
     public FrameResource(Type type, String name, URI source) {
         this.type = type;
         this.name = name;
@@ -49,11 +49,11 @@ public class FrameResource {
     public Type getType() {
         return type;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public URI getSource() {
         return source;
     }

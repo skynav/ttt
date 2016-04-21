@@ -39,6 +39,7 @@ import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.BlockFillerArea;
+import com.skynav.ttpe.area.BlockImageArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.ReferenceArea;
 import com.skynav.ttpe.fonts.FontCache;
@@ -50,6 +51,7 @@ import com.skynav.ttpe.style.BlockAlignment;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Display;
+import com.skynav.ttpe.style.Image;
 import com.skynav.ttpe.style.StyleCollector;
 import com.skynav.ttpe.style.Visibility;
 import com.skynav.ttpe.style.Whitespace;
@@ -476,6 +478,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
                 layoutDivision(c, ls);
             } else if (isElement(c, ttParagraphElementName)) {
                 layoutParagraph(c, ls);
+            } else if (isElement(c, ttImageElementName)) {
+                layoutImage(c, ls);
             }
         }
         ls.pop();
@@ -509,6 +513,29 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         if (b instanceof BlockArea)
             alignLineAreas((BlockArea) b, ls);
         ls.pop();
+    }
+
+    protected void layoutImage(Element e, LayoutState ls) {
+        Display display = ls.getDisplay(e);
+        if (display == Display.NONE)
+            return;
+        AreaNode a = ls.peek();
+        if ((a != null) && (a instanceof BlockArea)) {
+            BlockArea b = (BlockArea) a;
+            Visibility visibility = ls.getVisibility(e);
+            Image image = ls.getForegroundImage(e);
+            double w = image.getWidth();
+            double h = image.getHeight();
+            double ipd, bpd;
+            if (ls.getWritingMode().isVertical()) {
+                ipd = h;
+                bpd = w;
+            } else {
+                ipd = w;
+                bpd = h;
+            }
+            b.addChild(new BlockImageArea(e, ipd, bpd, visibility, image));
+        }
     }
 
     protected static List<Element> getChildElements(Element e) {

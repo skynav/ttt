@@ -37,7 +37,12 @@ public abstract class TTMLHelper extends ISDHelper {
     public static final String NAMESPACE_TT_PARAMETER           = TTML.Constants.NAMESPACE_TT_PARAMETER;
 
     public boolean hasUsableContent(Element elt) {
-        return isParagraphElement(elt) && hasUsableContentInParagraph(elt);
+        if (isParagraphElement(elt))
+            return hasUsableContentInParagraph(elt);
+        else if (isImageElement(elt))
+            return hasUsableContentInImage(elt);
+        else
+            return false;
     }
 
     public static boolean isRootElement(Element elt) {
@@ -111,6 +116,10 @@ public abstract class TTMLHelper extends ISDHelper {
             String id = getXmlIdentifier(elt);
             return (id != null) && (id.indexOf("isdSpan") == 0);
         }
+    }
+
+    public static boolean isImageElement(Element elt) {
+        return isTimedTextElement(elt, "image");
     }
 
     public static boolean isAnimationElement(Element elt) {
@@ -192,6 +201,11 @@ public abstract class TTMLHelper extends ISDHelper {
                 return true;
         }
         return false;
+    }
+
+    private static boolean hasUsableContentInImage(Element elt) {
+        // [TBD] - return true only if image is resolvable
+        return true;
     }
 
 }

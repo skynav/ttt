@@ -34,6 +34,8 @@ public class Image {
     private URI source;                         // source as uri
     private String type;                        // specified type (not necessarily resolved type)
     private String format;                      // specified format (not necessarily resolved format)
+    private double width;
+    private double height;
 
     private Image() {
         this(null, null, null);
@@ -61,6 +63,14 @@ public class Image {
 
     public boolean isNone() {
         return equals(NONE);
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
     }
 
     @Override

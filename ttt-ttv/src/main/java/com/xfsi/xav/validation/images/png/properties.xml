@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Portions Copyright 2009 Extensible Formatting Systems, Inc (XFSI).
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SKYNAV, INC. AND ITS CONTRIBUTORS “AS IS” AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL SKYNAV, INC. OR ITS CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!-- PNG Image Format Validator -->
+<properties>   
+    <!-- 1 = chunk type, 2 = message, 3 = bytes read, 4 = chunks processed -->
+    <entry key="LogTemplate">Chunk: %1$s, %2$s</entry>
+    <entry key="LogTemplateNoChunk">%2$s</entry>
+    <entry key="ErrorLogTemplate">Chunk: %1$s, %2$s, Bytes read: %3$d, Chunks processed: %4$d</entry>
+    <entry key="ErrorLogTemplateNoChunk">%2$s, Bytes read: %3$d, Chunks processed: %4$d</entry>
+    <!-- Information -->
+    <entry key="msg.PNG01I001">Valid signature</entry>
+    <entry key="ref.PNG01I001">PNG 1.0</entry>
+    <entry key="sec.PNG01I001">3.1</entry>
+    <entry key="msg.PNG01I002">Valid chunk type</entry>
+    <entry key="ref.PNG01I002">PNG 1.0</entry>
+    <entry key="sec.PNG01I002">3.3</entry>
+    <entry key="msg.PNG01I003">Valid chunk CRC (value=0x%1$x)</entry>
+    <entry key="ref.PNG01I003">PNG 1.0</entry>
+    <entry key="sec.PNG01I003">3.4</entry>
+    <entry key="msg.PNG01I004">Private bit in chunk type %1$s is set</entry>
+    <entry key="ref.PNG01I004">PNG 1.0</entry>
+    <entry key="sec.PNG01I004">3.4</entry>
+    <entry key="msg.PNG01I005">Required chunk %1$s found</entry>
+    <entry key="ref.PNG01I005">PNG 1.0</entry>
+    <entry key="msg.PNG01I006">Disallowed chunk %1$s not found</entry>
+    <entry key="ref.PNG01I006">PNG 1.0</entry>
+    <entry key="msg.PNG01I007">Required chunk %1$s found</entry>
+    <entry key="ref.PNG01I007">MHP 1.0.3</entry>
+    <entry key="sec.PNG01I007">15.1.1</entry>
+    <entry key="msg.PNG01I008">Single instance of chunk found</entry>
+    <entry key="ref.PNG01I008">PNG 1.0</entry>
+    <entry key="sec.PNG01I008">4.3</entry>
+    <entry key="msg.PNG01I009">Chunk found after chunk %1$s</entry>
+    <entry key="ref.PNG01I009">PNG 1.0</entry>
+    <entry key="sec.PNG01I009">4.3</entry>
+    <entry key="msg.PNG01I010">Chunk found before chunk %1$s</entry>
+    <entry key="ref.PNG01I010">PNG 1.0</entry>
+    <entry key="sec.PNG01I010">4.3</entry>
+    <entry key="msg.PNG01I011">Valid chunk data size (value=%1$d)</entry>
+    <entry key="ref.PNG01I011">PNG 1.0</entry>
+    <entry key="msg.PNG01I012">Valid compression method (value=%1$d)</entry>
+    <entry key="ref.PNG01I012">PNG 1.0</entry>
+    <entry key="msg.PNG01I013">Number of hIST entries matches number of PLTE entries (value=0x%1$x, actual=0x%2$x)</entry>
+    <entry key="ref.PNG01I013">PNG 1.0</entry>
+    <entry key="msg.PNG01I014">Valid keyword/name found</entry>
+    <entry key="ref.PNG01I014">PNG 1.0</entry>
+    <entry key="msg.PNG01I015">Chunk is last</entry>
+    <entry key="ref.PNG01I015">PNG 1.0</entry>
+    <entry key="sec.PNG01I015">4.1.4</entry>
+    <entry key="msg.PNG01I016">Chunk is first</entry>
+    <entry key="ref.PNG01I016">PNG 1.0</entry>
+    <entry key="sec.PNG01I016">4.1.1</entry>
+    <entry key="msg.PNG01I017">Valid width (value=%1$d)</entry>
+    <entry key="ref.PNG01I017">PNG 1.0</entry>
+    <entry key="msg.PNG01I018">Valid height (value=%1$d)</entry>
+    <entry key="ref.PNG01I018">PNG 1.0</entry>
+    <entry key="msg.PNG01I019">Valid bit depth (value=%1$d)</entry>
+    <entry key="ref.PNG01I019">PNG 1.0</entry>
+    <entry key="msg.PNG01I020">Valid color type (value=%1$d)</entry>
+    <entry key="ref.PNG01I020">PNG 1.0</entry>
+    <entry key="msg.PNG01I021">Valid filter method (value=%1$d)</entry>
+    <entry key="ref.PNG01I021">PNG 1.0</entry>
+    <entry key="msg.PNG01I022">Valid interlace method (value=%1$d)</entry>
+    <entry key="ref.PNG01I022">PNG 1.0</entry>
+    <entry key="msg.PNG01I023">Valid compression flag (value=%1$d)</entry>
+    <entry key="ref.PNG01I023">PNG 1.0</entry>
+    <entry key="msg.PNG01I024">All text characters valid</entry>
+    <entry key="ref.PNG01I024">PNG 1.0</entry>
+    <entry key="msg.PNG01I025">Valid unit specifier (value=%1$d)</entry>
+    <entry key="ref.PNG01I025">PNG 1.0</entry>
+    <entry key="msg.PNG01I026">Valid number of entries (value=%1$d)</entry>
+    <entry key="ref.PNG01I026">PNG 1.0</entry>
+    <entry key="msg.PNG01I027">Valid rendering intent (value=%1$d)</entry>
+    <entry key="ref.PNG01I027">PNG 1.0</entry>
+    <entry key="msg.PNG01I028">Valid month value</entry>
+    <entry key="ref.PNG01I028">PNG 1.0</entry>
+    <entry key="sec.PNG01I028">4.2.8</entry>
+    <entry key="msg.PNG01I029">Valid day value</entry>
+    <entry key="ref.PNG01I029">PNG 1.0</entry>
+    <entry key="sec.PNG01I029">4.2.8</entry>
+    <entry key="msg.PNG01I030">Valid hour value</entry>
+    <entry key="ref.PNG01I030">PNG 1.0</entry>
+    <entry key="sec.PNG01I030">4.2.8</entry>
+    <entry key="msg.PNG01I031">Valid minute value</entry>
+    <entry key="ref.PNG01I031">PNG 1.0</entry>
+    <entry key="sec.PNG01I031">4.2.8</entry>
+    <entry key="msg.PNG01I032">Valid second value</entry>
+    <entry key="ref.PNG01I032">PNG 1.0</entry>
+    <entry key="sec.PNG01I032">4.2.8</entry>
+    <entry key="msg.PNG01I033">Number of tRNS entries is less than number of PLTE entries (value=%1$d, actual=%2$d)</entry>
+    <entry key="ref.PNG01I033">PNG 1.0</entry>
+    <!-- Warning -->
+    <entry key="msg.PNG01W001">Second byte in private chunk name %1$s not lowercase</entry>
+    <entry key="ref.PNG01W001">PNG 1.0</entry>
+    <entry key="sec.PNG01W001">3.3</entry>
+    <entry key="msg.PNG01W002">Chunk %1$s should not exist</entry>
+    <entry key="ref.PNG01W002">PNG 1.0</entry>
+    <entry key="msg.PNG01W003">Non-standard chunk type %1$s</entry>
+    <entry key="ref.PNG01W003">PNG 1.0</entry>
+    <entry key="sec.PNG01W003">4.3</entry>
+    <entry key="msg.PNG01W004">Receivers should ignore this chunk</entry>
+    <entry key="ref.PNG01W004">MHP 1.0.3</entry>
+    <entry key="sec.PNG01W004">15.1</entry>
+    <entry key="cat.PNG01W004">interoperability</entry>
+    <entry key="msg.PNG01W005">Width is greater than supported by typical resolution (value=%1$d)</entry>
+    <entry key="cat.PNG01W005">interoperability</entry>
+    <entry key="msg.PNG01W006">Height is greater than supported by typical resolution (value=%1$d)</entry>
+    <entry key="cat.PNG01W006">interoperability</entry>
+    <entry key="msg.PNG01W007">Chunk is not part of the PNG V1.0 specification</entry>
+    <entry key="ref.PNG01W007">MHP 1.0.3</entry>
+    <entry key="sec.PNG01W007">15.1</entry>
+    <entry key="cat.PNG01W007">interoperability</entry>
+    <entry key="msg.PNG01W009">4-bits depth not supported on SA Explorer 2000</entry>
+    <entry key="ref.PNG01W009">ETV BIF 1.0</entry>
+    <entry key="sec.PNG01W009">H.2</entry>
+    <entry key="cat.PNG01W009">interoperability</entry>
+    <entry key="msg.PNG01W010">Chunk %1$s is not supported on generic platform</entry>
+    <entry key="ref.PNG01W010">ETV BIF 1.0</entry>
+    <entry key="sec.PNG01W010">H.1</entry>
+    <entry key="cat.PNG01W010">interoperability</entry>
+    <entry key="msg.PNG01W011">Bit depth must be 8 for generic platform or 4 for Motorola DCT2000 (depth=%1$d)</entry>
+    <entry key="ref.PNG01W011">ETV BIF 1.0</entry>
+    <entry key="sec.PNG01W011">H.1, H.2</entry>
+    <entry key="msg.PNG01W012">Color type must be 3 for generic platform (color type=%1$d)</entry>
+    <entry key="ref.PNG01W012">ETV BIF 1.0</entry>
+    <entry key="sec.PNG01W012">H.1</entry>
+    <entry key="msg.PNG01W013">Compression method must be 0 for generic platform (method=%1$d)</entry>
+    <entry key="ref.PNG01W013">ETV BIF 1.0</entry>
+    <entry key="sec.PNG01W013">H.1</entry>
+    <entry key="msg.PNG01W014">Filter method must be 0 for generic platform (method=%1$d)</entry>
+    <entry key="ref.PNG01W014">ETV BIF 1.0</entry>
+    <entry key="sec.PNG01W014">H.1</entry>
+    <entry key="msg.PNG01W015">Interlace method must be 0 for generic platform (method=%1$d)</entry>
+    <entry key="ref.PNG01W015">ETV BIF 1.0</entry>
+    <entry key="sec.PNG01W015">H.1</entry>
+    <entry key="msg.PNG01W016">Missing PLTE chunk. It should be included for specified color type (color type=%1$d)</entry>
+    <entry key="ref.PNG01W016">ETV BIF 1.0</entry>
+    <entry key="sec.PNG01W016">6.3.2.2.1</entry>
+    <entry key="msg.PNG01W017">Consider removing chunk. It may not be displayed by decoder</entry>
+    <entry key="ref.PNG01W017">PNG 1.2</entry>
+    <entry key="sec.PNG01W017">13.7</entry>
+    <entry key="cat.PNG01W017">efficiency</entry>
+    <!-- Error -->
+    <entry key="msg.PNG01F001">Invalid number of signature bytes</entry>
+    <entry key="ref.PNG01F001">PNG 1.0</entry>
+    <entry key="sec.PNG01F001">3.1</entry>
+    <entry key="msg.PNG01F002">Invalid signature value (index=%1$d, expected=0x%2$x, actual=0x%3$x)</entry>
+    <entry key="ref.PNG01F002">PNG 1.0</entry>
+    <entry key="sec.PNG01F002">3.1</entry>
+    <entry key="msg.PNG01F003">Unexpected end of stream data, unable to read chunk length</entry>
+    <entry key="ref.PNG01F003">PNG 1.0</entry>
+    <entry key="sec.PNG01F003">3.2</entry>
+    <entry key="msg.PNG01F004">Unexpected end of stream data, unable to read chunk type</entry>
+    <entry key="ref.PNG01F004">PNG 1.0</entry>
+    <entry key="sec.PNG01F004">3.2</entry>
+    <entry key="msg.PNG01F005">Unexpected end of stream data, unable to read chunk data (bytes needed=%1$d)</entry>
+    <entry key="ref.PNG01F005">PNG 1.0</entry>
+    <entry key="sec.PNG01F005">3.2</entry>
+    <entry key="msg.PNG01F006">Unexpected end of stream data, unable to read chunk crc</entry>
+    <entry key="ref.PNG01F006">PNG 1.0</entry>
+    <entry key="sec.PNG01F006">3.2</entry>
+    <entry key="msg.PNG01E003">Chunk must be first</entry>
+    <entry key="ref.PNG01E003">PNG 1.0</entry>
+    <entry key="msg.PNG01E004">Chunk must be last</entry>
+    <entry key="ref.PNG01E004">PNG 1.0</entry>
+    <entry key="msg.PNG01E005">Invalid width. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E005">PNG 1.0</entry>
+    <entry key="msg.PNG01E006">Invalid height. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E006">PNG 1.0</entry>
+    <entry key="msg.PNG01E007">Invalid bit depth (value=%3$d, valid inclusive range=%1$d-%2$d)</entry>
+    <entry key="ref.PNG01E007">PNG 1.0</entry>
+    <entry key="msg.PNG01E008">Invalid color type. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E008">PNG 1.0</entry>
+    <entry key="msg.PNG01E009">Invalid filter method value. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E009">PNG 1.0</entry>
+    <entry key="msg.PNG01E010">Invalid interlace method value. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E010">PNG 1.0</entry>
+    <entry key="msg.PNG01E011">Invalid rendering intent value. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E011">PNG 1.0</entry>
+    <entry key="msg.PNG01E016">Missing required chunk %1$s</entry>
+    <entry key="ref.PNG01E016">PNG 1.0</entry>
+    <entry key="msg.PNG01E017">Invalid compression method value. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E017">PNG 1.0</entry>
+    <entry key="msg.PNG01E018">Chunks must be consecutive</entry>
+    <entry key="ref.PNG01E018">PNG 1.0</entry>
+    <entry key="msg.PNG01E019">Invalid chunk CRC (expected=0x%1$x, actual=0x%2$x)</entry>
+    <entry key="ref.PNG01E019">PNG 1.0</entry>
+    <entry key="sec.PNG01E019">3.4</entry>
+    <entry key="msg.PNG01E020">Number of tRNS entries must not be greater than number of PLTE entries (PLTE entries=%1$d, tRNS entries=%2$d)</entry>
+    <entry key="ref.PNG01E020">PNG 1.0</entry>
+    <entry key="msg.PNG01E021">Invalid unit specifier. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E021">PNG 1.0</entry>
+    <entry key="msg.PNG01E022">Chunk must be before chunk %1$s</entry>
+    <entry key="ref.PNG01E022">PNG 1.0</entry>
+    <entry key="sec.PNG01E022">4.3</entry>
+    <entry key="msg.PNG01E023">Multiple %1$s chunks not allowed</entry>
+    <entry key="ref.PNG01E023">PNG 1.0</entry>
+    <entry key="sec.PNG01E023">4.3</entry>
+    <entry key="msg.PNG01E024">Invalid month value</entry>
+    <entry key="ref.PNG01E024">PNG 1.0</entry>
+    <entry key="msg.PNG01E025">Invalid day value</entry>
+    <entry key="ref.PNG01E025">PNG 1.0</entry>
+    <entry key="msg.PNG01E026">Invalid hour value</entry>
+    <entry key="ref.PNG01E026">PNG 1.0</entry>
+    <entry key="msg.PNG01E027">Invalid minute value</entry>
+    <entry key="ref.PNG01E027">PNG 1.0</entry>
+    <entry key="msg.PNG01E028">Invalid second value</entry>
+    <entry key="ref.PNG01E028">PNG 1.0</entry>
+    <entry key="msg.PNG01E029">Name delimiter (null) not found (constraint value=%1$d, actual=%2$d)</entry>
+    <entry key="ref.PNG01E029">PNG 1.0</entry>
+    <entry key="msg.PNG01E030">Invalid compression flag value (constraint values=%1$d,%2$d, actual=%3$d)</entry>
+    <entry key="ref.PNG01E030">PNG 1.0</entry>
+    <entry key="msg.PNG01E031">Invalid language tag value</entry>
+    <entry key="ref.PNG01E031">PNG 1.0</entry>
+    <entry key="msg.PNG01E032">Invalid text character (value=%1$c)</entry>
+    <entry key="ref.PNG01E032">PNG 1.0</entry>
+    <entry key="msg.PNG01E033">Required chunk %1$s missing</entry>
+    <entry key="ref.PNG01E033">MHP 1.0.3</entry>
+    <entry key="sec.PNG01E033">15.1.1</entry>
+    <entry key="msg.PNG01E034">Invalid chunk type (invalid character value=0x%1$x)</entry>
+    <entry key="ref.PNG01E034">PNG 1.0</entry>
+    <entry key="sec.PNG01E034">3.3</entry>
+    <entry key="msg.PNG01E035">Chunk must be after chunk %1$s</entry>
+    <entry key="ref.PNG01E035">PNG 1.0</entry>
+    <entry key="sec.PNG01E035">4.3</entry>
+    <entry key="msg.PNG01E036">Invalid chunk data size. Value cannot be %1$d</entry>
+    <entry key="ref.PNG01E036">PNG 1.0</entry>
+    <entry key="msg.PNG01E037">Number of hIST entries must match number of PLTE entries (PLTE entries=%1$d, hIST entries=%2$d)</entry>
+    <entry key="ref.PNG01E037">PNG 1.0</entry>
+    <entry key="msg.PNG01E038">Keyword/Name contains invalid characters (offset=%1$d)</entry>
+    <entry key="ref.PNG01E038">PNG 1.0</entry>
+    <entry key="msg.PNG01E039">Keyword/Name cannot start with space char (offset=%1$d)</entry>
+    <entry key="ref.PNG01E039">PNG 1.0</entry>
+    <entry key="msg.PNG01E040">Keyword/Name cannot contain contiguous space chars (offset=%1$d)</entry>
+    <entry key="ref.PNG01E040">PNG 1.0</entry>
+    <entry key="msg.PNG01E041">Keyword/Name exceeds maximum length (maximum=%1$d, actual=%2$d)</entry>
+    <entry key="ref.PNG01E041">PNG 1.0</entry>
+    <entry key="msg.PNG01E042">Invalid bit depth (color type=%1$d, depth=%2$d)</entry>
+    <entry key="ref.PNG01E042">PNG 1.0</entry>
+    <entry key="msg.PNG01E043">Cannot access compression method. Value cannot be %1$d.</entry>
+    <entry key="ref.PNG01E043">PNG 1.0</entry>
+    <entry key="msg.PNG01E044">Invalid bit depth. Value cannot be in %1$d,%2$d (actual=%3$d)</entry>
+    <entry key="ref.PNG01E044">PNG 1.0</entry>
+    <entry key="msg.PNG01E045">Cannot access compression flag. Value cannot be in %1$d,%2$d</entry>
+    <entry key="ref.PNG01E045">PNG 1.0</entry>
+    <entry key="msg.PNG01E046">Invalid bit depth. Value cannot be in %1$d,%2$d</entry>
+    <entry key="ref.PNG01E046">PNG 1.0</entry>
+    <entry key="msg.PNG01E047">Invalid number of entries (actual=%1$d)</entry>
+    <entry key="ref.PNG01E047">PNG 1.0</entry>
+    <!-- Internal -->
+    <entry key="msg.PNG01X001">Invalid chunk entry requested %1$s</entry>
+    <entry key="msg.PNG01X002">Invalid class instantiation: could not find class to validate chunk %1$s</entry>
+    <entry key="msg.PNG01X003">Null input stream</entry>
+</properties>

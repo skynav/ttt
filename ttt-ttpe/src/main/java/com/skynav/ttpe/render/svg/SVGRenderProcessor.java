@@ -380,7 +380,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     private String generateResourceName() {
         return outputPatternResourceFormatter.format(new Object[]{Integer.valueOf(++resourceGenerationIndex)});
     }
-    
+
     private FrameResource addResource(FrameResource.Type type, String name, URI source) {
         if (resources == null)
             resources = new java.util.ArrayList<FrameResource>();

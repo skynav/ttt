@@ -134,11 +134,11 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             return unexpectedContent(root);
     }
 
-    public boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context) {
+    public boolean verifyOtherElement(Object content, Locator locator, VerifierContext context) {
         return true;
     }
 
-    public boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
+    public boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
         return true;
     }
 
@@ -335,7 +335,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
     protected Locator getLocator(Object content) {
         return getLocator(content, getSysidDefault());
     }
-    
+
     private String getSysidDefault() {
         URI uri = (URI) getContext().getResourceState("sysid");
         if (uri != null)
@@ -895,7 +895,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             } else {
                 if (content instanceof JAXBElement<?>)
                     content = ((JAXBElement<?>)content).getValue();
-                failed = !verifyNonTTOtherElement(content, getLocator(content), this.context);
+                failed = !verifyOtherElement(content, getLocator(content), this.context);
             }
         }
         if (!verifyMetadataItem(metadataVerifier, metadata))
@@ -1042,7 +1042,7 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
             failed = true;
         if (!styleVerifier.verify(content, getLocator(content), this.context, ItemType.Other))
             failed = true;
-        if (!verifyNonTTOtherAttributes(content, getLocator(content), this.context))
+        if (!verifyOtherAttributes(content, getLocator(content), this.context))
             failed = true;
         return !failed;
     }

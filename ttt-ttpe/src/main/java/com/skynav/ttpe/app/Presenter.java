@@ -797,7 +797,7 @@ public class Presenter extends TimedTextTransformer {
         }
         return !fail && (reporter.getResourceErrors() == 0);
     }
-    
+
     private boolean writeFrameResource(URI uri, DocumentFrame f, FrameResource r) {
         boolean fail = false;
         Reporter reporter = getReporter();
@@ -824,7 +824,7 @@ public class Presenter extends TimedTextTransformer {
         }
         return !fail && (reporter.getResourceErrors() == 0);
     }
-    
+
     private boolean writeImageFrame(URI uri, ImageFrame f) {
         boolean fail = false;
         Reporter reporter = getReporter();

@@ -54,6 +54,11 @@ public class Constants {
 
     // TTML Attribute Names
     public static final QName conditionAttrName                         = new QName("", "condition");
+    public static final QName encodingAttrName                          = new QName("", "encoding");
+    public static final QName formatAttrName                            = new QName("", "format");
+    public static final QName lengthAttrName                            = new QName("", "length");
+    public static final QName sourceAttrName                            = new QName("", "src");
+    public static final QName typeAttrName                              = new QName("", "type");
 
     // XML Attribute Names
     public static final QName xmlIdAttrName                             = new QName(XML.xmlNamespace, "id");

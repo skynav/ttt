@@ -78,14 +78,14 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
-    public boolean verifyNonTTOtherElement(Object content, Locator locator, VerifierContext context) {
-        if (!super.verifyNonTTOtherElement(content, locator, context))
+    public boolean verifyOtherElement(Object content, Locator locator, VerifierContext context) {
+        if (!super.verifyOtherElement(content, locator, context))
             return false;
         else
-            return verifySMPTENonTTOtherElement(content, locator, context);
+            return verifySMPTEOtherElement(content, locator, context);
     }
 
-    protected boolean verifySMPTENonTTOtherElement(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifySMPTEOtherElement(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         assert context == getContext();
         Node node = context.getXMLNode(content);
@@ -282,14 +282,14 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
-    public boolean verifyNonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
-        if (!super.verifyNonTTOtherAttributes(content, locator, context))
+    public boolean verifyOtherAttributes(Object content, Locator locator, VerifierContext context) {
+        if (!super.verifyOtherAttributes(content, locator, context))
             return false;
         else
-            return verifySMPTENonTTOtherAttributes(content, locator, context);
+            return verifySMPTEOtherAttributes(content, locator, context);
     }
 
-    protected boolean verifySMPTENonTTOtherAttributes(Object content, Locator locator, VerifierContext context) {
+    protected boolean verifySMPTEOtherAttributes(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         NamedNodeMap attributes = context.getXMLNode(content).getAttributes();
         for (int i = 0, n = attributes.getLength(); i < n; ++i) {

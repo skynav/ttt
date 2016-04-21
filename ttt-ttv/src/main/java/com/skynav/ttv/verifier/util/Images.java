@@ -34,10 +34,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.ttml.TTML;
 import com.skynav.ttv.model.value.Image;
 import com.skynav.ttv.model.value.impl.EmbeddedImageImpl;
 import com.skynav.ttv.model.value.impl.ExternalImageImpl;
-import com.skynav.ttv.model.ttml.TTML;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
@@ -89,7 +89,6 @@ public class Images {
         } else {
             return false;                                                       // image reference is empty string
         }
-        
     }
 
     private static boolean internalImage(URI uri, Object target, Image[] outputImage) {

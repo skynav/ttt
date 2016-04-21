@@ -41,6 +41,7 @@ import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Division;
 import com.skynav.ttv.model.ttml2.tt.Head;
+import com.skynav.ttv.model.ttml2.tt.Image;
 import com.skynav.ttv.model.ttml2.tt.Layout;
 import com.skynav.ttv.model.ttml2.tt.ObjectFactory;
 import com.skynav.ttv.model.ttml2.tt.Paragraph;
@@ -174,6 +175,13 @@ public class TTML2Helper extends TTMLHelper {
             return;
     }
 
+    private static void traverse(Image image, Object parent, Visitor v) throws Exception {
+        if (!v.preVisit(image, parent))
+            return;
+        if(!v.postVisit(image, parent))
+            return;
+    }
+
     private static void traverse(Animate animate, Object parent, Visitor v) throws Exception {
         if (!v.preVisit(animate, parent))
             return;
@@ -200,6 +208,8 @@ public class TTML2Helper extends TTMLHelper {
             traverse((Division) block, parent, v);
         else if (block instanceof Paragraph)
             traverse((Paragraph) block, parent, v);
+        else if (block instanceof Image)
+            traverse((Image) block, parent, v);
     }
 
     private static void traverseContent(Serializable content, Object parent, Visitor v) throws Exception {
@@ -213,6 +223,8 @@ public class TTML2Helper extends TTMLHelper {
                 traverse((Span) element, parent, v);
             else if (element instanceof Break)
                 traverse((Break) element, parent, v);
+            else if (element instanceof Image)
+                traverse((Image) element, parent, v);
         } else if (content instanceof String) {
             traverse((String) content, parent, v);
         }
