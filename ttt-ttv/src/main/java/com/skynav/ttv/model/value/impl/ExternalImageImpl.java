@@ -31,7 +31,4 @@ public class ExternalImageImpl extends AbstractImageImpl {
     public ExternalImageImpl(URI uri) {
         super(uri);
     }
-    public boolean resolve() {
-        throw new UnsupportedOperationException();
-    }
 }

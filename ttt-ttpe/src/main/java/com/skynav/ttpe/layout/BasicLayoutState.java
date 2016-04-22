@@ -381,7 +381,7 @@ public class BasicLayoutState implements LayoutState {
             com.skynav.ttv.model.value.Image[] retImage = new com.skynav.ttv.model.value.Image[1];
             if (com.skynav.ttv.verifier.util.Images.isImage(attrValue, getLocation(e, attrName), context, retImage)) {
                 com.skynav.ttv.model.value.Image i = retImage[0];
-                return new Image(i.getURI(), i.getSpecifiedType(), i.getSpecifiedFormat());
+                return new Image(i.getURI(), i.getVerifiedType(), i.getVerifiedFormat(), i.getWidth(), i.getHeight());
             }
         }
         return null;

@@ -78,6 +78,22 @@ public class IOUtil {
         }
     }
 
+    public static int readCompletely(InputStream is, byte[] buf) throws IOException {
+        int len = buf.length;
+        int rem = len;
+        int nb;
+        while (rem > 0) {
+            nb = is.read(buf, len - rem, rem);
+            if (nb < 0)
+                break;
+            else if (nb > 0)
+                rem -= nb;
+            else
+                Thread.yield();
+        }
+        return len - rem;
+    }
+
     public static String getDirectoryPath(File f) {
         try {
             File d = getDirectory(f);

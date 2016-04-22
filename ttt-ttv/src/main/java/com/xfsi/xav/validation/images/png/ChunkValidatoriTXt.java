@@ -26,8 +26,6 @@
 
 package com.xfsi.xav.validation.images.png;
 
-import com.xfsi.xav.validation.util.Util;
-
 public final class ChunkValidatoriTXt extends ChunkValidator {
 
     public static final class Spec {

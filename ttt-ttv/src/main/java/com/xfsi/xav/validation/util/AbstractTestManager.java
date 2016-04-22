@@ -24,31 +24,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.xfsi.xav.validation.images.png;
+package com.xfsi.xav.validation.util;
 
-public final class ChunkValidatorgAMA extends ChunkValidator {
+import com.xfsi.xav.test.TestInfo;
+import com.xfsi.xav.test.TestManager;
+import com.xfsi.xav.util.Error;
+import com.xfsi.xav.util.Progress;
 
-    public static final class Spec {
+public abstract class AbstractTestManager implements TestManager {
 
-        public static final String section = "4.2.3";
-        public static final byte[] header =
-            ChunkValidatorgAMA.class.getName().substring(ChunkValidatorgAMA.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatorgAMA.class.getName().length()).getBytes();
-        public static class Offset {
-            static final byte imageGamma                        = 0;
-        }
-
-        public static class Size {
-            static final byte imageGamma                        = 4;
-        }
-
+    protected AbstractTestManager() {
     }
 
-    void validate() throws PngValidationException {
-        validateMultipleAllowed(Spec.header);
-        validateBeforeChunk(ChunkValidatorPLTE.Spec.header);
-        validateBeforeChunk(ChunkValidatorIDAT.Spec.header);
-        validateDataSize(Spec.Size.imageGamma, Spec.section);
+    public void reportError(TestInfo testInfo, Error error) {
+    }
+
+    public void reportProgress(TestInfo testInfo, Progress progress) {
+    }
+
+    public boolean isFilteredResultSeverity(Error.Severity severity) {
+        return false;
+    }
+
+    public boolean isFilteredResultKey(String messageKey) {
+        return false;
     }
 
 }

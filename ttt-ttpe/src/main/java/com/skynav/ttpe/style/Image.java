@@ -38,15 +38,17 @@ public class Image {
     private double height;
 
     private Image() {
-        this(null, null, null);
+        this(null, null, null, 0, 0);
     }
 
-    public Image(URI source, String type, String format) {
+    public Image(URI source, String type, String format, double width, double height) {
         this.source = source;
         assert (type == null) || !type.isEmpty();
         this.type = type;
         assert (format == null) || !format.isEmpty();
         this.format = format;
+        this.width = width;
+        this.height = height;
     }
 
     public URI getSource() {

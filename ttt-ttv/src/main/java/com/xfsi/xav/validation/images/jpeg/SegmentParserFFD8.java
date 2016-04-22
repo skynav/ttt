@@ -32,8 +32,7 @@ import com.xfsi.xav.validation.util.AbstractLoggingValidator;
  * validates SOI segment
  */
 class SegmentParserFFD8 extends SegmentParser {
-    boolean validate(@SuppressWarnings("unused") JpegInputStream jis, JpegState js, AbstractLoggingValidator mh)
-    {
+    boolean validate(JpegInputStream jis, JpegState js, AbstractLoggingValidator mh) {
         mh.logResult(JpegValidator.MsgCode.JPG01I022, js.getCurrentCode());
         js.setSoiFound();
         return true;

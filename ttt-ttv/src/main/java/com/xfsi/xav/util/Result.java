@@ -26,6 +26,8 @@
 
 package com.xfsi.xav.util;
 
+import java.util.Map;
+
 public final class Result {
 
     public static final int FAIL_RESULT                         = 0;
@@ -41,12 +43,37 @@ public final class Result {
     public static final Result DEP_FAIL                         = new Result(DEP_FAIL_RESULT); // Test not run due to dependency failure
 
     private int type;
+    private Map<String,Object> state;
 
-    private Result( int type ) {
+    private Result(int type) {
         this.type = type;
     }
 
+    public Result(Result r, Map<String,Object> state) {
+        this(r.type);
+        this.state = state;
+    }
+
     public int getResult() { return type; }
+
+    public void setState(String key, Object value) {
+        if (state == null)
+            state = new java.util.HashMap<String,Object>();
+        state.put(key, value);
+    }
+
+    public Object getState(String key) {
+        return getState(key, null);
+    }
+
+    public Object getState(String key, Object defaultValue) {
+        if (state == null)
+            return null;
+        else if (state.containsKey(key))
+            return state.get(key);
+        else
+            return defaultValue;
+    }
 
     public String toString() {
         switch (type) {

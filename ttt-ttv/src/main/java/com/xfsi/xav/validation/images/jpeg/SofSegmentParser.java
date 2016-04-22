@@ -33,7 +33,6 @@ import java.util.List;
 
 import com.xfsi.xav.validation.images.jpeg.JpegValidator.MsgCode;
 import com.xfsi.xav.validation.util.AbstractLoggingValidator;
-import com.xfsi.xav.validation.util.Util;
 
 /**
  * base segment parser for any SOF segment (SOFn)
@@ -94,7 +93,7 @@ abstract class SofSegmentParser extends SegmentParser {
         return true;
     }
 
-    protected void performSegmentSpecificChecks(@SuppressWarnings("unused") JpegState js, @SuppressWarnings("unused") AbstractLoggingValidator mh)
+    protected void performSegmentSpecificChecks(JpegState js, AbstractLoggingValidator mh)
     {
         // May be overriden for segment specific checks
     }

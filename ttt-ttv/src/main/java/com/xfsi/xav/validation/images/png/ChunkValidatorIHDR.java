@@ -26,8 +26,6 @@
 
 package com.xfsi.xav.validation.images.png;
 
-import com.xfsi.xav.validation.util.Util;
-
 public final class ChunkValidatorIHDR extends ChunkValidator {
 
     public static final class Spec {
@@ -81,8 +79,10 @@ public final class ChunkValidatorIHDR extends ChunkValidator {
         int invalid = 0;
         if (width == invalid)
             png.logMsg(PngValidator.MsgCode.PNG01E005, Spec.section, width);
-        else
+        else {
             png.logMsg(PngValidator.MsgCode.PNG01I017, Spec.section, width);
+            resultState.put("width", Integer.valueOf(width));
+        }
     }
 
     private void validateHeight() throws PngValidationException {
@@ -90,8 +90,10 @@ public final class ChunkValidatorIHDR extends ChunkValidator {
         int invalid = 0;
         if (height == invalid)
             png.logMsg(PngValidator.MsgCode.PNG01E006, Spec.section, height);
-        else
+        else {
             png.logMsg(PngValidator.MsgCode.PNG01I018, Spec.section, height);
+            resultState.put("height", Integer.valueOf(height));
+        }
     }
 
     private void validateBitDepthAndColorType() throws PngValidationException {

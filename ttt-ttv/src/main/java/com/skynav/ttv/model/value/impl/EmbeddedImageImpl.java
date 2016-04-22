@@ -34,7 +34,4 @@ public class EmbeddedImageImpl extends AbstractImageImpl {
         super(uri);
         this.target = target;
     }
-    public boolean resolve() {
-        throw new UnsupportedOperationException();
-    }
 }

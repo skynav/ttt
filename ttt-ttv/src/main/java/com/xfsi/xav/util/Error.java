@@ -400,6 +400,10 @@ public class Error {
 
         public int getSeverity() { return type; }
 
+        public boolean isSevereAs(int type) {
+            return (this.type >= type) && (this.type < OFF_SEVERITY);
+        }
+
         public String toString() {
             switch (type) {
             case TRACE_SEVERITY:

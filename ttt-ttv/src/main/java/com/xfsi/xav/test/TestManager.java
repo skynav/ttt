@@ -35,4 +35,8 @@ public interface TestManager {
 
     public void reportProgress(TestInfo testInfo, Progress progress);
 
+    public boolean isFilteredResultSeverity(Error.Severity severity);
+
+    public boolean isFilteredResultKey(String messageKey);
+
 }

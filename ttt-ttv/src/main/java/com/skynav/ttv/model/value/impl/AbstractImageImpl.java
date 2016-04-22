@@ -32,13 +32,11 @@ import com.skynav.ttv.model.value.Image;
 public abstract class AbstractImageImpl implements Image {
     private URI uri;
     private String typeSpecified;
-    private String typeResolved;
+    private String typeVerified;
     private String formatSpecified;
-    private String formatResolved;
-    private boolean resolved;
-    private boolean resolutionFailure;
-    private int width;
-    private int height;
+    private String formatVerified;
+    private int width = -1;
+    private int height = -1;
     public AbstractImageImpl(URI uri) {
         this.uri = uri;
     }
@@ -48,46 +46,29 @@ public abstract class AbstractImageImpl implements Image {
     public String getSpecifiedType() {
         return typeSpecified;
     }
-    protected void setResolvedType(String type) {
-        typeResolved = type;
+    protected void setVerifiedType(String type) {
+        typeVerified = type;
     }
-    public String getResolvedType() {
-        if (resolved())
-            return typeResolved;
-        else
-            return null;
+    public String getVerifiedType() {
+        return typeVerified;
     }
     public String getSpecifiedFormat() {
         return formatSpecified;
     }
-    protected void setResolvedFormat(String format) {
-        formatResolved = format;
+    protected void setVerifiedFormat(String format) {
+        formatVerified = format;
     }
-    public String getResolvedFormat() {
-        if (resolved())
-            return formatResolved;
-        else
-            return null;
-    }
-    public abstract boolean resolve();
-    public boolean resolved() {
-        return resolved;
-    }
-    public boolean resolutionFailed() {
-        return resolutionFailure;
+    public String getVerifiedFormat() {
+        return formatVerified;
     }
     public int getWidth() {
-        maybeResolve();
         return width;
     }
     public int getHeight() {
-        maybeResolve();
         return height;
     }
-    private void maybeResolve() {
-        if (!resolved && !resolutionFailure)
-            resolved = resolve();
-        if (!resolved)
-            resolutionFailure = true;
+    public void setExtent(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
 }

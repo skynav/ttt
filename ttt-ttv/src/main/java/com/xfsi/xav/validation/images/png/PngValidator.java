@@ -27,6 +27,7 @@
 package com.xfsi.xav.validation.images.png;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import com.xfsi.xav.test.TestInfo;
 import com.xfsi.xav.test.TestManager;
@@ -34,7 +35,6 @@ import com.xfsi.xav.util.Error;
 import com.xfsi.xav.util.Progress;
 import com.xfsi.xav.util.Result;
 import com.xfsi.xav.util.property.PropertyMessageKey;
-import com.xfsi.xav.validation.util.Util;
 import com.xfsi.xav.validation.validator.AbstractValidator;
 
 public final class PngValidator extends AbstractValidator
@@ -187,14 +187,16 @@ public final class PngValidator extends AbstractValidator
     private int totalMsgs;
     private int totalErrorMsgs;
 
-    public PngValidator() throws Exception  {
+    public PngValidator() {
     }
 
     public Result run(TestManager tm, TestInfo ti) {
         try {
-            super.initState(tm,ti);
+            super.initState(tm, ti);
             InputStream is = ti.getResourceStream();
-            return validate(is, tm, ti) ? Result.PASS : Result.FAIL;
+            Map<String,Object> resultState = new java.util.HashMap<String,Object>();
+            Result r = validate(is, tm, ti, resultState) ? Result.PASS : Result.FAIL;
+            return new Result(r, resultState);
         } catch (PngValidationException e) {
             tm.reportProgress(ti, new Progress(Error.Severity.INFO, "Unable to continue PNG validation: " + e.getMessage() + " issues detected"));
             return Result.FAIL;
@@ -209,10 +211,10 @@ public final class PngValidator extends AbstractValidator
     }
 
     public boolean validate(InputStream is) throws PngValidationException {
-        return validate(is, null, null);
+        return validate(is, null, null, null);
     }
 
-    public boolean validate(InputStream is, TestManager tm, TestInfo ti) throws PngValidationException {
+    public boolean validate(InputStream is, TestManager tm, TestInfo ti, Map<String,Object> resultState) throws PngValidationException {
         this.tm = tm;
         this.ti = ti;
         this.data = is;
@@ -225,12 +227,10 @@ public final class PngValidator extends AbstractValidator
         this.colorType = -1;
         this.bitDepth = -1;
         this.chunkStates = Spec.initializeChunkStates();
-
         if (this.data == null)
             logMsg(PngValidator.MsgCode.PNG01X003, null);
-
         validateSignature();
-        readChunks();
+        readChunks(resultState);
         return this.totalErrorMsgs == 0;
     }
 
@@ -404,7 +404,7 @@ public final class PngValidator extends AbstractValidator
             logMsg(PngValidator.MsgCode.PNG01F001, null);
     }
 
-    private void readChunks() throws PngValidationException {
+    private void readChunks(Map<String,Object> resultState) throws PngValidationException {
         boolean endFound = false;
         while (!endFound) {
             byte[] length = readChunkLength();
@@ -413,7 +413,7 @@ public final class PngValidator extends AbstractValidator
             byte[] data = readChunkData(length);
             byte[] crc = readChunkCrc();
             validateCrc(type, data, crc);
-            endFound = dispatchChunkValidator(type, data);
+            endFound = dispatchChunkValidator(type, data, resultState);
             currentChunkType = null;
         }
         assertRequiredChunksFound();
@@ -448,11 +448,11 @@ public final class PngValidator extends AbstractValidator
         return crc;
     }
 
-    private boolean dispatchChunkValidator(byte[] type, byte[] data) throws PngValidationException {
+    private boolean dispatchChunkValidator(byte[] type, byte[] data, Map<String,Object> resultState) throws PngValidationException {
         try {
-            Class c = Class.forName(ChunkValidator.class.getName() + new String(type));
+            Class<?> c = Class.forName(ChunkValidator.class.getName() + new String(type));
             ChunkValidator cv = (ChunkValidator) c.newInstance();
-            cv.initialize(this, data);
+            cv.initialize(this, data, resultState);
             cv.validate();
         } catch (ClassNotFoundException e) {
             processNonStandardChunk(type);
@@ -469,7 +469,6 @@ public final class PngValidator extends AbstractValidator
     }
 
     private void assertRequiredChunksFound() throws PngValidationException {
-        boolean plteFound = false;
         for (int i = 0; i < chunkStates.length; i++) {
             ChunkState cs = chunkStates[i];
             if (cs.mustExist()) {

@@ -26,12 +26,13 @@
 
 package com.xfsi.xav.validation.images.png;
 
-import com.xfsi.xav.validation.util.Util;
+import java.util.Map;
 
 public abstract class ChunkValidator {
 
-    protected PngValidator png = null;
-    protected byte[] data = null;
+    protected PngValidator png;
+    protected byte[] data;
+    protected Map<String,Object> resultState;
 
     public static final class Spec {
         public static final class Props {
@@ -42,9 +43,10 @@ public abstract class ChunkValidator {
         }
     }
 
-    void initialize(PngValidator caller, byte[] chunkData) {
-        png = caller;
-        data = chunkData;
+    void initialize(PngValidator caller, byte[] chunkData, Map<String,Object> resultState) {
+        this.png = caller;
+        this.data = chunkData;
+        this.resultState = resultState;
     }
 
     protected void validateMultipleAllowed(byte[] type) throws PngValidationException {

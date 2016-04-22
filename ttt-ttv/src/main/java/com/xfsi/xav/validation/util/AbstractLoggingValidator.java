@@ -34,7 +34,7 @@ import com.xfsi.xav.validation.validator.AbstractValidator;
 
 public abstract class AbstractLoggingValidator extends AbstractValidator {
 
-    protected AbstractLoggingValidator(TestType testType, ContentType contentType) throws Exception {
+    protected AbstractLoggingValidator(TestType testType, ContentType contentType) {
     }
 
     public AppType getAppType() {
@@ -49,13 +49,13 @@ public abstract class AbstractLoggingValidator extends AbstractValidator {
         return false;
     }
 
-    public void logResult(Enum code, Object... args) {
+    public void logResult(Enum<?> code, Object... args) {
     }
 
-    public void logProgress(Enum code, Object... args) {
+    public void logProgress(Enum<?> code, Object... args) {
     }
 
-    public void logAll(Enum code, Object... args) {
+    public void logAll(Enum<?> code, Object... args) {
     }
 
     public String msgFormatterNV(String msg, Object...objects) {

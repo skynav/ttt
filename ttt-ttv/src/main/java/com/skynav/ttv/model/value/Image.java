@@ -30,12 +30,10 @@ import java.net.URI;
 public interface Image {
     URI getURI();
     String getSpecifiedType();
-    String getResolvedType();
+    String getVerifiedType();
     String getSpecifiedFormat();
-    String getResolvedFormat();
-    boolean resolved();
-    boolean resolutionFailed();
+    String getVerifiedFormat();
     int getWidth();
     int getHeight();
-    boolean resolve();
+    void setExtent(int width, int height);
 }

@@ -45,6 +45,7 @@ import com.skynav.ttpe.area.Area;
 import com.skynav.ttpe.area.AreaNode;
 import com.skynav.ttpe.area.BlockArea;
 import com.skynav.ttpe.area.BlockFillerArea;
+import com.skynav.ttpe.area.BlockImageArea;
 import com.skynav.ttpe.area.BoundedBlockArea;
 import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.area.GlyphArea;
@@ -449,6 +450,28 @@ public class SVGRenderProcessor extends RenderProcessor {
         if ((i != null) && !i.isNone())
             return true;
         return false;
+    }
+
+    private Element renderImage(Element parent, BlockImageArea a, Document d) {
+        Element e = parent;
+        Image image = a.getImage();
+        if ((image != null) && !image.isNone()) {
+            FrameResource resource = addResource(image);
+            Element eImage = Documents.createElement(d, SVGDocumentFrame.svgImageEltName);
+            Documents.setAttribute(eImage, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {image.getWidth()}));
+            Documents.setAttribute(eImage, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {image.getHeight()}));
+            Documents.setAttribute(eImage, SVGDocumentFrame.preserveAspectRatioAttrName, "xMinYMin slice");
+            Documents.setAttribute(eImage, SVGDocumentFrame.xlinkHrefAttrName, resource.getName());
+            e.appendChild(eImage);
+        }
+        double bpd = a.getBPD();
+        if (a.isVertical()) {
+            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                bpd = -bpd;
+            xCurrent += bpd;
+        } else
+            yCurrent += bpd;
+        return e;
     }
 
     private Element renderFiller(Element parent, BlockFillerArea a, Document d) {
@@ -998,6 +1021,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             return renderViewport(parent, (ViewportArea) a, d);
         else if (a instanceof BlockFillerArea)
             return renderFiller(parent, (BlockFillerArea) a, d);
+        else if (a instanceof BlockImageArea)
+            return renderImage(parent, (BlockImageArea) a, d);
         else if (a instanceof BlockArea)
             return renderBlock(parent, (BlockArea) a, d);
         else

@@ -1,6 +1,5 @@
 /*
  * Copyright 2016 Skynav, Inc. All rights reserved.
- * Portions Copyright 2009 Extensible Formatting Systems, Inc (XFSI).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -24,31 +23,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.xfsi.xav.validation.images.png;
+package com.skynav.ttv.verifier;
 
-public final class ChunkValidatorgAMA extends ChunkValidator {
+import com.skynav.ttv.model.value.Image;
+import com.skynav.ttv.util.Location;
 
-    public static final class Spec {
+public interface ImageVerifier {
 
-        public static final String section = "4.2.3";
-        public static final byte[] header =
-            ChunkValidatorgAMA.class.getName().substring(ChunkValidatorgAMA.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatorgAMA.class.getName().length()).getBytes();
-        public static class Offset {
-            static final byte imageGamma                        = 0;
-        }
-
-        public static class Size {
-            static final byte imageGamma                        = 4;
-        }
-
-    }
-
-    void validate() throws PngValidationException {
-        validateMultipleAllowed(Spec.header);
-        validateBeforeChunk(ChunkValidatorPLTE.Spec.header);
-        validateBeforeChunk(ChunkValidatorIDAT.Spec.header);
-        validateDataSize(Spec.Size.imageGamma, Spec.section);
-    }
+    /**
+     * Verify resolvable image content.
+     * @param image instance
+     * @param location location context
+     * @param context verifier context
+     * @return true if verification succeeds without error
+     */
+    boolean verify(Image image, Location location, VerifierContext context);
 
 }

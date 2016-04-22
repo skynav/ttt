@@ -34,9 +34,7 @@ import com.xfsi.xav.validation.util.AbstractLoggingValidator;
  * validates EOI segment
  */
 class SegmentParserFFD9 extends SegmentParser {
-    @SuppressWarnings("unused")
-    boolean validate(JpegInputStream jis, JpegState js, AbstractLoggingValidator mh) throws EOFException
-    {
+    boolean validate(JpegInputStream jis, JpegState js, AbstractLoggingValidator mh) throws EOFException {
         mh.logResult(JpegValidator.MsgCode.JPG01I023, js.getCurrentCode());
         js.setEoiFound();
         return true;

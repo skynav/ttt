@@ -47,6 +47,9 @@ import com.skynav.ttv.verifier.VerifierContext;
 public class Images {
 
     public static boolean isImage(String value, Location location, VerifierContext context, Image[] outputImage) {
+        Image image;
+        if ((outputImage != null) && (outputImage.length < 0))
+            throw new IllegalArgumentException();
         if (URIs.isLocalFragment(value)) {
             String id = URIs.getFragment(value);
             assert id != null;
@@ -67,7 +70,7 @@ public class Images {
                             else {
                                 URI base = location.getSystemIdAsURI();
                                 URI uri = URIs.makeURISafely("#" + id, base);
-                                return internalImage(uri, target, outputImage); // good local reference
+                                image = internalImage(uri, target);             // good local reference (though not necessarily resolvable)
                             }
                         } else
                             throw new IllegalStateException();                  // no binding for target element (illegal state)
@@ -83,40 +86,36 @@ public class Images {
             if (uri == null)
                 return false;                                                   // bad syntax
             else
-                return externalImage(uri, outputImage);                         // good non-local reference (though not necessarily resolvable)
+                image = externalImage(uri);                                     // good non-local reference (though not necessarily resolvable)
         } else if (value.length() > 0) {
             return false;                                                       // image reference is all LWSP or has LWSP padding
         } else {
             return false;                                                       // image reference is empty string
         }
-    }
-
-    private static boolean internalImage(URI uri, Object target, Image[] outputImage) {
+        // verify image content
+        assert image != null;
+        if (!context.getModel().getImageVerifier().verify(image, location, context))
+            return false;
+        // return image instance if requested
         if (outputImage != null) {
-            if (outputImage.length < 1)
-                throw new IllegalArgumentException();
-            else
-                outputImage[0] = new EmbeddedImageImpl(uri, target);
+            assert outputImage.length > 0;
+            outputImage[0] = image;
         }
         return true;
     }
 
-    private static boolean externalImage(URI uri, Image[] outputImage) {
-        if (outputImage != null) {
-            if (outputImage.length < 1)
-                throw new IllegalArgumentException();
-            else
-                outputImage[0] = new ExternalImageImpl(uri);
-        }
-        return true;
+    private static Image internalImage(URI uri, Object target) {
+        return new EmbeddedImageImpl(uri, target);
+    }
+
+    private static Image externalImage(URI uri) {
+        return new ExternalImageImpl(uri);
     }
 
     public static void badImage(String value, Location location, VerifierContext context) {
-
         Reporter reporter = context.getReporter();
         Message m = null;
         Locator locator = location.getLocator();
-
         if (URIs.isLocalFragment(value)) {
             String id = URIs.getFragment(value);
             assert id != null;

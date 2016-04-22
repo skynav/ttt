@@ -26,6 +26,13 @@
 
 package com.xfsi.xav.validation.validator;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 import com.xfsi.xav.test.Test;
@@ -38,19 +45,35 @@ import com.xfsi.xav.util.Error.ContentType;
 import com.xfsi.xav.util.Error.Reference;
 import com.xfsi.xav.util.Error.TestType;
 import com.xfsi.xav.util.property.PropertyMessageKey;
+import com.xfsi.xav.util.property.PropertyMessageKeyTokenizer;
 
 public abstract class AbstractValidator implements Test  {
 
+    private static final String PROPERTY_FILE_NAME = "properties.xml";
+    private static final String MSG_PREFIX = "msg.";
+    private static final String INTERNAL_ERROR_ID = "XAV_INTERNAL: ";
+    private static final String TKN01F001 = "malformed message key ";
+    private static final String TKN01F002 = "null message key ";
+
     protected Properties properties;
+    protected boolean propertiesInitialized;
+    protected String propertyFile;
+    private Class instance;
+    private boolean valid;
+    private String lastError;
+    private PropertyMessageKeyTokenizer keyTokenizer;
 
-    public AbstractValidator()  throws Exception {
+    public AbstractValidator() {
+        this.instance = this.getClass();
+        this.propertyFile = PROPERTY_FILE_NAME;
     }
 
-    public AbstractValidator(String propertyFileName) throws Exception {
-        // super(propertyFileName);
+    public AbstractValidator(String propertyFile) {
+        this.instance = this.getClass();
+        this.propertyFile = propertyFile;
     }
 
-    public boolean isRunnable(TestManager tm, TestInfo ti) throws Exception {
+    public boolean isRunnable(TestManager tm, TestInfo ti) {
         return true;
     }
 
@@ -58,26 +81,192 @@ public abstract class AbstractValidator implements Test  {
         loadProperties();
     }
 
-    private void loadProperties() {
+    private void loadProperties() throws Exception {
+        if (!propertiesInitialized) {
+            InputStream is = null;
+            valid = false;
+            lastError = null;
+            propertiesInitialized = true;
+            try {
+                if ((is = this.instance.getClassLoader().getResourceAsStream(getClassDirectory() + propertyFile)) != null) {
+                    valid = true;
+                    properties = new Properties();
+                    properties.loadFromXML(is);
+                    try {
+                        Enumeration e = properties.propertyNames();
+                        for (; e.hasMoreElements();) {
+                            String propName = (String) e.nextElement();
+                            if (propName.startsWith(MSG_PREFIX))
+                                getMsgKey(propName);
+                        }
+                    } catch (PropertyMessageKey.MalformedKeyException e) {
+                        valid = false;
+                        lastError = e.toString();
+                        throw e;
+                    }
+                }
+            } catch (InvalidPropertiesFormatException e) {
+                valid = false;
+                lastError = e.toString();
+                throw e;
+            } catch (IOException e) {
+                valid = false;
+                lastError = e.toString();
+                throw e;
+            } finally {
+                closeSafely(is);
+            }
+        }
+    }
+
+    private void closeSafely(InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    private String getClassDirectory() {
+        String p = this.instance.getName().replace( '.', '/' );
+        return p.substring( 0, p.lastIndexOf( '/' ) + 1 );
+    }
+
+    private PropertyMessageKey getMsgKey(String key)
+        throws PropertyMessageKey.MalformedKeyException {
+        if (key != null) {
+            if (key.startsWith(MSG_PREFIX))
+                return parseKey(key.substring(MSG_PREFIX.length()));
+            throw new PropertyMessageKey.MalformedKeyException(TKN01F001 + key + ", invalid prefix, msg. expected");
+        }
+        throw new PropertyMessageKey.MalformedKeyException(TKN01F002);
     }
 
     protected String msg(String key, Object... formatArguments) {
-        return null;
+        if (properties != null) {
+            try {
+                parseKey(key);
+                String msg = properties.getProperty(MSG_PREFIX + key);
+                if (msg != null && msg.length() > 0)
+                    return MessageFormat.format(msg, formatArguments);
+            } catch (PropertyMessageKey.MalformedKeyException e) {
+                return INTERNAL_ERROR_ID + e.toString();
+            }
+        }
+        return INTERNAL_ERROR_ID + "missing message: " + key;
     }
 
     protected String msgFormatterNV(String key, Object... formatArguments) {
-        return null;
+        if (properties != null) {
+            String msg = properties.getProperty(MSG_PREFIX + key);
+            if (msg != null && msg.length() > 0)
+                return String.format(msg, formatArguments);
+        }
+        return INTERNAL_ERROR_ID + "missing message: " + key;
     }
 
     protected PropertyMessageKey parseKey(String key) throws PropertyMessageKey.MalformedKeyException {
-        return null;
+        if (keyTokenizer == null)
+            keyTokenizer = new PropertyMessageKeyTokenizer();
+        return parseKey(keyTokenizer, key);
+    }
+
+    protected PropertyMessageKey parseKey(PropertyMessageKeyTokenizer kt, String key) throws PropertyMessageKey.MalformedKeyException {
+        PropertyMessageKey mk = new PropertyMessageKey();
+        StringReader r = null;
+        try {
+            r = new StringReader(key);
+            if (kt == null)
+                kt = new PropertyMessageKeyTokenizer();
+            else
+                kt.reset();
+            kt.setReader(r);
+            int tokenCount = 0;
+            int token = kt.nextToken();
+            while (token != StreamTokenizer.TT_EOF) {
+                ++tokenCount;
+                switch (token) {
+                case PropertyMessageKeyTokenizer.TT_NUMBER:
+                    if (tokenCount == 2) {
+                        mk.setValidatorCode(kt.nval);
+                        if (kt.tokenLen != PropertyMessageKey.EXPECTED_VALIDATOR_CODE_LEN)
+                            throw new PropertyMessageKey.MalformedKeyException(TKN01F001 +
+                                key + ", expected validator code length " + PropertyMessageKey.EXPECTED_VALIDATOR_CODE_LEN + ", actual " + kt.tokenLen);
+                    } else if (tokenCount == 4) {
+                        mk.setErrorCode(kt.nval);
+                        if (kt.tokenLen != PropertyMessageKey.EXPECTED_ERROR_CODE_LEN)
+                            throw new PropertyMessageKey.MalformedKeyException(TKN01F001 +
+                                key + ", expected error code length " + PropertyMessageKey.EXPECTED_ERROR_CODE_LEN + ", actual " + kt.tokenLen);
+                    } else if (tokenCount == 6)
+                        mk.setErrorCodeFraction(kt.nval);
+                    else
+                        throw new PropertyMessageKey.MalformedKeyException(TKN01F001 + key + ", unexpected number token: " + kt.nval);
+                    break;
+                case PropertyMessageKeyTokenizer.TT_WORD:
+                    if (tokenCount == 1)
+                        mk.setValidatorId(kt.sval);
+                    else if (tokenCount == 3)
+                        mk.setSeverity(kt.sval);
+                    else
+                        throw new PropertyMessageKey.MalformedKeyException(TKN01F001 + key + ", unexpected string token: " + kt.sval);
+                    break;
+                case PropertyMessageKeyTokenizer.TT_FRACTION:
+                    if (tokenCount != 5)
+                        throw new PropertyMessageKey.MalformedKeyException(TKN01F001 + key + ", unexpected character: " + (char) kt.ttype);
+                    break;
+                default:
+                    throw new PropertyMessageKey.MalformedKeyException(TKN01F001 + key + ", unexpected character: " + (char) kt.ttype);
+                }
+                token = kt.nextToken();
+            }
+        } catch (IOException e) {
+            throw new PropertyMessageKey.MalformedKeyException(TKN01F001 + key + ", unexpected exception: " + e);
+        } finally {
+            if (r != null)
+                r.close();
+        }
+        try {
+            mk.checkValidity();
+        } catch (PropertyMessageKey.MalformedKeyException e) {
+            throw new PropertyMessageKey.MalformedKeyException(TKN01F001 + key + ", " + e);
+        }
+        return mk;
     }
 
     protected Error error(TestManager tm, TestType type, Category category, ContentType contentType, Reference reference, String subReference, String message, String messageKey) {
-        return null;
+        Error.Severity severity = Error.Severity.UNSPECIFIED;
+        try {
+            PropertyMessageKey mk = getMsgKey(MSG_PREFIX + messageKey);
+            category = verifyCategory(mk, category);
+            severity = mk.getSeverity();
+            if (isResultFiltered(tm, messageKey, severity))
+                return null;
+        } catch (PropertyMessageKey.MalformedKeyException e) {
+            message = INTERNAL_ERROR_ID + e.toString();
+        }
+        return errorInternal(tm, type, category, contentType, reference, subReference, message, messageKey, severity);
+    }
+
+    private Category verifyCategory(PropertyMessageKey mk, Category category) {
+        char sc = mk.getSeverityChar();
+        if (sc == 'Y' || sc == 'X')
+            return Error.Category.INTERNAL;
+        return category;
+    }
+
+    private Error errorInternal(TestManager tm, TestType type, Category category,
+        ContentType contentType, Reference reference, String subReference, String message, String messageKey, Error.Severity severity) {
+        return new Error(messageKey, type, category, severity, contentType, reference, message, subReference);
     }
 
     protected boolean isResultFiltered(TestManager tm, String messageKey, Error.Severity severity) {
+        if (tm != null) {
+            if (tm.isFilteredResultSeverity(severity))
+                return true;
+            if (tm.isFilteredResultKey(messageKey))
+                return true;
+        }
         return false;
     }
 

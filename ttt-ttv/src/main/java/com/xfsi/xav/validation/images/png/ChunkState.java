@@ -41,11 +41,6 @@ final class ChunkState
     private int count;
     private byte[] data;
 
-    private ChunkState() {
-        type = null;                            // gets rid of warning
-        multipleAllowed = false;                // gets rid of warning
-    }
-
     ChunkState(byte[] type, byte state, boolean multipleAllowed) {
         this.type = type;
         this.state = state;

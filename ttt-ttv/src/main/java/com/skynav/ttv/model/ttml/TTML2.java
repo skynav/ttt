@@ -35,12 +35,14 @@ import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.Style;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
+import com.skynav.ttv.verifier.ImageVerifier;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
+import com.skynav.ttv.verifier.ttml.TTML2ImageVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2MetadataVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2ParameterVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2ProfileVerifier;
@@ -81,6 +83,7 @@ public class TTML2 {
         private StyleVerifier styleVerifier;
         private TimingVerifier timingVerifier;
         private MetadataVerifier metadataVerifier;
+        private ImageVerifier imageVerifier;
 
         public TTML2Model() {
             populate();
@@ -206,6 +209,13 @@ public class TTML2 {
                 metadataVerifier = new TTML2MetadataVerifier(this);
             }
             return metadataVerifier;
+        }
+
+        public ImageVerifier getImageVerifier() {
+            if (imageVerifier == null) {
+                imageVerifier = new TTML2ImageVerifier(this);
+            }
+            return imageVerifier;
         }
 
     }

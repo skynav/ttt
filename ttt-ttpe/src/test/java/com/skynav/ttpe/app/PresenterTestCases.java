@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -542,6 +543,7 @@ public class PresenterTestCases {
     }
 
     @Test
+    @Ignore
     public void test098DivisionBackgroundImage1() throws Exception {
         performPresentationTest("test-098-div-background-image-1.xml", 0, 0);
     }

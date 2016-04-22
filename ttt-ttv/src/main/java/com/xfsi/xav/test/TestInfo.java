@@ -28,7 +28,7 @@ package com.xfsi.xav.test;
 
 import java.io.InputStream;
 
-// import com.xfsi.xav.util.MimeType;
+import com.xfsi.xav.util.MimeType;
 
 /**
  * An object that will contain all the information pertaining to a
@@ -91,14 +91,14 @@ public interface TestInfo {
      *
      * @return the MIME type this test applies to
      */
-    // public MimeType getMimeType();
+    public MimeType getMimeType();
 
     /**
      * set the MIME type of resource to be validated
      *
      * @param type the MIME type this test applies to
      */
-    // public void setMimeType( MimeType type );
+    public void setMimeType(MimeType type);
 
     /**
      * returns whether a resource hierarchy is extracted to disk

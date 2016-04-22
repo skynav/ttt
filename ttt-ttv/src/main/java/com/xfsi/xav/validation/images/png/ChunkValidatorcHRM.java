@@ -26,8 +26,6 @@
 
 package com.xfsi.xav.validation.images.png;
 
-import com.xfsi.xav.validation.util.Util;
-
 public final class ChunkValidatorcHRM extends ChunkValidator {
 
     public static final class Spec {

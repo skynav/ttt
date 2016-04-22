@@ -155,7 +155,7 @@ public final class JpegValidator extends AbstractLoggingValidator {
     private JpegInputStream inputStream = null;
     private JpegState state = null;
 
-    public JpegValidator() throws Exception
+    public JpegValidator()
     {
         super(Error.TestType.STATIC, Error.ContentType.IMAGE_JPG);
     }
@@ -222,43 +222,37 @@ public final class JpegValidator extends AbstractLoggingValidator {
 
     private boolean parseSegment() throws EOFException
     {
-        Class c = null;
         String className = this.state.getCurrentSegmentParserName();
-        try
-            {
-                c = Class.forName(className);
-                SegmentParser mp = (SegmentParser) c.newInstance();
-                return mp.validate(this.inputStream, this.state, this);
-            }
-        catch (ClassNotFoundException e)
-            {
-                Integer code = this.state.getCurrentCode();
-                if (!isReservedApplicationSegment(code))
-                    {
-                        String symbol;
-                        if ((symbol = findReservedJpegExtensionSymbol(code)) != null)
-                            logResult(MsgCode.JPG01E006, code, symbol, this.inputStream.getTotalBytesRead());
-                        else if (code == 0xff01)
-                            logResult(MsgCode.JPG01E007, this.inputStream.getTotalBytesRead());
-                        else if (code >= 0xff02 && code <= 0xffbf)
-                            logResult(MsgCode.JPG01E002, code, this.inputStream.getTotalBytesRead());
-                        else
-                            {
-                                logResult(MsgCode.JPG01E014, code, this.inputStream.getTotalBytesRead());
-                                return false;
-                            }
-                        skipToNextSegment();
-                    }
-                return true;
-            }
-        catch (IllegalAccessException e)
-            {
-                logProgress(MsgCode.JPG01X005, Thread.currentThread().getStackTrace()[2].getMethodName(), c.getName(), e.getMessage(), this.inputStream.getTotalBytesRead());
-            }
-        catch (InstantiationException e)
-            {
-                logProgress(MsgCode.JPG01X006, Thread.currentThread().getStackTrace()[2].getMethodName(), c.getName(), e.getMessage(), this.inputStream.getTotalBytesRead());
-            }
+        try {
+            Class<?> c = Class.forName(className);
+            SegmentParser mp = (SegmentParser) c.newInstance();
+            return mp.validate(this.inputStream, this.state, this);
+        } catch (ClassNotFoundException e) {
+            Integer code = this.state.getCurrentCode();
+            if (!isReservedApplicationSegment(code))
+                {
+                    String symbol;
+                    if ((symbol = findReservedJpegExtensionSymbol(code)) != null)
+                        logResult(MsgCode.JPG01E006, code, symbol, this.inputStream.getTotalBytesRead());
+                    else if (code == 0xff01)
+                        logResult(MsgCode.JPG01E007, this.inputStream.getTotalBytesRead());
+                    else if (code >= 0xff02 && code <= 0xffbf)
+                        logResult(MsgCode.JPG01E002, code, this.inputStream.getTotalBytesRead());
+                    else
+                        {
+                            logResult(MsgCode.JPG01E014, code, this.inputStream.getTotalBytesRead());
+                            return false;
+                        }
+                    skipToNextSegment();
+                }
+            return true;
+        } catch (IllegalAccessException e) {
+            logProgress(MsgCode.JPG01X005, Thread.currentThread().getStackTrace()[2].getMethodName(),
+                        className, e.getMessage(), this.inputStream.getTotalBytesRead());
+        } catch (InstantiationException e) {
+            logProgress(MsgCode.JPG01X006, Thread.currentThread().getStackTrace()[2].getMethodName(),
+                        className, e.getMessage(), this.inputStream.getTotalBytesRead());
+        }
         return false;
     }
 
