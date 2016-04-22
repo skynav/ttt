@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.InvalidPropertiesFormatException;
@@ -58,18 +59,15 @@ public abstract class AbstractValidator implements Test  {
     protected Properties properties;
     protected boolean propertiesInitialized;
     protected String propertyFile;
-    private Class instance;
     private boolean valid;
     private String lastError;
     private PropertyMessageKeyTokenizer keyTokenizer;
 
     public AbstractValidator() {
-        this.instance = this.getClass();
         this.propertyFile = PROPERTY_FILE_NAME;
     }
 
     public AbstractValidator(String propertyFile) {
-        this.instance = this.getClass();
         this.propertyFile = propertyFile;
     }
 
@@ -88,21 +86,24 @@ public abstract class AbstractValidator implements Test  {
             lastError = null;
             propertiesInitialized = true;
             try {
-                if ((is = this.instance.getClassLoader().getResourceAsStream(getClassDirectory() + propertyFile)) != null) {
-                    valid = true;
-                    properties = new Properties();
-                    properties.loadFromXML(is);
-                    try {
-                        Enumeration e = properties.propertyNames();
-                        for (; e.hasMoreElements();) {
-                            String propName = (String) e.nextElement();
-                            if (propName.startsWith(MSG_PREFIX))
-                                getMsgKey(propName);
+                URL url = getClass().getResource(propertyFile);
+                if (url != null) {
+                    if ((is = url.openStream()) != null) {
+                        valid = true;
+                        properties = new Properties();
+                        properties.loadFromXML(is);
+                        try {
+                            Enumeration e = properties.propertyNames();
+                            for (; e.hasMoreElements();) {
+                                String propName = (String) e.nextElement();
+                                if (propName.startsWith(MSG_PREFIX))
+                                    getMsgKey(propName);
+                            }
+                        } catch (PropertyMessageKey.MalformedKeyException e) {
+                            valid = false;
+                            lastError = e.toString();
+                            throw e;
                         }
-                    } catch (PropertyMessageKey.MalformedKeyException e) {
-                        valid = false;
-                        lastError = e.toString();
-                        throw e;
                     }
                 }
             } catch (InvalidPropertiesFormatException e) {
@@ -119,6 +120,11 @@ public abstract class AbstractValidator implements Test  {
         }
     }
 
+    private String getClassDirectory() {
+        String p = getClass().getName().replace( '.', '/' );
+        return p.substring( 0, p.lastIndexOf( '/' ) + 1 );
+    }
+
     private void closeSafely(InputStream is) {
         if (is != null) {
             try {
@@ -126,11 +132,6 @@ public abstract class AbstractValidator implements Test  {
             } catch (IOException e) {
             }
         }
-    }
-
-    private String getClassDirectory() {
-        String p = this.instance.getName().replace( '.', '/' );
-        return p.substring( 0, p.lastIndexOf( '/' ) + 1 );
     }
 
     private PropertyMessageKey getMsgKey(String key)
