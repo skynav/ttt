@@ -65,6 +65,11 @@ public class TTML2 {
         public static final String PROFILE_TTML2_FULL_ABSOLUTE = NAMESPACE_TT_PROFILE + PROFILE_TTML2_FULL;
 
         public static final String NAMESPACE_XLINK = "http://www.w3.org/1999/xlink";
+
+        public static final String ATTR_FORMAT = "format";
+        public static final String ATTR_SRC = "src";
+        public static final String ATTR_TYPE = "type";
+
     }
 
     public static final String MODEL_NAME = "ttml2";
@@ -216,6 +221,17 @@ public class TTML2 {
                 imageVerifier = new TTML2ImageVerifier(this);
             }
             return imageVerifier;
+        }
+
+        public boolean isSupportedResourceType(String type, String parameters) {
+            if (type == null)
+                return false;
+            else if (type.equals("image/png"))
+                return true;
+            else if (type.equals("image/jpeg"))
+                return true;
+            else
+                return false;
         }
 
     }

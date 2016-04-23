@@ -60,8 +60,10 @@ abstract class SofSegmentParser extends SegmentParser {
                 validateSamplePrecision(symbol, p, list, mh);
                 int y = jis.readShort() & 0xffff;
                 validateNumberOfLines(symbol, y, js, mh);
+                js.setResultState("height", Integer.valueOf(y));
                 int x = jis.readShort() & 0xffff;
                 validateNumberOfSamplesPerLine(symbol, x, mh);
+                js.setResultState("width", Integer.valueOf(x));
                 int nf = jis.readByte() & 0xff;
                 short minNf = getMinImageComponentNumber();
                 short maxNf = getMaxImageComponentNumber();

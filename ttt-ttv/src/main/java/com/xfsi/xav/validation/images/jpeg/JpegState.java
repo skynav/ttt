@@ -26,6 +26,8 @@
 
 package com.xfsi.xav.validation.images.jpeg;
 
+import java.util.Map;
+
 /**
  * Maintains state during JPEG file validation.
  */
@@ -39,6 +41,7 @@ class JpegState {
     }
     // There's no unsigned short in Java, so use an integer to store marker code, all of which are in the
     // 0xFFxx range
+    private Map<String,Object> resultState;
     private Integer currentCode;
     private Integer lastCode;
     private String currentSegmentParserName;
@@ -55,6 +58,15 @@ class JpegState {
     private int jfifMajorVersion;
     private int jfifMinorVersion;
     private int lastJfifApp0SegmentIndex;
+
+    JpegState(Map<String,Object> resultState) {
+        this.resultState = resultState;
+    }
+
+    void setResultState(String key, Object value) {
+        if (resultState != null)
+            resultState.put(key, value);
+    }
 
     void setInitialFrameCode(Integer code)
     {

@@ -1,7 +1,6 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
- * Portions Copyright 2009 Extensible Formatting Systems, Inc (XFSI).
- *
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -23,39 +22,18 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+package com.skynav.ttv.ttml2;
 
-package com.xfsi.xav.validation.util;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import com.xfsi.xav.test.TestInfo;
-import com.xfsi.xav.test.TestManager;
-import com.xfsi.xav.util.Error;
-import com.xfsi.xav.util.Progress;
-
-public abstract class AbstractTestManager implements TestManager {
-
-    protected AbstractTestManager() {
-    }
-
-    public void reportError(TestInfo testInfo, Error error) {
-    }
-
-    public void reportProgress(TestInfo testInfo, Progress progress) {
-    }
-
-    public boolean isFilteredResultSeverity(Error.Severity severity) {
-        return false;
-    }
-
-    public boolean isFilteredResultKey(String messageKey) {
-        return false;
-    }
-
-    public boolean isFilteredProgressSeverity(Error.Severity severity) {
-        return false;
-    }
-
-    public boolean isFilteredProgressKey(String messageKey) {
-        return false;
-    }
-
+@RunWith(Suite.class)
+@SuiteClasses({
+    ValidTestCases.class,
+    InvalidTestCases.class
+})
+public class VerifierTestSuite {
 }
+

@@ -31,4 +31,7 @@ public class ExternalImageImpl extends AbstractImageImpl {
     public ExternalImageImpl(URI uri) {
         super(uri);
     }
+    public boolean isExternal() {
+        return true;
+    }
 }

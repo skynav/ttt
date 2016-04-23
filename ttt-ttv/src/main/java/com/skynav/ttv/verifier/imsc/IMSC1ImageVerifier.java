@@ -1,6 +1,5 @@
 /*
  * Copyright 2016 Skynav, Inc. All rights reserved.
- * Portions Copyright 2009 Extensible Formatting Systems, Inc (XFSI).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -24,38 +23,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.xfsi.xav.validation.util;
+package com.skynav.ttv.verifier.imsc;
 
-import com.xfsi.xav.test.TestInfo;
-import com.xfsi.xav.test.TestManager;
-import com.xfsi.xav.util.Error;
-import com.xfsi.xav.util.Progress;
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.verifier.ttml.TTML2ImageVerifier;
 
-public abstract class AbstractTestManager implements TestManager {
+public class IMSC1ImageVerifier extends TTML2ImageVerifier {
 
-    protected AbstractTestManager() {
-    }
-
-    public void reportError(TestInfo testInfo, Error error) {
-    }
-
-    public void reportProgress(TestInfo testInfo, Progress progress) {
-    }
-
-    public boolean isFilteredResultSeverity(Error.Severity severity) {
-        return false;
-    }
-
-    public boolean isFilteredResultKey(String messageKey) {
-        return false;
-    }
-
-    public boolean isFilteredProgressSeverity(Error.Severity severity) {
-        return false;
-    }
-
-    public boolean isFilteredProgressKey(String messageKey) {
-        return false;
+    public IMSC1ImageVerifier(Model model) {
+        super(model);
     }
 
 }

@@ -39,4 +39,8 @@ public interface TestManager {
 
     public boolean isFilteredResultKey(String messageKey);
 
+    public boolean isFilteredProgressSeverity(Error.Severity severity);
+
+    public boolean isFilteredProgressKey(String messageKey);
+
 }

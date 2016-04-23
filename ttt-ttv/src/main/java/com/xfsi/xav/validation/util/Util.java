@@ -36,7 +36,8 @@ public final class Util {
         OCAP,
         JSR242,
         MHP,
-        ETV;
+        ETV,
+        OTHER;
         public static AppType getAppType( String type ) {
             if (type != null) {
                 for (AppType t : values()) {

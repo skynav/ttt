@@ -29,6 +29,7 @@ package com.xfsi.xav.validation.images.jpeg;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import com.xfsi.xav.test.TestInfo;
 import com.xfsi.xav.test.TestManager;
@@ -163,8 +164,10 @@ public final class JpegValidator extends AbstractLoggingValidator {
     public Result run(TestManager tm, TestInfo ti) throws Exception
     {
         initState(tm,ti);
-        validate();
-        return getErrorReported() ? Result.FAIL : Result.PASS;
+        Map<String,Object> resultState = new java.util.HashMap<String,Object>();
+        validate(resultState);
+        Result r = getErrorReported() ? Result.FAIL : Result.PASS;
+        return new Result(r, resultState);
     }
 
     public String getVersion()
@@ -173,9 +176,9 @@ public final class JpegValidator extends AbstractLoggingValidator {
         return "1.0.0";
     }
 
-    public void validate()
+    public void validate(Map<String,Object> resultState)
     {
-        this.state = new JpegState();
+        this.state = new JpegState(resultState);
         try
             {
                 InputStream is = getTestInfo().getResourceStream();

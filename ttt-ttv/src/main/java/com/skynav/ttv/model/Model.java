@@ -344,6 +344,14 @@ public interface Model {
     ImageVerifier getImageVerifier();
 
     /**
+     * Determine if reesource of specified (MIME) type is supported.
+     * @param type MIME type string
+     * @param parameters optional MIME type parameters (may be null or empty string)
+     * @return true if type and parameters is supported
+     */
+    boolean isSupportedResourceType(String type, String parameters);
+
+    /**
      * Apply per-model reporter configuration.
      * @param reporter to configure
      */

@@ -45,6 +45,7 @@ import com.xfsi.xav.util.Error.Category;
 import com.xfsi.xav.util.Error.ContentType;
 import com.xfsi.xav.util.Error.Reference;
 import com.xfsi.xav.util.Error.TestType;
+import com.xfsi.xav.util.Progress;
 import com.xfsi.xav.util.property.PropertyMessageKey;
 import com.xfsi.xav.util.property.PropertyMessageKeyTokenizer;
 
@@ -59,7 +60,9 @@ public abstract class AbstractValidator implements Test  {
     protected Properties properties;
     protected boolean propertiesInitialized;
     protected String propertyFile;
+    @SuppressWarnings("unused")
     private boolean valid;
+    @SuppressWarnings("unused")
     private String lastError;
     private PropertyMessageKeyTokenizer keyTokenizer;
 
@@ -93,7 +96,7 @@ public abstract class AbstractValidator implements Test  {
                         properties = new Properties();
                         properties.loadFromXML(is);
                         try {
-                            Enumeration e = properties.propertyNames();
+                            Enumeration<?> e = properties.propertyNames();
                             for (; e.hasMoreElements();) {
                                 String propName = (String) e.nextElement();
                                 if (propName.startsWith(MSG_PREFIX))
@@ -118,11 +121,6 @@ public abstract class AbstractValidator implements Test  {
                 closeSafely(is);
             }
         }
-    }
-
-    private String getClassDirectory() {
-        String p = getClass().getName().replace( '.', '/' );
-        return p.substring( 0, p.lastIndexOf( '/' ) + 1 );
     }
 
     private void closeSafely(InputStream is) {
@@ -249,6 +247,13 @@ public abstract class AbstractValidator implements Test  {
         return errorInternal(tm, type, category, contentType, reference, subReference, message, messageKey, severity);
     }
 
+    protected Error errorFormatterUnfiltered(TestManager tm, TestType type, Category category, ContentType contentType, Reference reference,
+        String subReference, String messageKey, PropertyMessageKey mk, Object... messageArguments) {
+        category = verifyCategory(mk, category);
+        return errorInternal(tm, type, category, contentType, reference, subReference,
+            msgFormatterNV(messageKey, messageArguments), messageKey, mk.getSeverity());
+    }
+
     private Category verifyCategory(PropertyMessageKey mk, Category category) {
         char sc = mk.getSeverityChar();
         if (sc == 'Y' || sc == 'X')
@@ -259,6 +264,30 @@ public abstract class AbstractValidator implements Test  {
     private Error errorInternal(TestManager tm, TestType type, Category category,
         ContentType contentType, Reference reference, String subReference, String message, String messageKey, Error.Severity severity) {
         return new Error(messageKey, type, category, severity, contentType, reference, message, subReference);
+    }
+
+    protected Progress progressFormatter(TestManager tm, String key, Object... formatArguments) {
+        return progress(tm, key, true, formatArguments);
+    }
+
+    private Progress progress(TestManager tm, String key, Boolean useFormatter, Object... formatArguments) {
+        if (properties != null) {
+            try {
+                PropertyMessageKey k = parseKey(key);
+                if (tm != null) {
+                    if (tm.isFilteredProgressSeverity(k.getSeverity()))
+                        return null;
+                    if (tm.isFilteredProgressKey(key))
+                        return null;
+                }
+                String msg = properties.getProperty(MSG_PREFIX + key);
+                if (msg != null && msg.length() > 0)
+                    return new Progress(k.getSeverity(), useFormatter ? String.format(msg, formatArguments) : MessageFormat.format(msg, formatArguments));
+            } catch (PropertyMessageKey.MalformedKeyException e) {
+                return new Progress(Error.Severity.ERROR, INTERNAL_ERROR_ID + e.toString());
+            }
+        }
+        return new Progress(Error.Severity.ERROR, INTERNAL_ERROR_ID + "missing message: " + key);
     }
 
     protected boolean isResultFiltered(TestManager tm, String messageKey, Error.Severity severity) {

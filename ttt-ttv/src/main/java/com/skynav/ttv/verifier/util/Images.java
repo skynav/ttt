@@ -47,6 +47,10 @@ import com.skynav.ttv.verifier.VerifierContext;
 public class Images {
 
     public static boolean isImage(String value, Location location, VerifierContext context, Image[] outputImage) {
+        return isImage(value, location, context, true, outputImage);
+    }
+
+    public static boolean isImage(String value, Location location, VerifierContext context, boolean verifyContent, Image[] outputImage) {
         Image image;
         if ((outputImage != null) && (outputImage.length < 0))
             throw new IllegalArgumentException();
@@ -94,7 +98,7 @@ public class Images {
         }
         // verify image content
         assert image != null;
-        if (!context.getModel().getImageVerifier().verify(image, location, context))
+        if (verifyContent && !context.getModel().getImageVerifier().verify(image, location, context))
             return false;
         // return image instance if requested
         if (outputImage != null) {

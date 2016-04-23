@@ -39,10 +39,12 @@ import com.skynav.ttv.model.smpte.ST20522010;
 import com.skynav.ttv.model.smpte.ST20522010.ST20522010Model;
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.ImageVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
+import com.skynav.ttv.verifier.imsc.IMSC1ImageVerifier;
 import com.skynav.ttv.verifier.imsc.IMSC1ParameterVerifier;
 import com.skynav.ttv.verifier.imsc.IMSC1SemanticsVerifier;
 import com.skynav.ttv.verifier.imsc.IMSC1StyleVerifier;
@@ -155,6 +157,7 @@ public class IMSC1 {
         private SemanticsVerifier semanticsVerifier;
         private StyleVerifier styleVerifier;
         private TimingVerifier timingVerifier;
+        private ImageVerifier imageVerifier;
 
         public IMSC1Model() {
             populate();
@@ -373,6 +376,23 @@ public class IMSC1 {
                 timingVerifier = new IMSC1TimingVerifier(this);
             }
             return timingVerifier;
+        }
+
+
+        public ImageVerifier getImageVerifier() {
+            if (imageVerifier == null) {
+                imageVerifier = new IMSC1ImageVerifier(this);
+            }
+            return imageVerifier;
+        }
+
+        public boolean isSupportedResourceType(String type, String parameters) {
+            if (type == null)
+                return false;
+            else if (type.equals("image/png"))
+                return true;
+            else
+                return false;
         }
 
         public void configureReporter(Reporter reporter) {

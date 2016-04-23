@@ -235,6 +235,7 @@ public class TimedTextVerifier implements VerifierContext {
         { "missing-agent-actor",                        Boolean.TRUE,   "no 'ttm:agent' child present in 'ttm:agent' element of type 'character'"},
         { "missing-agent-name",                         Boolean.TRUE,   "no 'ttm:name' child present in 'ttm:agent' element"},
         { "missing-profile",                            Boolean.FALSE,  "neither 'ttp:profile' attribute nor 'ttp:profile' element is present"},
+        { "missing-type-for-external-source",           Boolean.TRUE,   "no 'type' attribute present with external resource source reference"},
         { "negative-origin",                            Boolean.FALSE,  "either coordinate in 'tts:origin' is negative"},
         { "out-of-range-opacity",                       Boolean.TRUE,   "'tts:opacity' is out of range [0,1]"},
         { "quoted-generic-font-family",                 Boolean.FALSE,  "generic font family appears in quoted form, negating generic name function" },

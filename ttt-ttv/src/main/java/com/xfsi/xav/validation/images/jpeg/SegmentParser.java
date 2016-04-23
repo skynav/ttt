@@ -31,5 +31,5 @@ import java.io.EOFException;
 import com.xfsi.xav.validation.util.AbstractLoggingValidator;
 
 abstract class SegmentParser {
-        abstract boolean validate(JpegInputStream jv, JpegState js, AbstractLoggingValidator mh) throws EOFException;
+    abstract boolean validate(JpegInputStream jv, JpegState js, AbstractLoggingValidator mh) throws EOFException;
 }

@@ -29,11 +29,15 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import org.xml.sax.Locator;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Chunk;
@@ -61,8 +65,24 @@ import com.skynav.ttv.model.ttml2.ttm.Title;
 import com.skynav.ttv.model.ttml2.ttp.Extensions;
 import com.skynav.ttv.model.ttml2.ttp.Features;
 import com.skynav.ttv.model.ttml2.ttp.Profile;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.util.Message;
+import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Images;
+import com.skynav.ttv.verifier.util.ResourceFormats;
+import com.skynav.ttv.verifier.util.ResourceTypes;
 
 public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
+
+    public static final String NAMESPACE                        = TTML2.Constants.NAMESPACE_TT;
+
+    public static final QName formatAttributeName               = new QName("", "format");
+    public static final QName sourceAttributeName               = new QName("", "src");
+    public static final QName typeAttributeName                 = new QName("", "type");
+
+    public static final QName imageElementName                  = new QName(NAMESPACE, "image");
+    public static final QName sourceElementName                 = new QName(NAMESPACE, "source");
 
     public TTML2SemanticsVerifier(Model model) {
         super(model);
@@ -478,20 +498,93 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             if (!verifyMetadataItem(m))
                 failed = true;
         }
-        for (Object s : getImageSource(image)) {
+        for (Object s : getImageSources(image)) {
             if (!verifySource(s))
                 failed = true;
         }
         if (!verifyStyledItem(image))
             failed = true;
+        if (!failed && !verifyImageResources(image))
+            failed = true;
         return !failed;
     }
 
     protected boolean verifyImageAttributes(Object image) {
-        // [TBD] - src
-        // [TBD] - type
-        // [TBD] - format
-        return true;
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(image);
+        Locator locator = location.getLocator();
+        // @src
+        String s = getImageSourceAttribute(image);
+        int numSources = getImageSources(image).size();
+        com.skynav.ttv.model.value.Image[] outputImage = new com.skynav.ttv.model.value.Image[1];
+        com.skynav.ttv.model.value.Image i = null;
+        if (s != null) {
+            if (!Images.isImage(s, location, context, false, outputImage)) {
+                Images.badImage(s, location, context);
+                failed = true;
+            } else if (numSources > 0) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, sourceAttributeName));
+                failed = true;
+            } else {
+                i = outputImage[0];
+            }
+        } else if (numSources == 0) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, sourceAttributeName));
+            failed = true;
+        }
+        // @type
+        String t = getImageTypeAttribute(image);
+        if (t != null) {
+            if (!ResourceTypes.isType(t, location, context, null)) {
+                ResourceTypes.badType(t, location, context);
+                failed = true;
+            } else {
+                if (!i.isExternal()) {
+                    reporter.logError(reporter.message(locator, "*KEY*",
+                        "A ''{0}'' attribute must not specified for internal image sources.", typeAttributeName));
+                    failed = true;
+                }
+            }
+        } else {
+            if (i.isExternal()) {
+                if (reporter.isWarningEnabled("missing-type-for-external-source")) {
+                    Message message = reporter.message(locator, "*KEY*",
+                        "A ''{0}'' attribute should specified for external image sources.", typeAttributeName);
+                    if (reporter.logWarning(message)) {
+                        reporter.logError(message);
+                        failed = true;
+                    }
+                }
+            }
+        }
+        // @format
+        String f = getImageFormatAttribute(image);
+        if (f != null) {
+            if (!ResourceFormats.isFormat(f, location, context, null)) {
+                ResourceFormats.badFormat(f, location, context);
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+
+    protected String getImageFormatAttribute(Object image) {
+        assert image instanceof Image;
+        return ((Image) image).getFormat();
+    }
+
+    protected String getImageSourceAttribute(Object image) {
+        assert image instanceof Image;
+        return ((Image) image).getSrc();
+    }
+
+    protected String getImageTypeAttribute(Object image) {
+        assert image instanceof Image;
+        return ((Image) image).getType();
     }
 
     protected Collection<? extends Object> getImageMetadata(Object image) {
@@ -499,9 +592,21 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return ((Image) image).getMetadataClass();
     }
 
-    protected Collection<? extends Object> getImageSource(Object image) {
+    protected Collection<? extends Object> getImageSources(Object image) {
         assert image instanceof Image;
         return ((Image) image).getSource();
+    }
+
+    protected boolean verifyImageResources(Object image) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Location location = getLocation(image);
+        // @src
+        String s = getImageSourceAttribute(image);
+        if ((s != null) && !Images.isImage(s, location, context, true, null))
+            failed = true;
+        // [TBD] verify resources referenced by tt:source children
+        return !failed;
     }
 
     protected boolean verifySource(Object source) {

@@ -36,4 +36,5 @@ public interface Image {
     int getWidth();
     int getHeight();
     void setExtent(int width, int height);
+    boolean isExternal();
 }

@@ -28,6 +28,9 @@ package com.skynav.ttv.verifier.ttml;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+
+import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.Image;
@@ -59,11 +62,22 @@ public class TTML2ImageVerifier implements ImageVerifier {
 
     public boolean verify(Image image, Location location, VerifierContext context) {
         boolean failed = false;
+        Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         MimeType[] mimeType = new MimeType[1];
-        if (!sniffImage(image, mimeType, location, context))
+        if (!sniffImage(image, mimeType, location, context)) {
+            reporter.logError(reporter.message(locator, "*KEY*", "Unable to determine image type."));
             failed = true;
-        if (!failed && !verifyImage(image, mimeType[0], location, context))
-            failed = true;
+        } else {
+            MimeType mt = mimeType[0];
+            assert mt != null;
+            if (!isSupportedMimeType(mt)) {
+                reporter.logError(reporter.message(locator, "*KEY*", "Image type ''{0}'' is not supported.", mt.getType()));
+                failed = true;
+            }
+            if (!failed && !verifyImage(image, mt, location, context))
+                failed = true;
+        }
         return !failed;
     }
 
@@ -102,16 +116,18 @@ public class TTML2ImageVerifier implements ImageVerifier {
     private boolean sniffImage(Image image, MimeType[] outputType, Location location, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();
-        MimeType mt = unknownType;;
+        MimeType mt = unknownType;
         BufferedInputStream bis = null;
         try {
             bis = new BufferedInputStream(image.getURI().toURL().openStream());
             byte[] buf = new byte[signatureLengthMaximum];
             int nb = IOUtil.readCompletely(bis, buf);
             for (Signature s : signatures) {
-                mt = sniffImage(buf, nb, s.getSignature(), s.getType());
-                if (mt != null)
+                MimeType mtSniffed = sniffImage(buf, nb, s.getSignature(), s.getType());
+                if (mtSniffed != null) {
+                    mt = mtSniffed;
                     break;
+                }
             }
         } catch (MalformedURLException e) {
             reporter.logError(e);
@@ -139,10 +155,12 @@ public class TTML2ImageVerifier implements ImageVerifier {
     private boolean matchAtStart(short[] b1, byte[] b2) {
         if (b1 != null && b2 != null) {
             // Need to have sniffable array as long as signature
-            if (b1.length <= b2.length) {
+            if (b2.length >= b1.length) {
                 for (int i = 0; i < b1.length; i++) {
                     // Negative values matches all bytes
-                    if (b1[i] < 0) {
+                    if (b1[i] < 0)
+                        continue;
+                    else {
                         short b2s = (short) (0xFF & b2[i]);
                         if (b1[i] != b2s)
                             return false;
@@ -154,16 +172,30 @@ public class TTML2ImageVerifier implements ImageVerifier {
         return false;
     }
 
+    private boolean isSupportedMimeType(MimeType mt) {
+        String[] components = mt.getType().split(";");
+        String t = (components.length > 0) ? components[0] : null;
+        String p = (components.length > 1) ? components[1] : null;
+        if (t != null)
+            t = t.trim();
+        if (p != null)
+            p = p.trim();
+        return model.isSupportedResourceType(t, p);
+    }
+
     private boolean verifyImage(Image image, MimeType mimeType, Location location, VerifierContext context) {
         Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
         Test t = getImageValidator(mimeType);
         if (t != null) {
             BufferedInputStream bis = null;
             try {
                 TestInfo ti = new TestInfoAdapter(image, mimeType, location);
                 TestManager tm = new TestManagerAdapter(context);
-                bis = new BufferedInputStream(image.getURI().toURL().openStream());
+                URI uri = image.getURI();
+                bis = new BufferedInputStream(uri.toURL().openStream());
                 ti.setResourceStream(bis);
+                reporter.logInfo(reporter.message("*KEY*", "Verifying image ''{0}'' as ''{1}''.", getImageName(uri), mimeType.toString()));
                 Result r = t.run(tm, ti);
                 if (r.isFailure())
                     return false;
@@ -180,9 +212,17 @@ public class TTML2ImageVerifier implements ImageVerifier {
                 IOUtil.closeSafely(bis);
             }
         } else {
-            reporter.logError(reporter.message(location.getLocator(), "*KEY*", "No image validator for ''{0}''.", mimeType.toString()));
+            reporter.logError(reporter.message(locator, "*KEY*", "No image validator for ''{0}''.", mimeType.toString()));
             return false;
         }
+    }
+
+    private String getImageName(URI uri) {
+        String p = uri.getPath();
+        int i = p.lastIndexOf('/');
+        if (i >= 0)
+            p = p.substring(i + 1);
+        return p;
     }
 
     private Test getImageValidator(MimeType mimeType) {
@@ -210,7 +250,9 @@ public class TTML2ImageVerifier implements ImageVerifier {
     }
 
     private static class TestInfoAdapter extends AbstractTestInfo {
+        @SuppressWarnings("unused")
         private Image image;
+        @SuppressWarnings("unused")
         private MimeType mimeType;
         private Location location;
         TestInfoAdapter(Image image, MimeType mimeType, Location location) {

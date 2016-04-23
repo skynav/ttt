@@ -71,4 +71,5 @@ public abstract class AbstractImageImpl implements Image {
         this.width = width;
         this.height = height;
     }
+    public abstract boolean isExternal();
 }

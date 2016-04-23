@@ -220,6 +220,10 @@ public class AbstractModel implements Model {
         throw new UnsupportedOperationException();
     }
 
+    public boolean isSupportedResourceType(String type, String parameters) {
+        return false;
+    }
+
     public void configureReporter(Reporter reporter) {
     }
 

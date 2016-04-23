@@ -9,7 +9,7 @@
   <body>
     <div>
       <image>
-        <source src="ttml2-valid-image-in-block-all.png" type="image/png"/>
+        <source src="../resources/test.png" type="image/png"/>
         <source>
           <data type="image/png" length="119">
             iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

@@ -76,6 +76,7 @@ import com.skynav.ttv.model.ttml1.ttp.Extensions;
 import com.skynav.ttv.model.ttml1.ttp.Features;
 import com.skynav.ttv.model.ttml1.ttp.Profile;
 import com.skynav.ttv.util.IOUtil;
+import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
@@ -330,6 +331,14 @@ public class TTML1SemanticsVerifier implements SemanticsVerifier {
 
     public VerifierContext getContext() {
         return context;
+    }
+
+    protected Location getLocation(Object content) {
+        return getLocation(content, null);
+    }
+
+    protected Location getLocation(Object content, QName attrName) {
+        return new Location(content, getContext().getBindingElementName(content), attrName, getLocator(content));
     }
 
     protected Locator getLocator(Object content) {
