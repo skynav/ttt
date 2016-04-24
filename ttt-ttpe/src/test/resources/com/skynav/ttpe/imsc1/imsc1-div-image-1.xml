@@ -10,6 +10,6 @@
     </layout>
   </head>
   <body region="r0">
-    <div begin="1s" end="2s" smpte:backgroundImage="resources/test.png"/>
+    <div begin="1s" end="2s" smpte:backgroundImage="../resources/test.png"/>
   </body>
 </tt>

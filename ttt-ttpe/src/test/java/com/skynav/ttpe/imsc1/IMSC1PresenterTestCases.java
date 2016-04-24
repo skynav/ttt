@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-16 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,21 +23,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttpe.app;
+package com.skynav.ttpe.imsc1;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-import com.skynav.ttpe.imsc1.IMSC1PresenterTestCases;
-import com.skynav.ttpe.ttml1.TTML1PresenterTestCases;
-import com.skynav.ttpe.ttml2.TTML2PresenterTestCases;
+import com.skynav.ttpe.app.PresenterTestDriver;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-    TTML1PresenterTestCases.class,
-    TTML2PresenterTestCases.class,
-    IMSC1PresenterTestCases.class
-})
-public class PresenterTestSuite {
+public class IMSC1PresenterTestCases extends PresenterTestDriver {
+
+    @Test
+    public void testIMSC1DivisionImage1() throws Exception {
+        performPresentationTest("imsc1-div-image-1.xml", 0, 0);
+    }
+
+    @Test
+    public void testIMSC1FontSizePercentageOfInitialFontSize() throws Exception {
+        performPresentationTest("imsc1-font-size-percentage-of-initial-font-size.xml", 0, 0);
+    }
+
+    @Test
+    public void testIMSC1ForcedDisplayEnabled() throws Exception {
+        performPresentationTest("imsc1-forced-display-enabled.xml", 0, 0, new String[]{"--forced-display"});
+    }
+
+    @Test
+    public void testIMSC1ForcedDisplayDisabled() throws Exception {
+        performPresentationTest("imsc1-forced-display-disabled.xml", 0, 0);
+    }
+
 }

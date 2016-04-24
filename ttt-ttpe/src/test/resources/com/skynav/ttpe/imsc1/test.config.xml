@@ -2,6 +2,7 @@
 <config version="1" xmlns="http://skynav.com/ns/ttv">
 <option name="external-duration">24h</option>
 <option name="external-extent">1280px 720px</option>
+<option name="font-directory">../../../../../fonts</option>
 <option name="output-archive">true</option>
 <option name="output-format">svg</option>
 <option name="output-indent">true</option>
