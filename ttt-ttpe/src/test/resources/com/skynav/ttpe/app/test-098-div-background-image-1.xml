@@ -9,6 +9,6 @@
     </layout>
   </head>
   <body region="r0">
-    <div begin="1s" end="2s" tts:backgroundImage="test-098-div-background-image-1.png"><p>X</p></div>
+    <div begin="1s" end="2s" tts:backgroundImage="resources/test.png"><p>X</p></div>
   </body>
 </tt>

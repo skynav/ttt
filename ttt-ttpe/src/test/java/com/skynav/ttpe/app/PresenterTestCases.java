@@ -552,6 +552,11 @@ public class PresenterTestCases {
         performPresentationTest("test-099-div-image-1.xml", 0, 0);
     }
 
+    @Test
+    public void test100IMSC1DivisionImage1() throws Exception {
+        performPresentationTest("test-100-imsc1-div-image-1.xml", 0, 0);
+    }
+
     private void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
     }

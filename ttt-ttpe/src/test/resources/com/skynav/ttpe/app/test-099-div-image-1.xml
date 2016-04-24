@@ -10,7 +10,7 @@
   </head>
   <body region="r0">
     <div begin="1s" end="2s">
-      <image src="test-099-div-image-1.png" type="image/png"/>
+      <image src="resources/test.png" type="image/png"/>
     </div>
   </body>
 </tt>

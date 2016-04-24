@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" xml:lang="en"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/image"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:extent="160px 120px" tts:origin="560px 300px"/>
+    </layout>
+  </head>
+  <body region="r0">
+    <div begin="1s" end="2s" smpte:backgroundImage="resources/test.png"/>
+  </body>
+</tt>
