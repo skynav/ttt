@@ -3,14 +3,15 @@
 <script src="files.js"></script>
 <script>
 var h = document.createElement("h3");
-var i = document.createElement("img");
+var o = document.createElement("object");
 var fileIndex = -1;
 var fileCount = files.length;
 var testIndices = [];
 var option = false;
 function setFile(f) {
   h.textContent = f;
-  i.src = f;
+  o.data = f;
+  o.type = "image/svg+xml";
 }
 function goto(i) {
   if (i < 0)
@@ -86,7 +87,7 @@ function prevTest(index) {
 function load() {
   var b = document.body;
   b.appendChild(h);
-  b.appendChild(i);
+  b.appendChild(o);
   b.addEventListener("keydown",
     function(e) {
       if (e.keyCode == 18) {

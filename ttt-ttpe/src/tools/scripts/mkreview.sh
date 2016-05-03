@@ -1,6 +1,6 @@
 #!/bin/bash
 TOPDIR=../..
-SRCDIR=$TOPDIR/src/test/resources/com/skynav/ttpe/app
+SRCDIR=$TOPDIR/src/test/resources/com/skynav/ttpe
 RUNDIR=$TOPDIR/run/test
 OUTDIR=$RUNDIR/review
 OUTFIL=$OUTDIR/files.js
@@ -11,9 +11,9 @@ mkdir $OUTDIR
 if [ $# -gt 0 ]; then
   p=$1
 else
-  p=test-
+  p=
 fi
-for f in $SRCDIR/$p*.expected.zip
+for f in $SRCDIR/*/$p*.expected.zip
 do
   if [ ! -e $f ]; then
     continue

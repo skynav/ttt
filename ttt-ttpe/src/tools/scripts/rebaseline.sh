@@ -1,13 +1,13 @@
 #!/bin/bash
 cd ../..
-SRCDIR=src/test/resources/com/skynav/ttpe/app
+SRCDIR=src/test/resources/com/skynav/ttpe
 RUNDIR=run/test
 if [ $# -gt 0 ]; then
   p=$1
 else
-  p=test-
+  p=
 fi
-for f in $SRCDIR/$p*.xml
+for f in $SRCDIR/*/$p*.xml
 do
   if [ ! -e $f ]; then
     continue
