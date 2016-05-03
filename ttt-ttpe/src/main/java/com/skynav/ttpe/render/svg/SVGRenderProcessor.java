@@ -110,6 +110,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         { "svg-decorate-lines",         "",         "decorate line features (bounding baselines, boxes, labels)" },
         { "svg-decorate-regions",       "",         "decorate regions with bounding box" },
         { "svg-decoration",             "COLOR",    "paint decorations using specified color (default: color contrasting with specified background or black)" },
+        { "svg-mark-classes",           "",         "mark area classes" },
     };
     private static final Map<String,OptionSpecification> longOptions;
     static {
@@ -133,6 +134,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     private boolean decorateLineLabels;
     private boolean decorateRegions;
     private String decorationOption;
+    private boolean markClasses;
     private String outputPatternResource;
     private String outputPattern;
 
@@ -212,6 +214,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             decorationOption = args.get(++index);
+        } else if (option.equals("svg-mark-classes")) {
+            markClasses = true;
         } else {
             return super.parseLongOption(args, index);
         }
@@ -310,6 +314,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             eSVG = parent;
         else
             eSVG = Documents.createElement(d, SVGDocumentFrame.svgSVGEltName);
+        if (markClasses)
+            Documents.setAttribute(eSVG, SVGDocumentFrame.classAttrName, "viewport");
         Extent extent = a.getExtent();
         if (extent == null)
             extent = Extent.EMPTY;
@@ -330,6 +336,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             return renderChildren(eSVG, a, d);
         } else {
             Element eGroup = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+            if (markClasses)
+                Documents.setAttribute(eGroup, SVGDocumentFrame.classAttrName, "reference");
             Point origin = a.getOrigin();
             if (origin != null) {
                 Documents.setAttribute(eGroup, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {origin.getX(),origin.getY()}));
@@ -439,6 +447,10 @@ public class SVGRenderProcessor extends RenderProcessor {
             ++paragraphGenerationIndex;
             lineGenerationIndex = 0;
         }
+        if (markClasses) {
+            if (Documents.getAttribute(eBlockGroup, SVGDocumentFrame.classAttrName, null) == null)
+                Documents.setAttribute(eBlockGroup, SVGDocumentFrame.classAttrName, "block");
+        }
         return eBlockGroup;
     }
 
@@ -487,6 +499,8 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     private Element renderAnnotation(Element parent, AnnotationArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        if (markClasses)
+            Documents.setAttribute(e, SVGDocumentFrame.classAttrName, "annotation");
         double xSaved = xCurrent;
         double ySaved = yCurrent;
         LineArea l = a.getLine();
@@ -538,6 +552,8 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     private Element renderLine(Element parent, LineArea a, Document d) {
         Element e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        if (markClasses)
+            Documents.setAttribute(e, SVGDocumentFrame.classAttrName, "line");
         double xSaved = xCurrent;
         double ySaved = yCurrent;
         WritingMode wm = a.getWritingMode();
@@ -663,6 +679,8 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     private Element renderGlyphs(Element parent, GlyphArea a, Document d) {
         Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        if (markClasses)
+            Documents.setAttribute(g, SVGDocumentFrame.classAttrName, "glyphs");
         LineArea l = a.getLine();
         double bpdLine = l.getBPD();
         double bpdLineAnnotationBefore = l.getAnnotationBPD(AnnotationPosition.BEFORE);
@@ -724,6 +742,8 @@ public class SVGRenderProcessor extends RenderProcessor {
     private Element renderGlyphTextVertical(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
         Font font = a.getFont();
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        if (markClasses)
+            Documents.setAttribute(gOuter, SVGDocumentFrame.classAttrName, "text-v");
         Documents.setAttribute(gOuter, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
         boolean rotate = a.isRotatedOrientation() && !a.isCombined();
         TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL, rotate);
@@ -798,6 +818,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             // group wrapper (gInner) if font transform required or using glyphs path
             if ((fontMatrix != null) || ((tGlyphsPath != null) && (y != 0))) {
                 Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+                if (markClasses)
+                    Documents.setAttribute(gInner, SVGDocumentFrame.classAttrName, "text-v-inner");
                 if (y != 0)
                     Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {0,y}));
                 if (tOutline != null) {
@@ -832,6 +854,8 @@ public class SVGRenderProcessor extends RenderProcessor {
     private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
         Font font = a.getFont();
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        if (markClasses)
+            Documents.setAttribute(gOuter, SVGDocumentFrame.classAttrName, "text-h");
         boolean rotate = a.isRotatedOrientation() && !a.isCombined();
         TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL, rotate);
         GlyphMapping gm = a.getGlyphMapping();
@@ -915,6 +939,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             // group wrapper (gInner) if font transform required or using glyphs path
             if ((fontMatrix != null) || (tGlyphsPath != null) && ((x != 0) || (y != 0))) {
                 Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+                if (markClasses)
+                    Documents.setAttribute(gInner, SVGDocumentFrame.classAttrName, "text-h-inner");
                 if ((x != 0) || (y != 0))
                     Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,y}));
                 if (tOutline != null) {
