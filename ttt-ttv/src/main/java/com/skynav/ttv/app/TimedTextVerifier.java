@@ -1455,6 +1455,8 @@ public class TimedTextVerifier implements VerifierContext {
                         }
                     } else if (localName.equals("loc")) {
                         // no processing required here
+                    } else if (localName.equals("processingOptions")) {
+                        // [TBD] - implement me - ignore for now
                     } else {
                         throw new InvalidAnnotationException(localName, "unknown annotation");
                     }
