@@ -1577,6 +1577,7 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void restart(OptionProcessor optionProcessor) {
+        getShowOutput().flush();
         resetAllState(getReporter(), getShowOutput(), optionProcessor, true);
         setRestarted();
     }
@@ -2138,6 +2139,8 @@ public class TimedTextVerifier implements VerifierContext {
         Reporter reporter = getReporter();
         int code = RV_PASS;
         int flags = 0;
+        if (needsRestart())
+            return RV_RESTART;
         if (resourceExpectedErrors < 0) {
             if (reporter.getResourceErrors() > 0) {
                 code = RV_FAIL;
@@ -2161,8 +2164,6 @@ public class TimedTextVerifier implements VerifierContext {
             if (reporter.getResourceWarnings() > 0)
                 flags |= RV_FLAG_WARNING_EXPECTED_MATCH;
         }
-        if ((code == RV_PASS) && needsRestart())
-            code = RV_RESTART;
         return ((flags & 0x7FFFFF) << 8) | (code & 0xFF);
     }
 

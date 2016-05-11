@@ -43,7 +43,7 @@ public class IMSC1PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testIMSC1ForcedDisplayEnabled() throws Exception {
-        performPresentationTest("imsc1-forced-display-enabled.xml", 0, 0, new String[]{"--forced-display"});
+        performPresentationTest("imsc1-forced-display-enabled.xml", 0, 0);
     }
 
     @Test

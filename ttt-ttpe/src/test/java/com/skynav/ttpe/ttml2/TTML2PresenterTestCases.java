@@ -228,37 +228,37 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2MaxRegionsExceeded() throws Exception {
-        performPresentationTest("ttml2-max-regions-exceeded.xml", 0, 1, new String[]{"--max-regions", "3"});
+        performPresentationTest("ttml2-max-regions-exceeded.xml", 0, 1);
     }
 
     @Test
     public void testTTML2MaxLinesExceeded() throws Exception {
-        performPresentationTest("ttml2-max-lines-exceeded.xml", 0, 1, new String[]{"--max-lines", "5"});
+        performPresentationTest("ttml2-max-lines-exceeded.xml", 0, 1);
     }
 
     @Test
     public void testTTML2MaxLinesPerRegionExceeded() throws Exception {
-        performPresentationTest("ttml2-max-lines-per-region-exceeded.xml", 0, 1, new String[]{"--max-lines-per-region", "1"});
+        performPresentationTest("ttml2-max-lines-per-region-exceeded.xml", 0, 1);
     }
 
     @Test
     public void testTTML2MaxCharsExceeded() throws Exception {
-        performPresentationTest("ttml2-max-chars-exceeded.xml", 0, 1, new String[]{"--max-chars", "11"});
+        performPresentationTest("ttml2-max-chars-exceeded.xml", 0, 1);
     }
 
     @Test
     public void testTTML2MaxCharsPerRegionExceeded() throws Exception {
-        performPresentationTest("ttml2-max-chars-per-region-exceeded.xml", 0, 1, new String[]{"--max-chars-per-region", "5"});
+        performPresentationTest("ttml2-max-chars-per-region-exceeded.xml", 0, 1);
     }
 
     @Test
     public void testTTML2MaxCharsPerLineExceeded() throws Exception {
-        performPresentationTest("ttml2-max-chars-per-line-exceeded.xml", 0, 1, new String[]{"--max-chars-per-line", "3"});
+        performPresentationTest("ttml2-max-chars-per-line-exceeded.xml", 0, 1);
     }
 
     @Test
     public void testTTML2OptionDefaultColorRed() throws Exception {
-        performPresentationTest("ttml2-option-default-color-red.xml", 0, 0, new String[]{"--default-color", "red"});
+        performPresentationTest("ttml2-option-default-color-red.xml", 0, 0);
     }
 
     @Test
@@ -318,7 +318,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2OptionDefaultWhitespacePreserve() throws Exception {
-        performPresentationTest("ttml2-option-default-whitespace-preserve.xml", 0, 0, new String[]{"--default-whitespace", "preserve"});
+        performPresentationTest("ttml2-option-default-whitespace-preserve.xml", 0, 0);
     }
 
     @Test

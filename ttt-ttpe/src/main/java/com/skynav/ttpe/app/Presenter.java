@@ -508,8 +508,14 @@ public class Presenter extends TimedTextTransformer {
                         String n = e.getKey();
                         argsRestart.add("--" + n);
                         Object v = e.getValue();
-                        if (v != null)
+                        if (v != null) {
+                            if (v instanceof Double) {
+                                double d = (Double) v;
+                                if (d == Math.rint(d))
+                                    v = Integer.valueOf((int) d);
+                            }
                             argsRestart.add(v.toString());
+                        }
                     }
                 }
             }
