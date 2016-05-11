@@ -132,6 +132,40 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     @Override
+    public void resetAllState(boolean restart) {
+        resetDerivedOptionsState(restart);
+        resetOptionsState(restart);
+        resetGlobalState(restart);
+    }
+
+    private void resetDerivedOptionsState(boolean restart) {
+        fontCache = null;
+        lineBreaker = null;
+        charBreaker = null;
+        defaults = null;
+    }
+    
+    private void resetOptionsState(boolean restart) {
+        fontSpecificationDirectoryPath = null;
+        fontSpecificationFileNames = null;
+        lineBreakerName = null;
+        charBreakerName = null;
+        defaultBackgroundColor = null;
+        defaultColor = null;
+        defaultFontFamilies = null;
+        defaultWhitespace = null;
+        maxRegions = -1;
+        maxLines = -1;
+        maxLinesPerRegion = -1;
+        maxChars = -1;
+        maxCharsPerRegion = -1;
+        maxCharsPerLine = -1;
+    }
+
+    private void resetGlobalState(boolean restart) {
+    }
+
+    @Override
     public String getName() {
         return NAME;
     }

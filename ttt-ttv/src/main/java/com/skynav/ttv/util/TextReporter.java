@@ -119,12 +119,52 @@ public class TextReporter implements Reporter {
         this.output = null;
     }
 
-    public void resetResourceState() {
+    public void resetResourceState(boolean restart) {
+        if (restart) {
+            resourceDisabledWarnings = null;
+            resourceEnabledWarnings = null;
+        } else {
+            resourceDisabledWarnings = new java.util.HashSet<String>(disabledWarnings);
+            resourceEnabledWarnings = new java.util.HashSet<String>(enabledWarnings);
+        }
         resourceLines = null;
-        resourceDisabledWarnings = new java.util.HashSet<String>(disabledWarnings);
-        resourceEnabledWarnings = new java.util.HashSet<String>(enabledWarnings);
         resourceErrors = 0;
+        resourceUri = null;
+        resourceUriString = null;
         resourceWarnings = 0;
+    }
+
+    public void resetAllState(boolean restart) {
+        resetResourceState(restart);
+        resetOptionsState(restart);
+        resetGlobalState(restart);
+    }
+
+    private void resetGlobalState(boolean restart) {
+        if (!restart) {
+            defaultWarnings = null;
+            if (output != null) {
+                try {
+                    close();
+                } catch (IOException e) {
+                    output = null;
+                }
+            }
+            outputDefaulted = false;
+            bundle = null;
+        }
+    }
+
+    private void resetOptionsState(boolean restart) {
+        debug = 0;
+        disableWarnings = false;
+        disabledWarnings = new java.util.HashSet<String>();
+        enabledWarnings = new java.util.HashSet<String>();
+        hideLocation = false;
+        hidePath = false;
+        hideWarnings = false;
+        treatWarningAsError = false;
+        verbose = 0;
     }
 
     public void setResourceURI(String uri) {

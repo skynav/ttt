@@ -43,6 +43,7 @@ import org.w3c.dom.Node;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttv.app.RestartOptions;
 import com.skynav.ttv.app.ResultProcessor;
 import com.skynav.ttv.app.TimedTextVerifier;
 import com.skynav.ttv.app.UnknownOptionException;
@@ -112,6 +113,32 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     private Transformer transformer;
 
     public TimedTextTransformer() {
+    }
+
+    public void resetAllState(boolean restart) {
+        resetResourceState(restart);
+        resetOptionsState(restart);
+        resetGlobalState(restart);
+    }
+
+    private void resetResourceState(boolean restart) {
+    }
+
+    private void resetOptionsState(boolean restart) {
+        showMemory = false;
+        showTransformers = false;
+        transformerOptions = null;
+        mergedShortOptionsMap = null;
+        mergedLongOptionsMap = null;
+        if (transformer != null)
+            transformer.resetAllState(restart);
+        transformer = null;
+    }
+
+    private void resetGlobalState(boolean restart) {
+        if (!restart) {
+            verifier = null;
+        }
     }
 
     protected boolean showMemory() {
@@ -406,6 +433,10 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return nonOptionArgs;
     }
 
+    public List<String> processRestartArguments(List<String> args, RestartOptions restartOptions) {
+        return args;
+    }
+    
     public void showBanner(PrintWriter out) {
         showBanner(out, TimedTextTransformer.banner);
     }

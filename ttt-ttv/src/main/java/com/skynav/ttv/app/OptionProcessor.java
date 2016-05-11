@@ -34,6 +34,7 @@ import com.skynav.ttv.util.Configuration;
 import com.skynav.ttv.util.ConfigurationDefaults;
 
 public interface OptionProcessor {
+    void resetAllState(boolean restart);
     URL getDefaultConfigurationLocator();
     ConfigurationDefaults getConfigurationDefaults(URL configLocator);
     Class<? extends Configuration> getConfigurationClass();
@@ -42,6 +43,7 @@ public interface OptionProcessor {
     int parseOption(List<String> args, int index) throws UsageException;
     void processDerivedOptions();
     List<String> processNonOptionArguments(List<String> nonOptionArgs);
+    List<String> processRestartArguments(List<String> args, RestartOptions restartOptions);
     void showBanner(PrintWriter out);
     void showUsage(PrintWriter out);
     String getShowUsageCommand();

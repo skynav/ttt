@@ -157,6 +157,42 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     @Override
+    public void resetAllState(boolean restart) {
+        resetRenderState(restart);
+        resetDerivedOptionsState(restart);
+        resetOptionsState(restart);
+    }
+
+    private void resetRenderState(boolean restart) {
+        xCurrent = 0;
+        yCurrent = 0;
+        regions = null;
+        paragraphGenerationIndex = 0;
+        lineGenerationIndex = 0;
+        resources = null;
+        resourceGenerationIndex = 0;
+    }
+
+    private void resetDerivedOptionsState(boolean restart) {
+        backgroundColor = null;
+        decorationColor = null;
+        outputPatternResourceFormatter = null;
+    }
+
+    private void resetOptionsState(boolean restart) {
+        backgroundOption = null;
+        decorateGlyphs = false;
+        decorateLineBaselines = false;
+        decorateLineBounds = false;
+        decorateLineLabels = false;
+        decorateRegions = false;
+        decorationOption = null;
+        markClasses = false;
+        outputPatternResource = null;
+        outputPattern = null;
+    }
+
+    @Override
     public String getName() {
         return NAME;
     }

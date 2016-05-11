@@ -162,6 +162,29 @@ public class ISD {
             super(context);
         }
 
+        public void resetAllState(boolean restart) {
+            resetResourceState(restart);
+            resetOptionsState(restart);
+            resetGlobalState(restart);
+        }
+
+        private void resetResourceState(boolean restart) {
+        }
+
+        private void resetOptionsState(boolean restart) {
+            outputDirectoryClean = false;
+            outputDirectoryPath = null;
+            outputEncodingName = null;
+            outputIndent = false;
+            outputPattern = null;
+            outputDirectory = null;
+            outputEncoding = null;
+            outputPatternFormatter = null;
+        }
+
+        private void resetGlobalState(boolean restart) {
+        }
+
         public String getName() {
             return TRANSFORMER_NAME;
         }

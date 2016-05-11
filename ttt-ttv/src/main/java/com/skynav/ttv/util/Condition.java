@@ -140,7 +140,7 @@ public class Condition {
             Token t0 = state.next();
             if (t0 == null) {
                 state.error();
-            } if (t0.isLiteral()) {
+            } else if (t0.isLiteral()) {
                 state.consume();
                 Token t1 = state.next();
                 if (t1 == Token.OPEN) {

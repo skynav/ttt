@@ -31,6 +31,7 @@ import java.util.List;
 import com.skynav.ttv.app.OptionSpecification;
 
 public interface TransformerOptions {
+    void resetAllState(boolean restart);
     Collection<OptionSpecification> getShortOptionSpecs();
     Collection<OptionSpecification> getLongOptionSpecs();
     int parseLongOption(List<String> args, int index);

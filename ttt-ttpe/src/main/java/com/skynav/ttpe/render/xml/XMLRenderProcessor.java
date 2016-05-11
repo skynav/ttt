@@ -100,6 +100,25 @@ public class XMLRenderProcessor extends RenderProcessor {
     }
 
     @Override
+    public void resetAllState(boolean restart) {
+        resetRenderState(restart);
+        resetDerivedOptionsState(restart);
+        resetOptionsState(restart);
+    }
+
+    private void resetRenderState(boolean restart) {
+        regions = null;
+    }
+
+    private void resetDerivedOptionsState(boolean restart) {
+    }
+
+    private void resetOptionsState(boolean restart) {
+        includeGenerator = false;
+        outputPattern = null;
+    }
+
+    @Override
     public String getName() {
         return NAME;
     }

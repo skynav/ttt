@@ -75,6 +75,7 @@ import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
+import com.skynav.ttv.app.RestartOptions;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.NullReporter;
 import com.skynav.ttv.util.Reporter;
@@ -497,6 +498,27 @@ public class Presenter extends TimedTextTransformer {
         return nonOptionArgs;
     }
 
+    @Override
+    public List<String> processRestartArguments(List<String> args, RestartOptions restartOptions) {
+        if ((restartOptions != null) && !restartOptions.isEmpty()) {
+            List<String> argsRestart = new java.util.ArrayList<String>();
+            for (RestartOptions.Section s : restartOptions.getSections()) {
+                if (s.getName().equals("ttpe")) {
+                    for (Map.Entry<String,Object> e : s.getOptions().entrySet()) {
+                        String n = e.getKey();
+                        argsRestart.add("--" + n);
+                        Object v = e.getValue();
+                        if (v != null)
+                            argsRestart.add(v.toString());
+                    }
+                }
+            }
+            argsRestart.addAll(args);
+            args = argsRestart;
+        }
+        return args;
+    }
+    
     @Override
     public void showBanner(PrintWriter out) {
         showBanner(out, banner);

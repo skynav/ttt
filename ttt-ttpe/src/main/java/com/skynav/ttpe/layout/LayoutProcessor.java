@@ -47,6 +47,9 @@ public abstract class LayoutProcessor implements TransformerOptions, Layout {
         this.context = context;
     }
 
+    public void resetAllState(boolean restart) {
+    }
+
     public Collection<OptionSpecification> getShortOptionSpecs() {
         return new java.util.ArrayList<OptionSpecification>();
     }

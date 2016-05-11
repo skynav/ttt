@@ -35,4 +35,8 @@ public abstract class AbstractTransformer implements Transformer {
         this.context = context;
     }
 
+    public void resetAllState(boolean restart) {
+        // [TBD]
+    }
+
 }

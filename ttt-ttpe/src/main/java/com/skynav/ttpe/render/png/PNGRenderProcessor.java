@@ -103,6 +103,29 @@ public class PNGRenderProcessor extends SVGRenderProcessor {
     }
 
     @Override
+    public void resetAllState(boolean restart) {
+        resetRenderState(restart);
+        resetDerivedOptionsState(restart);
+        resetOptionsState(restart);
+    }
+
+    private void resetRenderState(boolean restart) {
+    }
+
+    private void resetDerivedOptionsState(boolean restart) {
+        background = null;
+        mode = null;
+        pixelDensity = 0;
+    }
+
+    private void resetOptionsState(boolean restart) {
+        backgroundOption = null;
+        modeOption = null;
+        outputPattern = null;
+        pixelDensityOption = null;
+    }
+
+    @Override
     public String getName() {
         return NAME;
     }

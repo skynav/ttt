@@ -43,7 +43,8 @@ public interface Reporter {
     public boolean isOpen();
     public void open(Object... arguments) throws IOException;
     public void close() throws IOException;
-    public void resetResourceState();
+    public void resetResourceState(boolean restart);
+    public void resetAllState(boolean restart);
     public void setResourceURI(String uri);
     public void setResourceURI(URI uri);
     public void setLines(String[] lines);

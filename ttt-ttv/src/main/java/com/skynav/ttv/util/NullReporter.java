@@ -57,7 +57,10 @@ public class NullReporter implements Reporter {
     public void close() throws IOException {
     }
 
-    public void resetResourceState() {
+    public void resetResourceState(boolean restart) {
+    }
+
+    public void resetAllState(boolean restart) {
     }
 
     public void setResourceURI(String uri) {

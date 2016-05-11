@@ -123,6 +123,7 @@ public class TimedTextVerifier implements VerifierContext {
     public static final int RV_PASS                             = 0;
     public static final int RV_FAIL                             = 1;
     public static final int RV_USAGE                            = 2;
+    public static final int RV_RESTART                          = 3;
 
     public static final int RV_FLAG_ERROR_UNEXPECTED            = 0x000001;
     public static final int RV_FLAG_ERROR_EXPECTED_MATCH        = 0x000002;
@@ -287,7 +288,7 @@ public class TimedTextVerifier implements VerifierContext {
     // miscellaneous statics
     private static final QName emptyName = new QName("", "");
 
-    // options state
+    // option state
     private String expectedErrors;
     private String expectedWarnings;
     private String externalDuration;
@@ -318,6 +319,7 @@ public class TimedTextVerifier implements VerifierContext {
     private double[] parsedExternalExtent;
 
     // global processing state
+    private boolean restarted;
     private PrintWriter showOutput;
     private ExternalParametersStore externalParameters = new ExternalParametersStore();
     private Reporter reporter;
@@ -368,6 +370,7 @@ public class TimedTextVerifier implements VerifierContext {
         WellFormedness,
         Validity,
         Semantics,
+        Restarted,
         All;
 
         public boolean isEnabled(Phase phase) {
@@ -398,6 +401,88 @@ public class TimedTextVerifier implements VerifierContext {
             reporter = Reporters.getDefaultReporter();
         setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
         setShowOutput(showOutput);
+    }
+
+    private void resetOptionsState(boolean restart) {
+        expectedErrors = null;
+        expectedWarnings = null;
+        externalDuration = null;
+        externalExtent = null;
+        externalFrameRate = null;
+        extensionSchemas = new java.util.HashMap<String,String>();
+        forceEncodingName = null;
+        forceModelName = null;
+        includeSource = false;
+        modelName = null;
+        quiet = false;
+        showModels = false;
+        showRepository = false;
+        showValidator = false;
+        showWarningTokens = false;
+        treatForeignAs = null;
+        untilPhase = null;
+    }
+    
+    private void resetDerivedOptionsState(boolean restart) {
+        configuration = null;
+        forceEncoding = null;
+        forceModel = null;
+        model = null;
+        foreignTreatment = null;
+        lastPhase = restart ? Phase.Restarted : Phase.None;
+        parsedExternalFrameRate = 0;
+        parsedExternalDuration = 0;
+        parsedExternalExtent = null;
+    }
+    
+    private void resetGlobalProcessingState(Reporter reporter, PrintWriter showOutput, boolean restart) {
+        if (restart) {
+            reporter.resetAllState(restart);
+            this.reporter = reporter;
+            this.showOutput = showOutput;
+        } else {
+            this.reporter = Reporters.getDefaultReporter();
+            this.showOutput = null;
+        }
+        externalParameters = new ExternalParametersStore();
+        schemaFactory = null;
+        nonPoolGrammarSupported = false;
+        schemas = new java.util.HashMap<List<URL>,Schema>();
+        results = new java.util.HashMap<String,Results>();
+    }
+    
+    private void resetResourceState() {
+        resetResourceState(false);
+    }
+    
+    private void resetResourceState(boolean restart) {
+        currentPhase = null;
+        resourceModel = model;
+        resourceUriString = null;
+        resourceState = new java.util.HashMap<String,Object>();
+        resourceUri = null;
+        resourceEncoding = null;
+        resourceBufferRaw = null;
+        resourceExpectedErrors = -1;
+        resourceExpectedWarnings = -1;
+        binder = null;
+        rootBinding = null;
+        rootName = null;
+        Reporter reporter = getReporter();
+        if (reporter != null) {
+            reporter.resetResourceState(restart);
+            if (resourceModel != null)
+                resourceModel.configureReporter(reporter);
+        }
+    }
+
+    private void resetAllState(Reporter reporter, PrintWriter showOutput, OptionProcessor optionProcessor, boolean restart) {
+        if (optionProcessor != null)
+            optionProcessor.resetAllState(restart);
+        resetResourceState(restart);
+        resetDerivedOptionsState(restart);
+        resetOptionsState(restart);
+        resetGlobalProcessingState(reporter, showOutput, restart);
     }
 
     private void resetReporter() {
@@ -894,6 +979,12 @@ public class TimedTextVerifier implements VerifierContext {
         return args;
     }
 
+    private List<String> processRestartArguments(List<String> args, OptionProcessor optionProcessor) {
+        if (optionProcessor != null)
+            args = optionProcessor.processRestartArguments(args, getRestartOptions());
+        return args;
+    }
+
     private void processDerivedOptions(OptionProcessor optionProcessor) {
         Reporter reporter = getReporter();
         Charset forceEncoding;
@@ -1315,22 +1406,6 @@ public class TimedTextVerifier implements VerifierContext {
         return lines.toArray(new String[lines.size()]);
     }
 
-    private void resetResourceState() {
-        resourceModel = model;
-        resourceState = new java.util.HashMap<String,Object>();
-        resourceUriString = null;
-        resourceUri = null;
-        resourceEncoding = null;
-        resourceBufferRaw = null;
-        resourceExpectedErrors = -1;
-        resourceExpectedWarnings = -1;
-        binder = null;
-        rootBinding = null;
-        rootName = null;
-        getReporter().resetResourceState();
-        resourceModel.configureReporter(getReporter());
-    }
-
     public Map<String,Object> getResourceState() {
         return resourceState;
     }
@@ -1456,7 +1531,15 @@ public class TimedTextVerifier implements VerifierContext {
                     } else if (localName.equals("loc")) {
                         // no processing required here
                     } else if (localName.equals("processingOptions")) {
-                        // [TBD] - implement me - ignore for now
+                        if (!hasRestarted()) {
+                            try {
+                                setRestartOptions(RestartOptions.valueOf(value));
+                                reporter.logInfo(reporter.message("*KEY*", "Found processing options, signalling restart: ''{0}''.", value));
+                            } catch (RestartOptions.ParserException e) {
+                                reporter.logError(reporter.message("*KEY*",
+                                    "Invalid processing options syntax for value ''{0}'': {1}.", value, e.getMessage()));
+                            }
+                        }
                     } else {
                         throw new InvalidAnnotationException(localName, "unknown annotation");
                     }
@@ -1467,6 +1550,37 @@ public class TimedTextVerifier implements VerifierContext {
             resourceModel.configureReporter(reporter);
     }
 
+    private void setRestartOptions(RestartOptions options) {
+        if (getRestartOptions() == null)
+            setResourceState("restartOptions", options);
+    }
+
+    private RestartOptions getRestartOptions() {
+        return (RestartOptions) getResourceState("restartOptions");
+    }
+
+    private boolean hasRestartOptions() {
+        RestartOptions restartOptions = getRestartOptions();
+        return (restartOptions != null) && !restartOptions.isEmpty();
+    }
+
+    private boolean needsRestart() {
+        return !hasRestarted() && hasRestartOptions();
+    }
+
+    private void setRestarted() {
+        restarted = true;
+    }
+    
+    private boolean hasRestarted() {
+        return restarted;
+    }
+
+    private void restart(OptionProcessor optionProcessor) {
+        resetAllState(getReporter(), getShowOutput(), optionProcessor, true);
+        setRestarted();
+    }
+    
     private boolean verifyWellFormedness() {
         Reporter reporter = getReporter();
         currentPhase = Phase.WellFormedness;
@@ -1521,7 +1635,7 @@ public class TimedTextVerifier implements VerifierContext {
         } catch (IOException e) {
             reporter.logError(e);
         }
-        return reporter.getResourceErrors() == 0;
+        return (reporter.getResourceErrors() == 0) && !needsRestart();
     }
 
     private SchemaFactory getSchemaFactory() {
@@ -2010,11 +2124,13 @@ public class TimedTextVerifier implements VerifierContext {
                 resultProcessor.processResult(args, resourceUri, rootBinding);
         } while (false);
         int rv = rvValue();
-        reporter.logInfo(reporter.message("*KEY*", "Verification {0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
-        reporter.flush();
-        Results results = new Results(uri, rv,
-            resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings, reporter.getResourceWarnings(), getModel(), getEncoding(), rootName);
-        this.results.put(uri, results);
+        if (rvCode(rv) != RV_RESTART) {
+            reporter.logInfo(reporter.message("*KEY*", "Verification {0}{1}.", rvPassed(rv) ? "Passed" : "Failed", resultDetails()));
+            reporter.flush();
+            this.results.put(uri,
+                new Results(uri, rv, resourceExpectedErrors, reporter.getResourceErrors(), resourceExpectedWarnings,
+                    reporter.getResourceWarnings(), getModel(), getEncoding(), rootName));
+        }
         return rv;
     }
 
@@ -2045,6 +2161,8 @@ public class TimedTextVerifier implements VerifierContext {
             if (reporter.getResourceWarnings() > 0)
                 flags |= RV_FLAG_WARNING_EXPECTED_MATCH;
         }
+        if ((code == RV_PASS) && needsRestart())
+            code = RV_RESTART;
         return ((flags & 0x7FFFFF) << 8) | (code & 0xFF);
     }
 
@@ -2135,6 +2253,8 @@ public class TimedTextVerifier implements VerifierContext {
             case RV_FAIL:
                 ++numFailure;
                 break;
+            case RV_RESTART:
+                return RV_RESTART;
             default:
                 break;
             }
@@ -2169,21 +2289,29 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     public int run(List<String> args, ResultProcessor resultProcessor) {
+        return run(args, resultProcessor, false);
+    }
+    
+    private int run(List<String> args, ResultProcessor resultProcessor, boolean restarting) {
         int rv = 0;
         OptionProcessor optionProcessor = (OptionProcessor) resultProcessor;
         try {
+            if (restarting)
+                restart(optionProcessor);
             List<String> argsPreProcessed = preProcessOptions(args, optionProcessor);
             List<String> nonOptionArgs = parseArgs(argsPreProcessed, optionProcessor);
-            showBanner(getShowOutput(), optionProcessor);
-            getShowOutput().flush();
-            if (showModels)
-                showModels();
-            if (showRepository)
-                showRepository();
-            if (showValidator)
-                showValidator();
-            if (showWarningTokens)
-                showWarningTokens();
+            if (!restarting) {
+                showBanner(getShowOutput(), optionProcessor);
+                getShowOutput().flush();
+                if (showModels)
+                    showModels();
+                if (showRepository)
+                    showRepository();
+                if (showValidator)
+                    showValidator();
+                if (showWarningTokens)
+                    showWarningTokens();
+            }
             if (optionProcessor != null)
                 optionProcessor.runOptions(getShowOutput());
             if (nonOptionArgs.size() > 1) {
@@ -2196,6 +2324,12 @@ public class TimedTextVerifier implements VerifierContext {
             if (nonOptionArgs.size() > 0) {
                 showProcessingInfo();
                 rv = verify(args, nonOptionArgs, resultProcessor);
+                if (rv == RV_RESTART) {
+                    assert !hasRestarted();
+                    List<String> argsRestart = processRestartArguments(args, resultProcessor);
+                    reporter.logInfo(reporter.message("*KEY*", "Restarting with augmented option arguments: {0}.", argsRestart));
+                    rv = run(argsRestart, resultProcessor, true);
+                }
             } else
                 rv = RV_PASS;
         } catch (ShowUsageException e) {

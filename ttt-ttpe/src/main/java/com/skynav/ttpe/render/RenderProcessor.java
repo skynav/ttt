@@ -48,6 +48,9 @@ public abstract class RenderProcessor implements TransformerOptions, Render {
         this.context = context;
     }
 
+    public void resetAllState(boolean restart) {
+    }
+
     public String getOutputPattern() {
         return null;
     }
