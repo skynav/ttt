@@ -77,7 +77,7 @@ public class RestartOptions {
         public Map<String,Object> getOptions() {
             return options;
         }
-        
+
     }
 
     private static class Parser {
@@ -99,7 +99,7 @@ public class RestartOptions {
             } else
                 throw new ParserException("empty options");
         }
-                    
+
         private void parseSections() {
             Token t = state.next();
             while (t != Token.EOS) {

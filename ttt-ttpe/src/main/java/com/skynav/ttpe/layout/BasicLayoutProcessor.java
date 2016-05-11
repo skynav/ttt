@@ -144,7 +144,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         charBreaker = null;
         defaults = null;
     }
-    
+
     private void resetOptionsState(boolean restart) {
         fontSpecificationDirectoryPath = null;
         fontSpecificationFileNames = null;

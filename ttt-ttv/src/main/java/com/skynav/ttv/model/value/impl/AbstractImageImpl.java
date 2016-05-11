@@ -43,19 +43,25 @@ public abstract class AbstractImageImpl implements Image {
     public URI getURI() {
         return uri;
     }
+    public void setSpecifiedType(String type) {
+        typeSpecified = type;
+    }
     public String getSpecifiedType() {
         return typeSpecified;
     }
-    protected void setVerifiedType(String type) {
+    public void setVerifiedType(String type) {
         typeVerified = type;
     }
     public String getVerifiedType() {
         return typeVerified;
     }
+    public void setSpecifiedFormat(String format) {
+        formatSpecified = format;
+    }
     public String getSpecifiedFormat() {
         return formatSpecified;
     }
-    protected void setVerifiedFormat(String format) {
+    public void setVerifiedFormat(String format) {
         formatVerified = format;
     }
     public String getVerifiedFormat() {

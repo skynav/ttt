@@ -30,8 +30,10 @@ import java.net.URI;
 public interface Image {
     URI getURI();
     String getSpecifiedType();
+    void setSpecifiedType(String type);
     String getVerifiedType();
     String getSpecifiedFormat();
+    void setSpecifiedFormat(String format);
     String getVerifiedFormat();
     int getWidth();
     int getHeight();

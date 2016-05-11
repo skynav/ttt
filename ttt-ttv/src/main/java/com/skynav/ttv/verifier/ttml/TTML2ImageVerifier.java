@@ -205,6 +205,8 @@ public class TTML2ImageVerifier implements ImageVerifier {
                     image.setExtent(w, h);
                     return true;
                 }
+            } catch (RuntimeException e) {
+                throw e;
             } catch (Exception e) {
                 reporter.logError(e);
                 return false;
@@ -250,9 +252,7 @@ public class TTML2ImageVerifier implements ImageVerifier {
     }
 
     private static class TestInfoAdapter extends AbstractTestInfo {
-        @SuppressWarnings("unused")
         private Image image;
-        @SuppressWarnings("unused")
         private MimeType mimeType;
         private Location location;
         TestInfoAdapter(Image image, MimeType mimeType, Location location) {
@@ -260,7 +260,14 @@ public class TTML2ImageVerifier implements ImageVerifier {
             this.mimeType = mimeType;
             this.location = location;
         }
-        Location getLocation() {
+        @SuppressWarnings("unused")
+        public Image getImage() {
+            return image;
+        }
+        public MimeType getMimeType() {
+            return mimeType;
+        }
+        public Location getLocation() {
             return location;
         }
     }

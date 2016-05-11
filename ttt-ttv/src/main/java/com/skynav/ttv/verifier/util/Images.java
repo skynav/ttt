@@ -52,7 +52,7 @@ public class Images {
 
     public static boolean isImage(String value, Location location, VerifierContext context, boolean verifyContent, Image[] outputImage) {
         Image image;
-        if ((outputImage != null) && (outputImage.length < 0))
+        if ((outputImage != null) && (outputImage.length < 1))
             throw new IllegalArgumentException();
         if (URIs.isLocalFragment(value)) {
             String id = URIs.getFragment(value);
@@ -96,6 +96,9 @@ public class Images {
         } else {
             return false;                                                       // image reference is empty string
         }
+        // record specified type and format
+        image.setSpecifiedType(null);                                           // [TBD] populate specified type from content
+        image.setSpecifiedFormat(null);                                         // [TBD] populate speicifed format from content
         // verify image content
         assert image != null;
         if (verifyContent && !context.getModel().getImageVerifier().verify(image, location, context))

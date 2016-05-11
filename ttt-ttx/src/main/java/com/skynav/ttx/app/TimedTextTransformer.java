@@ -436,7 +436,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     public List<String> processRestartArguments(List<String> args, RestartOptions restartOptions) {
         return args;
     }
-    
+
     public void showBanner(PrintWriter out) {
         showBanner(out, TimedTextTransformer.banner);
     }

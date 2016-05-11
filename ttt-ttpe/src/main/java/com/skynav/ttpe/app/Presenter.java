@@ -510,9 +510,10 @@ public class Presenter extends TimedTextTransformer {
                         Object v = e.getValue();
                         if (v != null) {
                             if (v instanceof Double) {
-                                double d = (Double) v;
-                                if (d == Math.rint(d))
-                                    v = Integer.valueOf((int) d);
+                                Double d = (Double) v;
+                                Double r = (Double) Math.rint(d);
+                                if (d.equals(r))
+                                    v = Integer.valueOf(d.intValue());
                             }
                             argsRestart.add(v.toString());
                         }
@@ -524,7 +525,7 @@ public class Presenter extends TimedTextTransformer {
         }
         return args;
     }
-    
+
     @Override
     public void showBanner(PrintWriter out) {
         showBanner(out, banner);

@@ -28,7 +28,6 @@ package com.skynav.ttv.model.value.impl;
 import java.net.URI;
 
 public class EmbeddedImageImpl extends AbstractImageImpl {
-    @SuppressWarnings("unused")
     private Object target;
     public EmbeddedImageImpl(URI uri, Object target) {
         super(uri);
@@ -36,5 +35,8 @@ public class EmbeddedImageImpl extends AbstractImageImpl {
     }
     public boolean isExternal() {
         return false;
+    }
+    public Object getTarget() {
+        return target;
     }
 }

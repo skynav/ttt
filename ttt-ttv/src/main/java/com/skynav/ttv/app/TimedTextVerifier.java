@@ -422,7 +422,7 @@ public class TimedTextVerifier implements VerifierContext {
         treatForeignAs = null;
         untilPhase = null;
     }
-    
+
     private void resetDerivedOptionsState(boolean restart) {
         configuration = null;
         forceEncoding = null;
@@ -434,7 +434,7 @@ public class TimedTextVerifier implements VerifierContext {
         parsedExternalDuration = 0;
         parsedExternalExtent = null;
     }
-    
+
     private void resetGlobalProcessingState(Reporter reporter, PrintWriter showOutput, boolean restart) {
         if (restart) {
             reporter.resetAllState(restart);
@@ -450,11 +450,11 @@ public class TimedTextVerifier implements VerifierContext {
         schemas = new java.util.HashMap<List<URL>,Schema>();
         results = new java.util.HashMap<String,Results>();
     }
-    
+
     private void resetResourceState() {
         resetResourceState(false);
     }
-    
+
     private void resetResourceState(boolean restart) {
         currentPhase = null;
         resourceModel = model;
@@ -1571,7 +1571,7 @@ public class TimedTextVerifier implements VerifierContext {
     private void setRestarted() {
         restarted = true;
     }
-    
+
     private boolean hasRestarted() {
         return restarted;
     }
@@ -1581,7 +1581,7 @@ public class TimedTextVerifier implements VerifierContext {
         resetAllState(getReporter(), getShowOutput(), optionProcessor, true);
         setRestarted();
     }
-    
+
     private boolean verifyWellFormedness() {
         Reporter reporter = getReporter();
         currentPhase = Phase.WellFormedness;
@@ -2292,7 +2292,7 @@ public class TimedTextVerifier implements VerifierContext {
     public int run(List<String> args, ResultProcessor resultProcessor) {
         return run(args, resultProcessor, false);
     }
-    
+
     private int run(List<String> args, ResultProcessor resultProcessor, boolean restarting) {
         int rv = 0;
         OptionProcessor optionProcessor = (OptionProcessor) resultProcessor;
