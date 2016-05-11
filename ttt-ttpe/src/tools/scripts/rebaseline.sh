@@ -11,7 +11,7 @@ for f in $SRCDIR/*/$p*.xml
 do
   if [ ! -e $f ]; then
     continue
-  elif [ "$f" == 'test.config.xml' ]; then
+  elif [ $(basename "$f") == 'test.config.xml' ]; then
     continue
   else
     echo Rebaselining $f ...
