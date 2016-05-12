@@ -9,4 +9,5 @@
 <option name="svg-background">black</option>
 <option name="svg-decoration">white</option>
 <option name="svg-decorate-all"/>
+<option name="svg-mark-classes"/>
 </config>
