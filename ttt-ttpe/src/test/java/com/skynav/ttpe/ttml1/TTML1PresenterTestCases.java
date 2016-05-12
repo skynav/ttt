@@ -32,6 +32,16 @@ import com.skynav.ttpe.app.PresenterTestDriver;
 public class TTML1PresenterTestCases extends PresenterTestDriver {
 
     @Test
+    public void testTTML1BackgroundColorBlock() throws Exception {
+        performPresentationTest("ttml1-background-color-block.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML1BackgroundColorRegion() throws Exception {
+        performPresentationTest("ttml1-background-color-region.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML1Display1() throws Exception {
         performPresentationTest("ttml1-display-1.xml", 0, 0);
     }

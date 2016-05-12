@@ -395,6 +395,16 @@ public class SVGRenderProcessor extends RenderProcessor {
                     addRegion(id, origin, extent);
                 }
             }
+            // render region presentation traits
+            Color bColor = a.getBackgroundColor();
+            if ((bColor != null) && !bColor.isTransparent()) {
+                Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, bColor.toRGBString());
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
+                eSVG.appendChild(eBackgroundColor);
+            }
             xCurrent = yCurrent = 0;
             WritingMode wm = a.getWritingMode();
             if (wm.isVertical()) {
