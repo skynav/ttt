@@ -72,6 +72,7 @@ import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.FrameResource;
 import com.skynav.ttpe.render.RenderProcessor;
 import com.skynav.ttpe.style.AnnotationPosition;
+import com.skynav.ttpe.style.BackgroundColor;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Image;
@@ -748,13 +749,14 @@ public class SVGRenderProcessor extends RenderProcessor {
         double bpdLineAnnotationAfter = l.getAnnotationBPD(AnnotationPosition.AFTER);
         double bpdLineSansAnnotation = bpdLine - (bpdLineAnnotationBefore + bpdLineAnnotationAfter);
         double bpdGlyphs = a.getBPD();
+        double baselineOffset;
         double ipdGlyphs = a.getIPD();
         Font font = a.getFont();
         boolean combined = a.isCombined();
         if (a.isVertical()) {
-            double baselineOffset = bpdLineAnnotationBefore;
             double yOffset = 0;
             boolean rotate = a.isRotatedOrientation();
+            baselineOffset = bpdLineAnnotationBefore;
             if (rotate && !combined) {
                 if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
                     baselineOffset += (bpdLineSansAnnotation - font.getHeight())/2 + font.getAscent();
@@ -776,12 +778,12 @@ public class SVGRenderProcessor extends RenderProcessor {
                 sb.append(",rotate(90)");
             Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, sb.toString());
         } else {
-            double baselineOffset = font.getHeight() + bpdLineAnnotationBefore;
+            baselineOffset = font.getHeight() + bpdLineAnnotationBefore;
             Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {xCurrent, baselineOffset}));
         }
         List<Decoration> decorations = a.getDecorations();
         Element e;
-        e = renderGlyphText(g, a, d, decorations);
+        e = renderGlyphText(g, a, d, decorations, bpdGlyphs, baselineOffset);
         assert e != null;
         g.appendChild(e);
         if (a.isVertical()) {
@@ -792,14 +794,14 @@ public class SVGRenderProcessor extends RenderProcessor {
         return g;
     }
 
-    private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
+    private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> decorations, double bpdGlyphs, double baselineOffset) {
         if (a.isVertical() && !a.isRotatedOrientation() && !a.isCombined())
-            return renderGlyphTextVertical(parent, a, d, decorations);
+            return renderGlyphTextVertical(parent, a, d, decorations, bpdGlyphs, baselineOffset);
         else
-            return renderGlyphTextHorizontal(parent, a, d, decorations);
+            return renderGlyphTextHorizontal(parent, a, d, decorations, bpdGlyphs, baselineOffset);
     }
 
-    private Element renderGlyphTextVertical(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
+    private Element renderGlyphTextVertical(Element parent, GlyphArea a, Document d, List<Decoration> decorations, double bpdGlyphs, double baselineOffset) {
         Font font = a.getFont();
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         maybeMarkClasses(gOuter, a, "text-v");
@@ -909,7 +911,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         return gOuter;
     }
 
-    private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> decorations) {
+    private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> decorations, double bpdGlyphs, double baselineOffset) {
         Font font = a.getFont();
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         maybeMarkClasses(gOuter, a, "text-h");
@@ -952,6 +954,23 @@ public class SVGRenderProcessor extends RenderProcessor {
                 glyphVisible = (decorationVisibility.getVisibility() == Visibility.VISIBLE);
             else
                 glyphVisible = areaVisible;
+            // background color if required
+            if (a.isVisible()) {
+                Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, i, j);
+                if ((decorationBackgroundColor != null) && glyphVisible) {
+                    BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
+                    Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+                    if (x != 0)
+                        Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                    if (baselineOffset > 0)
+                        Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {-baselineOffset}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ga}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {bpdGlyphs}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
+                    gOuter.appendChild(eBackgroundColor);
+                }
+            }
             // outline if required
             Element tOutline;
             Decoration decorationOutline = findDecoration(decorations, Decoration.Type.OUTLINE, i, j);

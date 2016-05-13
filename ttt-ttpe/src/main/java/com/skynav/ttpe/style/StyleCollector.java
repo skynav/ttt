@@ -235,12 +235,25 @@ public class StyleCollector {
     }
 
     public void collectSpanStyles(Element e, int begin, int end) {
+        StyleSet styles = getStyles(e);
 
         // collect common styles
         collectCommonStyles(e, begin, end);
 
         // collect non-common span styles
+        StyleSpecification s;
         Object v;
+
+        // BACKGROUND_COLOR (paragraph is handled as block presentation state, not outer text style state)
+        s = styles.get(ttsBackgroundColorAttrName);
+        v = null;
+        if (s != null) {
+            com.skynav.ttv.model.value.Color[] retColor = new com.skynav.ttv.model.value.Color[1];
+            if (com.skynav.ttv.verifier.util.Colors.isColor(s.getValue(), new Location(), context, retColor))
+                v = new Color(retColor[0].getRed(), retColor[0].getGreen(), retColor[0].getBlue(), retColor[0].getAlpha());
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.BACKGROUND_COLOR, v, begin, end);
 
         // LANGUAGE
         String xmlLang = Documents.getAttribute(e, xmlLanguageAttrName, null);

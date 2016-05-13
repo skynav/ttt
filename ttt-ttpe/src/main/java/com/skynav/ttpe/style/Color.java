@@ -66,6 +66,10 @@ public class Color {
         this(red, green, blue, 1);
     }
 
+    public Color(Color color) {
+        this(color.red, color.green, color.blue, color.alpha);
+    }
+
     public Color(double red, double green, double blue, double alpha) {
         assert red >= 0;
         assert red <= 1;

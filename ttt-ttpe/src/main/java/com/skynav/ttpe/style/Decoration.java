@@ -28,6 +28,7 @@ package com.skynav.ttpe.style;
 public class Decoration implements Cloneable {
 
     public enum Type {
+        BACKGROUND_COLOR,
         COLOR,
         EMPHASIS,
         HIGHLIGHT,
@@ -66,6 +67,14 @@ public class Decoration implements Cloneable {
 
     public boolean isType(Type type) {
         return this.type == type;
+    }
+
+    public boolean isBackgroundColor() {
+        return getType() == Type.BACKGROUND_COLOR;
+    }
+
+    public BackgroundColor getBackgroundColor() {
+        return isBackgroundColor() ? (BackgroundColor) getValue() : null;
     }
 
     public boolean isColor() {

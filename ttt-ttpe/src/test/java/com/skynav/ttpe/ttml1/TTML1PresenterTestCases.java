@@ -37,6 +37,11 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML1BackgroundColorInlineLRTB() throws Exception {
+        performPresentationTest("ttml1-background-color-inline-lrtb.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML1BackgroundColorRegion() throws Exception {
         performPresentationTest("ttml1-background-color-region.xml", 0, 0);
     }

@@ -51,6 +51,7 @@ import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.AnnotationReserve;
+import com.skynav.ttpe.style.BackgroundColor;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Defaults;
@@ -971,6 +972,7 @@ public class LineLayout {
         // obtain decorations starting at FROM to TO of run, where FROM and TO are indices into run, not outer iterator
         List<Decoration> getDecorations(int from, int to) {
             Set<StyleAttributeInterval> intervals = new java.util.TreeSet<StyleAttributeInterval>();
+            intervals.addAll(getBackgroundColorIntervals(from, to));
             intervals.addAll(getColorIntervals(from, to));
             intervals.addAll(getOutlineIntervals(from, to));
             intervals.addAll(getVisibilityIntervals(from, to));
@@ -979,7 +981,9 @@ public class LineLayout {
                 Decoration.Type t;
                 Object v = i.getValue();
                 if (v != null) {
-                    if (v instanceof Color)
+                    if (v instanceof BackgroundColor)
+                        t = Decoration.Type.BACKGROUND_COLOR;
+                    else if (v instanceof Color)
                         t = Decoration.Type.COLOR;
                     else if (v instanceof Outline)
                         t = Decoration.Type.OUTLINE;
@@ -1083,6 +1087,24 @@ public class LineLayout {
             if (fonts.isEmpty())
                 fonts.add(new StyleAttributeInterval(fontAttr, defaultFont, -1, -1));
             return fonts;
+        }
+        // obtain background colors for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getBackgroundColorIntervals(int from, int to) {
+            StyleAttribute backgroundColorAttr = StyleAttribute.BACKGROUND_COLOR;
+            List<StyleAttributeInterval> backgroundColors = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, backgroundColorAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                aci.setIndex(s);
+                Object v = aci.getAttribute(backgroundColorAttr);
+                if ((v != null) && (v instanceof Color))
+                    backgroundColors.add(new StyleAttributeInterval(backgroundColorAttr, new BackgroundColor((Color) v), s, e));
+            }
+            aci.setIndex(savedIndex);
+            return backgroundColors;
         }
         // obtain colors for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getColorIntervals(int from, int to) {
