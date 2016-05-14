@@ -69,11 +69,19 @@ public abstract class AbstractArea implements Area {
         return getAvailable(Dimension.IPD);
     }
 
+    public double getAllocationIPD() {
+        return getIPD();
+    }
+
     public void setBPD(double bpd) {
     }
 
     public double getBPD() {
         return getAvailable(Dimension.BPD);
+    }
+
+    public double getAllocationBPD() {
+        return getBPD();
     }
 
     public double getAvailable(Dimension dimension) {

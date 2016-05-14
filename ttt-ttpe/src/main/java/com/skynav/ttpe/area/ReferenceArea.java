@@ -28,6 +28,7 @@ package com.skynav.ttpe.area;
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.Visibility;
@@ -56,10 +57,11 @@ public class ReferenceArea extends PositionedBlockArea {
         WritingMode wm = this.wm;
         if (wm == null)
             wm = WritingMode.LRTB;
+        Extent ce = getContentExtent();
         if (wm.isHorizontal())
-            return (dimension == Dimension.IPD) ? getWidth() : getHeight();
+            return (dimension == Dimension.IPD) ? ce.getWidth() : ce.getHeight();
         else
-            return (dimension == Dimension.IPD) ? getHeight() : getWidth();
+            return (dimension == Dimension.IPD) ? ce.getHeight() : ce.getWidth();
     }
 
     public WritingMode getWritingMode() {

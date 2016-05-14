@@ -32,7 +32,7 @@ import com.skynav.ttpe.style.Visibility;
 
 public class PositionedBlockArea extends BoundedBlockArea {
 
-    private Point origin;
+    private Point origin;                                       // allocation rectangle origin
 
     public PositionedBlockArea(Element e, double x, double y, double width, double height, Visibility visibility) {
         super(e, width, height, visibility);
@@ -43,12 +43,52 @@ public class PositionedBlockArea extends BoundedBlockArea {
         return origin;
     }
 
+    public Point getOrigin(ReferenceRectangle rr) {
+        if (rr == ReferenceRectangle.ALLOCATION) {
+            return getOrigin();
+        } else if (rr == ReferenceRectangle.BORDER) {
+            return getBorderOrigin();
+        } else if (rr == ReferenceRectangle.PADDING) {
+            return getPaddingOrigin();
+        } else if (rr == ReferenceRectangle.CONTENT) {
+            return getContentOrigin();
+        } else if (rr == ReferenceRectangle.CONTAINER) {
+            throw new UnsupportedOperationException();          // [TBD] IMPLEMENT ME
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public Point getBorderOrigin() {                           // w.r.t. allocation rectangle origin
+        return Point.ZERO;
+    }
+
+    public Point getPaddingOrigin() {                          // w.r.t. allocation rectangle origin
+        Point borderOrigin = getBorderOrigin();
+        if (hasBorder()) {
+            double xBorder = getBorderX();
+            double yBorder = getBorderY();
+            return new Point(borderOrigin.getX() + xBorder, borderOrigin.getY() + yBorder);
+        } else
+            return borderOrigin;
+    }
+
+    public Point getContentOrigin() {                          // w.r.t. allocation rectangle origin
+        Point paddingOrigin = getPaddingOrigin();
+        if (hasPadding()) {
+            double xPadding = getPaddingX();
+            double yPadding = getPaddingY();
+            return new Point(paddingOrigin.getX() + xPadding, paddingOrigin.getY() + yPadding);
+        } else
+            return paddingOrigin;
+    }
+
     public double getX() {
-        return origin.getX();
+        return getOrigin().getX();
     }
 
     public double getY() {
-        return origin.getY();
+        return getOrigin().getY();
     }
 
 }

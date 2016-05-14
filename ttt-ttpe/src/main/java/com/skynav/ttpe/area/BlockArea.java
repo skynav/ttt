@@ -25,20 +25,24 @@
 
 package com.skynav.ttpe.area;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.geometry.Dimension;
+import com.skynav.ttpe.geometry.Direction;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Image;
 import com.skynav.ttpe.style.Visibility;
 
 public class BlockArea extends NonLeafAreaNode implements Block {
 
-    private double bpd;
-    private double ipd;
+    private double bpd;                         // bpd of content rectangle
+    private double ipd;                         // ipd of content rectangle
+    private double[] border;                    // writing-mode relative border: { before, end, after, start }
+    private double[] padding;                   // writing-mode relative padding: { before, end, after, start }
     private int level;
     private Visibility visibility;
     private int reversals;
@@ -66,6 +70,8 @@ public class BlockArea extends NonLeafAreaNode implements Block {
         this.visibility = visibility;
     }
 
+    // AbstractArea overrides
+    
     @Override
     public int getBidiLevel() {
         return level;
@@ -77,6 +83,33 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     @Override
+    public void setIPD(double ipd) {
+        this.ipd = ipd;
+    }
+
+    @Override
+    public double getAllocationIPD() {
+        return ipd + getBorderAndPadding(Dimension.IPD);
+    }
+
+    @Override
+    public void setBPD(double bpd) {
+        this.bpd = bpd;
+    }
+
+    @Override
+    public double getAllocationBPD() {
+        return bpd + getBorderAndPadding(Dimension.BPD);
+    }
+
+    @Override
+    public double getAvailable(Dimension dimension) {
+        return (dimension == Dimension.IPD) ? ipd : bpd;
+    }
+
+    // AreaNode overrides
+    
+    @Override
     public void reverse() {
         ++reversals;
     }
@@ -86,14 +119,50 @@ public class BlockArea extends NonLeafAreaNode implements Block {
         return (reversals & 1) == 1;
     }
 
+    // NonLeafAreaNode overrides
+    
     @Override
-    public void setIPD(double ipd) {
-        this.ipd = ipd;
-    }
-
-    @Override
-    public void setBPD(double bpd) {
-        this.bpd = bpd;
+    public void expand(AreaNode a, Set<Expansion> expansions) {
+        double ipd = a.getIPD();
+        double ipdCurrent = getIPD();
+        if (Double.isNaN(ipdCurrent))
+            ipdCurrent = 0;
+        double bpd = a.getBPD();
+        double bpdCurrent = getBPD();
+        if (Double.isNaN(bpdCurrent))
+            bpdCurrent = 0;
+        if (!Double.isNaN(ipd)) {
+            if (expansions.contains(Expansion.EXPAND_IPD)) {
+                if (expansions.contains(Expansion.CROSS))
+                    setBPD(bpdCurrent + ipd);
+                else
+                    setIPD(ipdCurrent + ipd);
+            } else if (expansions.contains(Expansion.ENCLOSE_IPD)) {
+                if (expansions.contains(Expansion.CROSS)) {
+                    if (ipd > bpdCurrent)
+                        setBPD(ipd);
+                } else {
+                    if (ipd > ipdCurrent)
+                        setIPD(ipd);
+                }
+            }
+        }
+        if (!Double.isNaN(bpd)) {
+            if (expansions.contains(Expansion.EXPAND_BPD)) {
+                if (expansions.contains(Expansion.CROSS))
+                    setIPD(ipdCurrent + bpd);
+                else
+                    setBPD(bpdCurrent + bpd);
+            } else if (expansions.contains(Expansion.ENCLOSE_BPD)) {
+                if (expansions.contains(Expansion.CROSS)) {
+                    if (bpd > ipdCurrent)
+                        setIPD(bpd);
+                } else {
+                    if (bpd > bpdCurrent)
+                        setBPD(bpd);
+                }
+            }
+        }
     }
 
     public int getLineCount() {
@@ -164,53 +233,179 @@ public class BlockArea extends NonLeafAreaNode implements Block {
         return backgroundImage;
     }
 
-    @Override
-    public void expand(AreaNode a, Set<Expansion> expansions) {
-        double ipd = a.getIPD();
-        double ipdCurrent = getIPD();
-        if (Double.isNaN(ipdCurrent))
-            ipdCurrent = 0;
-        double bpd = a.getBPD();
-        double bpdCurrent = getBPD();
-        if (Double.isNaN(bpdCurrent))
-            bpdCurrent = 0;
-        if (!Double.isNaN(ipd)) {
-            if (expansions.contains(Expansion.EXPAND_IPD)) {
-                if (expansions.contains(Expansion.CROSS))
-                    setBPD(bpdCurrent + ipd);
-                else
-                    setIPD(ipdCurrent + ipd);
-            } else if (expansions.contains(Expansion.ENCLOSE_IPD)) {
-                if (expansions.contains(Expansion.CROSS)) {
-                    if (ipd > bpdCurrent)
-                        setBPD(ipd);
-                } else {
-                    if (ipd > ipdCurrent)
-                        setIPD(ipd);
-                }
-            }
-        }
-        if (!Double.isNaN(bpd)) {
-            if (expansions.contains(Expansion.EXPAND_BPD)) {
-                if (expansions.contains(Expansion.CROSS))
-                    setIPD(ipdCurrent + bpd);
-                else
-                    setBPD(bpdCurrent + bpd);
-            } else if (expansions.contains(Expansion.ENCLOSE_BPD)) {
-                if (expansions.contains(Expansion.CROSS)) {
-                    if (bpd > ipdCurrent)
-                        setIPD(bpd);
-                } else {
-                    if (bpd > bpdCurrent)
-                        setBPD(bpd);
-                }
-            }
+    public void setBorder(double[] border) {
+        adjustContentRectangle(border, this.border);
+        this.border = Arrays.copyOf(border, 4);
+    }
+
+    public boolean hasBorder() {
+        return border != null;
+    }
+    
+    public double[] getBorder() {
+        if (border != null)
+            return Arrays.copyOf(border, border.length);
+        else
+            return new double[4];
+    }
+
+    public double getBorder(Dimension dimension) {
+        if (dimension == Dimension.BPD)
+            return border[0] + border[2];
+        else if (dimension == Dimension.IPD)
+            return border[0] + border[2];
+        else
+            return 0;
+    }
+
+    public double getBorderWidth() {
+        if (getWritingMode().isVertical()) {
+            return getBorder(Dimension.BPD);
+        } else {
+            return getBorder(Dimension.IPD);
         }
     }
 
-    @Override
-    public double getAvailable(Dimension dimension) {
-        return (dimension == Dimension.IPD) ? ipd : bpd;
+    public double getBorderHeight() {
+        if (getWritingMode().isVertical()) {
+            return getBorder(Dimension.IPD);
+        } else {
+            return getBorder(Dimension.BPD);
+        }
+    }
+
+    public double getBorderX(Dimension dimension) {
+        Direction direction = getWritingMode().getDirection(dimension);
+        if (direction == Direction.LR)
+            return border[1];
+        else if (direction == Direction.RL)
+            return border[3];
+        else
+            return 0;
+    }
+
+    public double getBorderX() {
+        if (getWritingMode().isVertical())
+            return getBorderX(Dimension.BPD);
+        else
+            return getBorderX(Dimension.IPD);
+    }
+
+    public double getBorderY(Dimension dimension) {
+        Direction direction = getWritingMode().getDirection(dimension);
+        if (direction == Direction.TB)
+            return border[0];
+        else if (direction == Direction.BT)
+            return border[2];
+        else
+            return 0;
+    }
+
+    public double getBorderY() {
+        if (getWritingMode().isVertical())
+            return getBorderY(Dimension.IPD);
+        else
+            return getBorderY(Dimension.BPD);
+    }
+
+    public void setPadding(double[] padding) {
+        adjustContentRectangle(padding, this.padding);
+        this.padding = Arrays.copyOf(padding, 4);
+    }
+
+    public boolean hasPadding() {
+        return padding != null;
+    }
+    
+    public double[] getPadding() {
+        if (padding != null)
+            return Arrays.copyOf(padding, padding.length);
+        else
+            return new double[4];
+    }
+
+    public double getPadding(Dimension dimension) {
+        if (dimension == Dimension.BPD)
+            return padding[0] + padding[2];
+        else if (dimension == Dimension.IPD)
+            return padding[0] + padding[2];
+        else
+            return 0;
+    }
+
+    public double getPaddingWidth() {
+        if (getWritingMode().isVertical()) {
+            return getPadding(Dimension.BPD);
+        } else {
+            return getPadding(Dimension.IPD);
+        }
+    }
+
+    public double getPaddingHeight() {
+        if (getWritingMode().isVertical()) {
+            return getPadding(Dimension.IPD);
+        } else {
+            return getPadding(Dimension.BPD);
+        }
+    }
+
+    public double getPaddingX(Dimension dimension) {
+        Direction direction = getWritingMode().getDirection(dimension);
+        if (direction == Direction.LR)
+            return padding[1];
+        else if (direction == Direction.RL)
+            return padding[3];
+        else
+            return 0;
+    }
+
+    public double getPaddingX() {
+        if (getWritingMode().isVertical())
+            return getPaddingX(Dimension.BPD);
+        else
+            return getPaddingX(Dimension.IPD);
+    }
+
+    public double getPaddingY(Dimension dimension) {
+        Direction direction = getWritingMode().getDirection(dimension);
+        if (direction == Direction.TB)
+            return padding[0];
+        else if (direction == Direction.BT)
+            return padding[2];
+        else
+            return 0;
+    }
+
+    public double getPaddingY() {
+        if (getWritingMode().isVertical())
+            return getPaddingY(Dimension.IPD);
+        else
+            return getPaddingY(Dimension.BPD);
+    }
+
+    public double getBorderAndPadding(Dimension dimension) {
+        return getBorder(dimension) + getPadding(dimension);
+    }
+
+    private void adjustContentRectangle(double[] insets, double[] oldInsets) {
+        double ipdCurrent = getIPD();
+        double ipdNew;
+        double ipdInsetDiff = (insets[1] + insets[3]) - ((oldInsets != null) ? (oldInsets[1] + oldInsets[3]) : 0);
+        if (!Double.isNaN(ipdCurrent)) {
+            ipdNew = ipdCurrent - ipdInsetDiff; 
+        } else
+            ipdNew = ipdCurrent;
+        if (ipdNew != ipdCurrent)
+            setIPD(ipdNew);
+        double bpdCurrent = getBPD();
+        double bpdNew;
+        double bpdInsetDiff = (insets[0] + insets[2]) - ((oldInsets != null) ? (oldInsets[0] + oldInsets[2]) : 0);
+        if (!Double.isNaN(bpdCurrent)) {
+            bpdNew = bpdCurrent - bpdInsetDiff; 
+        } else
+            bpdNew = bpdCurrent;
+        if (bpdNew != bpdCurrent)
+            setBPD(bpdNew);
     }
 
 }

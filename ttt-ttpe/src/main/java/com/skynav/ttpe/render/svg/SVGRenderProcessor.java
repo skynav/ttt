@@ -406,12 +406,6 @@ public class SVGRenderProcessor extends RenderProcessor {
                 Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
                 eSVG.appendChild(eBackgroundColor);
             }
-            xCurrent = yCurrent = 0;
-            WritingMode wm = a.getWritingMode();
-            if (wm.isVertical()) {
-                if (wm.getDirection(Dimension.BPD) == RL)
-                    xCurrent += extent.getWidth();
-            }
             if (decorateRegions) {
                 Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
@@ -419,6 +413,14 @@ public class SVGRenderProcessor extends RenderProcessor {
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.fillAttrName, "none");
                 Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decorationColor.toRGBString());
                 eSVG.appendChild(eDecoration);
+            }
+            Point contentOrigin = a.getContentOrigin();
+            xCurrent = contentOrigin.getX();
+            yCurrent = contentOrigin.getY();
+            WritingMode wm = a.getWritingMode();
+            if (wm.isVertical()) {
+                if (wm.getDirection(Dimension.BPD) == RL)
+                    xCurrent += a.getContentExtent().getWidth();
             }
             eGroup.appendChild(renderChildren(eSVG, a, d));
             paragraphGenerationIndex = 0;
@@ -467,7 +469,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         xCurrent = 0;
         yCurrent = 0;
         // render block presentation traits
-        Extent extent = (a instanceof BoundedBlockArea) ? ((BoundedBlockArea) a).getExtent() : null;
+        Extent extent = (a instanceof BoundedBlockArea) ? ((BoundedBlockArea) a).getBorderExtent() : null;
         if (extent == null)
             extent = new Extent(a.getIPD(), a.getBPD());
         Color bColor = a.getBackgroundColor();

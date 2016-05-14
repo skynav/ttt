@@ -30,6 +30,14 @@ import com.skynav.ttpe.geometry.WritingMode;
 
 public interface AreaGeometry {
 
+    public enum ReferenceRectangle {
+        ALLOCATION,             // allocation rectangle of this area
+        BORDER,                 // border rectangle of this area
+        PADDING,                // padding rectangle of this area
+        CONTENT,                // content rectangle of this area
+        CONTAINER;              // content rectangle of container area
+    };
+
     /**
      * Obtain writing mode of area.
      */
@@ -46,24 +54,34 @@ public interface AreaGeometry {
     int getBidiLevel();
 
     /**
-     * Set IPD of area.
+     * Set IPD of content rectangle of area.
      */
     void setIPD(double ipd);
 
     /**
-     * Obtain IPD of area.
+     * Obtain IPD of content rectangle of area.
      */
     double getIPD();
 
     /**
-     * Set BPD of area.
+     * Obtain IPD of allocation rectangle of area.
+     */
+    double getAllocationIPD();
+
+    /**
+     * Set BPD of content rectangle of area.
      */
     void setBPD(double bpd);
 
     /**
-     * Obtain BPD of area.
+     * Obtain BPD of content rectangle of area.
      */
     double getBPD();
+
+    /**
+     * Obtain BPD of allocation rectangle of area.
+     */
+    double getAllocationBPD();
 
     /**
      * Obtain available measure of area in specified dimension.

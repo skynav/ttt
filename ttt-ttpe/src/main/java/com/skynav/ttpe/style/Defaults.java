@@ -69,11 +69,12 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     public static final FontWeight defaultFontWeight                           = FontKey.DEFAULT_WEIGHT;
     public static final String defaultLanguage                                 = FontKey.DEFAULT_LANGUAGE;
     public static final double defaultLineHeight                               = defaultFontSize.getHeight() * 1.25;
-    public static final String defaultPositionComponents                       = "center";
     public static final Point defaultOrigin                                    = Point.ZERO;
     public static final Orientation defaultOrientation                         = Orientation.ROTATE000;
     public static final Outline defaultOutline                                 = Outline.NONE;
     public static final Overflow defaultOverflow                               = Overflow.HIDDEN;
+    public static final double[] defaultPadding                                = new double[4];
+    public static final String defaultPositionComponents                       = "center";
     public static final String defaultScript                                   = "auto";
     public static final Visibility defaultVisibility                           = Visibility.VISIBLE;
     public static final Whitespace defaultWhitespace                           = Whitespace.DEFAULT;
@@ -108,11 +109,12 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private FontWeight fontWeight                                              = defaultFontWeight;
     private String language                                                    = defaultLanguage;
     private double lineHeight                                                  = defaultLineHeight;
-    private String positionComponents                                          = defaultPositionComponents;
     private Point origin                                                       = defaultOrigin;
     private Orientation orientation                                            = defaultOrientation;
     private Outline outline                                                    = defaultOutline;
     private Overflow overflow                                                  = defaultOverflow;
+    private double[] padding                                                   = defaultPadding;
+    private String positionComponents                                          = defaultPositionComponents;
     private String script                                                      = defaultScript;
     private Whitespace whitespace                                              = defaultWhitespace;
     private InlineAlignment textAlign                                          = defaultTextAlign;
@@ -332,14 +334,6 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
         return lineHeight;
     }
 
-    public void setPositionComponents(String positionComponents) {
-        this.positionComponents = positionComponents;
-    }
-
-    public String getPositionComponents() {
-        return positionComponents;
-    }
-
     public void setOrigin(Point origin) {
         this.origin = origin;
     }
@@ -370,6 +364,22 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public Overflow getOverflow() {
         return overflow;
+    }
+
+    public void setPadding(double[] padding) {
+        this.padding = padding;
+    }
+
+    public double[] getPadding() {
+        return padding;
+    }
+
+    public void setPositionComponents(String positionComponents) {
+        this.positionComponents = positionComponents;
+    }
+
+    public String getPositionComponents() {
+        return positionComponents;
     }
 
     public void setScript(String script) {

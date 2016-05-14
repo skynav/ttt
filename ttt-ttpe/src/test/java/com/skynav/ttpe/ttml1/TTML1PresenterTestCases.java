@@ -62,6 +62,11 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML1PaddingRegion() throws Exception {
+        performPresentationTest("ttml1-padding-region.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML1Visibility1() throws Exception {
         performPresentationTest("ttml1-visibility-1.xml", 0, 0);
     }

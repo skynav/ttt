@@ -32,7 +32,7 @@ import com.skynav.ttpe.style.Visibility;
 
 public class BoundedBlockArea extends BlockArea {
 
-    private Extent extent;
+    private Extent extent;                                      // allocation rectangle extent
 
     public BoundedBlockArea(Element e, double width, double height, Visibility visibility) {
         super(e, visibility);
@@ -43,12 +43,52 @@ public class BoundedBlockArea extends BlockArea {
         return extent;
     }
 
+    public Extent getExtent(ReferenceRectangle rr) {
+        if (rr == ReferenceRectangle.ALLOCATION) {
+            return getExtent();
+        } else if (rr == ReferenceRectangle.BORDER) {
+            return getBorderExtent();
+        } else if (rr == ReferenceRectangle.PADDING) {
+            return getPaddingExtent();
+        } else if (rr == ReferenceRectangle.CONTENT) {
+            return getContentExtent();
+        } else if (rr == ReferenceRectangle.CONTAINER) {
+            throw new UnsupportedOperationException();          // [TBD] IMPLEMENT ME
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public Extent getBorderExtent() {
+        return getExtent();
+    }
+
+    public Extent getPaddingExtent() {
+        Extent borderExtent = getBorderExtent();
+        if (hasBorder()) {
+            double wBorder = getBorderWidth();
+            double hBorder = getBorderHeight();
+            return new Extent(borderExtent.getWidth() - wBorder, borderExtent.getHeight() - hBorder);
+        } else
+            return borderExtent;
+    }
+
+    public Extent getContentExtent() {
+        Extent paddingExtent = getPaddingExtent();
+        if (hasPadding()) {
+            double wPadding = getPaddingWidth();
+            double hPadding = getPaddingHeight();
+            return new Extent(paddingExtent.getWidth() - wPadding, paddingExtent.getHeight() - hPadding);
+        } else
+            return paddingExtent;
+    }
+
     public double getWidth() {
-        return extent.getWidth();
+        return getExtent().getWidth();
     }
 
     public double getHeight() {
-        return extent.getHeight();
+        return getExtent().getHeight();
     }
 
 }
