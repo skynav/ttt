@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,19 +25,24 @@
 
 package com.skynav.ttpe.area;
 
+import java.util.List;
+
 import org.w3c.dom.Element;
 
 import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.style.Decoration;
 
 public class SpaceArea extends InlineFillerArea {
 
     private String text;
     private Font font;
+    private List<Decoration> decorations;
 
-    public SpaceArea(Element e, double ipd, double bpd, int level,String text, Font font) {
+    public SpaceArea(Element e, double ipd, double bpd, int level, String text, Font font, List<Decoration> decorations) {
         super(e, ipd, bpd, level);
         this.text = text;
         this.font = font;
+        this.decorations = decorations;
     }
 
     public String getText() {
@@ -46,6 +51,10 @@ public class SpaceArea extends InlineFillerArea {
 
     public Font getFont() {
         return font;
+    }
+
+    public List<Decoration> getDecorations() {
+        return decorations;
     }
 
 }

@@ -1076,12 +1076,75 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     private Element renderSpace(Element parent, SpaceArea a, Document d) {
-        double ipd = a.getIPD();
-        if (a.isVertical())
-            yCurrent += ipd;
+        Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        maybeMarkClasses(g, a, "space");
+        LineArea l = a.getLine();
+        double bpdLine = l.getBPD();
+        double bpdLineAnnotationBefore = l.getAnnotationBPD(AnnotationPosition.BEFORE);
+        double bpdLineSansAnnotationBefore = bpdLine - bpdLineAnnotationBefore;
+        double bpdLineAnnotationAfter = l.getAnnotationBPD(AnnotationPosition.AFTER);
+        double bpdLineSansAnnotation = bpdLine - (bpdLineAnnotationBefore + bpdLineAnnotationAfter);
+        double bpdSpace = a.getBPD();
+        double baselineOffset;
+        double ipdSpace = a.getIPD();
+        Font font = a.getFont();
+        boolean combined = /*a.isCombined()*/ false;
+        if (a.isVertical()) {
+            double yOffset = 0;
+            boolean rotate = /*a.isRotatedOrientation()*/ false;
+            baselineOffset = bpdLineAnnotationBefore;
+            if (rotate && !combined) {
+                if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                    baselineOffset += (bpdLineSansAnnotation - font.getHeight())/2 + font.getAscent();
+                else
+                    baselineOffset += (bpdLineSansAnnotation - bpdSpace)/2 + font.getLeading()/2;
+            } else if (combined) {
+                if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                    baselineOffset += (bpdLineSansAnnotationBefore + ipdSpace)/2;
+                else
+                    baselineOffset += (bpdLineSansAnnotationBefore - ipdSpace)/2;
+                yOffset = font.getHeight();
+            } else {
+                baselineOffset += bpdLineSansAnnotation/2;
+            }
+            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                baselineOffset *= -1;
+            StringBuffer sb = new StringBuffer(translateFormatter.format(new Object[] {baselineOffset, yCurrent + yOffset}));
+            if (rotate && !combined)
+                sb.append(",rotate(90)");
+            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, sb.toString());
+        } else {
+            baselineOffset = font.getHeight() + bpdLineAnnotationBefore;
+            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {xCurrent, baselineOffset}));
+        }
+        // inline visibility
+        boolean areaVisible = a.isVisible();
+        boolean spaceVisible;
+        List<Decoration> decorations = a.getDecorations();
+        Decoration decorationVisibility = findDecoration(decorations, Decoration.Type.VISIBILITY, 0, 1);
+        if (decorationVisibility != null)
+            spaceVisible = (decorationVisibility.getVisibility() == Visibility.VISIBLE);
         else
-            xCurrent += ipd;
-        return null;
+            spaceVisible = areaVisible;
+        // background color if required
+        Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, 0, 1);
+        if ((decorationBackgroundColor != null) && spaceVisible) {
+            BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
+            Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+            if (baselineOffset > 0)
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {-baselineOffset}));
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ipdSpace}));
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {bpdSpace}));
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
+            g.appendChild(eBackgroundColor);
+        }
+        // update point
+        if (a.isVertical())
+            yCurrent += ipdSpace;
+        else
+            xCurrent += ipdSpace;
+        return g;
     }
 
     private Element renderFiller(Element parent, InlineFillerArea a, Document d) {

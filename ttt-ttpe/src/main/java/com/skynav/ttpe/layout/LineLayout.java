@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-16 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -385,8 +385,10 @@ public class LineLayout {
         if (run instanceof IgnoredControlRun) {
             return;
         } else if (run instanceof WhitespaceRun) {
-            if (advance > 0)
-                l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.bidiLevel, text, font), LineArea.ENCLOSE_ALL);
+            if (advance > 0) {
+                List<Decoration> d = getSegmentDecorations(decorations, 0, text.length());
+                l.addChild(new SpaceArea(content.getElement(), advance, lineHeight, run.bidiLevel, text, font, d), LineArea.ENCLOSE_ALL);
+            }
         } else if (run instanceof EmbeddingRun) {
             l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL);
         } else if (run instanceof NonWhitespaceRun) {
