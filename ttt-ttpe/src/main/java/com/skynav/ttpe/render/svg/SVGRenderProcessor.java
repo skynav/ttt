@@ -1144,7 +1144,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             yCurrent += ipdSpace;
         else
             xCurrent += ipdSpace;
-        return g;
+        return g.hasChildNodes() ? g : null;
     }
 
     private Element renderFiller(Element parent, InlineFillerArea a, Document d) {
