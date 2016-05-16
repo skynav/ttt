@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
+import com.skynav.ttpe.geometry.WritingMode;
 
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.impl.LengthImpl;
@@ -42,6 +43,62 @@ public class Helpers {
 
     private Helpers() {}
 
+    public static double[] resolvePadding(Element e, Length[] lengths, WritingMode wm, Extent external, Extent reference, Extent font, Extent cellResolution) {
+        Length pBefore = null;
+        Length pAfter  = null;
+        Length pStart  = null;
+        Length pEnd    = null;
+        if (lengths.length == 1) {
+            Length l1 = lengths[0];
+            pBefore = l1;
+            pAfter  = l1;
+            pStart  = l1;
+            pEnd    = l1;
+        } else if (lengths.length == 2) {
+            Length l1 = lengths[0];
+            Length l2 = lengths[1];
+            pBefore = l1;
+            pAfter  = l1;
+            pStart  = l2;
+            pEnd    = l2;
+        } else if (lengths.length == 3) {
+            Length l1 = lengths[0];
+            Length l2 = lengths[1];
+            Length l3 = lengths[2];
+            pBefore = l1;
+            pAfter  = l3;
+            pStart  = l2;
+            pEnd    = l2;
+        } else if (lengths.length > 3) {
+            Length l1 = lengths[0];
+            Length l2 = lengths[1];
+            Length l3 = lengths[2];
+            Length l4 = lengths[3];
+            pBefore = l1;
+            pAfter  = l3;
+            pStart  = l4;
+            pEnd    = l2;
+        }
+        // resolve to pixels
+        Axis ipdAxis, bpdAxis;
+        if (wm.isVertical()) {
+            ipdAxis = Axis.VERTICAL;
+            bpdAxis = Axis.HORIZONTAL;
+        } else {
+            ipdAxis = Axis.HORIZONTAL;
+            bpdAxis = Axis.VERTICAL;
+        }
+        assert pBefore != null;
+        double p1 = resolveLength(e, pBefore, bpdAxis, external, reference, font, cellResolution);
+        assert pEnd != null;
+        double p2 = resolveLength(e, pEnd, ipdAxis, external, reference, font, cellResolution);
+        assert pAfter != null;
+        double p3 = resolveLength(e, pAfter, bpdAxis, external, reference, font, cellResolution);
+        assert pStart != null;
+        double p4 = resolveLength(e, pStart, ipdAxis, external, reference, font, cellResolution);
+        return new double[]{p1, p2, p3, p4};
+    }
+    
     public static Point resolvePosition(Element e, Length[] lengths, Extent external, Extent reference, Extent cellResolution) {
 
         assert external != null;

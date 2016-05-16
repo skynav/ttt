@@ -466,7 +466,6 @@ public class StyleCollector {
     }
 
     protected void collectCommonStyles(Element e, int begin, int end, StyleSet styles) {
-
         StyleSpecification s;
         Object v;
 
@@ -484,6 +483,27 @@ public class StyleCollector {
 
         // FONT
         collectCommonFontStyles(e, begin, end, styles);
+
+        // PADDING
+        s = styles.get(ttsPaddingAttrName);
+        v = null;
+        if (s != null) {
+            double[] padding = null;
+            if (!Keywords.isAuto(s.getValue())) {
+                Integer[] minMax = new Integer[] { 1, 4 };
+                Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
+                List<Length> lengths = new java.util.ArrayList<Length>();
+                if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
+                    Length[] la = lengths.toArray(new Length[lengths.size()]);
+                    Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                    padding = Helpers.resolvePadding(e, la, writingMode, extBounds, refBounds, fs, cellResolution);
+                }
+            }
+            if (padding != null)
+                v = new Double[]{Double.valueOf(padding[0]), Double.valueOf(padding[1]), Double.valueOf(padding[2]), Double.valueOf(padding[3])};
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.PADDING, v, begin, end);
 
         // TEXT_ALIGN
         s = styles.get(ttsTextAlignAttrName);

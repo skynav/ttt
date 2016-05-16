@@ -264,6 +264,14 @@ public class BasicLayoutState implements LayoutState {
         return f;
     }
 
+    public Extent getFontSize() {
+        Font f = getFont();
+        if (f != null)
+            return f.getSize();
+        else
+            return Extent.UNIT;
+    }
+    
     public double getAvailable(Dimension dimension) {
         if (!areas.empty())
             return areas.peek().getAvailable(dimension);
@@ -284,7 +292,7 @@ public class BasicLayoutState implements LayoutState {
         if (ra != null)
             return ra.getExtent();
         else
-            return Extent.EMPTY;
+            return Extent.UNIT;
     }
 
     public BlockAlignment getReferenceAlignment() {
@@ -420,7 +428,7 @@ public class BasicLayoutState implements LayoutState {
                     Extent cellResolution = getCellResolution();
                     Extent externalExtent = getExternalExtent();
                     Extent referenceExtent = externalExtent;
-                    Extent fontSize = Extent.EMPTY;
+                    Extent fontSize = getFontSize();
                     double w = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, externalExtent, referenceExtent, fontSize, cellResolution);
                     double h = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, externalExtent, referenceExtent, fontSize, cellResolution);
                     return new Extent(w, h);
@@ -445,7 +453,7 @@ public class BasicLayoutState implements LayoutState {
                     Extent cellResolution = getCellResolution();
                     Extent externalExtent = getExternalExtent();
                     Extent referenceExtent = externalExtent;
-                    Extent fontSize = Extent.EMPTY;
+                    Extent fontSize = getFontSize();
                     double x = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, externalExtent, referenceExtent, fontSize, cellResolution);
                     double y = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, externalExtent, referenceExtent, fontSize, cellResolution);
                     return new Point(x, y);
@@ -466,104 +474,13 @@ public class BasicLayoutState implements LayoutState {
                 Integer[] minMax = new Integer[] { 1, 4 };
                 Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
                 List<Length> lengths = new java.util.ArrayList<Length>();
-                // expand shorthand
                 if (Lengths.isLengths(v, getLocation(e, ttsPaddingAttrName), context, minMax, treatments, lengths)) {
-                    Length pBefore = null;
-                    Length pAfter  = null;
-                    Length pStart  = null;
-                    Length pEnd    = null;
-                    if (lengths.size() == 1) {
-                        Length l1 = lengths.get(0);
-                        pBefore = l1;
-                        pAfter  = l1;
-                        pStart  = l1;
-                        pEnd    = l1;
-                    } else if (lengths.size() == 2) {
-                        Length l1 = lengths.get(0);
-                        Length l2 = lengths.get(1);
-                        pBefore = l1;
-                        pAfter  = l1;
-                        pStart  = l2;
-                        pEnd    = l2;
-                    } else if (lengths.size() == 3) {
-                        Length l1 = lengths.get(0);
-                        Length l2 = lengths.get(1);
-                        Length l3 = lengths.get(2);
-                        pBefore = l1;
-                        pAfter  = l3;
-                        pStart  = l2;
-                        pEnd    = l2;
-                    } else if (lengths.size() > 3) {
-                        Length l1 = lengths.get(0);
-                        Length l2 = lengths.get(1);
-                        Length l3 = lengths.get(2);
-                        Length l4 = lengths.get(3);
-                        pBefore = l1;
-                        pAfter  = l3;
-                        pStart  = l4;
-                        pEnd    = l2;
-                    }
-                    // resolve to pixels
-                    Extent cellResolution = getCellResolution();
+                    Length[] la = lengths.toArray(new Length[lengths.size()]);
                     Extent externalExtent = getExternalExtent();
                     Extent referenceExtent = getReferenceExtent();
-                    if (referenceExtent.isEmpty())
-                        referenceExtent = getExtent(e);
-                    Extent fontSize = Extent.EMPTY;
-                    Axis ipdAxis, bpdAxis;
-                    WritingMode wm = getWritingMode(e);
-                    if (wm.isVertical()) {
-                        ipdAxis = Axis.VERTICAL;
-                        bpdAxis = Axis.HORIZONTAL;
-                    } else {
-                        ipdAxis = Axis.HORIZONTAL;
-                        bpdAxis = Axis.VERTICAL;
-                    }
-                    assert pBefore != null;
-                    double p1 = Helpers.resolveLength(e, pBefore, bpdAxis, externalExtent, referenceExtent, fontSize, cellResolution);
-                    assert pEnd != null;
-                    double p2 = Helpers.resolveLength(e, pEnd, ipdAxis, externalExtent, referenceExtent, fontSize, cellResolution);
-                    assert pAfter != null;
-                    double p3 = Helpers.resolveLength(e, pAfter, bpdAxis, externalExtent, referenceExtent, fontSize, cellResolution);
-                    assert pStart != null;
-                    double p4 = Helpers.resolveLength(e, pStart, ipdAxis, externalExtent, referenceExtent, fontSize, cellResolution);
-                    // resolve to absolute edges
-                    /*
-                    double t  = 0;
-                    double b  = 0;
-                    double l  = 0;
-                    double r  = 0;
-                    Direction bpdDir = wm.getDirection(Dimension.BPD);
-                    if (bpdDir == Direction.LR) {
-                        l = p1;
-                        r = p3;
-                    } else if (bpdDir == Direction.RL) {
-                        l = p3;
-                        r = p1;
-                    } else if (bpdDir == Direction.TB) {
-                        t = p1;
-                        b = p3;
-                    } else if (bpdDir == Direction.BT) {
-                        t = p3;
-                        b = p1;
-                    }
-                    Direction ipdDir = wm.getDirection(Dimension.IPD);
-                    if (ipdDir == Direction.LR) {
-                        l = p4;
-                        r = p2;
-                    } else if (ipdDir == Direction.RL) {
-                        l = p2;
-                        r = p4;
-                    } else if (ipdDir == Direction.TB) {
-                        t = p4;
-                        b = p2;
-                    } else if (ipdDir == Direction.BT) {
-                        t = p2;
-                        b = p4;
-                    }
-                    return new double[]{t, r, b, l};
-                    */
-                    return new double[]{p1, p2, p3, p4};
+                    if ((referenceExtent == null) || referenceExtent.isEmpty())
+                        referenceExtent = externalExtent;
+                    return Helpers.resolvePadding(e, la, getWritingMode(e), externalExtent, referenceExtent, getFontSize(), getCellResolution());
                 }
             }
         }
