@@ -486,4 +486,9 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-div-image-1.xml", 0, 0);
     }
 
+    @Test
+    public void testTTML2PaddingInlineLRTB() throws Exception {
+        performPresentationTest("ttml2-padding-inline-lrtb.xml", 0, 0);
+    }
+
 }

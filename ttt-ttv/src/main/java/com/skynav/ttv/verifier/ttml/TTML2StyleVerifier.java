@@ -75,6 +75,7 @@ import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.OriginVerifier;
 import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
+import com.skynav.ttv.verifier.ttml.style.PaddingVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
@@ -257,6 +258,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Overflow.HIDDEN,
             Overflow.HIDDEN.value(),
+        },
+        {
+            paddingAttributeName,
+            "Padding",
+            String.class,
+            PaddingVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION|APPLIES_TO_CONTENT),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "0px",
+            null,
         },
         {
             positionAttributeName,

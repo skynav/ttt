@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Stack;
 
 import com.skynav.ttpe.area.AnnotationArea;
 import com.skynav.ttpe.area.AreaNode;
@@ -39,6 +40,7 @@ import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.Inline;
 import com.skynav.ttpe.area.InlineBlockArea;
 import com.skynav.ttpe.area.InlineFillerArea;
+import com.skynav.ttpe.area.InlinePaddingArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.SpaceArea;
 import com.skynav.ttpe.fonts.Combination;
@@ -57,6 +59,7 @@ import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
+import com.skynav.ttpe.style.Padding;
 import com.skynav.ttpe.style.Outline;
 import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
@@ -117,6 +120,9 @@ public class LineLayout {
     private double lineHeight;
     private WhitespaceState whitespace;
 
+    // other style state
+    private Stack<Padding> padding;
+
     public LineLayout(Phrase content, LayoutState state) {
         Defaults defaults = state.getDefaults();
         // content state
@@ -141,6 +147,8 @@ public class LineLayout {
         this.font = content.getFont(-1, defaults);
         this.lineHeight = content.getLineHeight(-1, defaults, font);
         this.whitespace = new WhitespaceState(state.getWhitespace());
+        // other style state
+        this.padding = new Stack<Padding>();
     }
 
     private static InlineAlignment relativizeAlignment(InlineAlignment alignment, WritingMode wm) {
@@ -163,6 +171,8 @@ public class LineLayout {
         List<LineArea> lines = new java.util.ArrayList<LineArea>();
         if (available > 0) {
             double consumed = 0;
+            double sPadding = 0;
+            double ePadding = 0;
             List<InlineBreakOpportunity> breaks = new java.util.ArrayList<InlineBreakOpportunity>();
             LineBreakIterator lbi = state.getBreakIterator();
             LineBreakIterator lci = state.getCharacterIterator();
@@ -173,19 +183,34 @@ public class LineLayout {
                     bi = updateIterator(lbi, r);
                     for (InlineBreakOpportunity b = getNextBreakOpportunity(bi, r, available - consumed); b != null; ) {
                         if (b.isHard()) {
-                            lines.add(emit(available, consumed, consume, breaks));
+                            lines.add(emit(available, consumed, ePadding, consume, breaks));
                             consumed = 0;
+                            ePadding = 0;
                             break;
                         } else {
                             double advance = b.getAdvance();
-                            double shearAdvance = b.getShearAdvance(bPrev);
-                            if (shearAdvance != 0)
-                                advance += Math.abs(shearAdvance);
-                            if ((consumed + advance) > available) {
+                            double advanceShear = b.getShearAdvance(bPrev);
+                            if (advanceShear != 0)
+                                advance += Math.abs(advanceShear);
+                            Padding p = b.getPadding();
+                            if (p != null) {
+                                if (padding.empty() || (p != padding.peek())) {
+                                    padding.push(p);
+                                    sPadding += p.getStart();
+                                    ePadding += p.getEnd();
+                                } else if (breaks.isEmpty()) {
+                                    sPadding += p.getStart();
+                                    ePadding += p.getEnd();
+                                }
+                            } else if (!padding.empty()) {
+                                padding.pop();
+                            }
+                            if ((consumed + advance) > (available - (sPadding + ePadding))) {
                                 if (wrap == Wrap.WRAP) {
                                     if (!breaks.isEmpty()) {
-                                        lines.add(emit(available, consumed, consume, breaks));
+                                        lines.add(emit(available, consumed, ePadding, consume, breaks));
                                         consumed = 0;
+                                        ePadding = 0;
                                     } else {
                                         if (bi != lci)
                                             bi = updateIterator(lci, b);
@@ -194,8 +219,13 @@ public class LineLayout {
                                     continue;
                                 }
                             }
-                            breaks.add(b);
                             consumed += advance;
+                            if (sPadding > 0) {
+                                b.startPadding(sPadding);
+                                consumed += sPadding;
+                                sPadding = 0;
+                            }
+                            breaks.add(b);
                             bPrev = b; b = getNextBreakOpportunity(bi, r, available - consumed);
                         }
                     }
@@ -203,7 +233,7 @@ public class LineLayout {
                 r = getNextTextRun();
             }
             if (!breaks.isEmpty())
-                lines.add(emit(available, consumed, consume, breaks));
+                lines.add(emit(available, consumed, ePadding, consume, breaks));
         }
         return reorder(align(lines));
     }
@@ -252,6 +282,7 @@ public class LineLayout {
         s.add(StyleAttribute.BIDI);
         s.add(StyleAttribute.COMBINATION);
         s.add(StyleAttribute.ORIENTATION);
+        s.add(StyleAttribute.PADDING);
         s.add(StyleAttribute.WHITESPACE);
         textRunBreakingAttributes = Collections.unmodifiableSet(s);
     }
@@ -303,9 +334,16 @@ public class LineLayout {
         return null;
     }
 
-    private LineArea emit(double available, double consumed, Consume consume, List<InlineBreakOpportunity> breaks) {
+    private LineArea emit(double available, double consumed, double endPadding, Consume consume, List<InlineBreakOpportunity> breaks) {
         consumed = maybeRemoveLeadingWhitespace(breaks, consumed);
         consumed = maybeRemoveTrailingWhitespace(breaks, consumed);
+        if (!breaks.isEmpty()) {
+            if (endPadding > 0) {
+                InlineBreakOpportunity bLast = breaks.get(breaks.size() - 1);
+                bLast.endPadding(endPadding);
+                consumed += endPadding;
+            }
+        }
         LineArea la = newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, bidiLevel, visibility, textAlign, color, font);
         return addTextAreas(la, breaks);
     }
@@ -326,20 +364,26 @@ public class LineLayout {
             TextRun lastRun = null;
             int lastRunStart = -1;
             double advance = 0;
+            double sPadding = 0;
+            double ePadding = 0;
             for (InlineBreakOpportunity b : breaks) {
                 TextRun r = b.run;
                 if ((lastRun != null) && ((r != lastRun) || (l instanceof AnnotationArea))) {
                     if (!(l instanceof AnnotationArea))
                         maybeAddAnnotationAreas(l, lastRunStart, r.start, font, advance, lineHeight);
-                    addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun, lastRunStart);
+                    addTextArea(l, sb.toString(), decorations, font, advance, sPadding, ePadding, lineHeight, lastRun, lastRunStart);
                     sb.setLength(0);
                     decorations.clear();
                     advance = 0;
+                    sPadding = 0;
+                    ePadding = 0;
                     lastRunStart = -1;
                 }
                 sb.append(r.getText(b.start, b.index));
                 decorations.addAll(r.getDecorations(b.start, b.index));
                 advance += b.getAdvance();
+                sPadding = b.startPadding();
+                ePadding = b.endPadding();
                 lastRun = r;
                 if (lastRunStart < 0)
                     lastRunStart = r.start + b.start;
@@ -347,7 +391,7 @@ public class LineLayout {
             if (sb.length() > 0) {
                 if (!(l instanceof AnnotationArea))
                     maybeAddAnnotationAreas(l, lastRunStart, lastRun != null ? lastRun.end : -1, font, advance, lineHeight);
-                addTextArea(l, sb.toString(), decorations, font, advance, lineHeight, lastRun, lastRunStart);
+                addTextArea(l, sb.toString(), decorations, font, advance, sPadding, ePadding, lineHeight, lastRun, lastRunStart);
             }
             iterator.setIndex(savedIndex);
             breaks.clear();
@@ -381,7 +425,11 @@ public class LineLayout {
         return consumed;
     }
 
-    private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double lineHeight, TextRun run, int runStart) {
+    private void addTextArea(LineArea l, String text, List<Decoration> decorations, Font font, double advance, double startPadding, double endPadding, double lineHeight, TextRun run, int runStart) {
+        if (startPadding > 0) {
+            List<Decoration> d = getSegmentDecorations(decorations, 0, 1);
+            l.addChild(new InlinePaddingArea(content.getElement(), startPadding, lineHeight, run.bidiLevel, d), LineArea.ENCLOSE_ALL);
+        }
         if (run instanceof IgnoredControlRun) {
             return;
         } else if (run instanceof WhitespaceRun) {
@@ -433,6 +481,10 @@ public class LineLayout {
                 if (fai.isOuterScope())
                     break;
             }
+        }
+        if (endPadding > 0) {
+            List<Decoration> d = getSegmentDecorations(decorations, text.length() - 1, text.length());
+            l.addChild(new InlinePaddingArea(content.getElement(), endPadding, lineHeight, run.bidiLevel, d), LineArea.ENCLOSE_ALL);
         }
     }
 
@@ -874,6 +926,8 @@ public class LineLayout {
         int start;              // start index within text run
         int index;              // index (of break) within text run
         double advance;         // advance (in IPD) within text run
+        double paddingStart;    // start padding
+        double paddingEnd;      // end padding
         InlineBreakOpportunity(TextRun run, InlineBreak type, int start, int index, double advance) {
             this.run = run;
             this.type = type;
@@ -890,6 +944,21 @@ public class LineLayout {
             else
                 return 0;
         }
+        Padding getPadding() {
+            return run.getPadding(start, index);
+        }
+        void startPadding(double paddingStart) {
+            this.paddingStart = paddingStart;
+        }
+        double startPadding() {
+            return paddingStart;
+        }
+        void endPadding(double paddingEnd) {
+            this.paddingEnd = paddingEnd;
+        }
+        double endPadding() {
+            return paddingEnd;
+        }
         @Override
         public String toString() {
             StringBuffer sb = new StringBuffer();
@@ -900,6 +969,14 @@ public class LineLayout {
             sb.append(index);
             sb.append(',');
             sb.append(Double.toString(advance));
+            if (paddingStart > 0) {
+                sb.append(',');
+                sb.append('[');
+                sb.append(Double.toString(paddingStart));
+                sb.append(',');
+                sb.append(Double.toString(paddingEnd));
+                sb.append(']');
+            }
             sb.append(']');
             return sb.toString();
         }
@@ -925,6 +1002,7 @@ public class LineLayout {
         int start;                                              // start index in outer iterator
         int end;                                                // end index in outer iterator
         List<StyleAttributeInterval> fontIntervals;             // cached font sub-intervals over complete run interval
+        List<StyleAttributeInterval> paddingIntervals;          // cached padding sub-intervals over complete run interval
         Orientation orientation;                                // dominant glyph orientation for run
         Combination combination;                                // dominant combination for run
         int bidiLevel;                                          // bidirectional level
@@ -934,6 +1012,7 @@ public class LineLayout {
             this.end = end;
             int l = end - start;
             this.fontIntervals = getFontIntervals(0, l, font);
+            this.paddingIntervals = getPaddingIntervals(0, l);
             this.orientation = getDominantOrientation(0, l, defaults.getOrientation());
             this.combination = getDominantCombination(0, l, defaults.getCombination());
             this.bidiLevel = getDominantLevel(0, l);
@@ -950,6 +1029,25 @@ public class LineLayout {
         // obtain all font intervals associated with run
         List<StyleAttributeInterval> getFontIntervals() {
             return fontIntervals;
+        }
+        // obtain padding where FROM and TO are indices into run, not outer iterator
+        Padding getPadding(int from, int to) {
+            Padding p = null;
+            for (StyleAttributeInterval pai : paddingIntervals) {
+                p = (Padding) pai.getValue();
+                if (p == null)
+                    continue;
+                else if (pai.isOuterScope()) {
+                    break;
+                } else {
+                    int[] intersection = pai.intersection(start + from, start + to);
+                    if (intersection == null) {
+                        p = null;
+                        continue;
+                    }
+                }
+            }
+            return p;
         }
         // obtain all of text associated with run
         String getText() {
@@ -1147,6 +1245,24 @@ public class LineLayout {
             if (outlines.isEmpty() && (outline != null) && !outline.equals(defaults.getOutline()))
                 outlines.add(new StyleAttributeInterval(outlineAttr, outline, start + from, start + to));
             return outlines;
+        }
+        // obtain colors for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getPaddingIntervals(int from, int to) {
+            StyleAttribute paddingAttr = StyleAttribute.PADDING;
+            List<StyleAttributeInterval> paddings = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, paddingAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                aci.setIndex(s);
+                Object v = aci.getAttribute(paddingAttr);
+                if (v != null)
+                    paddings.add(new StyleAttributeInterval(paddingAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            return paddings;
         }
         // obtain visibility for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getVisibilityIntervals(int from, int to) {

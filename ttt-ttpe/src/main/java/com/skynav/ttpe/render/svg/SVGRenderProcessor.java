@@ -51,6 +51,7 @@ import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.Inline;
 import com.skynav.ttpe.area.InlineFillerArea;
+import com.skynav.ttpe.area.InlinePaddingArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
 import com.skynav.ttpe.area.ReferenceArea;
@@ -1149,11 +1150,40 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     private Element renderFiller(Element parent, InlineFillerArea a, Document d) {
         double ipd = a.getIPD();
+        Element g;
+        if (a instanceof InlinePaddingArea) {
+            double bpd = a.getBPD();
+            g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+            maybeMarkClasses(g, a, "padding");
+            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {xCurrent, 0}));
+            // inline visibility
+            boolean areaVisible = a.isVisible();
+            boolean paddingVisible;
+            List<Decoration> decorations = ((InlinePaddingArea) a).getDecorations();
+            Decoration decorationVisibility = findDecoration(decorations, Decoration.Type.VISIBILITY, 0, 1);
+            if (decorationVisibility != null)
+                paddingVisible = (decorationVisibility.getVisibility() == Visibility.VISIBLE);
+            else
+                paddingVisible = areaVisible;
+            // background color if required
+            Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, 0, 1);
+            if ((decorationBackgroundColor != null) && paddingVisible) {
+                BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
+                Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ipd}));
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {bpd}));
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
+                g.appendChild(eBackgroundColor);
+            }
+        } else
+            g = null;
+        // udpate point
         if (a.isVertical())
             yCurrent += ipd;
         else
             xCurrent += ipd;
-        return null;
+        return ((g != null) && g.hasChildNodes()) ? g : null;
     }
 
     private Element renderChildren(Element parent, Area a, Document d) {

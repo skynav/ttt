@@ -500,7 +500,7 @@ public class StyleCollector {
                 }
             }
             if (padding != null)
-                v = new Double[]{Double.valueOf(padding[0]), Double.valueOf(padding[1]), Double.valueOf(padding[2]), Double.valueOf(padding[3])};
+                v = new Padding(padding);
         }
         if (v != null)
             addAttribute(StyleAttribute.PADDING, v, begin, end);
