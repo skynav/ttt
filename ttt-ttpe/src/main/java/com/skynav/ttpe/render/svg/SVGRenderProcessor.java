@@ -126,6 +126,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}", Locale.US);
     public static final MessageFormat matrixFormatter          = new MessageFormat("matrix({0})", Locale.US);
     public static final MessageFormat translateFormatter       = new MessageFormat("translate({0,number,#.####},{1,number,#.####})", Locale.US);
+    public static final double        bgFuzz                   = 0.5;
 
     // options state
     private String backgroundOption;
@@ -518,18 +519,6 @@ public class SVGRenderProcessor extends RenderProcessor {
             maybeMarkClasses(eBlockGroup, a, "block");
         return eBlockGroup;
     }
-
-    /*
-    private boolean hasBlockPresentationTraits(BlockArea a) {
-        Color c = a.getBackgroundColor();
-        if ((c != null) && !c.isTransparent())
-            return true;
-        Image i = a.getBackgroundImage();
-        if ((i != null) && !i.isNone())
-            return true;
-        return false;
-    }
-    */
 
     private Element renderImage(Element parent, BlockImageArea a, Document d) {
         Element e = parent;
@@ -967,7 +956,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                         Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
                     if (baselineOffset > 0)
                         Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {-baselineOffset}));
-                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ga}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ga + bgFuzz}));
                     Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {bpdGlyphs}));
                     Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
                     Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
@@ -1134,7 +1123,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
             if (baselineOffset > 0)
                 Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {-baselineOffset}));
-            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ipdSpace}));
+            Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ipdSpace + bgFuzz}));
             Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {bpdSpace}));
             Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
             Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
@@ -1170,7 +1159,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             if ((decorationBackgroundColor != null) && paddingVisible) {
                 BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
                 Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
-                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ipd}));
+                Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ipd + bgFuzz}));
                 Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {bpd}));
                 Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
                 Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
