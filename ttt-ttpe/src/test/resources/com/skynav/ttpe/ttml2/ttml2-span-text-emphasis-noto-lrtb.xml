@@ -2,6 +2,9 @@
 <tt xml:lang="ja" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
 <head>
+<styling>
+<initial tts:showBackground="whenActive"/>
+</styling>
 <layout>
 <region xml:id="r0" tts:displayAlign="center" tts:extent="768px 225px" tts:origin="256px 475px" tts:writingMode="lrtb"/>
 <region xml:id="r1" tts:displayAlign="center" tts:extent="225px 576px" tts:origin="1045px 72px" tts:writingMode="tbrl"/>

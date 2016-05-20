@@ -8,11 +8,11 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="nflxtt">
   <head>
     <layout>
-      <region xml:id="r0" tts:extent="100px 48px" tts:origin="20px 20px"/>
-      <region xml:id="r1" tts:extent="100px 48px" tts:origin="30px 30px"/>
-      <region xml:id="r2" tts:extent="100px 48px" tts:origin="40px 40px"/>
-      <region xml:id="r3" tts:extent="100px 48px" tts:origin="50px 50px"/>
-      <region xml:id="r4" tts:extent="100px 48px" tts:origin="60px 60px"/>
+      <region xml:id="r0" tts:extent="100px 48px" tts:origin="20px 20px" tts:showBackground="whenActive"/>
+      <region xml:id="r1" tts:extent="100px 48px" tts:origin="30px 30px" tts:showBackground="whenActive"/>
+      <region xml:id="r2" tts:extent="100px 48px" tts:origin="40px 40px" tts:showBackground="whenActive"/>
+      <region xml:id="r3" tts:extent="100px 48px" tts:origin="50px 50px" tts:showBackground="whenActive"/>
+      <region xml:id="r4" tts:extent="100px 48px" tts:origin="60px 60px" tts:showBackground="whenActive"/>
     </layout>
   </head>
   <body>

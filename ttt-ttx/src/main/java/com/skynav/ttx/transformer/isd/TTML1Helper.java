@@ -31,6 +31,8 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Element;
+
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.model.ttml1.tt.Body;
 import com.skynav.ttv.model.ttml1.tt.Break;
@@ -45,8 +47,12 @@ import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.ttml1.ttd.TimeContainer;
 import com.skynav.ttv.util.PreVisitor;
+import com.skynav.ttv.util.StyleSet;
+import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.util.Visitor;
+import com.skynav.ttv.verifier.ttml.TTML1StyleVerifier;
 import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.xml.helpers.Documents;
 
 public class TTML1Helper extends TTMLHelper {
 
@@ -405,6 +411,19 @@ public class TTML1Helper extends TTMLHelper {
             }
         }
         return cls;
+    }
+
+    public static boolean hasShowBackgroundAlways(Element region, StyleSet ss) {
+        QName n = TTML1StyleVerifier.showBackgroundAttributeName;
+        String v = null;
+        if (ss != null) {
+            StyleSpecification s = ss.get(n);
+            if (s != null)
+                v = s.getValue();
+        }
+        if (v == null)
+            v = Documents.getAttribute(region, n);
+        return (v != null) ? v.equals("always") : true;
     }
 
 }

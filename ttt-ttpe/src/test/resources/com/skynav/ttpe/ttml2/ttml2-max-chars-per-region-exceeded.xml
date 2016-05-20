@@ -5,6 +5,7 @@
   <head>
     <styling>
       <initial tts:displayAlign="center"/>
+      <initial tts:showBackground="whenActive"/>
       <initial tts:textAlign="center"/>
     </styling>
     <layout>

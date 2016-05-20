@@ -72,6 +72,11 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML1ShowBackground() throws Exception {
+        performPresentationTest("ttml1-show-background.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML1Visibility1() throws Exception {
         performPresentationTest("ttml1-visibility-1.xml", 0, 0);
     }

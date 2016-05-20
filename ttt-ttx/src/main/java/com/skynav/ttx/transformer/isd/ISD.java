@@ -844,8 +844,8 @@ public class ISD {
             isd.setAttributeNS(null, "begin", interval.getBegin().toString());
             isd.setAttributeNS(null, "end", interval.getEnd().toString());
             copyWrapperAttributes(isd, root);
-            generateISDComputedStyleSets(isd, root, context);
-            generateISDRegions(isd, root, context);
+            Map<Element, StyleSet> computedStyleSets = generateISDComputedStyleSets(isd, root, context);
+            generateISDRegions(isd, root, computedStyleSets, context);
             unwrapRedundantAnonymousSpans(isd, root, context);
             document.removeChild(root);
             document.appendChild(isd);
@@ -894,7 +894,7 @@ public class ISD {
                 return false;
         }
 
-        private static void generateISDComputedStyleSets(final Element isd, Element root, TransformerContext context) {
+        private static Map<Element,StyleSet> generateISDComputedStyleSets(final Element isd, Element root, TransformerContext context) {
             try {
                 final Map<Element, StyleSet> computedStyleSets = resolveComputedStyles(root, context);
                 final Set<String> styleIds = new java.util.HashSet<String>();
@@ -919,8 +919,10 @@ public class ISD {
                         return true;
                     }
                 });
+                return computedStyleSets;
             } catch (Exception e) {
                 context.getReporter().logError(e);
+                return null;
             }
         }
 
@@ -947,8 +949,7 @@ public class ISD {
             for (Map.Entry<Element, StyleSet> e : specifiedStyleSets.entrySet()) {
                 Element elt = e.getKey();
                 if (TTMLHelper.isRegionElement(elt)) {
-                    if (findChildElement(elt, TTMLHelper.NAMESPACE_TT, "body") != null)
-                        computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
+                    computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
                 } else if (TTMLHelper.isContentElement(elt)) {
                     computedStyleSets.put(elt, applicableStyles(e.getValue(), elt, context));
                 }
@@ -1316,14 +1317,14 @@ public class ISD {
             return null;
         }
 
-        private static void generateISDRegions(final Element isd, Element root, final TransformerContext context) {
+        private static void generateISDRegions(final Element isd, Element root, final Map<Element, StyleSet> computedStyleSets, final TransformerContext context) {
             try {
                 Traverse.traverseElements(root, null, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
                         assert content instanceof Element;
                         Element elt = (Element) content;
                         if (TTMLHelper.isRegionElement(elt)) {
-                            generateISDRegion(isd, elt, context);
+                            generateISDRegion(isd, elt, (computedStyleSets != null) ? computedStyleSets.get(elt) : null, context);
                         }
                         return true;
                     }
@@ -1333,13 +1334,14 @@ public class ISD {
             }
         }
 
-        private static void generateISDRegion(Element isd, Element region, TransformerContext context) {
+        private static void generateISDRegion(Element isd, Element region, StyleSet ss, TransformerContext context) {
             Element body = detachBody(region);
-            if (body != null) {
+            if ((body != null) || TTML1Helper.hasShowBackgroundAlways(region, ss)) {
                 Document document = isd.getOwnerDocument();
                 Element isdRegion = document.createElementNS(TTMLHelper.NAMESPACE_ISD, "region");
                 copyRegionAttributes(isdRegion, region, context);
-                isdRegion.appendChild(body);
+                if (body != null)
+                    isdRegion.appendChild(body);
                 isd.appendChild(isdRegion);
             }
         }

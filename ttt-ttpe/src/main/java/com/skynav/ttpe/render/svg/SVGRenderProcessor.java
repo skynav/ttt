@@ -110,6 +110,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         { "svg-decorate-line-bounds",   "",         "decorate line bounding boxes" },
         { "svg-decorate-line-labels",   "",         "decorate line labels" },
         { "svg-decorate-lines",         "",         "decorate line features (bounding baselines, boxes, labels)" },
+        { "svg-decorate-none",          "",         "disble decorations on regions, lines, glyphs" },
         { "svg-decorate-regions",       "",         "decorate regions with bounding box" },
         { "svg-decoration",             "COLOR",    "paint decorations using specified color (default: color contrasting with specified background or black)" },
         { "svg-mark-classes",           "",         "mark area classes" },
@@ -135,6 +136,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     private boolean decorateLineBaselines;
     private boolean decorateLineBounds;
     private boolean decorateLineLabels;
+    private boolean decorateNone;
     private boolean decorateRegions;
     private String decorationOption;
     private boolean markClasses;
@@ -188,6 +190,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         decorateLineBaselines = false;
         decorateLineBounds = false;
         decorateLineLabels = false;
+        decorateNone = false;
         decorateRegions = false;
         decorationOption = null;
         markClasses = false;
@@ -247,6 +250,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             decorateLineBaselines = true;
             decorateLineBounds = true;
             decorateLineLabels = true;
+        } else if (option.equals("svg-decorate-none")) {
+            decorateNone = true;
         } else if (option.equals("svg-decorate-regions")) {
             decorateRegions = true;
         } else if (option.equals("svg-decoration")) {
@@ -286,6 +291,13 @@ public class SVGRenderProcessor extends RenderProcessor {
         } else
             decorationColor = (backgroundColor != null) ? backgroundColor.contrast() : Color.BLACK;
         this.decorationColor = decorationColor;
+        if (decorateNone) {
+            decorateGlyphs = false;
+            decorateLineBaselines = false;
+            decorateLineBounds = false;
+            decorateLineLabels = false;
+            decorateRegions = false;
+        }
         // output pattern
         String outputPattern = this.outputPattern;
         if (outputPattern == null)
