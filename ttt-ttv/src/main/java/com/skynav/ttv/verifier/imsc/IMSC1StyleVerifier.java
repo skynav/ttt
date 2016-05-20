@@ -26,23 +26,27 @@
 package com.skynav.ttv.verifier.imsc;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.imsc1.ebuttd.MultiRowAlign;
 import com.skynav.ttv.model.ttml1.ttd.WritingMode;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.imsc.style.MultiRowAlignVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010StyleVerifier;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.Outline;
+
 
 import static com.skynav.ttv.model.imsc.IMSC1.Constants.*;
 
@@ -52,8 +56,28 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
     public static final QName linePaddingAttributeName          = new QName(NAMESPACE_EBUTT_STYLING,"linePadding");
     public static final QName multiRowAlignAttributeName        = new QName(NAMESPACE_EBUTT_STYLING,"multiRowAlign");
 
+    private static final Object[][] styleAccessorMap            = new Object[][] {
+        {
+            multiRowAlignAttributeName,
+            "MultiRowAlign",
+            MultiRowAlign.class,
+            MultiRowAlignVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            MultiRowAlign.AUTO,
+            MultiRowAlign.AUTO.value(),
+        },
+    };
+    
     public IMSC1StyleVerifier(Model model) {
         super(model);
+    }
+
+    @Override
+    protected void populateAccessors(Map<QName, StyleAccessor> accessors) {
+        super.populateAccessors(accessors);
+        populateAccessors(accessors, styleAccessorMap);
     }
 
     @Override

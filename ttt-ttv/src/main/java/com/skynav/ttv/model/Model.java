@@ -263,6 +263,13 @@ public interface Model {
     Collection<QName> getDefinedStyleNames();
 
     /**
+     * Determine if named style is defined (in this model).
+     * @param styleName name of style
+     * @return true if named style is defined
+     */
+    boolean isDefinedStyle(QName styleName);
+
+    /**
      * Obtain applicable style names for a specified named element type.
      * @param elementName name of element
      * @return a collection of style names that apply to named element

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- test ebutts:multiRowAlign -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ebutts="urn:ebu:tt:style" xmlns:ebuttm="urn:ebu:tt:metadata"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations"
+    ttva:warnOn="all" ttva:noWarnOn="foreign" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc1">
+  <head>
+    <metadata>
+      <ebuttm:documentMetadata>
+	<ebuttm:conformsToStandard>urn:ebu:tt:distribution:2014-01</ebuttm:conformsToStandard>
+	<ebuttm:conformsToStandard>http://www.w3.org/ns/ttml/profile/imsc1/text</ebuttm:conformsToStandard>
+      </ebuttm:documentMetadata>
+    </metadata>		
+    <styling>
+      <style xml:id="baseStyle" tts:color="#000000" tts:fontWeight="bold" tts:fontSize="40px" tts:lineHeight="50px"/>
+      <style xml:id="grayishBackground" tts:backgroundColor="#CFCFC4"/>
+      <style xml:id="greenishBackground" tts:backgroundColor="#77DD77"/>
+      <style xml:id="startEnd" tts:textAlign="start" ebutts:multiRowAlign="end"/>
+      <style xml:id="centerStart" tts:textAlign="center" ebutts:multiRowAlign="start"/>
+    </styling>
+    <layout>
+      <region xml:id="area1" tts:origin="15% 10%" tts:extent="70% 20%" style="greenishBackground" tts:displayAlign="center"/>
+      <region xml:id="area2" tts:origin="15% 70%" tts:extent="70% 20%" style="grayishBackground" tts:displayAlign="center"/>
+    </layout>
+  </head>
+  <body>
+    <div style="baseStyle">			
+      <p region="area1" style="startEnd" begin="00:00:01" end="00:00:09">
+        multiRowAlign="end"<br/>textAlign="start"
+      </p>
+      <p region="area2" style="centerStart" begin="00:00:01" end="00:00:09">
+        multiRowAlign="start"<br/>textAlign="center"
+      </p>
+    </div>
+  </body>
+</tt>

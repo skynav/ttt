@@ -17,7 +17,7 @@
   <font>
     <param name="family">Noto Sans</param>
     <param name="language">EN</param>
-    <param name="source">NotoSans-BoldRegular.ttf</param>
+    <param name="source">NotoSans-Bold.ttf</param>
     <param name="style">NORMAL</param>
     <param name="weight">BOLD</param>
   </font>
@@ -87,7 +87,7 @@
   <font>
     <param name="family">Noto Sans</param>
     <param name="language">RU</param>
-    <param name="source">NotoSans-BoldRegular.ttf</param>
+    <param name="source">NotoSans-Bold.ttf</param>
     <param name="style">NORMAL</param>
     <param name="weight">BOLD</param>
   </font>

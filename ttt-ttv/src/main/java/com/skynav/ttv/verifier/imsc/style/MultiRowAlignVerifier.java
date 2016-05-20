@@ -1,6 +1,6 @@
 /*
- * Copyright 2013-16 Skynav, Inc. All rights reserved.
- * 
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,38 +22,21 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
-package com.skynav.ttpe.imsc1;
 
-import org.junit.Test;
+package com.skynav.ttv.verifier.imsc.style;
 
-import com.skynav.ttpe.app.PresenterTestDriver;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
 
-public class IMSC1PresenterTestCases extends PresenterTestDriver {
+public class MultiRowAlignVerifier implements StyleValueVerifier {
 
-    @Test
-    public void testIMSC1DivisionImage1() throws Exception {
-        performPresentationTest("imsc1-div-image-1.xml", 0, 0);
-    }
-
-    @Test
-    public void testIMSC1FontSizePercentageOfInitialFontSize() throws Exception {
-        performPresentationTest("imsc1-font-size-percentage-of-initial-font-size.xml", 0, 0);
-    }
-
-    @Test
-    public void testIMSC1ForcedDisplayEnabled() throws Exception {
-        performPresentationTest("imsc1-forced-display-enabled.xml", 0, 0);
-    }
-
-    @Test
-    public void testIMSC1ForcedDisplayDisabled() throws Exception {
-        performPresentationTest("imsc1-forced-display-disabled.xml", 0, 0);
-    }
-
-    @Test
-    public void testIMSC1MultiRowAlign() throws Exception {
-        performPresentationTest("imsc1-multirow-align.xml", 0, 0);
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        // Schema validation phase (3) reports invalid values.
+        if (value instanceof com.skynav.ttv.model.imsc1.ebuttd.MultiRowAlign)
+            return true;
+        else
+            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
     }
 
 }

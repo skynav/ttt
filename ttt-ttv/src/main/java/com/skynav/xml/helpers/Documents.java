@@ -65,6 +65,17 @@ public class Documents {
         }
     }
 
+    public static Element findAncestorByName(Element elt, QName qn) {
+        for (Node p = elt.getParentNode(); p != null; p = p.getParentNode()) {
+            if (p instanceof Element) {
+                Element pElement = (Element) p;
+                if (getName(pElement).equals(qn))
+                    return pElement;
+            }
+        }
+        return null;
+    }
+
     public static List<Element> findElementsByName(Document d, QName qn) {
         String ns = qn.getNamespaceURI();
         NodeList nodes;

@@ -226,6 +226,7 @@ public class IMSC1 {
             normalizedPrefixes.put(Constants.NAMESPACE_IMSC_METADATA, "ittm");
             normalizedPrefixes.put(Constants.NAMESPACE_IMSC_PARAMETER, "ittp");
             normalizedPrefixes.put(Constants.NAMESPACE_IMSC_STYLING, "itts");
+            normalizedPrefixes.put(Constants.NAMESPACE_EBUTT_STYLING, "ebutts");
             return normalizedPrefixes;
         }
 

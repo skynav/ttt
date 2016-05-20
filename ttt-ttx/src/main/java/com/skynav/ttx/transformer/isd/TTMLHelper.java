@@ -25,6 +25,8 @@
 
 package com.skynav.ttx.transformer.isd;
 
+import javax.xml.namespace.QName;
+
 import org.w3c.dom.Element;
 
 import com.skynav.ttv.model.ttml.TTML;
@@ -206,6 +208,11 @@ public abstract class TTMLHelper extends ISDHelper {
     private static boolean hasUsableContentInImage(Element elt) {
         // [TBD] - return true only if image is resolvable
         return true;
+    }
+
+    public static boolean isStyleAttribute(QName attrName) {
+        String nsUri = attrName.getNamespaceURI();
+        return (nsUri != null) && nsUri.equals(NAMESPACE_TT_STYLE);
     }
 
 }

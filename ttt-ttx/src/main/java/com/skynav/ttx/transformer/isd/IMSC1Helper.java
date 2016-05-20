@@ -26,6 +26,7 @@
 package com.skynav.ttx.transformer.isd;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +34,7 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.skynav.ttv.model.imsc.IMSC1;
 import com.skynav.ttv.model.smpte.ST20522010;
@@ -49,9 +51,12 @@ public class IMSC1Helper extends TTML1Helper {
 
     public static final String NAMESPACE_IMSC_STYLING           = IMSC1.Constants.NAMESPACE_IMSC_STYLING;
     public static final String NAMESPACE_ST20522010             = ST20522010.Constants.NAMESPACE_2010;
+    public static final String NAMESPACE_EBUTT_STYLING          = IMSC1.Constants.NAMESPACE_EBUTT_STYLING;
 
     public static final QName  backgroundImageAttributeName     = new QName(NAMESPACE_ST20522010,       "backgroundImage");
     public static final QName  forcedDisplayAttributeName       = new QName(NAMESPACE_IMSC_STYLING,     "forcedDisplay");
+    public static final QName  linePaddingAlignAttributeName    = new QName(NAMESPACE_EBUTT_STYLING,    "linePadding");
+    public static final QName  multiRowAlignAttributeName       = new QName(NAMESPACE_EBUTT_STYLING,    "multiRowAlign");
 
     public static final String forcedParameterCondition         = "parameter('forced')";
 
@@ -202,7 +207,140 @@ public class IMSC1Helper extends TTML1Helper {
         return (condition != null) && condition.trim().equals(forcedParameterCondition);
     }
 
-    private void transformMultiRowAlign(Document doc, TransformerContext context) {
+    private void transformMultiRowAlign(final Document doc, final TransformerContext context) {
+        if (IMSC1SemanticsVerifier.isIMSCTextProfile(context)) {
+            final List<Element> styles = new java.util.ArrayList<Element>();
+            final List<Element> paragraphs = new java.util.ArrayList<Element>();
+            try {
+                Traverse.traverseElements(doc, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        assert content instanceof Element;
+                        Element elt = (Element) content;
+                        if (isISDStyleElement(elt)) {
+                            styles.add(elt);
+                        } else if (isParagraphElement(elt)) {
+                            paragraphs.add(elt);
+                        }
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+                context.getReporter().logError(e);
+            }
+            if (!paragraphs.isEmpty())
+                transformMultiRowAlign(doc, styles, paragraphs, context);
+        }
+    }
+
+    private void transformMultiRowAlign(Document doc, List<Element> styles, List<Element> paragraphs, TransformerContext context) {
+        Map<String,Element> styleMap = new java.util.HashMap<String,Element>();
+        int maxStyleIndex = -1;
+        for (Element s : styles) {
+            String id = getXmlIdentifier(s);
+            if (id != null) {
+                Matcher m = styleIdentifierPattern.matcher(id);
+                if (m.matches()) {
+                    String styleIndex = m.group(1);
+                    if (styleIndex != null) {
+                        try {
+                            int index = Integer.parseInt(styleIndex);
+                            if (index > maxStyleIndex)
+                                maxStyleIndex = index;
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+                }
+                styleMap.put(id, s);
+            }
+        }
+        Element pFirst = null;
+        List<Element> newStyles = new java.util.ArrayList<Element>();
+        for (Element p : paragraphs) {
+            if (pFirst == null)
+                pFirst = p;
+            String ma = getStyleAttribute(p, styleMap, multiRowAlignAttributeName, "auto");
+            if (isMultiRowAlignValue(ma)) {
+                String ta = getStyleAttribute(p, styleMap, TTML1StyleVerifier.textAlignAttributeName, "start");
+                if (ma.equals("auto"))
+                    ma = ta;
+                if (!ma.equals(ta)) {
+                    Element span = Documents.createElement(doc, TTML1Helper.spanElementName);
+                    // add new style (css) element to represent text alignment as required
+                    StringBuffer sb = new StringBuffer();
+                    sb.append('s');
+                    sb.append(++maxStyleIndex);
+                    String id = sb.toString();
+                    Element s = Documents.createElement(doc, isdStyleElementName);
+                    setXmlIdentifier(s, id);
+                    copyStyleAttributes(p, styleMap, s);
+                    Documents.setAttribute(s, TTML1StyleVerifier.textAlignAttributeName, ma);
+                    newStyles.add(s);
+                    Documents.setAttribute(span, isdStyleAttributeName, id);
+                    // capture child nodes
+                    List<Node> children = new java.util.ArrayList<Node>();
+                    for (Node n = p.getFirstChild(); n != null; n = n.getNextSibling())
+                        children.add(n);
+                    // remove child nodes, reparenting to new span
+                    for (Node n : children)
+                        span.appendChild(p.removeChild(n));
+                    assert p.getFirstChild() == null;
+                    // add new span to paragraph
+                    p.appendChild(span);
+                    // record uses of ttml2 feature
+                    context.setResourceState(ResourceState.isdUsesTTML2Feature.name(), Boolean.TRUE);
+                }
+            }
+        }
+        // remove ebutts:multiRowAlign from current styles
+        for (Element s : styles) {
+            Documents.removeAttribute(s, multiRowAlignAttributeName);
+        }
+        // augment styles with new text align styles as generated above
+        if (!newStyles.isEmpty()) {
+            Element isd = getISD(pFirst);
+            Element rFirst = getFirstRegion(isd);
+            for (Element s : newStyles)
+                isd.insertBefore(s, rFirst);
+        }
+    }
+
+    private String getStyleAttribute(Element e, Map<String,Element> styles, QName styleName, String defaultValue) {
+        String css = Documents.getAttribute(e, isdStyleAttributeName);
+        if (css != null) {
+            Element s = styles.get(css);
+            if (s != null)
+                return Documents.getAttribute(s, styleName, defaultValue);
+        }
+        return defaultValue;
+    }
+
+    private void copyStyleAttributes(Element e, Map<String,Element> styles, Element eTarget) {
+        String css = Documents.getAttribute(e, isdStyleAttributeName);
+        if (css != null) {
+            Element s = styles.get(css);
+            if (s != null) {
+                Map<QName,String> attributes = Documents.getAttributes(s);
+                for (Map.Entry<QName,String> a : attributes.entrySet()) {
+                    QName n = a.getKey();
+                    String v = a.getValue();
+                    if (isStyleAttribute(n))
+                        Documents.setAttribute(eTarget, n, v);
+                }
+            }
+        }
+    }
+
+    private boolean isMultiRowAlignValue(String s) {
+        if (s.equals("start"))
+            return true;
+        else if (s.equals("end"))
+            return true;
+        else if (s.equals("center"))
+            return true;
+        else if (s.equals("auto"))
+            return true;
+        else
+            return false;
     }
 
     private void transformLinePadding(Document doc, TransformerContext context) {

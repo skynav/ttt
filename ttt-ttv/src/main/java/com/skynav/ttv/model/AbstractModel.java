@@ -172,6 +172,10 @@ public class AbstractModel implements Model {
         return new java.util.ArrayList<QName>();
     }
 
+    public boolean isDefinedStyle(QName styleName) {
+        return getDefinedStyleNames().contains(styleName);
+    }
+
     public Collection<QName> getApplicableStyleNames(QName eltName) {
         return new java.util.ArrayList<QName>();
     }

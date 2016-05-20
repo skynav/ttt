@@ -1268,8 +1268,11 @@ public class ISD {
                 if (node instanceof Attr) {
                     Attr a = (Attr) node;
                     String nsUri = a.getNamespaceURI();
-                    if ((nsUri != null) && nsUri.equals(TTMLHelper.NAMESPACE_TT_STYLE))
-                        styles.merge(new StyleSpecification(new ComparableQName(a.getNamespaceURI(), a.getLocalName()), a.getValue()));
+                    if (nsUri != null) {
+                        QName styleName = new ComparableQName(a.getNamespaceURI(), a.getLocalName());
+                        if (isDefinedStyle(styleName, context))
+                            styles.merge(new StyleSpecification(styleName, a.getValue()));
+                    }
                 }
             }
             return styles;
@@ -1277,6 +1280,10 @@ public class ISD {
 
         private static Collection<QName> getDefinedStyleNames(TransformerContext context) {
             return context.getModel().getDefinedStyleNames();
+        }
+
+        private static boolean isDefinedStyle(QName styleName, TransformerContext context) {
+            return context.getModel().isDefinedStyle(styleName);
         }
 
         private static boolean isInheritableStyle(Element elt, QName styleName, TransformerContext context) {
@@ -1492,7 +1499,7 @@ public class ISD {
                     String localName = a.getLocalName();
                     String value = a.getValue();
                     if (nsUri == null) {
-                        if (localName.equals("style") && value.isEmpty())
+                        if (localName.equals("style"))
                             exclusions.add(a);
                         else
                             continue;

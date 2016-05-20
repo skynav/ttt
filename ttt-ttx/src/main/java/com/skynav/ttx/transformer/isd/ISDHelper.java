@@ -134,6 +134,10 @@ public abstract class ISDHelper {
         return Documents.isElement(elt, isdRegionElementName);
     }
 
+    public static void setXmlIdentifier(Element elt, String id) {
+        Documents.setAttribute(elt, XML.xmlIdentifierAttributeName, id);
+    }
+
     public static String getXmlIdentifier(Element elt) {
         return Documents.getAttribute(elt, XML.xmlIdentifierAttributeName, null);
     }
@@ -151,6 +155,15 @@ public abstract class ISDHelper {
 
     public boolean hasUsableContent(Element elt) {
         return false;
+    }
+
+    public Element getISD(Element elt) {
+        return Documents.findAncestorByName(elt, isdElementName);
+    }
+
+    public Element getFirstRegion(Element isd) {
+        List<Element> regions = Documents.findElementsByName(isd, isdRegionElementName);
+        return !regions.isEmpty() ? regions.get(0) : null;
     }
 
     public static ISDHelper makeInstance(Model model) {
