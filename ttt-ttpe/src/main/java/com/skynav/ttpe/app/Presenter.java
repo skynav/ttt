@@ -499,9 +499,11 @@ public class Presenter extends TimedTextTransformer {
     }
 
     @Override
-    public List<String> processRestartArguments(List<String> args, RestartOptions restartOptions) {
+    public List<String> processRestartArguments(List<String> args, List<String> nonOptionArgs, RestartOptions restartOptions) {
         if ((restartOptions != null) && !restartOptions.isEmpty()) {
             List<String> argsRestart = new java.util.ArrayList<String>();
+            for (int i = 0, n = args.size() - nonOptionArgs.size(); i < n; ++i)
+                argsRestart.add(args.get(i));
             for (RestartOptions.Section s : restartOptions.getSections()) {
                 if (s.getName().equals("ttpe")) {
                     for (Map.Entry<String,Object> e : s.getOptions().entrySet()) {
@@ -520,7 +522,8 @@ public class Presenter extends TimedTextTransformer {
                     }
                 }
             }
-            argsRestart.addAll(args);
+            for (int i = 0, n = nonOptionArgs.size(); i < n; ++i)
+                argsRestart.add(nonOptionArgs.get(i));
             args = argsRestart;
         }
         return args;

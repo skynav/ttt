@@ -880,6 +880,8 @@ public class ISD {
                 return false;
             else if (localName.equals("cellResolution"))
                 return true;
+            else if (localName.equals("displayAspectRatio"))    // TTML2
+                return true;
             else if (localName.equals("frameRate"))
                 return true;
             else if (localName.equals("frameRateMultiplier"))
@@ -889,6 +891,8 @@ public class ISD {
             else if (localName.equals("subFrameRate"))
                 return true;
             else if (localName.equals("tickRate"))
+                return true;
+            else if (localName.equals("version"))               // TTML2
                 return true;
             else
                 return false;

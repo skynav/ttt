@@ -47,7 +47,7 @@ import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.XML;
 
-public class IMSC1Helper extends TTML1Helper {
+public class IMSC1Helper extends TTML2Helper {
 
     public static final String NAMESPACE_IMSC_STYLING           = IMSC1.Constants.NAMESPACE_IMSC_STYLING;
     public static final String NAMESPACE_ST20522010             = ST20522010.Constants.NAMESPACE_2010;
@@ -90,8 +90,8 @@ public class IMSC1Helper extends TTML1Helper {
                             if (source != null) {
                                 source = source.trim();
                                 if (!source.isEmpty()) {
-                                    Element image = Documents.createElement(doc, TTML2Helper.imageElementName);
-                                    Documents.setAttribute(image, TTML2Helper.sourceAttributeName, source);
+                                    Element image = Documents.createElement(doc, imageElementName);
+                                    Documents.setAttribute(image, sourceAttributeName, source);
                                     // [TBD] ensure that no image child is already present
                                     elt.appendChild(image);
                                     // record uses of ttml2 feature
@@ -172,7 +172,7 @@ public class IMSC1Helper extends TTML1Helper {
             Element css = Documents.createElement(doc, isdStyleElementName);
             Documents.setAttribute(css, TTML1StyleVerifier.visibilityAttributeName, "visible");
             Documents.setAttribute(css, XML.xmlIdentifierAttributeName, forcedStyleIdentifier);
-            Documents.setAttribute(css, TTML2Helper.conditionAttributeName, forcedParameterCondition);
+            Documents.setAttribute(css, conditionAttributeName, forcedParameterCondition);
             if (!regions.isEmpty()) {
                 Element firstRegion = regions.get(0);
                 assert firstRegion != null;
@@ -200,7 +200,7 @@ public class IMSC1Helper extends TTML1Helper {
     }
 
     private String getCondition(Element elt) {
-        return Documents.getAttribute(elt, TTML2Helper.conditionAttributeName, null);
+        return Documents.getAttribute(elt, conditionAttributeName, null);
     }
 
     private boolean isForcedParameterCondition(String condition) {
@@ -264,7 +264,7 @@ public class IMSC1Helper extends TTML1Helper {
                 if (ma.equals("auto"))
                     ma = ta;
                 if (!ma.equals(ta)) {
-                    Element span = Documents.createElement(doc, TTML1Helper.spanElementName);
+                    Element span = Documents.createElement(doc, spanElementName);
                     // add new style (css) element to represent text alignment as required
                     StringBuffer sb = new StringBuffer();
                     sb.append('s');
@@ -355,32 +355,11 @@ public class IMSC1Helper extends TTML1Helper {
         Boolean usesForcedVisibility = (Boolean) context.getResourceState(ResourceState.isdUsesForcedVisibility.name());
         if ((usesForcedVisibility != null) && usesForcedVisibility) {
             Element ttm  = Documents.createElement(doc, metadataElementName);
-            Element ttmi = Documents.createElement(doc, TTML2Helper.itemElementName);
+            Element ttmi = Documents.createElement(doc, itemElementName);
             Documents.setAttribute(ttmi, nameAttributeName, "usesForced");
             ttm.appendChild(ttmi);
             Element root = doc.getDocumentElement();
             Documents.insertFirst(root, ttm);
-        }
-    }
-
-    private void maybeRecordRequiresTTML2(Document doc, TransformerContext context) {
-        Boolean usesTTML2Feature = (Boolean) context.getResourceState(ResourceState.isdUsesTTML2Feature.name());
-        if ((usesTTML2Feature != null) && usesTTML2Feature) {
-            Element root = doc.getDocumentElement();
-            boolean needsVersion = false;
-            if (!Documents.hasAttribute(root, TTML2Helper.versionAttributeName)) {
-                needsVersion = true;
-            } else {
-                String value = Documents.getAttribute(root, TTML2Helper.versionAttributeName);
-                try {
-                    int version = Integer.parseInt(value);
-                    if (version < TTML2Helper.ttml2Version)
-                        needsVersion = true;
-                } catch (NumberFormatException e) {
-                }
-            }
-            if (needsVersion)
-                Documents.setAttribute(root, TTML2Helper.versionAttributeName, Integer.toString(TTML2Helper.ttml2Version));
         }
     }
 

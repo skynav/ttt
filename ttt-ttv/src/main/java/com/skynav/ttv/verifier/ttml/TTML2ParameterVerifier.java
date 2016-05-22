@@ -39,6 +39,7 @@ import com.skynav.ttv.model.ttml2.ttd.TimeBase;
 import com.skynav.ttv.model.ttml2.ttp.Extensions;
 import com.skynav.ttv.model.ttml2.ttp.Features;
 import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.DisplayAspectRatioVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DropModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.MarkerModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
@@ -49,9 +50,12 @@ import com.skynav.xml.helpers.XML;
 
 public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
 
+    public static final QName displayAspectRatioAttributeName   = new QName(getParameterNamespaceUri(), "displayAspectRatio");
+    public static final QName versionAttributeName              = new QName(getParameterNamespaceUri(), "version");
+
     private static final Object[][] parameterAccessorMap        = new Object[][] {
         {
-            new QName(NAMESPACE,"clockMode"),
+            clockModeAttributeName,
             "ClockMode",
             ClockMode.class,
             ClockModeVerifier.class,
@@ -59,7 +63,15 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             ClockMode.UTC,
         },
         {
-            new QName(NAMESPACE,"dropMode"),
+            displayAspectRatioAttributeName,
+            "DisplayAspectRatio",
+            String.class,
+            DisplayAspectRatioVerifier.class,
+            Boolean.FALSE,
+            "auto",
+        },
+        {
+            dropModeAttributeName,
             "DropMode",
             DropMode.class,
             DropModeVerifier.class,
@@ -67,7 +79,7 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             DropMode.NON_DROP,
         },
         {
-            new QName(NAMESPACE,"markerMode"),
+            markerModeAttributeName,
             "MarkerMode",
             MarkerMode.class,
             MarkerModeVerifier.class,
@@ -75,7 +87,7 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             MarkerMode.DISCONTINUOUS,
         },
         {
-            new QName(NAMESPACE,"timeBase"),
+            timeBaseAttributeName,
             "TimeBase",
             TimeBase.class,
             TimeBaseVerifier.class,
@@ -83,7 +95,7 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             TimeBase.MEDIA,
         },
         {
-            new QName(NAMESPACE,"version"),
+            versionAttributeName,
             "Version",
             BigInteger.class,
             VersionVerifier.class,

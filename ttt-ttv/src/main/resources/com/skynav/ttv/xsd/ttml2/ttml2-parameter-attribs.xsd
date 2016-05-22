@@ -9,6 +9,7 @@
   <xs:attribute name="clockMode" type="ttd:clockMode"/>
   <xs:attribute name="contentProfiles" type="ttd:profiles"/>
   <xs:attribute name="contentProfileCombination" type="ttd:profileCombination"/>
+  <xs:attribute name="displayAspectRatio" type="ttd:displayAspectRatio"/>
   <xs:attribute name="dropMode" type="ttd:dropMode"/>
   <xs:attribute name="frameRate" type="ttd:frameRate"/>
   <xs:attribute name="frameRateMultiplier" type="ttd:frameRateMultiplier"/>
@@ -23,7 +24,6 @@
   <xs:attribute name="permitFeatureNarrowing" type="ttd:permitFeatureNarrowingOrWidening"/>
   <xs:attribute name="permitFeatureWidening" type="ttd:permitFeatureNarrowingOrWidening"/>
   <xs:attribute name="profile" type="ttd:profile"/>
-  <xs:attribute name="storageAspectRatio" type="ttd:storageAspectRatio"/>
   <xs:attribute name="subFrameRate" type="ttd:subFrameRate"/>
   <xs:attribute name="tickRate" type="ttd:tickRate"/>
   <xs:attribute name="timeBase" type="ttd:timeBase"/>
@@ -35,6 +35,7 @@
     <xs:attribute ref="ttp:clockMode"/>
     <xs:attribute ref="ttp:contentProfiles"/>
     <xs:attribute ref="ttp:contentProfileCombination"/>
+    <xs:attribute ref="ttp:displayAspectRatio"/>
     <xs:attribute ref="ttp:dropMode"/>
     <xs:attribute ref="ttp:frameRate"/>
     <xs:attribute ref="ttp:frameRateMultiplier"/>
@@ -49,7 +50,6 @@
     <xs:attribute ref="ttp:processorProfiles"/>
     <xs:attribute ref="ttp:processorProfileCombination"/>
     <xs:attribute ref="ttp:profile"/>
-    <xs:attribute ref="ttp:storageAspectRatio"/>
     <xs:attribute ref="ttp:subFrameRate"/>
     <xs:attribute ref="ttp:tickRate"/>
     <xs:attribute ref="ttp:timeBase"/>

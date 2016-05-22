@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,29 +23,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.app;
+package com.skynav.ttv.verifier.ttml.parameter;
 
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.Collection;
-import java.util.List;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.verifier.ParameterValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Integers;
+import com.skynav.ttv.verifier.util.Keywords;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
+import com.skynav.ttv.verifier.util.ZeroTreatment;
 
-import com.skynav.ttv.util.Configuration;
-import com.skynav.ttv.util.ConfigurationDefaults;
+public class DisplayAspectRatioVerifier implements ParameterValueVerifier {
 
-public interface OptionProcessor {
-    void resetAllState(boolean restart);
-    URL getDefaultConfigurationLocator();
-    ConfigurationDefaults getConfigurationDefaults(URL configLocator);
-    Class<? extends Configuration> getConfigurationClass();
-    List<String> preProcessOptions(List<String> args, Configuration configuration, Collection<OptionSpecification> shortOptions, Collection<OptionSpecification> longOptions);
-    boolean hasOption(String arg);
-    int parseOption(List<String> args, int index) throws UsageException;
-    void processDerivedOptions();
-    List<String> processNonOptionArguments(List<String> nonOptionArgs);
-    List<String> processRestartArguments(List<String> args, List<String> nonOptionArgs, RestartOptions restartOptions);
-    void showBanner(PrintWriter out);
-    void showUsage(PrintWriter out);
-    String getShowUsageCommand();
-    void runOptions(PrintWriter out);
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        assert value instanceof String;
+        String s = (String) value;
+        Integer[] minMax = new Integer[] { 2, 2 };
+        Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
+        if (Keywords.isAuto(s))
+            return true;
+        else if (Integers.isIntegers(s, location, context, minMax, treatments, null))
+            return true;
+        else {
+            Integers.badIntegers(s, location, context, minMax, treatments);
+            return false;
+        }
+    }
+
 }

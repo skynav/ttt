@@ -63,11 +63,9 @@ public abstract class ISDHelper {
     }
 
     public void traverse(Object tt, Visitor v) throws Exception {
-        throw new UnsupportedOperationException();
     }
 
-    public  void generateAnonymousSpans(Object root, final TransformerContext context) {
-        throw new UnsupportedOperationException();
+    public void generateAnonymousSpans(Object root, final TransformerContext context) {
     }
 
     public int[] getGenerationIndices(TransformerContext context) {
@@ -91,31 +89,31 @@ public abstract class ISDHelper {
 
     @SuppressWarnings("rawtypes")
     public List getChildren(Object content) {
-        throw new UnsupportedOperationException();
+        return new java.util.ArrayList<Object>();
     }
 
     public boolean isTimedText(Object content) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     public boolean isAnonymousSpan(Object content) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     public boolean isTimed(Object content) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     public boolean isTimedContainer(Object content) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     public boolean isSequenceContainer(Object content) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     public String getClassString(Object content) {
-        throw new UnsupportedOperationException();
+        return content.getClass().toString();
     }
 
     public boolean isISDElement(Element elt) {

@@ -433,7 +433,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
         return nonOptionArgs;
     }
 
-    public List<String> processRestartArguments(List<String> args, RestartOptions restartOptions) {
+    public List<String> processRestartArguments(List<String> args, List<String> nonOptionArgs, RestartOptions restartOptions) {
         return args;
     }
 

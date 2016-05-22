@@ -94,8 +94,10 @@ public class TTML1Helper extends TTMLHelper {
 
     @Override
     public void traverse(Object tt, Visitor v) throws Exception {
-        assert tt instanceof TimedText;
-        traverse((TimedText) tt, v);
+        if (tt instanceof TimedText)
+            traverse((TimedText) tt, v);
+        else
+            super.traverse(tt, v);
     }
 
     private static void traverse(TimedText tt, Visitor v) throws Exception {
@@ -222,29 +224,32 @@ public class TTML1Helper extends TTMLHelper {
     }
 
     @Override
-    public void generateAnonymousSpans(Object root, final TransformerContext context) {
-        try {
-            traverse(root, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    if (content instanceof String) {
-                        List<Serializable> contentChildren;
-                        if (parent instanceof Paragraph)
-                            contentChildren = ((Paragraph) parent).getContent();
-                        else if (parent instanceof Span)
-                            contentChildren = ((Span) parent).getContent();
-                        else
-                            contentChildren = null;
-                        if (contentChildren != null) {
-                            if (!(parent instanceof Span) || (contentChildren.size() > 1))
-                                contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
+    public void generateAnonymousSpans(Object tt, final TransformerContext context) {
+        if (tt instanceof TimedText) {
+            try {
+                traverse(tt, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        if (content instanceof String) {
+                            List<Serializable> contentChildren;
+                            if (parent instanceof Paragraph)
+                                contentChildren = ((Paragraph) parent).getContent();
+                            else if (parent instanceof Span)
+                                contentChildren = ((Span) parent).getContent();
+                            else
+                                contentChildren = null;
+                            if (contentChildren != null) {
+                                if (!(parent instanceof Span) || (contentChildren.size() > 1))
+                                    contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
+                            }
                         }
+                        return true;
                     }
-                    return true;
-                }
-            });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                });
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else
+            super.generateAnonymousSpans(tt, context);
     }
 
     private JAXBElement<Span> wrapInAnonymousSpan(Object content, TransformerContext context) {
@@ -283,7 +288,7 @@ public class TTML1Helper extends TTMLHelper {
         } else if (content instanceof Span) {
             children = dereferenceAsContent(((Span) content).getContent());
         } else {
-            children = new java.util.ArrayList<Object>();
+            children = super.getChildren(content);
         }
         return children;
     }
@@ -304,7 +309,10 @@ public class TTML1Helper extends TTMLHelper {
 
     @Override
     public boolean isTimedText(Object content) {
-        return content instanceof TimedText;
+        if (content instanceof TimedText)
+            return true;
+        else
+            return super.isTimedText(content);
     }
 
     @Override
@@ -313,7 +321,7 @@ public class TTML1Helper extends TTMLHelper {
             String value = getStringValuedAttribute(content, "id");
             return (value != null) && (value.indexOf("ttxSpan") == 0);
         } else
-            return false;
+            return super.isAnonymousSpan(content);
     }
 
     @Override
@@ -339,7 +347,7 @@ public class TTML1Helper extends TTMLHelper {
         else if (content instanceof Set)
             return true;
         else
-            return false;
+            return super.isTimed(content);
     }
 
     @Override
@@ -359,13 +367,16 @@ public class TTML1Helper extends TTMLHelper {
         else if (content instanceof Span)
             return true;
         else
-            return false;
+            return super.isTimedContainer(content);
     }
 
     @Override
     public boolean isSequenceContainer(Object content) {
         TimeContainer container = getTimeContainer(content);
-        return (container != null ) ? container.value().equals("seq") : false;
+        if (container != null)
+            return container.value().equals("seq");
+        else
+            return super.isSequenceContainer(content);
     }
 
     private TimeContainer getTimeContainer(Object content) {
@@ -385,15 +396,9 @@ public class TTML1Helper extends TTMLHelper {
                 container = ((Paragraph) content).getTimeContainer();
             else if (content instanceof Span)
                 container = ((Span) content).getTimeContainer();
-            else
-                unexpectedContent(content);
             return container;
         } else
             return null;
-    }
-
-    private static boolean unexpectedContent(Object content) throws IllegalStateException {
-        throw new IllegalStateException("Unexpected JAXB content object of type '" + content.getClass().getName() +  "'.");
     }
 
     @Override
@@ -409,7 +414,8 @@ public class TTML1Helper extends TTMLHelper {
                     cls = "AnonSpan(" + escapeControls(spanText) + ")";
                 }
             }
-        }
+        } else
+            cls = super.getClassString(content);
         return cls;
     }
 

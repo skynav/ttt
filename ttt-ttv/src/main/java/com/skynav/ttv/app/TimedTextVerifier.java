@@ -979,9 +979,9 @@ public class TimedTextVerifier implements VerifierContext {
         return args;
     }
 
-    private List<String> processRestartArguments(List<String> args, OptionProcessor optionProcessor) {
+    private List<String> processRestartArguments(List<String> args, List<String> nonOptionArgs, OptionProcessor optionProcessor) {
         if (optionProcessor != null)
-            args = optionProcessor.processRestartArguments(args, getRestartOptions());
+            args = optionProcessor.processRestartArguments(args, nonOptionArgs, getRestartOptions());
         return args;
     }
 
@@ -2327,7 +2327,7 @@ public class TimedTextVerifier implements VerifierContext {
                 rv = verify(args, nonOptionArgs, resultProcessor);
                 if (rv == RV_RESTART) {
                     assert !hasRestarted();
-                    List<String> argsRestart = processRestartArguments(args, resultProcessor);
+                    List<String> argsRestart = processRestartArguments(args, nonOptionArgs, resultProcessor);
                     reporter.logInfo(reporter.message("*KEY*", "Restarting with augmented option arguments: {0}.", argsRestart));
                     rv = run(argsRestart, resultProcessor, true);
                 }

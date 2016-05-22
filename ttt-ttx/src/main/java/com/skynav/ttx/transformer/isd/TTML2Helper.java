@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -56,8 +57,9 @@ import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.ttml.TTML2StyleVerifier;
 import com.skynav.ttx.transformer.TransformerContext;
+import com.skynav.xml.helpers.Documents;
 
-public class TTML2Helper extends TTMLHelper {
+public class TTML2Helper extends TTML1Helper {
 
     public static final QName animateElementName                = new QName(NAMESPACE_TT,               "animate");
     public static final QName animationElementName              = new QName(NAMESPACE_TT,               "animation");
@@ -85,9 +87,32 @@ public class TTML2Helper extends TTMLHelper {
     }
 
     @Override
-    public void traverse(Object root, Visitor v) throws Exception {
-        assert root instanceof TimedText;
-        traverse((TimedText) root, v);
+    public void traverse(Object tt, Visitor v) throws Exception {
+        if (tt instanceof TimedText)
+            traverse((TimedText) tt, v);
+        else
+            super.traverse(tt, v);
+    }
+
+    public static void maybeRecordRequiresTTML2(Document doc, TransformerContext context) {
+        Boolean usesTTML2Feature = (Boolean) context.getResourceState(ResourceState.isdUsesTTML2Feature.name());
+        if ((usesTTML2Feature != null) && usesTTML2Feature) {
+            Element root = doc.getDocumentElement();
+            boolean needsVersion = false;
+            if (!Documents.hasAttribute(root, versionAttributeName)) {
+                needsVersion = true;
+            } else {
+                String value = Documents.getAttribute(root, versionAttributeName);
+                try {
+                    int version = Integer.parseInt(value);
+                    if (version < ttml2Version)
+                        needsVersion = true;
+                } catch (NumberFormatException e) {
+                }
+            }
+            if (needsVersion)
+                Documents.setAttribute(root, versionAttributeName, Integer.toString(ttml2Version));
+        }
     }
 
     private static void traverse(TimedText tt, Visitor v) throws Exception {
@@ -240,29 +265,32 @@ public class TTML2Helper extends TTMLHelper {
     }
 
     @Override
-    public void generateAnonymousSpans(Object root, final TransformerContext context) {
-        try {
-            traverse(root, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    if (content instanceof String) {
-                        List<Serializable> contentChildren;
-                        if (parent instanceof Paragraph)
-                            contentChildren = ((Paragraph) parent).getContent();
-                        else if (parent instanceof Span)
-                            contentChildren = ((Span) parent).getContent();
-                        else
-                            contentChildren = null;
-                        if (contentChildren != null) {
-                            if (!(parent instanceof Span) || (contentChildren.size() > 1))
-                                contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
+    public void generateAnonymousSpans(Object tt, final TransformerContext context) {
+        if (tt instanceof TimedText) {
+            try {
+                traverse(tt, new PreVisitor() {
+                    public boolean visit(Object content, Object parent, Visitor.Order order) {
+                        if (content instanceof String) {
+                            List<Serializable> contentChildren;
+                            if (parent instanceof Paragraph)
+                                contentChildren = ((Paragraph) parent).getContent();
+                            else if (parent instanceof Span)
+                                contentChildren = ((Span) parent).getContent();
+                            else
+                                contentChildren = null;
+                            if (contentChildren != null) {
+                                if (!(parent instanceof Span) || (contentChildren.size() > 1))
+                                    contentChildren.set(contentChildren.indexOf(content), wrapInAnonymousSpan(content, context));
+                            }
                         }
+                        return true;
                     }
-                    return true;
-                }
-            });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                });
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else
+            super.generateAnonymousSpans(tt, context);
     }
 
     private JAXBElement<Span> wrapInAnonymousSpan(Object content, TransformerContext context) {
@@ -301,7 +329,7 @@ public class TTML2Helper extends TTMLHelper {
         } else if (content instanceof Span) {
             children = dereferenceAsContent(((Span) content).getContent());
         } else {
-            children = new java.util.ArrayList<Object>();
+            children = super.getChildren(content);
         }
         return children;
     }
@@ -322,7 +350,10 @@ public class TTML2Helper extends TTMLHelper {
 
     @Override
     public boolean isTimedText(Object content) {
-        return content instanceof TimedText;
+        if (content instanceof TimedText)
+            return true;
+        else
+            return super.isTimedText(content);
     }
 
     @Override
@@ -331,7 +362,7 @@ public class TTML2Helper extends TTMLHelper {
             String value = getStringValuedAttribute(content, "id");
             return (value != null) && (value.indexOf("ttxSpan") == 0);
         } else
-            return false;
+            return super.isAnonymousSpan(content);
     }
 
     @Override
@@ -359,7 +390,7 @@ public class TTML2Helper extends TTMLHelper {
         else if (content instanceof Set)
             return true;
         else
-            return false;
+            return super.isTimed(content);
     }
 
     @Override
@@ -379,13 +410,16 @@ public class TTML2Helper extends TTMLHelper {
         else if (content instanceof Span)
             return true;
         else
-            return false;
+            return super.isTimedContainer(content);
     }
 
     @Override
     public boolean isSequenceContainer(Object content) {
         TimeContainer container = getTimeContainer(content);
-        return (container != null ) ? container.value().equals("seq") : false;
+        if (container != null)
+            return container.value().equals("seq");
+        else
+            return super.isSequenceContainer(content);
     }
 
     private TimeContainer getTimeContainer(Object content) {
@@ -405,15 +439,9 @@ public class TTML2Helper extends TTMLHelper {
                 container = ((Paragraph) content).getTimeContainer();
             else if (content instanceof Span)
                 container = ((Span) content).getTimeContainer();
-            else
-                unexpectedContent(content);
             return container;
         } else
             return null;
-    }
-
-    private static boolean unexpectedContent(Object content) throws IllegalStateException {
-        throw new IllegalStateException("Unexpected JAXB content object of type '" + content.getClass().getName() +  "'.");
     }
 
     @Override
@@ -429,7 +457,8 @@ public class TTML2Helper extends TTMLHelper {
                     cls = "AnonSpan(" + escapeControls(spanText) + ")";
                 }
             }
-        }
+        } else
+            cls = super.getClassString(content);
         return cls;
     }
 
@@ -439,7 +468,7 @@ public class TTML2Helper extends TTMLHelper {
             if (isRubyTextContainer(elt, sss) || isRubyText(elt, sss))
                 return true;
         }
-        return false;
+        return super.specialStyleInheritance(elt, styleName, sss, context);
     }
 
     private static boolean hasSpecialInheritance(QName styleName) {
@@ -487,7 +516,7 @@ public class TTML2Helper extends TTMLHelper {
                 }
             }
         }
-        return null;
+        return super.getSpecialInheritedStyle(elt, styleName, sss, specifiedStyleSets, context);
     }
 
     private static String getStyleValue(StyleSet sss, QName styleName) {
