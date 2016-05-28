@@ -44,7 +44,6 @@ class SegmentParserFFCC extends SegmentParser {
                 if (js.getInitialFrameCode() != null && !js.usesArithmeticCoding())
                     mh.logResult(JpegValidator.MsgCode.JPG01W002, js.getSegmentCount(), js.getInitialFrameCode());
                 short l = jis.readShort();
-                String.format("DAC_DATASIZE %1$3d", l);
                 for (short i = 0; i < l - 2; i++)
                     jis.readByte();
             }

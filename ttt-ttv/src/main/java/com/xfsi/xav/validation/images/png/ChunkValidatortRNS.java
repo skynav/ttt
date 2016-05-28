@@ -30,9 +30,9 @@ public final class ChunkValidatortRNS extends ChunkValidator {
 
     public static final class Spec {
         public static final String section = "4.2.9";
-        public static final byte[] header =
+        static final byte[] header =
             ChunkValidatortRNS.class.getName().substring(ChunkValidatortRNS.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatortRNS.class.getName().length()).getBytes();
+                                                         ChunkValidatortRNS.class.getName().length()).getBytes(Utils.getCharset());
     }
 
     void validate() throws PngValidationException {
@@ -59,7 +59,7 @@ public final class ChunkValidatortRNS extends ChunkValidator {
         case 3:
             validateAfterChunk(ChunkValidatorPLTE.Spec.header);
             if (PLTEData == null) {
-                png.logMsg(PngValidator.MsgCode.PNG01E016, null, new String(ChunkValidatorPLTE.Spec.header));
+                png.logMsg(PngValidator.MsgCode.PNG01E016, null, new String(ChunkValidatorPLTE.Spec.header, Utils.getCharset()));
                 break;
             }
             int tRNSEntries = data.length;
@@ -71,8 +71,10 @@ public final class ChunkValidatortRNS extends ChunkValidator {
             break;
         case 4:
         case 6:
-            png.logMsg(PngValidator.MsgCode.PNG01W002, null, new String(Spec.header));
+            png.logMsg(PngValidator.MsgCode.PNG01W002, null, new String(Spec.header, Utils.getCharset()));
             trns.setStateType(ChunkState.StateType.mustNotExist);
+            break;
+        default:
             break;
         }
     }

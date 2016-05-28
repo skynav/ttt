@@ -199,6 +199,8 @@ public abstract class AbstractLoggingValidator extends AbstractValidator {
         case Error.Severity.FATAL_SEVERITY:
             errorReported = true;
             break;
+        default:
+            break;
         }
     }
 

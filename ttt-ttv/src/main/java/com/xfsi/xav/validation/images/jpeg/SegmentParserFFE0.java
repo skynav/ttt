@@ -99,29 +99,23 @@ class SegmentParserFFE0 extends SegmentParser {
         for (int i = 0; i < jfifIdentifierLength; i++)
             {
                 byte b = identifier[i];
-                switch (i)
-                    {
-                    case 0:
-                        if (b != 0x4a)
-                            return false;
-                        break;
-                    case 1:
-                        if (b != 0x46)
-                            return false;
-                        break;
-                    case 2:
-                        if (b != 0x49)
-                            return false;
-                        break;
-                    case 3:
-                        if (b != 0x46)
-                            return false;
-                        break;
-                    case 4:
-                        if (b != 0x00)
-                            return false;
-                        break;
-                    }
+                if (i == 0) {
+                    if (b != 0x4a)
+                        return false;
+                } else if (i == 1) {
+                    if (b != 0x46)
+                        return false;
+                } else if (i == 2) {
+                    if (b != 0x49)
+                        return false;
+                } else if (i == 3) {
+                    if (b != 0x46)
+                        return false;
+                } else if (i == 4) {
+                    if (b != 0x00)
+                        return false;
+                } else
+                    break;
             }
         return true;
     }
@@ -131,29 +125,23 @@ class SegmentParserFFE0 extends SegmentParser {
         for (int i = 0; i < jfifIdentifierLength; i++)
             {
                 byte b = identifier[i];
-                switch (i)
-                    {
-                    case 0:
-                        if (b != 0x4a)
-                            return false;
-                        break;
-                    case 1:
-                        if (b != 0x46)
-                            return false;
-                        break;
-                    case 2:
-                        if (b != 0x58)
-                            return false;
-                        break;
-                    case 3:
-                        if (b != 0x58)
-                            return false;
-                        break;
-                    case 4:
-                        if (b != 0x00)
-                            return false;
-                        break;
-                    }
+                if (i == 0) {
+                    if (b != 0x4a)
+                        return false;
+                } else if (i == 1) {
+                    if (b != 0x46)
+                        return false;
+                } else if (i == 2) {
+                    if (b != 0x58)
+                        return false;
+                } else if (i == 3) {
+                    if (b != 0x58)
+                        return false;
+                } else if (i == 4) {
+                    if (b != 0x00)
+                        return false;
+                } else
+                    break;
             }
         return true;
     }

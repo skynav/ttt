@@ -269,7 +269,7 @@ public final class JpegValidator extends AbstractLoggingValidator {
                     {
                         b = this.inputStream.readByte();
                     } while ((b & 0xff) == 0xff);
-                short code = (short) (0xff00 | b);
+                short code = (short) (0xff00 | (b & 0xff));
                 String markerClassBasePathName = SegmentParser.class.getName();
                 String segmentParserName = String.format("%1$s%2$X", markerClassBasePathName, code);
                 this.state.setCurrentCode(code);

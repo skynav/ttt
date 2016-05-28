@@ -60,9 +60,7 @@ public abstract class AbstractValidator implements Test  {
     protected Properties properties;
     protected boolean propertiesInitialized;
     protected String propertyFile;
-    @SuppressWarnings("unused")
     private boolean valid;
-    @SuppressWarnings("unused")
     private String lastError;
     private PropertyMessageKeyTokenizer keyTokenizer;
 
@@ -76,6 +74,14 @@ public abstract class AbstractValidator implements Test  {
 
     public boolean isRunnable(TestManager tm, TestInfo ti) {
         return true;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public String getLastError() {
+        return lastError;
     }
 
     protected void initState(TestManager tm, TestInfo ti) throws Exception {

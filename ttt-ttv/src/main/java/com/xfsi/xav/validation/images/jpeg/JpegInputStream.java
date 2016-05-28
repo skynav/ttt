@@ -64,9 +64,9 @@ class JpegInputStream {
                         this.readByteCount += 2;
                         return s;
                 }
-                byte msb = readByte();
-                byte lsb = readByte();
-                return (short) ((msb << 8) | lsb);
+                short msb = readByte();
+                short lsb = readByte();
+                return (short) ((msb << 8) | (lsb & 0xff));
         }
 
         int readInt() throws EOFException, IOException
@@ -77,9 +77,9 @@ class JpegInputStream {
                         this.readByteCount += 4;
                         return i;
                 }
-                short mss = readShort();
-                short lss = readShort();
-                return (mss << 16) | lss;
+                int mss = readShort();
+                int lss = readShort();
+                return (mss << 16) | (lss & 0xffff);
         }
 
         void skipBytes(int count) throws EOFException, IOException

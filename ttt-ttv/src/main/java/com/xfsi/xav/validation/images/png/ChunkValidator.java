@@ -52,7 +52,7 @@ public abstract class ChunkValidator {
     protected void validateMultipleAllowed(byte[] type) throws PngValidationException {
         ChunkState ce = png.getChunkState(type);
         if (!ce.getMultipleAllowed() && ce.getCount() > 0)
-            png.logMsg(PngValidator.MsgCode.PNG01E023, null, new String(type));
+            png.logMsg(PngValidator.MsgCode.PNG01E023, null, new String(type, Utils.getCharset()));
         else
             png.logMsg(PngValidator.MsgCode.PNG01I008, null);
         ce.incrementCount();
@@ -64,18 +64,18 @@ public abstract class ChunkValidator {
         ChunkState ac = png.getChunkState(chunkType);
         if (ac.mustExist()) {
             if (ac.getCount() == 0)
-                png.logMsg(PngValidator.MsgCode.PNG01E035, null, new String(chunkType));
+                png.logMsg(PngValidator.MsgCode.PNG01E035, null, new String(chunkType, Utils.getCharset()));
             else
-                png.logMsg(PngValidator.MsgCode.PNG01I009, null, new String(chunkType));
+                png.logMsg(PngValidator.MsgCode.PNG01I009, null, new String(chunkType, Utils.getCharset()));
         }
     }
 
     protected void validateBeforeChunk(byte[] chunkType) throws PngValidationException {
         ChunkState bc = png.getChunkState(chunkType);
         if (bc.getCount() > 0)
-            png.logMsg(PngValidator.MsgCode.PNG01E022, null, new String(chunkType));
+            png.logMsg(PngValidator.MsgCode.PNG01E022, null, new String(chunkType, Utils.getCharset()));
         else
-            png.logMsg(PngValidator.MsgCode.PNG01I010, null, new String(chunkType));
+            png.logMsg(PngValidator.MsgCode.PNG01I010, null, new String(chunkType, Utils.getCharset()));
     }
 
     protected boolean validateDataSize(int required, String section) throws PngValidationException {

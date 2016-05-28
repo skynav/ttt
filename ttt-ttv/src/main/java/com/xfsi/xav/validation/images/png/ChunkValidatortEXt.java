@@ -30,9 +30,9 @@ public final class ChunkValidatortEXt extends ChunkValidator {
 
     public static final class Spec {
         public static final String section = "4.2.7";
-        public static final byte[] header =
+        static final byte[] header =
             ChunkValidatortEXt.class.getName().substring(ChunkValidatortEXt.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatortEXt.class.getName().length()).getBytes();
+                                                         ChunkValidatortEXt.class.getName().length()).getBytes(Utils.getCharset());
     }
 
     void validate() throws PngValidationException {

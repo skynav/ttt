@@ -24,8 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* -*- indent-tabs-mode:nil;tab-width:4;coding:utf-8-unix -*- */
-
 package com.xfsi.xav.validation.images.png;
 
 public final class ChunkValidatortIME extends ChunkValidator {
@@ -33,9 +31,9 @@ public final class ChunkValidatortIME extends ChunkValidator {
     public static final class Spec {
 
         public static final String section = "4.2.8";
-        public static final byte[] header =
+        static final byte[] header =
             ChunkValidatortIME.class.getName().substring(ChunkValidatortIME.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatortIME.class.getName().length()).getBytes();
+                                                         ChunkValidatortIME.class.getName().length()).getBytes(Utils.getCharset());
 
         public static class Offset {
             static final byte data                              = 0;

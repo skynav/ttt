@@ -24,17 +24,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* -*- indent-tabs-mode:nil;tab-width:4;coding:utf-8-unix -*- */
-
 package com.xfsi.xav.validation.images.png;
 
 public final class ChunkValidatorsBIT extends ChunkValidator {
 
     public static final class Spec {
         public static final String section = "4.2.6";
-        public static final byte[] header =
+        static final byte[] header =
             ChunkValidatorsBIT.class.getName().substring(ChunkValidatorsBIT.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatorsBIT.class.getName().length()).getBytes();
+                                                         ChunkValidatorsBIT.class.getName().length()).getBytes(Utils.getCharset());
     }
 
     void validate() throws PngValidationException {
@@ -63,6 +61,8 @@ public final class ChunkValidatorsBIT extends ChunkValidator {
             break;
         case 6:
             validateDataBytes(0, 4, 1, bitDepth, PngValidator.MsgCode.PNG01E007, Spec.section);
+            break;
+        default:
             break;
         }
     }

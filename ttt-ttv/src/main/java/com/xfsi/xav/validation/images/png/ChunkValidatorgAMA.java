@@ -31,9 +31,9 @@ public final class ChunkValidatorgAMA extends ChunkValidator {
     public static final class Spec {
 
         public static final String section = "4.2.3";
-        public static final byte[] header =
+        static final byte[] header =
             ChunkValidatorgAMA.class.getName().substring(ChunkValidatorgAMA.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatorgAMA.class.getName().length()).getBytes();
+                                                         ChunkValidatorgAMA.class.getName().length()).getBytes(Utils.getCharset());
         public static class Offset {
             static final byte imageGamma                        = 0;
         }

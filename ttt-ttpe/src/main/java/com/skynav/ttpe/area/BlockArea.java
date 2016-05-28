@@ -387,6 +387,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
         return getBorder(dimension) + getPadding(dimension);
     }
 
+    private static final double EPSILON = 0.0000001;
     private void adjustContentRectangle(double[] insets, double[] oldInsets) {
         double ipdCurrent = getIPD();
         double ipdNew;
@@ -395,7 +396,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
             ipdNew = ipdCurrent - ipdInsetDiff;
         } else
             ipdNew = ipdCurrent;
-        if (ipdNew != ipdCurrent)
+        if (Math.abs(ipdNew - ipdCurrent) > EPSILON)
             setIPD(ipdNew);
         double bpdCurrent = getBPD();
         double bpdNew;
@@ -404,7 +405,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
             bpdNew = bpdCurrent - bpdInsetDiff;
         } else
             bpdNew = bpdCurrent;
-        if (bpdNew != bpdCurrent)
+        if (Math.abs(bpdNew - bpdCurrent) > EPSILON)
             setBPD(bpdNew);
     }
 

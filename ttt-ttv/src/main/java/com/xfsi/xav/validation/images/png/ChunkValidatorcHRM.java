@@ -30,9 +30,9 @@ public final class ChunkValidatorcHRM extends ChunkValidator {
 
     public static final class Spec {
         public static final String section = "4.2.2";
-        public static final byte[] header =
+        static final byte[] header =
             ChunkValidatorcHRM.class.getName().substring(ChunkValidatorcHRM.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatorcHRM.class.getName().length()).getBytes();
+                                                         ChunkValidatorcHRM.class.getName().length()).getBytes(Utils.getCharset());
 
         public static class Offset {
             static final byte data                              = 0;

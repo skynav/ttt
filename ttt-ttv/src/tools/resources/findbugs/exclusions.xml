@@ -88,6 +88,15 @@
     </Or>
   </Match>
   <Match>
+    <Bug pattern="UI_INHERITANCE_UNSAFE_GETRESOURCE"/>
+    <Or>
+      <And>
+        <Class name="com.xfsi.xav.validation.validator.AbstractValidator"/>
+        <Method name="loadProperties"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
     <Bug pattern="URF_UNREAD_FIELD"/>
     <Or>
       <And>

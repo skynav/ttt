@@ -31,9 +31,9 @@ public final class ChunkValidatorIHDR extends ChunkValidator {
     public static final class Spec {
 
         public static final String section = "4.1.1";
-        public static final byte[] header =
+        static final byte[] header =
             ChunkValidatorIHDR.class.getName().substring(ChunkValidatorIHDR.class.getName().length() - ChunkValidator.Spec.Props.typeSize,
-                                                         ChunkValidatorIHDR.class.getName().length()).getBytes();
+                                                         ChunkValidatorIHDR.class.getName().length()).getBytes(Utils.getCharset());
         public static class Offset {
             public static final byte width                      = 0;
             public static final byte height                     = 4;
@@ -153,6 +153,8 @@ public final class ChunkValidatorIHDR extends ChunkValidator {
         case 0:
         case 4:
             plte.setStateType(ChunkState.StateType.mustNotExist);
+            break;
+        default:
             break;
         }
     }

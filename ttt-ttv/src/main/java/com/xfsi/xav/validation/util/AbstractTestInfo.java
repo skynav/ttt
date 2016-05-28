@@ -27,6 +27,7 @@
 package com.xfsi.xav.validation.util;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 import com.xfsi.xav.test.TestInfo;
 import com.xfsi.xav.util.MimeType;
@@ -59,7 +60,7 @@ public abstract class AbstractTestInfo implements TestInfo {
     }
 
     public String[] getArguments() {
-        return arguments;
+        return Arrays.copyOf(arguments, arguments.length);
     }
 
     public String getResourceName() {

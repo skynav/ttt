@@ -469,7 +469,7 @@ public class BasicLayoutState implements LayoutState {
         if (s != null) {
             String v = s.getValue();
             if (Keywords.isAuto(v)) {
-                return zeroPadding;
+                return Arrays.copyOf(zeroPadding, zeroPadding.length);
             } else {
                 Integer[] minMax = new Integer[] { 1, 4 };
                 Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
@@ -684,7 +684,7 @@ public class BasicLayoutState implements LayoutState {
         // border [TBD]
         // padding [TBD]
         double[] p = getPadding(e);
-        if ((p != null) && !Arrays.equals(p,zeroPadding))
+        if (!Arrays.equals(p,zeroPadding))
             a.setPadding(p);
     }
 

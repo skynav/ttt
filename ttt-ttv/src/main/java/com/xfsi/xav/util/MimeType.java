@@ -27,6 +27,8 @@
 package com.xfsi.xav.util;
 
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 
 public class MimeType {
 
@@ -153,9 +155,21 @@ public class MimeType {
             csName = type.substring(i + charsetParamPrefix.length());
         }
         Charset cs;
-        if ((cs = Charset.forName(csName)) == null)
-            cs = Charset.forName(asciiName);
+        if ((cs = getCharsetSafely(csName)) == null)
+            cs = getCharsetSafely(asciiName);
         return cs;
+    }
+
+    private Charset getCharsetSafely(String name) {
+        try {
+            return Charset.forName(name);
+        } catch (IllegalCharsetNameException e) {
+            return null;
+        } catch (UnsupportedCharsetException e) {
+            return null;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     @Override

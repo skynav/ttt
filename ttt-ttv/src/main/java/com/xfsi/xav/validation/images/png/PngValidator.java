@@ -146,7 +146,7 @@ public final class PngValidator extends AbstractValidator
     public static final class Spec {
         public static final class Signature {
             public static final byte length = 8;
-            public static final byte[] data = {(byte)137, 80, 78, 71, 13, 10, 26, 10};
+            static final byte[] data = {(byte)137, 80, 78, 71, 13, 10, 26, 10};
         }
 
         static ChunkState[] initializeChunkStates() {
@@ -188,6 +188,8 @@ public final class PngValidator extends AbstractValidator
     private int totalErrorMsgs;
 
     public PngValidator() {
+        chunkStates = new ChunkState[0];
+        data = null;
     }
 
     public Result run(TestManager tm, TestInfo ti) {
@@ -239,7 +241,7 @@ public final class PngValidator extends AbstractValidator
             if (Utils.compareEqual(chunkStates[i].getType(), chunkType, ChunkValidator.Spec.Props.typeSize))
                 return chunkStates[i];
         }
-        logMsg(PngValidator.MsgCode.PNG01X001, null, new String(chunkType));
+        logMsg(PngValidator.MsgCode.PNG01X001, null, new String(chunkType, Utils.getCharset()));
         throw new PngValidationException(String.valueOf(this.totalMsgs));
     }
 
@@ -274,7 +276,7 @@ public final class PngValidator extends AbstractValidator
     void logMsg(PngValidator.MsgCode code, String section, Object... params) throws PngValidationException {
         totalMsgs++;
         String msgKey = code.toString();
-        Error.Severity severityType = Error.Severity.UNSPECIFIED;
+        Error.Severity severityType;
         try {
             PropertyMessageKey parsedKey = parseKey(msgKey);
             severityType = parsedKey.getSeverity();
@@ -288,6 +290,8 @@ public final class PngValidator extends AbstractValidator
             case Error.Severity.ERROR_SEVERITY:
             case Error.Severity.FATAL_SEVERITY:
                 this.totalErrorMsgs++;
+                break;
+            default:
                 break;
             }
         boolean consoleOutput = (tm == null || ti == null);
@@ -306,7 +310,7 @@ public final class PngValidator extends AbstractValidator
             String template = "";
             String currChunkType;
             if (this.currentChunkType != null) {
-                currChunkType = new String(this.currentChunkType);
+                currChunkType = new String(this.currentChunkType, Utils.getCharset());
                 if (consoleOutput) {
                     template = "  Chunk: %1$s\n  %5$s: %2$s\n  Reference: %6$s\n  Bytes read: %3$d\n  Chunks processed: %4$d\n";
                 } else {
@@ -356,14 +360,14 @@ public final class PngValidator extends AbstractValidator
             if (consoleOutput)
                 System.out.println("Message " + msgKey + " was filtered");
         }
-        CheckTermination(code);
+        checkTermination(code);
     }
 
     private Error makeError (String messageKey, Error.Category category, String reference, String message) {
         return error(tm, Error.TestType.STATIC, category, Error.ContentType.IMAGE_PNG, Error.Reference.OTHER, reference, message, messageKey);
     }
 
-    private void CheckTermination(PngValidator.MsgCode msgType) throws PngValidationException {
+    private void checkTermination(PngValidator.MsgCode msgType) throws PngValidationException {
         if (msgType == MsgCode.PNG01X003 ||
             msgType == MsgCode.PNG01F001 ||
             msgType == MsgCode.PNG01F002 ||
@@ -376,18 +380,18 @@ public final class PngValidator extends AbstractValidator
     }
 
     private byte[] readBytes(int numBytes) {
-        byte[] s;
-        try {
-            s = new byte[numBytes];
-            int bytesRead = data.read(s, 0, s.length);
-            if (bytesRead != s.length)
-                s = null;
-            if (bytesRead > 0)
-                currentBytesRead += bytesRead;
-        } catch (OutOfMemoryError bounded) {
-            s = null;
-        } catch (Exception e) {
-            s = null;
+        byte[] s = null;
+        if (data != null) {
+            try {
+                s = new byte[numBytes];
+                int bytesRead = data.read(s, 0, s.length);
+                if (bytesRead != s.length)
+                    s = null;
+                if (bytesRead > 0)
+                    currentBytesRead += bytesRead;
+            } catch (OutOfMemoryError bounded) {
+            } catch (Exception e) {
+            }
         }
         return s;
     }
@@ -450,17 +454,17 @@ public final class PngValidator extends AbstractValidator
 
     private boolean dispatchChunkValidator(byte[] type, byte[] data, Map<String,Object> resultState) throws PngValidationException {
         try {
-            Class<?> c = Class.forName(ChunkValidator.class.getName() + new String(type));
+            Class<?> c = Class.forName(ChunkValidator.class.getName() + new String(type, Utils.getCharset()));
             ChunkValidator cv = (ChunkValidator) c.newInstance();
             cv.initialize(this, data, resultState);
             cv.validate();
         } catch (ClassNotFoundException e) {
             processNonStandardChunk(type);
         } catch (InstantiationException e) {
-            logMsg(PngValidator.MsgCode.PNG01X002, null, new String(type));
+            logMsg(PngValidator.MsgCode.PNG01X002, null, new String(type, Utils.getCharset()));
             throw new PngValidationException(String.valueOf(this.totalMsgs));
         } catch (IllegalAccessException e) {
-            logMsg(PngValidator.MsgCode.PNG01X002, null, new String(type));
+            logMsg(PngValidator.MsgCode.PNG01X002, null, new String(type, Utils.getCharset()));
             throw new PngValidationException(String.valueOf(this.totalMsgs));
         }
         lastChunkType = type;
@@ -473,15 +477,15 @@ public final class PngValidator extends AbstractValidator
             ChunkState cs = chunkStates[i];
             if (cs.mustExist()) {
                 if (cs.getCount() == 0)
-                    logMsg(PngValidator.MsgCode.PNG01E016, null, new String(cs.getType()));
+                    logMsg(PngValidator.MsgCode.PNG01E016, null, new String(cs.getType(), Utils.getCharset()));
                 else
-                    logMsg(PngValidator.MsgCode.PNG01I005, null, new String(cs.getType()));
+                    logMsg(PngValidator.MsgCode.PNG01I005, null, new String(cs.getType(), Utils.getCharset()));
             }
             if (cs.mustNotExist()) {
                 if (cs.getCount() > 0)
-                    logMsg(PngValidator.MsgCode.PNG01W002, null, new String(cs.getType()));
+                    logMsg(PngValidator.MsgCode.PNG01W002, null, new String(cs.getType(), Utils.getCharset()));
                 else
-                    logMsg(PngValidator.MsgCode.PNG01I006, null, new String(cs.getType()));
+                    logMsg(PngValidator.MsgCode.PNG01I006, null, new String(cs.getType(), Utils.getCharset()));
             }
         }
     }
@@ -513,11 +517,11 @@ public final class PngValidator extends AbstractValidator
     }
 
     private void processNonStandardChunk(byte[] type) throws PngValidationException {
-        logMsg(PngValidator.MsgCode.PNG01W003, null, new String(type));
+        logMsg(PngValidator.MsgCode.PNG01W003, null, new String(type, Utils.getCharset()));
         if (Character.isLowerCase((char) type[1]))
-            logMsg(PngValidator.MsgCode.PNG01W001, null, new String(type));
+            logMsg(PngValidator.MsgCode.PNG01W001, null, new String(type, Utils.getCharset()));
         else
-            logMsg(PngValidator.MsgCode.PNG01I004, null, new String(type));
+            logMsg(PngValidator.MsgCode.PNG01I004, null, new String(type, Utils.getCharset()));
     }
 
 }

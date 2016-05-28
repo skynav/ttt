@@ -26,7 +26,24 @@
 
 package com.xfsi.xav.validation.images.png;
 
+import java.nio.charset.Charset;
+
 final public class Utils {
+
+    private static final Charset charset;
+    static {
+        Charset cs;
+        try {
+            cs = Charset.forName("ISO-8859-1");
+        } catch (IllegalArgumentException e) {
+            cs = Charset.defaultCharset();
+        }
+        charset = cs;
+    }
+
+    static Charset getCharset() {
+        return charset;
+    }
 
     static private int[] crcTable;
 
@@ -115,7 +132,8 @@ final public class Utils {
     }
 
     static boolean isAllowedLatin1Char(byte c) {
-        return (c >= 32 && c <= 126) || (c >= 161 && c <= 255);
+        int i = (c & 0xFF);
+        return (i >= 32 && i <= 126) || (i >= 161 && i <= 255);
     }
 
     private static void makeCrcTable() {
@@ -123,7 +141,7 @@ final public class Utils {
         for (int n = 0; n < 256; n++) {
             int c = n;
             for (int k = 0; k < 8; k++) {
-                if ((c & 1) > 0)
+                if ((c & 1) != 0)
                     c = 0xedb88320 ^ (c >>> 1);
                 else
                     c = c >>> 1;
