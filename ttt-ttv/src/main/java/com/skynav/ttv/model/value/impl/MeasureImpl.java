@@ -34,6 +34,7 @@ public class MeasureImpl extends LengthImpl implements Measure {
     public MeasureImpl(Measure.Type type, Length length) {
         super(length != null ? length : PXL_0);
         this.type = type;
+        this.resolved = length != null;
     }
     public Measure.Type getType() {
         return type;
@@ -43,6 +44,39 @@ public class MeasureImpl extends LengthImpl implements Measure {
     }
     public boolean isResolved() {
         return resolved;
+    }
+    @Override
+    public int hashCode() {
+        int hc = 23;
+        hc = hc * 31 + getType().hashCode();
+        if (isResolved())
+            hc = hc * 31 + super.hashCode();
+        return hc;
+    }
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Measure) {
+            Measure o = (Measure) other;
+            if (o.getType() != getType())
+                return false;
+            else if (!o.isResolved() || !isResolved())
+                return false;
+            else
+                return super.equals(other);
+        } else
+            return false;
+    }
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('[');
+        sb.append(getType());
+        if (isResolved()) {
+            sb.append(',');
+            sb.append(super.toString());
+        }
+        sb.append(']');
+        return sb.toString();
     }
 }
 

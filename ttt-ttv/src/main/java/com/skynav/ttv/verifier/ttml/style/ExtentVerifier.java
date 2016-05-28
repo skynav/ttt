@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -91,41 +91,50 @@ public class ExtentVerifier implements StyleValueVerifier {
         assert value instanceof String;
         String s = (String) value;
         Model model = context.getModel();
+        Length.Unit wUnits = null;
+        Length.Unit hUnits = null;
         if (model.isTTMLVersion(1)) {
             List<Length> lengths = new java.util.ArrayList<Length>();
             if (Lengths.isLengths(s, location, context, null, null, lengths)) {
                 if (lengths.size() == 2) {
-                    Reporter reporter = context.getReporter();
                     Length w = lengths.get(0);
-                    Length.Unit wUnits = w.getUnits();
+                    wUnits = w.getUnits();
                     Length h = lengths.get(1);
-                    Length.Unit hUnits = h.getUnits();
-                    Length.Unit pxUnits = Length.Unit.Pixel;
-                    QName styleName = location.getAttributeName();
-                    Locator locator = location.getLocator();
-                    if (w.getUnits() != pxUnits) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*",
-                            "Bad units on {0} width on root element, got ''{1}'', expected ''{2}''.",
-                            styleName, wUnits.shorthand(), pxUnits.shorthand()));
-                        failed = true;
-                    }
-                    if (h.getUnits() != pxUnits) {
-                        reporter.logInfo(reporter.message(locator, "*KEY*",
-                            "Bad units on {0} height on root element, got ''{1}'', expected ''{2}''.",
-                            styleName, hUnits.shorthand(), pxUnits.shorthand()));
-                        failed = true;
-                    }
+                    hUnits = h.getUnits();
                 }
             }
         } else if (model.isTTMLVersion(2)) {
             List<Measure> measures = new java.util.ArrayList<Measure>();
             if (Measures.isMeasures(s, location, context, null, null, measures)) {
                 if (measures.size() == 2) {
-                    // [TBD] - IMPLEMENT ME
+                    Measure w = measures.get(0);
+                    if (w.isLength())
+                        wUnits = w.getUnits();
+                    Measure h = measures.get(1);
+                    if (h.isLength())
+                        hUnits = h.getUnits();
                 }
             }
         } else
             failed = true;
+        if (!failed) {
+            Length.Unit pxUnits = Length.Unit.Pixel;
+            Reporter reporter = context.getReporter();
+            Locator locator = location.getLocator();
+            QName styleName = location.getAttributeName();
+            if ((wUnits != null) && (wUnits != pxUnits)) {
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad units on {0} width on root element, got ''{1}'', expected ''{2}''.",
+                    styleName, wUnits.shorthand(), pxUnits.shorthand()));
+                failed = true;
+            }
+            if ((hUnits != null) && (hUnits != pxUnits)) {
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad units on {0} height on root element, got ''{1}'', expected ''{2}''.",
+                    styleName, hUnits.shorthand(), pxUnits.shorthand()));
+                failed = true;
+            }
+        }
         return !failed;
     }
 
