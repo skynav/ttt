@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -423,12 +423,12 @@ public class TTML1Helper extends TTMLHelper {
         QName n = TTML1StyleVerifier.extentAttributeName;
         return Documents.hasAttribute(root, n);
     }
-    
+
     public static String getExplicitExtent(Element root) {
         QName n = TTML1StyleVerifier.extentAttributeName;
         return Documents.getAttribute(root, n);
     }
-    
+
     public static boolean hasShowBackgroundAlways(Element region, StyleSet ss) {
         QName n = TTML1StyleVerifier.showBackgroundAttributeName;
         String v = null;

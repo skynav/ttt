@@ -69,7 +69,7 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
             MultiRowAlign.AUTO.value(),
         },
     };
-    
+
     public IMSC1StyleVerifier(Model model) {
         super(model);
     }

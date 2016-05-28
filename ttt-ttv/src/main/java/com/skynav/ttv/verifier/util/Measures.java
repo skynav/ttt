@@ -44,7 +44,7 @@ public class Measures {
     public static boolean isMeasure(String value, Location location, VerifierContext context, Object[] treatments, Measure[] outputMeasure) {
         Measure m = null;
         if (isMeasureKeyword(value)) {
-            try { 
+            try {
                 m = new MeasureImpl(Measure.Type.valueOfShorthand(value), (Length) null);
             } catch (IllegalArgumentException e) {
                 throw new IllegalStateException(e.getMessage());

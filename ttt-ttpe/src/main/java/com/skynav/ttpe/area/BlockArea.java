@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     // AbstractArea overrides
-    
+
     @Override
     public int getBidiLevel() {
         return level;
@@ -108,7 +108,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     // AreaNode overrides
-    
+
     @Override
     public void reverse() {
         ++reversals;
@@ -120,7 +120,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     // NonLeafAreaNode overrides
-    
+
     @Override
     public void expand(AreaNode a, Set<Expansion> expansions) {
         double ipd = a.getIPD();
@@ -241,7 +241,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     public boolean hasBorder() {
         return border != null;
     }
-    
+
     public double[] getBorder() {
         if (border != null)
             return Arrays.copyOf(border, border.length);
@@ -316,7 +316,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     public boolean hasPadding() {
         return padding != null;
     }
-    
+
     public double[] getPadding() {
         if (padding != null)
             return Arrays.copyOf(padding, padding.length);
@@ -392,7 +392,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
         double ipdNew;
         double ipdInsetDiff = (insets[1] + insets[3]) - ((oldInsets != null) ? (oldInsets[1] + oldInsets[3]) : 0);
         if (!Double.isNaN(ipdCurrent)) {
-            ipdNew = ipdCurrent - ipdInsetDiff; 
+            ipdNew = ipdCurrent - ipdInsetDiff;
         } else
             ipdNew = ipdCurrent;
         if (ipdNew != ipdCurrent)
@@ -401,7 +401,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
         double bpdNew;
         double bpdInsetDiff = (insets[0] + insets[2]) - ((oldInsets != null) ? (oldInsets[0] + oldInsets[2]) : 0);
         if (!Double.isNaN(bpdCurrent)) {
-            bpdNew = bpdCurrent - bpdInsetDiff; 
+            bpdNew = bpdCurrent - bpdInsetDiff;
         } else
             bpdNew = bpdCurrent;
         if (bpdNew != bpdCurrent)

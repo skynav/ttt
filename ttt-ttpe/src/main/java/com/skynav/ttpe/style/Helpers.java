@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,7 @@ public class Helpers {
         double p4 = resolveLength(e, pStart, ipdAxis, external, reference, font, cellResolution);
         return new double[]{p1, p2, p3, p4};
     }
-    
+
     public static Point resolvePosition(Element e, Length[] lengths, Extent external, Extent reference, Extent cellResolution) {
 
         assert external != null;
