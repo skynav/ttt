@@ -39,6 +39,9 @@ public class LengthImpl implements Length {
     public LengthImpl(double value, String units) {
         this(value, Length.Unit.valueOf(units));
     }
+    public LengthImpl(Length length) {
+        this(length.getValue(), length.getUnits());
+    }
     public double getValue() {
         return value;
     }

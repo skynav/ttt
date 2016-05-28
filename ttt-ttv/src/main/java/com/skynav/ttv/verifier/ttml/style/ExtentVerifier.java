@@ -31,14 +31,17 @@ import javax.xml.namespace.QName;
 
 import org.xml.sax.Locator;
 
-import com.skynav.ttv.model.ttml1.tt.TimedText;
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.Measure;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Extents;
 import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.Measures;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 
@@ -50,17 +53,36 @@ public class ExtentVerifier implements StyleValueVerifier {
         String s = (String) value;
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
-        if (Keywords.isAuto(s))
-            failed = false;
-        else if (Lengths.isLengths(s, location, context, minMax, treatments, null))
-            failed = false;
-        else {
-            Lengths.badLengths(s, location, context, minMax, treatments);
+        Model model = context.getModel();
+        if (model.isTTMLVersion(1)) {
+            if (Keywords.isAuto(s))
+                failed = false;
+            else if (Lengths.isLengths(s, location, context, minMax, treatments, null))
+                failed = false;
+            else {
+                Lengths.badLengths(s, location, context, minMax, treatments);
+                failed = true;
+            }
+        } else if (model.isTTMLVersion(2)) {
+            if (Keywords.isAuto(s))
+                failed = false;
+            else if (Extents.isContain(s))
+                failed = false;
+            else if (Extents.isCover(s))
+                failed = false;
+            else if (Measures.isMeasures(s, location, context, minMax, treatments, null))
+                failed = false;
+            else {
+                Measures.badMeasures(s, location, context, minMax, treatments);
+                failed = true;
+            }
+        } else
             failed = true;
+        if (!failed) {
+            Object content = location.getContent();
+            if ((content instanceof com.skynav.ttv.model.ttml1.tt.TimedText) || (content instanceof com.skynav.ttv.model.ttml2.tt.TimedText))
+                failed = !verifyRootExtent(value, location, context);
         }
-        Object content = location.getContent();
-        if (!failed && (content instanceof TimedText))
-            failed = !verifyRootExtent(value, location, context);
         return !failed;
     }
 
@@ -68,31 +90,42 @@ public class ExtentVerifier implements StyleValueVerifier {
         boolean failed = false;
         assert value instanceof String;
         String s = (String) value;
-        List<Length> lengths = new java.util.ArrayList<Length>();
-        if (Lengths.isLengths(s, location, context, null, null, lengths)) {
-            if (lengths.size() == 2) {
-                Reporter reporter = context.getReporter();
-                Length w = lengths.get(0);
-                Length.Unit wUnits = w.getUnits();
-                Length h = lengths.get(1);
-                Length.Unit hUnits = h.getUnits();
-                Length.Unit pxUnits = Length.Unit.Pixel;
-                QName styleName = location.getAttributeName();
-                Locator locator = location.getLocator();
-                if (w.getUnits() != pxUnits) {
-                    reporter.logInfo(reporter.message(locator, "*KEY*",
-                        "Bad units on {0} width on root element, got ''{1}'', expected ''{2}''.",
-                        styleName, wUnits.shorthand(), pxUnits.shorthand()));
-                    failed = true;
-                }
-                if (h.getUnits() != pxUnits) {
-                    reporter.logInfo(reporter.message(locator, "*KEY*",
-                        "Bad units on {0} height on root element, got ''{1}'', expected ''{2}''.",
-                        styleName, hUnits.shorthand(), pxUnits.shorthand()));
-                    failed = true;
+        Model model = context.getModel();
+        if (model.isTTMLVersion(1)) {
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            if (Lengths.isLengths(s, location, context, null, null, lengths)) {
+                if (lengths.size() == 2) {
+                    Reporter reporter = context.getReporter();
+                    Length w = lengths.get(0);
+                    Length.Unit wUnits = w.getUnits();
+                    Length h = lengths.get(1);
+                    Length.Unit hUnits = h.getUnits();
+                    Length.Unit pxUnits = Length.Unit.Pixel;
+                    QName styleName = location.getAttributeName();
+                    Locator locator = location.getLocator();
+                    if (w.getUnits() != pxUnits) {
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Bad units on {0} width on root element, got ''{1}'', expected ''{2}''.",
+                            styleName, wUnits.shorthand(), pxUnits.shorthand()));
+                        failed = true;
+                    }
+                    if (h.getUnits() != pxUnits) {
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Bad units on {0} height on root element, got ''{1}'', expected ''{2}''.",
+                            styleName, hUnits.shorthand(), pxUnits.shorthand()));
+                        failed = true;
+                    }
                 }
             }
-        }
+        } else if (model.isTTMLVersion(2)) {
+            List<Measure> measures = new java.util.ArrayList<Measure>();
+            if (Measures.isMeasures(s, location, context, null, null, measures)) {
+                if (measures.size() == 2) {
+                    // [TBD] - IMPLEMENT ME
+                }
+            }
+        } else
+            failed = true;
         return !failed;
     }
 

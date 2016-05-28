@@ -844,6 +844,7 @@ public class ISD {
             isd.setAttributeNS(null, "begin", interval.getBegin().toString());
             isd.setAttributeNS(null, "end", interval.getEnd().toString());
             copyWrapperAttributes(isd, root);
+            copyMiscellaneousAttributes(isd, root);
             Map<Element, StyleSet> computedStyleSets = generateISDComputedStyleSets(isd, root, context);
             generateISDRegions(isd, root, computedStyleSets, context);
             unwrapRedundantAnonymousSpans(isd, root, context);
@@ -871,6 +872,11 @@ public class ISD {
                     }
                 }
             }
+        }
+
+        private static void copyMiscellaneousAttributes(Element isd, Element root) {
+            if (TTML1Helper.hasExplicitExtent(root))
+                isd.setAttributeNS(null, "extent", TTML1Helper.getExplicitExtent(root));
         }
 
         private static boolean inISDParameterAttributeSet(Attr attr) {

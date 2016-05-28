@@ -419,6 +419,16 @@ public class TTML1Helper extends TTMLHelper {
         return cls;
     }
 
+    public static boolean hasExplicitExtent(Element root) {
+        QName n = TTML1StyleVerifier.extentAttributeName;
+        return Documents.hasAttribute(root, n);
+    }
+    
+    public static String getExplicitExtent(Element root) {
+        QName n = TTML1StyleVerifier.extentAttributeName;
+        return Documents.getAttribute(root, n);
+    }
+    
     public static boolean hasShowBackgroundAlways(Element region, StyleSet ss) {
         QName n = TTML1StyleVerifier.showBackgroundAttributeName;
         String v = null;

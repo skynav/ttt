@@ -112,10 +112,6 @@ public class TTML2 {
             return MODEL_VERSION;
         }
 
-        public boolean isTTMLVersion(int version) {
-            return getTTMLVersion() == MODEL_VERSION;
-        }
-
         public String[] getTTSchemaResourceNames() {
             return schemaResourceNames;
         }
