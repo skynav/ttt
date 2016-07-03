@@ -37,6 +37,7 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.AbstractVerifier;
 import com.skynav.ttv.verifier.TimingValueVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.VerificationParameters;
@@ -47,7 +48,7 @@ import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters1;
 import com.skynav.ttv.verifier.util.Strings;
 
-public class TTML1TimingVerifier implements TimingVerifier {
+public class TTML1TimingVerifier extends AbstractVerifier implements TimingVerifier {
 
     private static final String timingNamespace                 = "";
 
@@ -82,15 +83,16 @@ public class TTML1TimingVerifier implements TimingVerifier {
         },
     };
 
-    private Model model;
     private Map<QName, TimingAccessor> accessors;
     private VerificationParameters verificationParameters;
 
     public TTML1TimingVerifier(Model model) {
-        populate(model);
+        super(model);
+        populate();
     }
 
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        setState(content, context);
         if (type == ItemType.Attributes)
             return verifyAttributeItems(content, locator, context);
         else
@@ -103,7 +105,7 @@ public class TTML1TimingVerifier implements TimingVerifier {
             verificationParameters = makeTimingVerificationParameters(content, context);
         } else {
             for (TimingAccessor ta : accessors.values()) {
-                if (!ta.verify(model, content, locator, context))
+                if (!ta.verify(getModel(), content, locator, context))
                     failed = true;
             }
         }
@@ -118,7 +120,7 @@ public class TTML1TimingVerifier implements TimingVerifier {
         return new TimingVerificationParameters1(content, context != null ? context.getExternalParameters() : null);
     }
 
-    private void populate(Model model) {
+    private void populate() {
         Map<QName, TimingAccessor> accessors = new java.util.HashMap<QName, TimingAccessor>();
         for (Object[] timingAccessorEntry : timingAccessorMap) {
             assert timingAccessorEntry.length >= 5;
@@ -129,7 +131,6 @@ public class TTML1TimingVerifier implements TimingVerifier {
             boolean paddingPermitted = ((Boolean) timingAccessorEntry[4]).booleanValue();
             accessors.put(timingName, new TimingAccessor(timingName, accessorName, valueClass, verifierClass, paddingPermitted));
         }
-        this.model = model;
         this.accessors = accessors;
     }
 

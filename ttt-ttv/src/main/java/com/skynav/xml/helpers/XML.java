@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -87,10 +87,14 @@ public class XML {
     }
 
     public static String escapeMarkup(String s) {
-        return escapeMarkup(s, false);
+        return escapeMarkup(s, false, false);
     }
 
     public static String escapeMarkup(String s, boolean escapeSpaceAsNBSP) {
+        return escapeMarkup(s, false, escapeSpaceAsNBSP);
+    }
+
+    public static String escapeMarkup(String s, boolean escapeWhitespace, boolean escapeSpaceAsNBSP) {
         if (s == null)
             return null;
         else {
@@ -100,9 +104,16 @@ public class XML {
                 if ((c > 65535)) {
                     appendNumericCharReference(sb, c);
                     ++i;
-                } else if (Character.isISOControl(c) && !Character.isWhitespace(c))
+                } else if (Character.isISOControl(c) && (escapeWhitespace || !Character.isWhitespace(c))) {
                     appendNumericCharReference(sb, c);
-                else if (c == '<')
+                } else if (c == ' ') {
+                    if (escapeWhitespace)
+                        appendNumericCharReference(sb, ' ');
+                    else if (escapeSpaceAsNBSP)
+                        appendNumericCharReference(sb, 0x00A0);
+                    else
+                        sb.append((char) c);
+                } else if (c == '<')
                     appendNamedCharReference(sb, "lt");
                 else if (c == '>')
                     appendNamedCharReference(sb, "gt");
@@ -112,8 +123,6 @@ public class XML {
                     appendNamedCharReference(sb, "quot");
                 else if (c == '\'')
                     appendNamedCharReference(sb, "apos");
-                else if ((c == ' ') && escapeSpaceAsNBSP)
-                    appendNumericCharReference(sb, 0x00A0);
                 else {
                     assert c < 65536;
                     sb.append((char) c);
@@ -125,7 +134,10 @@ public class XML {
 
     private static void appendNumericCharReference(StringBuffer sb, int codepoint) {
         sb.append("&#x");
-        sb.append(Integer.toString(codepoint, 16));
+        String s = Integer.toString(codepoint, 16).toUpperCase();
+        for (int i = 0, n = (6 - s.length()) % 2; i < n; ++i)
+            sb.append('0');
+        sb.append(s);
         sb.append(';');
     }
 

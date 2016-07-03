@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, Michal Samek, (Michal.Samek at at.redbullmediahouse.com)
- * Copyright 2015 Skynav, Inc.
+ * Copyright 2015-2016 Skynav, Inc. All rights reserved.
+ * Portions Copyright (c) 2015, Michal Samek.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,9 +40,10 @@ import com.skynav.ttv.verifier.ebuttd.EBUTTDTimingVerifier;
 import com.skynav.xml.helpers.XML;
 
 /**
- * Class adding integration for EBU-TT-D (3380).
+ * Class adding model for EBU-TT-D (3380).
  *
  * @author Michal Samek, (Michal.Samek at at.redbullmediahouse.com)
+ * @author Glenn Adams
  */
 public class EBUTTD {
 

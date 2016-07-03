@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, Michal Samek, (Michal.Samek at at.redbullmediahouse.com)
- * Copyright 2015 Skynav, Inc.
+ * Copyright 2015-2016 Skynav, Inc. All rights reserved.
+ * Portions Copyright (c) 2015, Michal Samek.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ package com.skynav.ttv.verifier.ebuttd;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.xml.bind.JAXBIntrospector;
+import javax.xml.bind.JAXBElement;
 
 import org.xml.sax.Locator;
 
@@ -39,10 +39,13 @@ import com.skynav.ttv.model.ttml1.tt.Span;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.TTML1TimingVerifier;
+import com.skynav.xml.helpers.XML;
 
 /**
+ * Class adding verifier for EBU-TT-D (3380).
  *
  * @author Michal Samek, (Michal.Samek at at.redbullmediahouse.com)
+ * @author Glenn Adams
  */
 public class EBUTTDTimingVerifier extends TTML1TimingVerifier {
 
@@ -52,6 +55,7 @@ public class EBUTTDTimingVerifier extends TTML1TimingVerifier {
 
     @Override
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        setState(content, context);
         if (type == ItemType.Attributes) {
             boolean failed = false;
             if (content instanceof Paragraph) {
@@ -66,11 +70,10 @@ public class EBUTTDTimingVerifier extends TTML1TimingVerifier {
     }
 
     protected boolean verifyTimingSpecs(Paragraph paragraph, Locator locator, VerifierContext context) {
-        if (paragraph.getBegin() != null && !paragraph.getBegin().isEmpty()) {
+        if (paragraph.getBegin() != null && !paragraph.getBegin().isEmpty())
             return verifyChildrenNotTimed(paragraph.getContent(), locator, context);
-        } else {
+        else
             return verifyChildrenAreTimed(paragraph.getContent(), locator, context);
-        }
     }
 
     /**
@@ -85,24 +88,26 @@ public class EBUTTDTimingVerifier extends TTML1TimingVerifier {
         boolean failed = false;
         Reporter reporter = context.getReporter();
         for (Serializable child : children) {
-            if (JAXBIntrospector.getValue(child) instanceof Span) {
-                Span span = (Span) JAXBIntrospector.getValue(child);
-                if (span.getBegin() == null || span.getBegin().isEmpty()) {
-                    reporter.logError(reporter.message(locator, "*KEY*", "Timing information is missing for {0}", span));
-                    failed = true;
+            if (child instanceof JAXBElement<?>) {
+                Object content = ((JAXBElement<?>)child).getValue();
+                if (content instanceof Span) {
+                    Span span = (Span) content;
+                    if (span.getBegin() == null || span.getBegin().isEmpty()) {
+                        reporter.logError(reporter.message(getLocator(content),
+                            "*KEY*", "Untimed child {0} when ancestor paragraph is untimed.",
+                            context.getBindingElementName(span)));
+                        failed = true;
+                    } else if (!verifyChildrenNotTimed(span.getContent(), locator, context)) {
+                        failed = true;
+                    }
                 }
-
-                if (!verifyChildrenNotTimed(span.getContent(), locator, context)) {
-                    failed = true;
-                }
-            }
-
-            if (child instanceof String) {
-                reporter.logError(reporter.message(locator, "*KEY*", "Timing information is missing for content (\"{0}\")", child));
+            } else if (child instanceof String) {
+                reporter.logError(reporter.message(locator,
+                    "*KEY*", "Untimed text content ''{0}'' when ancestor paragraph is untimed.",
+                    XML.escapeMarkup((String) child, true, false)));
                 failed = true;
             }
         }
-
         return !failed;
     }
 
@@ -118,19 +123,21 @@ public class EBUTTDTimingVerifier extends TTML1TimingVerifier {
         boolean failed = false;
         Reporter reporter = context.getReporter();
         for (Serializable child : children) {
-            if (JAXBIntrospector.getValue(child) instanceof Span) {
-                Span span = (Span) JAXBIntrospector.getValue(child);
-                if (span.getBegin() != null && !span.getBegin().isEmpty()) {
-                    reporter.logError(reporter.message(locator, "*KEY*", "Timing information not permitted on {0}", span));
-                    failed = true;
-                }
-
-                if (!verifyChildrenNotTimed(span.getContent(), locator, context)) {
-                    failed = true;
+            if (child instanceof JAXBElement<?>) {
+                Object content = ((JAXBElement<?>)child).getValue();
+                if (content instanceof Span) {
+                    Span span = (Span) content;
+                    if (span.getBegin() != null && !span.getBegin().isEmpty()) {
+                        reporter.logError(reporter.message(getLocator(content),
+                            "*KEY*", "Timed child {0} not permitted when ancestor paragraph is timed.",
+                            context.getBindingElementName(span)));
+                        failed = true;
+                    } else if (!verifyChildrenNotTimed(span.getContent(), locator, context)) {
+                        failed = true;
+                    }
                 }
             }
         }
-
         return !failed;
     }
 }

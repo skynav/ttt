@@ -172,7 +172,7 @@ public class TTML2 {
 
         public SemanticsVerifier getSemanticsVerifier() {
             if (semanticsVerifier == null) {
-                semanticsVerifier = new TTML2SemanticsVerifier(this);
+                semanticsVerifier = (SemanticsVerifier) new TTML2SemanticsVerifier(this);
             }
             return semanticsVerifier;
         }
