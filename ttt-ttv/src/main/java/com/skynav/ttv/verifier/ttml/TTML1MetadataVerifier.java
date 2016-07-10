@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -53,6 +53,7 @@ import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.AbstractVerifier;
 import com.skynav.ttv.verifier.MetadataValueVerifier;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -64,25 +65,25 @@ import com.skynav.ttv.verifier.util.Strings;
 
 import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
 
-public class TTML1MetadataVerifier implements MetadataVerifier {
+public class TTML1MetadataVerifier extends AbstractVerifier implements MetadataVerifier {
 
-    public static final String NAMESPACE = NAMESPACE_TT_METADATA;
+    public static final String NAMESPACE                                = NAMESPACE_TT_METADATA;
 
-    public static final QName actorAgentAttributeName = new QName("", "agent");
-    public static final QName actorElementName = new QName(NAMESPACE, "actor");
-    public static final QName agentAttributeName = new QName(NAMESPACE,"agent");
-    public static final QName agentElementName = new QName(NAMESPACE, "agent");
-    public static final QName nameElementName = new QName(NAMESPACE, "name");
-    public static final QName roleAttributeName = new QName(NAMESPACE,"role");
+    public static final QName actorAgentAttributeName                   = new QName("", "agent");
+    public static final QName actorElementName                          = new QName(NAMESPACE, "actor");
+    public static final QName agentAttributeName                        = new QName(NAMESPACE,"agent");
+    public static final QName agentElementName                          = new QName(NAMESPACE, "agent");
+    public static final QName nameElementName                           = new QName(NAMESPACE, "name");
+    public static final QName roleAttributeName                         = new QName(NAMESPACE,"role");
 
     private static final Object[][] metadataAccessorMap = new Object[][] {
         {
-            agentAttributeName,                                 // attribute name
-            "Agent",                                            // accessor method name suffix
-            List.class,                                         // value type
-            AgentAttributeVerifier.class,                       // specialized verifier
-            Boolean.FALSE,                                      // padding permitted
-            null,                                               // default value
+            agentAttributeName,                                         // attribute name
+            "Agent",                                                    // accessor method name suffix
+            List.class,                                                 // value type
+            AgentAttributeVerifier.class,                               // specialized verifier
+            Boolean.FALSE,                                              // padding permitted
+            null,                                                       // default value
         },
         {
             roleAttributeName,
@@ -94,11 +95,11 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         },
     };
 
-    private Model model;
     private Map<QName, MetadataAccessor> accessors;
 
     public TTML1MetadataVerifier(Model model) {
-        populate(model);
+        super(model);
+        populate();
     }
 
     public QName getMetadataAttributeName(String metadataName) {
@@ -112,6 +113,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
     }
 
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        setState(content, context);
         if (type == ItemType.Attributes)
             return verifyAttributeItems(content, locator, context);
         else if (type == ItemType.Element)
@@ -125,7 +127,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
     protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (MetadataAccessor ma : accessors.values()) {
-            if (!ma.verify(model, content, locator, context))
+            if (!ma.verify(getModel(), content, locator, context))
                 failed = true;
         }
         return !failed;
@@ -143,7 +145,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
             failed = !verify((Name) content, locator, context);
         if (failed) {
             Reporter reporter = context.getReporter();
-            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0}  metadata item.", context.getBindingElementName(content)));
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid ''{0}'' metadata item.", context.getBindingElementName(content)));
         }
         return !failed;
     }
@@ -202,6 +204,7 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
 
     protected boolean verify(Actor content, Locator locator, VerifierContext context) {
         QName name = actorAgentAttributeName;
+        Model model = getModel();
         QName targetName = model.getIdReferenceTargetName(name);
         Class<?> targetClass = model.getIdReferenceTargetClass(name);
         List<List<QName>> ancestors = model.getIdReferencePermissibleAncestors(name);
@@ -248,9 +251,18 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
         return true;
     }
 
-    private void populate(Model model) {
+    private void populate() {
+        this.accessors = makeAccessors();
+    }
+
+    private Map<QName, MetadataAccessor> makeAccessors() {
         Map<QName, MetadataAccessor> accessors = new java.util.HashMap<QName, MetadataAccessor>();
-        for (Object[] metadataAccessorEntry : metadataAccessorMap) {
+        populateAccessors(accessors, metadataAccessorMap);
+        return accessors;
+    }
+
+    private void populateAccessors(Map<QName, MetadataAccessor> accessors, Object[][] accessorMap) {
+        for (Object[] metadataAccessorEntry : accessorMap) {
             assert metadataAccessorEntry.length >= 6;
             QName metadataName = (QName) metadataAccessorEntry[0];
             String accessorName = (String) metadataAccessorEntry[1];
@@ -260,11 +272,9 @@ public class TTML1MetadataVerifier implements MetadataVerifier {
             Object defaultValue = metadataAccessorEntry[5];
             accessors.put(metadataName, new MetadataAccessor(metadataName, accessorName, valueClass, verifierClass, paddingPermitted, defaultValue));
         }
-        this.model = model;
-        this.accessors = accessors;
     }
 
-    private static class MetadataAccessor {
+    protected static class MetadataAccessor {
 
         private QName metadataName;
         private String getterName;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -66,6 +66,7 @@ import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.AbstractVerifier;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -100,57 +101,57 @@ import com.skynav.ttv.verifier.util.Strings;
 
 import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
 
-public class TTML1StyleVerifier implements StyleVerifier {
+public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifier {
 
     public static final String NAMESPACE = NAMESPACE_TT_STYLE;
 
-    public static final int APPLIES_TO_TT                       = 0x00000001;
-    public static final int APPLIES_TO_BODY                     = 0x00000002;
-    public static final int APPLIES_TO_DIV                      = 0x00000004;
-    public static final int APPLIES_TO_P                        = 0x00000008;
-    public static final int APPLIES_TO_SPAN                     = 0x00000010;
-    public static final int APPLIES_TO_BR                       = 0x00000020;
-    public static final int APPLIES_TO_CONTENT                  = (APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN|APPLIES_TO_BR);
-    public static final int APPLIES_TO_REGION                   = 0x00010000;
+    public static final int APPLIES_TO_TT                               = 0x00000001;
+    public static final int APPLIES_TO_BODY                             = 0x00000002;
+    public static final int APPLIES_TO_DIV                              = 0x00000004;
+    public static final int APPLIES_TO_P                                = 0x00000008;
+    public static final int APPLIES_TO_SPAN                             = 0x00000010;
+    public static final int APPLIES_TO_BR                               = 0x00000020;
+    public static final int APPLIES_TO_CONTENT                          = (APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN|APPLIES_TO_BR);
+    public static final int APPLIES_TO_REGION                           = 0x00010000;
 
-    public static final QName backgroundColorAttributeName      = new QName(NAMESPACE,"backgroundColor");
-    public static final QName colorAttributeName                = new QName(NAMESPACE,"color");
-    public static final QName directionAttributeName            = new QName(NAMESPACE,"direction");
-    public static final QName displayAttributeName              = new QName(NAMESPACE,"display");
-    public static final QName displayAlignAttributeName         = new QName(NAMESPACE,"displayAlign");
-    public static final QName extentAttributeName               = new QName(NAMESPACE,"extent");
-    public static final QName fontFamilyAttributeName           = new QName(NAMESPACE,"fontFamily");
-    public static final QName fontSizeAttributeName             = new QName(NAMESPACE,"fontSize");
-    public static final QName fontStyleAttributeName            = new QName(NAMESPACE,"fontStyle");
-    public static final QName fontWeightAttributeName           = new QName(NAMESPACE,"fontWeight");
-    public static final QName lineHeightAttributeName           = new QName(NAMESPACE,"lineHeight");
-    public static final QName opacityAttributeName              = new QName(NAMESPACE,"opacity");
-    public static final QName originAttributeName               = new QName(NAMESPACE,"origin");
-    public static final QName overflowAttributeName             = new QName(NAMESPACE,"overflow");
-    public static final QName paddingAttributeName              = new QName(NAMESPACE,"padding");
-    public static final QName regionAttributeName               = new QName("", "region");
-    public static final QName showBackgroundAttributeName       = new QName(NAMESPACE,"showBackground");
-    public static final QName styleAttributeName                = new QName("", "style");
-    public static final QName textAlignAttributeName            = new QName(NAMESPACE,"textAlign");
-    public static final QName textDecorationAttributeName       = new QName(NAMESPACE,"textDecoration");
-    public static final QName textOutlineAttributeName          = new QName(NAMESPACE,"textOutline");
-    public static final QName unicodeBidiAttributeName          = new QName(NAMESPACE,"unicodeBidi");
-    public static final QName visibilityAttributeName           = new QName(NAMESPACE,"visibility");
-    public static final QName wrapOptionAttributeName           = new QName(NAMESPACE,"wrapOption");
-    public static final QName writingModeAttributeName          = new QName(NAMESPACE,"writingMode");
-    public static final QName zIndexAttributeName               = new QName(NAMESPACE,"zIndex");
+    public static final QName backgroundColorAttributeName              = new QName(NAMESPACE,"backgroundColor");
+    public static final QName colorAttributeName                        = new QName(NAMESPACE,"color");
+    public static final QName directionAttributeName                    = new QName(NAMESPACE,"direction");
+    public static final QName displayAttributeName                      = new QName(NAMESPACE,"display");
+    public static final QName displayAlignAttributeName                 = new QName(NAMESPACE,"displayAlign");
+    public static final QName extentAttributeName                       = new QName(NAMESPACE,"extent");
+    public static final QName fontFamilyAttributeName                   = new QName(NAMESPACE,"fontFamily");
+    public static final QName fontSizeAttributeName                     = new QName(NAMESPACE,"fontSize");
+    public static final QName fontStyleAttributeName                    = new QName(NAMESPACE,"fontStyle");
+    public static final QName fontWeightAttributeName                   = new QName(NAMESPACE,"fontWeight");
+    public static final QName lineHeightAttributeName                   = new QName(NAMESPACE,"lineHeight");
+    public static final QName opacityAttributeName                      = new QName(NAMESPACE,"opacity");
+    public static final QName originAttributeName                       = new QName(NAMESPACE,"origin");
+    public static final QName overflowAttributeName                     = new QName(NAMESPACE,"overflow");
+    public static final QName paddingAttributeName                      = new QName(NAMESPACE,"padding");
+    public static final QName regionAttributeName                       = new QName("", "region");
+    public static final QName showBackgroundAttributeName               = new QName(NAMESPACE,"showBackground");
+    public static final QName styleAttributeName                        = new QName("", "style");
+    public static final QName textAlignAttributeName                    = new QName(NAMESPACE,"textAlign");
+    public static final QName textDecorationAttributeName               = new QName(NAMESPACE,"textDecoration");
+    public static final QName textOutlineAttributeName                  = new QName(NAMESPACE,"textOutline");
+    public static final QName unicodeBidiAttributeName                  = new QName(NAMESPACE,"unicodeBidi");
+    public static final QName visibilityAttributeName                   = new QName(NAMESPACE,"visibility");
+    public static final QName wrapOptionAttributeName                   = new QName(NAMESPACE,"wrapOption");
+    public static final QName writingModeAttributeName                  = new QName(NAMESPACE,"writingMode");
+    public static final QName zIndexAttributeName                       = new QName(NAMESPACE,"zIndex");
 
-    private static final Object[][] styleAccessorMap            = new Object[][] {
+    private static final Object[][] styleAccessorMap                    = new Object[][] {
         {
-            backgroundColorAttributeName,                       // attribute name
-            "BackgroundColor",                                  // accessor method name suffix
-            String.class,                                       // value type
-            BackgroundColorVerifier.class,                      // specialized verifier
-            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION), // applicability
-            Boolean.FALSE,                                      // padding permitted
-            Boolean.FALSE,                                      // inheritable
-            "transparent",                                      // initial value (as object suitable for setter)
-            null,                                               // initial value as string (or null if same as previous)
+            backgroundColorAttributeName,                               // attribute name
+            "BackgroundColor",                                          // accessor method name suffix
+            String.class,                                               // value type
+            BackgroundColorVerifier.class,                              // specialized verifier
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),      // applicability
+            Boolean.FALSE,                                              // padding permitted
+            Boolean.FALSE,                                              // inheritable
+            "transparent",                                              // initial value (as object suitable for setter)
+            null,                                                       // initial value as string (or null if same as previous)
         },
         {
             colorAttributeName,
@@ -429,15 +430,11 @@ public class TTML1StyleVerifier implements StyleVerifier {
         },
     };
 
-    protected Model model;
     protected Map<QName, StyleAccessor> accessors;
 
     public TTML1StyleVerifier(Model model) {
-        populate(model);
-    }
-
-    public Model getModel() {
-        return model;
+        super(model);
+        populate();
     }
 
     public QName getStyleAttributeName(String propertyName) {
@@ -493,6 +490,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
     }
 
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        setState(content, context);
         if (type == ItemType.Attributes)
             return verifyAttributeItems(content, locator, context);
         else if (type == ItemType.Element)
@@ -520,7 +518,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
     }
 
     protected boolean verifyAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
-        return sa.verify(model, content, locator, context);
+        return sa.verify(getModel(), content, locator, context);
     }
 
     protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
@@ -626,8 +624,7 @@ public class TTML1StyleVerifier implements StyleVerifier {
         return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
-    private void populate(Model model) {
-        this.model = model;
+    private void populate() {
         this.accessors = makeAccessors();
     }
 

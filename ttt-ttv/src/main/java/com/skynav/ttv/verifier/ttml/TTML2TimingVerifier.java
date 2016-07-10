@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,18 +25,53 @@
 
 package com.skynav.ttv.verifier.ttml;
 
+import java.util.Map;
+
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.parameter.MediaDurationVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.MediaOffsetVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters2;
 
+import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
+
 public class TTML2TimingVerifier extends TTML1TimingVerifier {
+
+    // treat these parameter attributes as timing attributes since we need timing parameters to resolve their values
+    public static final QName mediaDurationAttributeName                = new QName(NAMESPACE_TT_PARAMETER, "mediaDuration");
+    public static final QName mediaOffsetAttributeName                  = new QName(NAMESPACE_TT_PARAMETER, "mediaOffset");
+
+    private static final Object[][] timingAccessorMap                   = new Object[][] {
+        {
+            mediaDurationAttributeName,
+            "MediaDuration",
+            String.class,
+            MediaDurationVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
+        {
+            mediaOffsetAttributeName,
+            "MediaOffset",
+            String.class,
+            MediaOffsetVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
+    };
 
     public TTML2TimingVerifier(Model model) {
         super(model);
+    }
+
+    @Override
+    protected void populateAccessors(Map<QName, TimingAccessor> accessors) {
+        super.populateAccessors(accessors);
+        populateAccessors(accessors, timingAccessorMap);
     }
 
     @Override

@@ -23,6 +23,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier;
+package com.skynav.ttv.verifier.ttml.parameter;
 
-public interface ImageVerifier extends ItemVerifier {}
+import java.net.URI;
+import java.util.Set;
+
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.verifier.ParameterValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Profiles;
+
+public class ProfilesVerifier implements ParameterValueVerifier {
+
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        assert value instanceof String;
+        String s = (String) value;
+        Model model = context.getModel();
+        URI ttProfileNamespaceUri = model.getTTProfileNamespaceUri();
+        Set<URI> designators = model.getProfileDesignators();
+        if (Profiles.isProfileDesignators(s, location, context, ttProfileNamespaceUri, designators)) {
+            return true;
+        } else {
+            Profiles.badProfileDesignators(s, location, context, ttProfileNamespaceUri, designators);
+            return false;
+        }
+    }
+
+}

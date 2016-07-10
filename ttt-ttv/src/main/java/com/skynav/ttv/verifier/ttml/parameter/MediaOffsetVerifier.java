@@ -23,6 +23,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier;
+package com.skynav.ttv.verifier.ttml.parameter;
 
-public interface ImageVerifier extends ItemVerifier {}
+import com.skynav.ttv.model.value.TimeParameters;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.verifier.TimingValueVerifier;
+import com.skynav.ttv.verifier.VerificationParameters;
+import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
+import com.skynav.ttv.verifier.util.Timing;
+
+public class MediaOffsetVerifier implements TimingValueVerifier {
+
+    public boolean verify(Object value, Location location, VerifierContext context, VerificationParameters parameters) {
+        assert value instanceof String;
+        String s = (String) value;
+        assert parameters instanceof TimingVerificationParameters;
+        TimeParameters timeParameters = ((TimingVerificationParameters) parameters).getTimeParameters();
+        if (Timing.isCoordinate(s, location, context, timeParameters, null))
+            return true;
+        else {
+            Timing.badCoordinate(s, location, context, timeParameters);
+            return false;
+        }
+    }
+
+}

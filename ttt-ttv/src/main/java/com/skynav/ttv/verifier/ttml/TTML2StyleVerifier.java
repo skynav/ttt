@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -98,24 +98,24 @@ import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
-    public static final QName backgroundImageAttributeName      = new QName(NAMESPACE,"backgroundImage");
-    public static final QName fontKerningAttributeName          = new QName(NAMESPACE,"fontKerning");
-    public static final QName fontShearAttributeName            = new QName(NAMESPACE,"fontShear");
-    public static final QName fontVariantAttributeName          = new QName(NAMESPACE,"fontVariant");
-    public static final QName positionAttributeName             = new QName(NAMESPACE,"position");
-    public static final QName rubyAttributeName                 = new QName(NAMESPACE,"ruby");
-    public static final QName rubyAlignAttributeName            = new QName(NAMESPACE,"rubyAlign");
-    public static final QName rubyOffsetAttributeName           = new QName(NAMESPACE,"rubyOffset");
-    public static final QName rubyOverflowAttributeName         = new QName(NAMESPACE,"rubyOverflow");
-    public static final QName rubyOverhangAttributeName         = new QName(NAMESPACE,"rubyOverhang");
-    public static final QName rubyOverhangClassAttributeName    = new QName(NAMESPACE,"rubyOverhangClass");
-    public static final QName rubyPositionAttributeName         = new QName(NAMESPACE,"rubyPosition");
-    public static final QName rubyReserveAttributeName          = new QName(NAMESPACE,"rubyReserve");
-    public static final QName scriptAttributeName               = new QName(NAMESPACE,"script");
-    public static final QName textCombineAttributeName          = new QName(NAMESPACE,"textCombine");
-    public static final QName textEmphasisAttributeName         = new QName(NAMESPACE,"textEmphasis");
+    public static final QName backgroundImageAttributeName              = new QName(NAMESPACE,"backgroundImage");
+    public static final QName fontKerningAttributeName                  = new QName(NAMESPACE,"fontKerning");
+    public static final QName fontShearAttributeName                    = new QName(NAMESPACE,"fontShear");
+    public static final QName fontVariantAttributeName                  = new QName(NAMESPACE,"fontVariant");
+    public static final QName positionAttributeName                     = new QName(NAMESPACE,"position");
+    public static final QName rubyAttributeName                         = new QName(NAMESPACE,"ruby");
+    public static final QName rubyAlignAttributeName                    = new QName(NAMESPACE,"rubyAlign");
+    public static final QName rubyOffsetAttributeName                   = new QName(NAMESPACE,"rubyOffset");
+    public static final QName rubyOverflowAttributeName                 = new QName(NAMESPACE,"rubyOverflow");
+    public static final QName rubyOverhangAttributeName                 = new QName(NAMESPACE,"rubyOverhang");
+    public static final QName rubyOverhangClassAttributeName            = new QName(NAMESPACE,"rubyOverhangClass");
+    public static final QName rubyPositionAttributeName                 = new QName(NAMESPACE,"rubyPosition");
+    public static final QName rubyReserveAttributeName                  = new QName(NAMESPACE,"rubyReserve");
+    public static final QName scriptAttributeName                       = new QName(NAMESPACE,"script");
+    public static final QName textCombineAttributeName                  = new QName(NAMESPACE,"textCombine");
+    public static final QName textEmphasisAttributeName                 = new QName(NAMESPACE,"textEmphasis");
 
-    private static final Object[][] styleAccessorMap            = new Object[][] {
+    private static final Object[][] styleAccessorMap                    = new Object[][] {
         {
             backgroundImageAttributeName,
             "BackgroundImage",

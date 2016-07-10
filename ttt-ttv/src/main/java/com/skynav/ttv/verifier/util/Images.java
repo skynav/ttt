@@ -42,6 +42,7 @@ import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.URIs;
+import com.skynav.ttv.verifier.ItemVerifier.ItemType;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Images {
@@ -101,7 +102,7 @@ public class Images {
         image.setSpecifiedFormat(null);                                         // [TBD] populate speicifed format from content
         // verify image content
         assert image != null;
-        if (verifyContent && !context.getModel().getImageVerifier().verify(image, location, context))
+        if (verifyContent && !context.getModel().getImageVerifier().verify(image, location.getLocator(), context, ItemType.Other))
             return false;
         // return image instance if requested
         if (outputImage != null) {

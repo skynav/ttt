@@ -37,6 +37,7 @@ import com.skynav.ttv.model.value.Image;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.AbstractVerifier;
 import com.skynav.ttv.verifier.ImageVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -52,20 +53,37 @@ import com.xfsi.xav.validation.images.png.PngValidator;
 import com.xfsi.xav.validation.util.AbstractTestInfo;
 import com.xfsi.xav.validation.util.AbstractTestManager;
 
-public class TTML2ImageVerifier implements ImageVerifier {
-
-    private Model model;
+public class TTML2ImageVerifier extends AbstractVerifier implements ImageVerifier {
 
     public TTML2ImageVerifier(Model model) {
-        populate(model);
+        super(model);
     }
 
-    public boolean verify(Image image, Location location, VerifierContext context) {
+    public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        setState(content, context);
+        if (type == ItemType.Other)
+            return verifyOtherItem(content, locator, context);
+        else
+            throw new IllegalArgumentException();
+    }
+
+    protected boolean verifyOtherItem(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (content instanceof Image)
+            failed = !verify((Image) content, locator, context);
+        if (failed) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid image item."));
+        }
+        return !failed;
+    }
+
+    protected boolean verify(Image content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();
-        Locator locator = location.getLocator();
+        Location location = new Location(content, null, null, locator);
         MimeType[] mimeType = new MimeType[1];
-        if (!sniffImage(image, mimeType, location, context)) {
+        if (!sniffImage(content, mimeType, location, context)) {
             reporter.logError(reporter.message(locator, "*KEY*", "Unable to determine image type."));
             failed = true;
         } else {
@@ -75,14 +93,10 @@ public class TTML2ImageVerifier implements ImageVerifier {
                 reporter.logError(reporter.message(locator, "*KEY*", "Image type ''{0}'' is not supported.", mt.getType()));
                 failed = true;
             }
-            if (!failed && !verifyImage(image, mt, location, context))
+            if (!failed && !verifyImage(content, mt, location, context))
                 failed = true;
         }
         return !failed;
-    }
-
-    private void populate(Model model) {
-        this.model = model;
     }
 
     private static final short[]        pngSignature            =
@@ -180,7 +194,7 @@ public class TTML2ImageVerifier implements ImageVerifier {
             t = t.trim();
         if (p != null)
             p = p.trim();
-        return model.isSupportedResourceType(t, p);
+        return getModel().isSupportedResourceType(t, p);
     }
 
     private boolean verifyImage(Image image, MimeType mimeType, Location location, VerifierContext context) {

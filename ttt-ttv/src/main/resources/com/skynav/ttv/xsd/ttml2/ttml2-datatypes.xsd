@@ -461,11 +461,21 @@
     <xs:restriction base="xs:anyURI"/>
   </xs:simpleType>
   <xs:simpleType name="profiles">
-    <xs:restriction>
-      <xs:simpleType>
-        <xs:list itemType="ttd:profile"/>
-      </xs:simpleType>
-    </xs:restriction>
+    <xs:annotation>
+      <xs:documentation>
+        profiles
+          : designators
+          | "all(" designators ")
+          | "any(" designators ")
+
+        designators:
+          : designator (lswp designator)*
+
+        designator
+          : xs:anyURI
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="profileCombination">
     <xs:restriction base="xs:token">

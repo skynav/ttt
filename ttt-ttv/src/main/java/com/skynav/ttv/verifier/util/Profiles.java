@@ -164,6 +164,11 @@ public class Profiles {
             reporter.logInfo(message);
     }
 
+    public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
+        // [TBD] - IMPLEMENT ME
+        return true;
+    }
+
     public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
         try {
             URI uri = new URI(value);
@@ -186,6 +191,10 @@ public class Profiles {
             // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.
             return false;
         }
+    }
+
+    public static void badProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
+        // [TBD] - IMPLEMENT ME
     }
 
     public static void badProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {

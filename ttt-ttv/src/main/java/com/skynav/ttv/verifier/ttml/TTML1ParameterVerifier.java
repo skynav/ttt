@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,7 @@ import com.skynav.ttv.util.ComparableQName;
 import com.skynav.ttv.util.Enums;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.AbstractVerifier;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -72,34 +73,36 @@ import com.skynav.xml.helpers.XML;
 
 import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
 
-public class TTML1ParameterVerifier implements ParameterVerifier {
+public class TTML1ParameterVerifier extends AbstractVerifier implements ParameterVerifier {
 
-    public static final String NAMESPACE                        = NAMESPACE_TT_PARAMETER;
+    public static final String NAMESPACE                                = NAMESPACE_TT_PARAMETER;
 
-    public static final QName cellResolutionAttributeName       = new QName(getParameterNamespaceUri(), "cellResolution");
-    public static final QName clockModeAttributeName            = new QName(getParameterNamespaceUri(), "clockMode");
-    public static final QName dropModeAttributeName             = new QName(getParameterNamespaceUri(), "dropMode");
-    public static final QName frameRateAttributeName            = new QName(getParameterNamespaceUri(), "frameRate");
-    public static final QName frameRateMultiplierAttributeName  = new QName(getParameterNamespaceUri(), "frameRateMultiplier");
-    public static final QName markerModeAttributeName           = new QName(getParameterNamespaceUri(), "markerMode");
-    public static final QName pixelAspectRatioAttributeName     = new QName(getParameterNamespaceUri(), "pixelAspectRatio");
-    public static final QName profileAttributeName              = new QName(getParameterNamespaceUri(), "profile");
-    public static final QName subFrameRateAttributeName         = new QName(getParameterNamespaceUri(), "subFrameRate");
-    public static final QName tickRateAttributeName             = new QName(getParameterNamespaceUri(), "tickRate");
-    public static final QName timeBaseAttributeName             = new QName(getParameterNamespaceUri(), "timeBase");
-    public static final QName useAttributeName                  = new QName("", "use");
-    public static final QName xmlBaseAttributeName              = XML.getBaseAttributeName();
+    public static final QName cellResolutionAttributeName               = new QName(NAMESPACE, "cellResolution");
+    public static final QName clockModeAttributeName                    = new QName(NAMESPACE, "clockMode");
+    public static final QName dropModeAttributeName                     = new QName(NAMESPACE, "dropMode");
+    public static final QName frameRateAttributeName                    = new QName(NAMESPACE, "frameRate");
+    public static final QName frameRateMultiplierAttributeName          = new QName(NAMESPACE, "frameRateMultiplier");
+    public static final QName markerModeAttributeName                   = new QName(NAMESPACE, "markerMode");
+    public static final QName pixelAspectRatioAttributeName             = new QName(NAMESPACE, "pixelAspectRatio");
+    public static final QName profileAttributeName                      = new QName(NAMESPACE, "profile");
+    public static final QName subFrameRateAttributeName                 = new QName(NAMESPACE, "subFrameRate");
+    public static final QName tickRateAttributeName                     = new QName(NAMESPACE, "tickRate");
+    public static final QName timeBaseAttributeName                     = new QName(NAMESPACE, "timeBase");
+    public static final QName useAttributeName                          = new QName("", "use");
+    public static final QName xmlBaseAttributeName                      = XML.getBaseAttributeName();
 
-    public static final QName defaultedParametersAttributeName  = new QName(Annotations.getNamespace(), "defaultedParameters", Annotations.getNamespacePrefix());
+    // internal only parameters
+    public static final QName defaultedParametersAttributeName          =
+        new QName(Annotations.getNamespace(), "defaultedParameters", Annotations.getNamespacePrefix());
 
-    private static final Object[][] parameterAccessorMap        = new Object[][] {
+    private static final Object[][] parameterAccessorMap                = new Object[][] {
         {
-            cellResolutionAttributeName,                        // attribute name
-            "CellResolution",                                   // accessor method name suffix
-            String.class,                                       // value type
-            CellResolutionVerifier.class,                       // specialized verifier
-            Boolean.FALSE,                                      // padding permitted
-            "32 15",                                            // default value
+            cellResolutionAttributeName,                                // attribute name
+            "CellResolution",                                           // accessor method name suffix
+            String.class,                                               // value type
+            CellResolutionVerifier.class,                               // specialized verifier
+            Boolean.FALSE,                                              // padding permitted
+            "32 15",                                                    // default value
         },
         {
             clockModeAttributeName,
@@ -201,15 +204,11 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         },
     };
 
-    private Model model;
     private Map<QName, ParameterAccessor> accessors;
 
     public TTML1ParameterVerifier(Model model) {
-        populate(model);
-    }
-
-    public Model getModel() {
-        return model;
+        super(model);
+        populate();
     }
 
     public QName getParameterAttributeName(String parameterName) {
@@ -223,6 +222,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
     }
 
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        setState(content, context);
         if (type == ItemType.Attributes)
             return verifyAttributeItems(content, locator, context);
         else if (type == ItemType.Other)
@@ -234,7 +234,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
     protected boolean verifyAttributeItems(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         for (ParameterAccessor pa : accessors.values()) {
-            if (!pa.verify(model, content, locator, context))
+            if (!pa.verify(getModel(), content, locator, context))
                 failed = true;
         }
         return !failed;
@@ -282,8 +282,7 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
         return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
     }
 
-    private void populate(Model model) {
-        this.model = model;
+    private void populate() {
         this.accessors = makeAccessors();
     }
 
@@ -471,10 +470,6 @@ public class TTML1ParameterVerifier implements ParameterVerifier {
                 return null;
         }
 
-    }
-
-    public static final String getParameterNamespaceUri() {
-        return NAMESPACE;
     }
 
     private static void recordDefaultedParameter(Model model, Object content, QName parameterName, Locator locator, VerifierContext context) {

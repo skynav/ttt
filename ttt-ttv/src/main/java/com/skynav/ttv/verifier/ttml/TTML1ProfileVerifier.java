@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2016 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -41,23 +41,22 @@ import com.skynav.ttv.model.ttml1.ttp.Profile;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.AbstractVerifier;
 import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Profiles;
 
-public class TTML1ProfileVerifier implements ProfileVerifier {
+public class TTML1ProfileVerifier extends AbstractVerifier implements ProfileVerifier {
 
-    public static final QName profileAttributeName = new QName(TTML1ParameterVerifier.getParameterNamespaceUri(), "profile");
-    public static final QName profileElementName = new QName(TTML1ParameterVerifier.getParameterNamespaceUri(), "profile");
-
-    @SuppressWarnings("unused")
-    private Model model;
+    public static final QName profileAttributeName                      = new QName(TTML1ParameterVerifier.NAMESPACE, "profile");
+    public static final QName profileElementName                        = new QName(TTML1ParameterVerifier.NAMESPACE, "profile");
 
     public TTML1ProfileVerifier(Model model) {
-        populate(model);
+        super(model);
     }
 
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        setState(content, context);
         if (type == ItemType.Element)
             return verifyElementItem(content, locator, context);
         else
@@ -143,10 +142,6 @@ public class TTML1ProfileVerifier implements ProfileVerifier {
         } else
             throw new IllegalStateException("missing parent");
         return !failed;
-    }
-
-    private void populate(Model model) {
-        this.model = model;
     }
 
 }

@@ -3,7 +3,7 @@
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:version="2"
     xmlns:tts="http://www.w3.org/ns/ttml#styling"
-    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="3" ttva:expectedWarnings="0" ttva:model="ttml2">
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="5" ttva:expectedWarnings="0" ttva:model="ttml2">
   <head>
   </head>
   <body>

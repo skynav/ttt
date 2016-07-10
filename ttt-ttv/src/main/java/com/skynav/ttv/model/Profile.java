@@ -32,6 +32,11 @@ import com.skynav.ttv.util.URIs;
 
 public class Profile {
 
+    public enum Quantifier {
+        ALL,
+        ANY;
+    }
+
     public enum Usage {
         NONE,
         OPTIONAL,

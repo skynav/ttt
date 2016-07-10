@@ -23,6 +23,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier;
+package com.skynav.ttv.verifier.ttml.parameter;
 
-public interface ImageVerifier extends ItemVerifier {}
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.verifier.ParameterValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
+
+public class InferProcessorProfileMethodVerifier implements ParameterValueVerifier {
+
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        // Schema validation phase (3) reports invalid values.
+        Model model = context.getModel();
+        if (model.isTTMLVersion(2) && (value instanceof com.skynav.ttv.model.ttml2.ttd.InferProcessorProfileMethod))
+            return true;
+        else
+            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
+    }
+
+}
