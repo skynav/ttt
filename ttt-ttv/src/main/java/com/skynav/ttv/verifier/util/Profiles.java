@@ -27,11 +27,15 @@ package com.skynav.ttv.verifier.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
@@ -165,54 +169,164 @@ public class Profiles {
     }
 
     public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
-        // [TBD] - IMPLEMENT ME
+        return isProfileDesignators(value, location, context, ttmlProfileNamespaceUri, designators, null, null);
+    }
+    
+    private static final Pattern quantifiedDesignatorsPattern = Pattern.compile("(\\p{Alpha}+)\\(([^\\)]*)\\)");
+    public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators, List<URI> outputDesignators, Profile.Quantifier[] outputQuantifier) {
+        String v = value;
+        Profile.Quantifier q;
+        Matcher m = quantifiedDesignatorsPattern.matcher(v);
+        if (m.matches()) {
+            String ident = m.group(1);
+            String arguments = m.group(2).trim();
+            if (ident.equals("any"))
+                q = Profile.Quantifier.ANY;
+            else if (ident.equals("all"))
+                q = Profile.Quantifier.ALL;
+            else
+                return false;
+            v = arguments;
+        } else
+            q = null;
+        if (q == null)
+            q = Profile.Quantifier.ALL;
+        List<URI> uris = new java.util.ArrayList<URI>();
+        v = v.trim();
+        if (v.isEmpty())
+            return false;
+        else {
+            for (String d : v.split("\\s+")) {
+                URI[] uri = new URI[1];
+                if (!isProfileDesignator(d, location, context, ttmlProfileNamespaceUri, designators, uri))
+                    return false;
+                else
+                    uris.add(uri[0]);
+            }
+        }
+        Set<URI> uu = new java.util.HashSet<URI>();
+        for (URI u : uris) {
+            if (uu.contains(u))
+                return false;
+            else
+                uu.add(u);
+        }
+        if (outputDesignators != null) {
+            outputDesignators.clear();
+            outputDesignators.addAll(uris);
+        }
+        if (outputQuantifier != null) {
+            outputQuantifier[0] = q;
+        }
         return true;
     }
 
     public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
-        try {
-            URI uri = new URI(value);
-            if (!uri.isAbsolute())
-                uri = ttmlProfileNamespaceUri.resolve(uri);
-            if (designators.contains(uri))
-                return true;
-            else if (uri.toString().indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
-                // error - unknown designator in TTML profile namespace
-                return false;
-            } else {
-                Reporter reporter = context.getReporter();
-                if (reporter.isWarningEnabled("references-non-standard-profile")) {
-                    if (reporter.logWarning(reporter.message(location.getLocator(), "*KEY*", "Non-standard profile designator ''{0}''.", uri)))
-                        return false;
+        return isProfileDesignator(value, location, context, ttmlProfileNamespaceUri, designators, null);
+    }
+    
+    private static final Pattern badDelimiterSuffixPattern = Pattern.compile("[^\\,\\;\\)]+([\\,\\;\\)])");
+    public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators, URI[] outputDesignator) {
+        boolean failed = false;
+        URI uri = null;
+        Matcher m = badDelimiterSuffixPattern.matcher(value);
+        if (m.matches())
+            failed = true;
+        else {
+            try {
+                uri = new URI(value);
+                if (!uri.isAbsolute()) {
+                    if (uri.getFragment() != null) {
+                        // [TBD] - IMPLEMENT ME
+                        throw new UnsupportedOperationException();
+                    }
+                    uri = ttmlProfileNamespaceUri.resolve(uri);
                 }
-                return true;
+                if (!designators.contains(uri)) {
+                    String s = uri.toString();
+                    if (s.indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
+                        // error - unknown designator in TTML profile namespace
+                        failed = true;
+                    } else {
+                        Reporter reporter = context.getReporter();
+                        if (reporter.isWarningEnabled("references-non-standard-profile")) {
+                            if (reporter.logWarning(reporter.message(location.getLocator(), "*KEY*", "Non-standard profile designator ''{0}''.", uri)))
+                                failed = true;
+                        }
+                    }
+                }
+            } catch (URISyntaxException e) {
+                failed = true;
             }
-        } catch (URISyntaxException e) {
-            // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.
-            return false;
         }
+        if (!failed && (outputDesignator != null))
+            outputDesignator[0] = uri;
+        return !failed;
     }
 
     public static void badProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
-        // [TBD] - IMPLEMENT ME
+        Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
+        String v = value;
+        Matcher m = quantifiedDesignatorsPattern.matcher(v);
+        if (m.matches()) {
+            String ident = m.group(1);
+            String arguments = m.group(2);
+            if (!ident.equals("any") && !ident.equals("any")) {
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Bad profile quantifier syntax, unknown quantifier ''{0}''.", ident));
+                return;
+            } else
+                v = arguments;
+        }
+        List<URI> uris = new java.util.ArrayList<URI>();
+        v = v.trim();
+        if (v.isEmpty())
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Bad profile quantifier syntax, empty designator list."));
+        else {
+            for (String d : v.split("\\s+")) {
+                URI[] uri = new URI[1];
+                if (!isProfileDesignator(d, location, context, ttmlProfileNamespaceUri, designators, uri))
+                    badProfileDesignator(d, location, context, ttmlProfileNamespaceUri, designators);
+                else
+                    uris.add(uri[0]);
+            }
+        }
+        Set<URI> uu = new java.util.HashSet<URI>();
+        for (URI u : uris) {
+            if (uu.contains(u))
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Duplicate profile designator ''{0}''.", u.toString()));
+            else
+                uu.add(u);
+        }
     }
 
     public static void badProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
         Reporter reporter = context.getReporter();
         Locator locator = location.getLocator();
-        try {
-            URI uri = new URI(value);
-            if (!uri.isAbsolute())
-                uri = ttmlProfileNamespaceUri.resolve(uri);
-            if (!designators.contains(uri)) {
-                if (uri.toString().indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
-                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad profile designator, unrecognized designator ''{0}'' in TT Profile Namespace.", value));
-                } else {
-                    reporter.logInfo(reporter.message(locator, "*KEY*", "Bad profile designator, unrecognized designator ''{0}'' in Other Profile Namespace.", value));
+        Matcher m = badDelimiterSuffixPattern.matcher(value);
+        if (m.matches()) {
+            String suffix = m.group(1);
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Bad profile designator ''{0}'' ends with unexpected delimiter suffix ''{1}''.", value, suffix));
+        } else {
+            try {
+                URI uri = new URI(value);
+                if (!uri.isAbsolute())
+                    uri = ttmlProfileNamespaceUri.resolve(uri);
+                if (!designators.contains(uri)) {
+                    String s = uri.toString();
+                    if (s.indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Bad profile designator, unrecognized designator ''{0}'' in TT Profile Namespace.", value));
+                    } else {
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Bad profile designator, unrecognized designator ''{0}'' in Other Profile Namespace.", value));
+                    }
                 }
+            } catch (URISyntaxException e) {
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Bad profile designator ''{0}'', invalid designator syntax.", value));
             }
-        } catch (URISyntaxException e) {
-            // Phase 3 will have already reported that value doesn't correspond with xs:anyURI.
         }
     }
 

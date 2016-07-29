@@ -37,6 +37,40 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
 
     @Test
+    public void testValidTTML2AllParameters() throws Exception {
+        performValidityTest("ttml2-valid-all-parameters.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfilesQuantifiedAllMultiple() throws Exception {
+        performValidityTest("ttml2-valid-content-profiles-quantified-all-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfilesQuantifiedAllSingle() throws Exception {
+        performValidityTest("ttml2-valid-content-profiles-quantified-all-single.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfilesQuantifiedAnyMultiple() throws Exception {
+        performValidityTest("ttml2-valid-content-profiles-quantified-any-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfilesQuantifiedAnySingle() throws Exception {
+        performValidityTest("ttml2-valid-content-profiles-quantified-any-single.xml", -1, -1);
+    }
+
+    public void testValidTTML2ContentProfilesUnquantifiedMultiple() throws Exception {
+        performValidityTest("ttml2-valid-content-profiles-unquantified-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfilesUnquantifiedSingle() throws Exception {
+        performValidityTest("ttml2-valid-content-profiles-unquantified-single.xml", -1, -1);
+    }
+
+    @Test
     @Ignore
     public void testValidTTML2ImageInBlockAll() throws Exception {
         performValidityTest("ttml2-valid-image-in-block-all.xml", -1, -1);
@@ -50,6 +84,35 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ImageInBlockSimpleSourcePng() throws Exception {
         performValidityTest("ttml2-valid-image-in-block-simple-source-png.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfilesQuantifiedAllMultiple() throws Exception {
+        performValidityTest("ttml2-valid-processor-profiles-quantified-all-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfilesQuantifiedAllSingle() throws Exception {
+        performValidityTest("ttml2-valid-processor-profiles-quantified-all-single.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfilesQuantifiedAnyMultiple() throws Exception {
+        performValidityTest("ttml2-valid-processor-profiles-quantified-any-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfilesQuantifiedAnySingle() throws Exception {
+        performValidityTest("ttml2-valid-processor-profiles-quantified-any-single.xml", -1, -1);
+    }
+
+    public void testValidTTML2ProcessorProfilesUnquantifiedMultiple() throws Exception {
+        performValidityTest("ttml2-valid-processor-profiles-unquantified-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfilesUnquantifiedSingle() throws Exception {
+        performValidityTest("ttml2-valid-processor-profiles-unquantified-single.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

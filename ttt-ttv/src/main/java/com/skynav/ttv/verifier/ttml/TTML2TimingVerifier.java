@@ -37,17 +37,11 @@ import com.skynav.ttv.verifier.ttml.parameter.MediaOffsetVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters2;
 
-import static com.skynav.ttv.model.ttml.TTML1.Constants.*;
-
 public class TTML2TimingVerifier extends TTML1TimingVerifier {
-
-    // treat these parameter attributes as timing attributes since we need timing parameters to resolve their values
-    public static final QName mediaDurationAttributeName                = new QName(NAMESPACE_TT_PARAMETER, "mediaDuration");
-    public static final QName mediaOffsetAttributeName                  = new QName(NAMESPACE_TT_PARAMETER, "mediaOffset");
 
     private static final Object[][] timingAccessorMap                   = new Object[][] {
         {
-            mediaDurationAttributeName,
+            TTML2ParameterVerifier.mediaDurationAttributeName,
             "MediaDuration",
             String.class,
             MediaDurationVerifier.class,
@@ -55,7 +49,7 @@ public class TTML2TimingVerifier extends TTML1TimingVerifier {
             null,
         },
         {
-            mediaOffsetAttributeName,
+            TTML2ParameterVerifier.mediaOffsetAttributeName,
             "MediaOffset",
             String.class,
             MediaOffsetVerifier.class,

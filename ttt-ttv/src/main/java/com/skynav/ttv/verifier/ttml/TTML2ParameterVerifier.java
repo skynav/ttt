@@ -66,6 +66,8 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     public static final QName displayAspectRatioAttributeName           = new QName(NAMESPACE, "displayAspectRatio");
     public static final QName inferProcessorProfileMethodAttributeName  = new QName(NAMESPACE, "inferProcessorProfileMethod");
     public static final QName inferProcessorProfileSourceAttributeName  = new QName(NAMESPACE, "inferProcessorProfileSource");
+    public static final QName mediaDurationAttributeName                = new QName(NAMESPACE, "mediaDuration");
+    public static final QName mediaOffsetAttributeName                  = new QName(NAMESPACE, "mediaOffset");
     public static final QName permitFeatureNarrowingAttributeName       = new QName(NAMESPACE, "permitFeatureNarrowing");
     public static final QName permitFeatureWideningAttributeName        = new QName(NAMESPACE, "permitFeatureWidening");
     public static final QName processorProfileCombinationAttributeName  = new QName(NAMESPACE, "processorProfileCombination");
@@ -218,6 +220,18 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     @Override
     protected boolean permitsParameterAttribute(Object content, QName name) {
         if (content instanceof TimedText)
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    protected boolean isParameterAttribute(QName name) {
+        if (super.isParameterAttribute(name))
+            return true;
+        else if (name.equals(mediaDurationAttributeName))       // handled by ttml2 timing verifier
+            return true;
+        else if (name.equals(mediaOffsetAttributeName))         // handled by ttml2 timing verifier
             return true;
         else
             return false;

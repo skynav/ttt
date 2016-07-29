@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - processor profiles parameter with duplicate designator -->
+<tt:tt
+  xml:lang="en"
+  ttp:processorProfiles="http://www.w3.org/ns/ttml/profile/ttml2-presentation http://www.w3.org/ns/ttml/profile/ttml2-presentation"
+  ttp:version="2"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="ttml2"/>

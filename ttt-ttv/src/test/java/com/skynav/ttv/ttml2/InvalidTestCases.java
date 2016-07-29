@@ -36,6 +36,41 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidTTML2ContentProfilesDesignatorDelimiterSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-content-profiles-designator-delimiter-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfilesDuplicateDesignatorAbsolutized() throws Exception {
+        performInvalidityTest("ttml2-invalid-content-profiles-duplicate-designator-absolutized.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfilesDuplicateDesignator() throws Exception {
+        performInvalidityTest("ttml2-invalid-content-profiles-duplicate-designator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfilesNoDesignator() throws Exception {
+        performInvalidityTest("ttml2-invalid-content-profiles-no-designator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfilesQuantifiedNoDesignator() throws Exception {
+        performInvalidityTest("ttml2-invalid-content-profiles-quantified-no-designator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfilesQuantifierSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-content-profiles-quantifier-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfilesQuantifierUnknown() throws Exception {
+        performInvalidityTest("ttml2-invalid-content-profiles-quantifier-unknown.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ImageInBlockSimpleSourcePng() throws Exception {
         performInvalidityTest("ttml2-invalid-image-in-block-simple-source-png.xml", -1, -1);
     }
@@ -43,6 +78,41 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2ImageInBlockSimpleSourceJpg() throws Exception {
         performInvalidityTest("ttml2-invalid-image-in-block-simple-source-jpg.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfilesDesignatorDelimiterSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-processor-profiles-designator-delimiter-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfilesDuplicateDesignatorAbsolutized() throws Exception {
+        performInvalidityTest("ttml2-invalid-processor-profiles-duplicate-designator-absolutized.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfilesDuplicateDesignator() throws Exception {
+        performInvalidityTest("ttml2-invalid-processor-profiles-duplicate-designator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfilesNoDesignator() throws Exception {
+        performInvalidityTest("ttml2-invalid-processor-profiles-no-designator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfilesQuantifiedNoDesignator() throws Exception {
+        performInvalidityTest("ttml2-invalid-processor-profiles-quantified-no-designator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfilesQuantifierSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-processor-profiles-quantifier-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfilesQuantifierUnknown() throws Exception {
+        performInvalidityTest("ttml2-invalid-processor-profiles-quantifier-unknown.xml", -1, -1);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
