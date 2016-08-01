@@ -42,9 +42,10 @@ public class Emphasis {
         Color[] color = new Color[1];
         int numAuto = 0;
         for (int i = 0, k, n = components.length; i < n; ) {
-            if (Keywords.isAuto(components[i]))
+            if (Keywords.isAuto(components[i])) {
                 ++numAuto;
-            else if ((k = isStyle(components, i, location, context, style, text)) > i)
+                i = i + 1;
+            } else if ((k = isStyle(components, i, location, context, style, text)) > i)
                 i = k;
             else if ((k = isPosition(components, i, location, context, position)) > i)
                 i = k;

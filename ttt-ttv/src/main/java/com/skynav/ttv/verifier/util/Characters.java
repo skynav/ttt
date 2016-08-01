@@ -1825,7 +1825,11 @@ public class Characters {
         int numComponents = components.length;
         if (numComponents < 1)
             return false;
-        CharacterClass cc = (outputClass != null) ? new CharacterClass(CharacterClass.EMPTY) : null;
+        CharacterClass cc;
+        if ((outputClass != null) && (outputClass.length > 0) && (outputClass[0] != null))
+            cc = outputClass[0];
+        else
+            cc = new CharacterClass(CharacterClass.EMPTY);
         if ((numComponents == 1) && Keywords.isAuto(components[0])) {
             cc.add(getAutoCharacterClass());
         } else {

@@ -42,6 +42,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2AllStyles() throws Exception {
+        performValidityTest("ttml2-valid-all-styles.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ContentProfilesQuantifiedAllMultiple() throws Exception {
         performValidityTest("ttml2-valid-content-profiles-quantified-all-multiple.xml", -1, -1);
     }

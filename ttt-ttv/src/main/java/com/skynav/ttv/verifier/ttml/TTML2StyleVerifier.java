@@ -42,6 +42,7 @@ import com.skynav.ttv.model.ttml2.tt.Set;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Style;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.BackgroundRepeat;
 import com.skynav.ttv.model.ttml2.ttd.Direction;
 import com.skynav.ttv.model.ttml2.ttd.Display;
 import com.skynav.ttv.model.ttml2.ttd.DisplayAlign;
@@ -57,26 +58,35 @@ import com.skynav.ttv.model.ttml2.ttd.RubyPosition;
 import com.skynav.ttv.model.ttml2.ttd.ShowBackground;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 import com.skynav.ttv.model.ttml2.ttd.TextDecoration;
+import com.skynav.ttv.model.ttml2.ttd.TextOrientation;
 import com.skynav.ttv.model.ttml2.ttd.UnicodeBidi;
 import com.skynav.ttv.model.ttml2.ttd.Visibility;
 import com.skynav.ttv.model.ttml2.ttd.WrapOption;
 import com.skynav.ttv.model.ttml2.ttd.WritingMode;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.style.BackgroundImageVerifier;
+import com.skynav.ttv.verifier.ttml.style.BackgroundPositionVerifier;
+import com.skynav.ttv.verifier.ttml.style.BackgroundRepeatVerifier;
+import com.skynav.ttv.verifier.ttml.style.BackgroundSizeVerifier;
+import com.skynav.ttv.verifier.ttml.style.BorderVerifier;
 import com.skynav.ttv.verifier.ttml.style.DirectionVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisplayAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisplayVerifier;
+import com.skynav.ttv.verifier.ttml.style.DisparityVerifier;
 import com.skynav.ttv.verifier.ttml.style.ExtentVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontKerningVerifier;
+//import com.skynav.ttv.verifier.ttml.style.FontSelectionStrategyVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontShearVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontStyleVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontVariantVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
+import com.skynav.ttv.verifier.ttml.style.LetterSpacingVerifier;
 import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.OriginVerifier;
 import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
 import com.skynav.ttv.verifier.ttml.style.PaddingVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
+import com.skynav.ttv.verifier.ttml.style.ProgressionDimensionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyOverflowVerifier;
@@ -91,6 +101,8 @@ import com.skynav.ttv.verifier.ttml.style.TextAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextCombineVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextDecorationVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextEmphasisVerifier;
+import com.skynav.ttv.verifier.ttml.style.TextOrientationVerifier;
+import com.skynav.ttv.verifier.ttml.style.TextShadowVerifier;
 import com.skynav.ttv.verifier.ttml.style.UnicodeBidiVerifier;
 import com.skynav.ttv.verifier.ttml.style.VisibilityVerifier;
 import com.skynav.ttv.verifier.ttml.style.WrapOptionVerifier;
@@ -99,9 +111,18 @@ import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
     public static final QName backgroundImageAttributeName              = new QName(NAMESPACE,"backgroundImage");
+    public static final QName backgroundPositionAttributeName           = new QName(NAMESPACE,"backgroundPosition");
+    public static final QName backgroundSizeAttributeName               = new QName(NAMESPACE,"backgroundSize");
+    public static final QName backgroundRepeatAttributeName             = new QName(NAMESPACE,"backgroundRepeat");
+    public static final QName borderAttributeName                       = new QName(NAMESPACE,"border");
+    public static final QName bpdAttributeName                          = new QName(NAMESPACE,"bpd");
+    public static final QName disparityAttributeName                    = new QName(NAMESPACE,"disparity");
     public static final QName fontKerningAttributeName                  = new QName(NAMESPACE,"fontKerning");
+    public static final QName fontSelectionStrategyAttributeName        = new QName(NAMESPACE,"fontSelectionStrategy");
     public static final QName fontShearAttributeName                    = new QName(NAMESPACE,"fontShear");
     public static final QName fontVariantAttributeName                  = new QName(NAMESPACE,"fontVariant");
+    public static final QName ipdAttributeName                          = new QName(NAMESPACE,"ipd");
+    public static final QName letterSpacingAttributeName                = new QName(NAMESPACE,"letterSpacing");
     public static final QName positionAttributeName                     = new QName(NAMESPACE,"position");
     public static final QName rubyAttributeName                         = new QName(NAMESPACE,"ruby");
     public static final QName rubyAlignAttributeName                    = new QName(NAMESPACE,"rubyAlign");
@@ -114,6 +135,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName scriptAttributeName                       = new QName(NAMESPACE,"script");
     public static final QName textCombineAttributeName                  = new QName(NAMESPACE,"textCombine");
     public static final QName textEmphasisAttributeName                 = new QName(NAMESPACE,"textEmphasis");
+    public static final QName textOrientationAttributeName              = new QName(NAMESPACE,"textOrientation");
+    public static final QName textShadowAttributeName                   = new QName(NAMESPACE,"textShadow");
 
     private static final Object[][] styleAccessorMap                    = new Object[][] {
         {
@@ -125,7 +148,62 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.FALSE,
             "none",
-            null
+            null,
+        },
+        {
+            backgroundPositionAttributeName,
+            "BackgroundPosition",
+            String.class,
+            BackgroundPositionVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "none",
+            null,
+        },
+        {
+            backgroundRepeatAttributeName,
+            "BackgroundRepeat",
+            BackgroundRepeat.class,
+            BackgroundRepeatVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            BackgroundRepeat.REPEAT,
+            BackgroundRepeat.REPEAT.value(),
+        },
+        {
+            backgroundSizeAttributeName,
+            "BackgroundSize",
+            String.class,
+            BackgroundSizeVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "none",
+            null,
+        },
+        {
+            borderAttributeName,
+            "Border",
+            String.class,
+            BorderVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "none",
+            null,
+        },
+        {
+            bpdAttributeName,
+            "Bpd",
+            String.class,
+            ProgressionDimensionVerifier.class,
+            Integer.valueOf(APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "auto",
+            null,
         },
         {
             directionAttributeName,
@@ -148,6 +226,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Display.AUTO,
             Display.AUTO.value(),
+        },
+        {
+            disparityAttributeName,
+            "Disparity",
+            String.class,
+            DisparityVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "0",
+            null,
         },
         {
             displayAlignAttributeName,
@@ -182,6 +271,19 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             FontKerning.NORMAL,
             FontKerning.NORMAL.value(),
         },
+        /*
+        {
+            fontSelectionStrategyAttributeName,
+            "FontSelectionStrategy",
+            FontSelectionStrategy.class,
+            FontSelectionStrategyVerifier.class,
+            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            FontSelectionStrategy.NORMAL,
+            FontSelectionStrategy.NORMAL.value(),
+        },
+        */
         {
             fontShearAttributeName,
             "FontShear",
@@ -227,6 +329,28 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             FontWeight.NORMAL.value(),
         },
         {
+            ipdAttributeName,
+            "Ipd",
+            String.class,
+            ProgressionDimensionVerifier.class,
+            Integer.valueOf(APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "auto",
+            null,
+        },
+        {
+            letterSpacingAttributeName,
+            "LetterSpacing",
+            String.class,
+            LetterSpacingVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "normal",
+            null,
+        },
+        {
             lineHeightAttributeName,
             "LineHeight",
             String.class,
@@ -246,7 +370,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.FALSE,
             "auto",
-            null
+            null,
         },
         {
             overflowAttributeName,
@@ -279,7 +403,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.FALSE,
             "center",
-            null
+            null,
         },
         {
             rubyAttributeName,
@@ -312,7 +436,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             "auto",
-            null
+            null,
         },
         {
             rubyOverflowAttributeName,
@@ -345,7 +469,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             "auto",
-            null
+            null,
         },
         {
             rubyPositionAttributeName,
@@ -367,14 +491,14 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             "none",
-            null
+            null,
         },
         {
             scriptAttributeName,
             "Script",
             String.class,
             ScriptVerifier.class,
-            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+            Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.TRUE,
             "auto",
@@ -411,7 +535,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             "none",
-            null
+            null,
         },
         {
             textDecorationAttributeName,
@@ -433,7 +557,29 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             "none",
-            null
+            null,
+        },
+        {
+            textOrientationAttributeName,
+            "TextOrientation",
+            TextOrientation.class,
+            TextOrientationVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            TextOrientation.MIXED,
+            TextOrientation.MIXED.value(),
+        },
+        {
+            textShadowAttributeName,
+            "TextShadow",
+            String.class,
+            TextShadowVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "none",
+            null,
         },
         {
             unicodeBidiAttributeName,

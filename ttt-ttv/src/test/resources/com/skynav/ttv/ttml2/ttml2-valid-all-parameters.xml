@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- valid - all defined ttml2 parameters - but not all legal values of defined parameters -->
+<!-- valid - all defined ttml2 specific parameters - but not all legal values of defined parameters -->
 <tt:tt
   xml:lang="en"
   ttp:contentProfiles="any(http://www.w3.org/ns/ttml/profile/ttml2-presentation http://www.w3.org/ns/ttml/profile/ttml2-transformation)"
