@@ -171,7 +171,7 @@ public class Profiles {
     public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
         return isProfileDesignators(value, location, context, ttmlProfileNamespaceUri, designators, null, null);
     }
-    
+
     private static final Pattern quantifiedDesignatorsPattern = Pattern.compile("(\\p{Alpha}+)\\(([^\\)]*)\\)");
     public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators, List<URI> outputDesignators, Profile.Quantifier[] outputQuantifier) {
         String v = value;
@@ -224,7 +224,7 @@ public class Profiles {
     public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
         return isProfileDesignator(value, location, context, ttmlProfileNamespaceUri, designators, null);
     }
-    
+
     private static final Pattern badDelimiterSuffixPattern = Pattern.compile("[^\\,\\;\\)]+([\\,\\;\\)])");
     public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators, URI[] outputDesignator) {
         boolean failed = false;
@@ -272,7 +272,7 @@ public class Profiles {
         if (m.matches()) {
             String ident = m.group(1);
             String arguments = m.group(2);
-            if (!ident.equals("any") && !ident.equals("any")) {
+            if (!ident.equals("all") && !ident.equals("any")) {
                 reporter.logInfo(reporter.message(locator, "*KEY*", "Bad profile quantifier syntax, unknown quantifier ''{0}''.", ident));
                 return;
             } else
