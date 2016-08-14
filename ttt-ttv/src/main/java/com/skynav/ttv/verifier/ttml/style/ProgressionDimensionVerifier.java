@@ -25,15 +25,31 @@
 
 package com.skynav.ttv.verifier.ttml.style;
 
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Measures;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class ProgressionDimensionVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        /* [TBD] - IMPLEMENT ME */
-        return true;
+        boolean failed;
+        assert value instanceof String;
+        String s = (String) value;
+        Object[] treatments = new Object[] { NegativeTreatment.Error };
+        Model model = context.getModel();
+        if (model.isTTMLVersion(2)) {
+            if (Measures.isMeasure(s, location, context, treatments, null))
+                failed = false;
+            else {
+                Measures.badMeasure(s, location, context, treatments);
+                failed = true;
+            }
+        } else
+            failed = true;
+        return !failed;
     }
 
 }

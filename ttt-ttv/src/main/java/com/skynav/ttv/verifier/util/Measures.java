@@ -43,12 +43,15 @@ public class Measures {
 
     public static boolean isMeasure(String value, Location location, VerifierContext context, Object[] treatments, Measure[] outputMeasure) {
         Measure m = null;
-        if (isMeasureKeyword(value)) {
-            try {
-                m = new MeasureImpl(Measure.Type.valueOfShorthand(value), (Length) null);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalStateException(e.getMessage());
-            }
+        if (maybeMeasureKeyword(value)) {
+            if (isMeasureKeyword(value)) {
+                try {
+                    m = new MeasureImpl(Measure.Type.valueOfShorthand(value), (Length) null);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalStateException(e.getMessage());
+                }
+            } else
+                return false;
         } else {
             Object[] treatmentsInner = new Object[] {NegativeTreatment.Error, findTreatment(treatments, MixedUnitsTreatment.class)};
             Length[] length = new Length[1];
@@ -64,7 +67,13 @@ public class Measures {
     }
 
     public static void badMeasure(String value, Location location, VerifierContext context, Object[] treatments) {
-        if (!isMeasureKeyword(value)) {
+        if (maybeMeasureKeyword(value)) {
+            Reporter reporter = (context != null) ? context.getReporter() : null;
+            if (reporter != null) {
+                reporter.logInfo(reporter.message(location.getLocator(), "*KEY*",
+                    "Unknown keyword ''{0}'' used in <measure> expression.", value));
+            }
+        } else {
             Object[] treatmentsInner = new Object[] {NegativeTreatment.Error, findTreatment(treatments, MixedUnitsTreatment.class)};
             Length[] length = new Length[1];
             if (!Lengths.isLength(value, location, context, treatmentsInner, length))
@@ -72,6 +81,10 @@ public class Measures {
         }
     }
 
+    private static boolean maybeMeasureKeyword(String s) {
+        return (s != null) && !s.isEmpty() && Character.isLetter(s.charAt(0));
+    }
+    
     private static boolean isMeasureKeyword(String s) {
         if (s.equals("auto"))
             return true;

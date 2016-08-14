@@ -36,6 +36,26 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidTTML2BadBPDNegative() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-bpd-negative.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBPDUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-bpd-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadIPDNegative() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-ipd-negative.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadIPDUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-ipd-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ContentProfilesDesignatorDelimiterSyntax() throws Exception {
         performInvalidityTest("ttml2-invalid-content-profiles-designator-delimiter-syntax.xml", -1, -1);
     }
