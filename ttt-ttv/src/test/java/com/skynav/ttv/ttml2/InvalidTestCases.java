@@ -36,6 +36,11 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidTTML2BadBackgroundRepeatUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-repeat-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBPDNegative() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-bpd-negative.xml", -1, -1);
     }
