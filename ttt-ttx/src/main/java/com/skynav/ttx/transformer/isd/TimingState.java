@@ -50,14 +50,14 @@ public class TimingState {
     private Object content;                             // (jaxb) content object
     private TimeParameters timeParameters;              // timing parameters
     // explicit timing state
-    private TimeCoordinate durExplicit = TimeCoordinate.UNSPECIFIED;
-    private TimeCoordinate beginExplicit = TimeCoordinate.UNSPECIFIED;
-    private TimeCoordinate endExplicit = TimeCoordinate.UNSPECIFIED;
+    private TimeCoordinate durExplicit                  = TimeCoordinate.UNSPECIFIED;
+    private TimeCoordinate beginExplicit                = TimeCoordinate.UNSPECIFIED;
+    private TimeCoordinate endExplicit                  = TimeCoordinate.UNSPECIFIED;
     // implicit timing state
-    private TimeCoordinate durImplicit = TimeCoordinate.UNRESOLVED;
+    private TimeCoordinate durImplicit                  = TimeCoordinate.UNRESOLVED;
     // active timing state
-    private TimeCoordinate beginActive = TimeCoordinate.UNRESOLVED;
-    private TimeCoordinate endActive = TimeCoordinate.UNRESOLVED;
+    private TimeCoordinate beginActive                  = TimeCoordinate.UNRESOLVED;
+    private TimeCoordinate endActive                    = TimeCoordinate.UNRESOLVED;
 
     public TimingState(TransformerContext context, Object content, TimeParameters timeParameters) {
         this.context = context;
@@ -112,7 +112,7 @@ public class TimingState {
     }
 
     private TimeCoordinate computeIntermediateActiveDuration() {
-        // SMIL 3.0 Timing §5.4.5 "Intermedia Active Duration Computation"
+        // SMIL 3.0 Timing §5.4.5 "Intermediate Active Duration Computation"
         TimeCoordinate p0 = getSimpleDuration();
         TimeCoordinate rc = getRepeatCount();
         TimeCoordinate rd = getRepeatDuration();

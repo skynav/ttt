@@ -26,14 +26,24 @@
 package com.skynav.ttv.verifier.ttml.style;
 
 import com.skynav.ttv.util.Location;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Positions;
 
 public class BackgroundPositionVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        /* [TBD] - IMPLEMENT ME */
-        return true;
+        Reporter reporter = context.getReporter();
+        boolean failed = false;
+        assert value instanceof String;
+        String s = (String) value;
+        String [] components = s.split("[ \t\r\n]+");
+        if (!Positions.isPosition(components, location, context, null)) {
+            reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Bad <position> expression ''{0}''.", s));
+            failed = true;
+        }
+        return !failed;
     }
 
 }

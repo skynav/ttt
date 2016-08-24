@@ -76,7 +76,7 @@ public class Positions {
     private static boolean is2ComponentPosition(String[] components, Location location, VerifierContext context, Length[] outputLengths) {
         if (components.length == 2) {
             Length[] lengths = new Length[4];
-            if (isOffsetPositionHorizontal(components, 0, location, context, lengths) && isOffsetPositionVertical(components, 0, location, context, lengths))
+            if (isOffsetPositionHorizontal(components, 0, location, context, lengths) && isOffsetPositionVertical(components, 1, location, context, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
         }
         return false;
