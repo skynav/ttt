@@ -42,6 +42,7 @@ import com.skynav.ttv.model.ttml2.tt.Set;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Style;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.AreaRectangle;
 import com.skynav.ttv.model.ttml2.ttd.BackgroundRepeat;
 import com.skynav.ttv.model.ttml2.ttd.Direction;
 import com.skynav.ttv.model.ttml2.ttd.Display;
@@ -64,10 +65,10 @@ import com.skynav.ttv.model.ttml2.ttd.Visibility;
 import com.skynav.ttv.model.ttml2.ttd.WrapOption;
 import com.skynav.ttv.model.ttml2.ttd.WritingMode;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.style.AreaRectangleVerifier;
 import com.skynav.ttv.verifier.ttml.style.BackgroundImageVerifier;
 import com.skynav.ttv.verifier.ttml.style.BackgroundPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.BackgroundRepeatVerifier;
-import com.skynav.ttv.verifier.ttml.style.BackgroundSizeVerifier;
 import com.skynav.ttv.verifier.ttml.style.BorderVerifier;
 import com.skynav.ttv.verifier.ttml.style.DirectionVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisparityVerifier;
@@ -110,7 +111,9 @@ import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
+    public static final QName backgroundClipAttributeName               = new QName(NAMESPACE,"backgroundClip");
     public static final QName backgroundImageAttributeName              = new QName(NAMESPACE,"backgroundImage");
+    public static final QName backgroundOriginAttributeName             = new QName(NAMESPACE,"backgroundOrigin");
     public static final QName backgroundPositionAttributeName           = new QName(NAMESPACE,"backgroundPosition");
     public static final QName backgroundSizeAttributeName               = new QName(NAMESPACE,"backgroundSize");
     public static final QName backgroundRepeatAttributeName             = new QName(NAMESPACE,"backgroundRepeat");
@@ -140,6 +143,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
     private static final Object[][] styleAccessorMap                    = new Object[][] {
         {
+            backgroundClipAttributeName,
+            "BackgroundClip",
+            AreaRectangle.class,
+            AreaRectangleVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            AreaRectangle.BORDER,
+            AreaRectangle.BORDER.value(),
+        },
+        {
             backgroundImageAttributeName,
             "BackgroundImage",
             String.class,
@@ -151,6 +165,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             null,
         },
         {
+            backgroundOriginAttributeName,
+            "BackgroundOrigin",
+            AreaRectangle.class,
+            AreaRectangleVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            AreaRectangle.PADDING,
+            AreaRectangle.PADDING.value(),
+        },
+        {
             backgroundPositionAttributeName,
             "BackgroundPosition",
             String.class,
@@ -158,7 +183,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
             Boolean.FALSE,
             Boolean.FALSE,
-            "none",
+            "0% 0%",
             null,
         },
         {
@@ -176,11 +201,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             backgroundSizeAttributeName,
             "BackgroundSize",
             String.class,
-            BackgroundSizeVerifier.class,
+            ExtentVerifier.class,
             Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
             Boolean.FALSE,
             Boolean.FALSE,
-            "none",
+            "auto",
             null,
         },
         {

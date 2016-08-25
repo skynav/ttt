@@ -8,17 +8,67 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
   <head>
     <styling>
+      <!-- legal backgroundClip values (exhaustive) -->
+      <style tts:backgroundClip="border"/>
+      <style tts:backgroundClip="content"/>
+      <style tts:backgroundClip="padding"/>
       <!-- legal backgroundImage values (not exhaustive) -->
       <style tts:backgroundImage="none"/>
+      <!-- legal backgroundOrigin values (exhaustive) -->
+      <style tts:backgroundOrigin="border"/>
+      <style tts:backgroundOrigin="content"/>
+      <style tts:backgroundOrigin="padding"/>
       <!-- legal backgroundPosition values (not exhaustive) -->
+      <style tts:backgroundPosition="1px"/>
+      <style tts:backgroundPosition="+1px"/>
+      <style tts:backgroundPosition="-1px"/>
       <style tts:backgroundPosition="0% 0%"/>
+      <style tts:backgroundPosition="1px 1em"/>
+      <style tts:backgroundPosition="left 50%"/>
+      <style tts:backgroundPosition="left center"/>
+      <!-- the following four items should be valid; see https://github.com/w3c/ttml2/issues/174
+      <style tts:backgroundPosition="center left"/>
+      <style tts:backgroundPosition="center right"/>
+      <style tts:backgroundPosition="top center"/>
+      <style tts:backgroundPosition="bottom center"/>
+      -->
+      <style tts:backgroundPosition="center center"/>
+      <style tts:backgroundPosition="center top 1px"/>
+      <style tts:backgroundPosition="top 1px center"/>
+      <style tts:backgroundPosition="left top 1px"/>
+      <style tts:backgroundPosition="right top 1px"/>
+      <style tts:backgroundPosition="center bottom 1px"/>
+      <style tts:backgroundPosition="bottom 1px center"/>
+      <style tts:backgroundPosition="left bottom 1px"/>
+      <style tts:backgroundPosition="right bottom 1px"/>
+      <style tts:backgroundPosition="center left 1px"/>
+      <style tts:backgroundPosition="left 1px center"/>
+      <style tts:backgroundPosition="top left 1px"/>
+      <style tts:backgroundPosition="bottom left 1px"/>
+      <style tts:backgroundPosition="center right 1px"/>
+      <style tts:backgroundPosition="right 1px center"/>
+      <style tts:backgroundPosition="top right 1px"/>
+      <style tts:backgroundPosition="bottom right 1px"/>
       <!-- legal backgroundRepeat values (exhaustive) -->
       <style tts:backgroundRepeat="repeat"/>
       <style tts:backgroundRepeat="repeatX"/>
       <style tts:backgroundRepeat="repeatY"/>
       <style tts:backgroundRepeat="noRepeat"/>
       <!-- legal backgroundSize values (not exhaustive) -->
-      <!-- <style tts:backgroundSize=""/> [FIXME] -->
+      <style tts:backgroundSize="auto"/>
+      <style tts:backgroundSize="contain"/>
+      <style tts:backgroundSize="cover"/>
+      <style tts:backgroundSize="auto auto"/>
+      <style tts:backgroundSize="available available"/>
+      <style tts:backgroundSize="fitContent fitContent"/>
+      <style tts:backgroundSize="minContent minContent"/>
+      <style tts:backgroundSize="maxContent maxContent"/>
+      <style tts:backgroundSize="1px auto"/>
+      <style tts:backgroundSize="auto 1px"/>
+      <style tts:backgroundSize="1px 1px"/>
+      <style tts:backgroundSize="1% auto"/>
+      <style tts:backgroundSize="auto 1%"/>
+      <style tts:backgroundSize="1% 1%"/>
       <!-- legal border values (not exhaustive) -->
       <style tts:border="2px solid red"/>
       <!-- legal bpd values (not exhaustive) -->
@@ -49,7 +99,6 @@
       <!-- legal extent values (not exhaustive) - ttml2 value extensions -->
       <style tts:extent="contain"/>
       <style tts:extent="cover"/>
-      <style tts:extent="auto auto"/>
       <style tts:extent="available available"/>
       <style tts:extent="fitContent fitContent"/>
       <style tts:extent="minContent minContent"/>

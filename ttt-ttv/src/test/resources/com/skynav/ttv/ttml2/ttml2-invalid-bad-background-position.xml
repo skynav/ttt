@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- invalid - bad tts:backgroundPosition values (interspersed with good values) -->
+<!-- invalid - bad tts:backgroundPosition values -->
 <tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
     ttp:version="2"
@@ -7,57 +7,28 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="18" ttva:expectedWarnings="0" ttva:model="ttml2">
   <head>
     <styling>
-      <!-- 1-component values -->
-      <style tts:backgroundPosition="foo"/>                             <!-- NG -->
-      <style tts:backgroundPosition="1"/>                               <!-- NG -->
-      <style tts:backgroundPosition="1x"/>                              <!-- NG -->
-      <style tts:backgroundPosition="1px"/>                             <!-- OK -->
-      <style tts:backgroundPosition="+1px"/>                            <!-- OK -->
-      <style tts:backgroundPosition="-1px"/>                            <!-- OK -->
-      <!-- 2-component values -->
-      <style tts:backgroundPosition="1px 1em"/>                         <!-- OK -->
-      <style tts:backgroundPosition="left foo"/>                        <!-- NG -->
-      <style tts:backgroundPosition="foo top"/>                         <!-- NG -->
-      <style tts:backgroundPosition="left 50%"/>                        <!-- OK -->
-      <style tts:backgroundPosition="50% left"/>                        <!-- NG -->
-      <style tts:backgroundPosition="left center"/>                     <!-- OK -->
-      <!-- the following four items should be OK; see https://github.com/w3c/ttml2/issues/174
-      <style tts:backgroundPosition="center left"/>
-      <style tts:backgroundPosition="center right"/>
-      <style tts:backgroundPosition="top center"/>
-      <style tts:backgroundPosition="bottom center"/>
-      -->
-      <style tts:backgroundPosition="center center"/>                   <!-- OK -->
-      <!-- 3-component values -->
-      <style tts:backgroundPosition="center top 1px"/>                  <!-- OK -->
-      <style tts:backgroundPosition="top center 1px"/>                  <!-- NG -->
-      <style tts:backgroundPosition="top 1px center"/>                  <!-- OK -->
-      <style tts:backgroundPosition="top 1px 1px"/>                     <!-- NG -->
-      <style tts:backgroundPosition="left top 1px"/>                    <!-- OK -->
-      <style tts:backgroundPosition="right top 1px"/>                   <!-- OK -->
-      <style tts:backgroundPosition="center bottom 1px"/>               <!-- OK -->
-      <style tts:backgroundPosition="bottom center 1px"/>               <!-- NG -->
-      <style tts:backgroundPosition="bottom 1px center"/>               <!-- OK -->
-      <style tts:backgroundPosition="bottom 1px 1px"/>                  <!-- NG -->
-      <style tts:backgroundPosition="left bottom 1px"/>                 <!-- OK -->
-      <style tts:backgroundPosition="right bottom 1px"/>                <!-- OK -->
-      <style tts:backgroundPosition="left left 1px"/>                   <!-- NG -->
-      <style tts:backgroundPosition="right right 1px"/>                 <!-- NG -->
-      <style tts:backgroundPosition="center left 1px"/>                 <!-- OK -->
-      <style tts:backgroundPosition="left center 1px"/>                 <!-- NG -->
-      <style tts:backgroundPosition="left 1px center"/>                 <!-- OK -->
-      <style tts:backgroundPosition="left 1px 1px"/>                    <!-- NG -->
-      <style tts:backgroundPosition="top left 1px"/>                    <!-- OK -->
-      <style tts:backgroundPosition="bottom left 1px"/>                 <!-- OK -->
-      <style tts:backgroundPosition="center right 1px"/>                <!-- OK -->
-      <style tts:backgroundPosition="right center 1px"/>                <!-- NG -->
-      <style tts:backgroundPosition="right 1px center"/>                <!-- OK -->
-      <style tts:backgroundPosition="right 1px 1px"/>                   <!-- NG -->
-      <style tts:backgroundPosition="top right 1px"/>                   <!-- OK -->
-      <style tts:backgroundPosition="bottom right 1px"/>                <!-- OK -->
-      <style tts:backgroundPosition="top top 1px"/>                     <!-- NG -->
-      <style tts:backgroundPosition="bottom bottom 1px"/>               <!-- NG -->
-      <!-- 4-component values -->
+      <!-- bad 1-component values -->
+      <style tts:backgroundPosition="foo"/>
+      <style tts:backgroundPosition="1"/>
+      <style tts:backgroundPosition="1x"/>
+      <!-- bad 2-component values -->
+      <style tts:backgroundPosition="left foo"/>
+      <style tts:backgroundPosition="foo top"/>
+      <style tts:backgroundPosition="50% left"/>
+      <!-- bad 3-component values -->
+      <style tts:backgroundPosition="top center 1px"/>
+      <style tts:backgroundPosition="top 1px 1px"/>
+      <style tts:backgroundPosition="bottom center 1px"/>
+      <style tts:backgroundPosition="bottom 1px 1px"/>
+      <style tts:backgroundPosition="left left 1px"/>
+      <style tts:backgroundPosition="right right 1px"/>
+      <style tts:backgroundPosition="left center 1px"/>
+      <style tts:backgroundPosition="left 1px 1px"/>
+      <style tts:backgroundPosition="right center 1px"/>
+      <style tts:backgroundPosition="right 1px 1px"/>
+      <style tts:backgroundPosition="top top 1px"/>
+      <style tts:backgroundPosition="bottom bottom 1px"/>
+      <!-- bad 4-component values -->
     </styling>
   </head>
 </tt>

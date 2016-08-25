@@ -17,6 +17,13 @@
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
+  <xs:simpleType name="areaRectangle">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="border"/>
+      <xs:enumeration value="padding"/>
+      <xs:enumeration value="content"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="backgroundImage">
     <xs:union>
       <xs:simpleType>
@@ -161,7 +168,7 @@
   </xs:simpleType>
   <xs:simpleType name="extent">
     <xs:annotation>
-      <xs:documentation>auto | measure measure</xs:documentation>
+      <xs:documentation>auto | contain | cover | &lt;measure&gt; &lt;measure&gt;</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>

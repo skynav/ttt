@@ -25,15 +25,20 @@
 
 package com.skynav.ttv.verifier.ttml.style;
 
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 
-public class BackgroundSizeVerifier implements StyleValueVerifier {
+public class AreaRectangleVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        /* [TBD] - IMPLEMENT ME */
-        return true;
+        // Schema validation phase (3) reports invalid values.
+        Model model = context.getModel();
+        if (model.isTTMLVersion(2) && (value instanceof com.skynav.ttv.model.ttml2.ttd.AreaRectangle))
+            return true;
+        else
+            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
     }
 
 }
