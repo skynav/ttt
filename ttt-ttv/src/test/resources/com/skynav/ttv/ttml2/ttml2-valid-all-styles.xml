@@ -155,6 +155,18 @@
       <style tts:letterSpacing="1vw"/>
       <style tts:letterSpacing="1vh"/>
       <style tts:letterSpacing="1%"/>
+      <style tts:letterSpacing="-0px"/>
+      <style tts:letterSpacing="-0em"/>
+      <style tts:letterSpacing="-0c"/>
+      <style tts:letterSpacing="-0vw"/>
+      <style tts:letterSpacing="-0vh"/>
+      <style tts:letterSpacing="-0%"/>
+      <style tts:letterSpacing="-1px"/>
+      <style tts:letterSpacing="-1em"/>
+      <style tts:letterSpacing="-1c"/>
+      <style tts:letterSpacing="-1vw"/>
+      <style tts:letterSpacing="-1vh"/>
+      <style tts:letterSpacing="-1%"/>
       <!-- legal position values (not exhaustive) -->
       <style tts:position="center"/>
       <!-- legal ruby values (exhaustive) -->

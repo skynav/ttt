@@ -66,6 +66,31 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2LetterSpacingAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-letter-spacing-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2LetterSpacingEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-letter-spacing-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2LetterSpacingExtraLength() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-letter-spacing-extra-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2LetterSpacingMissingUnit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-letter-spacing-missing-unit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2LetterSpacingUnknownUnit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-letter-spacing-unknown-unit.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ContentProfilesDesignatorDelimiterSyntax() throws Exception {
         performInvalidityTest("ttml2-invalid-content-profiles-designator-delimiter-syntax.xml", -1, -1);
     }
