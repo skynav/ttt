@@ -845,11 +845,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidBadLineHeightCommaDelimiterWithWhitespace() throws Exception {
-        performInvalidityTest("ttml1-invalid-bad-line-height-comma-delimiter-with-whitespace.xml", 1, 0);
-    }
-
-    @Test
     public void testInvalidBadLineHeightEmpty() throws Exception {
         performInvalidityTest("ttml1-invalid-bad-line-height-empty.xml", 1, 0);
     }
@@ -867,11 +862,6 @@ public class InvalidTestCases {
     @Test
     public void testInvalidBadLineHeightNegativeHeight() throws Exception {
         performInvalidityTest("ttml1-invalid-bad-line-height-negative-height.xml", 1, 0);
-    }
-
-    @Test
-    public void testInvalidBadLineHeightSemicolonDelimiterSansWhitespace() throws Exception {
-        performInvalidityTest("ttml1-invalid-bad-line-height-semicolon-delimiter-sans-whitespace.xml", 1, 0);
     }
 
     @Test

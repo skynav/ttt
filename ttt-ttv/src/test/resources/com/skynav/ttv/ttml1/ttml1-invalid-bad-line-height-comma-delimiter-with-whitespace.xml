@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- invalid - bad tts:lineHeight value - comma delimiter with whitespace -->
-<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
-  <head/>
-  <body tts:lineHeight="100px, 200px"/>
-</tt>

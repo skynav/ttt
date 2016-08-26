@@ -2,5 +2,5 @@
 <!-- invalid - tts:lineHeight value - negative height -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
   <head/>
-  <body tts:lineHeight="100.1px -200.0px"/>
+  <body tts:lineHeight="-200.0px"/>
 </tt>
