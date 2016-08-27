@@ -110,23 +110,30 @@ public class Lengths {
                     }
                 }
             }
-            Length.Unit unitsValue;
+            Length.Unit unitsValue = null;
             if (m.groupCount() > 1) {
                 String units = m.group(2);
-                try {
-                    unitsValue = Length.Unit.valueOfShorthand(units);
-                    int unitVersion = unitsValue.fromVersion();
-                    int ttmlVersion = context.getModel().getTTMLVersion();
-                    if (unitVersion > ttmlVersion) {
+                if (units != null) {
+                    try {
+                        unitsValue = Length.Unit.valueOfShorthand(units);
+                        int unitVersion = unitsValue.fromVersion();
+                        int ttmlVersion = context.getModel().getTTMLVersion();
+                        if (unitVersion > ttmlVersion) {
+                            return false;
+                        } else if (!isUnitsPermitted(unitsValue, location, context))
+                            return false;
+                    } catch (IllegalArgumentException e) {
                         return false;
                     }
-                } catch (IllegalArgumentException e) {
-                    return false;
                 }
-            } else
-                return false;
-            if (!isUnitsPermitted(unitsValue, location, context))
-                return false;
+            }
+            if (unitsValue == null) {
+                if (isUnitsRequired(location, context)) {
+                    return false;
+                } else {
+                    unitsValue = Length.Unit.Pixel;
+                }
+            }
             if (outputLength != null)
                 outputLength[0] = new LengthImpl(numberValue, unitsValue);
             if (locator != null)
@@ -333,21 +340,22 @@ public class Lengths {
 
         if (negative)
             numberValue = -numberValue;
+
         if (treatments != null) {
             NegativeTreatment negativeTreatment = (NegativeTreatment) treatments[0];
             if ((numberValue < 0) && (negativeTreatment == NegativeTreatment.Error)) {
                 reporter.logInfo(reporter.message(locator, "*KEY*",
                     "Bad <length> expression, negative value {0} not permitted.", Numbers.normalize(numberValue)));
             }
-            if (units == null) {
-                reporter.logInfo(reporter.message(locator, "*KEY*",
-                    "Bad <length> expression, missing or unknown units, expected one of {0}.", Length.Unit.shorthands()));
-            }
         }
 
-        if (!isUnitsPermitted(units, location, context))
-            unitsNotPermitted(units, location, context);
-
+        if (units == null) {
+            if (isUnitsRequired(location, context))
+                unitsRequired(location, context);
+        } else {
+            if (!isUnitsPermitted(units, location, context))
+                unitsNotPermitted(units, location, context);
+        }
     }
 
     private static boolean isUnitsPermitted(Length.Unit units, Location location, VerifierContext context) {
@@ -358,6 +366,16 @@ public class Lengths {
         Reporter reporter = context.getReporter();
         reporter.logInfo(reporter.message(location.getLocator(),
             "*KEY*", "Bad <length> expression, units value {0} not permitted on {1}.", units.shorthand(), location.getAttributeName()));
+    }
+
+    private static boolean isUnitsRequired(Location location, VerifierContext context) {
+        return context.getModel().getStyleVerifier().isLengthUnitsRequired(location.getElementName(), location.getAttributeName());
+    }
+
+    private static void unitsRequired(Location location, VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message(location.getLocator(),
+            "*KEY*", "Bad <length> expression, missing units, expected one of {0}.", Length.Unit.shorthands()));
     }
 
     public static boolean isLengths(String value, Location location, VerifierContext context, Integer[] minMax, Object[] treatments, List<Length> outputLengths) {

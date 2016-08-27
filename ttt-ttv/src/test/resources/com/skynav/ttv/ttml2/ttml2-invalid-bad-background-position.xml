@@ -8,8 +8,8 @@
   <head>
     <styling>
       <!-- bad 1-component values -->
+      <style tts:backgroundPosition=""/>
       <style tts:backgroundPosition="foo"/>
-      <style tts:backgroundPosition="1"/>
       <style tts:backgroundPosition="1x"/>
       <!-- bad 2-component values -->
       <style tts:backgroundPosition="left foo"/>

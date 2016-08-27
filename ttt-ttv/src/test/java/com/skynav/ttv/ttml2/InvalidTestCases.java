@@ -56,6 +56,26 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2DisparityAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-disparity-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisparityEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-disparity-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisparityExtraLength() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-disparity-extra-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisparityUnknownUnit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-disparity-unknown-unit.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadIPDNegative() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-ipd-negative.xml", -1, -1);
     }
@@ -78,11 +98,6 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2LetterSpacingExtraLength() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-letter-spacing-extra-length.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidTTML2LetterSpacingMissingUnit() throws Exception {
-        performInvalidityTest("ttml2-invalid-bad-letter-spacing-missing-unit.xml", -1, -1);
     }
 
     @Test

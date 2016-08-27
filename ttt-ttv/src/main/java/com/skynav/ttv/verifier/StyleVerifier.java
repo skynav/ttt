@@ -109,4 +109,12 @@ public interface StyleVerifier extends ItemVerifier {
      */
     boolean isLengthUnitsPermitted(QName eltName, QName styleName, Length.Unit units);
 
+    /**
+     * Determine if length units is required.
+     * @param eltName name of element type
+     * @param styleName name of style
+     * @return true if length unit is required
+     */
+    boolean isLengthUnitsRequired(QName eltName, QName styleName);
+
 }

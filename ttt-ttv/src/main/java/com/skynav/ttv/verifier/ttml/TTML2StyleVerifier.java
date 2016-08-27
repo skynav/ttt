@@ -708,6 +708,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     }
 
     @Override
+    public boolean isLengthUnitsRequired(QName eltName, QName styleName) {
+        return false;
+    }
+
+    @Override
     protected boolean isInitial(Object content) {
         return content instanceof Initial;
     }

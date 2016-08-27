@@ -489,6 +489,10 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
         return true;
     }
 
+    public boolean isLengthUnitsRequired(QName eltName, QName styleName) {
+        return true;
+    }
+
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
         setState(content, context);
         if (type == ItemType.Attributes)

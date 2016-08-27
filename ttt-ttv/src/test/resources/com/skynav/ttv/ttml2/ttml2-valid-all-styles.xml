@@ -96,6 +96,12 @@
       <style tts:disparity="1"/>
       <style tts:disparity="1%"/>
       <style tts:disparity="1px"/>
+      <style tts:disparity="-0"/>
+      <style tts:disparity="-0%"/>
+      <style tts:disparity="-0px"/>
+      <style tts:disparity="-1"/>
+      <style tts:disparity="-1%"/>
+      <style tts:disparity="-1px"/>
       <!-- legal extent values (not exhaustive) - ttml2 value extensions -->
       <style tts:extent="contain"/>
       <style tts:extent="cover"/>

@@ -28,12 +28,23 @@ package com.skynav.ttv.verifier.ttml.style;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class DisparityVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        /* [TBD] - IMPLEMENT ME */
-        return true;
+        assert value instanceof String;
+        String s = (String) value;
+        Integer[] minMax = new Integer[] { 1, 1 };
+        Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
+        if (Lengths.isLengths(s, location, context, minMax, treatments, null))
+            return true;
+        else {
+            Lengths.badLengths(s, location, context, minMax, treatments);
+            return false;
+        }
     }
 
 }
