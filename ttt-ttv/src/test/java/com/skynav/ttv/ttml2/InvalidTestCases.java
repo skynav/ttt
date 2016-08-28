@@ -36,8 +36,48 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidTTML2BadBackgroundClipAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-clip-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundClipEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-clip-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundClipUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-clip-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundOriginAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-origin-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundOriginEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-origin-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundOriginUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-origin-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBackgroundPosition() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-background-position.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundRepeatAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-repeat-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundRepeatEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-repeat-empty.xml", -1, -1);
     }
 
     @Test
@@ -103,6 +143,21 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2LetterSpacingUnknownUnit() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-letter-spacing-unknown-unit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2TextOrientationAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-text-orientation-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2TextOrientationEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-text-orientation-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2TextOrientationUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-text-orientation-unknown-keyword.xml", -1, -1);
     }
 
     @Test

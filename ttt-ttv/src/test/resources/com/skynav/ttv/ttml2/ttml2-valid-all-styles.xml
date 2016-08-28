@@ -204,6 +204,18 @@
       <style tts:rubyOffset="1vw"/>
       <style tts:rubyOffset="1vh"/>
       <style tts:rubyOffset="1%"/>
+      <style tts:rubyOffset="-0px"/>
+      <style tts:rubyOffset="-0em"/>
+      <style tts:rubyOffset="-0c"/>
+      <style tts:rubyOffset="-0vw"/>
+      <style tts:rubyOffset="-0vh"/>
+      <style tts:rubyOffset="-0%"/>
+      <style tts:rubyOffset="-1px"/>
+      <style tts:rubyOffset="-1em"/>
+      <style tts:rubyOffset="-1c"/>
+      <style tts:rubyOffset="-1vw"/>
+      <style tts:rubyOffset="-1vh"/>
+      <style tts:rubyOffset="-1%"/>
       <!-- legal rubyOverflow values (exhaustive) -->
       <style tts:rubyOverflow="shiftRuby"/>
       <style tts:rubyOverflow="shiftBase"/>
