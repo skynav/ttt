@@ -86,6 +86,36 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadBorderAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderExtraColor() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-extra-color.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderExtraStyle() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-extra-style.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderExtraThickness() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-extra-thickness.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBPDNegative() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-bpd-negative.xml", -1, -1);
     }

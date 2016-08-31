@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!-- valid - all defined ttml2 specific style properties and enumerable values -->
 <tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
@@ -70,7 +71,28 @@
       <style tts:backgroundSize="auto 1%"/>
       <style tts:backgroundSize="1% 1%"/>
       <!-- legal border values (not exhaustive) -->
+      <style tts:border="none"/>
+      <style tts:border="dotted"/>
+      <style tts:border="dashed"/>
+      <style tts:border="double"/>
+      <style tts:border="solid"/>
+      <style tts:border="thin"/>
+      <style tts:border="medium"/>
+      <style tts:border="thick"/>
+      <style tts:border="2px"/>
+      <style tts:border="red"/>
+      <style tts:border="2px solid"/>
+      <style tts:border="solid 2px"/>
+      <style tts:border="solid red"/>
+      <style tts:border="red solid"/>
+      <style tts:border="2px red"/>
+      <style tts:border="red 2px"/>
       <style tts:border="2px solid red"/>
+      <style tts:border="2px red solid"/>
+      <style tts:border="solid 2px red"/>
+      <style tts:border="solid red 2px"/>
+      <style tts:border="red 2px solid"/>
+      <style tts:border="red solid 2px"/>
       <!-- legal bpd values (not exhaustive) -->
       <style tts:bpd="auto"/>
       <style tts:bpd="available"/>

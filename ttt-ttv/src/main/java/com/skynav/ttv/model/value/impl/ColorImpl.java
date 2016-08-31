@@ -28,15 +28,22 @@ package com.skynav.ttv.model.value.impl;
 import com.skynav.ttv.model.value.Color;
 
 public class ColorImpl implements Color {
+
+    public static final Color CURRENT = new ColorImpl();
+
     private double red;
     private double green;
     private double blue;
     private double alpha;
+
     public ColorImpl(double red, double green, double blue, double alpha) {
         this.red = clamp(red);
         this.green = clamp(green);
         this.blue = clamp(blue);
         this.alpha = clamp(alpha);
+    }
+    private ColorImpl() {
+        this.red = this.green = this.blue = this.alpha = Double.NaN;
     }
     private double clamp(double component) {
         if (Double.isNaN(component))
@@ -59,13 +66,37 @@ public class ColorImpl implements Color {
     public double getAlpha() {
         return alpha;
     }
+    public boolean isCurrent() {
+        return this == CURRENT;
+    }
     public int hashCode() {
-        return Double.valueOf(red).hashCode() ^ Double.valueOf(green).hashCode() ^ Double.valueOf(blue).hashCode() ^ Double.valueOf(alpha).hashCode();
+        if (isCurrent())
+            return -1;
+        else {
+            int r = Double.valueOf(red).hashCode();
+            r = rotateRight(r, 0);
+            int g = Double.valueOf(green).hashCode();
+            g = rotateRight(g, 8);
+            int b = Double.valueOf(blue).hashCode();
+            b = rotateRight(b, 16);
+            int a = Double.valueOf(alpha).hashCode();
+            a = rotateRight(a, 24);
+            return r ^ g ^ b ^ a;
+        }
+    }
+    private static int rotateRight(int bits, int n) {
+        n = n % Integer.SIZE;
+        return (bits >>> n) | (bits << (Integer.SIZE - n));
     }
     public boolean equals(Object o) {
         if (o instanceof Color) {
             Color c = (Color) o;
-            if (c.getRed() != red)
+            if (isCurrent() ^ c.isCurrent())
+                return false;
+            else if (isCurrent()) {
+                assert c.isCurrent();
+                return true;
+            } else if (c.getRed() != red)
                 return false;
             else if (c.getGreen() != green)
                 return false;
@@ -80,23 +111,27 @@ public class ColorImpl implements Color {
     }
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("rgb");
-        if (alpha != 1)
-            sb.append('a');
-        sb.append('(');
-        sb.append(getComponentAsString(red));
-        sb.append(',');
-        sb.append(getComponentAsString(green));
-        sb.append(',');
-        sb.append(getComponentAsString(blue));
-        if (alpha != 1) {
+        if (isCurrent())
+            sb.append("current");
+        else {
+            sb.append("rgb");
+            if (alpha != 1)
+                sb.append('a');
+            sb.append('(');
+            sb.append(getComponentAsString(red));
             sb.append(',');
-            sb.append(getComponentAsString(alpha));
+            sb.append(getComponentAsString(green));
+            sb.append(',');
+            sb.append(getComponentAsString(blue));
+            if (alpha != 1) {
+                sb.append(',');
+                sb.append(getComponentAsString(alpha));
+            }
+            sb.append(')');
         }
-        sb.append(')');
         return sb.toString();
     }
-    private String getComponentAsString(double component) {
+    private static String getComponentAsString(double component) {
         return Integer.toString((int) Math.floor(component * 255));
     }
     public static Color fromRGBHash(String hash) {

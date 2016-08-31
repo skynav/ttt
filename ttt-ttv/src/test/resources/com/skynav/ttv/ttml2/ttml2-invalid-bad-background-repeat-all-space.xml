@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- invalid - bad tts:backgroundRepeat value - empty value -->
+<!-- invalid - bad tts:backgroundRepeat value - all space value -->
 <tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
     ttp:version="2"

@@ -26,6 +26,7 @@
 package com.skynav.ttv.model.value;
 
 public interface Color {
+    boolean isCurrent();
     double getRed();
     double getGreen();
     double getBlue();
