@@ -7,11 +7,11 @@
     schemaLocation="ttml2-datatypes.xsd"/>
   <xs:attribute name="backgroundClip" type="ttd:areaRectangle"/>
   <xs:attribute name="backgroundColor" type="ttd:color"/>
+  <xs:attribute name="backgroundExtent" type="ttd:extent"/>
   <xs:attribute name="backgroundImage" type="ttd:backgroundImage"/>
   <xs:attribute name="backgroundOrigin" type="ttd:areaRectangle"/>
   <xs:attribute name="backgroundPosition" type="ttd:position"/>
   <xs:attribute name="backgroundRepeat" type="ttd:backgroundRepeat"/>
-  <xs:attribute name="backgroundSize" type="ttd:extent"/>
   <xs:attribute name="border" type="ttd:border"/>
   <xs:attribute name="bpd" type="ttd:measure"/>
   <xs:attribute name="color" type="ttd:color"/>
@@ -60,11 +60,11 @@
   <xs:attributeGroup name="Styling.attrib.class">
     <xs:attribute ref="tts:backgroundClip"/>
     <xs:attribute ref="tts:backgroundColor"/>
+    <xs:attribute ref="tts:backgroundExtent"/>
     <xs:attribute ref="tts:backgroundImage"/>
     <xs:attribute ref="tts:backgroundOrigin"/>
     <xs:attribute ref="tts:backgroundPosition"/>
     <xs:attribute ref="tts:backgroundRepeat"/>
-    <xs:attribute ref="tts:backgroundSize"/>
     <xs:attribute ref="tts:border"/>
     <xs:attribute ref="tts:bpd"/>
     <xs:attribute ref="tts:color"/>

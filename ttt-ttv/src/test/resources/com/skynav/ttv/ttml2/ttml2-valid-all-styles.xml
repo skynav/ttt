@@ -15,6 +15,21 @@
       <style tts:backgroundClip="padding"/>
       <!-- legal backgroundImage values (not exhaustive) -->
       <style tts:backgroundImage="none"/>
+      <!-- legal backgroundExtent values (not exhaustive) -->
+      <style tts:backgroundExtent="auto"/>
+      <style tts:backgroundExtent="contain"/>
+      <style tts:backgroundExtent="cover"/>
+      <style tts:backgroundExtent="auto auto"/>
+      <style tts:backgroundExtent="available available"/>
+      <style tts:backgroundExtent="fitContent fitContent"/>
+      <style tts:backgroundExtent="minContent minContent"/>
+      <style tts:backgroundExtent="maxContent maxContent"/>
+      <style tts:backgroundExtent="1px auto"/>
+      <style tts:backgroundExtent="auto 1px"/>
+      <style tts:backgroundExtent="1px 1px"/>
+      <style tts:backgroundExtent="1% auto"/>
+      <style tts:backgroundExtent="auto 1%"/>
+      <style tts:backgroundExtent="1% 1%"/>
       <!-- legal backgroundOrigin values (exhaustive) -->
       <style tts:backgroundOrigin="border"/>
       <style tts:backgroundOrigin="content"/>
@@ -55,21 +70,6 @@
       <style tts:backgroundRepeat="repeatX"/>
       <style tts:backgroundRepeat="repeatY"/>
       <style tts:backgroundRepeat="noRepeat"/>
-      <!-- legal backgroundSize values (not exhaustive) -->
-      <style tts:backgroundSize="auto"/>
-      <style tts:backgroundSize="contain"/>
-      <style tts:backgroundSize="cover"/>
-      <style tts:backgroundSize="auto auto"/>
-      <style tts:backgroundSize="available available"/>
-      <style tts:backgroundSize="fitContent fitContent"/>
-      <style tts:backgroundSize="minContent minContent"/>
-      <style tts:backgroundSize="maxContent maxContent"/>
-      <style tts:backgroundSize="1px auto"/>
-      <style tts:backgroundSize="auto 1px"/>
-      <style tts:backgroundSize="1px 1px"/>
-      <style tts:backgroundSize="1% auto"/>
-      <style tts:backgroundSize="auto 1%"/>
-      <style tts:backgroundSize="1% 1%"/>
       <!-- legal border values (not exhaustive) -->
       <style tts:border="none"/>
       <style tts:border="dotted"/>

@@ -112,10 +112,10 @@ import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
     public static final QName backgroundClipAttributeName               = new QName(NAMESPACE,"backgroundClip");
+    public static final QName backgroundExtentAttributeName             = new QName(NAMESPACE,"backgroundExtent");
     public static final QName backgroundImageAttributeName              = new QName(NAMESPACE,"backgroundImage");
     public static final QName backgroundOriginAttributeName             = new QName(NAMESPACE,"backgroundOrigin");
     public static final QName backgroundPositionAttributeName           = new QName(NAMESPACE,"backgroundPosition");
-    public static final QName backgroundSizeAttributeName               = new QName(NAMESPACE,"backgroundSize");
     public static final QName backgroundRepeatAttributeName             = new QName(NAMESPACE,"backgroundRepeat");
     public static final QName borderAttributeName                       = new QName(NAMESPACE,"border");
     public static final QName bpdAttributeName                          = new QName(NAMESPACE,"bpd");
@@ -198,8 +198,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             BackgroundRepeat.REPEAT.value(),
         },
         {
-            backgroundSizeAttributeName,
-            "BackgroundSize",
+            backgroundExtentAttributeName,
+            "BackgroundExtent",
             String.class,
             ExtentVerifier.class,
             Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
