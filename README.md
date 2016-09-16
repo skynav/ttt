@@ -17,8 +17,8 @@ A collection of related tools that provide support for or make use of the W3C Ti
 
 Prior to performing a build, the following requirements must be met:
 
-- Install Java JDK 7.
-- Install maven 3.
+- Install Java JDK 7 (or 8).
+- Install maven 3.1 (or greater).
 - Perform one-time installation of third party library dependencies as follows, where `$TTT_HOME` is set to the directory where the `ttt` repository is cloned:
 
 <pre>
