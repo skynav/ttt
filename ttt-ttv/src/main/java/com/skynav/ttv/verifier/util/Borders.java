@@ -43,7 +43,6 @@ public class Borders {
         Border.Style    bs = null;      // border style
         Color           bc = null;      // border color
         Length          bt = null;      // border thickness
-        Length[]        br = null;      // border radii
         for (int i = 0; i < nc; ++i) {
             String c = components[i];
             if (isStyleKeyword(c)) {
@@ -89,7 +88,7 @@ public class Borders {
                 bc = ColorImpl.CURRENT;
         }
         if (outputBorder != null)
-            outputBorder[0] = new BorderImpl(bs, bc, bt, br);
+            outputBorder[0] = new BorderImpl(bs, bc, bt, null /*FIXME - provide radii*/);
         return true;
     }
 

@@ -84,7 +84,7 @@ public class Measures {
     private static boolean maybeMeasureKeyword(String s) {
         return (s != null) && !s.isEmpty() && Character.isLetter(s.charAt(0));
     }
-    
+
     private static boolean isMeasureKeyword(String s) {
         if (s.equals("auto"))
             return true;
