@@ -50,6 +50,7 @@
     <module>ttt-ttv</module>
     <module>ttt-ttx</module>
     <module>ttt-ttxv</module>
+    <module>ttt-ttxv-all</module>
     <module>ttt-ttpe</module>
     <module>ttt-cap2tt</module>
   </modules>

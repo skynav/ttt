@@ -523,7 +523,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            return null;
         } catch (SecurityException e) {
             throw new RuntimeException(e);
         }
