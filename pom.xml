@@ -52,6 +52,7 @@
     <module>ttt-ttxv</module>
     <module>ttt-ttxv-all</module>
     <module>ttt-ttpe</module>
+    <module>ttt-ttpe-all</module>
     <module>ttt-cap2tt</module>
   </modules>
 
