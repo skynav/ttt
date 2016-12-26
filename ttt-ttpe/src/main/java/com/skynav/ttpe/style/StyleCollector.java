@@ -235,6 +235,7 @@ public class StyleCollector {
     }
 
     public void collectSpanStyles(Element e, int begin, int end) {
+        assert (begin < 0) || (end - begin) > 0;
         StyleSet styles = getStyles(e);
 
         // collect common styles
@@ -330,6 +331,8 @@ public class StyleCollector {
                     sb.append((char) Characters.UC_PDF);
                     t.replaceWholeText(sb.toString());
                 }
+            } else {
+                // [TBD] handle multiple children
             }
         }
     }
@@ -466,6 +469,8 @@ public class StyleCollector {
     }
 
     protected void collectCommonStyles(Element e, int begin, int end, StyleSet styles) {
+        assert (begin < 0) || (end - begin) > 0;
+
         StyleSpecification s;
         Object v;
 
@@ -738,6 +743,7 @@ public class StyleCollector {
     }
 
     protected void addAttribute(StyleAttribute attribute, Object value, int begin, int end) {
+        assert (begin < 0) || (end - begin) > 0;
         if (attributes == null)
             attributes = new java.util.ArrayList<StyleAttributeInterval>();
         attributes.add(new StyleAttributeInterval(attribute, value, begin, end));

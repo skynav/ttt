@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" xmlns:nttm="http://www.netflix.com/ns/ttml#metadata" xmlns:tt="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:xml="http://www.w3.org/XML/1998/namespace" ttp:tickRate="10000000" ttp:version="2" xml:lang="ja" xml:space="default" xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
+<head>
+<styling>
+<initial tts:backgroundColor="transparent" tts:color="white" tts:extent="auto" tts:fontSize="6.000vh" tts:lineHeight="7.500vh" tts:opacity="1.000" tts:origin="auto" tts:showBackground="whenActive" tts:textOutline="red 0.100em" tts:writingMode="lrtb"/>
+<style xml:id="style0" tts:fontShear="16.78842%" tts:fontSize="6.000vh" tts:lineHeight="7.500vh" tts:textAlign="center"/>
+<style xml:id="style1" tts:fontShear="16.78842%" tts:fontSize="6.000vh" tts:lineHeight="7.500vh"/>
+<style xml:id="style2" tts:fontShear="16.78842%" tts:fontSize="6.000vh" tts:lineHeight="7.500vh" tts:ruby="container"/>
+<style xml:id="style3" tts:fontShear="16.78842%" tts:fontSize="6.000vh" tts:lineHeight="7.500vh" tts:ruby="base"/>
+<style xml:id="style4" tts:fontShear="16.78842%" tts:ruby="text" tts:rubyPosition="before"/>
+</styling>
+<layout>
+<region xml:id="region0" tts:displayAlign="after" tts:extent="80.000% 30.000%" tts:position="center bottom 10vh" tts:showBackground="whenActive"/>
+</layout>
+</head>
+<body xml:space="preserve">
+<div>
+<p xml:id="subtitle1" begin="10017000000t" end="10031000000t" region="region0" style="style0"><span style="style1">“ビッグハウス･<br/>ビューグル新聞”</span></p>
+<p xml:id="subtitle2" begin="12863333333t" end="12874333333t" region="region0" style="style0"><span style="style1">“タンポン”</span></p>
+<p xml:id="subtitle3" begin="28622000000t" end="28647000000t" region="region0" style="style0"><span style="style1">“ふん<span style="style2"><span style="style3">堆肥</span><span style="style4">たいひ</span></span>　有機肥料”</span></p>
+</div>
+</body>
+</tt>

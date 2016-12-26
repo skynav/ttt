@@ -2247,7 +2247,7 @@ public class TimedTextVerifier implements VerifierContext {
         int numFailure = 0;
         int numSuccess = 0;
         for (String uri : nonOptionArgs) {
-            switch (rvCode(verify(args, uri, resultProcessor))) {
+            switch (rvCode(verify(args, maybeConvertToFileURLString(uri), resultProcessor))) {
             case RV_PASS:
                 ++numSuccess;
                 break;
@@ -2377,6 +2377,49 @@ public class TimedTextVerifier implements VerifierContext {
 
     public static void main(String[] args) {
         Runtime.getRuntime().exit(new TimedTextVerifier().run(args));
+    }
+
+    private static String maybeConvertToFileURLString(String s) {
+        if (isRelativeFilePath(s))
+            return convertRelativeFilePathToFileURLString(s);
+        else if (isAbsoluteFilePath(s))
+            return convertAbsoluteFilePathToFileURLString(s);
+        else
+            return s;
+    }
+
+    private static boolean isRelativeFilePath(String s) {
+        String rp1 = new String(new char[]{'.',File.separatorChar});
+        if (s.startsWith(rp1))
+            return true;
+        String rp2 = new String(new char[]{'.','.',File.separatorChar});
+        if (s.startsWith(rp2))
+            return true;
+        return false;
+    }
+
+    private static String convertRelativeFilePathToFileURLString(String s) {
+        return s;
+    }
+
+    private static boolean isAbsoluteFilePath(String s) {
+        return s.startsWith(File.separator);
+    }
+
+    private static String convertAbsoluteFilePathToFileURLString(String s) {
+        return "file://" + escapeURL(s);
+    }
+
+    private static String escapeURL(String s) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0, n = s.length(); i < n; ++i) {
+            char c = s.charAt(i);
+            if (Character.isWhitespace(c))
+                sb.append("%20");
+            else
+                sb.append(c);
+        }
+        return sb.toString();
     }
 
     private static String[] externalRepresentations(URI[] uris) {

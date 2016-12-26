@@ -59,24 +59,23 @@ public class PhraseCollector {
             collectParagraph(e);
         else if (Documents.isElement(e, ttSpanElementName))
             collectSpan(e);
-        emit(e);
+        maybeEmit(e);
         return extract();
     }
 
     protected void collectParagraph(Element e) {
         if (styleCollector.isDisplayed(e)) {
             collectChildren(e);
-            emit(e);
+            maybeEmit(e);
         }
     }
 
     protected void collectSpan(Element e) {
         if (styleCollector.isDisplayed(e)) {
-            int begin = text.length();
+            assert text.length() == 0;
             styleCollector.maybeWrapWithBidiControls(e);
             collectChildren(e);
-            styleCollector.collectSpanStyles(e, begin, text.length());
-            emit(e);
+            maybeEmit(e);
         }
     }
 
@@ -86,7 +85,7 @@ public class PhraseCollector {
                 String t = ((Text) n).getWholeText();
                 for (int i = findPhraseBreak(t); (t != null) && (i >= 0);) {
                     text.append(t.substring(0, i));
-                    emit(e);
+                    maybeEmit(e);
                     if ((i + 1) < t.length())
                         t = t.substring(i + 1);
                     else
@@ -99,7 +98,7 @@ public class PhraseCollector {
                 if (breakPhrase(c))
                     break;
                 else if (Documents.isElement(c, ttSpanElementName)) {
-                    emit(e);
+                    maybeEmit(e);
                     collectSpan(c);
                 } else if (Documents.isElement(c, ttBreakElementName))
                     collectBreak(c);
@@ -118,7 +117,6 @@ public class PhraseCollector {
     protected void collectBreak(Element e) {
         if (styleCollector.isDisplayed(e)) {
             text.append((char) Characters.UC_LINE_SEPARATOR);
-            emit(e);
         }
     }
 
@@ -128,12 +126,18 @@ public class PhraseCollector {
         this.text = new StringBuffer();
     }
 
-    protected void emit(Element e) {
+    protected void maybeEmit(Element e) {
         if (text.length() > 0) {
-            String content = text.toString();
-            styleCollector.collectContentStyles(content, 0, content.length());
-            add(newPhrase(e, content, styleCollector.extract()));
+            styleCollector.collectSpanStyles(e, 0, text.length());
+            emit(e);
         }
+    }
+
+    protected void emit(Element e) {
+        assert text.length() > 0;
+        String content = text.toString();
+        styleCollector.collectContentStyles(content, 0, content.length());
+        add(newPhrase(e, content, styleCollector.extract()));
         text.setLength(0);
     }
 

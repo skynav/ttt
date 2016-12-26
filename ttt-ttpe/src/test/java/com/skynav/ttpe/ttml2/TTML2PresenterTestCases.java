@@ -98,6 +98,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2StylingIssue179() throws Exception {
+        performPresentationTest("ttml2-styling-issue-179.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2RegionDisplayAlignJustifyLRTB() throws Exception {
         performPresentationTest("ttml2-region-display-align-justify-lrtb.xml", 0, 0);
     }
