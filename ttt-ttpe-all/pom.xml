@@ -4,7 +4,7 @@
 
   <artifactId>ttt-ttpe-all</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>Timed Text Transforming Verifier with Dependencies</description>
+  <description>Timed Text Presentation Engine with Dependencies</description>
   <packaging>pom</packaging>
   
   <parent>
