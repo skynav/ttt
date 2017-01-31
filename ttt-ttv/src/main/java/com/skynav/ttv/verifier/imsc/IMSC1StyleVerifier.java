@@ -248,12 +248,13 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
             TextOutline[] outline = new TextOutline[1];
             if (Outline.isOutline(s, location, context, outline)) {
                 assert outline.length > 0;
-                assert outline[0] != null;
-                Length b = outline[0].getBlur();
-                if ((b != null) && (b.getValue() > 0)) {
-                    Reporter reporter = context.getReporter();
-                    reporter.logError(reporter.message(locator, "*Key*", "Non-zero blur ''{0}'' prohibited.", s));
-                    return false;
+                if (outline[0] != null) {
+                    Length b = outline[0].getBlur();
+                    if ((b != null) && (b.getValue() > 0)) {
+                        Reporter reporter = context.getReporter();
+                        reporter.logError(reporter.message(locator, "*Key*", "Non-zero blur ''{0}'' prohibited.", s));
+                        return false;
+                    }
                 }
             }
         }

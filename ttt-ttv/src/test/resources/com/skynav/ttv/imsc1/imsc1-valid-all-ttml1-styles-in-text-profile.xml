@@ -1,14 +1,15 @@
-<!-- valid - all defined ttml style properties and enumerable values -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- valid - all defined ttml1 style properties permitted with imsc1 text profile -->
 <tt xml:lang="en"
     xmlns="http://www.w3.org/ns/ttml"
     xmlns:tts="http://www.w3.org/ns/ttml#styling"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
-    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
     tts:extent="640px 480px"
-    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0">
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc1">
   <head>
     <layout>
-      <region xml:id="r1">
+      <region xml:id="r1" tts:extent="640px 480px">
         <!-- legal backgroundColor values (not exhaustive) -->
         <style tts:backgroundColor="#000000"/>
         <style tts:backgroundColor="#c0c0c0"/>
@@ -202,7 +203,6 @@
         <!-- legal extent values (not exhaustive) -->
         <style tts:extent="auto"/>
         <style tts:extent="620px 96px"/>
-        <style tts:extent="620.3px 96.4c"/>
         <!-- legal fontFamily values (not exhaustive) -->
         <style tts:fontFamily="default"/>
         <style tts:fontFamily="monospace"/>
@@ -228,10 +228,8 @@
         <style tts:fontFamily="'Fun\&apos;ny Fam\&quot;ily', default"/>
         <style tts:fontFamily='"Fun\&apos;ny Fam\&quot;ily", default'/>
         <!-- legal fontSize values (not exhaustive) -->
-        <style tts:fontSize="1c"/>
-        <style tts:fontSize="1.1c"/>
         <style tts:fontSize="40px"/>
-        <style tts:fontSize="40px 50px"/>
+        <style tts:fontSize="40px 40px"/>
         <!-- legal fontStyle values -->
         <style tts:fontStyle="normal"/>
         <style tts:fontStyle="italic"/>
@@ -241,8 +239,6 @@
         <style tts:fontWeight="bold"/>
         <!-- legal lineHeight values (not exhaustive) -->
         <style tts:lineHeight="normal"/>
-        <style tts:lineHeight="1c"/>
-        <style tts:lineHeight="1.1c"/>
         <style tts:lineHeight="40px"/>
         <!-- legal opacity values (not exhaustive) -->
         <style tts:opacity="0"/>
@@ -251,9 +247,6 @@
         <!-- legal origin values (not exhaustive) -->
         <style tts:origin="auto"/>
         <style tts:origin="10px 100px"/>
-        <style tts:origin="1c 10c"/>
-        <style tts:origin="40px 10c"/>
-        <style tts:origin="40.3c 10.1em"/>
         <!-- legal overflow values -->
         <style tts:overflow="visible"/>
         <style tts:overflow="hidden"/>
@@ -262,8 +255,6 @@
         <style tts:padding="1px 2px"/>
         <style tts:padding="1px 2px 3px"/>
         <style tts:padding="1px 2px 3px 4px"/>
-        <style tts:padding="1.1c 1.2c 1.3c 1.4c"/>
-        <style tts:padding="1.1c 1.2em 1.3px 1.4%"/>
         <!-- legal showBackground values -->
         <style tts:showBackground="always"/>
         <style tts:showBackground="whenActive"/>
@@ -348,9 +339,7 @@
         <!-- legal textOutline values (not exhaustive) -->
         <style tts:textOutline="none"/>
         <style tts:textOutline="yellow 1px"/>
-        <style tts:textOutline="yellow 1px 2px"/>
         <style tts:textOutline="1px"/>
-        <style tts:textOutline="1px 2px"/>
         <!-- legal unicodeBidi values -->
         <style tts:unicodeBidi="normal"/>
         <style tts:unicodeBidi="embed"/>
@@ -379,7 +368,7 @@
       </region>
     </layout>
   </head>
-  <body region="r1">
+  <body region="r1" begin="0s" end="1s">
     <div>
       <p>Text 1</p>
     </div>
