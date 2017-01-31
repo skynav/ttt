@@ -782,16 +782,21 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     protected boolean verifySMPTEBackgroundImage(Object content, QName name, Object valueObject, Locator locator, VerifierContext context) {
         if (!super.verifySMPTEBackgroundImage(content, name, valueObject, locator, context)) {
             return false;
+        } else if (isIMSCImageProfile(context)) {
+            return true;
         } else if (isIMSCTextProfile(context)) {
             Reporter reporter = context.getReporter();
             reporter.logInfo(reporter.message(locator,
                 "*KEY*", "SMPTE attribute ''{0}'' prohibited on ''{1}'' in {2} text profile.",
                 name, context.getBindingElementName(content), getModel().getName()));
             return false;
-        } else if (isIMSCImageProfile(context)) {
-            return true;
-        } else
-            throw new IllegalStateException();
+        } else {
+            Reporter reporter = context.getReporter();
+            reporter.logInfo(reporter.message(locator,
+                "*KEY*", "SMPTE attribute ''{0}'' prohibited on ''{1}'' in {2} of indeterminate profile.",
+                name, context.getBindingElementName(content), getModel().getName()));
+            return false;
+        }
     }
 
     @Override
