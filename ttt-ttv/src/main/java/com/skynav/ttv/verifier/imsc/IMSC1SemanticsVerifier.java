@@ -238,17 +238,18 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     private double[] getRootExtent(TimedText tt) {
-        return getRootExtent(tt.getExtent(), getLocator(tt));
+        Location location = new Location(tt, getContext().getBindingElementName(tt), IMSC1StyleVerifier.extentAttributeName, getLocator(tt));
+        return getRootExtent(tt.getExtent(), location);
     }
 
-    private double[] getRootExtent(String extent, Locator locator) {
+    private double[] getRootExtent(String extent, Location location) {
         double[] externalExtent = (double[]) getContext().getResourceState("externalExtent");
         if (extent != null) {
             extent = extent.trim();
             if (extent.equals("auto"))
                 return externalExtent;
             else {
-                Length[] lengths = parseLengthPair(extent, locator, getContext().getReporter(), true);
+                Length[] lengths = parseLengthPair(extent, location, getContext().getReporter(), true);
                 return new double[] { getPixels(lengths[0], 0, 1, 1, 1), getPixels(lengths[1], 0, 1, 1, 1) };
             }
         } else
@@ -256,13 +257,14 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     }
 
     private double[] getCellResolution(TimedText tt) {
-        return getCellResolution(tt.getCellResolution(), getLocator(tt));
+        Location location = new Location(tt, getContext().getBindingElementName(tt), IMSC1ParameterVerifier.cellResolutionAttributeName, getLocator(tt));
+        return getCellResolution(tt.getCellResolution(), location);
     }
 
-    private double[] getCellResolution(String cellResolution, Locator locator) {
+    private double[] getCellResolution(String cellResolution, Location location) {
         if (cellResolution != null) {
             cellResolution = cellResolution.trim();
-            Integer[] integers = parseIntegerPair(cellResolution, locator, getContext().getReporter());
+            Integer[] integers = parseIntegerPair(cellResolution, location, getContext().getReporter());
             return new double[] { integers[0], integers[1] };
         } else
             return null;
@@ -271,7 +273,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
     protected boolean verifyRegionContainment(Region region, double[] rootExtent, double[] cellResolution) {
         boolean failed = false;
         Reporter reporter = getContext().getReporter();
-        Locator locator = getLocator(region);
+        Location location = new Location(region, getContext().getBindingElementName(region), IMSC1StyleVerifier.extentAttributeName, getLocator(region));
         if (rootExtent == null)
             rootExtent = new double[] { -1, -1 };
         if (cellResolution == null)
@@ -288,7 +290,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         if (origin != null) {
             origin = origin.trim();
             if (!origin.equals("auto")) {
-                Length[] lengths = parseLengthPair(origin, locator, reporter, false);
+                Length[] lengths = parseLengthPair(origin, location, reporter, false);
                 if (lengths != null) {
                     x = getPixels(lengths[0], 0, wRoot, wRoot, cellResolution[0]);
                     y = getPixels(lengths[1], 0, hRoot, wRoot, cellResolution[1]);
@@ -303,7 +305,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         if (extent != null) {
             extent = extent.trim();
             if (!extent.equals("auto")) {
-                Length[] lengths = parseLengthPair(extent, locator, reporter, false);
+                Length[] lengths = parseLengthPair(extent, location, reporter, false);
                 if (lengths != null) {
                     w = getPixels(lengths[0], 0, wRoot, wRoot, cellResolution[0]);
                     h = getPixels(lengths[1], 0, hRoot, hRoot, cellResolution[1]);
@@ -313,6 +315,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         }
         // check containment
         if (!failed) {
+            Locator locator = location.getLocator();
             if (x < xRoot) {
                 reporter.logError(reporter.message(locator, "*KEY*", "Left edge at {0}px is outside root container.", x));
                 failed = true;
@@ -335,11 +338,11 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
         return !failed;
     }
 
-    private Length[] parseLengthPair(String pair, Locator locator, Reporter reporter, boolean enforcePixelsOnly) {
+    private Length[] parseLengthPair(String pair, Location location, Reporter reporter, boolean enforcePixelsOnly) {
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
         List<Length> lengths = new java.util.ArrayList<Length>();
-        Location location = new Location(null, null, null, locator);
+        Locator locator = location.getLocator();
         if (Lengths.isLengths(pair, location, getContext(), minMax, treatments, lengths)) {
             if (enforcePixelsOnly) {
                 for (Length l : lengths) {
@@ -353,16 +356,16 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
             return lengths.toArray(new Length[2]);
         } else {
             if (reporter != null)
-                reporter.logError(reporter.message(locator, "*KEY*", "Invalid length pair ''{0}''.", pair));
+                reporter.logInfo(reporter.message(locator, "*KEY*", "Invalid length pair ''{0}''.", pair));
             return null;
         }
     }
 
-    private Integer[] parseIntegerPair(String pair, Locator locator, Reporter reporter) {
+    private Integer[] parseIntegerPair(String pair, Location location, Reporter reporter) {
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
         List<Integer> integers = new java.util.ArrayList<Integer>();
-        Location location = new Location(null, null, null, locator);
+        Locator locator = location.getLocator();
         if (Integers.isIntegers(pair, location, null, minMax, treatments, integers)) {
             return integers.toArray(new Integer[2]);
         } else {
