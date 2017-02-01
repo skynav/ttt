@@ -160,6 +160,9 @@ public class NullReporter implements Reporter {
         return true;
     }
 
+    public void addDefaultWarning(String token, boolean enabled) {
+    }
+
     public void setTreatWarningAsError(boolean treatWarningAsError) {
     }
 

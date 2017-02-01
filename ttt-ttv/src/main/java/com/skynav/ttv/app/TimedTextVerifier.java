@@ -1,6 +1,6 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
- *
+* Copyright 2013-2016 Skynav, Inc. All rights reserved.
+*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -427,7 +427,7 @@ public class TimedTextVerifier implements VerifierContext {
         configuration = null;
         forceEncoding = null;
         forceModel = null;
-        model = null;
+        // model = null;
         foreignTreatment = null;
         lastPhase = restart ? Phase.Restarted : Phase.None;
         parsedExternalFrameRate = 0;
@@ -576,8 +576,10 @@ public class TimedTextVerifier implements VerifierContext {
             return this.forceModel;
         else if (this.resourceModel != null)
             return this.resourceModel;
-        else
+        else if (this.model != null)
             return this.model;
+        else
+            return Models.getDefaultModel();
     }
 
     public Charset getEncoding() {
@@ -909,6 +911,8 @@ public class TimedTextVerifier implements VerifierContext {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             modelName = args.get(++index);
+            // unlike other options, we immediately perform derivation on the model option
+            processModelOption(modelName);
         } else if (option.equals("no-warn-on")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
@@ -985,6 +989,18 @@ public class TimedTextVerifier implements VerifierContext {
         return args;
     }
 
+    private void processModelOption(String modelName) {
+        Model model;
+        if ((modelName != null) && !modelName.equals("auto")) {
+            model = Models.getModel(modelName);
+            if (model == null)
+                throw new InvalidOptionUsageException("model", "unknown model: " + modelName);
+        } else
+            model = Models.getDefaultModel();
+        model.configureReporter(reporter);
+        this.model = model;
+    }
+
     private void processDerivedOptions(OptionProcessor optionProcessor) {
         Reporter reporter = getReporter();
         Charset forceEncoding;
@@ -1007,14 +1023,6 @@ public class TimedTextVerifier implements VerifierContext {
         } else
             forceModel = null;
         this.forceModel = forceModel;
-        Model model;
-        if ((modelName != null) && !modelName.equals("auto")) {
-            model = Models.getModel(modelName);
-            if (model == null)
-                throw new InvalidOptionUsageException("model", "unknown model: " + modelName);
-        } else
-            model = Models.getDefaultModel();
-        this.model = model;
         if (treatForeignAs != null) {
             try {
                 foreignTreatment = ForeignTreatment.valueOfIgnoringCase(treatForeignAs);
@@ -1502,6 +1510,23 @@ public class TimedTextVerifier implements VerifierContext {
         boolean configureReporter = false;
         if (attributes != null) {
             String annotationsNamespace = Annotations.getNamespace();
+            // first process model annotation, as processing others may depend on this
+            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+                if (attributes.getURI(i).equals(annotationsNamespace)) {
+                    String localName = attributes.getLocalName(i);
+                    String value = attributes.getValue(i);
+                    if (localName.equals("model")) {
+                        Model model = Models.getModel(value);
+                        if (model != null) {
+                            resourceModel = model; configureReporter = true;
+                        } else
+                            throw new InvalidAnnotationException(localName, "unknown model '" + value + "'");
+                    }
+                }
+            }
+            if (configureReporter)
+                resourceModel.configureReporter(reporter);
+            // now process other annotations
             for (int i = 0, n = attributes.getLength(); i < n; ++i) {
                 if (attributes.getURI(i).equals(annotationsNamespace)) {
                     String localName = attributes.getLocalName(i);
@@ -1511,11 +1536,7 @@ public class TimedTextVerifier implements VerifierContext {
                     } else if (localName.equals("expectedWarnings")) {
                         resourceExpectedWarnings = parseAnnotationAsInteger(value, -1);
                     } else if (localName.equals("model")) {
-                        Model model = Models.getModel(value);
-                        if (model != null) {
-                            resourceModel = model; configureReporter = true;
-                        } else
-                            throw new InvalidAnnotationException(localName, "unknown model '" + value + "'");
+                        // no processing required here
                     } else if (localName.equals("warnOn")) {
                         String[] tokens = value.split("\\s+");
                         for (String token : tokens) {
@@ -1546,8 +1567,6 @@ public class TimedTextVerifier implements VerifierContext {
                 }
             }
         }
-        if (configureReporter)
-            resourceModel.configureReporter(reporter);
     }
 
     private void setRestartOptions(RestartOptions options) {

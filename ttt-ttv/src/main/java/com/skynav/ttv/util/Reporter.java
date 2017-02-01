@@ -72,6 +72,7 @@ public interface Reporter {
     public void logError(Message message);
     public void logError(Exception e);
     public boolean hasDefaultWarning(String token);
+    public void addDefaultWarning(String token, boolean enabled);
     public void setTreatWarningAsError(boolean treatWarningAsError);
     public boolean isTreatingWarningAsError();
     public boolean isWarningEnabled(String token);

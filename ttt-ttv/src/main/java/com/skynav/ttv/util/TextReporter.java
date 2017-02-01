@@ -401,6 +401,11 @@ public class TextReporter implements Reporter {
         logDebug(e);
     }
 
+    public void addDefaultWarning(String token, boolean enabled) {
+        if (!defaultWarnings.containsKey(token))
+            defaultWarnings.put(token, Boolean.valueOf(enabled));
+    }
+
     public boolean hasDefaultWarning(String token) {
         return defaultWarnings.containsKey(token);
     }
@@ -441,6 +446,8 @@ public class TextReporter implements Reporter {
     }
 
     public void enableWarning(String token) {
+        if (!hasDefaultWarning(token))
+            addDefaultWarning(token, true);
         getEnabledWarnings().add(token);
     }
 
