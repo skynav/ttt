@@ -200,7 +200,7 @@ public class TimedTextVerifier implements VerifierContext {
         { "show-validator",             "",         "show platform validator information" },
         { "show-warning-tokens",        "",         "show warning tokens (use with --verbose to show more details)" },
         { "verbose",                    "",         "enable verbose output (may be specified multiple times to increase verbosity level)" },
-        { "verbos-level",               "LEVEL",    "enable verbose output at specified level (default: 0)" },
+        { "verbose-level",              "LEVEL",    "enable verbose output at specified level (default: 0)" },
         { "treat-foreign-as",           "TOKEN",    "specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
             ForeignTreatment.getDefault().name().toLowerCase() + ")" },
         { "treat-warning-as-error",     "",         "treat warning as error (overrides --disable-warnings)" },
