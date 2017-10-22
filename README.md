@@ -17,13 +17,13 @@ A collection of related tools that provide support for or make use of the W3C Ti
 
 Prior to performing a build, the following requirements must be met:
 
-- Install Java JDK 7 (or 8).
+- Install Java JDK 7 or 8.
 - Install maven 3.1 (or greater).
 - Perform one-time installation of third party library dependencies as follows, where `$TTT_HOME` is set to the directory where the `ttt` repository is cloned:
 
 <pre>
     $ cd $TTT_HOME
-    $ mvn -f ttt-deps install
+    $ mvn -f ttt-deps/pom.xml install
 </pre>
 
 This last step installs snapshot copies of `batik`, `fontbox`, and `xmlunit` dependencies that contain modifications specific to `ttt`.
@@ -48,12 +48,17 @@ At present, `ttt` is being developed using the following versions of tools:
 
 <pre>
     $ java -version
-    java version "1.7.0_80"
-    Java(TM) SE Runtime Environment (build 1.7.0_80-b15)
-    Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)
+    java version "1.8.0_152"
+    Java(TM) SE Runtime Environment (build 1.8.0_152-b16)
+    Java HotSpot(TM) 64-Bit Server VM (build 25.152-b16, mixed mode)
 
     $ mvn -version
-    Apache Maven 3.3.3 (7994120775791599e205a5524ec3e0dfe41d4a06; 2015-04-22T05:57:37-06:00)
+    Apache Maven 3.5.0 (ff8f5e7444045639af65f6095c62210b5713f426; 2017-04-03T13:39:06-06:00)
+    Maven home: /opt/local/share/java/maven3
+    Java version: 1.8.0_152, vendor: Oracle Corporation
+    Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/jre
+    Default locale: en_US, platform encoding: UTF-8
+    OS name: "mac os x", version: "10.12.6", arch: "x86_64", family: "mac"
 </pre>
 
 Additional dependencies are managed by maven.
