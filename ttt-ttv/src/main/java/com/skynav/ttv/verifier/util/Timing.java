@@ -68,7 +68,7 @@ public class Timing {
         badCoordinate(value, location, context, timeParameters);
     }
 
-    private static final Pattern clockTimePattern = Pattern.compile("(\\d{2,3}):(\\d{2}):(\\d{2})(\\.\\d+|:\\d{2,}(?:\\.\\d+)?)?");
+    private static final Pattern clockTimePattern = Pattern.compile("(\\d{2,}):(\\d{2}):(\\d{2})(\\.\\d+|:\\d{2,}(?:\\.\\d+)?)?");
     public static boolean isClockTime(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
         Matcher m = clockTimePattern.matcher(value);
         if (m.matches()) {
