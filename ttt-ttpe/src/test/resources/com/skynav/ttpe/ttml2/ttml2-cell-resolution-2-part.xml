@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xml:lang="en" ttp:version="2" ttp:cellResolution="64 30" tts:extent="1280px 720px"
+<tt xml:lang="en" ttp:cellResolution="64 30" tts:extent="1280px 720px"
     xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling"
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
   <head>

@@ -19,7 +19,7 @@
   <xs:attributeGroup name="tt.attlist">
     <xs:attributeGroup ref="tt:Core.required.attrib.class"/>
     <xs:attributeGroup ref="ttp:Parameter.attrib.class"/>
-    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attribute ref="tts:extent"/>
   </xs:attributeGroup>
   <xs:complexType name="tt.eltype">
     <xs:sequence>

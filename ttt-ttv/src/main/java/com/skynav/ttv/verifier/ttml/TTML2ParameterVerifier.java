@@ -197,14 +197,14 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             Boolean.FALSE,
             ValidationAction.WARN,
         },
-        {
-            versionAttributeName,
-            "Version",
-            BigInteger.class,
-            VersionVerifier.class,
-            Boolean.FALSE,
-            BigInteger.valueOf(2),
-        },
+        // {
+        //     versionAttributeName,
+        //     "Version",
+        //     BigInteger.class,
+        //     VersionVerifier.class,
+        //     Boolean.FALSE,
+        //     BigInteger.valueOf(2),
+        // },
     };
 
     public TTML2ParameterVerifier(Model model) {

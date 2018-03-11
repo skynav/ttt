@@ -42,6 +42,7 @@ import com.skynav.ttv.model.ttml2.tt.Set;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Style;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.AnnotationPosition;
 import com.skynav.ttv.model.ttml2.ttd.AreaRectangle;
 import com.skynav.ttv.model.ttml2.ttd.BackgroundRepeat;
 import com.skynav.ttv.model.ttml2.ttd.Direction;
@@ -53,9 +54,8 @@ import com.skynav.ttv.model.ttml2.ttd.FontWeight;
 import com.skynav.ttv.model.ttml2.ttd.Overflow;
 import com.skynav.ttv.model.ttml2.ttd.Ruby;
 import com.skynav.ttv.model.ttml2.ttd.RubyAlign;
-import com.skynav.ttv.model.ttml2.ttd.RubyOverflow;
-import com.skynav.ttv.model.ttml2.ttd.RubyOverhang;
-import com.skynav.ttv.model.ttml2.ttd.RubyPosition;
+// import com.skynav.ttv.model.ttml2.ttd.RubyOverflow;
+// import com.skynav.ttv.model.ttml2.ttd.RubyOverhang;
 import com.skynav.ttv.model.ttml2.ttd.ShowBackground;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 import com.skynav.ttv.model.ttml2.ttd.TextDecoration;
@@ -90,9 +90,9 @@ import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.ProgressionDimensionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
-import com.skynav.ttv.verifier.ttml.style.RubyOverflowVerifier;
-import com.skynav.ttv.verifier.ttml.style.RubyOverhangClassVerifier;
-import com.skynav.ttv.verifier.ttml.style.RubyOverhangVerifier;
+// import com.skynav.ttv.verifier.ttml.style.RubyOverflowVerifier;
+// import com.skynav.ttv.verifier.ttml.style.RubyOverhangClassVerifier;
+// import com.skynav.ttv.verifier.ttml.style.RubyOverhangVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyReserveVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyVerifier;
@@ -130,9 +130,9 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName rubyAttributeName                         = new QName(NAMESPACE,"ruby");
     public static final QName rubyAlignAttributeName                    = new QName(NAMESPACE,"rubyAlign");
     public static final QName rubyOffsetAttributeName                   = new QName(NAMESPACE,"rubyOffset");
-    public static final QName rubyOverflowAttributeName                 = new QName(NAMESPACE,"rubyOverflow");
-    public static final QName rubyOverhangAttributeName                 = new QName(NAMESPACE,"rubyOverhang");
-    public static final QName rubyOverhangClassAttributeName            = new QName(NAMESPACE,"rubyOverhangClass");
+    // public static final QName rubyOverflowAttributeName                 = new QName(NAMESPACE,"rubyOverflow");
+    // public static final QName rubyOverhangAttributeName                 = new QName(NAMESPACE,"rubyOverhang");
+    // public static final QName rubyOverhangClassAttributeName            = new QName(NAMESPACE,"rubyOverhangClass");
     public static final QName rubyPositionAttributeName                 = new QName(NAMESPACE,"rubyPosition");
     public static final QName rubyReserveAttributeName                  = new QName(NAMESPACE,"rubyReserve");
     public static final QName scriptAttributeName                       = new QName(NAMESPACE,"script");
@@ -449,8 +449,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.TRUE,
-            RubyAlign.AUTO,
-            RubyAlign.AUTO.value()
+            RubyAlign.CENTER,
+            RubyAlign.CENTER.value()
         },
         {
             rubyOffsetAttributeName,
@@ -463,49 +463,49 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             "auto",
             null,
         },
-        {
-            rubyOverflowAttributeName,
-            "RubyOverflow",
-            RubyOverflow.class,
-            RubyOverflowVerifier.class,
-            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
-            Boolean.FALSE,
-            Boolean.TRUE,
-            RubyOverflow.SHIFT_RUBY,
-            RubyOverflow.SHIFT_RUBY.value()
-        },
-        {
-            rubyOverhangAttributeName,
-            "RubyOverhang",
-            RubyOverhang.class,
-            RubyOverhangVerifier.class,
-            Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
-            Boolean.FALSE,
-            Boolean.TRUE,
-            RubyOverhang.ALLOW,
-            RubyOverhang.ALLOW.value()
-        },
-        {
-            rubyOverhangClassAttributeName,
-            "RubyOverhangClass",
-            String.class,
-            RubyOverhangClassVerifier.class,
-            Integer.valueOf(APPLIES_TO_SPAN),
-            Boolean.FALSE,
-            Boolean.TRUE,
-            "auto",
-            null,
-        },
+        // {
+        //     rubyOverflowAttributeName,
+        //     "RubyOverflow",
+        //     RubyOverflow.class,
+        //     RubyOverflowVerifier.class,
+        //     Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+        //     Boolean.FALSE,
+        //     Boolean.TRUE,
+        //     RubyOverflow.SHIFT_RUBY,
+        //     RubyOverflow.SHIFT_RUBY.value()
+        // },
+        // {
+        //     rubyOverhangAttributeName,
+        //     "RubyOverhang",
+        //     RubyOverhang.class,
+        //     RubyOverhangVerifier.class,
+        //     Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
+        //     Boolean.FALSE,
+        //     Boolean.TRUE,
+        //     RubyOverhang.ALLOW,
+        //     RubyOverhang.ALLOW.value()
+        // },
+        // {
+        //     rubyOverhangClassAttributeName,
+        //     "RubyOverhangClass",
+        //     String.class,
+        //     RubyOverhangClassVerifier.class,
+        //     Integer.valueOf(APPLIES_TO_SPAN),
+        //     Boolean.FALSE,
+        //     Boolean.TRUE,
+        //     "auto",
+        //     null,
+        // },
         {
             rubyPositionAttributeName,
             "RubyPosition",
-            RubyPosition.class,
+            AnnotationPosition.class,
             RubyPositionVerifier.class,
             Integer.valueOf(APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.TRUE,
-            RubyPosition.AUTO,
-            RubyPosition.AUTO.value()
+            AnnotationPosition.OUTSIDE,
+            AnnotationPosition.OUTSIDE.value()
         },
         {
             rubyReserveAttributeName,

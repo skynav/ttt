@@ -574,7 +574,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     protected String getImageFormatAttribute(Object image) {
         assert image instanceof Image;
-        return ((Image) image).getFormat();
+        return null;
     }
 
     protected String getImageSourceAttribute(Object image) {
@@ -584,7 +584,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     protected String getImageTypeAttribute(Object image) {
         assert image instanceof Image;
-        return ((Image) image).getType();
+        return ((Image) image).getDataType();
     }
 
     protected Collection<? extends Object> getImageMetadata(Object image) {

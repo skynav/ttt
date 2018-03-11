@@ -2,7 +2,7 @@
 <!-- valid - all defined ttml2 specific parameters - but not all legal values of defined parameters -->
 <tt:tt
   xml:lang="en"
-  ttp:contentProfiles="any(http://www.w3.org/ns/ttml/profile/ttml2-presentation http://www.w3.org/ns/ttml/profile/ttml2-transformation)"
+  ttp:contentProfiles="all(http://www.w3.org/ns/ttml/profile/ttml2-presentation http://www.w3.org/ns/ttml/profile/ttml2-transformation)"
   ttp:contentProfileCombination="mostRestrictive"
   ttp:displayAspectRatio="4 3"
   ttp:mediaDuration="24h"
@@ -11,11 +11,10 @@
   ttp:inferProcessorProfileSource="first"
   ttp:permitFeatureNarrowing="true"
   ttp:permitFeatureWidening="true"
-  ttp:processorProfiles="all(http://www.w3.org/ns/ttml/profile/ttml2-presentation http://www.w3.org/ns/ttml/profile/ttml2-transformation)"
+  ttp:processorProfiles="any(http://www.w3.org/ns/ttml/profile/ttml2-presentation http://www.w3.org/ns/ttml/profile/ttml2-transformation)"
   ttp:processorProfileCombination="leastRestrictive"
   ttp:validation="required"
   ttp:validationAction="abort"
-  ttp:version="2"
   xmlns:tt="http://www.w3.org/ns/ttml"
   xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
   xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2"/>

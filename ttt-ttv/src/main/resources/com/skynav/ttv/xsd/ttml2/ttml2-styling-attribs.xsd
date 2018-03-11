@@ -22,6 +22,7 @@
   <xs:attribute name="extent" type="ttd:extent"/>
   <xs:attribute name="fontFamily" type="ttd:fontFamily"/>
   <xs:attribute name="fontKerning" type="ttd:fontKerning"/>
+  <xs:attribute name="fontSelectionStrategy" type="ttd:fontSelectionStrategy"/>
   <xs:attribute name="fontShear" type="ttd:fontShear"/>
   <xs:attribute name="fontSize" type="ttd:fontSize"/>
   <xs:attribute name="fontStyle" type="ttd:fontStyle"/>
@@ -30,6 +31,7 @@
   <xs:attribute name="ipd" type="ttd:measure"/>
   <xs:attribute name="letterSpacing" type="ttd:letterSpacing"/>
   <xs:attribute name="lineHeight" type="ttd:lineHeight"/>
+  <xs:attribute name="luminance" type="ttd:luminance"/>
   <xs:attribute name="opacity" type="ttd:opacity"/>
   <xs:attribute name="origin" type="ttd:origin"/>
   <xs:attribute name="overflow" type="ttd:overflow"/>
@@ -37,10 +39,6 @@
   <xs:attribute name="position" type="ttd:position"/>
   <xs:attribute name="ruby" type="ttd:ruby"/>
   <xs:attribute name="rubyAlign" type="ttd:rubyAlign"/>
-  <xs:attribute name="rubyOffset" type="ttd:rubyOffset"/>
-  <xs:attribute name="rubyOverflow" type="ttd:rubyOverflow"/>
-  <xs:attribute name="rubyOverhang" type="ttd:rubyOverhang"/>
-  <xs:attribute name="rubyOverhangClass" type="ttd:rubyOverhangClass"/>
   <xs:attribute name="rubyPosition" type="ttd:rubyPosition"/>
   <xs:attribute name="rubyReserve" type="ttd:rubyReserve"/>
   <xs:attribute name="script" type="ttd:script"/>
@@ -75,6 +73,7 @@
     <xs:attribute ref="tts:extent"/>
     <xs:attribute ref="tts:fontFamily"/>
     <xs:attribute ref="tts:fontKerning"/>
+    <xs:attribute ref="tts:fontSelectionStrategy"/>
     <xs:attribute ref="tts:fontShear"/>
     <xs:attribute ref="tts:fontSize"/>
     <xs:attribute ref="tts:fontStyle"/>
@@ -83,6 +82,7 @@
     <xs:attribute ref="tts:ipd"/>
     <xs:attribute ref="tts:letterSpacing"/>
     <xs:attribute ref="tts:lineHeight"/>
+    <xs:attribute ref="tts:luminance"/>
     <xs:attribute ref="tts:opacity"/>
     <xs:attribute ref="tts:origin"/>
     <xs:attribute ref="tts:overflow"/>
@@ -90,10 +90,6 @@
     <xs:attribute ref="tts:position"/>
     <xs:attribute ref="tts:ruby"/>
     <xs:attribute ref="tts:rubyAlign"/>
-    <xs:attribute ref="tts:rubyOffset"/>
-    <xs:attribute ref="tts:rubyOverflow"/>
-    <xs:attribute ref="tts:rubyOverhang"/>
-    <xs:attribute ref="tts:rubyOverhangClass"/>
     <xs:attribute ref="tts:rubyPosition"/>
     <xs:attribute ref="tts:rubyReserve"/>
     <xs:attribute ref="tts:script"/>
@@ -112,4 +108,3 @@
     <xs:attribute ref="tts:zIndex"/>
   </xs:attributeGroup>
 </xs:schema>
-

@@ -33,14 +33,15 @@ import com.skynav.ttv.verifier.util.Characters;
 public class RubyOverhangClassVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        assert value instanceof String;
-        String s = (String) value;
-        if (Characters.isCharacterClass(s, location, context, null))
-            return true;
-        else {
-            Characters.badCharacterClass(s, location, context);
-            return false;
-        }
+        // assert value instanceof String;
+        // String s = (String) value;
+        // if (Characters.isCharacterClass(s, location, context, null))
+        //     return true;
+        // else {
+        //     Characters.badCharacterClass(s, location, context);
+        //     return false;
+        // }
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -3,18 +3,24 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:tt="http://www.w3.org/ns/ttml"
   xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
-  xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:tta="http://www.w3.org/ns/ttml#audio"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
   <xs:include schemaLocation="ttml2-core-attribs.xsd"/>
   <xs:include schemaLocation="ttml2-metadata.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml#metadata"
     schemaLocation="ttml2-metadata-attribs.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
     schemaLocation="ttml2-datatypes.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#audio"
+    schemaLocation="ttml2-audio-attribs.xsd"/>
+  <xs:import namespace="http://www.w3.org/1999/xlink"
+    schemaLocation="xlink.xsd"/>
   <xs:attributeGroup name="audio.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
     <xs:attributeGroup ref="tt:Styled.attrib.class"/>
     <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
-    <xs:attribute name="format" type="ttd:dataFormat"/>
+    <xs:attributeGroup ref="tta:Audio.audio.attrib.class"/>
     <xs:attribute name="src" type="ttd:dataSource"/>
     <xs:attribute name="type" type="ttd:dataType"/>
   </xs:attributeGroup>
@@ -34,7 +40,6 @@
   <xs:attributeGroup name="font.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
     <xs:attribute name="family" type="ttd:fontFamily"/>
-    <xs:attribute name="format" type="ttd:dataFormat"/>
     <xs:attribute name="range" type="ttd:fontRange"/>
     <xs:attribute name="src" type="ttd:dataSource"/>
     <xs:attribute name="style" type="ttd:fontStyle"/>
@@ -43,9 +48,12 @@
   </xs:attributeGroup>
   <xs:attributeGroup name="image.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:TimedContainer.attrib.class"/>
+    <xs:attributeGroup ref="tt:AnimationBinding.attrib.class"/>
+    <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
     <xs:attributeGroup ref="tt:Styled.attrib.class"/>
     <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
-    <xs:attribute name="format" type="ttd:dataFormat"/>
+    <xs:attributeGroup ref="xlink:simpleAttrs"/>
     <xs:attribute name="src" type="ttd:dataSource"/>
     <xs:attribute name="type" type="ttd:dataType"/>
   </xs:attributeGroup>

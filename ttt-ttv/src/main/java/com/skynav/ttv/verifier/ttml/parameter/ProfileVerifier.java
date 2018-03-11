@@ -29,6 +29,7 @@ import java.net.URI;
 import java.util.Set;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -42,10 +43,10 @@ public class ProfileVerifier implements ParameterValueVerifier {
         Model model = context.getModel();
         URI ttProfileNamespaceUri = model.getTTProfileNamespaceUri();
         Set<URI> designators = model.getProfileDesignators();
-        if (Profiles.isProfileDesignator(s, location, context, ttProfileNamespaceUri, designators)) {
+        if (Profiles.isProfileDesignator(s, location, context, ttProfileNamespaceUri, Profile.Type.PROCESSOR, designators)) {
             return true;
         } else {
-            Profiles.badProfileDesignator(s, location, context, ttProfileNamespaceUri, designators);
+            Profiles.badProfileDesignator(s, location, context, ttProfileNamespaceUri, Profile.Type.PROCESSOR, designators);
             return false;
         }
     }

@@ -168,21 +168,24 @@ public class Profiles {
             reporter.logInfo(message);
     }
 
-    public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
-        return isProfileDesignators(value, location, context, ttmlProfileNamespaceUri, designators, null, null);
+    public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Profile.Type profileType, Set<URI> designators) {
+        return isProfileDesignators(value, location, context, ttmlProfileNamespaceUri, profileType, designators, null, null);
     }
 
     private static final Pattern quantifiedDesignatorsPattern = Pattern.compile("(\\p{Alpha}+)\\(([^\\)]*)\\)");
-    public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators, List<URI> outputDesignators, Profile.Quantifier[] outputQuantifier) {
+    public static boolean isProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Profile.Type profileType, Set<URI> designators, List<URI> outputDesignators, Profile.Quantifier[] outputQuantifier) {
         String v = value;
         Profile.Quantifier q;
         Matcher m = quantifiedDesignatorsPattern.matcher(v);
         if (m.matches()) {
             String ident = m.group(1);
             String arguments = m.group(2).trim();
-            if (ident.equals("any"))
-                q = Profile.Quantifier.ANY;
-            else if (ident.equals("all"))
+            if (ident.equals("any")) {
+                if (profileType.equals(Profile.Type.PROCESSOR))
+                    q = Profile.Quantifier.ANY;
+                else
+                    return false;
+            } else if (ident.equals("all"))
                 q = Profile.Quantifier.ALL;
             else
                 return false;
@@ -198,7 +201,7 @@ public class Profiles {
         else {
             for (String d : v.split("\\s+")) {
                 URI[] uri = new URI[1];
-                if (!isProfileDesignator(d, location, context, ttmlProfileNamespaceUri, designators, uri))
+                if (!isProfileDesignator(d, location, context, ttmlProfileNamespaceUri, profileType, designators, uri))
                     return false;
                 else
                     uris.add(uri[0]);
@@ -221,12 +224,12 @@ public class Profiles {
         return true;
     }
 
-    public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
-        return isProfileDesignator(value, location, context, ttmlProfileNamespaceUri, designators, null);
+    public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Profile.Type profileType, Set<URI> designators) {
+        return isProfileDesignator(value, location, context, ttmlProfileNamespaceUri, profileType, designators, null);
     }
 
     private static final Pattern badDelimiterSuffixPattern = Pattern.compile("[^\\,\\;\\)]+([\\,\\;\\)])");
-    public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators, URI[] outputDesignator) {
+    public static boolean isProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Profile.Type profileType, Set<URI> designators, URI[] outputDesignator) {
         boolean failed = false;
         URI uri = null;
         Matcher m = badDelimiterSuffixPattern.matcher(value);
@@ -264,7 +267,7 @@ public class Profiles {
         return !failed;
     }
 
-    public static void badProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
+    public static void badProfileDesignators(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Profile.Type profileType, Set<URI> designators) {
         Reporter reporter = context.getReporter();
         Locator locator = location.getLocator();
         String v = value;
@@ -272,11 +275,19 @@ public class Profiles {
         if (m.matches()) {
             String ident = m.group(1);
             String arguments = m.group(2);
-            if (!ident.equals("all") && !ident.equals("any")) {
+            if (ident.equals("any")) {
+                if (profileType.equals(Profile.Type.CONTENT)) {
+                    reporter.logInfo(reporter.message(locator,
+                        "*KEY*", "Bad profile quantifier syntax, ''{0}'' quantifier not supported with content profiles.", ident));
+                    return;
+                } else
+                    v = arguments;
+            } else if (ident.equals("all")) {
+                v = arguments;
+            } else {
                 reporter.logInfo(reporter.message(locator, "*KEY*", "Bad profile quantifier syntax, unknown quantifier ''{0}''.", ident));
                 return;
-            } else
-                v = arguments;
+            }
         }
         List<URI> uris = new java.util.ArrayList<URI>();
         v = v.trim();
@@ -285,8 +296,8 @@ public class Profiles {
         else {
             for (String d : v.split("\\s+")) {
                 URI[] uri = new URI[1];
-                if (!isProfileDesignator(d, location, context, ttmlProfileNamespaceUri, designators, uri))
-                    badProfileDesignator(d, location, context, ttmlProfileNamespaceUri, designators);
+                if (!isProfileDesignator(d, location, context, ttmlProfileNamespaceUri, profileType, designators, uri))
+                    badProfileDesignator(d, location, context, ttmlProfileNamespaceUri, profileType, designators);
                 else
                     uris.add(uri[0]);
             }
@@ -300,7 +311,7 @@ public class Profiles {
         }
     }
 
-    public static void badProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Set<URI> designators) {
+    public static void badProfileDesignator(String value, Location location, VerifierContext context, URI ttmlProfileNamespaceUri, Profile.Type profileType, Set<URI> designators) {
         Reporter reporter = context.getReporter();
         Locator locator = location.getLocator();
         Matcher m = badDelimiterSuffixPattern.matcher(value);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xmlns="http://www.w3.org/ns/ttml" xmlns:nttm="http://www.netflix.com/ns/ttml#metadata" xmlns:tt="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:xml="http://www.w3.org/XML/1998/namespace" ttp:tickRate="10000000" ttp:version="2" xml:lang="ja" xml:space="default" xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
+<tt xmlns="http://www.w3.org/ns/ttml" xmlns:nttm="http://www.netflix.com/ns/ttml#metadata" xmlns:tt="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:xml="http://www.w3.org/XML/1998/namespace" ttp:tickRate="10000000" xml:lang="ja" xml:space="default" xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
 <head>
 <styling>
 <initial tts:backgroundColor="transparent" tts:color="white" tts:extent="auto" tts:fontSize="6.000vh" tts:lineHeight="7.500vh" tts:opacity="1.000" tts:origin="auto" tts:showBackground="whenActive" tts:textOutline="red 0.100em" tts:writingMode="lrtb"/>

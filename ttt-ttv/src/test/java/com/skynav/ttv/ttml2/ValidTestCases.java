@@ -57,15 +57,6 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2ContentProfilesQuantifiedAnyMultiple() throws Exception {
-        performValidityTest("ttml2-valid-content-profiles-quantified-any-multiple.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidTTML2ContentProfilesQuantifiedAnySingle() throws Exception {
-        performValidityTest("ttml2-valid-content-profiles-quantified-any-single.xml", -1, -1);
-    }
-
     public void testValidTTML2ContentProfilesUnquantifiedMultiple() throws Exception {
         performValidityTest("ttml2-valid-content-profiles-unquantified-multiple.xml", -1, -1);
     }

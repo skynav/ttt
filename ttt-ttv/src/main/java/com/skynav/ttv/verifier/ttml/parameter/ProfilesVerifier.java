@@ -28,7 +28,10 @@ package com.skynav.ttv.verifier.ttml.parameter;
 import java.net.URI;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
@@ -42,10 +45,16 @@ public class ProfilesVerifier implements ParameterValueVerifier {
         Model model = context.getModel();
         URI ttProfileNamespaceUri = model.getTTProfileNamespaceUri();
         Set<URI> designators = model.getProfileDesignators();
-        if (Profiles.isProfileDesignators(s, location, context, ttProfileNamespaceUri, designators)) {
+        Profile.Type profileType;
+        QName parameterName = location.getAttributeName();
+        if (parameterName.getLocalPart().equals("contentProfiles"))
+            profileType = Profile.Type.CONTENT;
+        else
+            profileType = Profile.Type.PROCESSOR;
+        if (Profiles.isProfileDesignators(s, location, context, ttProfileNamespaceUri, profileType, designators)) {
             return true;
         } else {
-            Profiles.badProfileDesignators(s, location, context, ttProfileNamespaceUri, designators);
+            Profiles.badProfileDesignators(s, location, context, ttProfileNamespaceUri, profileType, designators);
             return false;
         }
     }

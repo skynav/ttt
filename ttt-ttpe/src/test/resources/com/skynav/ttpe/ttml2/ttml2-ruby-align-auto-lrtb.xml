@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xml:lang="ja" ttp:version="2" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
+<tt xml:lang="ja" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
 <head>
 <layout>
@@ -18,7 +18,7 @@
     <span tts:ruby="baseContainer">
       <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="auto">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="center">
       <span tts:ruby="text">ラ</span>
     </span>
   </span>
@@ -30,7 +30,7 @@
     <span tts:ruby="baseContainer">
       <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="auto">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="spaceBetween">
       <span tts:ruby="text">ライセ</span>
     </span>
   </span>
@@ -42,7 +42,7 @@
     <span tts:ruby="baseContainer">
       <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="auto">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="withBase">
       <span tts:ruby="text">ライセン</span>
     </span>
   </span>
@@ -54,7 +54,7 @@
     <span tts:ruby="baseContainer">
       <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="auto">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="center">
       <span tts:ruby="text">ライセンス</span>
     </span>
   </span>
@@ -66,7 +66,7 @@
     <span tts:ruby="baseContainer">
       <span tts:ruby="base">利用許諾</span>
     </span>
-    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="auto">
+    <span tts:ruby="textContainer" tts:fontSize="18px" tts:lineHeight="22px" tts:rubyPosition="before" tts:rubyAlign="center">
       <span tts:ruby="text">ライセンスライセンス</span>
     </span>
   </span>

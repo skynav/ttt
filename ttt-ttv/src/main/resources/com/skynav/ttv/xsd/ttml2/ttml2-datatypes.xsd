@@ -17,6 +17,13 @@
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
+  <xs:simpleType name="annotationPosition">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="before"/>
+      <xs:enumeration value="after"/>
+      <xs:enumeration value="outside"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="areaRectangle">
     <xs:restriction base="xs:token">
       <xs:enumeration value="border"/>
@@ -72,6 +79,9 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="color">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="contentProfiles">
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="dataEncoding">
@@ -130,20 +140,11 @@
   </xs:simpleType>
   <xs:simpleType name="displayAspectRatio">
     <xs:annotation>
-      <xs:documentation>auto | positiveInteger positiveInteger</xs:documentation>
+      <xs:documentation>positiveInteger lwsp positiveInteger</xs:documentation>
     </xs:annotation>
-    <xs:union>
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="auto"/>
-        </xs:restriction>
-      </xs:simpleType>
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:union>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
+    </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="dropMode">
     <xs:restriction base="xs:token">
@@ -168,7 +169,7 @@
   </xs:simpleType>
   <xs:simpleType name="extent">
     <xs:annotation>
-      <xs:documentation>auto | contain | cover | &lt;measure&gt; &lt;measure&gt;</xs:documentation>
+      <xs:documentation>auto | measure measure</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
@@ -200,6 +201,12 @@
   </xs:simpleType>
   <xs:simpleType name="fontRange">
     <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="fontSelectionStrategy">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="auto"/>
+      <xs:enumeration value="character"/>
+    </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="fontShear">
     <xs:annotation>
@@ -347,6 +354,12 @@
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
+  <xs:simpleType name="luminance">
+    <xs:annotation>
+      <xs:documentation>string</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:simpleType name="markerMode">
     <xs:restriction base="xs:token">
       <xs:enumeration value="continuous"/>
@@ -354,27 +367,6 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="measure">
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
-  <xs:simpleType name="mediaDuration">
-    <xs:annotation>
-      <xs:documentation>timeExpression (offset-time form only) | indefinite</xs:documentation>
-    </xs:annotation>
-    <xs:union>
-      <xs:simpleType>
-        <xs:restriction base="ttd:timeDuration"/>
-      </xs:simpleType>
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="indefinite"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:union>
-  </xs:simpleType>
-  <xs:simpleType name="mediaOffset">
-    <xs:annotation>
-      <xs:documentation>sign? timeExpression (offset-time form only)</xs:documentation>
-    </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="metadataAgentType">
@@ -455,7 +447,7 @@
   </xs:simpleType>
   <xs:simpleType name="pixelAspectRatio">
     <xs:annotation>
-      <xs:documentation>positiveInteger positiveInteger</xs:documentation>
+      <xs:documentation>positiveInteger:positiveInteger</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
@@ -464,25 +456,11 @@
   <xs:simpleType name="position">
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
+  <xs:simpleType name="processorProfiles">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:simpleType name="profile">
     <xs:restriction base="xs:anyURI"/>
-  </xs:simpleType>
-  <xs:simpleType name="profiles">
-    <xs:annotation>
-      <xs:documentation>
-        profiles
-          : designators
-          | "all(" designators ")
-          | "any(" designators ")
-
-        designators:
-          : designator (lswp designator)*
-
-        designator
-          : xs:anyURI
-      </xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="profileCombination">
     <xs:restriction base="xs:token">
@@ -551,7 +529,6 @@
   </xs:simpleType>
   <xs:simpleType name="rubyAlign">
     <xs:restriction base="xs:token">
-      <xs:enumeration value="auto"/>
       <xs:enumeration value="start"/>
       <xs:enumeration value="center"/>
       <xs:enumeration value="end"/>
@@ -560,40 +537,8 @@
       <xs:enumeration value="withBase"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="rubyOffset">
-    <xs:annotation>
-      <xs:documentation>length</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
-  <xs:simpleType name="rubyOverflow">
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="shiftRuby"/>
-      <xs:enumeration value="shiftBase"/>
-      <xs:enumeration value="overflow"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="rubyOverhang">
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="none"/>
-      <xs:enumeration value="allow"/>
-      <xs:enumeration value="always"/>
-      <xs:enumeration value="overlap"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="rubyOverhangClass">
-    <xs:annotation>
-      <xs:documentation>auto | (characterClassNamed | characterClass)+</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
   <xs:simpleType name="rubyPosition">
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="auto"/>
-      <xs:enumeration value="before"/>
-      <xs:enumeration value="after"/>
-      <xs:enumeration value="outside"/>
-    </xs:restriction>
+    <xs:restriction base="ttd:annotationPosition"/>
   </xs:simpleType>
   <xs:simpleType name="rubyReserve">
     <xs:restriction base="xs:string"/>
@@ -727,7 +672,7 @@
   </xs:simpleType>
   <xs:simpleType name="textShadow">
     <xs:annotation>
-      <xs:documentation>none | [ shadow ]#</xs:documentation>
+      <xs:documentation>none | ( shadow )+</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
@@ -779,9 +724,6 @@
       <xs:enumeration value="ignore"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="version">
-    <xs:restriction base="xs:positiveInteger"/>
-  </xs:simpleType>
   <xs:simpleType name="visibility">
     <xs:restriction base="xs:token">
       <xs:enumeration value="hidden"/>
@@ -810,5 +752,22 @@
       <xs:documentation>auto | integer</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="gain">
+    <xs:restriction base="xs:decimal"/>   
+  </xs:simpleType>
+  <xs:simpleType name="pan">
+    <xs:restriction base="xs:decimal"/>
+  </xs:simpleType>
+  <xs:simpleType name="pitch">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="speak">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="fast"/>
+      <xs:enumeration value="slow"/>
+    </xs:restriction>
   </xs:simpleType>
 </xs:schema>

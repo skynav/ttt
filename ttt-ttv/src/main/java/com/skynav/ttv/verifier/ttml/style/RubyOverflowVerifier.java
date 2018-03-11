@@ -34,11 +34,12 @@ public class RubyOverflowVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
         // Schema validation phase (3) reports invalid values.
-        Model model = context.getModel();
-        if (model.isTTMLVersion(2) && (value instanceof com.skynav.ttv.model.ttml2.ttd.RubyOverflow))
-            return true;
-        else
-            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
+        // Model model = context.getModel();
+        // if (model.isTTMLVersion(2) && (value instanceof com.skynav.ttv.model.ttml2.ttd.RubyOverflow))
+        //     return true;
+        // else
+        //     throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
+        throw new UnsupportedOperationException();
     }
 
 }

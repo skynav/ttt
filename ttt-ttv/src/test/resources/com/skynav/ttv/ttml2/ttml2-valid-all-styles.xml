@@ -3,7 +3,6 @@
 <tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
     ttp:cellResolution="64 24"
-    ttp:version="2"
     xmlns:tts="http://www.w3.org/ns/ttml#styling"
     tts:extent="1280px 720px"
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
@@ -206,86 +205,13 @@
       <style tts:ruby="textContainer"/>
       <style tts:ruby="delimiter"/>
       <!-- legal rubyAlign values (exhaustive) -->
-      <style tts:rubyAlign="auto"/>
       <style tts:rubyAlign="start"/>
       <style tts:rubyAlign="center"/>
       <style tts:rubyAlign="end"/>
       <style tts:rubyAlign="spaceAround"/>
       <style tts:rubyAlign="spaceBetween"/>
       <style tts:rubyAlign="withBase"/>
-      <!-- legal rubyOffset values (not exhaustive) -->
-      <style tts:rubyOffset="0px"/>
-      <style tts:rubyOffset="0em"/>
-      <style tts:rubyOffset="0c"/>
-      <style tts:rubyOffset="0vw"/>
-      <style tts:rubyOffset="0vh"/>
-      <style tts:rubyOffset="0%"/>
-      <style tts:rubyOffset="1px"/>
-      <style tts:rubyOffset="1em"/>
-      <style tts:rubyOffset="1c"/>
-      <style tts:rubyOffset="1vw"/>
-      <style tts:rubyOffset="1vh"/>
-      <style tts:rubyOffset="1%"/>
-      <style tts:rubyOffset="-0px"/>
-      <style tts:rubyOffset="-0em"/>
-      <style tts:rubyOffset="-0c"/>
-      <style tts:rubyOffset="-0vw"/>
-      <style tts:rubyOffset="-0vh"/>
-      <style tts:rubyOffset="-0%"/>
-      <style tts:rubyOffset="-1px"/>
-      <style tts:rubyOffset="-1em"/>
-      <style tts:rubyOffset="-1c"/>
-      <style tts:rubyOffset="-1vw"/>
-      <style tts:rubyOffset="-1vh"/>
-      <style tts:rubyOffset="-1%"/>
-      <!-- legal rubyOverflow values (exhaustive) -->
-      <style tts:rubyOverflow="shiftRuby"/>
-      <style tts:rubyOverflow="shiftBase"/>
-      <style tts:rubyOverflow="overflow"/>
-      <!-- legal rubyOverhang values (exhaustive) -->
-      <style tts:rubyOverhang="none"/>
-      <style tts:rubyOverhang="allow"/>
-      <style tts:rubyOverhang="always"/>
-      <style tts:rubyOverhang="overlap"/>
-      <!-- legal rubyOverhangClass values (not exhaustive) -->
-      <style tts:rubyOverhangClass="auto"/>
-      <style tts:rubyOverhangClass="closeBrackets"/>
-      <style tts:rubyOverhangClass="closeWarichu"/>
-      <style tts:rubyOverhangClass="commas"/>
-      <style tts:rubyOverhangClass="fullStops"/>
-      <style tts:rubyOverhangClass="groupedNumerals"/>
-      <style tts:rubyOverhangClass="hiragana"/>
-      <style tts:rubyOverhangClass="hyphens"/>
-      <style tts:rubyOverhangClass="ideographic"/>
-      <style tts:rubyOverhangClass="ideographicSpace"/>
-      <style tts:rubyOverhangClass="inseparables"/>
-      <style tts:rubyOverhangClass="iterationMarks"/>
-      <style tts:rubyOverhangClass="katakana"/>
-      <style tts:rubyOverhangClass="mathOperators"/>
-      <style tts:rubyOverhangClass="mathSymbols"/>
-      <style tts:rubyOverhangClass="middleDots"/>
-      <style tts:rubyOverhangClass="openBrackets"/>
-      <style tts:rubyOverhangClass="openWarichu"/>
-      <style tts:rubyOverhangClass="postAbbreviations"/>
-      <style tts:rubyOverhangClass="preAbbreviations"/>
-      <style tts:rubyOverhangClass="punctuationMarks"/>
-      <style tts:rubyOverhangClass="smallKana"/>
-      <style tts:rubyOverhangClass="soundMarks"/>
-      <style tts:rubyOverhangClass="unitSymbols"/>
-      <style tts:rubyOverhangClass="western"/>
-      <style tts:rubyOverhangClass="westernWordSpace"/>
-      <style tts:rubyOverhangClass="[A-Z]"/>
-      <style tts:rubyOverhangClass="[0-9]"/>
-      <style tts:rubyOverhangClass="[A-Z0-9]"/>
-      <style tts:rubyOverhangClass="[\u000041]"/>
-      <style tts:rubyOverhangClass="[\u0041]"/>
-      <style tts:rubyOverhangClass="[\A]"/>
-      <style tts:rubyOverhangClass="[\-]"/>
-      <style tts:rubyOverhangClass="[\]]"/>
-      <style tts:rubyOverhangClass="[\']"/>
-      <!-- <style tts:rubyOverhangClass="[\ ]"/> [FIXME] -->
       <!-- legal rubyPosition values (exhaustive) -->
-      <style tts:rubyPosition="auto"/>
       <style tts:rubyPosition="after"/>
       <style tts:rubyPosition="before"/>
       <style tts:rubyPosition="outside"/>

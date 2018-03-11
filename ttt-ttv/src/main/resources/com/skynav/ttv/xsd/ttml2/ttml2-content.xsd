@@ -4,6 +4,7 @@
   xmlns:tt="http://www.w3.org/ns/ttml"
   xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
   xmlns:tts="http://www.w3.org/ns/ttml#styling"
+  xmlns:tta="http://www.w3.org/ns/ttml#audio"
   xmlns:xlink="http://www.w3.org/1999/xlink">
   <xs:include schemaLocation="ttml2-core-attribs.xsd"/>
   <xs:include schemaLocation="ttml2-timing-attribs.xsd"/>
@@ -14,6 +15,8 @@
   <xs:include schemaLocation="ttml2-styling.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml#metadata"
     schemaLocation="ttml2-metadata-attribs.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#audio"
+    schemaLocation="ttml2-audio-attribs.xsd"/>
   <xs:import namespace="http://www.w3.org/1999/xlink"
     schemaLocation="xlink.xsd"/>
   <xs:attributeGroup name="body.attlist">
@@ -23,6 +26,7 @@
     <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
     <xs:attributeGroup ref="tt:Styled.attrib.class"/>
     <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
+    <xs:attributeGroup ref="tta:Audio.content.attrib.class"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="div.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
@@ -31,6 +35,7 @@
     <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
     <xs:attributeGroup ref="tt:Styled.attrib.class"/>
     <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
+    <xs:attributeGroup ref="tta:Audio.content.attrib.class"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="p.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
@@ -39,6 +44,7 @@
     <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
     <xs:attributeGroup ref="tt:Styled.attrib.class"/>
     <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
+    <xs:attributeGroup ref="tta:Audio.content.attrib.class"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="span.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
@@ -46,14 +52,12 @@
     <xs:attributeGroup ref="tt:AnimationBinding.attrib.class"/>
     <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
     <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="tta:Audio.content.attrib.class"/>
     <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
     <xs:attributeGroup ref="xlink:simpleAttrs"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="br.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
-    <xs:attributeGroup ref="tt:TimedContainer.attrib.class"/>
-    <xs:attributeGroup ref="tt:AnimationBinding.attrib.class"/>
-    <xs:attributeGroup ref="tt:RegionBinding.attrib.class"/>
     <xs:attributeGroup ref="tt:Styled.attrib.class"/>
     <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
   </xs:attributeGroup>

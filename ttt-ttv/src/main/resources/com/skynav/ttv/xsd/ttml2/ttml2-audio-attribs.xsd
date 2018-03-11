@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#audio"
+  xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:tta="http://www.w3.org/ns/ttml#audio">
+  <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
+    schemaLocation="ttml2-datatypes.xsd"/>
+  <xs:attribute name="gain" type="ttd:gain"/>
+  <xs:attribute name="pan" type="ttd:pan"/>
+  <xs:attribute name="pitch" type="ttd:pitch"/>
+  <xs:attribute name="speak" type="ttd:speak"/>        
+  <xs:attributeGroup name="Audio.content.attrib.class">
+    <xs:attribute ref="tta:gain"/>
+    <xs:attribute ref="tta:pan"/>
+    <xs:attribute ref="tta:pitch"/>
+    <xs:attribute ref="tta:speak"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="Audio.audio.attrib.class">
+    <xs:attribute ref="tta:gain"/>
+    <xs:attribute ref="tta:pan"/>
+  </xs:attributeGroup>
+</xs:schema>
