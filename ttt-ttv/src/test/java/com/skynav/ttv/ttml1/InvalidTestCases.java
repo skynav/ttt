@@ -1015,6 +1015,46 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadProfileExtensionEmptyDesignation() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-profile-extension-empty-designation.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadProfileExtensionMissingDesignation() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-profile-extension-missing-designation.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadProfileExtensionUnknownDesignation() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-profile-extension-unknown-designation.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadProfileExtensionUnknownValue() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-profile-extension-unknown-value.xml", 2, 0);
+    }
+
+    @Test
+    public void testInvalidBadProfileFeatureEmptyDesignation() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-profile-feature-empty-designation.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadProfileFeatureMissingDesignation() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-profile-feature-missing-designation.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadProfileFeatureUnknownDesignation() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-profile-feature-unknown-designation.xml", 1, 0);
+    }
+
+    @Test
+    public void testInvalidBadProfileFeatureUnknownValue() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-profile-feature-unknown-value.xml", 2, 0);
+    }
+
+    @Test
     public void testInvalidBadProfileUseAttributeEmpty() throws Exception {
         performInvalidityTest("ttml1-invalid-bad-profile-use-attribute-empty.xml", 1, 0);
     }

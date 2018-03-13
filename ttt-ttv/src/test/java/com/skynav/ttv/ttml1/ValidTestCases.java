@@ -131,6 +131,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidProfileNonStandardExtensionInOtherExtensionNamespace() throws Exception {
+        performValidityTest("ttml1-valid-profile-extension-non-standard-in-other-namespace.xml", 0, 0);
+    }
+
+    @Test
     public void testValidProfileMissing() throws Exception {
         performValidityTest("ttml1-valid-profile-missing.xml", 0, 1);
     }
