@@ -43,7 +43,7 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
+        <version>0.13.3</version>
         <executions>
           <execution>
             <id>xjc-ttml1</id>
@@ -53,7 +53,12 @@
             <configuration>
               <specVersion>2.1</specVersion>
               <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/ttml1</schemaDirectory>
+              <schemaIncludes>
+                <include>ttml1.xsd</include>
+              </schemaIncludes>
               <generateDirectory>target/generated-sources/xjc-ttml1</generateDirectory>
+              <episode>false</episode>
+              <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
             </configuration>
           </execution>
           <execution>
@@ -64,7 +69,12 @@
             <configuration>
               <specVersion>2.1</specVersion>
               <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/ttml2</schemaDirectory>
+              <schemaIncludes>
+                <include>ttml2.xsd</include>
+              </schemaIncludes>
               <generateDirectory>target/generated-sources/xjc-ttml2</generateDirectory>
+              <episode>false</episode>
+              <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
             </configuration>
           </execution>
           <execution>
@@ -75,7 +85,13 @@
             <configuration>
               <specVersion>2.1</specVersion>
               <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/smpte/2010</schemaDirectory>
+              <schemaIncludes>
+                <include>smpte-tt.xsd</include>
+                <include>smpte-tt-608.xsd</include>
+              </schemaIncludes>
               <generateDirectory>target/generated-sources/xjc-smpte-2010</generateDirectory>
+              <episode>false</episode>
+              <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
             </configuration>
           </execution>
           <execution>
@@ -86,7 +102,14 @@
             <configuration>
               <specVersion>2.1</specVersion>
               <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/smpte/2013</schemaDirectory>
+              <schemaIncludes>
+                <include>smpte-tt.xsd</include>
+                <include>smpte-tt-608.xsd</include>
+                <include>smpte-tt-708.xsd</include>
+              </schemaIncludes>
               <generateDirectory>target/generated-sources/xjc-smpte-2013</generateDirectory>
+              <episode>false</episode>
+              <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
             </configuration>
           </execution>
           <execution>
@@ -97,7 +120,12 @@
             <configuration>
               <specVersion>2.1</specVersion>
               <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/ebuttd</schemaDirectory>
+              <schemaIncludes>
+                <include>ebutt_d.xsd</include>
+              </schemaIncludes>
               <generateDirectory>target/generated-sources/xjc-ebu-tt-d</generateDirectory>
+              <episode>false</episode>
+              <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
             </configuration>
           </execution>
           <execution>
@@ -108,7 +136,12 @@
             <configuration>
               <specVersion>2.1</specVersion>
               <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/imsc1</schemaDirectory>
+              <schemaIncludes>
+                <include>imsc1.xsd</include>
+              </schemaIncludes>
               <generateDirectory>target/generated-sources/xjc-imsc1</generateDirectory>
+              <episode>false</episode>
+              <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
             </configuration>
           </execution>
         </executions>
