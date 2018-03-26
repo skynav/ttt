@@ -61,7 +61,7 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="discrete"/>
       <xs:enumeration value="linear"/>
-      <xs:enumeration value="displaced"/>
+      <xs:enumeration value="paced"/>
       <xs:enumeration value="spline"/>
     </xs:restriction>
   </xs:simpleType>

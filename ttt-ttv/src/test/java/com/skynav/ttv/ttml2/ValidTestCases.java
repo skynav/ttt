@@ -47,6 +47,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2AnimateOutOfLine() throws Exception {
+        performValidityTest("ttml2-valid-animate-out-of-line.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ContentProfilesQuantifiedAllMultiple() throws Exception {
         performValidityTest("ttml2-valid-content-profiles-quantified-all-multiple.xml", -1, -1);
     }

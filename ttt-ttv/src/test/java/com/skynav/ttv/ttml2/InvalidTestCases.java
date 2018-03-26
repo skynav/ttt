@@ -36,6 +36,11 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidTTML2BadAnimateAnimationStyleValue() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-animate-animation-style-value.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBackgroundClipAllSpace() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-background-clip-all-space.xml", -1, -1);
     }

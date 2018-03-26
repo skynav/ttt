@@ -1334,14 +1334,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     protected Object findSetBindingElement(Object set, Node node) {
         if (getContext().getXMLNode(set) == node)
             return set;
-        else {
-            for (Object m : getSetMetadata(set)) {
-                Object content = findMetadataItemBindingElement(m, node);
-                if (content != null)
-                    return content;
-            }
-            return null;
-        }
+        else
+            return findBindingElement((Set) set, node);
     }
 
     protected Object findProfileBindingElement(Object profile, Node node) {

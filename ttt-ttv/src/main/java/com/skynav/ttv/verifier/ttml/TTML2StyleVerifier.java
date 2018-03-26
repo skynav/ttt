@@ -713,6 +713,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     }
 
     @Override
+    protected boolean isAnimate(Object content) {
+        return content instanceof Animate;
+    }
+
+    @Override
     protected boolean isInitial(Object content) {
         return content instanceof Initial;
     }

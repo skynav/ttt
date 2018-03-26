@@ -608,6 +608,10 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             return false;
     }
 
+    protected boolean isAnimate(Object content) {
+        return false;
+    }
+
     protected boolean isInitial(Object content) {
         return false;
     }
@@ -756,12 +760,30 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Object value = getStyleValue(content);
             if (value != null) {
                 Location location = new Location(content, context.getBindingElementName(content), styleName, locator);
-                if (value instanceof String)
-                    success = verify((String) value, location, context);
+                if (isAnimate(content) && (value instanceof Collection<?>))
+                    success = verifyMultiple((Collection<?>) value, location, context);
                 else
-                    success = verifier.verify(value, location, context);
+                    success = verifySingle(value, location, context);
             } else if (!isInitial(content))
                 setStyleInitialValue(content, context);
+            return success;
+        }
+
+        protected boolean verifyMultiple(Collection<?> values, Location location, VerifierContext context) {
+            boolean success = true;
+            for (Object value : values) {
+                if (!verifySingle(value, location, context))
+                    success = false;
+            }
+            return success;
+        }
+
+        protected boolean verifySingle(Object value, Location location, VerifierContext context) {
+            boolean success = true;
+            if (value instanceof String)
+                success = verify((String) value, location, context);
+            else
+                success = verifier.verify(value, location, context);
             if (!success) {
                 if (value != null) {
                     if (styleName.equals(styleAttributeName)) {
@@ -771,6 +793,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
                     } else
                         value = value.toString();
                     Reporter reporter = context.getReporter();
+                    Locator locator = location.getLocator();
                     reporter.logError(reporter.message(locator,
                         "*KEY*", "Invalid {0} value ''{1}''.", styleName, value));
                 }
@@ -824,7 +847,11 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             try {
                 Class<?> contentClass = content.getClass();
                 Method m = contentClass.getMethod(getterName, new Class<?>[]{});
-                return convertType(m.invoke(content, new Object[]{}), valueClass);
+                Object v = m.invoke(content, new Object[]{});
+                if (isAnimationValueList(content, v)) {
+                    return convertValueListType(v, valueClass);
+                } else
+                    return convertType(v, valueClass);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             } catch (IllegalArgumentException e) {
@@ -838,8 +865,28 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             }
         }
 
+        private boolean isAnimationValueList(Object content, Object value) {
+            if (!isAnimate(content))
+                return false;
+            else if (value == null)
+                return false;
+            else if (value.getClass() != String.class)
+                return false;
+            else
+                return ((String) value).indexOf(';') != -1;
+        }
+
         private void setStyleInitialValue(Object content, VerifierContext context) {
             TTML1StyleVerifier.this.setStyleInitialValue(content, this, initialValue, context);
+        }
+
+        private Object convertValueListType(Object value, Class<?> targetClass) {
+            assert value != null;
+            assert value.getClass() == String.class;
+            Collection<Object> values = new java.util.ArrayList<Object>();
+            for (String s : ((String) value).split(";"))
+                values.add(convertType(s.trim(), targetClass));
+            return values;
         }
 
         private Object convertType(Object value, Class<?> targetClass) {

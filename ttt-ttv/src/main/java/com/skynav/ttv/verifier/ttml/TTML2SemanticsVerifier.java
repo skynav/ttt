@@ -38,6 +38,8 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml.TTML2;
+import com.skynav.ttv.model.ttml2.tt.Animate;
+import com.skynav.ttv.model.ttml2.tt.Animation;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Chunk;
@@ -98,6 +100,58 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return verifyProfile(root);
         else
             return unexpectedContent(root);
+    }
+
+    @Override
+    protected boolean verifyHead(Object head, Object tt) {
+        boolean failed = false;
+        if (!verifyOtherAttributes(head))
+            failed = true;
+        for (Object m : getHeadMetadata(head)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        Object styling  = getHeadStyling(head);
+        if (styling != null) {
+            if (!verifyStyling(styling))
+                failed = true;
+        }
+        Object layout  = getHeadLayout(head);
+        if (layout != null) {
+            if (!verifyLayout(layout))
+                failed = true;
+        }
+        Object animation  = getHeadAnimation(head);
+        if (animation != null) {
+            if (!verifyAnimations(animation))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected boolean verifyAnimations(Object animation) {
+        boolean failed = false;
+        if (!verifyOtherAttributes(animation))
+            failed = true;
+        for (Object m : getAnimationMetadata(animation)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Object a : getAnimationAnimate(animation)) {
+            if (!verifyAnimation(a))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected Collection<? extends Object> getAnimationMetadata(Object animation) {
+        assert animation instanceof Animation;
+        return ((Animation) animation).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getAnimationAnimate(Object animation) {
+        assert animation instanceof Animation;
+        return ((Animation) animation).getAnimate();
     }
 
     @Override
@@ -164,10 +218,17 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     @Override
     protected boolean verifyAnimation(Object animation) {
-        if (animation instanceof Set)
+        if (animation instanceof Animate)
+            return verifyAnimate(animation);
+        else if (animation instanceof Set)
             return verifySet(animation);
         else
             return unexpectedContent(animation);
+    }
+
+    protected Collection<? extends Object> getAnimateMetadata(Object animate) {
+        assert animate instanceof Animate;
+        return ((Animate) animate).getMetadataClass();
     }
 
     @Override
@@ -188,6 +249,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             Object element = ((JAXBElement<?>)content).getValue();
             if (isMetadataItem(element))
                 return verifyMetadata(element);
+            else if (element instanceof Animate)
+                return verifyAnimate(element);
             else if (element instanceof Set)
                 return verifySet(element);
             else if (element instanceof Span)
@@ -220,6 +283,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             Object element = ((JAXBElement<?>)content).getValue();
             if (getContext().getXMLNode(element) == node)
                 return element;
+            else if (element instanceof Animate)
+                return findBindingElement((Animate) element, node);
             else if (element instanceof Image)
                 return findBindingElement((Image) element, node);
         }
@@ -235,6 +300,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         else if (element instanceof Copyright)
             return true;
         else if (element instanceof Description)
+            return true;
+        else if (element instanceof Item)
             return true;
         else if (element instanceof Metadata)
             return true;
@@ -258,6 +325,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return findCopyrightBindingElement(metadata, node);
         else if (metadata instanceof Description)
             return findDescriptionBindingElement(metadata, node);
+        else if (metadata instanceof Item)
+            return findDescriptionBindingElement(metadata, node);
         else if (metadata instanceof Metadata)
             return findMetadataBindingElement(metadata, node);
         else if (metadata instanceof Name)
@@ -272,10 +341,19 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     @Override
     protected Object findAnimationBindingElement(Object animation, Node node) {
-        if (animation instanceof Set)
+        if (animation instanceof Animate)
+            return findAnimateBindingElement(animation, node);
+        else if (animation instanceof Set)
             return findSetBindingElement(animation, node);
         else
             return null;
+    }
+
+    protected Object findAnimateBindingElement(Object animate, Node node) {
+        if (getContext().getXMLNode(animate) == node)
+            return animate;
+        else
+            return findBindingElement((Animate) animate, node);
     }
 
     // accessor overrides
@@ -302,6 +380,11 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     protected Collection<? extends Object> getHeadParameters(Object head) {
         assert head instanceof Head;
         return ((Head) head).getParametersClass();
+    }
+
+    protected Object getHeadAnimation(Object head) {
+        assert head instanceof Head;
+        return ((Head) head).getAnimation();
     }
 
     @Override
@@ -486,11 +569,40 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     // new elements
 
+    protected boolean verifyAnimate(Object animate) {
+        boolean failed = false;
+        if (!verifyAnimateAttributes(animate))
+            failed = true;
+        if (!verifyStyleAttributes(animate))
+            failed = true;
+        if (!verifyTimingAttributes(animate))
+            failed = true;
+        if (!verifyOtherAttributes(animate))
+            failed = true;
+        for (Object m : getAnimateMetadata(animate)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        if (!verifyStyledItem(animate))
+            failed = true;
+        return !failed;
+    }
+
+    protected boolean verifyAnimateAttributes(Object animate) {
+        boolean failed = false;
+        // @calcMode    - handled by pass 3 (schema validation)
+        // @fill        - handled by pass 3 (schema validation)
+        // @keySplines  - <control> (<lwsp>? ';' <lwsp>? <control>)*
+        // @keyTimes    - <time> (<lwsp>? ';' <lwsp>? <time>)*
+        // @repeatCount - <digit>+ | 'indefinite'
+        return !failed;
+    }
+
     protected boolean verifyImage(Object image) {
         boolean failed = false;
-        if (!verifyStyleAttributes(image))
-            failed = true;
         if (!verifyImageAttributes(image))
+            failed = true;
+        if (!verifyStyleAttributes(image))
             failed = true;
         if (!verifyOtherAttributes(image))
             failed = true;
