@@ -67,6 +67,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2AnimateRepeatCount() throws Exception {
+        performValidityTest("ttml2-valid-animate-repeat-count.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2AnimateSpline() throws Exception {
         performValidityTest("ttml2-valid-animate-spline.xml", -1, -1);
     }

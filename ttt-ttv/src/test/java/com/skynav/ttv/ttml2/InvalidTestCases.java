@@ -41,6 +41,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadAnimateNegativeRepeatCount() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-animate-negative-repeat-count.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadAnimateUnknownCalculationMode() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-animate-unknown-calculation-mode.xml", -1, -1);
     }
@@ -48,6 +53,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadAnimateUnknownFill() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-animate-unknown-fill.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadAnimateUnknownRepeatCount() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-animate-unknown-repeat-count.xml", -1, -1);
     }
 
     @Test

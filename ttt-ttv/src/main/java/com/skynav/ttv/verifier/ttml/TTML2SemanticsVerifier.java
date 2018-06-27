@@ -72,6 +72,7 @@ import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Images;
+import com.skynav.ttv.verifier.util.RepeatCount;
 import com.skynav.ttv.verifier.util.ResourceFormats;
 import com.skynav.ttv.verifier.util.ResourceTypes;
 
@@ -590,12 +591,29 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     protected boolean verifyAnimateAttributes(Object animate) {
         boolean failed = false;
-        // @calcMode    - handled by pass 3 (schema validation)
-        // @fill        - handled by pass 3 (schema validation)
-        // @keySplines  - <control> (<lwsp>? ';' <lwsp>? <control>)*
-        // @keyTimes    - <time> (<lwsp>? ';' <lwsp>? <time>)*
-        // @repeatCount - <digit>+ | 'indefinite'
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(animate);
+        Locator locator = location.getLocator();
+        // @calcMode    - schema validation only
+        // @fill        - schema validation only
+        // @keySplines  - TBD
+        // @keyTimes    - TBD
+        // @repeatCount
+        String s = getAnimateRepeatCountAttribute(animate);
+        if (s != null) {
+            if (!RepeatCount.isRepeatCount(s, location, context, null)) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "Bad <repeat-count> expression ''{0}''.", s));
+                failed = true;
+            }
+        }
         return !failed;
+    }
+
+    protected String getAnimateRepeatCountAttribute(Object animate) {
+        assert animate instanceof Animate;
+        return ((Animate) animate).getRepeatCount();
     }
 
     protected boolean verifyImage(Object image) {

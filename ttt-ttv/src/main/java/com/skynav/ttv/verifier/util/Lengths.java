@@ -67,7 +67,7 @@ public class Lengths {
         }
     }
 
-    private static final Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*.\\d+|\\d+))(\\w+|%)?");
+    private static final Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*\\.\\d+|\\d+))(\\w+|%)?");
     public static boolean isLength(String value, Location location, VerifierContext context, Object[] treatments, Length[] outputLength) {
         Reporter reporter = context.getReporter();
         Locator locator = location.getLocator();

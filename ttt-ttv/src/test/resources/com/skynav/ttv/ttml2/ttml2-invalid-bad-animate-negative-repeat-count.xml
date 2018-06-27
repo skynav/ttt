@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - unknown repeat count keyword on tt:animate -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="14" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <animation>
+      <animate repeatCount="-0"/>
+      <animate repeatCount="-1"/>
+      <animate repeatCount="-10"/>
+      <animate repeatCount="-999999999"/>
+      <animate repeatCount="-0.0"/>
+      <animate repeatCount="-1.0"/>
+      <animate repeatCount="-10.0"/>
+      <animate repeatCount="-999999999.999999999"/>
+      <animate repeatCount="-0.1"/>
+      <animate repeatCount="-1.1"/>
+      <animate repeatCount="-10.1"/>
+      <animate repeatCount="-.0"/>
+      <animate repeatCount="-.1"/>
+      <animate repeatCount="-.999999999"/>
+    </animation>
+  </head>
+</tt>
