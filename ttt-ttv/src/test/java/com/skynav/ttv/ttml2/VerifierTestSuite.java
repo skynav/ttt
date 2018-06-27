@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,9 @@ package com.skynav.ttv.ttml2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+
+import com.skynav.ttv.ttml2.validation.invalid.InvalidTestCases;
+import com.skynav.ttv.ttml2.validation.valid.ValidTestCases;
 
 @RunWith(Suite.class)
 @SuiteClasses({
