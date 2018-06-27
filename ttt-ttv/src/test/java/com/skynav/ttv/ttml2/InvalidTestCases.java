@@ -41,6 +41,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadAnimateUnknownCalculationMode() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-animate-unknown-calculation-mode.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadAnimateUnknownFill() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-animate-unknown-fill.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBackgroundClipAllSpace() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-background-clip-all-space.xml", -1, -1);
     }

@@ -47,6 +47,31 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2AnimateDiscrete() throws Exception {
+        performValidityTest("ttml2-valid-animate-discrete.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2AnimateFill() throws Exception {
+        performValidityTest("ttml2-valid-animate-fill.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2AnimateLinear() throws Exception {
+        performValidityTest("ttml2-valid-animate-linear.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2AnimatePaced() throws Exception {
+        performValidityTest("ttml2-valid-animate-paced.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2AnimateSpline() throws Exception {
+        performValidityTest("ttml2-valid-animate-spline.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2AnimateOutOfLine() throws Exception {
         performValidityTest("ttml2-valid-animate-out-of-line.xml", -1, -1);
     }
