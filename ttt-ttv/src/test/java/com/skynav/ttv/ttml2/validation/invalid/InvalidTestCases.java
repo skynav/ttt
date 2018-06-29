@@ -76,6 +76,41 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadBackgroundExtentAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-extent-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundExtentEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-extent-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundExtentUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-extent-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundImageAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-image-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundImageEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-image-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundImageUnresolvableFragmentUri() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-image-unresolvable-fragment-uri.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundImageUnresolvableExternalUri() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-image-unresolvable-external-uri.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBackgroundOriginAllSpace() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-background-origin-all-space.xml", -1, -1);
     }
@@ -93,6 +128,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadBackgroundPosition() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-background-position.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundPositionAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-position-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundPositionEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-position-empty.xml", -1, -1);
     }
 
     @Test

@@ -42,11 +42,6 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2AllStyles() throws Exception {
-        performValidityTest("ttml2-valid-all-styles.xml", -1, -1);
-    }
-
-    @Test
     public void testValidTTML2AnimateDiscrete() throws Exception {
         performValidityTest("ttml2-valid-animate-discrete.xml", -1, -1);
     }
@@ -79,6 +74,36 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2AnimateOutOfLine() throws Exception {
         performValidityTest("ttml2-valid-animate-out-of-line.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BackgroundClip() throws Exception {
+        performValidityTest("ttml2-valid-background-clip.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BackgroundExtent() throws Exception {
+        performValidityTest("ttml2-valid-background-extent.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BackgroundImage() throws Exception {
+        performValidityTest("ttml2-valid-background-image.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BackgroundOrigin() throws Exception {
+        performValidityTest("ttml2-valid-background-origin.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BackgroundPosition() throws Exception {
+        performValidityTest("ttml2-valid-background-position.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BackgroundRepeat() throws Exception {
+        performValidityTest("ttml2-valid-background-repeat.xml", -1, -1);
     }
 
     @Test
