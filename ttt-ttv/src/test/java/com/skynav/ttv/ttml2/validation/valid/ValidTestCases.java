@@ -127,6 +127,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2DisplayAlignAll() throws Exception {
+        performValidityTest("ttml2-valid-display-align-all.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayAlignJustify() throws Exception {
+        performValidityTest("ttml2-valid-display-align-justify.xml", -1, -1);
+    }
+
+    @Test
     @Ignore
     public void testValidTTML2ImageInBlockAll() throws Exception {
         performValidityTest("ttml2-valid-image-in-block-all.xml", -1, -1);
