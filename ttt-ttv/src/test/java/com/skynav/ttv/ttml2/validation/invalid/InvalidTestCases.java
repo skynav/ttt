@@ -186,6 +186,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadBPDAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-bpd-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBPDEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-bpd-empty.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBPDNegative() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-bpd-negative.xml", -1, -1);
     }
@@ -285,6 +295,16 @@ public class InvalidTestCases {
         performInvalidityTest("ttml2-invalid-bad-extent-unknown-unit.xml", -1, -1);
     }
     
+    @Test
+    public void testInvalidTTML2BadIPDAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-ipd-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadIPDEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-ipd-empty.xml", -1, -1);
+    }
+
     @Test
     public void testInvalidTTML2BadIPDNegative() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-ipd-negative.xml", -1, -1);

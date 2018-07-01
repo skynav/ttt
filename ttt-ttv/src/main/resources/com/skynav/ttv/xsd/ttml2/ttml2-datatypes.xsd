@@ -128,6 +128,7 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="auto"/>
       <xs:enumeration value="none"/>
+      <xs:enumeration value="inlineBlock"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="displayAlign">

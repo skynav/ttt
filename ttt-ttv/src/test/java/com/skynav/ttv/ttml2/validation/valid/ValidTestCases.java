@@ -107,6 +107,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2BPD() throws Exception {
+        performValidityTest("ttml2-valid-bpd.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BPDBlock() throws Exception {
+        performValidityTest("ttml2-valid-bpd-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BPDInline() throws Exception {
+        performValidityTest("ttml2-valid-bpd-inline.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BPDInlineBlock() throws Exception {
+        performValidityTest("ttml2-valid-bpd-inline-block.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ContentProfilesQuantifiedAllMultiple() throws Exception {
         performValidityTest("ttml2-valid-content-profiles-quantified-all-multiple.xml", -1, -1);
     }
@@ -155,6 +175,26 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ImageInBlockSimpleSourcePng() throws Exception {
         performValidityTest("ttml2-valid-image-in-block-simple-source-png.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2IPD() throws Exception {
+        performValidityTest("ttml2-valid-ipd.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2IPDBlock() throws Exception {
+        performValidityTest("ttml2-valid-ipd-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2IPDInline() throws Exception {
+        performValidityTest("ttml2-valid-ipd-inline.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2IPDInlineBlock() throws Exception {
+        performValidityTest("ttml2-valid-ipd-inline-block.xml", -1, -1);
     }
 
     @Test
