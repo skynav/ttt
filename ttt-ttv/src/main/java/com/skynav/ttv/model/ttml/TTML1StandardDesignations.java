@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ import static com.skynav.ttv.model.ttml.TTML1.Constants.NAMESPACE_TT_FEATURE;
 
 public class TTML1StandardDesignations extends Profile.StandardDesignations {
 
-    private static final String[] featureDesignationStrings = new String[] {
+    private static final String[] ttml1FeatureDesignationStrings = new String[] {
         "#animation",
         "#backgroundColor-block",
         "#backgroundColor-inline",
@@ -150,10 +150,10 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
         "#writingMode-horizontal",
         "#writingMode-vertical",
         "#writingMode",
-        "#zIndex",
+        "#zIndex"
     };
 
-    private static final String[] extensionDesignationStrings = new String[] {
+    private static final String[] ttml1ExtensionDesignationStrings = new String[] {
     };
 
     private Set<URI> featureDesignations;
@@ -167,8 +167,9 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
     private void populateFeatureDesignations() {
         URI featureNamespaceUri = URIs.makeURISafely(NAMESPACE_TT_FEATURE);
         if (featureNamespaceUri != null) {
-            Set<URI> featureDesignations = new java.util.HashSet<URI>(featureDesignationStrings.length);
-            for (String designation : featureDesignationStrings) {
+            String[] designationStrings = getFeatureDesignationStrings();
+            Set<URI> featureDesignations = new java.util.HashSet<URI>(designationStrings.length);
+            for (String designation : designationStrings) {
                 featureDesignations.add(featureNamespaceUri.resolve(designation));
             }
             this.featureDesignations = featureDesignations;
@@ -178,8 +179,9 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
     private void populateExtensionDesignations() {
         URI extensionNamespaceUri = URIs.makeURISafely(NAMESPACE_TT_EXTENSION);
         if (extensionNamespaceUri != null) {
-            Set<URI> extensionDesignations = new java.util.HashSet<URI>(extensionDesignationStrings.length);
-            for (String designation : extensionDesignationStrings) {
+            String[] designationStrings = getExtensionDesignationStrings();
+            Set<URI> extensionDesignations = new java.util.HashSet<URI>(designationStrings.length);
+            for (String designation : designationStrings) {
                 extensionDesignations.add(extensionNamespaceUri.resolve(designation));
             }
             this.extensionDesignations = extensionDesignations;
@@ -198,6 +200,14 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
     @Override
     public boolean isStandardExtensionDesignation(URI uri) {
         return (extensionDesignations != null) && extensionDesignations.contains(uri);
+    }
+
+    protected String[] getFeatureDesignationStrings() {
+        return ttml1FeatureDesignationStrings;
+    }
+
+    protected String[] getExtensionDesignationStrings() {
+        return ttml1ExtensionDesignationStrings;
     }
 
 }

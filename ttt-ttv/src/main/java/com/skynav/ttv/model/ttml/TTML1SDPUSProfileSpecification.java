@@ -66,7 +66,7 @@ public class TTML1SDPUSProfileSpecification extends Specification {
         { "#textOutline-unblurred", Usage.REQUIRED },
         { "#time-offset", Usage.REQUIRED },
         { "#timing", Usage.REQUIRED },
-        { "#writingMode-horizontal-lr", Usage.REQUIRED },
+        { "#writingMode-horizontal-lr", Usage.REQUIRED }
     };
 
     private static final Object[][] extensionMapEntries = new Object[][] {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 package com.skynav.ttv.model.ttml;
 
 import java.net.URI;
+import java.util.Map;
 
 import com.skynav.ttv.model.Profile.Specification;
 import com.skynav.ttv.model.Profile.Usage;
@@ -148,7 +149,7 @@ public class TTML1FullProfileSpecification extends Specification {
         { "#writingMode-horizontal", Usage.REQUIRED },
         { "#writingMode-vertical", Usage.REQUIRED },
         { "#writingMode", Usage.REQUIRED },
-        { "#zIndex", Usage.REQUIRED },
+        { "#zIndex", Usage.REQUIRED }
     };
 
     private static final Object[][] extensionMapEntries = new Object[][] {
@@ -156,6 +157,10 @@ public class TTML1FullProfileSpecification extends Specification {
 
     public TTML1FullProfileSpecification(URI profileUri) {
         super(profileUri, null, featuresMap(NAMESPACE_TT_FEATURE, featureMapEntries), extensionsMap(NAMESPACE_TT_EXTENSION, extensionMapEntries));
+    }
+
+    protected TTML1FullProfileSpecification(URI uri, String baseline, Map<URI,Usage> features, Map<URI,Usage> extensions) {
+        super(uri, baseline, features, extensions);
     }
 
 }
