@@ -171,6 +171,16 @@ public class ValidTestCases {
         performValidityTest("ttml2-valid-processor-profiles-unquantified-single.xml", -1, -1);
     }
 
+    @Test
+    public void testValidTTML2UnicodeBidiAll() throws Exception {
+        performValidityTest("ttml2-valid-unicode-bidi-all.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2UnicodeBidiIsolate() throws Exception {
+        performValidityTest("ttml2-valid-unicode-bidi-isolate.xml", -1, -1);
+    }
+
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performValidityTest(resourceName, expectedErrors, expectedWarnings, null);
     }

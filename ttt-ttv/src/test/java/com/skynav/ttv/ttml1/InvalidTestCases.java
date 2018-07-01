@@ -1220,6 +1220,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidBadUnicodeBidiAllSpace() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-unicode-bidi-all-space.xml", 2, 0);
+    }
+
+    @Test
+    public void testInvalidBadUnicodeBidiEmpty() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-unicode-bidi-empty.xml", 2, 0);
+    }
+
+    @Test
+    public void testInvalidBadUnicodeBidiUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml1-invalid-bad-unicode-bidi-unknown-keyword.xml", 2, 0);
+    }
+
+    @Test
     public void testInvalidBadZIndexAllSpace() throws Exception {
         performInvalidityTest("ttml1-invalid-bad-z-index-all-space.xml", 1, 0);
     }
