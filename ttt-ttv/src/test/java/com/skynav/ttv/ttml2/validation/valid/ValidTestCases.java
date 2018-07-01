@@ -137,6 +137,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2ImageExtent() throws Exception {
+        performValidityTest("ttml2-valid-image-extent.xml", -1, -1);
+    }
+
+    @Test
     @Ignore
     public void testValidTTML2ImageInBlockAll() throws Exception {
         performValidityTest("ttml2-valid-image-in-block-all.xml", -1, -1);

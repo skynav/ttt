@@ -33,8 +33,8 @@ public interface Length {
         Em("em"),
         Pixel("px"),
         Percentage("%"),
-        ViewportHeight("vh"),
-        ViewportWidth("vw");
+        ViewportHeight("rh"),
+        ViewportWidth("rw");
         private String shorthand;
         Unit(String shorthand) {
             this.shorthand = shorthand;

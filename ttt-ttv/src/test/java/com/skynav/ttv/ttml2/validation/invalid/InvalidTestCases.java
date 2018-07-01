@@ -216,6 +216,76 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void textInvalidTTML2BadExtentAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-all-space.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentCommaDelimiterWithWhitespace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-comma-delimiter-with-whitespace.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-empty.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentExtraLength() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-extra-length.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentMissingLength() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-missing-length.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentMissingUnit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-missing-unit.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentNegativeHeight() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-negative-height.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentNegativeWidth() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-negative-width.xml", -1, -1);
+    }
+
+    @Test
+    public void textInvalidTTML2BadExtentRootHeight() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-root-height.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentRootWidth() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-root-width.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentSemicolonDelimiterSansWhitespace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-semicolon-delimiter-sans-whitespace.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-unknown-keyword.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentUnknownMeasureKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-unknown-measure-keyword.xml", -1, -1);
+    }
+    
+    @Test
+    public void textInvalidTTML2BadExtentUnknownUnit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-extent-unknown-unit.xml", -1, -1);
+    }
+    
+    @Test
     public void testInvalidTTML2BadIPDNegative() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-ipd-negative.xml", -1, -1);
     }

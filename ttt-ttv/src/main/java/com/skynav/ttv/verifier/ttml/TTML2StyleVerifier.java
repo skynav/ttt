@@ -32,9 +32,11 @@ import javax.xml.namespace.QName;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml.TTML2.TTML2Model;
 import com.skynav.ttv.model.ttml2.tt.Animate;
+import com.skynav.ttv.model.ttml2.tt.Audio;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Division;
+import com.skynav.ttv.model.ttml2.tt.Image;
 import com.skynav.ttv.model.ttml2.tt.Initial;
 import com.skynav.ttv.model.ttml2.tt.Paragraph;
 import com.skynav.ttv.model.ttml2.tt.Region;
@@ -708,11 +710,6 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     }
 
     @Override
-    public boolean isLengthUnitsRequired(QName eltName, QName styleName) {
-        return false;
-    }
-
-    @Override
     protected boolean isAnimate(Object content) {
         return content instanceof Animate;
     }
@@ -741,9 +738,13 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     protected boolean permitsStyleAttribute(Object content, QName name) {
         if (content instanceof Animate)
             return true;
+        else if (content instanceof Audio)
+            return true;
         else if (content instanceof Body)
             return true;
         else if (content instanceof Division)
+            return true;
+        else if (content instanceof Image)
             return true;
         else if (content instanceof Initial)
             return true;
