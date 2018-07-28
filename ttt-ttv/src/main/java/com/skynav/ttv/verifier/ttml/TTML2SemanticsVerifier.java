@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -669,25 +669,21 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         // @type
         String t = getImageTypeAttribute(image);
         if (t != null) {
-            if (!ResourceTypes.isType(t, location, context, null)) {
+            if ((i == null) || !i.isExternal()) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute must not specified for internal image sources.", typeAttributeName));
+                failed = true;
+            } else if (!ResourceTypes.isType(t, location, context, null)) {
                 ResourceTypes.badType(t, location, context);
                 failed = true;
-            } else {
-                if (!i.isExternal()) {
-                    reporter.logError(reporter.message(locator, "*KEY*",
-                        "A ''{0}'' attribute must not specified for internal image sources.", typeAttributeName));
-                    failed = true;
-                }
             }
-        } else {
-            if (i.isExternal()) {
-                if (reporter.isWarningEnabled("missing-type-for-external-source")) {
-                    Message message = reporter.message(locator, "*KEY*",
-                        "A ''{0}'' attribute should specified for external image sources.", typeAttributeName);
-                    if (reporter.logWarning(message)) {
-                        reporter.logError(message);
-                        failed = true;
-                    }
+        } else if ((i != null) && i.isExternal()) {
+            if (reporter.isWarningEnabled("missing-type-for-external-source")) {
+                Message message = reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute should be specified for external image sources.", typeAttributeName);
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
+                    failed = true;
                 }
             }
         }

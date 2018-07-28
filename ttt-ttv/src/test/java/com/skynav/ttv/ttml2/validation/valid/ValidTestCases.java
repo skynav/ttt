@@ -162,7 +162,6 @@ public class ValidTestCases {
     }
 
     @Test
-    @Ignore
     public void testValidTTML2ImageInBlockAll() throws Exception {
         performValidityTest("ttml2-valid-image-in-block-all.xml", -1, -1);
     }
@@ -175,6 +174,21 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ImageInBlockSimpleSourcePng() throws Exception {
         performValidityTest("ttml2-valid-image-in-block-simple-source-png.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ImageInInlineAll() throws Exception {
+        performValidityTest("ttml2-valid-image-in-inline-all.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ImageInInlineSimpleSourceJpg() throws Exception {
+        performValidityTest("ttml2-valid-image-in-inline-simple-source-jpg.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ImageInInlineSimpleSourcePng() throws Exception {
+        performValidityTest("ttml2-valid-image-in-inline-simple-source-png.xml", -1, -1);
     }
 
     @Test
