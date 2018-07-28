@@ -107,6 +107,36 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Border() throws Exception {
+        performValidityTest("ttml2-valid-border.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BorderBlock() throws Exception {
+        performValidityTest("ttml2-valid-border-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BorderInline() throws Exception {
+        performValidityTest("ttml2-valid-border-inline.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BorderRadii1() throws Exception {
+        performValidityTest("ttml2-valid-border-radii-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BorderRadii2() throws Exception {
+        performValidityTest("ttml2-valid-border-radii-2.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BorderRegion() throws Exception {
+        performValidityTest("ttml2-valid-border-region.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2BPD() throws Exception {
         performValidityTest("ttml2-valid-bpd.xml", -1, -1);
     }

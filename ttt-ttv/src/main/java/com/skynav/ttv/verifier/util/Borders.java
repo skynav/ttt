@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,8 @@
 
 package com.skynav.ttv.verifier.util;
 
+import java.util.List;
+
 import com.skynav.ttv.model.value.Border;
 import com.skynav.ttv.model.value.Color;
 import com.skynav.ttv.model.value.Length;
@@ -37,12 +39,17 @@ import com.skynav.ttv.verifier.VerifierContext;
 public class Borders {
 
     private static final Object[]       TREATMENTS      = new Object[] { NegativeTreatment.Error };
+    private static final String         RADII_PREFIX    = "radii(";
+    private static final String         RADII_SUFFIX    = ")";
+    public static final Length[]        ZERO_RADII      = new Length[] { LengthImpl.PXL_0, LengthImpl.PXL_0 };
 
-    public static boolean isBorder(String[] components, Location location, VerifierContext context, Border[] outputBorder) {
+    public static boolean isBorder(String value, Location location, VerifierContext context, Border[] outputBorder) {
+        String[]        components = getComponents(value);
         int             nc = components.length;
         Border.Style    bs = null;      // border style
         Color           bc = null;      // border color
         Length          bt = null;      // border thickness
+        Length[]        br = null;      // border radii
         for (int i = 0; i < nc; ++i) {
             String c = components[i];
             if (isStyleKeyword(c)) {
@@ -73,11 +80,16 @@ public class Borders {
                         return false;   // bad expression that may be color
                 } else
                     return false;       // extra color expression
+            } else if (isRadiiFunction(c, location, context)) {
+                if (br == null)
+                    br = getLengthsFromRadiiFunction(c, location, context);
+                else
+                    return false;       // extra radii function
             } else {
                 return false;           // other form of unknown expression or delimiter
             }
         }
-        if ((bs == null) && (bt == null) && (bc == null))
+        if ((bs == null) && (bt == null) && (bc == null) && (br == null))
             return false;               // must have at least one valid component
         else {
             if (bs == null)
@@ -86,10 +98,40 @@ public class Borders {
                 bt = LengthImpl.PXL_0;
             if (bc == null)
                 bc = ColorImpl.CURRENT;
+            if (br == null)
+                br = ZERO_RADII;
         }
         if (outputBorder != null)
-            outputBorder[0] = new BorderImpl(bs, bc, bt, null /*FIXME - provide radii*/);
+            outputBorder[0] = new BorderImpl(bs, bc, bt, br);
         return true;
+    }
+
+    private static String[] getComponents(String s) {
+        assert s != null;
+        String[]        ca = s.split("[ \t\r\n]+");
+        int             nc = ca.length;
+        int             ci = 0;
+        List<String>    components = new java.util.ArrayList<String>();
+        StringBuffer    rf = new StringBuffer();
+        while (ci < nc) {
+            String      c  = ca[ci++];
+            if (c.startsWith(RADII_PREFIX)) {
+                rf.setLength(0);
+                rf.append(c);
+                if (!c.endsWith(RADII_SUFFIX)) {
+                    while (ci < nc) {
+                        c = ca[ci++];
+                        rf.append(c);
+                        if (c.endsWith(RADII_SUFFIX))
+                            break;
+                    }
+                }
+                components.add(rf.toString());
+            } else {
+                components.add(c);
+            }
+        }
+        return components.toArray(new String[components.size()]);
     }
 
     private static boolean isStyleKeyword(String s) {
@@ -107,6 +149,56 @@ public class Borders {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
+        }
+    }
+
+    private static boolean isRadiiFunction(String s, Location location, VerifierContext context) {
+        if (!s.startsWith(RADII_PREFIX))
+            return false;
+        else if (!s.endsWith(RADII_SUFFIX))
+            return false;
+        else {
+            String      al = s.substring(RADII_PREFIX.length(), s.length() - RADII_SUFFIX.length());
+            String[]    aa = al.split(",");
+            int         na = aa.length;
+            if ((na < 1) || (na > 2)) {
+                return false;
+            } else {
+                String  a1 = aa[0];
+                if (!Lengths.isLength(a1, location, context, TREATMENTS, null))
+                    return false;
+                String  a2 = (na > 1) ? aa[1] : a1;
+                if (!Lengths.isLength(a2, location, context, TREATMENTS, null))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private static Length[] getLengthsFromRadiiFunction(String s, Location location, VerifierContext context) {
+        assert s != null;
+        assert s.startsWith(RADII_PREFIX);
+        assert s.endsWith(RADII_SUFFIX);
+        String          al = s.substring(RADII_PREFIX.length(), s.length() - RADII_SUFFIX.length());
+        String[]        aa = al.split(",");
+        int             na = aa.length;
+        assert !((na < 1) || (na > 2));
+        if ((na < 1) || (na > 2)) {
+            return ZERO_RADII;
+        } else {
+            String      a1 = aa[0];
+            Length[]    l1 = new Length[1];
+            if (!Lengths.isLength(a1, location, context, TREATMENTS, l1)) {
+                assert l1[0] != null;
+                return ZERO_RADII;
+            }
+            String      a2 = (na > 1) ? aa[1] : a1;
+            Length[]    l2 = new Length[1];
+            if (!Lengths.isLength(a2, location, context, TREATMENTS, l2)) {
+                assert l2[0] != null;
+                return ZERO_RADII;
+            }
+            return new Length[] { l1[0], l2[0] };
         }
     }
 

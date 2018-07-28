@@ -28,7 +28,7 @@
     <project.info.reports.version>2.8</project.info.reports.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <release.version>2.5.2</release.version>
-    <surefire.version>2.18.1</surefire.version>
+    <surefire.version>2.22.0</surefire.version>
     <xmlunit.version>1.0</xmlunit.version>
   </properties>
 

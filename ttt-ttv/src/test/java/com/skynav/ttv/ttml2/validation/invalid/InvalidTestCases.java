@@ -181,6 +181,50 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadBorderExtraRadii() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-extra-radii.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderNegativeThickness() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-negative-thickness.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderRadii1Argument() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-radii-1-argument.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderRadii1Negative() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-radii-1-negative.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderRadii2Argument() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-radii-2-argument.xml", -1, -1);
+    }
+
+    public void testInvalidTTML2BadBorderRadii2Delimiter() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-radii-2-delimiter.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderRadii2Negative() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-radii-2-negative.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderRadiiMissingLength() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-radii-missing-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBorderRadiiExtraLength() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-border-radii-extra-length.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBorderUnknownKeyword() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-border-unknown-keyword.xml", -1, -1);
     }
@@ -393,6 +437,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2ImageInBlockSimpleSourceJpg() throws Exception {
         performInvalidityTest("ttml2-invalid-image-in-block-simple-source-jpg.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ImageInInlineSimpleSourcePng() throws Exception {
+        performInvalidityTest("ttml2-invalid-image-in-inline-simple-source-png.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ImageInInlineSimpleSourceJpg() throws Exception {
+        performInvalidityTest("ttml2-invalid-image-in-inline-simple-source-jpg.xml", -1, -1);
     }
 
     @Test

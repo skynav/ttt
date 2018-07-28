@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@ import java.util.Arrays;
 import com.skynav.ttv.model.value.Border;
 import com.skynav.ttv.model.value.Color;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.impl.LengthImpl;
 
 public class BorderImpl implements Border {
     private Style style;
@@ -98,6 +99,7 @@ public class BorderImpl implements Border {
         sb.append(',');
         sb.append(getThickness());
         if (radii != null) {
+            sb.append(',');
             sb.append('[');
             sb.append(radii[0]);
             sb.append(',');
@@ -117,5 +119,6 @@ public class BorderImpl implements Border {
         else
             return LengthImpl.PXL_0;
     }
+
 }
 
