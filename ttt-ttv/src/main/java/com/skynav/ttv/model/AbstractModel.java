@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.verifier.AudioVerifier;
 import com.skynav.ttv.verifier.ImageVerifier;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
@@ -217,6 +218,10 @@ public class AbstractModel implements Model {
     }
 
     public MetadataVerifier getMetadataVerifier() {
+        throw new UnsupportedOperationException();
+    }
+
+    public AudioVerifier getAudioVerifier() {
         throw new UnsupportedOperationException();
     }
 

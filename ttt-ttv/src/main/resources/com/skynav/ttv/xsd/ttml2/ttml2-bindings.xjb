@@ -87,6 +87,11 @@
     <jxb:bindings node="//xs:complexType[@name='source.eltype']">
       <jxb:class name="Source"/>
     </jxb:bindings>
+    <jxb:bindings node="//xs:attributeGroup[@name='audio.attlist']">
+      <jxb:bindings node="./xs:attribute[@name='type']">
+        <jxb:property name="dataType"/>
+      </jxb:bindings>
+    </jxb:bindings>
     <jxb:bindings node="//xs:attributeGroup[@name='image.attlist']">
       <jxb:bindings node="./xs:attribute[@name='type']">
         <jxb:property name="dataType"/>

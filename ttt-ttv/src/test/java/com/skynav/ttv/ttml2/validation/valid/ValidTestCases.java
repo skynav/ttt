@@ -77,6 +77,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2AudioInBlock() throws Exception {
+        performValidityTest("ttml2-valid-audio-in-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2AudioInInline() throws Exception {
+        performValidityTest("ttml2-valid-audio-in-inline.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2BackgroundClip() throws Exception {
         performValidityTest("ttml2-valid-background-clip.xml", -1, -1);
     }
@@ -192,8 +202,8 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2ImageInBlockAll() throws Exception {
-        performValidityTest("ttml2-valid-image-in-block-all.xml", -1, -1);
+    public void testValidTTML2ImageInBlock() throws Exception {
+        performValidityTest("ttml2-valid-image-in-block.xml", -1, -1);
     }
 
     @Test
@@ -207,8 +217,8 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2ImageInInlineAll() throws Exception {
-        performValidityTest("ttml2-valid-image-in-inline-all.xml", -1, -1);
+    public void testValidTTML2ImageInInline() throws Exception {
+        performValidityTest("ttml2-valid-image-in-inline.xml", -1, -1);
     }
 
     @Test

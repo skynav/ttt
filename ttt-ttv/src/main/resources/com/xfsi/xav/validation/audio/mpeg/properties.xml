@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!-- MPEG Audio Format Validator -->
+<properties>   
+    <entry key="msg.MPA01I001">Starting MPEG audio validator</entry>
+    <entry key="msg.MPA01I002">Ending MPEG audio validator</entry>
+    <entry key="msg.MPA01I003">Valid syncword: value=0x%1$03x, bytes read=%2$d</entry>
+    <entry key="ref.MPA01I003">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I003">2.4.2.3</entry>
+    <entry key="msg.MPA01I004">Algorithm ID value 1 identifies ISO/IEC 11172-3 audio</entry>
+    <entry key="ref.MPA01I004">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I004">2.4.2.3</entry>
+    <entry key="msg.MPA01I005">Valid layer: layer=%1$d</entry>
+    <entry key="ref.MPA01I005">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I005">2.4.2.3</entry>
+    <entry key="msg.MPA01I006">Error detection and concealment redundancy: enabled=%1$b</entry>
+    <entry key="ref.MPA01I006">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I006">2.4.2.3</entry>
+    <entry key="msg.MPA01I007">Valid bitrate index: index=%d</entry>
+    <entry key="ref.MPA01I007">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I007">2.4.2.3</entry>
+    <entry key="msg.MPA01I008">Valid sampling frequency: frequency=%1$dHz</entry>
+    <entry key="ref.MPA01I008">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I008">2.4.2.3</entry>
+    <entry key="msg.MPA01I009">Mode=%1$s</entry>
+    <entry key="ref.MPA01I009">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I009">2.4.2.3</entry>
+    <entry key="msg.MPA01I010">Subbands %1$d-31 in intensity stereo: bound=%1$d</entry>
+    <entry key="ref.MPA01I010">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I010">2.4.2.3</entry>
+    <entry key="msg.MPA01I011">Joint stereo coding method type: intensity stereo applied=%1$b, ms stereo applied=%2$b</entry>
+    <entry key="ref.MPA01I011">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I011">2.4.2.3</entry>
+    <entry key="msg.MPA01I012">Copyright protection: protected=%1$b</entry>
+    <entry key="ref.MPA01I012">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I012">2.4.2.3</entry>
+    <entry key="msg.MPA01I013">Bitstream origin: original=%1$b</entry>
+    <entry key="ref.MPA01I013">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I013">2.4.2.3</entry>
+    <entry key="msg.MPA01I014">De-emphasis type: type=%1$s</entry>
+    <entry key="ref.MPA01I014">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I014">2.4.2.3</entry>
+    <entry key="msg.MPA01I015">Valid bit rate: rate=%1$dkbits/s</entry>
+    <entry key="ref.MPA01I015">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I015">2.4.2.3</entry>
+    <entry key="msg.MPA01I016">Frame count: frame=%1$d</entry>
+    <entry key="ref.MPA01I016">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01I016">2.4.1.2</entry>
+    <entry key="msg.MPA01X001">Assertion failed: msg=%1$s, bytes read=%2$d</entry>
+    <entry key="msg.MPA01X002">Null input stream</entry>
+    <entry key="msg.MPA01X003">I/O exception: method=%1$s, msg=%2$s</entry>
+    <entry key="msg.MPA01W001">MP3 support is recommended but optional</entry>
+    <entry key="ref.MPA01W001">JSR-242</entry>
+    <entry key="sec.MPA01W001">6.1.2</entry>
+    <entry key="cat.MPA01W001">Interoperability</entry>
+    <entry key="msg.MPA01W002">MPEG audio file has no frames</entry>
+    <entry key="msg.MPA01E001">Invalid syncword: value=0x%1$03x, expected=0x%2$03x, frame=%3$d, bytes read=%4$d</entry>
+    <entry key="ref.MPA01E001">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01E001">2.4.2.3</entry>
+    <entry key="msg.MPA01E002">Algorithm ID value 0 is reserved (and was eventually used to flag MPEG-2 Audio): frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01E002">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01E002">2.4.2.3</entry>
+    <entry key="msg.MPA01E003">Layer value 0 is reserved: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01E003">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01E003">2.4.2.3</entry>
+    <entry key="msg.MPA01E004">Bitrate index cannot be 0xf: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01E004">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01E004">2.4.2.3</entry>
+    <entry key="msg.MPA01E005">Sampling frequency value 0x3 is reserved: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01E005">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01E005">2.4.2.3</entry>
+    <entry key="msg.MPA01E006">De-emphasis value type 0x2 is reserved: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01E006">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01E006">2.4.2.3</entry>
+    <entry key="msg.MPA01E007">ID3 tags are not part of the MPEG specification: tag=%1$s, bytes read=%2$d</entry>
+    <entry key="ref.MPA01E007">ISO/IEC 11172-3</entry>
+    <entry key="msg.MPA01F001">Encountered end of file while reading CRC data: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01F001">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01F001">2.4.1.4</entry>
+    <entry key="msg.MPA01F002">Encountered end of file while reading header data: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01F002">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01F002">2.4.1.3</entry>
+    <entry key="msg.MPA01F003">Encountered end of file while reading ID3 tag data: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="msg.MPA01F004">Encountered end of file while reading layer I audio data: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01F004">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01F004">2.4.1.5</entry>
+    <entry key="msg.MPA01F005">Encountered end of file while reading layer II audio data: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01F005">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01F005">2.4.1.6</entry>
+    <entry key="msg.MPA01F006">Encountered end of file while reading layer III audio data: frame=%1$d, bytes read=%2$d</entry>
+    <entry key="ref.MPA01F006">ISO/IEC 11172-3</entry>
+    <entry key="sec.MPA01F006">2.4.1.7</entry>
+</properties>

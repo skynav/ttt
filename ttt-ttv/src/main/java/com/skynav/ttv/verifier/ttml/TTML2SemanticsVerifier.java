@@ -40,6 +40,7 @@ import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.ttv.model.ttml2.tt.Animate;
 import com.skynav.ttv.model.ttml2.tt.Animation;
+import com.skynav.ttv.model.ttml2.tt.Audio;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Chunk;
@@ -71,6 +72,7 @@ import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Audios;
 import com.skynav.ttv.verifier.util.Images;
 import com.skynav.ttv.verifier.util.RepeatCount;
 import com.skynav.ttv.verifier.util.ResourceFormats;
@@ -84,6 +86,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     public static final QName sourceAttributeName               = new QName("", "src");
     public static final QName typeAttributeName                 = new QName("", "type");
 
+    public static final QName audioElementName                  = new QName(NAMESPACE, "audio");
     public static final QName imageElementName                  = new QName(NAMESPACE, "image");
     public static final QName sourceElementName                 = new QName(NAMESPACE, "source");
 
@@ -240,6 +243,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return verifyParagraph(block);
         else if (block instanceof Image)
             return verifyImage(block);
+        else if (block instanceof Audio)
+            return verifyAudio(block);
         else
             return unexpectedContent(block);
     }
@@ -260,6 +265,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
                 return verifyBreak(element);
             else if (element instanceof Image)
                 return verifyImage(element);
+            else if (element instanceof Audio)
+                return verifyAudio(element);
             else
                 return unexpectedContent(element);
         } else if (content instanceof String) {
@@ -274,6 +281,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return block;
         else if (block instanceof Image)
             return findBindingElement((Image) block, node);
+        else if (block instanceof Audio)
+            return findBindingElement((Audio) block, node);
         else
             return super.findBlockBindingElement(block, node);
     }
@@ -288,6 +297,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
                 return findBindingElement((Animate) element, node);
             else if (element instanceof Image)
                 return findBindingElement((Image) element, node);
+            else if (element instanceof Audio)
+                return findBindingElement((Audio) element, node);
         }
         return super.findContentBindingElement(content, node);
     }
@@ -614,6 +625,125 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     protected String getAnimateRepeatCountAttribute(Object animate) {
         assert animate instanceof Animate;
         return ((Animate) animate).getRepeatCount();
+    }
+
+    protected boolean verifyAudio(Object audio) {
+        boolean failed = false;
+        if (!verifyAudioAttributes(audio))
+            failed = true;
+        if (!verifyStyleAttributes(audio))
+            failed = true;
+        if (!verifyOtherAttributes(audio))
+            failed = true;
+        for (Object m : getAudioMetadata(audio)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Object s : getAudioSources(audio)) {
+            if (!verifySource(s))
+                failed = true;
+        }
+        if (!verifyStyledItem(audio))
+            failed = true;
+        if (!failed && !verifyAudioResources(audio))
+            failed = true;
+        return !failed;
+    }
+
+    protected boolean verifyAudioAttributes(Object audio) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(audio);
+        Locator locator = location.getLocator();
+        // @src
+        String s = getAudioSourceAttribute(audio);
+        int numSources = getAudioSources(audio).size();
+        com.skynav.ttv.model.value.Audio[] outputAudio = new com.skynav.ttv.model.value.Audio[1];
+        com.skynav.ttv.model.value.Audio i = null;
+        if (s != null) {
+            if (!Audios.isAudio(s, location, context, false, outputAudio)) {
+                Audios.badAudio(s, location, context);
+                failed = true;
+            } else if (numSources > 0) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, sourceAttributeName));
+                failed = true;
+            } else {
+                i = outputAudio[0];
+            }
+        } else if (numSources == 0) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, sourceAttributeName));
+            failed = true;
+        }
+        // @type
+        String t = getAudioTypeAttribute(audio);
+        if (t != null) {
+            if ((i == null) || !i.isExternal()) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute must not specified for internal audio sources.", typeAttributeName));
+                failed = true;
+            } else if (!ResourceTypes.isType(t, location, context, null)) {
+                ResourceTypes.badType(t, location, context);
+                failed = true;
+            }
+        } else if ((i != null) && i.isExternal()) {
+            if (reporter.isWarningEnabled("missing-type-for-external-source")) {
+                Message message = reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute should be specified for external audio sources.", typeAttributeName);
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
+                    failed = true;
+                }
+            }
+        }
+        // @format
+        String f = getAudioFormatAttribute(audio);
+        if (f != null) {
+            if (!ResourceFormats.isFormat(f, location, context, null)) {
+                ResourceFormats.badFormat(f, location, context);
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+
+    protected String getAudioFormatAttribute(Object audio) {
+        assert audio instanceof Audio;
+        return null;
+    }
+
+    protected String getAudioSourceAttribute(Object audio) {
+        assert audio instanceof Audio;
+        return ((Audio) audio).getSrc();
+    }
+
+    protected String getAudioTypeAttribute(Object audio) {
+        assert audio instanceof Audio;
+        return ((Audio) audio).getDataType();
+    }
+
+    protected Collection<? extends Object> getAudioMetadata(Object audio) {
+        assert audio instanceof Audio;
+        return ((Audio) audio).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getAudioSources(Object audio) {
+        assert audio instanceof Audio;
+        return ((Audio) audio).getSource();
+    }
+
+    protected boolean verifyAudioResources(Object audio) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Location location = getLocation(audio);
+        // @src
+        String s = getAudioSourceAttribute(audio);
+        if ((s != null) && !Audios.isAudio(s, location, context, true, null))
+            failed = true;
+        // [TBD] verify resources referenced by tt:source children
+        return !failed;
     }
 
     protected boolean verifyImage(Object image) {
