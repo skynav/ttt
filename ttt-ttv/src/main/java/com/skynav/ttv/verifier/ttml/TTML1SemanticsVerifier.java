@@ -670,6 +670,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     protected boolean verifyProfile(Object profile) {
+        System.out.println("TTML1.verifyProfile(" + profile + ")");
         boolean failed = false;
         if (!verifyParameterAttributes(profile))
             failed = true;
@@ -708,6 +709,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     protected boolean verifyFeatures(Object features) {
+        System.out.println("TTML1.verifyFeatures(" + features + ")");
         boolean failed = false;
         if (!verifyParameterAttributes(features))
             failed = true;
@@ -735,6 +737,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     protected boolean verifyFeature(Object feature) {
+        System.out.println("TTML1.verifyFeatures(" + feature + ")");
         boolean failed = false;
         if (!verifyOtherAttributes(feature))
             failed = true;
@@ -780,6 +783,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     private boolean verifyProfileItem(Object content) {
+        System.out.println("TTML1.verifyProfileItem(" + content + ")");
         return this.profileVerifier.verify(content, getLocator(content), getContext(), ItemType.Element);
     }
 
@@ -947,6 +951,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     private boolean verifyTimedTextParameterAttributes(Object tt) {
+        System.out.println("TTML1.verifyTimedTextParameterAttributes(" + tt + ")");
         boolean failed = false;
         if (!this.parameterVerifier.verify(tt, getLocator(tt), getContext(), ItemType.Attributes))
             failed = true;
@@ -961,6 +966,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     private boolean verifyHeadParameterAttributes(Object head) {
+        System.out.println("TTML1.verifyHeadParameterAttributes(" + head + ")");
         boolean failed = false;
         for (Object p : getHeadParameters(head)) {
             if (!verifyProfile(p))
@@ -970,6 +976,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     protected Collection<? extends Object> getHeadParameters(Object head) {
+        System.out.println("TTML1.verifyHeadParameters(" + head + ")");
         assert head instanceof Head;
         return ((Head) head).getParametersClass();
     }

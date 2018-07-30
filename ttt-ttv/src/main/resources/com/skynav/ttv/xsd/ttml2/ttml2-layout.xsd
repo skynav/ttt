@@ -19,6 +19,7 @@
   </xs:attributeGroup>
   <xs:attributeGroup name="region.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
     <xs:attributeGroup ref="tt:Styled.attrib.class"/>
     <xs:attributeGroup ref="tt:TimedContainer.attrib.class"/>
     <xs:attributeGroup ref="tt:AnimationBinding.attrib.class"/>

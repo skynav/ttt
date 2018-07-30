@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,20 +32,22 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.value.Pitch;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
-public class Numbers {
+public class Pitches {
 
-    private static final Pattern numberPattern = Pattern.compile("([\\+\\-]?(?:\\d*\\.\\d+|\\d+))");
-    public static boolean isNumber(String value, Location location, VerifierContext context, Double[] outputNumber) {
+    private static final Pattern pitchPattern = Pattern.compile("([\\+\\-]?(?:\\d*\\.\\d+|\\d+))(\\w+|%)?");
+    public static boolean isPitch(String value, Location location, VerifierContext context, Pitch[] outputPitch) {
         Reporter reporter = context.getReporter();
         Locator locator = location.getLocator();
-        Matcher m = numberPattern.matcher(value);
+        Matcher m = pitchPattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() > 0;
             String number = m.group(1);
+            boolean numberHasSign = (number.charAt(0) == '+') || (number.charAt(0) == '-');
             double numberValue;
             if (!Strings.containsDecimalSeparator(number)) {
                 try {
@@ -60,19 +62,30 @@ public class Numbers {
                     return false;
                 }
             }
-            if (outputNumber != null) {
-                outputNumber[0] = Double.valueOf(numberValue);
+            Pitch.Unit unitsValue = null;
+            if (m.groupCount() > 1) {
+                String units = m.group(2);
+                if (units != null) {
+                    try {
+                        unitsValue = Pitch.Unit.valueOfShorthand(units);
+                    } catch (IllegalArgumentException e) {
+                        return false;
+                    }
+                }
+            }
+            if (unitsValue == null)
+                unitsValue = Pitch.Unit.Hertz;
+            if (outputPitch != null) {
+                Pitch.Type type;
+                if ((unitsValue == Pitch.Unit.Percentage) || numberHasSign)
+                    type = Pitch.Type.RELATIVE;
+                else
+                    type = Pitch.Type.ABSOLUTE;
+                outputPitch[0] = new Pitch(type, numberValue, unitsValue);
             }
             return true;
         } else
             return false;
-    }
-
-    public static String normalize(double number) {
-        if (Math.floor(number) == number)
-            return Long.toString((long) number);
-        else
-            return Double.toString(number);
     }
 
 }

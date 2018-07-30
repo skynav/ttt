@@ -31,8 +31,9 @@
   </xs:complexType>
   <xs:attributeGroup name="animate.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class" />
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
     <xs:attributeGroup ref="tt:Timed.attrib.class" />
-    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="tt:Styled.NoBinding.attrib.class"/>
     <xs:attribute name="calcMode" type="ttd:calcMode"/>
     <xs:attribute name="fill" type="ttd:fill"/>
     <xs:attribute name="keySplines" type="ttd:keySplines"/>
@@ -47,8 +48,9 @@
   </xs:complexType>
   <xs:attributeGroup name="set.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class" />
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
     <xs:attributeGroup ref="tt:Timed.attrib.class" />
-    <xs:attributeGroup ref="tt:Styled.attrib.class"/>
+    <xs:attributeGroup ref="tt:Styled.NoBinding.attrib.class"/>
     <xs:attribute name="fill" type="ttd:fill"/>
     <xs:attribute name="repeatCount" type="ttd:repeatCount"/>
   </xs:attributeGroup>

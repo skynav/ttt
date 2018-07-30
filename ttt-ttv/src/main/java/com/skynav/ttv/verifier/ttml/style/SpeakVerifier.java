@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-15 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,20 +23,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.model.ttml;
+package com.skynav.ttv.verifier.ttml.style;
 
-public class TTML {
-    public static class Constants {
-        public static final String NAMESPACE_PREFIX = "http://www.w3.org/ns/ttml";
-        public static final String NAMESPACE_TT = "http://www.w3.org/ns/ttml";
-        public static final String NAMESPACE_TT_AUDIO = "http://www.w3.org/ns/ttml#audio";
-        public static final String NAMESPACE_TT_EXTENSION = "http://www.w3.org/ns/ttml/extension/";
-        public static final String NAMESPACE_TT_FEATURE = "http://www.w3.org/ns/ttml/feature/";
-        public static final String NAMESPACE_TT_ISD = "http://www.w3.org/ns/ttml#isd";
-        public static final String NAMESPACE_TT_METADATA = "http://www.w3.org/ns/ttml#metadata";
-        public static final String NAMESPACE_TT_PARAMETER = "http://www.w3.org/ns/ttml#parameter";
-        public static final String NAMESPACE_TT_PROFILE = "http://www.w3.org/ns/ttml/profile/";
-        public static final String NAMESPACE_TT_RESOURCE = "http://www.w3.org/ns/ttml/resource/";
-        public static final String NAMESPACE_TT_STYLE = "http://www.w3.org/ns/ttml#styling";
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
+
+public class SpeakVerifier implements StyleValueVerifier {
+
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        // Schema validation phase (3) reports invalid values.
+        Model model = context.getModel();
+        if (model.isTTMLVersion(2) && (value instanceof com.skynav.ttv.model.ttml2.ttd.Speak))
+            return true;
+        else
+            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
     }
+
 }

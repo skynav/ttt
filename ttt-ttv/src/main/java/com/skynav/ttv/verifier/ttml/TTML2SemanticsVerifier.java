@@ -390,6 +390,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     @Override
     protected Collection<? extends Object> getHeadParameters(Object head) {
+        System.out.println("TTML2.verifyHeadParameters(" + head + ")");
         assert head instanceof Head;
         return ((Head) head).getParametersClass();
     }

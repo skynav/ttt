@@ -23,7 +23,7 @@
   <xs:attribute name="fontFamily" type="ttd:fontFamily"/>
   <xs:attribute name="fontKerning" type="ttd:fontKerning"/>
   <xs:attribute name="fontSelectionStrategy" type="ttd:fontSelectionStrategy"/>
-  <xs:attribute name="fontShear" type="ttd:fontShear"/>
+  <xs:attribute name="fontShear" type="ttd:shear"/>
   <xs:attribute name="fontSize" type="ttd:fontSize"/>
   <xs:attribute name="fontStyle" type="ttd:fontStyle"/>
   <xs:attribute name="fontVariant" type="ttd:fontVariant"/>
@@ -31,6 +31,7 @@
   <xs:attribute name="ipd" type="ttd:measure"/>
   <xs:attribute name="letterSpacing" type="ttd:letterSpacing"/>
   <xs:attribute name="lineHeight" type="ttd:lineHeight"/>
+  <xs:attribute name="lineShear" type="ttd:shear"/>
   <xs:attribute name="luminance" type="ttd:luminance"/>
   <xs:attribute name="opacity" type="ttd:opacity"/>
   <xs:attribute name="origin" type="ttd:origin"/>
@@ -42,6 +43,7 @@
   <xs:attribute name="rubyPosition" type="ttd:rubyPosition"/>
   <xs:attribute name="rubyReserve" type="ttd:rubyReserve"/>
   <xs:attribute name="script" type="ttd:script"/>
+  <xs:attribute name="shear" type="ttd:shear"/>
   <xs:attribute name="showBackground" type="ttd:showBackground"/>
   <xs:attribute name="textAlign" type="ttd:textAlign"/>
   <xs:attribute name="textCombine" type="ttd:textCombine"/>
@@ -82,6 +84,7 @@
     <xs:attribute ref="tts:ipd"/>
     <xs:attribute ref="tts:letterSpacing"/>
     <xs:attribute ref="tts:lineHeight"/>
+    <xs:attribute ref="tts:lineShear"/>
     <xs:attribute ref="tts:luminance"/>
     <xs:attribute ref="tts:opacity"/>
     <xs:attribute ref="tts:origin"/>
@@ -93,6 +96,7 @@
     <xs:attribute ref="tts:rubyPosition"/>
     <xs:attribute ref="tts:rubyReserve"/>
     <xs:attribute ref="tts:script"/>
+    <xs:attribute ref="tts:shear"/>
     <xs:attribute ref="tts:showBackground"/>
     <xs:attribute ref="tts:textAlign"/>
     <xs:attribute ref="tts:textCombine"/>

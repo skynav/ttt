@@ -36,6 +36,16 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidTTML2AudioInBlockSimpleSourceMpeg() throws Exception {
+        performInvalidityTest("ttml2-invalid-audio-in-block-simple-source-mpeg.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2AudioInInlineSimpleSourceMpeg() throws Exception {
+        performInvalidityTest("ttml2-invalid-audio-in-inline-simple-source-mpeg.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadAnimateAnimationStyleValue() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-animate-animation-style-value.xml", -1, -1);
     }
@@ -340,6 +350,26 @@ public class InvalidTestCases {
     }
     
     @Test
+    public void testInvalidTTML2BadGainAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-gain-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadGainEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-gain-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadGainRealSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-gain-real-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadGainUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-gain-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadIPDAllSpace() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-ipd-all-space.xml", -1, -1);
     }
@@ -360,37 +390,97 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2LetterSpacingAllSpace() throws Exception {
+    public void testInvalidTTML2BadLetterSpacingAllSpace() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-letter-spacing-all-space.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2LetterSpacingEmpty() throws Exception {
+    public void testInvalidTTML2BadLetterSpacingEmpty() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-letter-spacing-empty.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2LetterSpacingExtraLength() throws Exception {
+    public void testInvalidTTML2BadLetterSpacingExtraLength() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-letter-spacing-extra-length.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2LetterSpacingUnknownUnit() throws Exception {
+    public void testInvalidTTML2BadLetterSpacingUnknownUnit() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-letter-spacing-unknown-unit.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2TextOrientationAllSpace() throws Exception {
+    public void testInvalidTTML2BadPanAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pan-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPanEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pan-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPanRealSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pan-real-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPanUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pan-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPitchAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pitch-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPitchEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pitch-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPitchRealSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pitch-real-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPitchUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pitch-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPitchUnknownUnit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-pitch-unknown-unit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadSpeakAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-speak-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadSpeakEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-speak-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadSpeakUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-speak-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextOrientationAllSpace() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-text-orientation-all-space.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2TextOrientationEmpty() throws Exception {
+    public void testInvalidTTML2BadTextOrientationEmpty() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-text-orientation-empty.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2TextOrientationUnknownKeyword() throws Exception {
+    public void testInvalidTTML2BadTextOrientationUnknownKeyword() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-text-orientation-unknown-keyword.xml", -1, -1);
     }
 

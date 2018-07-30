@@ -59,6 +59,7 @@ import com.skynav.ttv.model.ttml2.ttd.RubyAlign;
 // import com.skynav.ttv.model.ttml2.ttd.RubyOverflow;
 // import com.skynav.ttv.model.ttml2.ttd.RubyOverhang;
 import com.skynav.ttv.model.ttml2.ttd.ShowBackground;
+import com.skynav.ttv.model.ttml2.ttd.Speak;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 import com.skynav.ttv.model.ttml2.ttd.TextDecoration;
 import com.skynav.ttv.model.ttml2.ttd.TextOrientation;
@@ -85,9 +86,11 @@ import com.skynav.ttv.verifier.ttml.style.FontVariantVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
 import com.skynav.ttv.verifier.ttml.style.LetterSpacingVerifier;
 import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
+import com.skynav.ttv.verifier.ttml.style.NumberVerifier;
 import com.skynav.ttv.verifier.ttml.style.OriginVerifier;
 import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
 import com.skynav.ttv.verifier.ttml.style.PaddingVerifier;
+import com.skynav.ttv.verifier.ttml.style.PitchVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.ProgressionDimensionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
@@ -99,6 +102,7 @@ import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyReserveVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyVerifier;
 import com.skynav.ttv.verifier.ttml.style.ScriptVerifier;
+import com.skynav.ttv.verifier.ttml.style.SpeakVerifier;
 import com.skynav.ttv.verifier.ttml.style.ShowBackgroundVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextCombineVerifier;
@@ -111,7 +115,14 @@ import com.skynav.ttv.verifier.ttml.style.VisibilityVerifier;
 import com.skynav.ttv.verifier.ttml.style.WrapOptionVerifier;
 import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
 
+import static com.skynav.ttv.model.ttml.TTML2.Constants.*;
+
 public class TTML2StyleVerifier extends TTML1StyleVerifier {
+
+    public static final String NAMESPACE_AUDIO = NAMESPACE_TT_AUDIO;
+
+    public static final int APPLIES_TO_AUDIO                            = 0x00001000;
+    public static final int APPLIES_TO_IMAGE                            = 0x00002000;
 
     public static final QName backgroundClipAttributeName               = new QName(NAMESPACE,"backgroundClip");
     public static final QName backgroundExtentAttributeName             = new QName(NAMESPACE,"backgroundExtent");
@@ -126,8 +137,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName fontSelectionStrategyAttributeName        = new QName(NAMESPACE,"fontSelectionStrategy");
     public static final QName fontShearAttributeName                    = new QName(NAMESPACE,"fontShear");
     public static final QName fontVariantAttributeName                  = new QName(NAMESPACE,"fontVariant");
+    public static final QName gainAttributeName                         = new QName(NAMESPACE_AUDIO,"gain");
     public static final QName ipdAttributeName                          = new QName(NAMESPACE,"ipd");
     public static final QName letterSpacingAttributeName                = new QName(NAMESPACE,"letterSpacing");
+    public static final QName panAttributeName                          = new QName(NAMESPACE_AUDIO,"pan");
+    public static final QName pitchAttributeName                        = new QName(NAMESPACE_AUDIO,"pitch");
     public static final QName positionAttributeName                     = new QName(NAMESPACE,"position");
     public static final QName rubyAttributeName                         = new QName(NAMESPACE,"ruby");
     public static final QName rubyAlignAttributeName                    = new QName(NAMESPACE,"rubyAlign");
@@ -138,6 +152,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName rubyPositionAttributeName                 = new QName(NAMESPACE,"rubyPosition");
     public static final QName rubyReserveAttributeName                  = new QName(NAMESPACE,"rubyReserve");
     public static final QName scriptAttributeName                       = new QName(NAMESPACE,"script");
+    public static final QName speakAttributeName                        = new QName(NAMESPACE_AUDIO,"speak");
     public static final QName textCombineAttributeName                  = new QName(NAMESPACE,"textCombine");
     public static final QName textEmphasisAttributeName                 = new QName(NAMESPACE,"textEmphasis");
     public static final QName textOrientationAttributeName              = new QName(NAMESPACE,"textOrientation");
@@ -356,6 +371,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             FontWeight.NORMAL.value(),
         },
         {
+            gainAttributeName,
+            "Gain",
+            String.class,
+            NumberVerifier.class,
+            Integer.valueOf(APPLIES_TO_AUDIO|APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "1",
+            null,
+        },
+        {
             ipdAttributeName,
             "Ipd",
             String.class,
@@ -419,6 +445,28 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.FALSE,
             "0px",
+            null,
+        },
+        {
+            panAttributeName,
+            "Pan",
+            String.class,
+            NumberVerifier.class,
+            Integer.valueOf(APPLIES_TO_AUDIO|APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "0",
+            null,
+        },
+        {
+            pitchAttributeName,
+            "Pitch",
+            String.class,
+            PitchVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "0%",
             null,
         },
         {
@@ -530,6 +578,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "auto",
             null,
+        },
+        {
+            speakAttributeName,
+            "Speak",
+            Speak.class,
+            SpeakVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            Speak.NONE,
+            Speak.NONE.value(),
         },
         {
             showBackgroundAttributeName,
@@ -735,6 +794,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     }
 
     @Override
+    protected boolean isStyleNamespace(String s) {
+        return super.isStyleNamespace(s) || s.equals(getAudioStyleNamespaceUri());
+    }
+
+    @Override
     protected boolean permitsStyleAttribute(Object content, QName name) {
         if (content instanceof Animate)
             return true;
@@ -764,6 +828,10 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             return true;
         else
             return false;
+    }
+
+    public static final String getAudioStyleNamespaceUri() {
+        return NAMESPACE_AUDIO;
     }
 
 }

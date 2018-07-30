@@ -197,6 +197,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Gain() throws Exception {
+        performValidityTest("ttml2-valid-gain.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ImageExtent() throws Exception {
         performValidityTest("ttml2-valid-image-extent.xml", -1, -1);
     }
@@ -252,6 +257,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Pan() throws Exception {
+        performValidityTest("ttml2-valid-pan.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Pitch() throws Exception {
+        performValidityTest("ttml2-valid-pitch.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ProcessorProfilesQuantifiedAllMultiple() throws Exception {
         performValidityTest("ttml2-valid-processor-profiles-quantified-all-multiple.xml", -1, -1);
     }
@@ -278,6 +293,16 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ProcessorProfilesUnquantifiedSingle() throws Exception {
         performValidityTest("ttml2-valid-processor-profiles-unquantified-single.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Speak() throws Exception {
+        performValidityTest("ttml2-valid-speak.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Speech() throws Exception {
+        performValidityTest("ttml2-valid-speech.xml", -1, -1);
     }
 
     @Test

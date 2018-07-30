@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.w3.org/ns/ttml#isd" xml:lang="en"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling"
+  xmlns:isd="http://www.w3.org/ns/ttml#isd">
+  <xs:import namespace="http://www.w3.org/ns/ttml"
+    schemaLocation="ttml2-metadata.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#parameter"
+    schemaLocation="ttml2-parameter-attribs.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#parameter"
+    schemaLocation="ttml2-parameter-items.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml"
+    schemaLocation="ttml2-content.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml"
+    schemaLocation="ttml2-animation.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+    schemaLocation="xml.xsd"/>
+  <xs:attributeGroup name="isd.parameter.attrib.class">
+    <xs:attribute ref="ttp:cellResolution"/>
+    <xs:attribute ref="ttp:displayAspectRatio"/>
+    <xs:attribute ref="ttp:frameRate"/>
+    <xs:attribute ref="ttp:frameRateMultiplier"/>
+    <xs:attribute ref="ttp:pixelAspectRatio"/>
+    <xs:attribute ref="ttp:subFrameRate"/>
+    <xs:attribute ref="ttp:tickRate"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="isd.style.attrib.class">
+    <xs:anyAttribute namespace="http://www.w3.org/ns/ttml#styling" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="isd.other.attrib.class">
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="sequence.attlist">
+    <xs:attribute name="extent" type="xs:string"/>
+    <xs:attribute name="size" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="version" type="xs:nonNegativeInteger"/>
+    <xs:attribute ref="xml:base"/>
+    <xs:attribute ref="xml:id"/>
+    <xs:attribute ref="xml:lang" use="required"/>
+    <xs:attributeGroup ref="isd:isd.parameter.attrib.class"/>
+    <xs:attributeGroup ref="isd:isd.other.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="sequence.eltype">
+    <xs:sequence>
+      <xs:element ref="tt:metadata" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ttp:profile" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="isd:isd" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="isd:sequence.attlist"/>
+  </xs:complexType>
+  <xs:attributeGroup name="isd.attlist">
+    <xs:attribute name="begin" type="xs:string" use="required"/>
+    <xs:attribute name="end" type="xs:string" use="required"/>
+    <xs:attribute name="extent" type="xs:string"/>
+    <xs:attribute name="version" type="xs:nonNegativeInteger"/>
+    <xs:attribute ref="xml:base"/>
+    <xs:attribute ref="xml:id"/>
+    <xs:attribute ref="xml:lang"/>
+    <xs:attributeGroup ref="isd:isd.parameter.attrib.class"/>
+    <xs:attributeGroup ref="isd:isd.other.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="isd.eltype">
+    <xs:sequence>
+      <xs:element ref="tt:metadata" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ttp:profile" minOccurs="0" maxOccurs="1"/>
+      <xs:element ref="isd:css" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="isd:region" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="isd:isd.attlist"/>
+  </xs:complexType>
+  <xs:attributeGroup name="css.attlist">
+    <xs:attribute name="style" type="xs:IDREF"/>
+    <xs:attribute ref="xml:base"/>
+    <xs:attribute ref="xml:id" use="required"/>
+    <xs:attribute ref="xml:lang"/>
+    <xs:attributeGroup ref="isd:isd.style.attrib.class"/>
+    <xs:attributeGroup ref="isd:isd.other.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="css.eltype">
+    <xs:sequence>
+      <xs:element ref="tt:metadata" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="isd:css.attlist"/>
+  </xs:complexType>
+  <xs:attributeGroup name="region.attlist">
+    <xs:attribute name="style" type="xs:IDREF"/>
+    <xs:attribute ref="xml:base"/>
+    <xs:attribute ref="xml:id" use="required"/>
+    <xs:attribute ref="xml:lang"/>
+    <xs:attributeGroup ref="isd:isd.other.attrib.class"/>
+  </xs:attributeGroup>
+  <xs:complexType name="region.eltype">
+    <xs:sequence>
+      <xs:element ref="tt:metadata" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="tt:animate" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="tt:body" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="isd:region.attlist"/>
+  </xs:complexType>
+  <xs:element name="sequence" type="isd:sequence.eltype"/>
+  <xs:element name="isd" type="isd:isd.eltype"/>
+  <xs:element name="region" type="isd:region.eltype"/>
+  <xs:element name="css" type="isd:css.eltype"/>
+</xs:schema>

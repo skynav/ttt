@@ -8,21 +8,33 @@
   <xs:attributeGroup name="Core.Condition.attrib.class">
     <xs:attribute name="condition" type="xs:string"/>
   </xs:attributeGroup>
+  <xs:attributeGroup name="Core.BASE.attrib.class">
+    <xs:attribute ref="xml:base"/>
+  </xs:attributeGroup>
   <xs:attributeGroup name="Core.ID.attrib.class">
     <xs:attribute ref="xml:id"/>
   </xs:attributeGroup>
-  <xs:attributeGroup name="Core.attrib.class">
-    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
-    <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
+  <xs:attributeGroup name="Core.LANG.attrib.class">
     <xs:attribute ref="xml:lang"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="Core.LANG.required.attrib.class">
+    <xs:attribute ref="xml:lang" use="required"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="Core.SPACE.attrib.class">
     <xs:attribute ref="xml:space"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="Core.attrib.class">
+    <xs:attributeGroup ref="tt:Core.BASE.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.LANG.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.SPACE.attrib.class"/>
     <xs:anyAttribute namespace="##other" processContents="lax"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="Core.required.attrib.class">
-    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.BASE.attrib.class"/>
     <xs:attributeGroup ref="tt:Core.ID.attrib.class"/>
-    <xs:attribute ref="xml:lang" use="required"/>
-    <xs:attribute ref="xml:space"/>
+    <xs:attributeGroup ref="tt:Core.LANG.required.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.SPACE.attrib.class"/>
     <xs:anyAttribute namespace="##other" processContents="lax"/>
   </xs:attributeGroup>
 </xs:schema>

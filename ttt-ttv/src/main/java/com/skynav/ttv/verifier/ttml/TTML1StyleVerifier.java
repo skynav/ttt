@@ -569,7 +569,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             if (localName.indexOf("xmlns") == 0)
                 continue;
             QName name = new QName(nsUri != null ? nsUri : "", localName);
-            if (name.getNamespaceURI().equals(NAMESPACE)) {
+            if (isStyleNamespace(name.getNamespaceURI())) {
                 Reporter reporter = context.getReporter();
                 if ((content instanceof TimedText) && name.equals(extentAttributeName))
                     continue;
@@ -629,7 +629,11 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
     }
 
     protected boolean isStyleAttribute(QName name) {
-        return name.getNamespaceURI().equals(NAMESPACE) && accessors.containsKey(name);
+        return isStyleNamespace(name.getNamespaceURI()) && accessors.containsKey(name);
+    }
+
+    protected boolean isStyleNamespace(String s) {
+        return s.equals(getStyleNamespaceUri());
     }
 
     private void populate() {

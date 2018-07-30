@@ -11,28 +11,35 @@
   <xs:include schemaLocation="ttml2-metadata-attribs.xsd"/>
   <xs:attributeGroup name="actor.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
     <xs:attribute name="agent" type="xs:IDREF" use="required"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="agent.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
     <xs:attribute name="type" type="ttd:metadataAgentType" use="required"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="copyright.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="desc.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="item.attlist">
     <xs:attribute name="name" type="ttd:metadataItemName" use="required"/>
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="name.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
     <xs:attribute name="type" type="ttd:metadataNameType" use="required"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="title.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
   </xs:attributeGroup>
   <xs:complexType name="actor.eltype">
     <xs:attributeGroup ref="ttm:actor.attlist"/>

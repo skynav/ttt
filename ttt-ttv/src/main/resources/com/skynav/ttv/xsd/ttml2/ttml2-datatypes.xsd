@@ -141,7 +141,7 @@
   </xs:simpleType>
   <xs:simpleType name="displayAspectRatio">
     <xs:annotation>
-      <xs:documentation>positiveInteger lwsp positiveInteger</xs:documentation>
+      <xs:documentation>positiveInteger positiveInteger</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
@@ -170,7 +170,7 @@
   </xs:simpleType>
   <xs:simpleType name="extent">
     <xs:annotation>
-      <xs:documentation>auto | measure measure</xs:documentation>
+      <xs:documentation>auto | contain | cover | measure measure</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
@@ -208,12 +208,6 @@
       <xs:enumeration value="auto"/>
       <xs:enumeration value="character"/>
     </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="fontShear">
-    <xs:annotation>
-      <xs:documentation>percentage</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="fontSize">
     <xs:annotation>
@@ -382,10 +376,13 @@
   <xs:simpleType name="metadataItemName">
     <xs:union>
       <xs:simpleType>
-        <xs:restriction base="xs:token"/>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="altText"/>
+          <xs:enumeration value="usesForced"/>
+        </xs:restriction>
       </xs:simpleType>
       <xs:simpleType>
-        <xs:restriction base="xs:anyURI"/>
+        <xs:restriction base="xs:QName"/>
       </xs:simpleType>
     </xs:union>
   </xs:simpleType>
@@ -468,6 +465,7 @@
       <xs:enumeration value="mostRestrictive"/>
       <xs:enumeration value="leastRestrictive"/>
       <xs:enumeration value="replace"/>
+      <xs:enumeration value="ignore"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="profileType">
@@ -483,11 +481,16 @@
     <xs:annotation>
       <xs:documentation>
         repeatCount
-          : count
+          : count                          // value > 0
           | "indefinite"
 
         count:
-          : digit+                         // value > 0
+          : whole
+          | whole "." fraction
+          | "." fraction
+
+        whole, fraction
+          : digit+
       </xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
@@ -547,6 +550,12 @@
   <xs:simpleType name="script">
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
+  <xs:simpleType name="shear">
+    <xs:annotation>
+      <xs:documentation>percentage</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:simpleType name="showBackground">
     <xs:restriction base="xs:token">
       <xs:enumeration value="always"/>
@@ -567,10 +576,10 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="textCombine">
-    <xs:annotation>
-      <xs:documentation>none | all | [ digits xsd:nonNegativeInteger? ]</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string"/>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="all"/>
+    </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="textDecoration">
     <xs:annotation>
@@ -756,10 +765,10 @@
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="gain">
-    <xs:restriction base="xs:decimal"/>   
+    <xs:restriction base="xs:string"/>   
   </xs:simpleType>
   <xs:simpleType name="pan">
-    <xs:restriction base="xs:decimal"/>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="pitch">
     <xs:restriction base="xs:string"/>

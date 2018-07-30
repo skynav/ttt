@@ -26,6 +26,8 @@
 package com.skynav.ttv.model.ttml;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +82,7 @@ public class TTML2 {
     public static class TTML2Model extends TTML1.TTML1Model {
 
         private String[] schemaResourceNames;
+        private URI[] namespaceURIs;
         private Map<String,String> normalizedPrefixes2;
         private Map<URI,Class<?>> profileSpecificationClasses;
         private Profile.StandardDesignations standardDesignations;
@@ -99,12 +102,24 @@ public class TTML2 {
 
         private void populate() {
             populateSchemaResourceNames();
+            populateNamespaceURIs();
         }
 
         private void populateSchemaResourceNames() {
             List<String> resourceNames = new java.util.ArrayList<String>();
             resourceNames.add(Constants.XSD_TTML2);
             this.schemaResourceNames = resourceNames.toArray(new String[resourceNames.size()]);
+        }
+
+        private void populateNamespaceURIs() {
+            List<URI> namespaceURIs = new java.util.ArrayList<URI>();
+            try {
+                namespaceURIs.addAll(Arrays.asList(super.getTTNamespaceURIs()));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_TT_AUDIO));
+                this.namespaceURIs = namespaceURIs.toArray(new URI[namespaceURIs.size()]);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         public String getName() {
@@ -119,9 +134,14 @@ public class TTML2 {
             return schemaResourceNames;
         }
 
+        public URI[] getTTNamespaceURIs() {
+            return namespaceURIs;
+        }
+
         public Map<String,String> getNormalizedPrefixes() {
             if (normalizedPrefixes2 == null) {
                 normalizedPrefixes2 = new java.util.HashMap<String,String>(super.getNormalizedPrefixes());
+                normalizedPrefixes2.put(Constants.NAMESPACE_TT_AUDIO, "tta");
                 normalizedPrefixes2.put(Constants.NAMESPACE_XLINK, "xlink");
             }
             return normalizedPrefixes2;

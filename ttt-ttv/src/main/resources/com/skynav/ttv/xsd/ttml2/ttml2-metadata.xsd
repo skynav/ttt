@@ -8,6 +8,7 @@
     schemaLocation="ttml2-metadata-items.xsd"/>
   <xs:attributeGroup name="metadata.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
+    <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
     <xs:attributeGroup ref="ttm:Metadata.attrib.class"/>
   </xs:attributeGroup>
   <xs:complexType name="metadata.eltype">
