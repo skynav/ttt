@@ -86,6 +86,156 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadBackgroundColorAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-all-space.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorEmpty() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-empty.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBFunctionBadComponentSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-function-bad-component-syntax.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBFunctionExtraComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-function-extra-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBFunctionMissingComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-function-missing-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBFunctionNegativeComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-function-negative-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBFunctionOutOfRangeComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-function-out-of-range-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBFunctionPaddedComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-function-padded-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBHashExtraDigit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-hash-extra-digit.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBHashGarbageAfterDigits() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-hash-garbage-after-digits.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBHashMissingAllDigitsGarbageAfterHash() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-hash-missing-all-digits-garbage-after-hash.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBHashMissingAllDigitsHashOnly() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-hash-missing-all-digits-hash-only.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBHashMissingDigit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-hash-missing-digit.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBHashNonDigit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-hash-non-digit.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBHashSpaceAfterHash() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgb-hash-space-after-hash.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAFunctionBadComponentSyntax() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-function-bad-component-syntax.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAFunctionExtraComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-function-extra-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAFunctionMissingComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-function-missing-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAFunctionNegativeComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-function-negative-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAFunctionOutOfRangeComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-function-out-of-range-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAFunctionPaddedComponent() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-function-padded-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAHashExtraDigit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-hash-extra-digit.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAHashMissingDigit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-hash-missing-digit.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorRGBAHashNonDigit() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-rgba-hash-non-digit.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorSpacePaddedNamedColor() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-space-padded-named-color.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorSpacePaddedRGBFunction() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-space-padded-rgb-function.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorSpacePaddedRGBHash() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-space-padded-rgb-hash.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorSpacePaddedRGBAFunction() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-space-padded-rgba-function.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorSpacePaddedRGBAHash() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-space-padded-rgba-hash.xml", -1, -1);
+    }
+    
+    @Test
+    public void testInvalidTTML2BadBackgroundColorUnknownNamedColor() throws Exception {
+        performInvalidityTest("ttml2-invalid-bad-background-color-unknown-named-color.xml", -1, -1);
+    }
+    
+    @Test
     public void testInvalidTTML2BadBackgroundExtentAllSpace() throws Exception {
         performInvalidityTest("ttml2-invalid-bad-background-extent-all-space.xml", -1, -1);
     }

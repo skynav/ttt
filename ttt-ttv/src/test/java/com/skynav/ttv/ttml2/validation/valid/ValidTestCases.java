@@ -92,6 +92,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2BackgroundColor() throws Exception {
+        performValidityTest("ttml2-valid-background-color.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2BackgroundExtent() throws Exception {
         performValidityTest("ttml2-valid-background-extent.xml", -1, -1);
     }
