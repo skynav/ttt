@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml2.tt.Chunk;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.ClockMode;
 import com.skynav.ttv.model.ttml2.ttd.DropMode;
@@ -41,7 +42,9 @@ import com.skynav.ttv.model.ttml2.ttd.ProfileCombination;
 import com.skynav.ttv.model.ttml2.ttd.TimeBase;
 import com.skynav.ttv.model.ttml2.ttd.Validation;
 import com.skynav.ttv.model.ttml2.ttd.ValidationAction;
+import com.skynav.ttv.model.ttml2.ttp.Extension;
 import com.skynav.ttv.model.ttml2.ttp.Extensions;
+import com.skynav.ttv.model.ttml2.ttp.Feature;
 import com.skynav.ttv.model.ttml2.ttp.Features;
 import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DisplayAspectRatioVerifier;
@@ -197,14 +200,6 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             Boolean.FALSE,
             ValidationAction.WARN,
         },
-        // {
-        //     versionAttributeName,
-        //     "Version",
-        //     BigInteger.class,
-        //     VersionVerifier.class,
-        //     Boolean.FALSE,
-        //     BigInteger.valueOf(2),
-        // },
     };
 
     public TTML2ParameterVerifier(Model model) {
@@ -221,7 +216,16 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     protected boolean permitsParameterAttribute(Object content, QName name) {
         if (content instanceof TimedText)
             return true;
-        else
+        else if (name.equals(XML.getBaseAttributeName())) {
+            if (content instanceof Chunk)
+                return false;
+            else if (content instanceof Feature)
+                return false;
+            else if (content instanceof Extension)
+                return false;
+            else
+                return true;
+        } else
             return false;
     }
 

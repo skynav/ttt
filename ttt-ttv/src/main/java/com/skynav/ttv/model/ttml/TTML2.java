@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.Style;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
 import com.skynav.ttv.verifier.AudioVerifier;
+import com.skynav.ttv.verifier.FontVerifier;
 import com.skynav.ttv.verifier.ImageVerifier;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
@@ -46,6 +47,7 @@ import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2AudioVerifier;
+import com.skynav.ttv.verifier.ttml.TTML2FontVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2ImageVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2MetadataVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2ParameterVerifier;
@@ -94,6 +96,7 @@ public class TTML2 {
         private TimingVerifier timingVerifier;
         private MetadataVerifier metadataVerifier;
         private AudioVerifier audioVerifier;
+        private FontVerifier fontVerifier;
         private ImageVerifier imageVerifier;
 
         public TTML2Model() {
@@ -242,6 +245,13 @@ public class TTML2 {
             return audioVerifier;
         }
 
+        public FontVerifier getFontVerifier() {
+            if (fontVerifier == null) {
+                fontVerifier = new TTML2FontVerifier(this);
+            }
+            return fontVerifier;
+        }
+
         public ImageVerifier getImageVerifier() {
             if (imageVerifier == null) {
                 imageVerifier = new TTML2ImageVerifier(this);
@@ -253,6 +263,14 @@ public class TTML2 {
             if (type == null)
                 return false;
             else if (type.equals("audio/mpeg"))
+                return true;
+            else if (type.equals("font/collection"))
+                return true;
+            else if (type.equals("font/otf"))
+                return true;
+            else if (type.equals("font/ttf"))
+                return true;
+            else if (type.equals("font/woff"))
                 return true;
             else if (type.equals("image/png"))
                 return true;

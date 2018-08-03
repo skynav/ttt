@@ -25,7 +25,7 @@
   <xs:complexType name="animation.eltype">
     <xs:sequence>
       <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element ref="tt:animate" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:Animation.class" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attributeGroup ref="tt:animation.attlist"/>
   </xs:complexType>

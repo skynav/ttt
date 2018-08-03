@@ -27,6 +27,7 @@ package com.skynav.ttv.verifier.ttml;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -46,6 +47,7 @@ import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Chunk;
 import com.skynav.ttv.model.ttml2.tt.Data;
 import com.skynav.ttv.model.ttml2.tt.Division;
+import com.skynav.ttv.model.ttml2.tt.Font;
 import com.skynav.ttv.model.ttml2.tt.Head;
 import com.skynav.ttv.model.ttml2.tt.Image;
 import com.skynav.ttv.model.ttml2.tt.Initial;
@@ -53,6 +55,7 @@ import com.skynav.ttv.model.ttml2.tt.Layout;
 import com.skynav.ttv.model.ttml2.tt.Metadata;
 import com.skynav.ttv.model.ttml2.tt.Paragraph;
 import com.skynav.ttv.model.ttml2.tt.Region;
+import com.skynav.ttv.model.ttml2.tt.Resources;
 import com.skynav.ttv.model.ttml2.tt.Set;
 import com.skynav.ttv.model.ttml2.tt.Source;
 import com.skynav.ttv.model.ttml2.tt.Span;
@@ -73,6 +76,7 @@ import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Audios;
+import com.skynav.ttv.verifier.util.Fonts;
 import com.skynav.ttv.verifier.util.Images;
 import com.skynav.ttv.verifier.util.RepeatCount;
 import com.skynav.ttv.verifier.util.ResourceFormats;
@@ -109,10 +113,17 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     @Override
     protected boolean verifyHead(Object head, Object tt) {
         boolean failed = false;
+        if (!verifyParameterAttributes(head))
+            failed = true;
         if (!verifyOtherAttributes(head))
             failed = true;
         for (Object m : getHeadMetadata(head)) {
             if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        Object resources  = getHeadResources(head);
+        if (resources != null) {
+            if (!verifyResources(resources))
                 failed = true;
         }
         Object styling  = getHeadStyling(head);
@@ -133,91 +144,28 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean verifyAnimations(Object animation) {
-        boolean failed = false;
-        if (!verifyOtherAttributes(animation))
-            failed = true;
-        for (Object m : getAnimationMetadata(animation)) {
-            if (!verifyMetadataItem(m))
-                failed = true;
-        }
-        for (Object a : getAnimationAnimate(animation)) {
-            if (!verifyAnimation(a))
-                failed = true;
-        }
-        return !failed;
-    }
-
-    protected Collection<? extends Object> getAnimationMetadata(Object animation) {
-        assert animation instanceof Animation;
-        return ((Animation) animation).getMetadataClass();
-    }
-
-    protected Collection<? extends Object> getAnimationAnimate(Object animation) {
-        assert animation instanceof Animation;
-        return ((Animation) animation).getAnimate();
-    }
-
     @Override
     protected boolean verifyStyling(Object styling) {
         boolean failed = false;
-        if (super.verifyStyling(styling)) {
-            for (Object i : getStylingInitials(styling)) {
-                if (i instanceof Initial) {
-                    Initial initial = (Initial) i;
-                    if (verifyInitial(initial))
-                        addInitialOverrides(initial);
-                    else
-                        failed = true;
-                }
-            }
-        } else
+        if (!verifyParameterAttributes(styling))
             failed = true;
+        if (!verifyOtherAttributes(styling))
+            failed = true;
+        for (Object m : getStylingMetadata(styling)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Initial i : getStylingInitials(styling)) {
+            if (!verifyInitial(i))
+                failed = true;
+            else
+                addInitialOverrides(i);
+        }
+        for (Object s : getStylingStyles(styling)) {
+            if (!verifyStyle(s))
+                failed = true;
+        }
         return !failed;
-    }
-
-    protected Collection<? extends Object> getStylingInitials(Object styling) {
-        assert styling instanceof Styling;
-        return ((Styling) styling).getInitial();
-    }
-
-    protected boolean verifyInitial(Initial initial) {
-        boolean failed = false;
-        if (!verifyStyleAttributes(initial))
-            failed = true;
-        if (!verifyOtherAttributes(initial))
-            failed = true;
-        return !failed;
-    }
-
-    private void addInitialOverrides(Object initial) {
-        this.styleVerifier.addInitialOverrides(initial, getContext());
-    }
-
-    @Override
-    protected boolean verifyMetadataItem(Object metadata) {
-        if (metadata instanceof JAXBElement<?>)
-            return verifyMetadata(((JAXBElement<?>)metadata).getValue());
-        else if (metadata instanceof Actor)
-            return verifyActor(metadata);
-        else if (metadata instanceof Agent)
-            return verifyAgent(metadata);
-        else if (metadata instanceof Copyright)
-            return verifyCopyright(metadata);
-        else if (metadata instanceof Description)
-            return verifyDescription(metadata);
-        else if (metadata instanceof Item)
-            return verifyItem(metadata);
-        else if (metadata instanceof Metadata)
-            return verifyMetadata(metadata);
-        else if (metadata instanceof Name)
-            return verifyName(metadata);
-        else if (metadata instanceof Title)
-            return verifyTitle(metadata);
-        else if (metadata instanceof Element)
-            return verifyForeignMetadata((Element)metadata);
-        else
-            return unexpectedContent(metadata);
     }
 
     @Override
@@ -228,11 +176,6 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return verifySet(animation);
         else
             return unexpectedContent(animation);
-    }
-
-    protected Collection<? extends Object> getAnimateMetadata(Object animate) {
-        assert animate instanceof Animate;
-        return ((Animate) animate).getMetadataClass();
     }
 
     @Override
@@ -324,6 +267,32 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
+    protected boolean verifyMetadataItem(Object metadata) {
+        if (metadata instanceof JAXBElement<?>)
+            return verifyMetadata(((JAXBElement<?>)metadata).getValue());
+        else if (metadata instanceof Actor)
+            return verifyActor(metadata);
+        else if (metadata instanceof Agent)
+            return verifyAgent(metadata);
+        else if (metadata instanceof Copyright)
+            return verifyCopyright(metadata);
+        else if (metadata instanceof Description)
+            return verifyDescription(metadata);
+        else if (metadata instanceof Item)
+            return verifyItem(metadata);
+        else if (metadata instanceof Metadata)
+            return verifyMetadata(metadata);
+        else if (metadata instanceof Name)
+            return verifyName(metadata);
+        else if (metadata instanceof Title)
+            return verifyTitle(metadata);
+        else if (metadata instanceof Element)
+            return verifyForeignMetadata((Element)metadata);
+        else
+            return unexpectedContent(metadata);
+    }
+
+    @Override
     protected Object findMetadataItemBindingElement(Object metadata, Node node) {
         if (metadata instanceof JAXBElement<?>)
             return findMetadataItemBindingElement(((JAXBElement<?>)metadata).getValue(), node);
@@ -361,13 +330,6 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return null;
     }
 
-    protected Object findAnimateBindingElement(Object animate, Node node) {
-        if (getContext().getXMLNode(animate) == node)
-            return animate;
-        else
-            return findBindingElement((Animate) animate, node);
-    }
-
     // accessor overrides
 
     @Override
@@ -390,7 +352,6 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     @Override
     protected Collection<? extends Object> getHeadParameters(Object head) {
-        System.out.println("TTML2.verifyHeadParameters(" + head + ")");
         assert head instanceof Head;
         return ((Head) head).getParametersClass();
     }
@@ -400,7 +361,11 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return ((Head) head).getAnimation();
     }
 
-    @Override
+    protected Object getHeadResources(Object head) {
+        assert head instanceof Head;
+        return ((Head) head).getResources();
+    }
+
     protected Object getHeadStyling(Object head) {
         assert head instanceof Head;
         return ((Head) head).getStyling();
@@ -582,8 +547,104 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     // new elements
 
+    protected boolean verifyResources(Object resources) {
+        boolean failed = false;
+        if (!verifyParameterAttributes(resources))
+            failed = true;
+        if (!verifyOtherAttributes(resources))
+            failed = true;
+        for (Object m : getResourcesMetadata(resources)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Object r : getResources(resources)) {
+            if (!verifyResource(r))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected Collection<? extends Object> getResourcesMetadata(Object resources) {
+        assert resources instanceof Resources;
+        return ((Resources) resources).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getResources(Object resources) {
+        assert resources instanceof Resources;
+        return ((Resources) resources).getResourceClass();
+    }
+
+    protected boolean verifyResource(Object resource) {
+        if (resource instanceof Audio)
+            return verifyAudio(resource);
+        else if (resource instanceof Data)
+            return verifyData(resource);
+        else if (resource instanceof Font)
+            return verifyFont(resource);
+        else if (resource instanceof Image)
+            return verifyImage(resource);
+        else
+            return unexpectedContent(resource);
+    }
+
+    protected List<Initial> getStylingInitials(Object styling) {
+        assert styling instanceof Styling;
+        return ((Styling) styling).getInitial();
+    }
+
+    protected boolean isInitial(Object element) {
+        if (element instanceof Initial)
+            return true;
+        else
+            return false;
+    }
+
+    protected boolean verifyInitial(Initial initial) {
+        boolean failed = false;
+        if (!verifyParameterAttributes(initial))
+            failed = true;
+        if (!verifyStyleAttributes(initial))
+            failed = true;
+        if (!verifyOtherAttributes(initial))
+            failed = true;
+        return !failed;
+    }
+
+    private void addInitialOverrides(Initial initial) {
+        this.styleVerifier.addInitialOverrides(initial, getContext());
+    }
+
+    protected boolean verifyAnimations(Object animation) {
+        boolean failed = false;
+        if (!verifyParameterAttributes(animation))
+            failed = true;
+        if (!verifyOtherAttributes(animation))
+            failed = true;
+        for (Object m : getAnimationMetadata(animation)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Object a : getAnimations(animation)) {
+            if (!verifyAnimation(a))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected Collection<? extends Object> getAnimationMetadata(Object animation) {
+        assert animation instanceof Animation;
+        return ((Animation) animation).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getAnimations(Object animation) {
+        assert animation instanceof Animation;
+        return ((Animation) animation).getAnimationClass();
+    }
+
     protected boolean verifyAnimate(Object animate) {
         boolean failed = false;
+        if (!verifyParameterAttributes(animate))
+            failed = true;
         if (!verifyAnimateAttributes(animate))
             failed = true;
         if (!verifyStyleAttributes(animate))
@@ -599,6 +660,18 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (!verifyStyledItem(animate))
             failed = true;
         return !failed;
+    }
+
+    protected Collection<? extends Object> getAnimateMetadata(Object animate) {
+        assert animate instanceof Animate;
+        return ((Animate) animate).getMetadataClass();
+    }
+
+    protected Object findAnimateBindingElement(Object animate, Node node) {
+        if (getContext().getXMLNode(animate) == node)
+            return animate;
+        else
+            return findBindingElement((Animate) animate, node);
     }
 
     protected boolean verifyAnimateAttributes(Object animate) {
@@ -630,6 +703,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     protected boolean verifyAudio(Object audio) {
         boolean failed = false;
+        if (!verifyParameterAttributes(audio))
+            failed = true;
         if (!verifyAudioAttributes(audio))
             failed = true;
         if (!verifyStyleAttributes(audio))
@@ -747,8 +822,192 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return !failed;
     }
 
+    protected boolean verifyChunk(Object chunk) {
+        boolean failed = false;
+        if (!verifyChunkAttributes(chunk))
+            failed = true;
+        if (!verifyOtherAttributes(chunk))
+            failed = true;
+        return !failed;
+    }
+
+    protected boolean verifyChunkAttributes(Object chunk) {
+        // [TBD] - length
+        // [TBD] - encoding
+        return true;
+    }
+
+    protected boolean verifyData(Object data) {
+        boolean failed = false;
+        if (!verifyParameterAttributes(data))
+            failed = true;
+        if (!verifyDataAttributes(data))
+            failed = true;
+        if (!verifyOtherAttributes(data))
+            failed = true;
+        for (Serializable s : getDataContent(data)) {
+            if (!verifyDataContent(s))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected boolean verifyDataAttributes(Object data) {
+        // [TBD] - src
+        // [TBD] - type
+        // [TBD] - format
+        // [TBD] - length
+        // [TBD] - encoding
+        return true;
+    }
+
+    protected Collection<Serializable> getDataContent(Object data) {
+        assert data instanceof Data;
+        return ((Data) data).getContent();
+    }
+
+    protected boolean verifyDataContent(Serializable content) {
+        if (content instanceof JAXBElement<?>) {
+            Object element = ((JAXBElement<?>)content).getValue();
+            if (isMetadataItem(element))
+                return verifyMetadata(element);
+            else if (element instanceof Chunk)
+                return verifyChunk(element);
+            else if (element instanceof Source)
+                return verifySource(element);
+            else
+                return unexpectedContent(element);
+        } else if (content instanceof String) {
+            return true;
+        } else
+            return unexpectedContent(content);
+    }
+
+    protected boolean verifyFont(Object font) {
+        boolean failed = false;
+        if (!verifyParameterAttributes(font))
+            failed = true;
+        if (!verifyFontAttributes(font))
+            failed = true;
+        if (!verifyStyleAttributes(font))
+            failed = true;
+        if (!verifyOtherAttributes(font))
+            failed = true;
+        for (Object m : getFontMetadata(font)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Object s : getFontSources(font)) {
+            if (!verifySource(s))
+                failed = true;
+        }
+        if (!verifyStyledItem(font))
+            failed = true;
+        if (!failed && !verifyFontResources(font))
+            failed = true;
+        return !failed;
+    }
+
+    protected boolean verifyFontAttributes(Object font) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(font);
+        Locator locator = location.getLocator();
+        // @src
+        String s = getFontSourceAttribute(font);
+        int numSources = getFontSources(font).size();
+        com.skynav.ttv.model.value.Font[] outputFont = new com.skynav.ttv.model.value.Font[1];
+        com.skynav.ttv.model.value.Font i = null;
+        if (s != null) {
+            if (!Fonts.isFont(s, location, context, false, outputFont)) {
+                Fonts.badFont(s, location, context);
+                failed = true;
+            } else if (numSources > 0) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, sourceAttributeName));
+                failed = true;
+            } else {
+                i = outputFont[0];
+            }
+        } else if (numSources == 0) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, sourceAttributeName));
+            failed = true;
+        }
+        // @type
+        String t = getFontTypeAttribute(font);
+        if (t != null) {
+            if ((i == null) || !i.isExternal()) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute must not specified for internal font sources.", typeAttributeName));
+                failed = true;
+            } else if (!ResourceTypes.isType(t, location, context, null)) {
+                ResourceTypes.badType(t, location, context);
+                failed = true;
+            }
+        } else if ((i != null) && i.isExternal()) {
+            if (reporter.isWarningEnabled("missing-type-for-external-source")) {
+                Message message = reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute should be specified for external font sources.", typeAttributeName);
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
+                    failed = true;
+                }
+            }
+        }
+        // @format
+        String f = getFontFormatAttribute(font);
+        if (f != null) {
+            if (!ResourceFormats.isFormat(f, location, context, null)) {
+                ResourceFormats.badFormat(f, location, context);
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+
+    protected String getFontFormatAttribute(Object font) {
+        assert font instanceof Font;
+        return null;
+    }
+
+    protected String getFontSourceAttribute(Object font) {
+        assert font instanceof Font;
+        return ((Font) font).getSrc();
+    }
+
+    protected String getFontTypeAttribute(Object font) {
+        assert font instanceof Font;
+        return ((Font) font).getDataType();
+    }
+
+    protected Collection<? extends Object> getFontMetadata(Object font) {
+        assert font instanceof Font;
+        return ((Font) font).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getFontSources(Object font) {
+        assert font instanceof Font;
+        return ((Font) font).getSource();
+    }
+
+    protected boolean verifyFontResources(Object font) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Location location = getLocation(font);
+        // @src
+        String s = getFontSourceAttribute(font);
+        if ((s != null) && !Fonts.isFont(s, location, context, true, null))
+            failed = true;
+        // [TBD] verify resources referenced by tt:source children
+        return !failed;
+    }
+
     protected boolean verifyImage(Object image) {
         boolean failed = false;
+        if (!verifyParameterAttributes(image))
+            failed = true;
         if (!verifyImageAttributes(image))
             failed = true;
         if (!verifyStyleAttributes(image))
@@ -868,6 +1127,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     protected boolean verifySource(Object source) {
         boolean failed = false;
+        if (!verifyParameterAttributes(source))
+            failed = true;
         if (!verifySourceAttributes(source))
             failed = true;
         if (!verifyOtherAttributes(source))
@@ -901,67 +1162,10 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return ((Source) source).getData();
     }
 
-    protected boolean verifyData(Object data) {
-        boolean failed = false;
-        if (!verifyDataAttributes(data))
-            failed = true;
-        if (!verifyOtherAttributes(data))
-            failed = true;
-        for (Serializable s : getDataContent(data)) {
-            if (!verifyDataContent(s))
-                failed = true;
-        }
-        return !failed;
-    }
-
-    protected boolean verifyDataAttributes(Object data) {
-        // [TBD] - src
-        // [TBD] - type
-        // [TBD] - format
-        // [TBD] - length
-        // [TBD] - encoding
-        return true;
-    }
-
-    protected Collection<Serializable> getDataContent(Object data) {
-        assert data instanceof Data;
-        return ((Data) data).getContent();
-    }
-
-    protected boolean verifyDataContent(Serializable content) {
-        if (content instanceof JAXBElement<?>) {
-            Object element = ((JAXBElement<?>)content).getValue();
-            if (isMetadataItem(element))
-                return verifyMetadata(element);
-            else if (element instanceof Chunk)
-                return verifyChunk(element);
-            else if (element instanceof Source)
-                return verifySource(element);
-            else
-                return unexpectedContent(element);
-        } else if (content instanceof String) {
-            return true;
-        } else
-            return unexpectedContent(content);
-    }
-
-    protected boolean verifyChunk(Object chunk) {
-        boolean failed = false;
-        if (!verifyChunkAttributes(chunk))
-            failed = true;
-        if (!verifyOtherAttributes(chunk))
-            failed = true;
-        return !failed;
-    }
-
-    protected boolean verifyChunkAttributes(Object chunk) {
-        // [TBD] - length
-        // [TBD] - encoding
-        return true;
-    }
-
     protected boolean verifyItem(Object item) {
         boolean failed = false;
+        if (!verifyParameterAttributes(item))
+            failed = true;
         if (!verifyOtherAttributes(item))
             failed = true;
         if (!verifyMetadataItem(metadataVerifier, item))

@@ -187,13 +187,13 @@ public class TTML1TimingVerifier extends AbstractVerifier implements TimingVerif
             Locator locator = location.getLocator();
             if (value.length() == 0) {
                 reporter.logInfo(reporter.message(locator,
-                    "*KEY*", "Empty {0} not permitted, got ''{1}''.", timingName, value));
+                    "*KEY*", "Empty {0} not permitted on {1}, got ''{2}''.", timingName, location.getElementName(), value));
             } else if (Strings.isAllXMLSpace(value)) {
                 reporter.logInfo(reporter.message(locator,
-                    "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", timingName, value));
+                    "*KEY*", "The value of {0} on {1} is entirely XML space characters, got ''{2}''.", timingName, location.getElementName(), value));
             } else if (!paddingPermitted && !value.equals(value.trim())) {
                 reporter.logInfo(reporter.message(locator,
-                    "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", timingName, value));
+                    "*KEY*", "XML space padding of {0} not permitted on {1}, got ''{2}''.", timingName, location.getElementName(), value));
             } else
                 success = verifier.verify(value, location, context, verificationParameters);
             return success;

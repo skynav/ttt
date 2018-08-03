@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,19 +25,32 @@
 
 package com.skynav.ttv.verifier.util;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.Locator;
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.ttml.TTML;
+import com.skynav.ttv.model.value.Font;
 import com.skynav.ttv.model.value.FontFamily;
 import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.GenericFontFamily;
+import com.skynav.ttv.model.value.impl.EmbeddedFontImpl;
+import com.skynav.ttv.model.value.impl.ExternalFontImpl;
 import com.skynav.ttv.model.value.impl.FontFamilyImpl;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.URIs;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ItemVerifier.ItemType;
 
 public class Fonts {
 
@@ -316,6 +329,132 @@ public class Fonts {
 
     private static String[] splitFontVariants(String value) {
         return value.split("\\s+");
+    }
+
+    public static boolean isFont(String value, Location location, VerifierContext context, Font[] outputFont) {
+        return isFont(value, location, context, true, outputFont);
+    }
+
+    public static boolean isFont(String value, Location location, VerifierContext context, boolean verifyContent, Font[] outputFont) {
+        Font font;
+        if ((outputFont != null) && (outputFont.length < 1))
+            throw new IllegalArgumentException();
+        if (URIs.isLocalFragment(value)) {
+            String id = URIs.getFragment(value);
+            assert id != null;
+            Object content = location.getContent();
+            Node node = content != null ? context.getXMLNode(content) : null;
+            if ((node == null) && (content instanceof Element))
+                node = (Element) content;
+            if (node != null) {
+                Document document = node.getOwnerDocument();
+                if (document != null) {
+                    Element targetElement = document.getElementById(id);
+                    if (targetElement != null) {
+                        Object target = context.getBindingElement(targetElement);
+                        if (target != null) {
+                            QName targetName = context.getBindingElementName(target);
+                            if (!isFontElement(targetName))
+                                return false;                                   // target must be an font element
+                            else {
+                                URI base = location.getSystemIdAsURI();
+                                URI uri = URIs.makeURISafely("#" + id, base);
+                                font = internalFont(uri, target);               // good local reference (though not necessarily resolvable)
+                            }
+                        } else
+                            throw new IllegalStateException();                  // no binding for target element (illegal state)
+                    } else
+                        return false;                                           // no target element for given fragment identifier
+                } else
+                    throw new IllegalStateException();                          // no owner document (illegal state)
+            } else
+                throw new IllegalStateException();                              // no node (illegal state)
+        } else if (value.trim().length() == value.length()) {
+            URI base = location.getSystemIdAsURI();
+            URI uri = URIs.makeURISafely(value, base);
+            if (uri == null)
+                return false;                                                   // bad syntax
+            else
+                font = externalFont(uri);                                       // good non-local reference (though not necessarily resolvable)
+        } else if (value.length() > 0) {
+            return false;                                                       // font reference is all LWSP or has LWSP padding
+        } else {
+            return false;                                                       // font reference is empty string
+        }
+        // record specified type and format
+        font.setSpecifiedType(null);                                            // [TBD] populate specified type from content
+        font.setSpecifiedFormat(null);                                          // [TBD] populate speicifed format from content
+        // verify font content
+        assert font != null;
+        if (verifyContent && !context.getModel().getFontVerifier().verify(font, location.getLocator(), context, ItemType.Other))
+            return false;
+        // return font instance if requested
+        if (outputFont != null) {
+            assert outputFont.length > 0;
+            outputFont[0] = font;
+        }
+        return true;
+    }
+
+    private static Font internalFont(URI uri, Object target) {
+        return new EmbeddedFontImpl(uri, target);
+    }
+
+    private static Font externalFont(URI uri) {
+        return new ExternalFontImpl(uri);
+    }
+
+    public static void badFont(String value, Location location, VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        Message m = null;
+        Locator locator = location.getLocator();
+        if (URIs.isLocalFragment(value)) {
+            String id = URIs.getFragment(value);
+            assert id != null;
+            Object content = location.getContent();
+            Node node = content != null ? context.getXMLNode(content) : null;
+            if ((node == null) && (content instanceof Element))
+                node = (Element) content;
+            if (node != null) {
+                Document document = node.getOwnerDocument();
+                if (document != null) {
+                    Element targetElement = document.getElementById(id);
+                    if (targetElement != null) {
+                        Object target = context.getBindingElement(targetElement);
+                        if (target != null) {
+                            QName targetName = context.getBindingElementName(target);
+                            if (!isFontElement(targetName)) {                   // target must be an font element
+                                m = reporter.message(locator, "*KEY*",
+                                    "Bad <font> expression, got ''{0}'', target must be an font element.", value);
+                            }
+                        }
+                    } else {                                                    // no target element for given fragment identifier
+                        m = reporter.message(locator, "*KEY*",
+                            "Bad <font> expression, got ''{0}'', no target element for given fragment identifier.", value);
+                    }
+                }
+            }
+        } else if (value.trim().length() == value.length()) {
+            URI base = location.getSystemIdAsURI();
+            URI uri = URIs.makeURISafely(value, base);
+            if (uri == null) {                                                  // bad syntax
+                m = reporter.message(locator, "*KEY*",
+                    "Bad <font> expression, got ''{0}'', illegal syntax.", value);
+            }
+        } else if (value.length() > 0) {                                        // font reference is all LWSP or has LWSP padding
+            m = reporter.message(locator, "*KEY*",
+                "Bad <font> expression, got ''{0}'', all LWSP or has LWSP padding.", value);
+        } else {                                                                // font reference is empty string
+            m = reporter.message(locator, "*KEY*",
+                "Bad <font> expression, got ''{0}'', empty string.", value);
+        }
+        if (m != null)
+            reporter.logError(m);
+    }
+
+    private static final QName fontElementName = new QName(TTML.Constants.NAMESPACE_TT, "font");
+    private static boolean isFontElement(QName name) {
+        return name.equals(fontElementName);
     }
 
 }

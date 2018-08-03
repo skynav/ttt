@@ -56,7 +56,6 @@ public class TTML1ProfileVerifier extends AbstractVerifier implements ProfileVer
     }
 
     public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
-        System.out.println("TTML1ProfileVerifier.verify(" + content + ")");
         setState(content, context);
         if (type == ItemType.Element)
             return verifyElementItem(content, locator, context);
@@ -65,7 +64,6 @@ public class TTML1ProfileVerifier extends AbstractVerifier implements ProfileVer
     }
 
     protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
-        System.out.println("TTML1ProfileVerifier.verifyElementItem(" + content + ")");
         boolean failed = false;
         if (content instanceof TimedText)
             failed = !verify((TimedText) content, locator, context);
@@ -109,7 +107,6 @@ public class TTML1ProfileVerifier extends AbstractVerifier implements ProfileVer
 
     protected boolean verify(Profile content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        System.out.println("verify(Profile)");
         // warn on duplicate features
         // warn on duplicate extensions
         return !failed;
@@ -118,7 +115,6 @@ public class TTML1ProfileVerifier extends AbstractVerifier implements ProfileVer
     protected boolean verify(Feature content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Features features = (Features) context.getBindingElementParent(content);
-        System.out.println("verify(Feature)");
         if (features != null) {
             String base = features.getBase();
             String designation = content.getValue();
@@ -127,7 +123,6 @@ public class TTML1ProfileVerifier extends AbstractVerifier implements ProfileVer
                 base = context.getModel().getTTFeatureNamespaceUri().toString();
                 features.setBase(base);
             }
-            System.out.println("base(" + base + ")");
             if (!Profiles.isFeatureDesignation(designation, location, context, base)) {
                 Profiles.badFeatureDesignation(designation, location, context, base);
                 failed = true;

@@ -80,69 +80,29 @@ public class Error {
     public static final class ContentType {
         public static final int UNSPECIFIED_TYPE                = 0;
         public static final int OTHER_TYPE                      = 1;
-        public static final int PACKAGE_TYPE                    = 2;
-        public static final int APPLICATION_TYPE                = 3;
-        public static final int JAVA_TYPE                       = 4;
         public static final int AUDIO_AC3_TYPE                  = 5;
         public static final int AUDIO_MP2_TYPE                  = 6;
         public static final int AUDIO_MP3_TYPE                  = 7;
         public static final int IMAGE_PNG_TYPE                  = 8;
         public static final int IMAGE_JPG_TYPE                  = 9;
         public static final int IMAGE_MPG_TYPE                  = 10;
-        public static final int VIDEO_DRIP_TYPE                 = 11;
-        public static final int VIDEO_MPG_TYPE                  = 12;
-        public static final int TEXT_TYPE                       = 13;
-        public static final int FONT_TYPE                       = 14;
-        public static final int DIGEST_TYPE                     = 15;
-        public static final int SIGNATURE_TYPE                  = 16;
-        public static final int CERTIFICATE_TYPE                = 17;
-        public static final int PERMISSION_TYPE                 = 18;
-        public static final int ZIP_TYPE                        = 19;
-        public static final int GZIP_TYPE                       = 20;
-        public static final int FONT_INDEX_TYPE                 = 21;
-        public static final int PACKAGE_MANIFEST_TYPE           = 22;
-        public static final int HASHFILE_TYPE                   = 23;
-        public static final int TEXT_XML_TYPE                   = 24;
-        public static final int CRL_TYPE                        = 25;
-        public static final int DESCRIPTION_TYPE                = 26;
-        public static final int TEXT_PROPERTIES_TYPE            = 27;
-        public static final int EBIF_TYPE                       = 28;
-        public static final int SAVR_TYPE                       = 29;
-        public static final int TESTLET_CONF_TYPE               = 30;
-        public static final int CODF_TYPE                       = 31;
+        public static final int FONT_OTF_TYPE                   = 11;
+        public static final int FONT_TTF_TYPE                   = 12;
+        public static final int FONT_TTC_TYPE                   = 13;
+        public static final int FONT_WOFF_TYPE                  = 14;
 
         public static final ContentType UNSPECIFIED             = new ContentType(UNSPECIFIED_TYPE);
         public static final ContentType OTHER                   = new ContentType(OTHER_TYPE);
-        public static final ContentType PACKAGE                 = new ContentType(PACKAGE_TYPE);
-        public static final ContentType APPLICATION             = new ContentType(APPLICATION_TYPE);
-        public static final ContentType JAVA                    = new ContentType(JAVA_TYPE);
         public static final ContentType AUDIO_AC3               = new ContentType(AUDIO_AC3_TYPE);
         public static final ContentType AUDIO_MP2               = new ContentType(AUDIO_MP2_TYPE);
         public static final ContentType AUDIO_MP3               = new ContentType(AUDIO_MP3_TYPE);
         public static final ContentType IMAGE_PNG               = new ContentType(IMAGE_PNG_TYPE);
         public static final ContentType IMAGE_JPG               = new ContentType(IMAGE_JPG_TYPE);
         public static final ContentType IMAGE_MPG               = new ContentType(IMAGE_MPG_TYPE);
-        public static final ContentType VIDEO_DRIP              = new ContentType(VIDEO_DRIP_TYPE);
-        public static final ContentType VIDEO_MPG               = new ContentType(VIDEO_MPG_TYPE);
-        public static final ContentType TEXT                    = new ContentType(TEXT_TYPE);
-        public static final ContentType FONT                    = new ContentType(FONT_TYPE);
-        public static final ContentType DIGEST                  = new ContentType(DIGEST_TYPE);
-        public static final ContentType SIGNATURE               = new ContentType(SIGNATURE_TYPE);
-        public static final ContentType CERTIFICATE             = new ContentType(CERTIFICATE_TYPE);
-        public static final ContentType PERMISSION              = new ContentType(PERMISSION_TYPE);
-        public static final ContentType ZIP                     = new ContentType(ZIP_TYPE);
-        public static final ContentType GZIP                    = new ContentType(GZIP_TYPE);
-        public static final ContentType FONT_INDEX              = new ContentType(FONT_INDEX_TYPE);
-        public static final ContentType PACKAGE_MANIFEST        = new ContentType(PACKAGE_MANIFEST_TYPE);
-        public static final ContentType HASHFILE                = new ContentType(HASHFILE_TYPE);
-        public static final ContentType TEXT_XML                = new ContentType(TEXT_XML_TYPE);
-        public static final ContentType CRL                     = new ContentType(CRL_TYPE);
-        public static final ContentType DESCRIPTION             = new ContentType(DESCRIPTION_TYPE);
-        public static final ContentType TEXT_PROPERTIES         = new ContentType(TEXT_PROPERTIES_TYPE);
-        public static final ContentType EBIF                    = new ContentType(EBIF_TYPE);
-        public static final ContentType SAVR                    = new ContentType(SAVR_TYPE);
-        public static final ContentType TESTLET_CONF            = new ContentType(TESTLET_CONF_TYPE);
-        public static final ContentType CODF                    = new ContentType(CODF_TYPE);
+        public static final ContentType FONT_OTF                = new ContentType(FONT_OTF_TYPE);
+        public static final ContentType FONT_TTF                = new ContentType(FONT_TTF_TYPE);
+        public static final ContentType FONT_TTC                = new ContentType(FONT_TTC_TYPE);
+        public static final ContentType FONT_WOFF               = new ContentType(FONT_WOFF_TYPE);
 
         private int type;
 
@@ -154,12 +114,6 @@ public class Error {
 
         public String toString() {
             switch (type) {
-            case PACKAGE_TYPE:
-                return "package";
-            case APPLICATION_TYPE:
-                return "application";
-            case JAVA_TYPE:
-                return "java";
             case AUDIO_AC3_TYPE:
                 return "AC3 audio";
             case AUDIO_MP2_TYPE:
@@ -172,52 +126,14 @@ public class Error {
                 return "JPEG image";
             case IMAGE_MPG_TYPE:
                 return "MPG image";
-            case VIDEO_DRIP_TYPE:
-                return "drip video";
-            case VIDEO_MPG_TYPE:
-                return "mpg video";
-            case TEXT_TYPE:
-                return "text";
-            case FONT_TYPE:
-                return "font";
-            case DIGEST_TYPE:
-                return "digest";
-            case SIGNATURE_TYPE:
-                return "signature";
-            case CERTIFICATE_TYPE:
-                return "certificate";
-            case PERMISSION_TYPE:
-                return "permission";
-            case ZIP_TYPE:
-                return "ZIP file";
-            case GZIP_TYPE:
-                return "GZIP file";
-            case FONT_INDEX_TYPE:
-                return "font index";
-            case PACKAGE_MANIFEST_TYPE:
-                return "package manifest";
-            case HASHFILE_TYPE:
-                return "hashfile";
-            case TEXT_XML_TYPE:
-                return "XML";
-            case CRL_TYPE:
-                return "CRL";
-            case DESCRIPTION_TYPE:
-                return "application description";
-            case TEXT_PROPERTIES_TYPE:
-                return "Java properties";
-            case OTHER_TYPE:
-                return "other";
-            case UNSPECIFIED_TYPE:
-                return "unspecified";
-            case EBIF_TYPE:
-                return "EBIF 1.0";
-            case SAVR_TYPE:
-                return "secure application validation record";
-            case TESTLET_CONF_TYPE:
-                return "testlet configuration";
-            case CODF_TYPE:
-                return "CODF package";
+            case FONT_OTF_TYPE:
+                return "OpenType font";
+            case FONT_TTF_TYPE:
+                return "TrueType font";
+            case FONT_TTC_TYPE:
+                return "TrueType Collection font";
+            case FONT_WOFF_TYPE:
+                return "WebFont font";
             default:
                 return "unknown";
             }

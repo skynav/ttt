@@ -356,6 +356,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyHead(Object head, Object tt) {
         boolean failed = false;
+        if (!verifyParameterAttributes(head))
+            failed = true;
         if (!verifyOtherAttributes(head))
             failed = true;
         for (Object m : getHeadMetadata(head)) {
@@ -392,6 +394,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyStyling(Object styling) {
         boolean failed = false;
+        if (!verifyParameterAttributes(styling))
+            failed = true;
         if (!verifyOtherAttributes(styling))
             failed = true;
         for (Object m : getStylingMetadata(styling)) {
@@ -417,6 +421,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyStyle(Object style) {
         boolean failed = false;
+        if (!verifyParameterAttributes(style))
+            failed = true;
         if (!verifyStyleAttributes(style))
             failed = true;
         if (!verifyOtherAttributes(style))
@@ -426,6 +432,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyLayout(Object layout) {
         boolean failed = false;
+        if (!verifyParameterAttributes(layout))
+            failed = true;
         if (!verifyOtherAttributes(layout))
             failed = true;
         for (Object m : getLayoutMetadata(layout)) {
@@ -451,6 +459,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyRegion(Object region) {
         boolean failed = false;
+        if (!verifyParameterAttributes(region))
+            failed = true;
         if (!verifyStyleAttributes(region))
             failed = true;
         if (!verifyTimingAttributes(region))
@@ -489,6 +499,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyBody(Object body) {
         boolean failed = false;
+        if (!verifyParameterAttributes(body))
+            failed = true;
         if (!verifyMetadataAttributes(metadataVerifier, body))
             failed = true;
         if (!verifyStyleAttributes(body))
@@ -529,6 +541,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyDivision(Object division) {
         boolean failed = false;
+        if (!verifyParameterAttributes(division))
+            failed = true;
         if (!verifyMetadataAttributes(metadataVerifier, division))
             failed = true;
         if (!verifyStyleAttributes(division))
@@ -569,6 +583,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyParagraph(Object paragraph) {
         boolean failed = false;
+        if (!verifyParameterAttributes(paragraph))
+            failed = true;
         if (!verifyMetadataAttributes(metadataVerifier, paragraph))
             failed = true;
         if (!verifyStyleAttributes(paragraph))
@@ -591,6 +607,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifySpan(Object span) {
         boolean failed = false;
+        if (!verifyParameterAttributes(span))
+            failed = true;
         if (!verifyMetadataAttributes(metadataVerifier, span))
             failed = true;
         if (!verifyStyleAttributes(span))
@@ -613,6 +631,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyBreak(Object br) {
         boolean failed = false;
+        if (!verifyParameterAttributes(br))
+            failed = true;
         if (!verifyMetadataAttributes(metadataVerifier, br))
             failed = true;
         if (!verifyStyleAttributes(br))
@@ -649,6 +669,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifySet(Object set) {
         boolean failed = false;
+        if (!verifyParameterAttributes(set))
+            failed = true;
         if (!verifyStyleAttributes(set))
             failed = true;
         if (!verifyTimingAttributes(set))
@@ -670,7 +692,6 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     protected boolean verifyProfile(Object profile) {
-        System.out.println("TTML1.verifyProfile(" + profile + ")");
         boolean failed = false;
         if (!verifyParameterAttributes(profile))
             failed = true;
@@ -709,7 +730,6 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     protected boolean verifyFeatures(Object features) {
-        System.out.println("TTML1.verifyFeatures(" + features + ")");
         boolean failed = false;
         if (!verifyParameterAttributes(features))
             failed = true;
@@ -737,8 +757,9 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     protected boolean verifyFeature(Object feature) {
-        System.out.println("TTML1.verifyFeatures(" + feature + ")");
         boolean failed = false;
+        if (!verifyParameterAttributes(feature))
+            failed = true;
         if (!verifyOtherAttributes(feature))
             failed = true;
         if (!verifyProfileItem(feature))
@@ -775,6 +796,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyExtension(Object extension) {
         boolean failed = false;
+        if (!verifyParameterAttributes(extension))
+            failed = true;
         if (!verifyOtherAttributes(extension))
             failed = true;
         if (!verifyProfileItem(extension))
@@ -783,12 +806,13 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     private boolean verifyProfileItem(Object content) {
-        System.out.println("TTML1.verifyProfileItem(" + content + ")");
         return this.profileVerifier.verify(content, getLocator(content), getContext(), ItemType.Element);
     }
 
     protected boolean verifyActor(Object actor) {
         boolean failed = false;
+        if (!verifyParameterAttributes(actor))
+            failed = true;
         if (!verifyOtherAttributes(actor))
             failed = true;
         if (!verifyMetadataItem(metadataVerifier, actor))
@@ -798,6 +822,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyAgent(Object agent) {
         boolean failed = false;
+        if (!verifyParameterAttributes(agent))
+            failed = true;
         if (!verifyOtherAttributes(agent))
             failed = true;
         for (Object name : getAgentNames(agent)) {
@@ -826,6 +852,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyCopyright(Object copyright) {
         boolean failed = false;
+        if (!verifyParameterAttributes(copyright))
+            failed = true;
         if (!verifyOtherAttributes(copyright))
             failed = true;
         if (!verifyMetadataItem(metadataVerifier, copyright))
@@ -835,6 +863,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyDescription(Object description) {
         boolean failed = false;
+        if (!verifyParameterAttributes(description))
+            failed = true;
         if (!verifyOtherAttributes(description))
             failed = true;
         if (!verifyMetadataItem(metadataVerifier, description))
@@ -844,18 +874,20 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyMetadata(Object metadata) {
         boolean failed = false;
+        if (!verifyParameterAttributes(metadata))
+            failed = true;
         if (!verifyMetadataAttributes(metadataVerifier, metadata))
             failed = true;
         if (!verifyOtherAttributes(metadata))
             failed = true;
-        for (Object content : getMetadataAny(metadata)) {
-            if (isMetadataItem(content)) {
-                if (!verifyMetadataItem(content))
+        for (Object m : getMetadataAny(metadata)) {
+            if (m instanceof JAXBElement<?>)
+                m = ((JAXBElement<?>)m).getValue();
+            if (isMetadataItem(m)) {
+                if (!verifyMetadataItem(m))
                     failed = true;
             } else {
-                if (content instanceof JAXBElement<?>)
-                    content = ((JAXBElement<?>)content).getValue();
-                failed = !verifyOtherElement(content, getLocator(content), getContext());
+                failed = !verifyOtherElement(m, getLocator(m), getContext());
             }
         }
         if (!verifyMetadataItem(metadataVerifier, metadata))
@@ -870,6 +902,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyName(Object name) {
         boolean failed = false;
+        if (!verifyParameterAttributes(name))
+            failed = true;
         if (!verifyOtherAttributes(name))
             failed = true;
         if (!verifyMetadataItem(metadataVerifier, name))
@@ -879,6 +913,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean verifyTitle(Object title) {
         boolean failed = false;
+        if (!verifyParameterAttributes(title))
+            failed = true;
         if (!verifyOtherAttributes(title))
             failed = true;
         if (!verifyMetadataItem(metadataVerifier, title))
@@ -889,6 +925,21 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     protected boolean verifyForeignMetadata(Element metadata) {
         boolean failed = false;
         return !failed;
+    }
+
+    protected boolean isMetadataItem(Object element) {
+        if (element instanceof Agent)
+            return true;
+        else if (element instanceof Copyright)
+            return true;
+        else if (element instanceof Description)
+            return true;
+        else if (element instanceof Metadata)
+            return true;
+        else if (element instanceof Title)
+            return true;
+        else
+            return false;
     }
 
     protected boolean verifyMetadataItem(Object metadata) {
@@ -951,13 +1002,12 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     private boolean verifyTimedTextParameterAttributes(Object tt) {
-        System.out.println("TTML1.verifyTimedTextParameterAttributes(" + tt + ")");
         boolean failed = false;
-        if (!this.parameterVerifier.verify(tt, getLocator(tt), getContext(), ItemType.Attributes))
+        if (!verifyParameterAttributes(tt))
             failed = true;
         Object head = getTimedTextHead(tt);
         if (head != null) {
-            if (!verifyHeadParameterAttributes(head))
+            if (!verifyHeadParameterItems(head))
                 failed = true;
         }
         if (!failed)
@@ -965,8 +1015,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
         return !failed;
     }
 
-    private boolean verifyHeadParameterAttributes(Object head) {
-        System.out.println("TTML1.verifyHeadParameterAttributes(" + head + ")");
+    private boolean verifyHeadParameterItems(Object head) {
         boolean failed = false;
         for (Object p : getHeadParameters(head)) {
             if (!verifyProfile(p))
@@ -976,7 +1025,6 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     }
 
     protected Collection<? extends Object> getHeadParameters(Object head) {
-        System.out.println("TTML1.verifyHeadParameters(" + head + ")");
         assert head instanceof Head;
         return ((Head) head).getParametersClass();
     }
@@ -1245,6 +1293,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
             return metadata;
         else {
             for (Object m : getMetadataAny(metadata)) {
+                if (m instanceof JAXBElement<?>)
+                    m = ((JAXBElement<?>)m).getValue();
                 if (!isMetadataItem(m)) {
                     Object content = findMetadataItemBindingElement(m, node);
                     if (content != null)
@@ -1420,21 +1470,6 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
 
     protected boolean unexpectedContent(Object content) throws IllegalStateException {
         throw new IllegalStateException("Unexpected JAXB content object of type '" + content.getClass().getName() +  "'.");
-    }
-
-    protected boolean isMetadataItem(Object element) {
-        if (element instanceof Agent)
-            return true;
-        else if (element instanceof Copyright)
-            return true;
-        else if (element instanceof Description)
-            return true;
-        else if (element instanceof Metadata)
-            return true;
-        else if (element instanceof Title)
-            return true;
-        else
-            return false;
     }
 
 }

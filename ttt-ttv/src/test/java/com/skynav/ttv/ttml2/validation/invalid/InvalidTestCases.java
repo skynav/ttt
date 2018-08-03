@@ -410,22 +410,22 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2DisparityAllSpace() throws Exception {
+    public void testInvalidTTML2BadDisparityAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-disparity-all-space.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2DisparityEmpty() throws Exception {
+    public void testInvalidTTML2BadDisparityEmpty() throws Exception {
         performInvalidityTest("ttml2-invld-bad-disparity-empty.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2DisparityExtraLength() throws Exception {
+    public void testInvalidTTML2BadDisparityExtraLength() throws Exception {
         performInvalidityTest("ttml2-invld-bad-disparity-extra-length.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2DisparityUnknownUnit() throws Exception {
+    public void testInvalidTTML2BadDisparityUnknownUnit() throws Exception {
         performInvalidityTest("ttml2-invld-bad-disparity-unknown-unit.xml", -1, -1);
     }
 
@@ -632,6 +632,26 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadTextOrientationUnknownKeyword() throws Exception {
         performInvalidityTest("ttml2-invld-bad-text-orientation-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BaseAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-base-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BaseEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-base-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BaseGeneralAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-base-general-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BaseGeneralEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-base-general-empty.xml", -1, -1);
     }
 
     @Test

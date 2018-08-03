@@ -40,6 +40,12 @@ public class MimeType {
     public static final String AUDIO_WAV_TYPE                   = "audio/wav";
     public static final String AUDIO_OGG_TYPE                   = "audio/ogg";
 
+    public static final String FONT_OTF_TYPE                    = "font/otf";
+    public static final String FONT_TTF_TYPE                    = "font/ttf";
+    public static final String FONT_TTC_TYPE                    = "font/collection";
+    public static final String FONT_WF1_TYPE                    = "font/woff";
+    public static final String FONT_WF2_TYPE                    = "font/woff2";
+
     public static final String IMAGE_PNG_TYPE                   = "image/png";
     public static final String IMAGE_GIF_TYPE                   = "image/gif";
     public static final String IMAGE_JPG_TYPE                   = "image/jpeg";

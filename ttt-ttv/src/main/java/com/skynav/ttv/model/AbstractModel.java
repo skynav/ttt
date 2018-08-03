@@ -35,6 +35,7 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.AudioVerifier;
+import com.skynav.ttv.verifier.FontVerifier;
 import com.skynav.ttv.verifier.ImageVerifier;
 import com.skynav.ttv.verifier.MetadataVerifier;
 import com.skynav.ttv.verifier.ParameterVerifier;
@@ -222,6 +223,10 @@ public class AbstractModel implements Model {
     }
 
     public AudioVerifier getAudioVerifier() {
+        throw new UnsupportedOperationException();
+    }
+
+    public FontVerifier getFontVerifier() {
         throw new UnsupportedOperationException();
     }
 

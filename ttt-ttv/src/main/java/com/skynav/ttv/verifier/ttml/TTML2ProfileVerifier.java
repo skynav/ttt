@@ -49,7 +49,6 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
     }
 
     protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
-        System.out.println("TTML2ProfileVerifier.verifyElementItem(" + content + ")");
         boolean failed = false;
         if (content instanceof TimedText)
             failed = !verify((TimedText) content, locator, context);
@@ -68,7 +67,6 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
     }
 
     public boolean verify(TimedText content, Locator locator, VerifierContext context) {
-        System.out.println("TTML2ProfileVerifier.verify#TimedText(" + content + ")");
         boolean failed = false;
         Reporter reporter = context.getReporter();
         String profileAttribute = content.getProfile();
@@ -93,19 +91,15 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
     }
 
     protected boolean verify(Profile content, Locator locator, VerifierContext context) {
-        System.out.println("TTML2ProfileVerifier.verify#profile(" + content + ")");
         boolean failed = false;
-        System.out.println("verify(Profile)");
         // warn on duplicate features
         // warn on duplicate extensions
         return !failed;
     }
 
     protected boolean verify(Feature content, Locator locator, VerifierContext context) {
-        System.out.println("TTML2ProfileVerifier.verify#feature(" + content + ")");
         boolean failed = false;
         Features features = (Features) context.getBindingElementParent(content);
-        System.out.println("verify(Feature)");
         if (features != null) {
             String base = features.getBase();
             String designation = content.getValue();
@@ -114,7 +108,6 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
                 base = context.getModel().getTTFeatureNamespaceUri().toString();
                 features.setBase(base);
             }
-            System.out.println("base(" + base + ")");
             if (!Profiles.isFeatureDesignation(designation, location, context, base)) {
                 Profiles.badFeatureDesignation(designation, location, context, base);
                 failed = true;
@@ -125,7 +118,6 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
     }
 
     protected boolean verify(Extension content, Locator locator, VerifierContext context) {
-        System.out.println("TTML2ProfileVerifier.verify#extension(" + content + ")");
         boolean failed = false;
         Extensions extensions = (Extensions) context.getBindingElementParent(content);
         if (extensions != null) {

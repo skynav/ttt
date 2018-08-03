@@ -122,6 +122,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Base() throws Exception {
+        performValidityTest("ttml2-valid-base.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2BaseGeneral() throws Exception {
+        performValidityTest("ttml2-valid-base-general.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Border() throws Exception {
         performValidityTest("ttml2-valid-border.xml", -1, -1);
     }
