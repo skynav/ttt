@@ -37,6 +37,7 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
 
     @Test
+    @Ignore
     public void testValidTTML2AllParameters() throws Exception {
         performValidityTest("ttml2-valid-all-parameters.xml", -1, -1);
     }
@@ -301,6 +302,7 @@ public class ValidTestCases {
         performValidityTest("ttml2-valid-processor-profiles-quantified-any-single.xml", -1, -1);
     }
 
+    @Test
     public void testValidTTML2ProcessorProfilesUnquantifiedMultiple() throws Exception {
         performValidityTest("ttml2-valid-processor-profiles-unquantified-multiple.xml", -1, -1);
     }
@@ -308,6 +310,12 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ProcessorProfilesUnquantifiedSingle() throws Exception {
         performValidityTest("ttml2-valid-processor-profiles-unquantified-single.xml", -1, -1);
+    }
+
+    @Test
+    @Ignore
+    public void testValidTTML2ResourcesAll() throws Exception {
+        performValidityTest("ttml2-valid-resources-all.xml", -1, -1);
     }
 
     @Test
@@ -376,6 +384,12 @@ public class ValidTestCases {
             }
             if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MISMATCH) != 0) {
                 fail("Unexpected failure with expected error(s) mismatch.");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0) {
+                fail("Unexpected failure with unexpected warning(s).");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_EXPECTED_MISMATCH) != 0) {
+                fail("Unexpected failure with expected warning(s) mismatch.");
             }
         } else
             fail("Unexpected result code " + resultCode + ".");

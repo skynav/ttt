@@ -258,7 +258,6 @@ public class TTML2FontVerifier extends AbstractVerifier implements FontVerifier 
     }
 
     private Test getFontValidator(MimeType mimeType) {
-        System.out.println("getFontValidator(" + mimeType + ")");
         if (mimeType.equals(otfType))
             return new OpenTypeValidator();
         else if (mimeType.equals(ttfType))
