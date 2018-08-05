@@ -410,6 +410,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadDirectionAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-direction-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadDirectionEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-direction-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadDirectionUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-direction-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadDisparityAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-disparity-all-space.xml", -1, -1);
     }
@@ -632,6 +647,21 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadTextOrientationUnknownKeyword() throws Exception {
         performInvalidityTest("ttml2-invld-bad-text-orientation-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadUnicodeBidiAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-unicode-bidi-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadUnicodeBidiEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-unicode-bidi-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadUnicodeBidiUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-unicode-bidi-unknown-keyword.xml", -1, -1);
     }
 
     @Test

@@ -218,8 +218,13 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2DisplayAlignAll() throws Exception {
-        performValidityTest("ttml2-valid-display-align-all.xml", -1, -1);
+    public void testValidTTML2DirectionP() throws Exception {
+        performValidityTest("ttml2-valid-direction-p.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DirectionSpan() throws Exception {
+        performValidityTest("ttml2-valid-direction-span.xml", -1, -1);
     }
 
     @Test
@@ -343,8 +348,13 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2UnicodeBidiAll() throws Exception {
-        performValidityTest("ttml2-valid-unicode-bidi-all.xml", -1, -1);
+    public void testValidTTML2UnicodeBidi1() throws Exception {
+        performValidityTest("ttml2-valid-unicode-bidi-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2UnicodeBidi2() throws Exception {
+        performValidityTest("ttml2-valid-unicode-bidi-2.xml", -1, -1);
     }
 
     @Test
