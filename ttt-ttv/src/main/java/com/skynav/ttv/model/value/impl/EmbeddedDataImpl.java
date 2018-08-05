@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,10 +23,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.model.value;
+package com.skynav.ttv.model.value.impl;
 
-public interface Image extends Resource {
-    int getWidth();
-    int getHeight();
-    void setExtent(int width, int height);
+import java.net.URI;
+
+public class EmbeddedDataImpl extends AbstractDataImpl {
+    private Object target;
+    public EmbeddedDataImpl(URI uri, Object target) {
+        super(uri);
+        this.target = target;
+    }
+    public boolean isExternal() {
+        return false;
+    }
+    public Object getTarget() {
+        return target;
+    }
 }

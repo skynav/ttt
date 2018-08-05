@@ -203,6 +203,21 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2DataInResourcesChunked() throws Exception {
+        performValidityTest("ttml2-valid-data-in-resources-chunked.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DataInResourcesSimple() throws Exception {
+        performValidityTest("ttml2-valid-data-in-resources-simple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DataInResourcesSourced() throws Exception {
+        performValidityTest("ttml2-valid-data-in-resources-sourced.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2DisplayAlignAll() throws Exception {
         performValidityTest("ttml2-valid-display-align-all.xml", -1, -1);
     }
@@ -313,7 +328,6 @@ public class ValidTestCases {
     }
 
     @Test
-    @Ignore
     public void testValidTTML2ResourcesAll() throws Exception {
         performValidityTest("ttml2-valid-resources-all.xml", -1, -1);
     }

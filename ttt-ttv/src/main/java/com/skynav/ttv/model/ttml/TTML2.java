@@ -38,6 +38,7 @@ import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.Style;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
 import com.skynav.ttv.verifier.AudioVerifier;
+import com.skynav.ttv.verifier.DataVerifier;
 import com.skynav.ttv.verifier.FontVerifier;
 import com.skynav.ttv.verifier.ImageVerifier;
 import com.skynav.ttv.verifier.MetadataVerifier;
@@ -47,6 +48,7 @@ import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2AudioVerifier;
+import com.skynav.ttv.verifier.ttml.TTML2DataVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2FontVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2ImageVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2MetadataVerifier;
@@ -96,6 +98,7 @@ public class TTML2 {
         private TimingVerifier timingVerifier;
         private MetadataVerifier metadataVerifier;
         private AudioVerifier audioVerifier;
+        private DataVerifier dataVerifier;
         private FontVerifier fontVerifier;
         private ImageVerifier imageVerifier;
 
@@ -245,6 +248,13 @@ public class TTML2 {
             return audioVerifier;
         }
 
+        public DataVerifier getDataVerifier() {
+            if (dataVerifier == null) {
+                dataVerifier = new TTML2DataVerifier(this);
+            }
+            return dataVerifier;
+        }
+
         public FontVerifier getFontVerifier() {
             if (fontVerifier == null) {
                 fontVerifier = new TTML2FontVerifier(this);
@@ -275,6 +285,8 @@ public class TTML2 {
             else if (type.equals("image/png"))
                 return true;
             else if (type.equals("image/jpeg"))
+                return true;
+            else if (type.equals("application/octet-stream"))
                 return true;
             else
                 return false;

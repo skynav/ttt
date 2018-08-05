@@ -29,43 +29,11 @@ import java.net.URI;
 
 import com.skynav.ttv.model.value.Image;
 
-public abstract class AbstractImageImpl implements Image {
-    private URI uri;
-    private String typeSpecified;
-    private String typeVerified;
-    private String formatSpecified;
-    private String formatVerified;
+public abstract class AbstractImageImpl extends AbstractResourceImpl implements Image {
     private int width = -1;
     private int height = -1;
     public AbstractImageImpl(URI uri) {
-        this.uri = uri;
-    }
-    public URI getURI() {
-        return uri;
-    }
-    public void setSpecifiedType(String type) {
-        typeSpecified = type;
-    }
-    public String getSpecifiedType() {
-        return typeSpecified;
-    }
-    public void setVerifiedType(String type) {
-        typeVerified = type;
-    }
-    public String getVerifiedType() {
-        return typeVerified;
-    }
-    public void setSpecifiedFormat(String format) {
-        formatSpecified = format;
-    }
-    public String getSpecifiedFormat() {
-        return formatSpecified;
-    }
-    public void setVerifiedFormat(String format) {
-        formatVerified = format;
-    }
-    public String getVerifiedFormat() {
-        return formatVerified;
+        super(uri);
     }
     public int getWidth() {
         return width;
@@ -77,5 +45,4 @@ public abstract class AbstractImageImpl implements Image {
         this.width = width;
         this.height = height;
     }
-    public abstract boolean isExternal();
 }

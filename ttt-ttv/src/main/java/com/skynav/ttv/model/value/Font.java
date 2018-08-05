@@ -25,15 +25,4 @@
 
 package com.skynav.ttv.model.value;
 
-import java.net.URI;
-
-public interface Font {
-    URI getURI();
-    String getSpecifiedType();
-    void setSpecifiedType(String type);
-    String getVerifiedType();
-    String getSpecifiedFormat();
-    void setSpecifiedFormat(String format);
-    String getVerifiedFormat();
-    boolean isExternal();
-}
+public interface Font extends Resource {}

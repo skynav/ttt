@@ -25,12 +25,53 @@
 
 package com.skynav.ttv.model.value.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 
-import com.skynav.ttv.model.value.Font;
+import com.skynav.ttv.model.value.Resource;
 
-public abstract class AbstractFontImpl extends AbstractResourceImpl implements Font {
-    public AbstractFontImpl(URI uri) {
-        super(uri);
+public abstract class AbstractResourceImpl implements Resource {
+    private URI uri;
+    private String typeSpecified;
+    private String typeVerified;
+    private String formatSpecified;
+    private String formatVerified;
+    public AbstractResourceImpl(URI uri) {
+        this.uri = uri;
     }
+    public URI getURI() {
+        return uri;
+    }
+    public InputStream openStream() throws IOException {
+        if (uri != null)
+            return uri.toURL().openStream();
+        else
+            return null;
+    }
+    public void setSpecifiedType(String type) {
+        typeSpecified = type;
+    }
+    public String getSpecifiedType() {
+        return typeSpecified;
+    }
+    public void setVerifiedType(String type) {
+        typeVerified = type;
+    }
+    public String getVerifiedType() {
+        return typeVerified;
+    }
+    public void setSpecifiedFormat(String format) {
+        formatSpecified = format;
+    }
+    public String getSpecifiedFormat() {
+        return formatSpecified;
+    }
+    public void setVerifiedFormat(String format) {
+        formatVerified = format;
+    }
+    public String getVerifiedFormat() {
+        return formatVerified;
+    }
+    public abstract boolean isExternal();
 }

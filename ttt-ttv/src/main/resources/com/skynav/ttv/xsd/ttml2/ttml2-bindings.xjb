@@ -92,6 +92,11 @@
         <jxb:property name="dataType"/>
       </jxb:bindings>
     </jxb:bindings>
+    <jxb:bindings node="//xs:attributeGroup[@name='data.attlist']">
+      <jxb:bindings node="./xs:attribute[@name='type']">
+        <jxb:property name="dataType"/>
+      </jxb:bindings>
+    </jxb:bindings>
     <jxb:bindings node="//xs:attributeGroup[@name='font.attlist']">
       <jxb:bindings node="./xs:attribute[@name='type']">
         <jxb:property name="dataType"/>

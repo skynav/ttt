@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Copyright 2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,8 +25,18 @@
 
 package com.skynav.ttv.model.value;
 
-public interface Image extends Resource {
-    int getWidth();
-    int getHeight();
-    void setExtent(int width, int height);
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
+public interface Resource {
+    URI getURI();
+    InputStream openStream() throws IOException;
+    String getSpecifiedType();
+    void setSpecifiedType(String type);
+    String getVerifiedType();
+    String getSpecifiedFormat();
+    void setSpecifiedFormat(String format);
+    String getVerifiedFormat();
+    boolean isExternal();
 }

@@ -26,6 +26,7 @@
 package com.skynav.ttv.verifier.ttml;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 
@@ -61,6 +62,7 @@ import com.skynav.ttv.model.ttml2.tt.Source;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.DataEncoding;
 import com.skynav.ttv.model.ttml2.ttm.Actor;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
 import com.skynav.ttv.model.ttml2.ttm.Copyright;
@@ -76,6 +78,7 @@ import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Audios;
+import com.skynav.ttv.verifier.util.Datas;
 import com.skynav.ttv.verifier.util.Fonts;
 import com.skynav.ttv.verifier.util.Images;
 import com.skynav.ttv.verifier.util.RepeatCount;
@@ -86,7 +89,9 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     public static final String NAMESPACE                        = TTML2.Constants.NAMESPACE_TT;
 
+    public static final QName encodingAttributeName             = new QName("", "encoding");
     public static final QName formatAttributeName               = new QName("", "format");
+    public static final QName lengthAttributeName               = new QName("", "length");
     public static final QName sourceAttributeName               = new QName("", "src");
     public static final QName typeAttributeName                 = new QName("", "type");
 
@@ -733,20 +738,20 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         Location location = getLocation(audio);
         Locator locator = location.getLocator();
         // @src
-        String s = getAudioSourceAttribute(audio);
+        String src = getAudioSourceAttribute(audio);
         int numSources = getAudioSources(audio).size();
         com.skynav.ttv.model.value.Audio[] outputAudio = new com.skynav.ttv.model.value.Audio[1];
-        com.skynav.ttv.model.value.Audio i = null;
-        if (s != null) {
-            if (!Audios.isAudio(s, location, context, false, outputAudio)) {
-                Audios.badAudio(s, location, context);
+        com.skynav.ttv.model.value.Audio a = null;
+        if (src != null) {
+            if (!Audios.isAudio(src, location, context, false, outputAudio)) {
+                Audios.badAudio(src, location, context);
                 failed = true;
             } else if (numSources > 0) {
                 reporter.logError(reporter.message(locator, "*KEY*",
                     "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, sourceAttributeName));
                 failed = true;
             } else {
-                i = outputAudio[0];
+                a = outputAudio[0];
             }
         } else if (numSources == 0) {
             reporter.logError(reporter.message(locator, "*KEY*",
@@ -754,17 +759,17 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             failed = true;
         }
         // @type
-        String t = getAudioTypeAttribute(audio);
-        if (t != null) {
-            if ((i == null) || !i.isExternal()) {
+        String type = getAudioTypeAttribute(audio);
+        if (type != null) {
+            if ((a == null) || !a.isExternal()) {
                 reporter.logError(reporter.message(locator, "*KEY*",
                     "A ''{0}'' attribute must not specified for internal audio sources.", typeAttributeName));
                 failed = true;
-            } else if (!ResourceTypes.isType(t, location, context, null)) {
-                ResourceTypes.badType(t, location, context);
+            } else if (!ResourceTypes.isType(type, location, context, null)) {
+                ResourceTypes.badType(type, location, context);
                 failed = true;
             }
-        } else if ((i != null) && i.isExternal()) {
+        } else if ((a != null) && a.isExternal()) {
             if (reporter.isWarningEnabled("missing-type-for-external-source")) {
                 Message message = reporter.message(locator, "*KEY*",
                     "A ''{0}'' attribute should be specified for external audio sources.", typeAttributeName);
@@ -775,10 +780,10 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             }
         }
         // @format
-        String f = getAudioFormatAttribute(audio);
-        if (f != null) {
-            if (!ResourceFormats.isFormat(f, location, context, null)) {
-                ResourceFormats.badFormat(f, location, context);
+        String format = getAudioFormatAttribute(audio);
+        if (format != null) {
+            if (!ResourceFormats.isFormat(format, location, context, null)) {
+                ResourceFormats.badFormat(format, location, context);
                 failed = true;
             }
         }
@@ -839,26 +844,249 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     protected boolean verifyData(Object data) {
         boolean failed = false;
+        com.skynav.ttv.model.value.Data[] outputData = new com.skynav.ttv.model.value.Data[1];
+        DataEncoding[] outputEncoding = new DataEncoding[] { DataEncoding.BASE_64 };
+        Integer[] outputLength = new Integer[] { Integer.valueOf(0) };
         if (!verifyParameterAttributes(data))
             failed = true;
-        if (!verifyDataAttributes(data))
+        if (!verifyDataAttributes(data, outputData, outputEncoding, outputLength))
             failed = true;
         if (!verifyOtherAttributes(data))
             failed = true;
         for (Serializable s : getDataContent(data)) {
-            if (!verifyDataContent(s))
+            if (!verifyDataContent(s, outputData[0], outputEncoding[0], outputLength[0]))
                 failed = true;
         }
         return !failed;
     }
 
-    protected boolean verifyDataAttributes(Object data) {
-        // [TBD] - src
-        // [TBD] - type
-        // [TBD] - format
-        // [TBD] - length
-        // [TBD] - encoding
-        return true;
+    public enum DataEmbeddingType {
+        Chunked,        // contains chunk child
+        Reference,      // specifies @src attribute
+        Simple,         // contains non-lwsp #PCDATA (text fragment) child
+        Sourced;        // contains source child
+    }
+
+    private static final BigInteger maxLength = BigInteger.valueOf(Integer.MAX_VALUE);
+    protected boolean verifyDataAttributes(Object data,
+        com.skynav.ttv.model.value.Data[] outputData, DataEncoding[] outputEncoding, Integer[] outputLength) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(data);
+        Locator locator = location.getLocator();
+        DataEmbeddingType embeddingType = getDataEmbeddingType(data);
+
+        // @src
+        // simple embedding    - ignore with warning (not in spec!)
+        // chunked embedding   - ignore with warning (not in spec!)
+        // sourced embedding   - ignore with warning (not in spec!)
+        // reference embedding - required
+        String src = getDataSourceAttribute(data);
+        com.skynav.ttv.model.value.Data d = null;
+        if (src != null) {
+            if (embeddingType != DataEmbeddingType.Reference) {
+                if (reporter.isWarningEnabled("ignored-source-attribute")) {
+                    Message message = reporter.message(locator, "*KEY*",
+                      "Ignoring ''{0}'' attribute for non-reference {1} data embedding.", sourceAttributeName, embeddingType);
+                    if (reporter.logWarning(message)) {
+                        reporter.logError(message);
+                        failed = true;
+                    }
+                }
+            } else {
+                com.skynav.ttv.model.value.Data[] tempOutputData = new com.skynav.ttv.model.value.Data[1];
+                if (!Datas.isData(src, location, context, false, tempOutputData)) {
+                    Datas.badData(src, location, context);
+                    failed = true;
+                } else {
+                    d = tempOutputData[0];
+                }
+            }
+        }
+
+        // @type
+        // simple embedding    - required
+        // chunked embedding   - required
+        // sourced embedding   - use type of resolved source (what if present but different than type of resolved source?)
+        // reference embedding - if external reference, then should be present; if internal reference, then must not be present (not in spec!)
+        String type = getDataTypeAttribute(data);
+        if (type != null) {
+            if ((d != null) && !d.isExternal()) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute must not specified for internal {1} data embedding.", typeAttributeName, embeddingType));
+                failed = true;
+            } else if (!ResourceTypes.isType(type, location, context, null)) {
+                ResourceTypes.badType(type, location, context);
+                failed = true;
+            }
+        } else if ((embeddingType == DataEmbeddingType.Chunked) || (embeddingType == DataEmbeddingType.Simple)) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "A ''{0}'' attribute must be specified for {1} data embedding.", typeAttributeName, embeddingType));
+            failed = true;
+        } else if (embeddingType == DataEmbeddingType.Reference) {
+            if ((d != null) && d.isExternal()) {
+                if (reporter.isWarningEnabled("missing-type-for-external-source")) {
+                    Message message = reporter.message(locator, "*KEY*",
+                      "A ''{0}'' attribute should be specified for external {1} data embedding.", typeAttributeName, embeddingType);
+                    if (reporter.logWarning(message)) {
+                        reporter.logError(message);
+                        failed = true;
+                    }
+                }
+            }
+        }
+
+        // @format
+        // simple embedding    - optional
+        // chunked embedding   - optional
+        // sourced embedding   - optional (what if present but different than format of resolved source?)
+        // reference embedding - optional
+        String format = getDataFormatAttribute(data);
+        if (format != null) {
+            if (!ResourceFormats.isFormat(format, location, context, null)) {
+                ResourceFormats.badFormat(format, location, context);
+                failed = true;
+            }
+        }
+
+        // @encoding
+        // simple embedding    - optional, base64 is default
+        // chunked embedding   - not permitted
+        // sourced embedding   - not permitted
+        // reference embedding - not permitted
+        DataEncoding encoding = getDataEncodingAttribute(data);
+        if (encoding != null) {
+            if (embeddingType != DataEmbeddingType.Simple) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "An ''{0}'' attribute must not specified for non-simple data embeddings.", encodingAttributeName));
+                failed = true;
+            }
+        } else {
+            if (embeddingType == DataEmbeddingType.Simple) {
+                encoding = DataEncoding.BASE_64;
+            }
+        }
+
+        // @length
+        // simple embedding    - optional, actual number of decoded bytes is default
+        // chunked embedding   - optional, actual number of decoded bytes of all chunks is default
+        // sourced embedding   - not permitted
+        // reference embedding - not permitted
+        BigInteger length = getDataLengthAttribute(data);
+        if (length != null) {
+            if ((embeddingType == DataEmbeddingType.Sourced) || (embeddingType == DataEmbeddingType.Reference)) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute must not be specified for {1} data embedding.", lengthAttributeName, embeddingType));
+                failed = true;
+            } else if (length.abs().compareTo(maxLength) > 0) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "Absolute values of the ''{0}'' attribute greater than {1} are not supported, got {2}.",
+                    lengthAttributeName, maxLength.toString(), length.toString()));
+                failed = true;
+            }
+        } else {
+            length = BigInteger.valueOf(-1);
+        }
+
+        // update output parameters
+        if (!failed) {
+            if (outputData != null) {
+                assert outputData.length > 0;
+                outputData[0] = d;
+            }
+            if (outputEncoding != null) {
+                assert outputEncoding.length > 0;
+                outputEncoding[0] = encoding;
+            }
+            if (outputLength != null) {
+                assert outputLength.length > 0;
+                outputLength[0] = Integer.valueOf(length.intValueExact());
+            }
+        }
+
+        return !failed;
+    }
+
+    private DataEmbeddingType getDataEmbeddingType(Object data) {
+        assert data instanceof Data;
+        if (getDataChunks(data).size() > 0)
+            return DataEmbeddingType.Chunked;
+        else if (getDataSources(data).size() > 0)
+            return DataEmbeddingType.Sourced;
+        else {
+            String text = getDataText(data).replaceAll("\\s", "");
+            if (!text.isEmpty())
+                return DataEmbeddingType.Simple;
+            else {
+                String src = getDataSourceAttribute(data);
+                if (src != null)
+                    return DataEmbeddingType.Reference;
+                else
+                    return DataEmbeddingType.Simple;
+            }
+        }
+    }
+
+    protected DataEncoding getDataEncodingAttribute(Object data) {
+        assert data instanceof Data;
+        return ((Data) data).getEncoding();
+    }
+
+    protected String getDataFormatAttribute(Object data) {
+        assert data instanceof Data;
+        return ((Data) data).getFormat();
+    }
+
+    protected BigInteger getDataLengthAttribute(Object data) {
+        assert data instanceof Data;
+        return ((Data) data).getLength();
+    }
+
+    protected String getDataSourceAttribute(Object data) {
+        assert data instanceof Data;
+        return ((Data) data).getSrc();
+    }
+
+    protected String getDataTypeAttribute(Object data) {
+        assert data instanceof Data;
+        return ((Data) data).getDataType();
+    }
+
+    protected Collection<? extends Object> getDataChunks(Object data) {
+        assert data instanceof Data;
+        List<Chunk> chunks = new java.util.ArrayList<Chunk>();
+        for (Serializable s : getDataContent(data)) {
+            if (s instanceof JAXBElement<?>) {
+                Object element = ((JAXBElement<?>)s).getValue();
+                if (element instanceof Chunk)
+                    chunks.add((Chunk) element);
+            }
+        }
+        return chunks;
+    }
+
+    protected Collection<? extends Object> getDataSources(Object data) {
+        assert data instanceof Data;
+        List<Source> sources = new java.util.ArrayList<Source>();
+        for (Serializable s : getDataContent(data)) {
+            if (s instanceof JAXBElement<?>) {
+                Object element = ((JAXBElement<?>)s).getValue();
+                if (element instanceof Source)
+                    sources.add((Source) element);
+            }
+        }
+        return sources;
+    }
+
+    protected String getDataText(Object data) {
+        assert data instanceof Data;
+        StringBuffer sb = new StringBuffer();
+        for (Serializable s : getDataContent(data)) {
+            if (s instanceof String)
+                sb.append(s);
+        }
+        return sb.toString();
     }
 
     protected Collection<Serializable> getDataContent(Object data) {
@@ -866,7 +1094,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return ((Data) data).getContent();
     }
 
-    protected boolean verifyDataContent(Serializable content) {
+    protected boolean verifyDataContent(Serializable content, com.skynav.ttv.model.value.Data data, DataEncoding encoding, int length) {
         if (content instanceof JAXBElement<?>) {
             Object element = ((JAXBElement<?>)content).getValue();
             if (isMetadataItem(element))
@@ -915,20 +1143,20 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         Location location = getLocation(font);
         Locator locator = location.getLocator();
         // @src
-        String s = getFontSourceAttribute(font);
+        String src = getFontSourceAttribute(font);
         int numSources = getFontSources(font).size();
         com.skynav.ttv.model.value.Font[] outputFont = new com.skynav.ttv.model.value.Font[1];
-        com.skynav.ttv.model.value.Font i = null;
-        if (s != null) {
-            if (!Fonts.isFont(s, location, context, false, outputFont)) {
-                Fonts.badFont(s, location, context);
+        com.skynav.ttv.model.value.Font f = null;
+        if (src != null) {
+            if (!Fonts.isFont(src, location, context, false, outputFont)) {
+                Fonts.badFont(src, location, context);
                 failed = true;
             } else if (numSources > 0) {
                 reporter.logError(reporter.message(locator, "*KEY*",
                     "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, sourceAttributeName));
                 failed = true;
             } else {
-                i = outputFont[0];
+                f = outputFont[0];
             }
         } else if (numSources == 0) {
             reporter.logError(reporter.message(locator, "*KEY*",
@@ -936,17 +1164,17 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             failed = true;
         }
         // @type
-        String t = getFontTypeAttribute(font);
-        if (t != null) {
-            if ((i == null) || !i.isExternal()) {
+        String type = getFontTypeAttribute(font);
+        if (type != null) {
+            if ((f == null) || !f.isExternal()) {
                 reporter.logError(reporter.message(locator, "*KEY*",
                     "A ''{0}'' attribute must not specified for internal font sources.", typeAttributeName));
                 failed = true;
-            } else if (!ResourceTypes.isType(t, location, context, null)) {
-                ResourceTypes.badType(t, location, context);
+            } else if (!ResourceTypes.isType(type, location, context, null)) {
+                ResourceTypes.badType(type, location, context);
                 failed = true;
             }
-        } else if ((i != null) && i.isExternal()) {
+        } else if ((f != null) && f.isExternal()) {
             if (reporter.isWarningEnabled("missing-type-for-external-source")) {
                 Message message = reporter.message(locator, "*KEY*",
                     "A ''{0}'' attribute should be specified for external font sources.", typeAttributeName);
@@ -957,10 +1185,10 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             }
         }
         // @format
-        String f = getFontFormatAttribute(font);
-        if (f != null) {
-            if (!ResourceFormats.isFormat(f, location, context, null)) {
-                ResourceFormats.badFormat(f, location, context);
+        String format = getFontFormatAttribute(font);
+        if (format != null) {
+            if (!ResourceFormats.isFormat(format, location, context, null)) {
+                ResourceFormats.badFormat(format, location, context);
                 failed = true;
             }
         }
@@ -1036,13 +1264,13 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         Location location = getLocation(image);
         Locator locator = location.getLocator();
         // @src
-        String s = getImageSourceAttribute(image);
+        String src = getImageSourceAttribute(image);
         int numSources = getImageSources(image).size();
         com.skynav.ttv.model.value.Image[] outputImage = new com.skynav.ttv.model.value.Image[1];
         com.skynav.ttv.model.value.Image i = null;
-        if (s != null) {
-            if (!Images.isImage(s, location, context, false, outputImage)) {
-                Images.badImage(s, location, context);
+        if (src != null) {
+            if (!Images.isImage(src, location, context, false, outputImage)) {
+                Images.badImage(src, location, context);
                 failed = true;
             } else if (numSources > 0) {
                 reporter.logError(reporter.message(locator, "*KEY*",
@@ -1057,14 +1285,14 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             failed = true;
         }
         // @type
-        String t = getImageTypeAttribute(image);
-        if (t != null) {
+        String type = getImageTypeAttribute(image);
+        if (type != null) {
             if ((i == null) || !i.isExternal()) {
                 reporter.logError(reporter.message(locator, "*KEY*",
                     "A ''{0}'' attribute must not specified for internal image sources.", typeAttributeName));
                 failed = true;
-            } else if (!ResourceTypes.isType(t, location, context, null)) {
-                ResourceTypes.badType(t, location, context);
+            } else if (!ResourceTypes.isType(type, location, context, null)) {
+                ResourceTypes.badType(type, location, context);
                 failed = true;
             }
         } else if ((i != null) && i.isExternal()) {
@@ -1078,10 +1306,10 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             }
         }
         // @format
-        String f = getImageFormatAttribute(image);
-        if (f != null) {
-            if (!ResourceFormats.isFormat(f, location, context, null)) {
-                ResourceFormats.badFormat(f, location, context);
+        String format = getImageFormatAttribute(image);
+        if (format != null) {
+            if (!ResourceFormats.isFormat(format, location, context, null)) {
+                ResourceFormats.badFormat(format, location, context);
                 failed = true;
             }
         }

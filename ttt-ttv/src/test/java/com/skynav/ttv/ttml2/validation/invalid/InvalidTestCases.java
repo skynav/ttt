@@ -690,6 +690,26 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2DataChunkedMissingType() throws Exception {
+        performInvalidityTest("ttml2-invld-data-chunked-missing-type.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DataReferenceExternalMissingType() throws Exception {
+        performInvalidityTest("ttml2-invld-data-reference-external-missing-type.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DataReferenceInternalWithType() throws Exception {
+        performInvalidityTest("ttml2-invld-data-reference-internal-with-type.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DataSimpleMissingType() throws Exception {
+        performInvalidityTest("ttml2-invld-data-simple-missing-type.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ImageInBlockSimpleSourcePng() throws Exception {
         performInvalidityTest("ttml2-invld-image-in-block-simple-source-png.xml", -1, -1);
     }

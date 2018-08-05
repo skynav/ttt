@@ -25,15 +25,4 @@
 
 package com.skynav.ttv.model.value;
 
-import java.net.URI;
-
-public interface Audio {
-    URI getURI();
-    String getSpecifiedType();
-    void setSpecifiedType(String type);
-    String getVerifiedType();
-    String getSpecifiedFormat();
-    void setSpecifiedFormat(String format);
-    String getVerifiedFormat();
-    boolean isExternal();
-}
+public interface Audio extends Resource {}

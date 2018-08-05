@@ -29,41 +29,8 @@ import java.net.URI;
 
 import com.skynav.ttv.model.value.Audio;
 
-public abstract class AbstractAudioImpl implements Audio {
-    private URI uri;
-    private String typeSpecified;
-    private String typeVerified;
-    private String formatSpecified;
-    private String formatVerified;
+public abstract class AbstractAudioImpl extends AbstractResourceImpl implements Audio {
     public AbstractAudioImpl(URI uri) {
-        this.uri = uri;
+        super(uri);
     }
-    public URI getURI() {
-        return uri;
-    }
-    public void setSpecifiedType(String type) {
-        typeSpecified = type;
-    }
-    public String getSpecifiedType() {
-        return typeSpecified;
-    }
-    public void setVerifiedType(String type) {
-        typeVerified = type;
-    }
-    public String getVerifiedType() {
-        return typeVerified;
-    }
-    public void setSpecifiedFormat(String format) {
-        formatSpecified = format;
-    }
-    public String getSpecifiedFormat() {
-        return formatSpecified;
-    }
-    public void setVerifiedFormat(String format) {
-        formatVerified = format;
-    }
-    public String getVerifiedFormat() {
-        return formatVerified;
-    }
-    public abstract boolean isExternal();
 }

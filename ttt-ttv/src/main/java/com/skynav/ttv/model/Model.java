@@ -35,6 +35,7 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.AudioVerifier;
+import com.skynav.ttv.verifier.DataVerifier;
 import com.skynav.ttv.verifier.FontVerifier;
 import com.skynav.ttv.verifier.ImageVerifier;
 import com.skynav.ttv.verifier.MetadataVerifier;
@@ -351,6 +352,12 @@ public interface Model {
      * @return audio verifier instance
      */
     AudioVerifier getAudioVerifier();
+
+    /**
+     * Obtain data verifier for model.
+     * @return data verifier instance
+     */
+    DataVerifier getDataVerifier();
 
     /**
      * Obtain font verifier for model.

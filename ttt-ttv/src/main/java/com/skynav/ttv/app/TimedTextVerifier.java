@@ -233,6 +233,7 @@ public class TimedTextVerifier implements VerifierContext {
         { "duplicate-role",                             Boolean.TRUE,   "duplicate role token in 'ttm:role' attribute"},
         { "foreign",                                    Boolean.FALSE,  "attribute or element in non-TTML (foreign) namespace"},
         { "ignored-profile-attribute",                  Boolean.TRUE,   "'ttp:profile' attribute ignored when 'ttp:profile' element is present"},
+        { "ignored-source-attribute",                   Boolean.TRUE,   "'src' attribute ignored on non-reference data embedding"},
         { "missing-agent-actor",                        Boolean.TRUE,   "no 'ttm:agent' child present in 'ttm:agent' element of type 'character'"},
         { "missing-agent-name",                         Boolean.TRUE,   "no 'ttm:name' child present in 'ttm:agent' element"},
         { "missing-profile",                            Boolean.FALSE,  "neither 'ttp:profile' attribute nor 'ttp:profile' element is present"},
