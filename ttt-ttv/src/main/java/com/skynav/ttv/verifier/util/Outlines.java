@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ import com.skynav.ttv.verifier.util.Colors;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 
-public class Outline {
+public class Outlines {
 
     public static boolean isOutline(String value, Location location, VerifierContext context, TextOutline[] outputOutline) {
         String [] components = value.split("[ \t\r\n]+");

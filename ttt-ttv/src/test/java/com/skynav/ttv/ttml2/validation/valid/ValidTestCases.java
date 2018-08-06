@@ -398,6 +398,41 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2TextCombine() throws Exception {
+        performValidityTest("ttml2-valid-text-combine.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2TextEmphasisColor() throws Exception {
+        performValidityTest("ttml2-valid-text-emphasis-color.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2TextEmphasisMinimal() throws Exception {
+        performValidityTest("ttml2-valid-text-emphasis-minimal.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2TextEmphasisQuotedString() throws Exception {
+        performValidityTest("ttml2-valid-text-emphasis-quoted-string.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2TextOrientation() throws Exception {
+        performValidityTest("ttml2-valid-text-orientation.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2TextOrientationSideways() throws Exception {
+        performValidityTest("ttml2-valid-text-orientation-sideways.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2TextShadow() throws Exception {
+        performValidityTest("ttml2-valid-text-shadow.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2UnicodeBidi1() throws Exception {
         performValidityTest("ttml2-valid-unicode-bidi-1.xml", -1, -1);
     }

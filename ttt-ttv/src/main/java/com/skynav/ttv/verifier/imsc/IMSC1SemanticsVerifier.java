@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -83,7 +83,7 @@ import com.skynav.ttv.verifier.util.Integers;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
-import com.skynav.ttv.verifier.util.Outline;
+import com.skynav.ttv.verifier.util.Outlines;
 import com.skynav.ttv.verifier.util.Timing;
 import com.skynav.ttv.verifier.util.ZeroTreatment;
 import com.skynav.xml.helpers.Documents;
@@ -1071,7 +1071,7 @@ public class IMSC1SemanticsVerifier extends ST20522010SemanticsVerifier {
 
     private double getTextOutlineThicknessInPixels(String value, Location location, double hFont, double hRoot, double hCell, VerifierContext context) {
         TextOutline[] outline = new TextOutline[1];
-        if (Outline.isOutline(value, location, context, outline)) {
+        if (Outlines.isOutline(value, location, context, outline)) {
             Length to = outline[0].getThickness();
             if (to != null)
                 return getPixels(to, hFont, hFont, hRoot, hCell);

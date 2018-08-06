@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,24 +23,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier.ttml.style;
+package com.skynav.ttv.model.value;
 
-import com.skynav.ttv.util.Location;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.util.Outlines;
+public class TextShadow {
 
-public class TextOutlineVerifier implements StyleValueVerifier {
+    public static final TextShadow NONE         = new TextShadow(null, null, null, null);
 
-    public boolean verify(Object value, Location location, VerifierContext context) {
-        assert value instanceof String;
-        String s = (String) value;
-        if (Outlines.isOutline(s, location, context, null))
-            return true;
-        else {
-            Outlines.badOutline(s, location, context);
-            return false;
-        }
+    private Length xOffset;
+    private Length yOffset;
+    private Length blur;
+    private Color color;
+
+    public TextShadow(Length xOffset, Length yOffset, Length blur, Color color) {
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        this.blur = blur;
+        this.color = color;
+    }
+
+    public Length getXOffset() {
+        return xOffset;
+    }
+
+    public Length getYOffset() {
+        return yOffset;
+    }
+
+    public Length getBlur() {
+        return blur;
+    }
+
+    public Color getColor() {
+        return color;
     }
 
 }

@@ -700,6 +700,36 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadTextCombineAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-combine-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextCombineEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-combine-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextCombineUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-combine-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextEmphasisAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-emphasis-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextEmphasisEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-emphasis-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextEmphasisUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-emphasis-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadTextOrientationAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-text-orientation-all-space.xml", -1, -1);
     }
@@ -712,6 +742,41 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadTextOrientationUnknownKeyword() throws Exception {
         performInvalidityTest("ttml2-invld-bad-text-orientation-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextShadowAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-shadow-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextShadowEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-shadow-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextShadowExtraLength() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-shadow-extra-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextShadowMisplacedColor() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-shadow-misplaced-color.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextShadowMissingLength() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-shadow-missing-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextShadowNegativeBlur() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-shadow-negative-blur.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextShadowUnknownColor() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-shadow-unknown-color.xml", -1, -1);
     }
 
     @Test

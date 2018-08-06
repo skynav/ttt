@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,6 @@ public class TextEmphasis {
     };
 
     public enum Position {
-        AUTO,
         BEFORE,
         AFTER,
         OUTSIDE;
@@ -67,7 +66,7 @@ public class TextEmphasis {
         this.style = style;
         this.text = text;
         if (position == null)
-            position = Position.AUTO;
+            position = Position.OUTSIDE;
         this.position = position;
         this.color = color;
     }
@@ -107,12 +106,33 @@ public class TextEmphasis {
             c = isFilled(fill) ? UC_BLACK_CIRCLE : UC_WHITE_CIRCLE;
         } else if (style.equals(SESAME)) {
             c = isFilled(fill) ? UC_SESAME_DOT : UC_WHITE_SESAME_DOT;
-        } else
+        } else if (isQuotedString(style)) {
+            c = -1;
+        } else {
             c = 0;
-        if (c != 0)
-            return new String(new char[] {(char) c});
-        else
+        }
+        if (c != 0) {
+            if (c >= 0)
+                return new String(new char[] {(char) c});
+            else
+                return dequoteQuotedString(style);
+        } else
             return null;
+    }
+
+    public static boolean isQuotedString(String s) {
+        if ((s != null) && (s.length() >= 2)) {
+            char q1 = s.charAt(0);
+            char q2 = s.charAt(s.length() - 1);
+            if ((q1 == '\'') || (q1 == '\"'))
+                return q1 == q2;
+        }
+        return false;
+    }
+
+    public static String dequoteQuotedString(String s) {
+        assert (s != null) && (s.length() >= 2);
+        return s.substring(1, s.length() - 1);
     }
 
     private static boolean isFilled(String fill) {

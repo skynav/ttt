@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,12 +28,19 @@ package com.skynav.ttv.verifier.ttml.style;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Shadows;
 
 public class TextShadowVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        /* [TBD] - IMPLEMENT ME */
-        return true;
+        assert value instanceof String;
+        String s = (String) value;
+        if (Shadows.isShadows(s, location, context, null))
+            return true;
+        else {
+            Shadows.badShadows(s, location, context);
+            return false;
+        }
     }
 
 }

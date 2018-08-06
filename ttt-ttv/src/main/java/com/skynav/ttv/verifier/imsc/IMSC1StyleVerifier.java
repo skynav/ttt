@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ import com.skynav.ttv.verifier.smpte.ST20522010StyleVerifier;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
-import com.skynav.ttv.verifier.util.Outline;
+import com.skynav.ttv.verifier.util.Outlines;
 
 
 import static com.skynav.ttv.model.imsc.IMSC1.Constants.*;
@@ -246,7 +246,7 @@ public class IMSC1StyleVerifier extends ST20522010StyleVerifier {
             String s = (String) value;
             Location location = new Location(content, context.getBindingElementName(content), name, locator);
             TextOutline[] outline = new TextOutline[1];
-            if (Outline.isOutline(s, location, context, outline)) {
+            if (Outlines.isOutline(s, location, context, outline)) {
                 assert outline.length > 0;
                 if (outline[0] != null) {
                     Length b = outline[0].getBlur();

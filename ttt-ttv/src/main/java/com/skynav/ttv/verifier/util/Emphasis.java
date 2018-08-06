@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@ package com.skynav.ttv.verifier.util;
 
 import com.skynav.ttv.model.value.Color;
 import com.skynav.ttv.model.value.TextEmphasis;
+import com.skynav.ttv.model.value.impl.ColorImpl;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -40,32 +41,14 @@ public class Emphasis {
         String[] text = new String[1];
         TextEmphasis.Position[] position = new TextEmphasis.Position[1];
         Color[] color = new Color[1];
-        int numAuto = 0;
         for (int i = 0, k, n = components.length; i < n; ) {
-            if (Keywords.isAuto(components[i])) {
-                ++numAuto;
-                i = i + 1;
-            } else if ((k = isStyle(components, i, location, context, style, text)) > i)
+            if ((k = isStyle(components, i, location, context, style, text)) > i)
                 i = k;
             else if ((k = isPosition(components, i, location, context, position)) > i)
                 i = k;
             else if ((k = isColor(components, i, location, context, color)) > i)
                 i = k;
             else
-                return false;
-        }
-        if (numAuto == 1) {
-            if (style[0] == null)
-                style[0] = TextEmphasis.Style.AUTO;
-            else if (position[0] == null)
-                position[0] = TextEmphasis.Position.AUTO;
-            else
-                return false;
-        } else if (numAuto == 2) {
-            if ((style[0] == null) && (position[0] == null)) {
-                style[0] = TextEmphasis.Style.AUTO;
-                position[0] = TextEmphasis.Position.AUTO;
-            } else
                 return false;
         }
         if (outputEmphasis != null) {
@@ -76,6 +59,7 @@ public class Emphasis {
     }
 
     private static String[] splitComponents(String value) {
+        // [TBD] - FIXME - handle quoted string emphasis style containing whitespace
         return value.split("[ \t\r\n]+");
     }
 
@@ -86,7 +70,7 @@ public class Emphasis {
             return -1;
         String c1 = (index < components.length) ? components[index] : null;
         if (c1 != null) {
-            if (Keywords.isNone(c1)) {
+            if (Keywords.isNone(c1) || Keywords.isAuto(c1) || TextEmphasis.isQuotedString(c1)) {
                 return isStyleContinuation(c1, null, ++index, outputStyle, outputText);
             } else if (isStyleKeyword(c1)) {
                 s = c1;
@@ -161,12 +145,25 @@ public class Emphasis {
             return index;
         String c = (index < components.length) ? components[index] : null;
         if (c != null) {
-            if (Colors.maybeColor(c)) {
+            if (isCurrentColor(c)) {
+                if (outputColor != null) {
+                    assert outputColor.length >= 1;
+                    outputColor[0] = ColorImpl.CURRENT;
+                }
+                return ++index;
+            } else if (Colors.maybeColor(c)) {
                 if (Colors.isColor(c, location, context, outputColor))
                     return ++index;
             }
         }
         return -1;
+    }
+
+    private static boolean isCurrentColor(String s) {
+        if (s.equals("current"))
+            return true;
+        else
+            return false;
     }
 
     private static int isPosition(String[] components, int index, Location location, VerifierContext context, TextEmphasis.Position[] outputPosition) {
