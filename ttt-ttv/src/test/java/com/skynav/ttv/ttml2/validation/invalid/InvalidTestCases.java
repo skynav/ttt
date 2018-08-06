@@ -620,6 +620,71 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadRubyAlignAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-align-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyAlignEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-align-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyAlignUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-align-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyPositionAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-position-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyPositionEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-position-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyPositionUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-position-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyReserveAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-reserve-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyReserveEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-reserve-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyReserveNegative() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-reserve-negative.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyReserveUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-reserve-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadRubyUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-ruby-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadSpeakAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-speak-all-space.xml", -1, -1);
     }

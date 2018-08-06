@@ -338,6 +338,56 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Ruby() throws Exception {
+        performValidityTest("ttml2-valid-ruby.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubyAlign() throws Exception {
+        performValidityTest("ttml2-valid-ruby-align.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubyAlignMinimal() throws Exception {
+        performValidityTest("ttml2-valid-ruby-align-minimal.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubyAlignWithBase() throws Exception {
+        performValidityTest("ttml2-valid-ruby-align-with-base.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubyPosition() throws Exception {
+        performValidityTest("ttml2-valid-ruby-position.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubyReserve() throws Exception {
+        performValidityTest("ttml2-valid-ruby-reserve.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubySpan() throws Exception {
+        performValidityTest("ttml2-valid-ruby-span.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubySpanDelimiters() throws Exception {
+        performValidityTest("ttml2-valid-ruby-span-delimiters.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubySpanShortcuts() throws Exception {
+        performValidityTest("ttml2-valid-ruby-span-shortcuts.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RubySpanShortcutsDelimiters() throws Exception {
+        performValidityTest("ttml2-valid-ruby-span-shortcuts-delimiters.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Speak() throws Exception {
         performValidityTest("ttml2-valid-speak.xml", -1, -1);
     }
