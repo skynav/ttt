@@ -700,6 +700,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadTextAlignAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-align-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextAlignEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-align-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadTextAlignUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-text-align-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadTextCombineAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-text-combine-all-space.xml", -1, -1);
     }

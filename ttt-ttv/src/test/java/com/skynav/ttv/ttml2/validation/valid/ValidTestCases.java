@@ -398,6 +398,21 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2TextAlignAbsolute() throws Exception {
+        performValidityTest("ttml2-valid-text-align-absolute.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2TextAlignJustify() throws Exception {
+        performValidityTest("ttml2-valid-text-align-justify.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2TextAlignRelative() throws Exception {
+        performValidityTest("ttml2-valid-text-align-relative.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2TextCombine() throws Exception {
         performValidityTest("ttml2-valid-text-combine.xml", -1, -1);
     }
