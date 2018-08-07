@@ -293,6 +293,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Padding() throws Exception {
+        performValidityTest("ttml2-valid-padding.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2PaddingBlock() throws Exception {
+        performValidityTest("ttml2-valid-padding-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2PaddingInline() throws Exception {
+        performValidityTest("ttml2-valid-padding-inline.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2PaddingRegion() throws Exception {
+        performValidityTest("ttml2-valid-padding-region.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Pan() throws Exception {
         performValidityTest("ttml2-valid-pan.xml", -1, -1);
     }

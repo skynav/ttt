@@ -575,6 +575,51 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadPaddingAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPaddingCommaDelimiterWitWhitespace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-comma-delimiter-with-whitespace.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPaddingEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPaddingExtraLength() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-extra-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPaddingMissingUnit() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-missing-unit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPaddingNegativeBeforeAndAfter() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-negative-before-and-after.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPaddingNegativeStartAndEnd() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-negative-start-and-end.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPaddingSemicolonDelimiterSansWhitespace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-semicolon-delimiter-sans-whitespace.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPaddingUnknownUnit() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-padding-unknown-unit.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadPanAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-pan-all-space.xml", -1, -1);
     }
