@@ -293,6 +293,31 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Opacity() throws Exception {
+        performValidityTest("ttml2-valid-opacity.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2OpacityBlock() throws Exception {
+        performValidityTest("ttml2-valid-opacity-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2OpacityInline() throws Exception {
+        performValidityTest("ttml2-valid-opacity-inline.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2OpacityOutOfRange() throws Exception {
+        performValidityTest("ttml2-valid-opacity-out-of-range.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2OpacityRegion() throws Exception {
+        performValidityTest("ttml2-valid-opacity-region.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Padding() throws Exception {
         performValidityTest("ttml2-valid-padding.xml", -1, -1);
     }

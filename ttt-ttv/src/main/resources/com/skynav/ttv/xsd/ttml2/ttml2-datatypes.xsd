@@ -420,7 +420,7 @@
     <xs:annotation>
       <xs:documentation>alpha</xs:documentation>
     </xs:annotation>
-    <xs:restriction base="ttd:alpha"/>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="origin">
     <xs:annotation>

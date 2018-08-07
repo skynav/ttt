@@ -575,6 +575,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadOpacityAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-opacity-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadOpacityEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-opacity-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadOpacityUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-opacity-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadPaddingAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-padding-all-space.xml", -1, -1);
     }

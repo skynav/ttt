@@ -266,13 +266,13 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
         {
             opacityAttributeName,
             "Opacity",
-            Float.class,
+            String.class,
             OpacityVerifier.class,
             Integer.valueOf(APPLIES_TO_REGION),
             Boolean.FALSE,
             Boolean.FALSE,
-            Float.valueOf(1.0F),
             "1.0",
+            null,
         },
         {
             originAttributeName,
