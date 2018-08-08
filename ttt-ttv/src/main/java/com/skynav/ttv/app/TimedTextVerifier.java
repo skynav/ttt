@@ -1655,6 +1655,8 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.logError(e);
         } catch (IOException e) {
             reporter.logError(e);
+        } catch (Exception e) {
+            reporter.logError(e, true);
         }
         return (reporter.getResourceErrors() == 0) && !needsRestart();
     }
@@ -2122,6 +2124,8 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.logError(e);
         } catch (SAXException e) {
             reporter.logError(e);
+        } catch (Exception e) {
+            reporter.logError(e, true);
         }
         return reporter.getResourceErrors() == 0;
     }

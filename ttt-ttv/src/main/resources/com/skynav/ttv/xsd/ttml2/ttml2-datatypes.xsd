@@ -349,7 +349,7 @@
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
-  <xs:simpleType name="luminance">
+  <xs:simpleType name="luminanceGain">
     <xs:annotation>
       <xs:documentation>string</xs:documentation>
     </xs:annotation>

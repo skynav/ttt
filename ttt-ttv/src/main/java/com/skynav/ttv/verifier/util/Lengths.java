@@ -232,7 +232,7 @@ public class Lengths {
             if (c == '.') {
                 c = value.charAt(++valueIndex);
                 if (Characters.isDigit(c)) {
-                    StringBuffer sb = new StringBuffer();
+                    StringBuffer sb = new StringBuffer("0.");
                     while (Characters.isDigit(c)) {
                         sb.append(c);
                         if (++valueIndex >= valueLength)

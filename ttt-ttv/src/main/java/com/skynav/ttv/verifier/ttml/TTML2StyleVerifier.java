@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -84,12 +84,14 @@ import com.skynav.ttv.verifier.ttml.style.FontShearVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontStyleVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontVariantVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
+import com.skynav.ttv.verifier.ttml.style.GainVerifier;
 import com.skynav.ttv.verifier.ttml.style.LetterSpacingVerifier;
 import com.skynav.ttv.verifier.ttml.style.LineHeightVerifier;
-import com.skynav.ttv.verifier.ttml.style.NumberVerifier;
+import com.skynav.ttv.verifier.ttml.style.LuminanceGainVerifier;
 import com.skynav.ttv.verifier.ttml.style.OriginVerifier;
 import com.skynav.ttv.verifier.ttml.style.OverflowVerifier;
 import com.skynav.ttv.verifier.ttml.style.PaddingVerifier;
+import com.skynav.ttv.verifier.ttml.style.PanVerifier;
 import com.skynav.ttv.verifier.ttml.style.PitchVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.ProgressionDimensionVerifier;
@@ -140,6 +142,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName gainAttributeName                         = new QName(NAMESPACE_AUDIO,"gain");
     public static final QName ipdAttributeName                          = new QName(NAMESPACE,"ipd");
     public static final QName letterSpacingAttributeName                = new QName(NAMESPACE,"letterSpacing");
+    public static final QName luminanceGainAttributeName                = new QName(NAMESPACE,"luminanceGain");
     public static final QName panAttributeName                          = new QName(NAMESPACE_AUDIO,"pan");
     public static final QName pitchAttributeName                        = new QName(NAMESPACE_AUDIO,"pitch");
     public static final QName positionAttributeName                     = new QName(NAMESPACE,"position");
@@ -374,7 +377,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             gainAttributeName,
             "Gain",
             String.class,
-            NumberVerifier.class,
+            GainVerifier.class,
             Integer.valueOf(APPLIES_TO_AUDIO|APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.FALSE,
@@ -415,6 +418,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             null,
         },
         {
+            luminanceGainAttributeName,
+            "LuminanceGain",
+            String.class,
+            LuminanceGainVerifier.class,
+            Integer.valueOf(APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            "1.0",
+            null,
+        },
+        {
             originAttributeName,
             "Origin",
             String.class,
@@ -451,7 +465,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             panAttributeName,
             "Pan",
             String.class,
-            NumberVerifier.class,
+            PanVerifier.class,
             Integer.valueOf(APPLIES_TO_AUDIO|APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.FALSE,

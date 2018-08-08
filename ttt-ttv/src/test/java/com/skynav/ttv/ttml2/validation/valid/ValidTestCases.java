@@ -228,6 +228,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Disparity() throws Exception {
+        performValidityTest("ttml2-valid-disparity.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2DisplayAlignJustify() throws Exception {
         performValidityTest("ttml2-valid-display-align-justify.xml", -1, -1);
     }
@@ -290,6 +295,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2IPDInlineBlock() throws Exception {
         performValidityTest("ttml2-valid-ipd-inline-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2LuminanceGain() throws Exception {
+        performValidityTest("ttml2-valid-luminance-gain.xml", -1, -1);
     }
 
     @Test

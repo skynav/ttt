@@ -71,6 +71,7 @@ public interface Reporter {
     public Message message(Locator locator, String key, String format, Object... arguments);
     public void logError(Message message);
     public void logError(Exception e);
+    public void logError(Exception e, boolean rethrow);
     public boolean hasDefaultWarning(String token);
     public void addDefaultWarning(String token, boolean enabled);
     public void setTreatWarningAsError(boolean treatWarningAsError);

@@ -575,6 +575,36 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadLuminanceGainAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-luminance-gain-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLuminanceGainEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-luminance-gain-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLuminanceGainRealSyntax() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-luminance-gain-real-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLuminanceGainSignNegative() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-luminance-gain-sign-negative.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLuminanceGainSignPositive() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-luminance-gain-sign-positive.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLuminanceGainUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-luminance-gain-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadOpacityAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-opacity-all-space.xml", -1, -1);
     }
@@ -1000,6 +1030,10 @@ public class InvalidTestCases {
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
+        performInvalidityTest(resourceName, expectedErrors, expectedWarnings, null);
+    }
+    
+    private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings, String[] additionalOptions) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
@@ -1007,6 +1041,8 @@ public class InvalidTestCases {
         List<String> args = new java.util.ArrayList<String>();
         args.add("-q");
         args.add("-v");
+        args.add("--warn-on");
+        args.add("all");
         if (expectedErrors >= 0) {
             args.add("--expect-errors");
             args.add(Integer.toString(expectedErrors));
@@ -1014,6 +1050,9 @@ public class InvalidTestCases {
         if (expectedWarnings >= 0) {
             args.add("--expect-warnings");
             args.add(Integer.toString(expectedWarnings));
+        }
+        if (additionalOptions != null) {
+            args.addAll(java.util.Arrays.asList(additionalOptions));
         }
         args.add(urlString);
         TimedTextVerifier ttv = new TimedTextVerifier();

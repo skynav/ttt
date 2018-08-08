@@ -154,6 +154,14 @@ public class NullReporter implements Reporter {
     }
 
     public void logError(Exception e) {
+        logError(e, false);
+    }
+
+    public void logError(Exception e, boolean rethrow) {
+        if (rethrow) {
+            flush();
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean hasDefaultWarning(String token) {

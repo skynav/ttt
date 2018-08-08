@@ -397,8 +397,16 @@ public class TextReporter implements Reporter {
     }
 
     public void logError(Exception e) {
+        logError(e, false);
+    }
+
+    public void logError(Exception e, boolean rethrow) {
         logError(extractMessage(e));
         logDebug(e);
+        if (rethrow) {
+            flush();
+            throw new RuntimeException(e);
+        }
     }
 
     public void addDefaultWarning(String token, boolean enabled) {

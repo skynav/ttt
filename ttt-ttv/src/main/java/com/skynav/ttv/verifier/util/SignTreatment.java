@@ -23,26 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier.ttml.style;
+package com.skynav.ttv.verifier.util;
 
-import com.skynav.ttv.util.Location;
-import com.skynav.ttv.util.Reporter;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.util.Numbers;
-
-public class NumberVerifier implements StyleValueVerifier {
-
-    public boolean verify(Object value, Location location, VerifierContext context) {
-        Reporter reporter = context.getReporter();
-        boolean failed = false;
-        assert value instanceof String;
-        String s = (String) value;
-        if (!Numbers.isNumber(s, location, context, null)) {
-            reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Bad <number> expression ''{0}''.", s));
-            failed = true;
-        }
-        return !failed;
-    }
-
+public enum SignTreatment {
+    Error,
+    Warning,
+    Info,
+    Allow;
 }
