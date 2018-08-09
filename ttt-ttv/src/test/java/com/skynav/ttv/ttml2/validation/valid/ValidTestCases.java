@@ -443,6 +443,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Set() throws Exception {
+        performValidityTest("ttml2-valid-set.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2SetFill() throws Exception {
+        performValidityTest("ttml2-valid-set-fill.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2SetMultipleStyles() throws Exception {
+        performValidityTest("ttml2-valid-set-multiple-styles.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2SetRepeatCount() throws Exception {
+        performValidityTest("ttml2-valid-set-repeat-count.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Speak() throws Exception {
         performValidityTest("ttml2-valid-speak.xml", -1, -1);
     }

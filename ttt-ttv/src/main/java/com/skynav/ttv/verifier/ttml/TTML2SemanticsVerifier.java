@@ -184,6 +184,31 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
+    protected boolean verifySetAttributes(Object set) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(set);
+        Locator locator = location.getLocator();
+        // @fill        - schema validation only
+        // @repeatCount
+        String s = getSetRepeatCountAttribute(set);
+        if (s != null) {
+            if (!RepeatCount.isRepeatCount(s, location, context, null)) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "Bad <repeat-count> expression ''{0}''.", s));
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+
+    protected String getSetRepeatCountAttribute(Object set) {
+        assert set instanceof Set;
+        return ((Set) set).getRepeatCount();
+    }
+
+    @Override
     protected boolean verifyBlock(Object block) {
         if (block instanceof Division)
             return verifyDivision(block);

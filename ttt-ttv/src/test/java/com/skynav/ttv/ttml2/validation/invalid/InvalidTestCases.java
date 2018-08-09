@@ -775,6 +775,26 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadSetAnimationStyleValue() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-set-animation-style-value.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadSetNegativeRepeatCount() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-set-negative-repeat-count.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadSetUnknownFill() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-set-unknown-fill.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadSetUnknownRepeatCount() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-set-unknown-repeat-count.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadSpeakAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-speak-all-space.xml", -1, -1);
     }

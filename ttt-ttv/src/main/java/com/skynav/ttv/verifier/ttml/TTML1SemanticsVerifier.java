@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -671,6 +671,8 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
         boolean failed = false;
         if (!verifyParameterAttributes(set))
             failed = true;
+        if (!verifySetAttributes(set))
+            failed = true;
         if (!verifyStyleAttributes(set))
             failed = true;
         if (!verifyTimingAttributes(set))
@@ -689,6 +691,10 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
     protected Collection<? extends Object> getSetMetadata(Object set) {
         assert set instanceof Set;
         return ((Set) set).getMetadataClass();
+    }
+
+    protected boolean verifySetAttributes(Object set) {
+        return true;
     }
 
     protected boolean verifyProfile(Object profile) {

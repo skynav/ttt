@@ -29,6 +29,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.xml.sax.Locator;
+
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml.TTML2.TTML2Model;
 import com.skynav.ttv.model.ttml2.tt.Animate;
@@ -810,6 +812,12 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     @Override
     protected boolean isStyleNamespace(String s) {
         return super.isStyleNamespace(s) || s.equals(getAudioStyleNamespaceUri());
+    }
+
+    @Override
+    protected boolean verifySet(Object content, Locator locator, VerifierContext context) {
+        // allow multiple styles, i.e., bypass style count constraint in superclass
+        return true;
     }
 
     @Override
