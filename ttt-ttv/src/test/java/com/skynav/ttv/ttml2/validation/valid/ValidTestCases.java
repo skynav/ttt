@@ -238,6 +238,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2FontShear() throws Exception {
+        performValidityTest("ttml2-valid-font-shear.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Gain() throws Exception {
         performValidityTest("ttml2-valid-gain.xml", -1, -1);
     }
@@ -295,6 +300,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2IPDInlineBlock() throws Exception {
         performValidityTest("ttml2-valid-ipd-inline-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2LineShear() throws Exception {
+        performValidityTest("ttml2-valid-line-shear.xml", -1, -1);
     }
 
     @Test
@@ -460,6 +470,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2SetRepeatCount() throws Exception {
         performValidityTest("ttml2-valid-set-repeat-count.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Shear() throws Exception {
+        performValidityTest("ttml2-valid-shear.xml", -1, -1);
     }
 
     @Test

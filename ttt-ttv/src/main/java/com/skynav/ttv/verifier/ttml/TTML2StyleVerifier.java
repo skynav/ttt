@@ -82,7 +82,6 @@ import com.skynav.ttv.verifier.ttml.style.DisplayVerifier;
 import com.skynav.ttv.verifier.ttml.style.ExtentVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontKerningVerifier;
 //import com.skynav.ttv.verifier.ttml.style.FontSelectionStrategyVerifier;
-import com.skynav.ttv.verifier.ttml.style.FontShearVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontStyleVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontVariantVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
@@ -106,6 +105,7 @@ import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyReserveVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyVerifier;
 import com.skynav.ttv.verifier.ttml.style.ScriptVerifier;
+import com.skynav.ttv.verifier.ttml.style.ShearVerifier;
 import com.skynav.ttv.verifier.ttml.style.SpeakVerifier;
 import com.skynav.ttv.verifier.ttml.style.ShowBackgroundVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextAlignVerifier;
@@ -144,6 +144,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName gainAttributeName                         = new QName(NAMESPACE_AUDIO,"gain");
     public static final QName ipdAttributeName                          = new QName(NAMESPACE,"ipd");
     public static final QName letterSpacingAttributeName                = new QName(NAMESPACE,"letterSpacing");
+    public static final QName lineShearAttributeName                    = new QName(NAMESPACE,"lineShear");
     public static final QName luminanceGainAttributeName                = new QName(NAMESPACE,"luminanceGain");
     public static final QName panAttributeName                          = new QName(NAMESPACE_AUDIO,"pan");
     public static final QName pitchAttributeName                        = new QName(NAMESPACE_AUDIO,"pitch");
@@ -157,6 +158,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName rubyPositionAttributeName                 = new QName(NAMESPACE,"rubyPosition");
     public static final QName rubyReserveAttributeName                  = new QName(NAMESPACE,"rubyReserve");
     public static final QName scriptAttributeName                       = new QName(NAMESPACE,"script");
+    public static final QName shearAttributeName                        = new QName(NAMESPACE,"shear");
     public static final QName speakAttributeName                        = new QName(NAMESPACE_AUDIO,"speak");
     public static final QName textCombineAttributeName                  = new QName(NAMESPACE,"textCombine");
     public static final QName textEmphasisAttributeName                 = new QName(NAMESPACE,"textEmphasis");
@@ -335,7 +337,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             fontShearAttributeName,
             "FontShear",
             String.class,
-            FontShearVerifier.class,
+            ShearVerifier.class,
             Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.TRUE,
@@ -417,6 +419,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             "normal",
+            null,
+        },
+        {
+            lineShearAttributeName,
+            "LineShear",
+            String.class,
+            ShearVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "0%",
             null,
         },
         {
@@ -593,6 +606,17 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             "auto",
+            null,
+        },
+        {
+            shearAttributeName,
+            "Shear",
+            String.class,
+            ShearVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "0%",
             null,
         },
         {

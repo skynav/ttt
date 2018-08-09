@@ -515,6 +515,26 @@ public class InvalidTestCases {
     }
     
     @Test
+    public void testInvalidTTML2BadFontShearAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-shear-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontShearEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-shear-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontShearRealSyntax() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-shear-real-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontShearUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-shear-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadGainAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-gain-all-space.xml", -1, -1);
     }
@@ -572,6 +592,26 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadLetterSpacingUnknownUnit() throws Exception {
         performInvalidityTest("ttml2-invld-bad-letter-spacing-unknown-unit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLineShearAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-line-shear-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLineShearEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-line-shear-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLineShearRealSyntax() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-line-shear-real-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLineShearUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-line-shear-unknown-keyword.xml", -1, -1);
     }
 
     @Test
@@ -792,6 +832,26 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadSetUnknownRepeatCount() throws Exception {
         performInvalidityTest("ttml2-invld-bad-set-unknown-repeat-count.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadShearAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-shear-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadShearEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-shear-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadShearRealSyntax() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-shear-real-syntax.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadShearUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-shear-unknown-keyword.xml", -1, -1);
     }
 
     @Test

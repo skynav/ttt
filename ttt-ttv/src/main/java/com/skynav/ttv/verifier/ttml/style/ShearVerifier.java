@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 
-public class FontShearVerifier implements StyleValueVerifier {
+public class ShearVerifier implements StyleValueVerifier {
 
     private static Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
 
