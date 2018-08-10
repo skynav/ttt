@@ -233,8 +233,48 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Display1() throws Exception {
+        performValidityTest("ttml2-valid-display-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Display2() throws Exception {
+        performValidityTest("ttml2-valid-display-2.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayAlign1() throws Exception {
+        performValidityTest("ttml2-valid-display-align-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayAlign1Region() throws Exception {
+        performValidityTest("ttml2-valid-display-align-1-region.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayAlign2() throws Exception {
+        performValidityTest("ttml2-valid-display-align-2.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayAlign2Block() throws Exception {
+        performValidityTest("ttml2-valid-display-align-2-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayAlign2Region() throws Exception {
+        performValidityTest("ttml2-valid-display-align-2-region.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2DisplayAlignJustify() throws Exception {
         performValidityTest("ttml2-valid-display-align-justify.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayInlineBlock() throws Exception {
+        performValidityTest("ttml2-valid-display-inline-block.xml", -1, -1);
     }
 
     @Test

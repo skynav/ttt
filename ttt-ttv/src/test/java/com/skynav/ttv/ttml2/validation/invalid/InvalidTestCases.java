@@ -445,6 +445,41 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadDisplayAlignAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-display-align-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadDisplayAlignEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-display-align-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadDisplayAlignUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-display-align-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadDisplayAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-display-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadDisplayEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-display-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadDisplayInlineBlockNonSpan() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-display-inline-block-non-span.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadDisplayUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-display-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void textInvalidTTML2BadExtentAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-extent-all-space.xml", -1, -1);
     }

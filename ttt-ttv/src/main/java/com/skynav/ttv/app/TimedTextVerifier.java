@@ -1657,6 +1657,8 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.logError(e);
         } catch (Exception e) {
             reporter.logError(e, true);
+        } catch (Error e) {
+            reporter.logError(new RuntimeException(e), true);
         }
         return (reporter.getResourceErrors() == 0) && !needsRestart();
     }
@@ -2126,6 +2128,8 @@ public class TimedTextVerifier implements VerifierContext {
             reporter.logError(e);
         } catch (Exception e) {
             reporter.logError(e, true);
+        } catch (Error e) {
+            reporter.logError(new RuntimeException(e), true);
         }
         return reporter.getResourceErrors() == 0;
     }

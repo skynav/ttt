@@ -69,6 +69,7 @@ import com.skynav.ttv.model.ttml2.ttd.UnicodeBidi;
 import com.skynav.ttv.model.ttml2.ttd.Visibility;
 import com.skynav.ttv.model.ttml2.ttd.WrapOption;
 import com.skynav.ttv.model.ttml2.ttd.WritingMode;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.style.AreaRectangleVerifier;
 import com.skynav.ttv.verifier.ttml.style.BackgroundImageVerifier;
@@ -836,6 +837,48 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     @Override
     protected boolean isStyleNamespace(String s) {
         return super.isStyleNamespace(s) || s.equals(getAudioStyleNamespaceUri());
+    }
+
+    @Override
+    protected boolean verifyAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        if (!super.verifyAttributeItem(content, locator, sa, context))
+            return false;
+        else {
+            boolean failed = false;
+            QName name = sa.getStyleName();
+            if (name.equals(displayAttributeName)) {
+                Object value = sa.getStyleValue(content);
+                if (value != null) {
+                    assert value instanceof Display;
+                    Display display = (Display) value;
+                    if (display == Display.INLINE_BLOCK) {
+                        if (!permitsDisplayInlineBlock(content)) {
+                            Reporter reporter = context.getReporter();
+                            reporter.logError(reporter.message(locator,
+                                "*KEY*", "Attribute ''{0}'' with value ''{1}'' is prohibited on ''{2}''.",
+                                name, display.value(), context.getBindingElementName(content)));
+                            failed = true;
+                        }
+                    }
+                }
+            }
+            return !failed;
+        }
+    }
+
+    protected boolean permitsDisplayInlineBlock(Object content) {
+        if (content instanceof Span)
+            return true;
+        else if (content instanceof Style)
+            return true;
+        else if (content instanceof Animate)
+            return true;
+        else if (content instanceof Set)
+            return true;
+        else if (content instanceof Initial)
+            return true;
+        else
+            return false;
     }
 
     @Override
