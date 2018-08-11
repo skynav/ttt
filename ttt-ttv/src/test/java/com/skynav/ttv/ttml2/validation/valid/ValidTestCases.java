@@ -278,6 +278,71 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Extent1() throws Exception {
+        performValidityTest("ttml2-valid-extent-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent1Region() throws Exception {
+        performValidityTest("ttml2-valid-extent-1-region.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent1RootAuto() throws Exception {
+        performValidityTest("ttml2-valid-extent-1-root-auto.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent1RootDefinite() throws Exception {
+        performValidityTest("ttml2-valid-extent-1-root-definite.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2() throws Exception {
+        performValidityTest("ttml2-valid-extent-2.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2Image() throws Exception {
+        performValidityTest("ttml2-valid-extent-2-image.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2Length() throws Exception {
+        performValidityTest("ttml2-valid-extent-2-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2Measure() throws Exception {
+        performValidityTest("ttml2-valid-extent-2-measure.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2Region() throws Exception {
+        performValidityTest("ttml2-valid-extent-2-region.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2RegionContain() throws Exception {
+        performValidityTest("ttml2-valid-extent-2-region-contain.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2RegionCover() throws Exception {
+        performValidityTest("ttml2-valid-extent-2-region-cover.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2RootAuto() throws Exception {
+        performValidityTest("ttml2-valid-extent-2-root-auto.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Extent2RootContain() throws Exception {
+        performValidityTest("ttml2-valid-extent-2-root-contain.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2FontShear() throws Exception {
         performValidityTest("ttml2-valid-font-shear.xml", -1, -1);
     }

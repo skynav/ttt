@@ -25,6 +25,7 @@
 
 package com.skynav.ttv.verifier.ttml;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -69,6 +70,9 @@ import com.skynav.ttv.model.ttml2.ttd.UnicodeBidi;
 import com.skynav.ttv.model.ttml2.ttd.Visibility;
 import com.skynav.ttv.model.ttml2.ttd.WrapOption;
 import com.skynav.ttv.model.ttml2.ttd.WritingMode;
+import com.skynav.ttv.model.value.Measure;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ttml.style.AreaRectangleVerifier;
@@ -119,6 +123,10 @@ import com.skynav.ttv.verifier.ttml.style.UnicodeBidiVerifier;
 import com.skynav.ttv.verifier.ttml.style.VisibilityVerifier;
 import com.skynav.ttv.verifier.ttml.style.WrapOptionVerifier;
 import com.skynav.ttv.verifier.ttml.style.WritingModeVerifier;
+import com.skynav.ttv.verifier.util.Extents;
+import com.skynav.ttv.verifier.util.Measures;
+import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
+import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 import static com.skynav.ttv.model.ttml.TTML2.Constants.*;
 
@@ -845,6 +853,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             return false;
         else {
             boolean failed = false;
+            Reporter reporter = context.getReporter();
+            Message message = null;
             QName name = sa.getStyleName();
             if (name.equals(displayAttributeName)) {
                 Object value = sa.getStyleValue(content);
@@ -853,14 +863,44 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
                     Display display = (Display) value;
                     if (display == Display.INLINE_BLOCK) {
                         if (!permitsDisplayInlineBlock(content)) {
-                            Reporter reporter = context.getReporter();
-                            reporter.logError(reporter.message(locator,
-                                "*KEY*", "Attribute ''{0}'' with value ''{1}'' is prohibited on ''{2}''.",
-                                name, display.value(), context.getBindingElementName(content)));
+                            message = reporter.message(locator, "*KEY*", "Attribute ''{0}'' with value ''{1}'' is prohibited on ''{2}''.",
+                                name, display.value(), context.getBindingElementName(content));
                             failed = true;
                         }
                     }
                 }
+            } else if (name.equals(extentAttributeName)) {
+                Object value = sa.getStyleValue(content);
+                if (value != null) {
+                    assert value instanceof String;
+                    String extent = (String) value;
+                    if (isTimedText(content)) {
+                        if (Extents.isCover(extent)) {
+                            failed = true;
+                        } else {
+                            Integer[] minMax = new Integer[] { 2, 2 };
+                            Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
+                            List<Measure> measures = new java.util.ArrayList<Measure>();
+                            Location location = new Location(content, context.getBindingElementName(content), name, locator);
+                            if (Measures.isMeasures(extent, location, context, minMax, treatments, measures)) {
+                                for (Measure m : measures) {
+                                    if (!m.isLength())
+                                        failed = true;
+                                }
+                            }
+                        }
+                        if (failed) {
+                            message = reporter.message(locator, "*KEY*", "Attribute ''{0}'' with value ''{1}'' is prohibited on ''{2}''.",
+                                name, value, context.getBindingElementName(content));
+                        }
+                    }
+                }
+            }
+            if (message != null) {
+                if (failed)
+                    reporter.logError(message);
+                else
+                    reporter.logInfo(message);
             }
             return !failed;
         }
