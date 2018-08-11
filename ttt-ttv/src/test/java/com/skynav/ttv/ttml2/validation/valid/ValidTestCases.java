@@ -343,8 +343,23 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2FontKerning() throws Exception {
+        performValidityTest("ttml2-valid-font-kerning.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2FontShear() throws Exception {
         performValidityTest("ttml2-valid-font-shear.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2FontSelectionStrategy() throws Exception {
+        performValidityTest("ttml2-valid-font-selection-strategy.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2FontVariant() throws Exception {
+        performValidityTest("ttml2-valid-font-variant.xml", -1, -1);
     }
 
     @Test
@@ -405,6 +420,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2IPDInlineBlock() throws Exception {
         performValidityTest("ttml2-valid-ipd-inline-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2LetterSpacing() throws Exception {
+        performValidityTest("ttml2-valid-letter-spacing.xml", -1, -1);
     }
 
     @Test

@@ -575,6 +575,36 @@ public class InvalidTestCases {
     }
     
     @Test
+    public void testInvalidTTML2BadFontKerningAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-kerning-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontKerningEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-kerning-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontKerningUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-kerning-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontSelectionStrategyAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-selection-strategy-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontSelectionStrategyEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-selection-strategy-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontSelectionStrategyUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-selection-strategy-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadFontShearAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-font-shear-all-space.xml", -1, -1);
     }
@@ -592,6 +622,36 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadFontShearUnknownKeyword() throws Exception {
         performInvalidityTest("ttml2-invld-bad-font-shear-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontVariantAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-variant-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontVariantEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-variant-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontVariantMixedNormal() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-variant-mixed-normal.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontVariantMixedWidth() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-variant-mixed-width.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontVariantMixedScript() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-variant-mixed-script.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadFontVariantUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-variant-unknown-keyword.xml", -1, -1);
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,28 +23,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.model.value;
+package com.skynav.ttv.verifier.ttml.style;
 
-public enum FontVariant {
-    NORMAL("normal"),
-    SUPER("super"),
-    SUB("sub"),
-    HALF("half"),
-    FULL("full"),
-    RUBY("ruby");
-    private final String value;
-    FontVariant(String v) {
-        value = v;
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.util.Location;
+import com.skynav.ttv.verifier.StyleValueVerifier;
+import com.skynav.ttv.verifier.VerifierContext;
+
+public class FontSelectionStrategyVerifier implements StyleValueVerifier {
+
+    public boolean verify(Object value, Location location, VerifierContext context) {
+        // Schema validation phase (3) reports invalid values.
+        Model model = context.getModel();
+        if (model.isTTMLVersion(2) && (value instanceof com.skynav.ttv.model.ttml2.ttd.FontSelectionStrategy))
+            return true;
+        else
+            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
     }
-    public String value() {
-        return value;
-    }
-    public static FontVariant fromValue(String v) {
-        for (FontVariant fv: FontVariant.values()) {
-            if (fv.value.equals(v)) {
-                return fv;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+
 }

@@ -54,6 +54,7 @@ import com.skynav.ttv.model.ttml2.ttd.Direction;
 import com.skynav.ttv.model.ttml2.ttd.Display;
 import com.skynav.ttv.model.ttml2.ttd.DisplayAlign;
 import com.skynav.ttv.model.ttml2.ttd.FontKerning;
+import com.skynav.ttv.model.ttml2.ttd.FontSelectionStrategy;
 import com.skynav.ttv.model.ttml2.ttd.FontStyle;
 import com.skynav.ttv.model.ttml2.ttd.FontWeight;
 import com.skynav.ttv.model.ttml2.ttd.Overflow;
@@ -86,7 +87,7 @@ import com.skynav.ttv.verifier.ttml.style.DisplayAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisplayVerifier;
 import com.skynav.ttv.verifier.ttml.style.ExtentVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontKerningVerifier;
-//import com.skynav.ttv.verifier.ttml.style.FontSelectionStrategyVerifier;
+import com.skynav.ttv.verifier.ttml.style.FontSelectionStrategyVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontStyleVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontVariantVerifier;
 import com.skynav.ttv.verifier.ttml.style.FontWeightVerifier;
@@ -329,7 +330,6 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             FontKerning.NORMAL,
             FontKerning.NORMAL.value(),
         },
-        /*
         {
             fontSelectionStrategyAttributeName,
             "FontSelectionStrategy",
@@ -338,10 +338,9 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
             Boolean.FALSE,
             Boolean.TRUE,
-            FontSelectionStrategy.NORMAL,
-            FontSelectionStrategy.NORMAL.value(),
+            FontSelectionStrategy.AUTO,
+            FontSelectionStrategy.AUTO.value(),
         },
-        */
         {
             fontShearAttributeName,
             "FontShear",
