@@ -358,6 +358,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2FontSelectionStrategyCharacter() throws Exception {
+        performValidityTest("ttml2-valid-font-selection-strategy-character.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2FontVariant() throws Exception {
         performValidityTest("ttml2-valid-font-variant.xml", -1, -1);
     }

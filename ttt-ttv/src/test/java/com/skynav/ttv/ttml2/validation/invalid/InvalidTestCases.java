@@ -640,13 +640,13 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2BadFontVariantMixedWidth() throws Exception {
-        performInvalidityTest("ttml2-invld-bad-font-variant-mixed-width.xml", -1, -1);
+    public void testInvalidTTML2BadFontVariantMixedScript() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-variant-mixed-script.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidTTML2BadFontVariantMixedScript() throws Exception {
-        performInvalidityTest("ttml2-invld-bad-font-variant-mixed-script.xml", -1, -1);
+    public void testInvalidTTML2BadFontVariantMixedWidth() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-font-variant-mixed-width.xml", -1, -1);
     }
 
     @Test
