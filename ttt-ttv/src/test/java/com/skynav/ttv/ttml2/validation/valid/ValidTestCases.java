@@ -502,6 +502,21 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Length1() throws Exception {
+        performValidityTest("ttml2-valid-length-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Length2() throws Exception {
+        performValidityTest("ttml2-valid-length-2.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Length2RootContainerRelative() throws Exception {
+        performValidityTest("ttml2-valid-length-2-root-container-relative.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2LetterSpacing() throws Exception {
         performValidityTest("ttml2-valid-letter-spacing.xml", -1, -1);
     }

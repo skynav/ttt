@@ -1356,6 +1356,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2Length2RootContainerRelative() throws Exception {
+        performInvalidityTest("ttml2-invld-length-2-root-container-relative.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2PermitFeatureNarrowingAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-permit-feature-narrowing-all-space.xml", -1, -1);
     }
