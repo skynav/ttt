@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xmlns="http://www.w3.org/ns/ttml" ttva:model="ttml2" xml:lang="ar" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<tt xml:lang="ar" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
 <head>
 <styling>
-<initial tts:fontSize="6vh"/>
-<initial tts:lineHeight="10vh"/>
+<initial tts:fontSize="6rh"/>
+<initial tts:lineHeight="10rh"/>
 </styling>
 <layout>
-<region xml:id="r0" tts:displayAlign="center" tts:extent="80vw 80vh" tts:position="center" tts:writingMode="rltb"/>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="80rw 80rh" tts:position="center" tts:writingMode="rltb"/>
 </layout>
 </head>
 <body tts:textAlign="center">

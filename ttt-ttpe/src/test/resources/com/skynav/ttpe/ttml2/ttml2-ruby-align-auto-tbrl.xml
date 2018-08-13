@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xml:lang="ja" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
-    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+<tt xml:lang="ja" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
 <head>
 <layout>
 <region xml:id="r0" tts:displayAlign="after" tts:extent="90px 576px" tts:position="right 163.33px center" tts:writingMode="tbrl"/>

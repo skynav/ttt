@@ -551,7 +551,7 @@ public class StyleCollector {
         v = null;
         if (s != null) {
             com.skynav.ttv.model.value.TextOutline[] retOutline = new com.skynav.ttv.model.value.TextOutline[1];
-            if (com.skynav.ttv.verifier.util.Outline.isOutline(s.getValue(), new Location(), context, retOutline)) {
+            if (com.skynav.ttv.verifier.util.Outlines.isOutline(s.getValue(), new Location(), context, retOutline)) {
                 com.skynav.ttv.model.value.TextOutline to = retOutline[0];
                 com.skynav.ttv.model.value.Color toColor = to.getColor();
                 Color c = (toColor != null) ? new Color(toColor.getRed(), toColor.getGreen(), toColor.getBlue(), toColor.getAlpha()) : color;

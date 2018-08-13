@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xml:lang="ja" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
-    xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+<tt xml:lang="ja" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
 <head>
 <ttm:item name="creationDate">2015-01-31T04:31:05Z</ttm:item>
 <ttm:item name="creationSystem">CAP2TT/1.0.0dev</ttm:item>
 <styling>
-<initial tts:fontSize="4vh"/>
-<initial tts:lineHeight="5vh"/>
+<initial tts:fontSize="4rh"/>
+<initial tts:lineHeight="5rh"/>
 <initial tts:showBackground="whenActive"/>
 <style xml:id="s1" tts:fontShear="27%"/>
 <style xml:id="s2" tts:fontSize="1.5em 1.0em"/>

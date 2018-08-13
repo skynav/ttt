@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xmlns="http://www.w3.org/ns/ttml" ttva:model="ttml2" xml:lang="ja" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttva="http://skynav.com/ns/ttv/annotations">
+<tt xml:lang="ja" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
 <head>
 <ttm:item name="creationDate">2015-05-11T14:50:08Z</ttm:item>
 <ttm:item name="creationSystem">CAP2TT/1.0.0dev</ttm:item>
 <styling>
 <initial tts:fontFamily="Noto Sans"/>
-<initial tts:fontSize="4vh"/>
-<initial tts:lineHeight="5vh"/>
+<initial tts:fontSize="4rh"/>
+<initial tts:lineHeight="5rh"/>
 <initial tts:showBackground="whenActive"/>
 <style xml:id="s1" tts:textAlign="center"/>
 <style xml:id="s2" tts:textAlign="start"/>
@@ -17,9 +21,9 @@
 <style xml:id="s7" tts:ruby="text" tts:rubyPosition="after"/>
 </styling>
 <layout>
-<region xml:id="r0" tts:displayAlign="center" tts:extent="80vw 15vh" tts:position="center top 10vh"/>
-<region xml:id="r1" tts:displayAlign="center" tts:extent="80vw 15vh" tts:position="center"/>
-<region xml:id="r2" tts:displayAlign="center" tts:extent="80vw 15vh" tts:position="center bottom 10vh"/>
+<region xml:id="r0" tts:displayAlign="center" tts:extent="80rw 15rh" tts:position="center top 10rh"/>
+<region xml:id="r1" tts:displayAlign="center" tts:extent="80rw 15rh" tts:position="center"/>
+<region xml:id="r2" tts:displayAlign="center" tts:extent="80rw 15rh" tts:position="center bottom 10rh"/>
 </layout>
 </head>
 <body>

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tt xml:lang="en" ttva:model="ttml2" xmlns="http://www.w3.org/ns/ttml" xmlns:ttva="http://skynav.com/ns/ttv/annotations"
-    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:cellResolution="40 20"
-    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px">
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px" ttp:cellResolution="40 20"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
   <head>
     <layout>
       <region xml:id="r0" tts:displayAlign="after" tts:extent="768px 90px" tts:origin="256px 610px"/>
