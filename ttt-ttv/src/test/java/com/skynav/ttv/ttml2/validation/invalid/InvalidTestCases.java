@@ -1101,6 +1101,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadVisibilityAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-visibility-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadVisibilityEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-visibility-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadVisibilityUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-visibility-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BaseAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-base-all-space.xml", -1, -1);
     }
@@ -1268,6 +1283,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2ImageInInlineSimpleSourceJpg() throws Exception {
         performInvalidityTest("ttml2-invld-image-in-inline-simple-source-jpg.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ImageUnresolvableFragmentUri() throws Exception {
+        performInvalidityTest("ttml2-invld-image-unresolvable-fragment-uri.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ImageUnresolvableExternalUri() throws Exception {
+        performInvalidityTest("ttml2-invld-image-unresolvable-external-uri.xml", -1, -1);
     }
 
     @Test

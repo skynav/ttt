@@ -412,8 +412,8 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2ImageInBlock() throws Exception {
-        performValidityTest("ttml2-valid-image-in-block.xml", -1, -1);
+    public void testValidTTML2ImageInBlockPng() throws Exception {
+        performValidityTest("ttml2-valid-image-in-block-png.xml", -1, -1);
     }
 
     @Test
@@ -427,8 +427,8 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2ImageInInline() throws Exception {
-        performValidityTest("ttml2-valid-image-in-inline.xml", -1, -1);
+    public void testValidTTML2ImageInInlinePng() throws Exception {
+        performValidityTest("ttml2-valid-image-in-inline-png.xml", -1, -1);
     }
 
     @Test
@@ -869,6 +869,16 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ValidationRequired() throws Exception {
         performValidityTest("ttml2-valid-validation-required.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Visibility() throws Exception {
+        performValidityTest("ttml2-valid-visibility.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2VisibilityImage() throws Exception {
+        performValidityTest("ttml2-valid-visibility-image.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
