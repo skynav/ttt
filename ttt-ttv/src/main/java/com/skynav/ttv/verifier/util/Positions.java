@@ -78,6 +78,8 @@ public class Positions {
             Length[] lengths = new Length[4];
             if (isOffsetPositionHorizontal(components, 0, location, context, lengths) && isOffsetPositionVertical(components, 1, location, context, lengths))
                 return componentPositionContinuation(lengths, outputLengths, true);
+            else if (isPositionKeywordVertical(components, 0, lengths) && isPositionKeywordHorizontal(components, 1, lengths))
+                return componentPositionContinuation(lengths, outputLengths, true);
         }
         return false;
     }

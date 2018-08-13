@@ -301,6 +301,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadBackgroundPositionUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-background-position-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadBackgroundRepeatAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-background-repeat-all-space.xml", -1, -1);
     }
@@ -868,6 +873,26 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadPitchUnknownUnit() throws Exception {
         performInvalidityTest("ttml2-invld-bad-pitch-unknown-unit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPosition() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-position.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPositionAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-position-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPositionEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-position-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadPositionUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-position-unknown-keyword.xml", -1, -1);
     }
 
     @Test

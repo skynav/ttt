@@ -572,6 +572,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Position() throws Exception {
+        performValidityTest("ttml2-valid-position.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Presentation1() throws Exception {
         performValidityTest("ttml2-valid-presentation-1.xml", -1, -1);
     }
