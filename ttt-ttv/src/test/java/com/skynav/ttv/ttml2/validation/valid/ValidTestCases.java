@@ -37,12 +37,6 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
 
     @Test
-    @Ignore
-    public void testValidTTML2AllParameters() throws Exception {
-        performValidityTest("ttml2-valid-all-parameters.xml", -1, -1);
-    }
-
-    @Test
     public void testValidTTML2AnimateDiscrete() throws Exception {
         performValidityTest("ttml2-valid-animate-discrete.xml", -1, -1);
     }
@@ -183,6 +177,36 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2ContentProfileCombinationIgnore() throws Exception {
+        performValidityTest("ttml2-valid-content-profile-combination-ignore.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfileCombinationLeastRestrictive() throws Exception {
+        performValidityTest("ttml2-valid-content-profile-combination-least-restrictive.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfileCombinationMostRestrictive() throws Exception {
+        performValidityTest("ttml2-valid-content-profile-combination-most-restrictive.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfileCombinationReplace() throws Exception {
+        performValidityTest("ttml2-valid-content-profile-combination-replace.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfileMultiple() throws Exception {
+        performValidityTest("ttml2-valid-content-profile-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ContentProfileNested() throws Exception {
+        performValidityTest("ttml2-valid-content-profile-nested.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ContentProfilesQuantifiedAllMultiple() throws Exception {
         performValidityTest("ttml2-valid-content-profiles-quantified-all-multiple.xml", -1, -1);
     }
@@ -270,6 +294,16 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2DisplayAlignJustify() throws Exception {
         performValidityTest("ttml2-valid-display-align-justify.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayAspectRatio169() throws Exception {
+        performValidityTest("ttml2-valid-display-aspect-ratio-16-9.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DisplayAspectRatio43() throws Exception {
+        performValidityTest("ttml2-valid-display-aspect-ratio-4-3.xml", -1, -1);
     }
 
     @Test
@@ -408,6 +442,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2InferProcessorProfileMethodLoose() throws Exception {
+        performValidityTest("ttml2-valid-infer-processor-profile-method-loose.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2InferProcessorProfileMethodStrict() throws Exception {
+        performValidityTest("ttml2-valid-infer-processor-profile-method-strict.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2InferProcessorProfileSourceFirst() throws Exception {
+        performValidityTest("ttml2-valid-infer-processor-profile-source-first.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2InferProcessorProfileSourceCombined() throws Exception {
+        performValidityTest("ttml2-valid-infer-processor-profile-source-combined.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2IPD() throws Exception {
         performValidityTest("ttml2-valid-ipd.xml", -1, -1);
     }
@@ -493,8 +547,68 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2PermitFeatureNarrowingAllow() throws Exception {
+        performValidityTest("ttml2-valid-permit-feature-narrowing-allow.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2PermitFeatureNarrowingDisallow() throws Exception {
+        performValidityTest("ttml2-valid-permit-feature-narrowing-disallow.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2PermitFeatureWideningAllow() throws Exception {
+        performValidityTest("ttml2-valid-permit-feature-widening-allow.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2PermitFeatureWideningDisallow() throws Exception {
+        performValidityTest("ttml2-valid-permit-feature-widening-disallow.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Pitch() throws Exception {
         performValidityTest("ttml2-valid-pitch.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Presentation1() throws Exception {
+        performValidityTest("ttml2-valid-presentation-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Presentation2() throws Exception {
+        performValidityTest("ttml2-valid-presentation-2.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfileCombinationIgnore() throws Exception {
+        performValidityTest("ttml2-valid-processor-profile-combination-ignore.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfileCombinationLeastRestrictive() throws Exception {
+        performValidityTest("ttml2-valid-processor-profile-combination-least-restrictive.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfileCombinationMostRestrictive() throws Exception {
+        performValidityTest("ttml2-valid-processor-profile-combination-most-restrictive.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfileCombinationReplace() throws Exception {
+        performValidityTest("ttml2-valid-processor-profile-combination-replace.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfileMultiple() throws Exception {
+        performValidityTest("ttml2-valid-processor-profile-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProcessorProfileNested() throws Exception {
+        performValidityTest("ttml2-valid-processor-profile-nested.xml", -1, -1);
     }
 
     @Test
@@ -525,6 +639,41 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ProcessorProfilesUnquantifiedSingle() throws Exception {
         performValidityTest("ttml2-valid-processor-profiles-unquantified-single.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProfileCombineLeastRestrictive() throws Exception {
+        performValidityTest("ttml2-valid-profile-combine-least-restrictive.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProfileCombineMostRestrictive() throws Exception {
+        performValidityTest("ttml2-valid-profile-combine-most-restrictive.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProfileCombineReplace() throws Exception {
+        performValidityTest("ttml2-valid-profile-combine-replace.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProfileDesignator() throws Exception {
+        performValidityTest("ttml2-valid-profile-designator.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProfileTypeContent() throws Exception {
+        performValidityTest("ttml2-valid-profile-type-content.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProfileTypeProcessor() throws Exception {
+        performValidityTest("ttml2-valid-profile-type-processor.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProfileUse() throws Exception {
+        performValidityTest("ttml2-valid-profile-use.xml", -1, -1);
     }
 
     @Test
@@ -668,6 +817,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2Transformation1() throws Exception {
+        performValidityTest("ttml2-valid-transformation-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2Transformation2() throws Exception {
+        performValidityTest("ttml2-valid-transformation-2.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2UnicodeBidi1() throws Exception {
         performValidityTest("ttml2-valid-unicode-bidi-1.xml", -1, -1);
     }
@@ -680,6 +839,36 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2UnicodeBidiIsolate() throws Exception {
         performValidityTest("ttml2-valid-unicode-bidi-isolate.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ValidationActionAbort() throws Exception {
+        performValidityTest("ttml2-valid-validation-action-abort.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ValidationActionIgnore() throws Exception {
+        performValidityTest("ttml2-valid-validation-action-ignore.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ValidationActionWarn() throws Exception {
+        performValidityTest("ttml2-valid-validation-action-warn.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ValidationOptional() throws Exception {
+        performValidityTest("ttml2-valid-validation-optional.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ValidationProhibited() throws Exception {
+        performValidityTest("ttml2-valid-validation-prohibited.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ValidationRequired() throws Exception {
+        performValidityTest("ttml2-valid-validation-required.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

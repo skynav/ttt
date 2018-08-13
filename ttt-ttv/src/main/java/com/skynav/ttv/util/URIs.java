@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -83,6 +83,14 @@ public class URIs {
             return uri.getFragment();
         else
             return null;
+    }
+
+    public static boolean isAbsolute(String uriString) {
+        URI uri = makeURISafely(uriString);
+        if (uri != null) {
+            return uri.isAbsolute();
+        } else
+            return false;
     }
 
 }

@@ -81,7 +81,7 @@ public class TTML1ProfileVerifier extends AbstractVerifier implements ProfileVer
         return !failed;
     }
 
-    public boolean verify(TimedText content, Locator locator, VerifierContext context) {
+    protected boolean verify(TimedText content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();
         String profileAttribute = content.getProfile();

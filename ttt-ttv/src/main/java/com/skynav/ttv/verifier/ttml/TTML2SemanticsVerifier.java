@@ -150,6 +150,34 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
+    protected boolean verifyProfile(Object profile) {
+        boolean failed = false;
+        if (!verifyParameterAttributes(profile))
+            failed = true;
+        if (!verifyOtherAttributes(profile))
+            failed = true;
+        for (Object m : getProfileMetadata(profile)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Object nestedProfile : getProfileProfiles(profile)) {
+            if (!verifyProfile(nestedProfile))
+                failed = true;
+        }
+        for (Object features : getProfileFeatures(profile)) {
+            if (!verifyFeatures(features))
+                failed = true;
+        }
+        for (Object extensions : getProfileExtensions(profile)) {
+            if (!verifyExtensions(extensions))
+                failed = true;
+        }
+        if (!verifyProfileItem(profile))
+            failed = true;
+        return !failed;
+    }
+
+    @Override
     protected boolean verifyStyling(Object styling) {
         boolean failed = false;
         if (!verifyParameterAttributes(styling))
@@ -519,6 +547,11 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     protected Collection<? extends Object> getProfileMetadata(Object profile) {
         assert profile instanceof Profile;
         return ((Profile) profile).getMetadataClass();
+    }
+
+    protected Collection<? extends Object> getProfileProfiles(Object profile) {
+        assert profile instanceof Profile;
+        return ((Profile) profile).getProfile();
     }
 
     @Override

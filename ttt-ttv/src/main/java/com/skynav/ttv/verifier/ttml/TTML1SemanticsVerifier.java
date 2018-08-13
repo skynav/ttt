@@ -811,7 +811,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
         return !failed;
     }
 
-    private boolean verifyProfileItem(Object content) {
+    protected boolean verifyProfileItem(Object content) {
         return this.profileVerifier.verify(content, getLocator(content), getContext(), ItemType.Element);
     }
 

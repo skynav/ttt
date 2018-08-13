@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,6 @@ import com.skynav.ttv.util.Location;
 import com.skynav.ttv.verifier.ParameterValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Integers;
-import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.ZeroTreatment;
 
@@ -40,9 +39,7 @@ public class DisplayAspectRatioVerifier implements ParameterValueVerifier {
         String s = (String) value;
         Integer[] minMax = new Integer[] { 2, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Error, ZeroTreatment.Error };
-        if (Keywords.isAuto(s))
-            return true;
-        else if (Integers.isIntegers(s, location, context, minMax, treatments, null))
+        if (Integers.isIntegers(s, location, context, minMax, treatments, null))
             return true;
         else {
             Integers.badIntegers(s, location, context, minMax, treatments);

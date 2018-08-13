@@ -365,6 +365,7 @@ public class InvalidTestCases {
         performInvalidityTest("ttml2-invld-bad-border-radii-2-argument.xml", -1, -1);
     }
 
+    @Test
     public void testInvalidTTML2BadBorderRadii2Delimiter() throws Exception {
         performInvalidityTest("ttml2-invld-bad-border-radii-2-delimiter.xml", -1, -1);
     }
@@ -1120,6 +1121,26 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2ContentProfileCombinationAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-content-profile-combination-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfileCombinationEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-content-profile-combination-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfileCombinationUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-content-profile-combination-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ContentProfilesAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-content-profiles-all-space.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ContentProfilesDesignatorDelimiterSyntax() throws Exception {
         performInvalidityTest("ttml2-invld-content-profiles-designator-delimiter-syntax.xml", -1, -1);
     }
@@ -1135,8 +1156,8 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2ContentProfilesNoDesignator() throws Exception {
-        performInvalidityTest("ttml2-invld-content-profiles-no-designator.xml", -1, -1);
+    public void testInvalidTTML2ContentProfilesEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-content-profiles-empty.xml", -1, -1);
     }
 
     @Test
@@ -1175,6 +1196,61 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2DisplayAspectRatioAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioColonDelimiterSansWhitespace() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-colon-delimiter-sans-whitespace.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioCommaDelimiterWIthWhitespace() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-comma-delimiter-with-whitespace.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioExtraComponent() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-extra-component.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioMissingComponent() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-missing-component.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioNegativeDenominator() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-negative-denominator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioNegativeNumerator() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-negative-numerator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioZeroDenominator() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-zero-denominator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DisplayAspectRatioZeroNumerator() throws Exception {
+        performInvalidityTest("ttml2-invld-display-aspect-ratio-zero-numerator.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ImageInBlockSimpleSourcePng() throws Exception {
         performInvalidityTest("ttml2-invld-image-in-block-simple-source-png.xml", -1, -1);
     }
@@ -1195,6 +1271,86 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2InferProcessorProfileMethodAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-infer-processor-profile-method-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2InferProcessorProfileMethodEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-infer-processor-profile-method-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2InferProcessorProfileMethodUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-infer-processor-profile-method-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2InferProcessorProfileSourceAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-infer-processor-profile-source-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2InferProcessorProfileSourceEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-infer-processor-profile-source-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2InferProcessorProfileSourceUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-infer-processor-profile-source-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2PermitFeatureNarrowingAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-permit-feature-narrowing-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2PermitFeatureNarrowingEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-permit-feature-narrowing-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2PermitFeatureNarrowingUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-permit-feature-narrowing-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2PermitFeatureWideningAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-permit-feature-widening-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2PermitFeatureWideningEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-permit-feature-widening-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2PermitFeatureWideningUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-permit-feature-widening-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfileCombinationAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-processor-profile-combination-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfileCombinationEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-processor-profile-combination-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfileCombinationUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-processor-profile-combination-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProcessorProfilesAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-processor-profiles-all-space.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ProcessorProfilesDesignatorDelimiterSyntax() throws Exception {
         performInvalidityTest("ttml2-invld-processor-profiles-designator-delimiter-syntax.xml", -1, -1);
     }
@@ -1210,8 +1366,8 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2ProcessorProfilesNoDesignator() throws Exception {
-        performInvalidityTest("ttml2-invld-processor-profiles-no-designator.xml", -1, -1);
+    public void testInvalidTTML2ProcessorProfilesEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-processor-profiles-empty.xml", -1, -1);
     }
 
     @Test
@@ -1227,6 +1383,83 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2ProcessorProfilesQuantifierUnknown() throws Exception {
         performInvalidityTest("ttml2-invld-processor-profiles-quantifier-unknown.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileCombineAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-combine-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileCombineEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-combine-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileCombineUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-combine-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileDesignatorFragment() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-designator-fragment.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileNestedMixed() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-nested-mixed.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileTypeAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-type-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileTypeEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-type-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileTypeUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-type-unknown-keyword.xml", -1, -1);
+    }
+
+    /*
+    @Test
+    public void testInvalidTTML2ProfileUseFragment() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-use-fragment.xml", -1, -1, new String[] { "--debug-exceptions" });
+    }
+    */
+
+    @Test
+    public void testInvalidTTML2ValidationActionAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-validation-action-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ValidationActionEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-validation-action-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ValidationActionUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-validation-action-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ValidationAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-validation-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ValidationEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-validation-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ValidationUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-validation-unknown-keyword.xml", -1, -1);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

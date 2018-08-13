@@ -726,6 +726,7 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="required"/>
       <xs:enumeration value="optional"/>
+      <xs:enumeration value="prohibited"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="validationAction">

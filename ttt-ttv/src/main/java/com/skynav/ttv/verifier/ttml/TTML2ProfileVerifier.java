@@ -27,10 +27,14 @@ package com.skynav.ttv.verifier.ttml;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.ProfileCombination;
+import com.skynav.ttv.model.ttml2.ttd.ProfileType;
 import com.skynav.ttv.model.ttml2.ttp.Extension;
 import com.skynav.ttv.model.ttml2.ttp.Extensions;
 import com.skynav.ttv.model.ttml2.ttp.Feature;
@@ -39,15 +43,31 @@ import com.skynav.ttv.model.ttml2.ttp.Profile;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
+import com.skynav.ttv.util.URIs;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Profiles;
 
 public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
 
+    public static final QName contentProfilesAttributeName              = new QName(TTML1ParameterVerifier.NAMESPACE, "contentProfiles");
+    public static final QName designatorAttributeName                   = new QName("", "designator");
+    public static final QName processorProfilesAttributeName            = new QName(TTML1ParameterVerifier.NAMESPACE, "processorProfiles");
+    public static final QName useAttributeName                          = new QName("", "use");
+    private static final List<QName> allProfileAttributeNames;
+
+    static {
+        List<QName> names = new java.util.ArrayList<QName>();
+        names.add(contentProfilesAttributeName);
+        names.add(processorProfilesAttributeName);
+        names.add(profileAttributeName);
+        allProfileAttributeNames = names;
+    }
+
     public TTML2ProfileVerifier(Model model) {
         super(model);
     }
 
+    @Override
     protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof TimedText)
@@ -66,25 +86,43 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
         return !failed;
     }
 
-    public boolean verify(TimedText content, Locator locator, VerifierContext context) {
+    protected boolean verify(TimedText content, Locator locator, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();
+        boolean specifiesSomeProfileAttribute = false;
+        // @contentProfiles
+        String contentProfilesAttribute = content.getContentProfiles();
+        if ((contentProfilesAttribute != null) && !contentProfilesAttribute.isEmpty())
+            specifiesSomeProfileAttribute = true;
+        // @processorProfiles
+        String processorProfilesAttribute = content.getProcessorProfiles();
+        if ((processorProfilesAttribute != null) && !processorProfilesAttribute.isEmpty())
+            specifiesSomeProfileAttribute = true;
+        // @profile
         String profileAttribute = content.getProfile();
+        if ((profileAttribute != null) && !profileAttribute.isEmpty())
+            specifiesSomeProfileAttribute = true;
+        // warn if profile attribute is ignored when internal profile (element) is present, unless the former references the latter
         List<Profile> profileElements = (content.getHead() != null) ? content.getHead().getParametersClass() : null;
-        if ((profileElements != null) && (profileElements.size() > 0) && (profileAttribute != null)) {
+        if ((profileElements != null) && (profileElements.size() > 0) && specifiesSomeProfileAttribute) {
+            // [TBD] do not emit warning when a profile attribute supplies the profile and that profile is an internal profile
             if (reporter.isWarningEnabled("ignored-profile-attribute")) {
                 Message message = reporter.message(locator, "*KEY*",
-                    "When {0} element is present, the {1} attribute is ignored.", profileElementName, profileAttributeName);
+                    "When {0} element is present, the {1} attribute is ignored.", profileElementName, allProfileAttributeNames);
                 if (reporter.logWarning(message))
                     failed = true;
             }
         }
-        if (((profileElements == null) || (profileElements.size() == 0)) && ((profileAttribute == null) || (profileAttribute.length() == 0))) {
-            if (reporter.isWarningEnabled("missing-profile")) {
-                Message message = reporter.message(locator, "*KEY*",
-                    "No profile specified, expected either {1} attribute or {0} element.", profileElementName, profileAttributeName);
-                if (reporter.logWarning(message))
-                    failed = true;
+        // warn if no profile attribute or internal profile is present
+        if ((profileElements == null) || (profileElements.size() == 0)) {
+            if (!specifiesSomeProfileAttribute) {
+                if (reporter.isWarningEnabled("missing-profile")) {
+                    Message message = reporter.message(locator, "*KEY*",
+                        "No profile specified, expected either (1) one of the {1} attributes or (2) a {0} element.",
+                        profileElementName, profileAttributeName);
+                    if (reporter.logWarning(message))
+                        failed = true;
+                }
             }
         }
         return !failed;
@@ -92,8 +130,46 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
 
     protected boolean verify(Profile content, Locator locator, VerifierContext context) {
         boolean failed = false;
-        // warn on duplicate features
-        // warn on duplicate extensions
+        Reporter reporter = context.getReporter();
+        // @combine     - schema validation only, but handle defaulting here
+        ProfileCombination combine = content.getCombine();
+        if (combine == null) {
+            combine = ProfileCombination.IGNORE;        // N.B. spec currently say REPLACE, but should say IGNORE!!!
+            content.setCombine(combine);
+        }
+        // @designator  - must be absolute
+        String designator = content.getDesignator();
+        if ((designator != null) && !URIs.isAbsolute(designator)) {
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Invalid {0} attribute, reference to non-absolute URI ''{1}'' not permitted", designatorAttributeName, designator));
+            failed = true;
+        }
+        // @type        - schema validation only, but handle defaulting here
+        ProfileType type = content.getType();
+        if (type == null) {
+            type = ProfileType.PROCESSOR;
+            content.setType(type);
+        }
+        // @use         - must not be local fragment
+        String use = content.getUse();
+        if ((use != null) && URIs.isLocalFragment(use)) {
+            reporter.logInfo(reporter.message(locator, "*KEY*",
+                "Invalid {0} attribute, reference to local fragment ''{1}'' not permitted", useAttributeName, use));
+            failed = true;
+        }
+        // check nesting constraints
+        Object parent = context.getBindingElementParent(content);
+        if (parent instanceof Profile) {
+            ProfileType tThis   = content.getType();
+            ProfileType tParent = ((Profile) parent).getType();
+            if (tParent == null)
+                tParent = type = ProfileType.PROCESSOR;
+            if (tThis != tParent) {
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Invalid nested profile, this profile''s type ''{0}'' must match parent''s profile type ''{1}''", tThis.value(), tParent.value()));
+                failed = true;
+            }
+        }
         return !failed;
     }
 
