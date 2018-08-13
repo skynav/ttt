@@ -1351,6 +1351,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2InitialNestedStyle() throws Exception {
+        performInvalidityTest("ttml2-invld-initial-nested-style.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2PermitFeatureNarrowingAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-permit-feature-narrowing-all-space.xml", -1, -1);
     }

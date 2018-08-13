@@ -462,6 +462,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2InitialDuplicate() throws Exception {
+        performValidityTest("ttml2-valid-initial-duplicate.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2InitialMultiple() throws Exception {
+        performValidityTest("ttml2-valid-initial-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2InitialNone() throws Exception {
+        performValidityTest("ttml2-valid-initial-none.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2InitialSingle() throws Exception {
+        performValidityTest("ttml2-valid-initial-single.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2IPD() throws Exception {
         performValidityTest("ttml2-valid-ipd.xml", -1, -1);
     }

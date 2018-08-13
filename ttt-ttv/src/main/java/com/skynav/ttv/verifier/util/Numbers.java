@@ -43,12 +43,10 @@ public class Numbers {
         Reporter reporter = context.getReporter();
         Locator locator = location.getLocator();
         Matcher m = numberPattern.matcher(value);
-        System.out.println("isNumber(" + value + ")");
         if (m.matches()) {
             assert m.groupCount() > 0;
             // number
             String number = m.group(1);
-            System.out.println("isNumber#matchNumber(" + number + ")");
             double numberValue;
             if (!Strings.containsDecimalSeparator(number)) {
                 try {
@@ -71,7 +69,6 @@ public class Numbers {
                 signTreatment = null;
             if (signTreatment != null) {
                 String sign = m.group(2);
-                System.out.println("isNumber#matchSign(" + sign + ")");
                 if ((sign != null) && !sign.isEmpty()) {
                     if (signTreatment == SignTreatment.Error)
                         return false;
