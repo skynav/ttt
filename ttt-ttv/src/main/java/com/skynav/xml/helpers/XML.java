@@ -32,6 +32,7 @@ public class XML {
     public static final String xmlNamespace                     = "http://www.w3.org/XML/1998/namespace";
     public static final String xmlnsNamespace                   = "http://www.w3.org/2000/xmlns/";
     public static final String xsiNamespace                     = "http://www.w3.org/2001/XMLSchema-instance";
+    public static final String xlinkNamespace                   = "http://www.w3.org/1999/xlink";
 
     public static final String xmlPrefix                        = "xml";
     public static final String xmlnsPrefix                      = "xmlns";
@@ -60,6 +61,11 @@ public class XML {
         return xmlIdName;
     }
 
+    private static final QName xlinkHrefName = new QName(getXlinkNamespaceUri(), "href");
+    public static QName getXlinkHrefAttributeName() {
+        return xlinkHrefName;
+    }
+
     public static String getXSINamespaceUri() {
         return xsiNamespace;
     }
@@ -70,6 +76,14 @@ public class XML {
 
     public static boolean isXMLNSNamespace(String nsUri) {
         return (nsUri != null) && nsUri.equals(xmlnsNamespace);
+    }
+
+    public static String getXlinkNamespaceUri() {
+        return xlinkNamespace;
+    }
+
+    public static boolean isXlinkNamespace(String nsUri) {
+        return (nsUri != null) && nsUri.equals(getXlinkNamespaceUri());
     }
 
     public static boolean isAnyXMLNamespace(String nsUri) {

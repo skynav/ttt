@@ -32,6 +32,8 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml2.tt.Chunk;
+import com.skynav.ttv.model.ttml2.tt.Image;
+import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.ClockMode;
 import com.skynav.ttv.model.ttml2.ttd.DropMode;
@@ -59,6 +61,7 @@ import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ValidationActionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ValidationVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.VersionVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.XlinkHrefVerifier;
 
 import com.skynav.xml.helpers.XML;
 
@@ -69,8 +72,6 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     public static final QName displayAspectRatioAttributeName           = new QName(NAMESPACE, "displayAspectRatio");
     public static final QName inferProcessorProfileMethodAttributeName  = new QName(NAMESPACE, "inferProcessorProfileMethod");
     public static final QName inferProcessorProfileSourceAttributeName  = new QName(NAMESPACE, "inferProcessorProfileSource");
-    public static final QName mediaDurationAttributeName                = new QName(NAMESPACE, "mediaDuration");
-    public static final QName mediaOffsetAttributeName                  = new QName(NAMESPACE, "mediaOffset");
     public static final QName permitFeatureNarrowingAttributeName       = new QName(NAMESPACE, "permitFeatureNarrowing");
     public static final QName permitFeatureWideningAttributeName        = new QName(NAMESPACE, "permitFeatureWidening");
     public static final QName processorProfileCombinationAttributeName  = new QName(NAMESPACE, "processorProfileCombination");
@@ -78,6 +79,7 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     public static final QName validationActionAttributeName             = new QName(NAMESPACE, "validationAction");
     public static final QName validationAttributeName                   = new QName(NAMESPACE, "validation");
     public static final QName versionAttributeName                      = new QName(NAMESPACE, "version");
+    public static final QName xlinkHrefAttributeName                    = XML.getXlinkHrefAttributeName();
 
     private static final Object[][] parameterAccessorMap                = new Object[][] {
         {
@@ -200,6 +202,15 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             Boolean.FALSE,
             ValidationAction.WARN,
         },
+        // 'xlink:href' attribute applies only to span and image elements
+        {
+            xlinkHrefAttributeName,
+            "Href",
+            String.class,
+            XlinkHrefVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
     };
 
     public TTML2ParameterVerifier(Model model) {
@@ -225,6 +236,13 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
                 return false;
             else
                 return true;
+        } else if (name.equals(xlinkHrefAttributeName)) {
+            if (content instanceof Span)
+                return true;
+            else if (content instanceof Image)
+                return true;
+            else
+                return false;
         } else
             return false;
     }
@@ -232,10 +250,6 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     @Override
     protected boolean isParameterAttribute(QName name) {
         if (super.isParameterAttribute(name))
-            return true;
-        else if (name.equals(mediaDurationAttributeName))       // handled by ttml2 timing verifier
-            return true;
-        else if (name.equals(mediaOffsetAttributeName))         // handled by ttml2 timing verifier
             return true;
         else
             return false;

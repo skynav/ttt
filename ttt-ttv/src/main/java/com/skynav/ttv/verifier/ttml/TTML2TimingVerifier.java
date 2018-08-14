@@ -32,30 +32,12 @@ import javax.xml.namespace.QName;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.ttml.parameter.MediaDurationVerifier;
-import com.skynav.ttv.verifier.ttml.parameter.MediaOffsetVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters2;
 
 public class TTML2TimingVerifier extends TTML1TimingVerifier {
 
     private static final Object[][] timingAccessorMap                   = new Object[][] {
-        {
-            TTML2ParameterVerifier.mediaDurationAttributeName,
-            "MediaDuration",
-            String.class,
-            MediaDurationVerifier.class,
-            Boolean.FALSE,
-            null,
-        },
-        {
-            TTML2ParameterVerifier.mediaOffsetAttributeName,
-            "MediaOffset",
-            String.class,
-            MediaOffsetVerifier.class,
-            Boolean.FALSE,
-            null,
-        },
     };
 
     public TTML2TimingVerifier(Model model) {

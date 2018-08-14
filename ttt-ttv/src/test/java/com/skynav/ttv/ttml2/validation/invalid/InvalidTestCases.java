@@ -1522,6 +1522,26 @@ public class InvalidTestCases {
         performInvalidityTest("ttml2-invld-validation-unknown-keyword.xml", -1, -1);
     }
 
+    @Test
+    public void testInvalidTTML2XlinkHrefAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-xlink-href-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2XlinkHrefEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-xlink-href-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2XlinkHrefNestedImage() throws Exception {
+        performInvalidityTest("ttml2-invld-xlink-href-nested-image.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2XlinkHrefNestedSpan() throws Exception {
+        performInvalidityTest("ttml2-invld-xlink-href-nested-span.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performInvalidityTest(resourceName, expectedErrors, expectedWarnings, null);
     }

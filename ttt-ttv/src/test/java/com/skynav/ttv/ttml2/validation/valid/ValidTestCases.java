@@ -921,6 +921,21 @@ public class ValidTestCases {
         performValidityTest("ttml2-valid-visibility-image.xml", -1, -1);
     }
 
+    @Test
+    public void testValidTTML2XlinkHrefImageInBlock() throws Exception {
+        performValidityTest("ttml2-valid-xlink-href-image-in-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2XlinkHrefImageInInline() throws Exception {
+        performValidityTest("ttml2-valid-xlink-href-image-in-inline.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2XlinkHrefSpan() throws Exception {
+        performValidityTest("ttml2-valid-xlink-href-span.xml", -1, -1);
+    }
+
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performValidityTest(resourceName, expectedErrors, expectedWarnings, null);
     }

@@ -57,7 +57,7 @@ import com.skynav.ttv.verifier.ttml.TTML2ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2StyleVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2TimingVerifier;
-
+import com.skynav.xml.helpers.XML;
 
 public class TTML2 {
 
@@ -121,6 +121,7 @@ public class TTML2 {
             List<URI> namespaceURIs = new java.util.ArrayList<URI>();
             try {
                 namespaceURIs.addAll(Arrays.asList(super.getTTNamespaceURIs()));
+                namespaceURIs.add(new URI(XML.getXlinkNamespaceUri()));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_TT_AUDIO));
                 this.namespaceURIs = namespaceURIs.toArray(new URI[namespaceURIs.size()]);
             } catch (URISyntaxException e) {
