@@ -532,6 +532,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2MetadataItemNamed() throws Exception {
+        performValidityTest("ttml2-valid-metadata-item-named.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2MetadataItemQualified() throws Exception {
+        performValidityTest("ttml2-valid-metadata-item-qualified.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Opacity() throws Exception {
         performValidityTest("ttml2-valid-opacity.xml", -1, -1);
     }

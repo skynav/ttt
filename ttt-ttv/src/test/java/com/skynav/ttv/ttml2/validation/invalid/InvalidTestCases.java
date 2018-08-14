@@ -1361,6 +1361,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2MetadataItemAllSpace() throws Exception {
+        performInvalidityTest("ttml2-invld-metadata-item-all-space.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2MetadataItemEmpty() throws Exception {
+        performInvalidityTest("ttml2-invld-metadata-item-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2MetadataItemQualifiedMissingBinding() throws Exception {
+        performInvalidityTest("ttml2-invld-metadata-item-qualified-missing-binding.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2PermitFeatureNarrowingAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-permit-feature-narrowing-all-space.xml", -1, -1);
     }
