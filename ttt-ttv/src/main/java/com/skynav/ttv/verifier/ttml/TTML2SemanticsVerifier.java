@@ -237,6 +237,24 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
+    protected boolean verifyDivision(Object division) {
+        boolean failed = false;
+        if (!super.verifyDivision(division))
+            failed = true;
+        Region region = getDivisionRegion(division);
+        if (region != null) {
+            if (!verifyRegion(region))
+                failed = true;
+        }
+        return !failed;
+    }
+    
+    protected Region getDivisionRegion(Object division) {
+        assert division instanceof Division;
+        return ((Division) division).getLayoutClass();
+    }
+
+    @Override
     protected boolean verifyBlock(Object block) {
         if (block instanceof Division)
             return verifyDivision(block);
@@ -260,6 +278,8 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
                 return verifyAnimate(element);
             else if (element instanceof Set)
                 return verifySet(element);
+            else if (element instanceof Region)
+                return verifyRegion(element);
             else if (element instanceof Span)
                 return verifySpan(element);
             else if (element instanceof Break)

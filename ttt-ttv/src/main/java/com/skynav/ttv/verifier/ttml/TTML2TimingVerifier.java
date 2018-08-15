@@ -29,15 +29,33 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.xml.sax.Locator;
+
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml2.tt.Division;
+import com.skynav.ttv.model.ttml2.tt.Image;
+import com.skynav.ttv.model.ttml2.tt.Paragraph;
+import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.TimeContainer;
+import com.skynav.ttv.util.Message;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.timing.TimeContainerVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters2;
 
 public class TTML2TimingVerifier extends TTML1TimingVerifier {
 
     private static final Object[][] timingAccessorMap                   = new Object[][] {
+        {
+            timeContainerAttributeName,
+            "TimeContainer",
+            TimeContainer.class,
+            TimeContainerVerifier.class,
+            Boolean.FALSE,
+            TimeContainer.PAR,
+        },
     };
 
     public TTML2TimingVerifier(Model model) {
@@ -53,6 +71,46 @@ public class TTML2TimingVerifier extends TTML1TimingVerifier {
     @Override
     protected TimingVerificationParameters makeTimingVerificationParameters(Object content, VerifierContext context) {
         return new TimingVerificationParameters2(content, context != null ? context.getExternalParameters() : null);
+    }
+
+    @Override
+    protected boolean verifyAttributeItem(Object content, Locator locator, TimingAccessor ta, VerifierContext context) {
+        if (!super.verifyAttributeItem(content, locator, ta, context))
+            return false;
+        else {
+            boolean failed = false;
+            Reporter reporter = context.getReporter();
+            Message message = null;
+            if (content instanceof Region) {
+                if (isBlock(context.getBindingElementParent(content), context)) {
+                    QName name = ta.getTimingName();
+                    Object value = ta.getTimingValue(content);
+                    if (value != null) {
+                        message = reporter.message(locator, "*KEY*",
+                            "Timing attribute ''{0}'' is prohibited on inline ''{1}'' in block context.", name, context.getBindingElementName(content));
+                        failed = true;
+                    }
+                }
+            }
+            if (message != null) {
+                if (failed)
+                    reporter.logError(message);
+                else
+                    reporter.logInfo(message);
+            }
+            return !failed;
+        }
+    }
+
+    protected boolean isBlock(Object content, VerifierContext context) {
+        if (content instanceof Division)
+            return true;
+        else if (content instanceof Paragraph)
+            return true;
+        else if (content instanceof Image)
+            return isBlock(context.getBindingElementParent(content), context);
+        else
+            return false;
     }
 
     @Override

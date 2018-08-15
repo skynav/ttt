@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml1.tt.TimedText;
+import com.skynav.ttv.model.ttml1.ttd.TimeContainer;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.AbstractVerifier;
@@ -42,6 +43,7 @@ import com.skynav.ttv.verifier.TimingValueVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.ttml.timing.TimeContainerVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimeCoordinateVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimeDurationVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
@@ -53,6 +55,7 @@ public class TTML1TimingVerifier extends AbstractVerifier implements TimingVerif
     public static final QName beginAttributeName                        = new QName("", "begin");
     public static final QName durAttributeName                          = new QName("", "dur");
     public static final QName endAttributeName                          = new QName("", "end");
+    public static final QName timeContainerAttributeName                = new QName("", "timeContainer");
 
     private static final Object[][] timingAccessorMap                   = new Object[][] {
         {
@@ -79,6 +82,14 @@ public class TTML1TimingVerifier extends AbstractVerifier implements TimingVerif
             Boolean.FALSE,
             null,
         },
+        {
+            timeContainerAttributeName,
+            "TimeContainer",
+            TimeContainer.class,
+            TimeContainerVerifier.class,
+            Boolean.FALSE,
+            TimeContainer.PAR,
+        },
     };
 
     private Map<QName, TimingAccessor> accessors;
@@ -102,10 +113,14 @@ public class TTML1TimingVerifier extends AbstractVerifier implements TimingVerif
         if (isTimedText(content))
             verificationParameters = makeTimingVerificationParameters(content, context);
         for (TimingAccessor ta : accessors.values()) {
-            if (!ta.verify(getModel(), content, locator, context))
+            if (!verifyAttributeItem(content, locator, ta, context))
                 failed = true;
         }
         return !failed;
+    }
+
+    protected boolean verifyAttributeItem(Object content, Locator locator, TimingAccessor ta, VerifierContext context) {
+        return ta.verify(getModel(), content, locator, context);
     }
 
     protected boolean isTimedText(Object content) {
@@ -159,6 +174,10 @@ public class TTML1TimingVerifier extends AbstractVerifier implements TimingVerif
 
         public TimingAccessor(QName timingName, String accessorName, Class<?> valueClass, Class<?> verifierClass, boolean paddingPermitted) {
             populate(timingName, accessorName, valueClass, verifierClass, paddingPermitted);
+        }
+
+        public QName getTimingName() {
+            return timingName;
         }
 
         public boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
@@ -218,7 +237,7 @@ public class TTML1TimingVerifier extends AbstractVerifier implements TimingVerif
             this.paddingPermitted = paddingPermitted;
         }
 
-        private Object getTimingValue(Object content) {
+        protected Object getTimingValue(Object content) {
             try {
                 Class<?> contentClass = content.getClass();
                 Method m = contentClass.getMethod(getterName, new Class<?>[]{});

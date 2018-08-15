@@ -727,6 +727,21 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2RegionInline() throws Exception {
+        performValidityTest("ttml2-valid-region-inline.xml", -1, -1, new String[] { "--debug-exceptions" });
+    }
+
+    @Test
+    public void testValidTTML2RegionImpliedAnimation() throws Exception {
+        performValidityTest("ttml2-valid-region-implied-animation.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2RegionTiming() throws Exception {
+        performValidityTest("ttml2-valid-region-timing.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ResourcesAll() throws Exception {
         performValidityTest("ttml2-valid-resources-all.xml", -1, -1);
     }

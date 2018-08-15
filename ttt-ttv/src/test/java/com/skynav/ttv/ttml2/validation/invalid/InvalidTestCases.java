@@ -1508,6 +1508,31 @@ public class InvalidTestCases {
     */
 
     @Test
+    public void testInvalidTTML2RegionInlineDivMultiple() throws Exception {
+        performInvalidityTest("ttml2-invld-region-inline-div-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2RegionInlineImage() throws Exception {
+        performInvalidityTest("ttml2-invld-region-inline-image.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2RegionInlineParagraphMultiple() throws Exception {
+        performInvalidityTest("ttml2-invld-region-inline-p-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2RegionInlineSpan() throws Exception {
+        performInvalidityTest("ttml2-invld-region-inline-span.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2RegionInlineTiming() throws Exception {
+        performInvalidityTest("ttml2-invld-region-inline-timing.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ValidationActionAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-validation-action-all-space.xml", -1, -1);
     }
