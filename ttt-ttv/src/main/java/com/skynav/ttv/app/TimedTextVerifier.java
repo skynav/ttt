@@ -1,6 +1,6 @@
 /*
-* Copyright 2013-2016 Skynav, Inc. All rights reserved.
-*
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -97,6 +97,8 @@ import com.skynav.ttv.model.Models;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
+import com.skynav.ttv.model.value.WallClockTime;
+import com.skynav.ttv.model.value.impl.WallClockTimeImpl;
 import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.util.Configuration;
 import com.skynav.ttv.util.ConfigurationDefaults;
@@ -176,6 +178,7 @@ public class TimedTextVerifier implements VerifierContext {
         { "external-duration",          "DURATION", "specify root temporal extent duration for document processing context" },
         { "external-extent",            "EXTENT",   "specify root container region extent for document processing context" },
         { "external-frame-rate",        "RATE",     "specify frame rate for document processing context" },
+        { "external-wallclock-begin",   "TIME",     "specify document wallclock begin time for document processing context" },
         { "force-encoding",             "NAME",     "force use of named character encoding, overriding default and resource specified encoding" },
         { "force-model",                "NAME",     "force use of named model, overriding default model and resource specified model" },
         { "help",                       "",         "show usage help" },
@@ -295,6 +298,7 @@ public class TimedTextVerifier implements VerifierContext {
     private String externalDuration;
     private String externalExtent;
     private String externalFrameRate;
+    private String externalWallClockBegin;
     private Map<String,String> extensionSchemas = new java.util.HashMap<String,String>();
     private String forceEncodingName;
     private String forceModelName;
@@ -318,6 +322,7 @@ public class TimedTextVerifier implements VerifierContext {
     private double parsedExternalFrameRate;
     private double parsedExternalDuration;
     private double[] parsedExternalExtent;
+    private WallClockTime parsedExternalWallClockBegin;
 
     // global processing state
     private boolean restarted;
@@ -434,6 +439,7 @@ public class TimedTextVerifier implements VerifierContext {
         parsedExternalFrameRate = 0;
         parsedExternalDuration = 0;
         parsedExternalExtent = null;
+        parsedExternalWallClockBegin = null;
     }
 
     private void resetGlobalProcessingState(Reporter reporter, PrintWriter showOutput, boolean restart) {
@@ -892,6 +898,10 @@ public class TimedTextVerifier implements VerifierContext {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             externalFrameRate = args.get(++index);
+        } else if (option.equals("external-wallclock-begin")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            externalWallClockBegin = args.get(++index);
         } else if (option.equals("force-encoding")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
@@ -1076,6 +1086,17 @@ public class TimedTextVerifier implements VerifierContext {
                 getExternalParameters().setParameter("externalExtent", parsedExternalExtent);
             } else
                 throw new InvalidOptionUsageException("external-extent", "invalid syntax: " + externalExtent);
+        }
+        if (externalWallClockBegin != null) {
+            Time[] wallClockBegin = new Time[1];
+            TimeParameters timeParameters = new TimeParameters();
+            if (Timing.isCoordinate(externalWallClockBegin, null, this, timeParameters, wallClockBegin)) {
+                if (wallClockBegin[0].getType() != Time.Type.WallClock)
+                    throw new InvalidOptionUsageException("external-duration", "must use wallclock time syntax only: " + externalWallClockBegin);
+                parsedExternalWallClockBegin = ((WallClockTime) wallClockBegin[0]);
+                getExternalParameters().setParameter("externalWallClockBegin", parsedExternalWallClockBegin);
+            } else
+                throw new InvalidOptionUsageException("external-duration", "invalid syntax: " + externalWallClockBegin);
         }
         if (optionProcessor != null)
             optionProcessor.processDerivedOptions();
@@ -1451,6 +1472,11 @@ public class TimedTextVerifier implements VerifierContext {
         if (parsedExternalExtent != null) {
             setResourceState("externalExtent", parsedExternalExtent);
         }
+        if (parsedExternalWallClockBegin != null) {
+            setResourceState("externalWallClockBegin", parsedExternalWallClockBegin);
+        }
+        setResourceState("internalWallClockBegin", WallClockTimeImpl.utc());
+        setResourceState("internalWallClockOffsetFromUTC", Integer.valueOf(WallClockTimeImpl.utcOffset()));
     }
 
     private boolean verifyResource() {

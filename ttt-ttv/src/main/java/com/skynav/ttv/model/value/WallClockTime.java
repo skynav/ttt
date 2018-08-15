@@ -25,12 +25,14 @@
 
 package com.skynav.ttv.model.value;
 
-public interface Time {
-    public enum Type {
-        Clock,
-        Offset,
-        WallClock;
-    }
-    Type getType();
-    double getTime(TimeParameters parameters);
+import java.math.BigDecimal;
+
+public interface WallClockTime extends Time {
+    int getYears();
+    int getMonths();
+    int getDays();
+    int getHours();
+    int getMinutes();
+    double getSeconds();
+    BigDecimal getJulianDate();
 }

@@ -28,6 +28,7 @@ package com.skynav.ttv.verifier.ttml.timing;
 import java.math.BigDecimal;
 
 import com.skynav.ttv.model.ttml1.tt.TimedText;
+import com.skynav.ttv.model.value.ClockMode;
 import com.skynav.ttv.model.value.DropMode;
 import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.util.ExternalParameters;
@@ -43,6 +44,7 @@ public class TimingVerificationParameters1 extends TimingVerificationParameters 
         assert content instanceof TimedText;
         TimedText tt = (TimedText) content;
         this.timeBase = TimeBase.valueOf(tt.getTimeBase().name());
+        this.clockMode = ClockMode.valueOf(tt.getClockMode().name());
         this.dropMode = DropMode.valueOf(tt.getDropMode().name());
         this.allowDuration = (timeBase != TimeBase.SMPTE) || !tt.getMarkerMode().name().equals("DISCONTINUOUS");
         this.frameRate = tt.getFrameRate().intValue();

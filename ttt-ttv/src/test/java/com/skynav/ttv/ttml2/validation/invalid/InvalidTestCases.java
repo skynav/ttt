@@ -1563,6 +1563,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2WallClockDateTime() throws Exception {
+        performInvalidityTest("ttml2-invld-wall-clock-date-time.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2WallClockDate() throws Exception {
+        performInvalidityTest("ttml2-invld-wall-clock-date.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2WallClockWallTime() throws Exception {
+        performInvalidityTest("ttml2-invld-wall-clock-wall-time.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2XlinkHrefAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-xlink-href-all-space.xml", -1, -1);
     }

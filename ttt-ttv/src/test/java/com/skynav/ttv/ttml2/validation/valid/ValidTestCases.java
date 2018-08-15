@@ -947,6 +947,21 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2WallClockDate() throws Exception {
+        performValidityTest("ttml2-valid-wall-clock-date.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2WallClockDateTime() throws Exception {
+        performValidityTest("ttml2-valid-wall-clock-date-time.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2WallClockWallTime() throws Exception {
+        performValidityTest("ttml2-valid-wall-clock-wall-time.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2XlinkHrefImageInBlock() throws Exception {
         performValidityTest("ttml2-valid-xlink-href-image-in-block.xml", -1, -1);
     }

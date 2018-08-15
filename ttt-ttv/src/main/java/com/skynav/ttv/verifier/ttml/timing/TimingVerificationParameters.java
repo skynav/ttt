@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
+import com.skynav.ttv.model.value.ClockMode;
 import com.skynav.ttv.model.value.DropMode;
 import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.model.value.TimeParameters;
@@ -43,6 +44,7 @@ public class TimingVerificationParameters implements VerificationParameters {
     public static final int frameRateMultiplierScale = 16;
 
     protected TimeBase timeBase;
+    protected ClockMode clockMode;
     protected DropMode dropMode;
     protected boolean allowDuration;
     protected int frameRate;
@@ -67,6 +69,10 @@ public class TimingVerificationParameters implements VerificationParameters {
 
     public TimeBase getTimeBase() {
         return timeBase;
+    }
+
+    public ClockMode getClockMode() {
+        return clockMode;
     }
 
     public boolean allowsDuration() {
@@ -98,7 +104,7 @@ public class TimingVerificationParameters implements VerificationParameters {
     private TimeParameters timeParameters;
     public TimeParameters getTimeParameters() {
         if (timeParameters == null)
-            timeParameters = new TimeParameters(timeBase, dropMode, frameRate, subFrameRate, effectiveFrameRate, tickRate, externalDuration);
+            timeParameters = new TimeParameters(timeBase, clockMode, dropMode, frameRate, subFrameRate, effectiveFrameRate, tickRate, externalDuration);
         return timeParameters;
     }
 

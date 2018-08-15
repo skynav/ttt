@@ -25,12 +25,8 @@
 
 package com.skynav.ttv.model.value;
 
-public interface Time {
-    public enum Type {
-        Clock,
-        Offset,
-        WallClock;
-    }
-    Type getType();
-    double getTime(TimeParameters parameters);
+public enum ClockMode {
+    LOCAL,
+    GPS,
+    UTC;
 }

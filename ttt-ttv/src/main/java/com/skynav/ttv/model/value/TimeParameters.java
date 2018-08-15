@@ -27,6 +27,7 @@ package com.skynav.ttv.model.value;
 
 public class TimeParameters {
     private TimeBase timeBase;
+    private ClockMode clockMode;
     private DropMode dropMode;
     private int frameRate;
     private int subFrameRate;
@@ -37,10 +38,11 @@ public class TimeParameters {
         this(30.0);
     }
     public TimeParameters(double frameRate) {
-        this(TimeBase.MEDIA, DropMode.NON_DROP, (int) frameRate, 1, frameRate, 1, Double.NaN);
+        this(TimeBase.MEDIA, ClockMode.UTC, DropMode.NON_DROP, (int) frameRate, 1, frameRate, 1, Double.NaN);
     }
-    public TimeParameters(TimeBase timeBase, DropMode dropMode, int frameRate, int subFrameRate, double effectiveFrameRate, int tickRate, double externalDuration) {
+    public TimeParameters(TimeBase timeBase, ClockMode clockMode, DropMode dropMode, int frameRate, int subFrameRate, double effectiveFrameRate, int tickRate, double externalDuration) {
         this.timeBase = timeBase;
+        this.clockMode = clockMode;
         this.dropMode = dropMode;
         this.frameRate = frameRate;
         this.subFrameRate = subFrameRate;
@@ -49,6 +51,7 @@ public class TimeParameters {
         this.externalDuration = externalDuration;
     }
     public TimeBase getTimeBase() { return this.timeBase; }
+    public ClockMode getClockMode() { return clockMode; }
     public DropMode getDropMode() { return dropMode; }
     public int getFrameRate() { return this.frameRate; }
     public int getSubFrameRate() { return this.subFrameRate; }

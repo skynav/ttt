@@ -31,14 +31,19 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Locator;
 
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.value.ClockMode;
 import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.OffsetTime;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.model.value.TimeParameters;
+import com.skynav.ttv.model.value.WallClockTime;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
 import com.skynav.ttv.model.value.impl.OffsetTimeImpl;
+import com.skynav.ttv.model.value.impl.WallClockTimeImpl;
 import com.skynav.ttv.util.Location;
+import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -49,15 +54,33 @@ public class Timing {
             return true;
         else if (isOffsetTime(value, location, context, timeParameters, outputTime))
             return true;
-        else
+        else if (isWallClockTime(value, location, context, timeParameters, outputTime)) {
+            if (context.getModel().isTTMLVersion(2))
+                return true;
+            else
+                return false;
+        } else
             return false;
     }
 
     public static void badCoordinate(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
-        if (value.indexOf(':') >= 0)
+        if (maybeWallClockTime(value, location, context, timeParameters)) {
+            Model model = context.getModel();
+            if (model.isTTMLVersion(2))
+                badWallClockTime(value, location, context, timeParameters);
+            else {
+                Reporter reporter = context.getReporter();
+                reporter.logInfo(reporter.message(location.getLocator(), "*KEY*",
+                    "Bad <timeExpression>, wall clock time not supported in TTML{0}.", model.getTTMLVersion()));
+            }
+        } else if (maybeClockTime(value, location, context, timeParameters))
             badClockTime(value, location, context, timeParameters);
         else
             badOffsetTime(value, location, context, timeParameters);
+    }
+
+    private static boolean maybeClockTime(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
+        return value.indexOf(':') >= 0;
     }
 
     public static boolean isDuration(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
@@ -455,6 +478,144 @@ public class Timing {
 
         } while (false);
 
+    }
+
+    private static final Pattern wallClockTimePattern = Pattern.compile("wallclock\\(\\s*([^\\)]*)\\s*\\)");
+    private static boolean maybeWallClockTime(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
+        return wallClockTimePattern.matcher(value).matches();
+    }
+
+    public static boolean isWallClockTime(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+        Matcher m = wallClockTimePattern.matcher(value);
+        if (m.matches()) {
+            assert m.groupCount() == 1;
+            String wallClockTime = m.group(1);
+            if (isWallClockDateTime(wallClockTime, location, context, timeParameters, outputTime))
+                return true;
+            else if (isWallClockWallTime(wallClockTime, location, context, timeParameters, outputTime))
+                return true;
+            else if (isWallClockDate(wallClockTime, location, context, timeParameters, outputTime))
+                return true;
+            else
+                return false;
+        } else
+            return false;
+    }
+
+    private static final Pattern wallClockDateTimePattern =
+        Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})(?::(\\d{2}(?:\\.\\d+)?))?");
+    public static boolean isWallClockDateTime(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+        Matcher m = wallClockDateTimePattern.matcher(value);
+        if (m.matches()) {
+            assert m.groupCount() >= 5;
+            String years = m.group(1);
+            String months = m.group(2);
+            String days = m.group(3);
+            String hours = m.group(4);
+            String minutes = m.group(5);
+            String seconds = null;
+            if (m.groupCount() > 5)
+                seconds = m.group(6);
+            if ((timeParameters.getTimeBase() != TimeBase.CLOCK) && (timeParameters.getClockMode() != ClockMode.UTC))
+                return false;
+            WallClockTime t = new WallClockTimeImpl(years, months, days, hours, minutes, seconds);
+            if ((t.getMonths() < 1) || (t.getMonths() > 12))
+                return false;
+            if ((t.getDays() < 1) || (t.getDays() > 31))
+                return false;
+            if (t.getHours() > 23)
+                return false;
+            if (t.getMinutes() > 59)
+                return false;
+            if (t.getSeconds() > 60.0)
+                return false;
+            if (outputTime != null)
+                outputTime[0] = t;
+            return true;
+        } else
+            return false;
+    }
+
+    private static final Pattern wallClockWallTimePattern = Pattern.compile("(\\d{2}):(\\d{2})(?::(\\d{2}(?:\\.\\d+)?))?");
+    public static boolean isWallClockWallTime(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+        Matcher m = wallClockWallTimePattern.matcher(value);
+        if (m.matches()) {
+            WallClockTime tBegin = getDocumentWallClockBegin(context);
+            String years = Integer.toString(tBegin.getYears());
+            String months = Integer.toString(tBegin.getMonths());
+            String days = Integer.toString(tBegin.getDays());
+            assert m.groupCount() >= 2;
+            String hours = m.group(1);
+            String minutes = m.group(2);
+            String seconds = null;
+            if (m.groupCount() > 2)
+                seconds = m.group(3);
+            if ((timeParameters.getTimeBase() != TimeBase.CLOCK) && (timeParameters.getClockMode() != ClockMode.UTC))
+                return false;
+            WallClockTime t = new WallClockTimeImpl(years, months, days, hours, minutes, seconds);
+            if (t.getHours() > 23)
+                return false;
+            if (t.getMinutes() > 59)
+                return false;
+            if (t.getSeconds() > 60.0)
+                return false;
+            if (outputTime != null)
+                outputTime[0] = t;
+            return true;
+        } else
+            return false;
+    }
+
+    private static final Pattern wallClockDatePattern = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})");
+    public static boolean isWallClockDate(String value, Location location, VerifierContext context, TimeParameters timeParameters, Time[] outputTime) {
+        Matcher m = wallClockDatePattern.matcher(value);
+        if (m.matches()) {
+            assert m.groupCount() == 3;
+            String years = m.group(1);
+            String months = m.group(2);
+            String days = m.group(3);
+            String hours = null;
+            String minutes = null;
+            String seconds = null;
+            if ((timeParameters.getTimeBase() != TimeBase.CLOCK) && (timeParameters.getClockMode() != ClockMode.UTC))
+                return false;
+            WallClockTime t = new WallClockTimeImpl(years, months, days, hours, minutes, seconds);
+            if ((t.getMonths() < 1) || (t.getMonths() > 12))
+                return false;
+            if ((t.getDays() < 1) || (t.getDays() > 31))
+                return false;
+            if (outputTime != null)
+                outputTime[0] = t;
+            return true;
+        } else
+            return false;
+    }
+
+    public static void badWallClockTime(String value, Location location, VerifierContext context, TimeParameters timeParameters) {
+        Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
+        Message m;
+        if (value.indexOf('T') >= 0) {          // date-time format contains 'T', while other forms do not
+            m = reporter.message(locator, "*KEY*", "Bad date-time form of wall clock <timeExpression>.");
+        } else if (value.indexOf('-') >= 0) {   // date format contains '-', but not 'T'
+            m = reporter.message(locator, "*KEY*", "Bad date form of wall clock <timeExpression>.");
+        } else if (value.indexOf(':') >= 0) {   // wall-time format contains ':', but not 'T' and not '-'
+            m = reporter.message(locator, "*KEY*", "Bad wall-time form of wallclock time <timeExpression>.");
+        } else {                                // no hint on intended format
+            m = reporter.message(locator, "*KEY*", "Bad wall clock <timeExpression>.");
+        }
+        reporter.logInfo(m);
+    }
+
+    private static WallClockTime getDocumentWallClockBegin(VerifierContext context) {
+        WallClockTime xwcb = (WallClockTime) context.getResourceState("externalWallClockBegin");
+        if (xwcb != null)
+            return xwcb;
+        WallClockTime iwcb = (WallClockTime) context.getResourceState("internalWallClockBegin");
+        if (iwcb != null)
+            return iwcb;
+        else
+            return WallClockTimeImpl.utc();
     }
 
 }
