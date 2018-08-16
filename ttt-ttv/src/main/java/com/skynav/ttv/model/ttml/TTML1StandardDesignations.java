@@ -202,11 +202,13 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
         return (extensionDesignations != null) && extensionDesignations.contains(uri);
     }
 
-    protected String[] getFeatureDesignationStrings() {
+    @Override
+    public String[] getFeatureDesignationStrings() {
         return ttml1FeatureDesignationStrings;
     }
 
-    protected String[] getExtensionDesignationStrings() {
+    @Override
+    public String[] getExtensionDesignationStrings() {
         return ttml1ExtensionDesignationStrings;
     }
 

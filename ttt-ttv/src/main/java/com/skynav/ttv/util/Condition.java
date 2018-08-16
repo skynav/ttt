@@ -83,8 +83,14 @@ public class Condition {
 
     public static EvaluatorState makeEvaluatorState(Map<String,Object> mediaParams, Map<String,Object> boundParams, Set<String> supportFeatures) {
         EvaluatorState state = new EvaluatorBindingState();
+        if (mediaParams == null)
+            mediaParams = new java.util.HashMap<String,Object>();
         state.setBinding("media", new MediaFunction(mediaParams));
+        if (boundParams == null)
+            boundParams = new java.util.HashMap<String,Object>();
         state.setBinding("parameter", new ParameterFunction(boundParams));
+        if (supportFeatures == null)
+            supportFeatures = new java.util.HashSet<String>();
         state.setBinding("supports", new SupportsFunction(supportFeatures));
         return state;
     }
@@ -1717,7 +1723,7 @@ public class Condition {
             this(e.getOperandCount(), minCount, maxCount);
         }
         public BadOperandCountException(int count, int minCount, int maxCount) {
-            super("expected from " + minCount + " to " + (maxCount >= 0 ? Integer.toString(maxCount) : "...") + " operands, got" + count);
+            super("expected from " + minCount + " to " + (maxCount >= 0 ? Integer.toString(maxCount) : "...") + " operands, got " + count);
         }
     }
 

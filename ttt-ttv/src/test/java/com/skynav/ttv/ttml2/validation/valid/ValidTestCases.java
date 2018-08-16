@@ -182,6 +182,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2ConditionMedia() throws Exception {
+        performValidityTest("ttml2-valid-condition-media.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ConditionParameter() throws Exception {
+        performValidityTest("ttml2-valid-condition-parameter.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ConditionPrimary() throws Exception {
+        performValidityTest("ttml2-valid-condition-primary.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ConditionSupports() throws Exception {
+        performValidityTest("ttml2-valid-condition-supports.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ContentProfileCombinationIgnore() throws Exception {
         performValidityTest("ttml2-valid-content-profile-combination-ignore.xml", -1, -1);
     }

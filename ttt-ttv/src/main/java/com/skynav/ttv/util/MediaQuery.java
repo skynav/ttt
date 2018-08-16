@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,11 +38,52 @@ public class MediaQuery {
     }
 
     public boolean evaluate(Map<String,Object> parameters) {
-        throw new UnsupportedOperationException();
+        // [TBD] implement me
+        return true;
     }
 
     public static MediaQuery valueOf(String query) throws ParserException {
-        throw new UnsupportedOperationException();
+        // [TBD] implement me
+        return new MediaQuery(new Query());
+    }
+
+    public static void populateDefaultMediaParameters(Map<String,Object> parameters) {
+        // current
+        parameters.put("aspect-ratio", Double.valueOf(16.0/9.0));
+        parameters.put("color", Double.valueOf(8));
+        parameters.put("color-index", Double.valueOf(0));
+        parameters.put("device-aspect-ratio", Double.valueOf(16.0/9.0));
+        parameters.put("device-height", Double.valueOf(1280));
+        parameters.put("device-width", Double.valueOf(720));
+        parameters.put("grid", Boolean.FALSE);
+        parameters.put("height", Double.valueOf(720));
+        parameters.put("monochrome", Double.valueOf(0));
+        parameters.put("orientation", "landscape");
+        parameters.put("resolution", Double.valueOf(100));
+        parameters.put("scan", "progressive");
+        parameters.put("width", Double.valueOf(1280));
+        // minimums
+        parameters.put("min-aspect-ratio", Double.valueOf(16.0/9.0));
+        parameters.put("min-color", Double.valueOf(8));
+        parameters.put("min-color-index", Double.valueOf(0));
+        parameters.put("min-device-aspect-ratio", Double.valueOf(16.0/9.0));
+        parameters.put("min-device-height", Double.valueOf(1280));
+        parameters.put("min-device-width", Double.valueOf(720));
+        parameters.put("min-height", Double.valueOf(720));
+        parameters.put("min-monochrome", Double.valueOf(0));
+        parameters.put("min-resolution", Double.valueOf(100));
+        parameters.put("min-width", Double.valueOf(1280));
+        // maximums
+        parameters.put("max-aspect-ratio", Double.valueOf(16.0/9.0));
+        parameters.put("max-color", Double.valueOf(8));
+        parameters.put("max-color-index", Double.valueOf(0));
+        parameters.put("max-device-aspect-ratio", Double.valueOf(16.0/9.0));
+        parameters.put("max-device-height", Double.valueOf(1280));
+        parameters.put("max-device-width", Double.valueOf(720));
+        parameters.put("max-height", Double.valueOf(720));
+        parameters.put("max-monochrome", Double.valueOf(0));
+        parameters.put("max-resolution", Double.valueOf(100));
+        parameters.put("max-width", Double.valueOf(1280));
     }
 
     public static class Query {

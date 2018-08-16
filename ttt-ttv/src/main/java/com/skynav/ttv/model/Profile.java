@@ -123,6 +123,14 @@ public class Profile {
             return false;
         }
 
+        public String[] getFeatureDesignationStrings() {
+            return new String[] {};
+        }
+
+        public String[] getExtensionDesignationStrings() {
+            return new String[] {};
+        }
+
     }
 
     public static class Specification {

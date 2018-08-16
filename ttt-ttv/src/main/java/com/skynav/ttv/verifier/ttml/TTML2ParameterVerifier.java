@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -49,6 +49,7 @@ import com.skynav.ttv.model.ttml2.ttp.Extensions;
 import com.skynav.ttv.model.ttml2.ttp.Feature;
 import com.skynav.ttv.model.ttml2.ttp.Features;
 import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.ConditionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DisplayAspectRatioVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DropModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.FeatureSemanticsVerifier;
@@ -67,6 +68,7 @@ import com.skynav.xml.helpers.XML;
 
 public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
 
+    public static final QName conditionAttributeName                    = new QName("", "condition");
     public static final QName contentProfileCombinationAttributeName    = new QName(NAMESPACE, "contentProfileCombination");
     public static final QName contentProfilesAttributeName              = new QName(NAMESPACE, "contentProfiles");
     public static final QName displayAspectRatioAttributeName           = new QName(NAMESPACE, "displayAspectRatio");
@@ -82,6 +84,14 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     public static final QName xlinkHrefAttributeName                    = XML.getXlinkHrefAttributeName();
 
     private static final Object[][] parameterAccessorMap                = new Object[][] {
+        {
+            conditionAttributeName,
+            "Condition",
+            String.class,
+            ConditionVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
         {
             clockModeAttributeName,
             "ClockMode",

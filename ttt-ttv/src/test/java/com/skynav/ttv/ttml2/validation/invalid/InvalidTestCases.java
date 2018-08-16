@@ -1166,6 +1166,26 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2ConditionMedia() throws Exception {
+        performInvalidityTest("ttml2-invld-condition-media.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ConditionParameter() throws Exception {
+        performInvalidityTest("ttml2-invld-condition-parameter.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ConditionPrimary() throws Exception {
+        performInvalidityTest("ttml2-invld-condition-primary.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ConditionSupports() throws Exception {
+        performInvalidityTest("ttml2-invld-condition-supports.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ContentProfileCombinationAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-content-profile-combination-all-space.xml", -1, -1);
     }

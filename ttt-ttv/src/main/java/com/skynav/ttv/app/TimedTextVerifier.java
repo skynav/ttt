@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
@@ -94,18 +95,21 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
+import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.model.value.WallClockTime;
 import com.skynav.ttv.model.value.impl.WallClockTimeImpl;
 import com.skynav.ttv.util.Annotations;
+import com.skynav.ttv.util.Condition;
 import com.skynav.ttv.util.Configuration;
 import com.skynav.ttv.util.ConfigurationDefaults;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Locators;
+import com.skynav.ttv.util.MediaQuery;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Reporters;
@@ -1477,8 +1481,44 @@ public class TimedTextVerifier implements VerifierContext {
         }
         setResourceState("internalWallClockBegin", WallClockTimeImpl.utc());
         setResourceState("internalWallClockOffsetFromUTC", Integer.valueOf(WallClockTimeImpl.utcOffset()));
+        setResourceState("conditionEvaluatorState", makeConditionEvaluatorState());
     }
 
+    private Condition.EvaluatorState makeConditionEvaluatorState() {
+        // media parameters
+        Map<String,Object> mp = new java.util.HashMap<String,Object>();
+        populateMediaParameters(mp);
+        // bound parameters
+        Map<String,Object> bp = new java.util.HashMap<String,Object>();
+        populateBoundParameters(bp);
+        // supported features
+        Set<String> sf = new java.util.HashSet<String>();
+        populateSupportedFeatures(sf);
+        return Condition.makeEvaluatorState(mp, bp, sf);
+    }
+
+    private void populateMediaParameters(Map<String,Object> parameters) {
+        MediaQuery.populateDefaultMediaParameters(parameters);
+    }
+    
+    private void populateBoundParameters(Map<String,Object> parameters) {
+        parameters.put("forced", Boolean.FALSE);
+        parameters.put("mediaAspectRatio", Double.valueOf(16.0/9.0));
+        parameters.put("mediaLanguage", "");
+        parameters.put("userLanguage", Locale.getDefault().getLanguage());
+    }
+
+    private void populateSupportedFeatures(Set<String> features) {
+        Model model = getModel();
+        Profile.StandardDesignations designations = model.getStandardDesignations();
+        for (String fd : designations.getFeatureDesignationStrings()) {
+            features.add(fd);
+        }
+        for (String ed : designations.getExtensionDesignationStrings()) {
+            features.add(ed);
+        }
+    }
+    
     private boolean verifyResource() {
         Reporter reporter = getReporter();
         currentPhase = Phase.Resource;

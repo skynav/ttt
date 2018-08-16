@@ -293,12 +293,12 @@ public class TTML2StandardDesignations extends TTML1StandardDesignations {
     }
 
     @Override
-    protected String[] getFeatureDesignationStrings() {
+    public String[] getFeatureDesignationStrings() {
         return ttml2FeatureDesignationStrings;
     }
 
     @Override
-    protected String[] getExtensionDesignationStrings() {
+    public String[] getExtensionDesignationStrings() {
         return ttml2ExtensionDesignationStrings;
     }
 
