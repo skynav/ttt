@@ -32,9 +32,9 @@ The second phase performs well-formedness testing by attempting to parse the res
 
 The third phase performs schema validity testing using an XSD (XML Schema Definition) schema. The schema used during validation is determined by the specified (or default) verification model. Different models may specify different schemas. If a schema validation error occurs, then this phase fails.
 
-Unless `--treat-foreign-as` is specified as `allow`, elements and attributes in foreign (non-TTML and non-XML) namespaces are pruned by a filtering process before attempting schema validation. In this case, potential validity of foreign namespace vocabulary is not assessed. If `--treat-foreign-as` is specified as `allow`, then foreign vocabulary is not pruned, which, depending on the schema, may result in schema validation errors if the schema is not designed to permit foreign attributes or elements.
+Unless `--treat-foreign-as` is specified as `allow`, elements and attributes in foreign (non-TTML and non-XML) namespaces are pruned by a filtering process before attempting schema validation. In this case, potential validity of foreign namespace vocabulary is not assessed. If `--treat-foreign-as` is specified as `allow`, then foreign vocabulary is not pruned, which, depending on the schema, may result in schema validation errors if the schema is not designed to permit foreign attributes or elements. Additional schemas that cover foreign vocabulary may be specified by using one or more `--extension-schema` options.
 
-The fourth phase performs additional semantic (and some syntactic) testing on the resource that is beyond what is tested by the previous three phases. For example, some TTML attributes are typed by the TTML schema as `xs:string`, which does not test the form of that string to determine compliance with TTML. In this fourth phase, these attributes are further verified to determine if they comply with TTML syntactic and semantic rules. In addition, a variety of other constraints specified by TTML are tested during this phase.
+The fourth phase performs additional semantic (and some syntactic) testing on the resource that is beyond what is tested by the previous three phases. For example, some TTML attributes are typed by the TTML schema as `xs:string`, which does not test the form of that string to determine compliance with TTML. In this fourth phase, these attributes are further verified to determine if they comply with TTML syntactic and semantic rules. In addition, a variety of other constraints specified by TTML (or a derivative specifiction) are tested during this phase.
 
 If desired, the `--until-phase` option may be used to cause verification to stop at a particular phase, thus skipping subsequent phases.
 
@@ -43,13 +43,13 @@ If desired, the `--until-phase` option may be used to cause verification to stop
 A verification *model* includes the following information:
 
  * a name (exposed via the `--show-models` option)
- * a schema resource name (path), used to locate the schema (XSD) resource
- * a namespace URI string, which must match the target namespace of the schema
+ * one or more schema resource names (paths), used to locate schema (XSD) resources
+ * one or more namespace URI strings, which must match the target namespaces of their respective schemas
  * a JAXB context path, used when creating the JAXB context for unmarshalling
  * a collection of acceptable root JAXB content classes, used to verify the root element
  * additional model specific verification tools used during the semantic verification phase
 
-The model used to perform phase 3 (validity) and phase 4 (semantics) verification is determined as follows: if a `--force-model` option is present, then the force model is used; otherwise, if the resource specifies a `ttva:model` annotation, then the annotated model is used; otherwise, if the `--model` option is present, then it is used; otherwise, the default model is used. In order to determine the default model, invoke **ttv** with the `--show-models` option.
+The model used to perform phase 3 (validity) and phase 4 (semantics) verification is determined as follows: if a `--force-model` option is present, then the forced model is used; otherwise, if the resource specifies a `ttva:model` annotation, then the annotated model is used; otherwise, if the `--model` option is present, then it is used; otherwise, the default model is used. In order to determine the default model, invoke **ttv** with the `--show-models` option.
 
 ## Building
 
@@ -151,27 +151,33 @@ Verification Models:
 
 ## Testing
 
-Junit 4 is used to perform tests on `ttv`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
+Junit 4 is used to perform tests on `ttv` from *maven*. All tests are performed by using `mvn test`. An individual test can be performed using the following syntax, for example:
 
-A number of test targets are listed above for invocation from `ant`. The `clean-test` target is useful in order to perform a clean build then run all tests.
-
-In addition, the `run-valid` target will use the command line (not Junit) invocation path in order to run `ttv` on all valid test files included in the Junit testing process.
+<pre>
+  mvn -Dtest=ValidTestCases#testValidTTML2ConditionPrimary test
+</pre>
 
 ## Annotations
 
 In order to ease the use of `ttv`, a number of *annotation* attributes are supported to provide verification configuration parameters within a document that would otherwise have to be expressed on the command line, where the namespace of these attributes is `http://skynav.com/ns/ttv/annotations`, and a prefix of `ttva` is used out of convenience (though this can change in an actual document instance). The following annotations are defined, and, if specified, must appear on the `tt:tt` (root) element of a document:
 
- * expectedErrors
- * expectedWarnings
- * model
- * noWarnOn
- * warnOn
+ * `expectedErrors`
+ * `expectedWarnings`
+ * `model`
+ * `noWarnOn`
+ * `processingOptions`
+ * `warnOn`
 
 The values of the `ttva:expectedErrors` and `ttva:expectedWarnings` annotations express a non-negative integer, indicating the expected number of errors and warnings to be encountered. When running `ttv` on a resource containing these annotations, a *PASS* result will be reported if the expected and actual numbers of errors and warnings match, and *FAIL* if not matched.
 
 The values of the `ttva:warnOn` and `ttva:noWarnOn` annotations express a whitespace separated listed of warning *TOKENs* to enable or disable, as if they had been specified on the command line.
 
 The value of the `ttva:model` annotation expresses a model name to be used to verify the document.
+
+The value of the `ttva:processingOptions` annotation allows including (or overriding) command line or configuration file options within
+the document itself. The value consists of a token that identifies the TTT tool, e.g., `ttv` or `ttpe`, followed by open and closed curly braces that
+contain with the braces a sequence of option names and (optional) values (after a colon), and where each option (name and value) is separated from
+one another using semicolon characters. Note that the use of thhe `ttva:processingOptions` annotation causes a processing restart, i.e., the first pass of the document reads the options, then restarts processing (by means of a second pass) with the new options taking effect.
 
 An example of a document fragment that uses annotations follows (taken from the `ttv` test suite):
 
@@ -184,6 +190,7 @@ An example of a document fragment that uses annotations follows (taken from the 
     ttva:warnOn="all"
     ttva:expectedErrors="1"
     ttva:expectedWarnings="0"
+    ttva:processingOptions="ttv { debug-level: 2; }"
     ttva:model="st2052-2010"&gt;
 ...
 &lt;/tt&gt;
