@@ -177,7 +177,7 @@ The value of the `ttva:model` annotation expresses a model name to be used to ve
 The value of the `ttva:processingOptions` annotation allows including (or overriding) command line or configuration file options within
 the document itself. The value consists of a token that identifies the TTT tool, e.g., `ttv` or `ttpe`, followed by open and closed curly braces that
 contain with the braces a sequence of option names and (optional) values (after a colon), and where each option (name and value) is separated from
-one another using semicolon characters. Note that the use of thhe `ttva:processingOptions` annotation causes a processing restart, i.e., the first pass of the document reads the options, then restarts processing (by means of a second pass) with the new options taking effect.
+one another using semicolon characters. Note that the use of the `ttva:processingOptions` annotation causes a processing restart, i.e., the first pass of the document reads the options, then restarts processing (by means of a second pass) with the new options taking effect.
 
 An example of a document fragment that uses annotations follows (taken from the `ttv` test suite):
 
