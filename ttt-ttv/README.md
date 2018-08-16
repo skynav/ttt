@@ -208,10 +208,6 @@ An example of a document fragment that uses annotations follows (taken from the 
     OS name: "mac os x", version: "10.13.6", arch: "x86_64", family: "mac"
 </pre>
 
- * An (Helios) Eclipse workspace and `ttv` project are available under the `.eclipse` directory.
-
- * See the `dst` directory for archived source and binary releases.
-
 ## Issues
 
 See [Open Issues](http://github.com/skynav/ttv/issues?state=open) for current known bugs, feature requests (enhancements), etc.
