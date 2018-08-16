@@ -53,96 +53,71 @@ The model used to perform phase 3 (validity) and phase 4 (semantics) verificatio
 
 ## Building
 
-In order to build **ttv**, run *ant* with one of the following targets:
-
-`ant build`
-
-Using the `build` target will (re)create the `ttv.jar` target under `bld/artifacts`.
-
-`ant clean-build`
-
-Using the `clean-build` target will first clean (delete) previously built classes and artifacts, and then perform a `build`.
-
-The full set of (public) `ant` targets can be listed by using `ant -p`, which presently outputs the following:
-
-<pre>
-Main targets:
-
- build              Build All
- build-servlet      Build TTV Servlet
- build-ttv          Build TTV
- clean-build        Clean and build TTV
- clean-test         Clean, build, and test TTV
- run-valid          Run verifier with valid input test files
- run-valid-verbose  Run verifier with valid input test files, with verbose output.
- test               Run all test suites
- test-apps          Run TTV application tests
- test-ttml1         Run TTML1 tests
- test-ttv           Run all TTV test suites
- test-verifier      Run TTV verification test suite
- test-xml           Run XML tests
-
-Default target: clean-test
-</pre>
+In order to build **ttv**, run `mvn clean install`.
 
 ## Running
 
 In order to run the verifier, use the following (or an equivalent):
 
-`java -jar bld/artifacts/ttv.jar ttml.xml`
+`java -jar target/ttt-ttv-3.0-SNAPSHOT.jar ttml.xml`
 
 Usage information can be obtained by using:
 
-`java -jar bld/artifacts/ttv.jar --help`
+`java -jar target/ttt-ttv-3.0-SNAPSHOT.jar --help`
 
 At present, this will output the following:
 
 <pre>
-Timed Text Verifier (TTV) [1.0.0dev] Copyright 2013-14 Skynav, Inc.
+Timed Text Verifier (TTV) [3.0-SNAPSHOT] Copyright 2013-18 Skynav, Inc.
 Usage: java -jar ttv.jar [options] URL*
   Short Options:
-    -d                                 - see --debug
-    -q                                 - see --quiet
-    -v                                 - see --verbose
-    -?                                 - see --help
+    -?                                  - see --help
+    -d                                  - see --debug
+    -q                                  - see --quiet
+    -v                                  - see --verbose
   Long Options:
-    --debug                            - enable debug output (may be specified multiple times to increase debug level)
-    --debug-exceptions                 - enable stack traces on exceptions (implies --debug)
-    --disable-warnings                 - disable warnings (both hide and don't count warnings)
-    --expect-errors COUNT              - expect count errors or -1 meaning unspecified expectation (default: -1)
-    --expect-warnings COUNT            - expect count warnings or -1 meaning unspecified expectation (default: -1)
-    --extension-schema NS URL          - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)
-    --external-extent EXTENT           - specify extent for document processing context
-    --external-frame-rate RATE         - specify frame rate for document processing context
-    --force-encoding NAME              - force use of named character encoding, overriding default and resource specified encoding
-    --force-model NAME                 - force use of named model, overriding default model and resource specified model
-    --help                             - show usage help
-    --hide-resource-location           - hide resource location (default: show)
-    --hide-resource-path               - hide resource path (default: show)
-    --hide-warnings                    - hide warnings (but count them)
-    --model NAME                       - specify model name (default: ttml1)
-    --no-warn-on TOKEN                 - disable warning specified by warning TOKEN, where multiple instances of this option may be specified
-    --no-verbose                       - disable verbose output (resets verbosity level to 0)
-    --quiet                            - don't show banner
-    --reporter REPORTER                - specify reporter, where REPORTER is null|text|xml (default: text)
-    --reporter-file FILE               - specify path to file to which reporter output is to be written
-    --reporter-file-encoding ENCODING  - specify character encoding of reporter output (default: utf-8)
-    --reporter-file-append             - if reporter file already exists, then append output to it
-    --reporter-include-source          - include source context in report messages
-    --servlet                          - configure defaults for servlet operation
-    --show-models                      - show built-in verification models (use with --verbose to show more details)
-    --show-repository                  - show source code repository information
-    --show-resource-location           - show resource location (default: show)
-    --show-resource-path               - show resource path (default: show)
-    --show-validator                   - show platform validator information
-    --show-warning-tokens              - show warning tokens (use with --verbose to show more details)
-    --verbose                          - enable verbose output (may be specified multiple times to increase verbosity level)
-    --treat-foreign-as TOKEN           - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: warning)
-    --treat-warning-as-error           - treat warning as error (overrides --disable-warnings)
-    --until-phase PHASE                - verify up to and including specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: all)
-    --warn-on TOKEN                    - enable warning specified by warning TOKEN, where multiple instances of this option may be specified
+    --config FILE                       - specify path to configuration file
+    --debug                             - enable debug output (may be specified multiple times to increase debug level)
+    --debug-exceptions                  - enable stack traces on exceptions (implies --debug)
+    --debug-level LEVEL                 - enable debug output at specified level (default: 0)
+    --disable-warnings                  - disable warnings (both hide and don't count warnings)
+    --expect-errors COUNT               - expect count errors or -1 meaning unspecified expectation (default: -1)
+    --expect-warnings COUNT             - expect count warnings or -1 meaning unspecified expectation (default: -1)
+    --extension-schema NS URL           - add schema for namespace NS at location URL to grammar pool (may be specified multiple times)
+    --external-duration DURATION        - specify root temporal extent duration for document processing context
+    --external-extent EXTENT            - specify root container region extent for document processing context
+    --external-frame-rate RATE          - specify frame rate for document processing context
+    --external-wallclock-begin TIME     - specify document wallclock begin time for document processing context
+    --force-encoding NAME               - force use of named character encoding, overriding default and resource specified encoding
+    --force-model NAME                  - force use of named model, overriding default model and resource specified model
+    --help                              - show usage help
+    --hide-resource-location            - hide resource location (default: show)
+    --hide-resource-path                - hide resource path (default: show)
+    --hide-warnings                     - hide warnings (but count them)
+    --model NAME                        - specify model name (default: ttml1)
+    --no-verbose                        - disable verbose output (resets verbosity level to 0)
+    --no-warn-on TOKEN                  - disable warning specified by warning TOKEN, where multiple instances of this option may be specified
+    --quiet                             - don't show banner
+    --reporter REPORTER                 - specify reporter, where REPORTER is null|text|xml (default: text)
+    --reporter-file FILE                - specify path to file to which reporter output is to be written
+    --reporter-file-append              - if reporter file already exists, then append output to it
+    --reporter-file-encoding ENCODING   - specify character encoding of reporter output (default: utf-8)
+    --reporter-include-source           - include source context in report messages
+    --servlet                           - configure defaults for servlet operation
+    --show-models                       - show built-in verification models (use with --verbose to show more details)
+    --show-repository                   - show source code repository information
+    --show-resource-location            - show resource location (default: show)
+    --show-resource-path                - show resource path (default: show)
+    --show-validator                    - show platform validator information
+    --show-warning-tokens               - show warning tokens (use with --verbose to show more details)
+    --treat-foreign-as TOKEN            - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: warning)
+    --treat-warning-as-error            - treat warning as error (overrides --disable-warnings)
+    --until-phase PHASE                 - verify up to specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: all)
+    --verbose                           - enable verbose output (may be specified multiple times to increase verbosity level)
+    --verbose-level LEVEL               - enable verbose output at specified level (default: 0)
+    --warn-on TOKEN                     - enable warning specified by warning TOKEN, where multiple instances of this option may be specified
   Non-Option Arguments:
-    URL                                - an absolute or relative URL; if relative, resolved against current working directory
+    URL                                 - an absolute or relative URL; if relative, resolved against current working directory
 </pre>
 
 As a convenience, if a URL argument takes a relative form, then `ttv` attempts to resolve it against the current working directory.
