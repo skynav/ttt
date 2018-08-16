@@ -145,7 +145,7 @@ public class TimedTextVerifier implements VerifierContext {
 
     // banner text
     private static final String title = "Timed Text Verifier (TTV) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-16 Skynav, Inc.";
+    private static final String copyright = "Copyright 2013-18 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     // usage text

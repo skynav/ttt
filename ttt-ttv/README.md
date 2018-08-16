@@ -38,126 +38,6 @@ The fourth phase performs additional semantic (and some syntactic) testing on th
 
 If desired, the `--until-phase` option may be used to cause verification to stop at a particular phase, thus skipping subsequent phases.
 
-The following `xs:string` schema typed attributes are tested for syntactic correctness during this fourth phase:
-
- * `tts:color`
- * `tts:backgroundColor`
- * `tts:extent`
- * `tts:fontFamily`
- * `tts:fontSize`
- * `tts:lineHeight`
- * `tts:origin`
- * `tts:padding`
- * `tts:textOutline`
- * `tts:zIndex`
-
-In addition, the following similarly typed attributes are similarly verified in this phase:
-
- * `begin`
- * `dur`
- * `end`
- * `ttp:cellResolution`
- * `ttp:frameRateMultiplier`
- * `ttp:pixelAspectRatio`
-
-## Additional Semantic Tests
-
-A number of additional semantic constraints are tested in the fourth phase:
-
- * Warn if neither ttp:profile attribute nor ttp:profile element are present and `missing-profile` warning is enabled. (3.3)
- * Warn if ttp:profile attribute is ignored due to presence of ttp:profile element and `ignored-profile-attribute` warning is not disabled. (5.2)
- * Warn if 'use' attribute on ttp:profile element specifies a non-standard profile designation and `references-non-standard-profile` warning is enabled. (6.1.1)
- * Error if xml:base on ttp:features is not absolute. (6.1.2)
- * Error if xml:base on ttp:features is specified and is not the TT Feature Namespace. (6.1.2)
- * Error if absolutized feature designation doesn't conform to feature-designation defined in D.1. (6.1.3)
- * Error if absolutized feature designation is not a known standard designation. (6.1.3)
- * Error if xml:base on ttp:extensions is not absolute. (6.1.4)
- * Warn if xml:base on ttp:extensions is specified, is not TT Extension Namespace, and `references-other-extension-namespace` warning is enabled. (6.1.4)
- * Error if absolutized extension designation doesn't conform to extension-designation defined in E.1. (6.1.5)
- * Error if absolutized extension designation is not a known standard designation. (6.1.5)
- * Warn if absolutized extension designation is in Other Extension Namespace and `references-non-standard-extension` warning is enabled. (6.1.5)
- * Warn if ttp:profile attribute specifies a non-standard profile designation and `references-non-standard-profile` warning is enabled. (6.2.8)
- * Error if style attribute IDREF does not reference a style element. (8.2.1)
- * Error if style attribute IDREF references a style element that is not a descendant of styling element. (8.2.1)
- * Warn if same IDREF appears more than once in specified tts:style attribute without intervening IDREF and `duplicate-idref-in-style-no-intervening` warning is not disabled. (8.2.1)
- * Warn if same IDREF appears more than once in specified tts:style attribute and `duplicate-idref-in-style` warning is enabled. (8.2.1)
- * Error if tts:extent attribute uses a negative length value. (8.2.7)
- * Error if tts:extent on root (tt) element specifies non-pixel unit for either width or height. (8.2.7)
- * Warn if tts:fontFamily attribute uses quoted generic family name and `quoted-generic-font-family` warning is enabled. (8.2.8)
- * Error if tts:fontSize attribute uses a negative length value. (8.2.9)
- * Error if tts:fontSize attribute uses different units when two length expressions are specified. (8.2.9)
- * Error if tts:lineHeight attribute uses a negative length value. (8.2.12)
- * Warn if tts:opacity attribute uses a legal xs:float value outside the range [0,1] and `out-of-range-opacity` warning is not disabled. (8.2.13)
- * Warn if tts:origin attribute uses a negative length value and `negative-origin` warning is enabled. (8.2.14)
- * Error if tts:padding attribute uses a negative length value. (8.2.16)
- * Error if tts:textOutline attribute uses a negative length value for thickness or blur radius. (8.2.20)
- * Error if loop in sequence of chained style references. (8.4.1.3)
- * Error if region attribute IDREF does not reference a region element. (9.2.1)
- * Error if ttp:clockMode is smpte, ttp:markerMode is discontinuous, and an otherwise well-formed dur attribute is specified. (10.2.3)
- * Error if time expression expressed as clock-time and minutes are greater than 59 (10.3.1)
- * Error if time expression expressed as clock-time and seconds (including fractional part) are greater than 60 (10.3.1)
- * Error if time expression expressed as clock-time and frames are not less than frame rate. (10.3.1)
- * Error if time expression expressed as clock-time and sub-frames are not less than sub-frame rate. (10.3.1)
- * Error if time expression uses frame component or `f` metric when tts:timeBase is clock. (10.3.1)
- * Error if set element specifies zero or more than one style attribute. (11.1.1)
- * Warn if ttm:agent element does not contain a ttm:name child and `missing-agent-name` warning is not disabled. (12.1.5)
- * Warn if ttm:agent element does not contain a ttm:actor child when type='character' and `missing-agent-actor` warning is not disabled. (12.1.5)
- * Error if ttm:actor element's agent attribute does not reference a ttm:agent element. (12.1.7)
- * Error if ttm:actor element's agent attribute does not reference a significant ttm:agent element. (12.1.7)
- * Error if ttm:agent attribute IDREF does not reference a ttm:agent element. (12.2.1)
- * Error if ttm:agent attribute IDREF does not reference a significant ttm:agent element. (12.2.1)
- * Warn if same IDREF appears more than once in specified ttm:agent attribute and `duplicate-idref-in-agent` is enabled. (12.2.1)
- * Warn if same token appears more than once in specified ttm:role attribute and `duplicate-role` warning is not disabled. (12.2.2)
- * Warn if ttm:role attribute references "x-" extension role and `references-extension-role` warning is enabled. (12.2.2)
- * Error if unknown attribute in TT Metadata Namespace specified on any element.
- * Error if TT Metadata Namespace attribute specified on element where it is not explicitly permitted.
- * Error if unknown attribute in TT Parameter Namespace specified on any element.
- * Error if TT Parameter Namespace attribute specified on element where it is not explicitly permitted.
- * Error if unknown attribute in TT StyleMetadata Namespace specified on any element.
- * Error if TT Style Namespace attribute specified on element where it is not explicitly permitted.
-
-If one of the **smpte** verification models applies, a number of additional semantic constraints are tested in the fourth phase:
-
- * Error if smpte:backgroundImage specifies a local fragment that does not reference a smpte:image element.
- * Warn if smpte:backgroundImage references a non-local image and `references-external-image` warning is enabled.
- * Error if smpte:backgroundImageHorizontal attribute specifies value that is not `left|center|right` or doesn't conform to the TTML \<length\> syntax.
- * Error if smpte:backgroundImageHorizontal attribute uses a negative length value.
- * Error if smpte:backgroundImageVertical attribute specifies value that is not `top|center|bottom` or doesn't conform to the TTML \<length\> syntax.
- * Error if smpte:backgroundImageVertical attribute uses a negative length value.
- * Error if smpte:data element's immediate ancestor is not tt:metadata.
- * Error if smpte:data element's content does not conform to Base64 encoding, ignoring XML whitespace.
- * Error if smpte:data element's datatype attribute is not a standard datatype or private ('x-' prefixed) datatype.
- * Error if smpte:image element's immediate ancestor is not tt:metadata.
- * Error if smpte:image element's content does not conform to Base64 encoding, ignoring XML whitespace.
- * Error if smpte:information element's immediate ancestors are not tt:metadata and tt:head.
- * Error if smpte:information element appears more than once in document.
- * Error if unknown element in some SMPTE-TT Namespace is specified.
- * Error if unknown attribute in some SMPTE-TT Namespace is specified on any element.
- * Error if SMPTE-TT Namespace attribute specified on element where it is not explicitly permitted.
- * Error if SMPTE attribute is empty, all whitespace, or whitespace padded (unless explicitly permitted).
-
-If the **nflxtt** verification models applies, a number of additional semantic constraints are tested in the fourth phase:
-
- * Error if document encoding is not UTF-8.
- * Error if root element is not tt:tt.
- * Error if tt:tt element does not specify ttp:profile attribute.
- * Error if ttp:profile attribute is not `http://www.netflix.com/ns/ttml/profile/nflx-cc` or `http://www.netflix.com/ns/ttml/profile/nflx-sdh`.
- * Error if tt:tt element does not specify ttp:cellResolution attribute and a cell (c) unit is used in document.
- * Error if tt:tt element does not specify ttp:extent attribute and a pixel (px) unit is used in document.
- * Error if tt:tt element does specify ttp:markerMode attribute.
- * Error if tt:head element is missing.
- * Error if tt:body element is missing.
- * Error if tt:region element specifies tts:overflow attribute.
- * Error if tt:region element specifies tts:origin attribute with value other than `10% 10%` when profile is `http://www.netflix.com/ns/ttml/profile/nflx-sdh`.
- * Error if tt:region element specifies tts:extent attribute with value other than `80% 80%` when profile is `http://www.netflix.com/ns/ttml/profile/nflx-sdh`.
- * Error if smpte:image element is present.
- * Error if smpte:backgroundImage attribute is present.
- * Error if smpte:backgroundImageHorizontal attribute is present.
- * Error if smpte:backgroundImageVertical attribute is present.
- * Error if smpte:backgroundImageVertical attribute is present.
- * Error if \<length\> expression uses em unit.
- * Error if computed geometry of a region is not contained in root container (requires specifying `tts:extent` on `tt:tt` or specifying `--external-extent``).
-
 ## Verification Model
 
 A verification *model* includes the following information:
@@ -270,24 +150,28 @@ As a convenience, if a URL argument takes a relative form, then `ttv` attempts t
 Run `ttv` with the `--show-models` option to determine which verification models are supported, and which is the default model. If the `-v` option is added, this will additionally show the built-in schemas used by each model, as demonstrated by the following console log:
 
 <pre>
-$ java -jar bld/artifacts/ttv.jar -v --show-models
-Timed Text Verifier (TTV) [1.0.0dev] Copyright 2013-14 Skynav, Inc.
+$ java -jar target/ttt-ttv-3.0-SNAPSHOT.jar -v --show-models
+Timed Text Verifier (TTV) [3.0-SNAPSHOT] Copyright 2013-18 Skynav, Inc.
 Verification Models:
-  nflxtt
-    XSD: xsd/ttml1/ttml1.xsd
-    XSD: xsd/smpte/2010/smpte-tt.xsd
-    XSD: xsd/smpte/2010/smpte-tt-608.xsd
+  ebuttd
+    XSD: com/skynav/ttv/xsd/ebuttd/ebutt_d.xsd
+  imsc1
+    XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd
+    XSD: com/skynav/ttv/xsd/imsc1/imsc1.xsd
   st2052-2010
-    XSD: xsd/ttml1/ttml1.xsd
-    XSD: xsd/smpte/2010/smpte-tt.xsd
-    XSD: xsd/smpte/2010/smpte-tt-608.xsd
+    XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt-608.xsd
   st2052-2013
-    XSD: xsd/ttml1/ttml1.xsd
-    XSD: xsd/smpte/2013/smpte-tt.xsd
-    XSD: xsd/smpte/2013/smpte-tt-608.xsd
-    XSD: xsd/smpte/2013/smpte-tt-708.xsd
+    XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2013/smpte-tt.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2013/smpte-tt-608.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2013/smpte-tt-708.xsd
   ttml1 (default)
-    XSD: xsd/ttml1/ttml1.xsd
+    XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
+  ttml2
+    XSD: com/skynav/ttv/xsd/ttml2/ttml2.xsd
 </pre>
 
 ## Testing
@@ -336,15 +220,17 @@ An example of a document fragment that uses annotations follows (taken from the 
 
 <pre>
     $ java -version
-    java version "1.6.0_65"
-    Java(TM) SE Runtime Environment (build 1.6.0_65-b14-462-11M4609)
-    Java HotSpot(TM) 64-Bit Server VM (build 20.65-b04-462, mixed mode)
+    java version "1.8.0_152"
+    Java(TM) SE Runtime Environment (build 1.8.0_152-b16)
+    Java HotSpot(TM) 64-Bit Server VM (build 25.152-b16, mixed mode)
 
-    $ ant -version
-    Apache Ant(TM) version 1.9.3 compiled on December 23 2013
-
-    $ java -cp /usr/share/java/junit.jar junit.runner.Version
-    4.11
+    $ mvn -version
+    Apache Maven 3.5.3 (3383c37e1f9e9b3bc3df5050c29c8aff9f295297; 2018-02-24T12:49:05-07:00)
+    Maven home: /opt/local/share/java/maven3
+    Java version: 1.8.0_152, vendor: Oracle Corporation
+    Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/jre
+    Default locale: en_US, platform encoding: UTF-8
+    OS name: "mac os x", version: "10.13.6", arch: "x86_64", family: "mac"
 </pre>
 
  * An (Helios) Eclipse workspace and `ttv` project are available under the `.eclipse` directory.

@@ -22,7 +22,8 @@
     <checkstyle.version>2.15</checkstyle.version>
     <exec.version>1.4.0</exec.version>
     <findbugs.version>3.0.1</findbugs.version>
-    <java.version>1.7</java.version>
+    <java.version>1.8</java.version>
+    <jar.version>2.4</jar.version>
     <junit.version>4.11</junit.version>
     <pmd.version>3.4</pmd.version>
     <project.info.reports.version>2.8</project.info.reports.version>
