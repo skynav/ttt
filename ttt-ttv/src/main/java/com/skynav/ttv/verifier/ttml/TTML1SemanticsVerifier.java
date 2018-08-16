@@ -89,6 +89,7 @@ import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.util.Strings;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.XML;
 
@@ -1062,6 +1063,21 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
         if (!verifyOtherAttributes(content, getLocator(content), getContext()))
             failed = true;
         return !failed;
+    }
+
+    protected boolean verifyNonEmptyOrPadded(Object content, QName name, String value, Locator locator, VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        if (value.length() == 0) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", name, value));
+            return false;
+        } else if (Strings.isAllXMLSpace(value)) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", name, value));
+            return false;
+        } else if (!value.equals(value.trim())) {
+            reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", name, value));
+            return false;
+        } else
+            return true;
     }
 
     protected Object findTimedTextBindingElement(Object tt, Node node) {

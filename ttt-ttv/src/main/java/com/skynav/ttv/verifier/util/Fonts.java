@@ -65,7 +65,7 @@ public class Fonts {
             return false;
     }
 
-    private static boolean isGenericFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
+    public static boolean isGenericFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         FontFamily family = FontFamilyImpl.getGenericFamily(trimmedValue);
         if (family != null) {
@@ -76,7 +76,7 @@ public class Fonts {
             return false;
     }
 
-    private static boolean isUnquotedFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
+    public static boolean isUnquotedFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0)
             return false;
@@ -91,7 +91,7 @@ public class Fonts {
         }
     }
 
-    private static boolean isQuotedFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
+    public static boolean isQuotedFontFamily(String value, Location location, VerifierContext context, Object[] treatments, FontFamily[] outputFamily) {
         String trimmedValue = value.trim();
         if (trimmedValue.length() == 0)
             return false;

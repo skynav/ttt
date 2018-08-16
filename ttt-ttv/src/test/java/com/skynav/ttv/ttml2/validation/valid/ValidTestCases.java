@@ -72,6 +72,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2AudioEmbedding() throws Exception {
+        performValidityTest("ttml2-valid-audio-embedding.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2AudioInBlock() throws Exception {
         performValidityTest("ttml2-valid-audio-in-block.xml", -1, -1);
     }
@@ -227,18 +232,18 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2DataInResourcesChunked() throws Exception {
-        performValidityTest("ttml2-valid-data-in-resources-chunked.xml", -1, -1);
+    public void testValidTTML2DataEmbeddingChunked() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-chunked.xml", -1, -1);
     }
 
     @Test
-    public void testValidTTML2DataInResourcesSimple() throws Exception {
-        performValidityTest("ttml2-valid-data-in-resources-simple.xml", -1, -1);
+    public void testValidTTML2DataEmbeddingSimple() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-simple.xml", -1, -1);
     }
 
     @Test
-    public void testValidTTML2DataInResourcesSourced() throws Exception {
-        performValidityTest("ttml2-valid-data-in-resources-sourced.xml", -1, -1);
+    public void testValidTTML2DataEmbeddingSourced() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-sourced.xml", -1, -1);
     }
 
     @Test
@@ -377,6 +382,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2FontEmbedding() throws Exception {
+        performValidityTest("ttml2-valid-font-embedding.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2FontKerning() throws Exception {
         performValidityTest("ttml2-valid-font-kerning.xml", -1, -1);
     }
@@ -404,6 +414,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2Gain() throws Exception {
         performValidityTest("ttml2-valid-gain.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ImageEmbedding() throws Exception {
+        performValidityTest("ttml2-valid-image-embedding.xml", -1, -1);
     }
 
     @Test

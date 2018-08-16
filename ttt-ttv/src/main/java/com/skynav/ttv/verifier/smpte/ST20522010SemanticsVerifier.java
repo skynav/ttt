@@ -345,21 +345,6 @@ public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean verifyNonEmptyOrPadded(Object content, QName name, String value, Locator locator, VerifierContext context) {
-        Reporter reporter = context.getReporter();
-        if (value.length() == 0) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "Empty {0} not permitted, got ''{1}''.", name, value));
-            return false;
-        } else if (Strings.isAllXMLSpace(value)) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "The value of {0} is entirely XML space characters, got ''{1}''.", name, value));
-            return false;
-        } else if (!value.equals(value.trim())) {
-            reporter.logInfo(reporter.message(locator, "*KEY*", "XML space padding not permitted on {0}, got ''{1}''.", name, value));
-            return false;
-        } else
-            return true;
-    }
-
     private static final QName backgroundImageAttributeName = new QName(NAMESPACE_2010, "backgroundImage");
     protected QName getBackgroundImageAttributeName() {
         return backgroundImageAttributeName;

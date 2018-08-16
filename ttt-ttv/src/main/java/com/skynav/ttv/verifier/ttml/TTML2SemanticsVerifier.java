@@ -73,14 +73,17 @@ import com.skynav.ttv.model.ttml2.ttm.Title;
 import com.skynav.ttv.model.ttml2.ttp.Extensions;
 import com.skynav.ttv.model.ttml2.ttp.Features;
 import com.skynav.ttv.model.ttml2.ttp.Profile;
+import com.skynav.ttv.model.value.FontFamily;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Audios;
+import com.skynav.ttv.verifier.util.Characters;
 import com.skynav.ttv.verifier.util.Datas;
 import com.skynav.ttv.verifier.util.Fonts;
 import com.skynav.ttv.verifier.util.Images;
+import com.skynav.ttv.verifier.util.QuotedGenericFontFamilyTreatment;
 import com.skynav.ttv.verifier.util.RepeatCount;
 import com.skynav.ttv.verifier.util.ResourceFormats;
 import com.skynav.ttv.verifier.util.ResourceTypes;
@@ -89,11 +92,17 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     public static final String NAMESPACE                        = TTML2.Constants.NAMESPACE_TT;
 
-    public static final QName encodingAttributeName             = new QName("", "encoding");
-    public static final QName formatAttributeName               = new QName("", "format");
-    public static final QName lengthAttributeName               = new QName("", "length");
-    public static final QName sourceAttributeName               = new QName("", "src");
-    public static final QName typeAttributeName                 = new QName("", "type");
+    public static final QName animationFillAttributeName        = new QName("", "fill");
+    public static final QName animationRepeatCountAttributeName = new QName("", "repeatCount");
+    public static final QName fontFamilyAttributeName           = new QName("", "family");
+    public static final QName fontRangeAttributeName            = new QName("", "range");
+    public static final QName fontStyleAttributeName            = new QName("", "style");
+    public static final QName fontWeightAttributeName           = new QName("", "weight");
+    public static final QName resourceEncodingAttributeName     = new QName("", "encoding");
+    public static final QName resourceFormatAttributeName       = new QName("", "format");
+    public static final QName resourceLengthAttributeName       = new QName("", "length");
+    public static final QName resourceSourceAttributeName       = new QName("", "src");
+    public static final QName resourceTypeAttributeName         = new QName("", "type");
 
     public static final QName audioElementName                  = new QName(NAMESPACE, "audio");
     public static final QName imageElementName                  = new QName(NAMESPACE, "image");
@@ -220,11 +229,13 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         Locator locator = location.getLocator();
         // @fill        - schema validation only
         // @repeatCount
-        String s = getSetRepeatCountAttribute(set);
-        if (s != null) {
-            if (!RepeatCount.isRepeatCount(s, location, context, null)) {
+        String repeatCount = getSetRepeatCountAttribute(set);
+        if (repeatCount != null) {
+            if (!verifyNonEmptyOrPadded(set, animationRepeatCountAttributeName, repeatCount, locator, context))
+                failed = true;
+            else if (!RepeatCount.isRepeatCount(repeatCount, location, context, null)) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "Bad <repeat-count> expression ''{0}''.", s));
+                    "Bad <repeat-count> expression ''{0}''.", repeatCount));
                 failed = true;
             }
         }
@@ -768,11 +779,13 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         // @keySplines  - TBD
         // @keyTimes    - TBD
         // @repeatCount
-        String s = getAnimateRepeatCountAttribute(animate);
-        if (s != null) {
-            if (!RepeatCount.isRepeatCount(s, location, context, null)) {
+        String repeatCount = getAnimateRepeatCountAttribute(animate);
+        if (repeatCount != null) {
+            if (!verifyNonEmptyOrPadded(animate, animationRepeatCountAttributeName, repeatCount, locator, context))
+                failed = true;
+            else if (!RepeatCount.isRepeatCount(repeatCount, location, context, null)) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "Bad <repeat-count> expression ''{0}''.", s));
+                    "Bad <repeat-count> expression ''{0}''.", repeatCount));
                 failed = true;
             }
         }
@@ -826,14 +839,14 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
                 failed = true;
             } else if (numSources > 0) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, sourceAttributeName));
+                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, resourceSourceAttributeName));
                 failed = true;
             } else {
                 a = outputAudio[0];
             }
         } else if (numSources == 0) {
             reporter.logError(reporter.message(locator, "*KEY*",
-                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, sourceAttributeName));
+                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, resourceSourceAttributeName));
             failed = true;
         }
         // @type
@@ -841,7 +854,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (type != null) {
             if ((a == null) || !a.isExternal()) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute must not specified for internal audio sources.", typeAttributeName));
+                    "A ''{0}'' attribute must not specified for internal audio sources.", resourceTypeAttributeName));
                 failed = true;
             } else if (!ResourceTypes.isType(type, location, context, null)) {
                 ResourceTypes.badType(type, location, context);
@@ -850,7 +863,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         } else if ((a != null) && a.isExternal()) {
             if (reporter.isWarningEnabled("missing-type-for-external-source")) {
                 Message message = reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute should be specified for external audio sources.", typeAttributeName);
+                    "A ''{0}'' attribute should be specified for external audio sources.", resourceTypeAttributeName);
                 if (reporter.logWarning(message)) {
                     reporter.logError(message);
                     failed = true;
@@ -966,7 +979,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             if (embeddingType != DataEmbeddingType.Reference) {
                 if (reporter.isWarningEnabled("ignored-source-attribute")) {
                     Message message = reporter.message(locator, "*KEY*",
-                      "Ignoring ''{0}'' attribute for non-reference {1} data embedding.", sourceAttributeName, embeddingType);
+                      "Ignoring ''{0}'' attribute for non-reference {1} data embedding.", resourceSourceAttributeName, embeddingType);
                     if (reporter.logWarning(message)) {
                         reporter.logError(message);
                         failed = true;
@@ -992,7 +1005,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (type != null) {
             if ((d != null) && !d.isExternal()) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute must not specified for internal {1} data embedding.", typeAttributeName, embeddingType));
+                    "A ''{0}'' attribute must not specified for internal {1} data embedding.", resourceTypeAttributeName, embeddingType));
                 failed = true;
             } else if (!ResourceTypes.isType(type, location, context, null)) {
                 ResourceTypes.badType(type, location, context);
@@ -1000,13 +1013,13 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             }
         } else if ((embeddingType == DataEmbeddingType.Chunked) || (embeddingType == DataEmbeddingType.Simple)) {
             reporter.logError(reporter.message(locator, "*KEY*",
-                "A ''{0}'' attribute must be specified for {1} data embedding.", typeAttributeName, embeddingType));
+                "A ''{0}'' attribute must be specified for {1} data embedding.", resourceTypeAttributeName, embeddingType));
             failed = true;
         } else if (embeddingType == DataEmbeddingType.Reference) {
             if ((d != null) && d.isExternal()) {
                 if (reporter.isWarningEnabled("missing-type-for-external-source")) {
                     Message message = reporter.message(locator, "*KEY*",
-                      "A ''{0}'' attribute should be specified for external {1} data embedding.", typeAttributeName, embeddingType);
+                      "A ''{0}'' attribute should be specified for external {1} data embedding.", resourceTypeAttributeName, embeddingType);
                     if (reporter.logWarning(message)) {
                         reporter.logError(message);
                         failed = true;
@@ -1037,7 +1050,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (encoding != null) {
             if (embeddingType != DataEmbeddingType.Simple) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "An ''{0}'' attribute must not specified for non-simple data embeddings.", encodingAttributeName));
+                    "An ''{0}'' attribute must not specified for non-simple data embeddings.", resourceEncodingAttributeName));
                 failed = true;
             }
         } else {
@@ -1055,12 +1068,12 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (length != null) {
             if ((embeddingType == DataEmbeddingType.Sourced) || (embeddingType == DataEmbeddingType.Reference)) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute must not be specified for {1} data embedding.", lengthAttributeName, embeddingType));
+                    "A ''{0}'' attribute must not be specified for {1} data embedding.", resourceLengthAttributeName, embeddingType));
                 failed = true;
             } else if (length.abs().compareTo(maxLength) > 0) {
                 reporter.logError(reporter.message(locator, "*KEY*",
                     "Absolute values of the ''{0}'' attribute greater than {1} are not supported, got {2}.",
-                    lengthAttributeName, maxLength.toString(), length.toString()));
+                    resourceLengthAttributeName, maxLength.toString(), length.toString()));
                 failed = true;
             }
         } else {
@@ -1220,62 +1233,131 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         Reporter reporter = context.getReporter();
         Location location = getLocation(font);
         Locator locator = location.getLocator();
-        // @src
-        String src = getFontSourceAttribute(font);
-        int numSources = getFontSources(font).size();
-        com.skynav.ttv.model.value.Font[] outputFont = new com.skynav.ttv.model.value.Font[1];
-        com.skynav.ttv.model.value.Font f = null;
-        if (src != null) {
-            if (!Fonts.isFont(src, location, context, false, outputFont)) {
-                Fonts.badFont(src, location, context);
+        // @family
+        String family = getFontFamilyAttribute(font);
+        if (family != null) {
+            if (!verifyFontFamilyAttribute(family, fontFamilyAttributeName, font, location, context))
                 failed = true;
-            } else if (numSources > 0) {
-                reporter.logError(reporter.message(locator, "*KEY*",
-                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, sourceAttributeName));
-                failed = true;
-            } else {
-                f = outputFont[0];
-            }
-        } else if (numSources == 0) {
-            reporter.logError(reporter.message(locator, "*KEY*",
-                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, sourceAttributeName));
-            failed = true;
-        }
-        // @type
-        String type = getFontTypeAttribute(font);
-        if (type != null) {
-            if ((f == null) || !f.isExternal()) {
-                reporter.logError(reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute must not specified for internal font sources.", typeAttributeName));
-                failed = true;
-            } else if (!ResourceTypes.isType(type, location, context, null)) {
-                ResourceTypes.badType(type, location, context);
-                failed = true;
-            }
-        } else if ((f != null) && f.isExternal()) {
-            if (reporter.isWarningEnabled("missing-type-for-external-source")) {
-                Message message = reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute should be specified for external font sources.", typeAttributeName);
-                if (reporter.logWarning(message)) {
-                    reporter.logError(message);
-                    failed = true;
-                }
-            }
         }
         // @format
         String format = getFontFormatAttribute(font);
         if (format != null) {
-            if (!ResourceFormats.isFormat(format, location, context, null)) {
-                ResourceFormats.badFormat(format, location, context);
+            if (!verifyResourceFormatAttribute(format, resourceFormatAttributeName, font, location, context))
                 failed = true;
-            }
         }
+        // @range
+        String range = getFontRangeAttribute(font);
+        if (range != null) {
+            if (!verifyFontRangeAttribute(range, fontRangeAttributeName, font, location, context))
+                failed = true;
+        }
+        // @src         - schema validation only, @seealso #verifyFontResources
+        // @style       - schema validation only, do not set default
+        // @type        - @seealso #verifyFontResources
+        String type = getFontTypeAttribute(font);
+        if (type != null) {
+            if (!verifyResourceTypeAttribute(type, resourceTypeAttributeName, font, location, context))
+                failed = true;
+        }
+        // @weight      - schema validation only, do not set default
         return !failed;
+    }
+
+    private boolean verifyFontFamilyAttribute(String value, QName name, Object font, Location location, VerifierContext context) {
+        boolean failed = false;
+        Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
+        if (!verifyNonEmptyOrPadded(font, name, value, locator, context))
+            failed = true;
+        else {
+            Object[] treatments = new Object[] { QuotedGenericFontFamilyTreatment.Allow };
+            FontFamily[] outputFontFamily = new FontFamily[1];
+            if (!Fonts.isFontFamily(value, location, context, treatments, null)) {
+                Fonts.badFontFamily(value, location, context, treatments);
+                failed = true;
+            } else if (Fonts.isGenericFontFamily(value, location, context, treatments, null)) {
+                // [TBD] - not yet in spec
+                reporter.logInfo(reporter.message(locator, "*KEY*",
+                    "Attribute {1} on {2} element does not permit generic font family ''{0}''.",
+                    value, name, context.getBindingElementName(font)));
+                failed = true;
+            } else if (Fonts.isQuotedFontFamily(value, location, context, treatments, outputFontFamily)) {
+                FontFamily fontFamily = outputFontFamily[0];
+                if ((fontFamily != null) && (fontFamily.getType() == FontFamily.Type.Quoted)) {
+                    String family = fontFamily.toString();
+                    if (Fonts.isGenericFontFamily(family, location, context, treatments, null)) {
+                        // [TBD] - not yet in spec
+                        reporter.logInfo(reporter.message(locator, "*KEY*",
+                            "Attribute {1} on {2} element does not permit quoted generic font family ''{0}''.",
+                            family, name, context.getBindingElementName(font)));
+                        failed = true;
+                    }
+                }
+            } 
+        }
+        if (failed)
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+        return !failed;
+    }
+
+    private boolean verifyFontRangeAttribute(String value, QName name, Object font, Location location, VerifierContext context) {
+        boolean failed = false;
+        Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
+        if (!verifyNonEmptyOrPadded(font, name, value, locator, context))
+            failed = true;
+        else if (!Characters.isCharacterRange(value, location, context, null)) {
+            Characters.badCharacterRange(value, location, context);
+            failed = true;
+        }
+        if (failed)
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+        return !failed;
+    }
+    
+    private boolean verifyResourceFormatAttribute(String value, QName name, Object font, Location location, VerifierContext context) {
+        boolean failed = false;
+        Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
+        if (!verifyNonEmptyOrPadded(font, name, value, locator, context))
+            failed = true;
+        else if (!ResourceFormats.isFormat(value, location, context, null)) {
+            ResourceFormats.badFormat(value, location, context);
+            failed = true;
+        }
+        if (failed)
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+        return !failed;
+    }
+
+    private boolean verifyResourceTypeAttribute(String value, QName name, Object font, Location location, VerifierContext context) {
+        boolean failed = false;
+        Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
+        if (!verifyNonEmptyOrPadded(font, name, value, locator, context))
+            failed = true;
+        else if (!ResourceTypes.isType(value, location, context, null)) {
+            ResourceTypes.badType(value, location, context);
+            failed = true;
+        }
+        if (failed)
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
+        return !failed;
+    }
+
+    protected String getFontFamilyAttribute(Object font) {
+        assert font instanceof Font;
+        return ((Font) font).getFamily();
     }
 
     protected String getFontFormatAttribute(Object font) {
         assert font instanceof Font;
         return null;
+    }
+
+    protected String getFontRangeAttribute(Object font) {
+        assert font instanceof Font;
+        return ((Font) font).getRange();
     }
 
     protected String getFontSourceAttribute(Object font) {
@@ -1301,11 +1383,48 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     protected boolean verifyFontResources(Object font) {
         boolean failed = false;
         VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
         Location location = getLocation(font);
+        Locator locator = location.getLocator();
         // @src
-        String s = getFontSourceAttribute(font);
-        if ((s != null) && !Fonts.isFont(s, location, context, true, null))
+        String src = getFontSourceAttribute(font);
+        int numSources = getFontSources(font).size();
+        com.skynav.ttv.model.value.Font[] outputFont = new com.skynav.ttv.model.value.Font[1];
+        com.skynav.ttv.model.value.Font f = null;
+        if (src != null) {
+            if (!Fonts.isFont(src, location, context, false, outputFont)) {
+                Fonts.badFont(src, location, context);
+                failed = true;
+            } else if (numSources > 0) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, resourceSourceAttributeName));
+                failed = true;
+            } else {
+                f = outputFont[0];
+            }
+        } else if (numSources == 0) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, resourceSourceAttributeName));
             failed = true;
+        }
+        // @type
+        String type = getFontTypeAttribute(font);
+        if (type != null) {
+            if ((f == null) || !f.isExternal()) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute must not specified for internal font sources.", resourceTypeAttributeName));
+                failed = true;
+            }
+        } else if ((f != null) && f.isExternal()) {
+            if (reporter.isWarningEnabled("missing-type-for-external-source")) {
+                Message message = reporter.message(locator, "*KEY*",
+                    "A ''{0}'' attribute should be specified for external font sources.", resourceTypeAttributeName);
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
+                    failed = true;
+                }
+            }
+        }
         // [TBD] verify resources referenced by tt:source children
         return !failed;
     }
@@ -1352,14 +1471,14 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
                 failed = true;
             } else if (numSources > 0) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, sourceAttributeName));
+                    "No ''{0}'' child permitted when ''{1}'' attribute is specified.", sourceElementName, resourceSourceAttributeName));
                 failed = true;
             } else {
                 i = outputImage[0];
             }
         } else if (numSources == 0) {
             reporter.logError(reporter.message(locator, "*KEY*",
-                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, sourceAttributeName));
+                "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, resourceSourceAttributeName));
             failed = true;
         }
         // @type
@@ -1367,7 +1486,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (type != null) {
             if ((i == null) || !i.isExternal()) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute must not specified for internal image sources.", typeAttributeName));
+                    "A ''{0}'' attribute must not specified for internal image sources.", resourceTypeAttributeName));
                 failed = true;
             } else if (!ResourceTypes.isType(type, location, context, null)) {
                 ResourceTypes.badType(type, location, context);
@@ -1376,7 +1495,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         } else if ((i != null) && i.isExternal()) {
             if (reporter.isWarningEnabled("missing-type-for-external-source")) {
                 Message message = reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute should be specified for external image sources.", typeAttributeName);
+                    "A ''{0}'' attribute should be specified for external image sources.", resourceTypeAttributeName);
                 if (reporter.logWarning(message)) {
                     reporter.logError(message);
                     failed = true;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,8 @@ package com.skynav.ttv.verifier.util;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.skynav.ttv.model.value.CharacterClass;
 import com.skynav.ttv.util.Location;
@@ -1821,7 +1823,7 @@ public class Characters {
     }
 
     public static boolean isCharacterClass(String value, Location location, VerifierContext context, CharacterClass[] outputClass) {
-        String[] components = splitComponents(value);
+        String[] components = splitCharacterClassComponents(value);
         int numComponents = components.length;
         if (numComponents < 1)
             return false;
@@ -1852,7 +1854,7 @@ public class Characters {
         return true;
     }
 
-    private static String[] splitComponents(String value) {
+    private static String[] splitCharacterClassComponents(String value) {
         return value.split("[ \t\r\n]+");
     }
 
@@ -1876,6 +1878,153 @@ public class Characters {
     public static void badCharacterClass(String value, Location location, VerifierContext context) {
         Reporter reporter = context.getReporter();
         reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Bad character class expression ''{0}''.", value));
+    }
+
+    public static boolean isCharacterRange(String value, Location location, VerifierContext context, CharacterClass[] outputClass) {
+        String[] components = splitRangeComponents(value);
+        int numComponents = components.length;
+        if (numComponents < 1)
+            return false;
+        CharacterClass cc;
+        if ((outputClass != null) && (outputClass.length > 0) && (outputClass[0] != null))
+            cc = outputClass[0];
+        else
+            cc = new CharacterClass(CharacterClass.EMPTY);
+        for (int i = 0, n = numComponents; i < n; ++i) {
+            String c = components[i].trim();
+            if (isCharacterRange(c)) {
+                cc.add(CharacterClass.parse(makeCharacterClassFromRange(c.toUpperCase())));
+                continue;
+            } else
+                return false;
+        }
+        if (outputClass != null)
+            outputClass[0] = cc;
+        return true;
+    }
+
+    private static String[] splitRangeComponents(String value) {
+        return value.split(",");
+    }
+
+    private static boolean isCharacterRange(String value) {
+        if (isSingleCodepoint(value))
+            return true;
+        else if (isIntervalRange(value))
+            return true;
+        else if (isWildcardRange(value))
+            return true;
+        else
+            return false;
+    }
+
+    private static final Pattern singleCodepointPattern = Pattern.compile("[Uu]\\+(\\p{XDigit}{1,6})");
+    private static boolean isSingleCodepoint(String value) {
+      return singleCodepointPattern.matcher(value).matches();
+    }
+
+    private static final Pattern intervalRangePattern = Pattern.compile("[Uu]\\+(\\p{XDigit}{1,6})\\-(\\p{XDigit}{1,6})");
+    private static boolean isIntervalRange(String value) {
+      return intervalRangePattern.matcher(value).matches();
+    }
+
+    private static final Pattern wildcardRangePattern = Pattern.compile("[Uu]\\+(?<digits>\\p{XDigit}*)?(?<wildcards>\\?*)?");
+    private static boolean isWildcardRange(String value) {
+        Matcher m = wildcardRangePattern.matcher(value);
+        if (m.matches()) {
+            String digits = m.group("digits");
+            if (digits == null)
+                digits = Strings.EMPTY;
+            String wildcards = m.group("wildcards");
+            if (wildcards == null)
+                wildcards = Strings.EMPTY;
+            int nd = digits.length();
+            int nw = wildcards.length();
+            if (nw > 5)
+                return false;
+            int nt = nd + nw;
+            return (nt >= 1) && (nt <= 6);
+        }
+        return false;
+    }
+
+    private static String makeCharacterClassFromRange(String value) {
+        if (isSingleCodepoint(value))
+            return makeCharacterClassFromSingleCodepoint(value);
+        else if (isIntervalRange(value))
+            return makeCharacterClassFromIntervalRange(value);
+        else if (isWildcardRange(value))
+            return makeCharacterClassFromWildcardRange(value);
+        else
+            return Strings.EMPTY;
+    }
+
+    private static String makeCharacterClassFromSingleCodepoint(String value) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(CharacterClass.OPEN_DELIMITER);
+        Matcher m = singleCodepointPattern.matcher(value);
+        if (m.matches()) {
+            assert m.groupCount() == 1;
+            String digits = m.group(1);
+            sb.append("\\u");
+            sb.append(digits);
+        }
+        sb.append(CharacterClass.CLOSE_DELIMITER);
+        return sb.toString();
+    }
+
+    private static String makeCharacterClassFromIntervalRange(String value) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(CharacterClass.OPEN_DELIMITER);
+        Matcher m = intervalRangePattern.matcher(value);
+        if (m.matches()) {
+            assert m.groupCount() == 2;
+            String digits1 = m.group(1);
+            sb.append("\\u");
+            sb.append(digits1);
+            sb.append('-');
+            String digits2 = m.group(2);
+            sb.append("\\u");
+            sb.append(digits2);
+        }
+        sb.append(CharacterClass.CLOSE_DELIMITER);
+        return sb.toString();
+    }
+
+    private static String makeCharacterClassFromWildcardRange(String value) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(CharacterClass.OPEN_DELIMITER);
+        Matcher m = intervalRangePattern.matcher(value);
+        if (m.matches()) {
+            assert m.groupCount() > 0;
+            String digits = m.group("digits");
+            if (digits == null)
+                digits = Strings.EMPTY;
+            String wildcards = m.group("wildcards");
+            if (wildcards == null)
+                wildcards = Strings.EMPTY;
+            int nd = digits.length();
+            int nw = wildcards.length();
+            assert (nd + nw) <= 6;
+            int nf = 6 - nd;
+            if (nf > nw)
+                nf = nw;
+            sb.append("\\u");
+            sb.append(digits);
+            for (int i = 0; i < nf; i++)
+                sb.append('0');
+            sb.append('-');
+            sb.append("\\u");
+            for (int i = 0; i < nf; i++)
+                sb.append('F');
+        }
+        sb.append(CharacterClass.CLOSE_DELIMITER);
+        return sb.toString();
+    }
+
+    public static void badCharacterRange(String value, Location location, VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message(location.getLocator(), "*KEY*", "Bad character range expression ''{0}''.", value));
     }
 
     public static boolean isXMLSpace(char c) {

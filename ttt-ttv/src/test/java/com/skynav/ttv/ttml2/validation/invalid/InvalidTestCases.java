@@ -36,6 +36,11 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidTTML2AudioEmbeddingBadResource() throws Exception {
+        performInvalidityTest("ttml2-invld-audio-embedding-bad-resource.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2AudioInBlockSimpleSourceMpeg() throws Exception {
         performInvalidityTest("ttml2-invld-audio-in-block-simple-source-mpeg.xml", -1, -1);
     }
@@ -1288,6 +1293,41 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2DisplayAspectRatioZeroNumerator() throws Exception {
         performInvalidityTest("ttml2-invld-display-aspect-ratio-zero-numerator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2FontEmbeddingRangeIntervalExtraDigit() throws Exception {
+        performInvalidityTest("ttml2-invld-font-embedding-range-interval-extra-digit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2FontEmbeddingRangeSingleExtraDigit() throws Exception {
+        performInvalidityTest("ttml2-invld-font-embedding-range-single-extra-digit.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2FontEmbeddingRangeUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-font-embedding-range-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2FontEmbeddingRangeWildcardTooMany() throws Exception {
+        performInvalidityTest("ttml2-invld-font-embedding-range-wildcard-too-many.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2FontEmbeddingStyleUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-font-embedding-style-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2FontEmbeddingWeightUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-font-embedding-weight-unknown-keyword.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ImageEmbeddingBadResource() throws Exception {
+        performInvalidityTest("ttml2-invld-image-embedding-bad-resource.xml", -1, -1);
     }
 
     @Test

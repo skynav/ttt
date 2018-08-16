@@ -30,6 +30,8 @@ import com.skynav.ttv.verifier.VerifierContext;
 
 public class Strings {
 
+    public static final String EMPTY = new String();
+
     public static boolean isDoubleQuotedString(String value, Location location, VerifierContext context, String[] outputString) {
         return isQuotedString(value, location, context, '\"', outputString);
     }
