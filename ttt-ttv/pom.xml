@@ -167,6 +167,7 @@
             <include>**/*TestCases.java</include>
           </includes>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <runOrder>alphabetical</runOrder>
         </configuration>
       </plugin>
       <plugin>

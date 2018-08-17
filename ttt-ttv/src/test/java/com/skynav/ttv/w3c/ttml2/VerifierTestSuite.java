@@ -23,14 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.ttml2;
+package com.skynav.ttv.w3c.ttml2;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.skynav.ttv.ttml2.validation.invalid.InvalidTestCases;
-import com.skynav.ttv.ttml2.validation.valid.ValidTestCases;
+import com.skynav.ttv.w3c.ttml2.validation.invalid.InvalidTestCases;
+import com.skynav.ttv.w3c.ttml2.validation.valid.ValidTestCases;
 
 @RunWith(Suite.class)
 @SuiteClasses({

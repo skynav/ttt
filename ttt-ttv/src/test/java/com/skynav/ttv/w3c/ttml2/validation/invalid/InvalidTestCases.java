@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.ttml2.validation.invalid;
+package com.skynav.ttv.w3c.ttml2.validation.invalid;
 
 import java.net.URL;
 import java.util.List;
