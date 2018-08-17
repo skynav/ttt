@@ -92,7 +92,7 @@ public class PresenterTestDriver {
         }
         args.add(urlString);
         Presenter ttpe = new Presenter();
-        URI output = ttpe.present(args, new TextReporter());
+        List<URI> output = ttpe.present(args, new TextReporter());
         assertNotNull("Presentation failed, no output produced.", output);
         maybeCheckDifferences(output, input);
         TimedTextVerifier.Results r = ttpe.getResults(urlString);
@@ -192,12 +192,22 @@ public class PresenterTestDriver {
             return false;
     }
 
-    private void maybeCheckDifferences(URI output, URI input) {
-        String[] components = getComponents(input);
-        if (hasFileScheme(components)) {
-            File control = new File(joinComponents(components, ".expected.zip"));
-            if (control.exists()) {
-                checkDifferences(control.toURI(), output);
+    private void maybeCheckDifferences(List<URI> output, URI input) {
+        if ((output != null) && !output.isEmpty()) {
+            if (output.size() == 1) {
+                URI outputURI = output.get(0);
+                if (outputURI != null) {
+                    String outputURIPath = outputURI.getPath();
+                    if ((outputURIPath != null) && outputURIPath.endsWith(".zip")) {
+                        String[] components = getComponents(input);
+                        if (hasFileScheme(components)) {
+                            File control = new File(joinComponents(components, ".expected.zip"));
+                            if (control.exists()) {
+                                checkDifferences(control.toURI(), outputURI);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

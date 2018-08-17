@@ -185,11 +185,12 @@ public class Presenter extends TimedTextTransformer {
     // processing state
     private int outputFileSequence;
     private int outputFileSequenceISD;
+    private List<URI> outputFileURIs;
 
     public Presenter() {
     }
 
-    public URI present(List<String> args, Reporter reporter) {
+    public List<URI> present(List<String> args, Reporter reporter) {
         if (reporter == null)
             reporter = new NullReporter();
         if (!reporter.isOpen()) {
@@ -203,10 +204,17 @@ public class Presenter extends TimedTextTransformer {
             setReporter(reporter, null, null, false, false);
         }
         run(args);
-        if (outputArchiveFile != null)
-            return outputArchiveFile.toURI();
-        else
+        if (outputArchive) {
+            if (outputArchiveFile != null) {
+                return Arrays.asList(new URI[] { outputArchiveFile.toURI() });
+            } else
+                return null;
+        } else if ((outputFileURIs != null) && !outputFileURIs.isEmpty()) {
+            return outputFileURIs;
+        } else {
             return null;
+
+        }
     }
 
     public static void main(String[] args) {
@@ -801,6 +809,9 @@ public class Presenter extends TimedTextTransformer {
                 File outputFile = retOutputFile[0];
                 reporter.logInfo(reporter.message("*KEY*", "Wrote TTPE artifact ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
                 f.setFile(outputFile);
+                if (outputFileURIs == null)
+                    outputFileURIs = new java.util.ArrayList<URI>();
+                outputFileURIs.add(outputFile.toURI());
             }
             if (!writeFrameResources(uri, f))
                 fail = true;
