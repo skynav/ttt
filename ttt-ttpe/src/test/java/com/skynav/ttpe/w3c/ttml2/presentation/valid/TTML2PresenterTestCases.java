@@ -33,28 +33,28 @@ import com.skynav.ttpe.app.PresenterTestDriver;
 public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
-    public void testTTML2IMSC11Ruby001() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby001.xml", 0, 0);
+    public void testTTML2IMSC11Ruby1() throws Exception {
+        performPresentationTest("ttml2-prstn-imsc11-ruby-1.xml", 0, 0);
     }
 
     @Test
-    public void testTTML2IMSC11Ruby002() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby002.xml", 0, 0);
+    public void testTTML2IMSC11Ruby2() throws Exception {
+        performPresentationTest("ttml2-prstn-imsc11-ruby-2.xml", 0, 0);
     }
 
     @Test
-    public void testTTML2IMSC11Ruby003() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby003.xml", 0, 0);
+    public void testTTML2IMSC11Ruby3() throws Exception {
+        performPresentationTest("ttml2-prstn-imsc11-ruby-3.xml", 0, 0);
     }
 
     @Test
-    public void testTTML2IMSC11Ruby004() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby004.xml", 0, 0);
+    public void testTTML2IMSC11Ruby4() throws Exception {
+        performPresentationTest("ttml2-prstn-imsc11-ruby-4.xml", 0, 0);
     }
 
     @Test
-    public void testTTML2IMSC11Ruby005() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby005.xml", 0, 0);
+    public void testTTML2IMSC11Ruby5() throws Exception {
+        performPresentationTest("ttml2-prstn-imsc11-ruby-5.xml", 0, 0);
     }
 
 }
