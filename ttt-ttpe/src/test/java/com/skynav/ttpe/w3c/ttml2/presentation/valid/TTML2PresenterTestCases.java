@@ -112,4 +112,29 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-prstn-ruby-reserve-imsc11-3.xml", 0, 0);
     }
 
+    @Test
+    public void testTTML2TextCombineIMSC11Test1() throws Exception {
+        performPresentationTest("ttml2-prstn-text-combine-imsc11-1.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2TextEmphasisIMSC11Test1() throws Exception {
+        performPresentationTest("ttml2-prstn-text-emphasis-imsc11-1.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2TextEmphasisIMSC11Test2() throws Exception {
+        performPresentationTest("ttml2-prstn-text-emphasis-imsc11-2.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2TextEmphasisIMSC11Test3() throws Exception {
+        performPresentationTest("ttml2-prstn-text-emphasis-imsc11-3.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2TextShadowIMSC11Test1() throws Exception {
+        performPresentationTest("ttml2-prstn-text-shadow-imsc11-1.xml", 0, 0);
+    }
+
 }
