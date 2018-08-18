@@ -33,28 +33,83 @@ import com.skynav.ttpe.app.PresenterTestDriver;
 public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
-    public void testTTML2IMSC11Ruby1() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby-1.xml", 0, 0);
+    public void testTTML2RubyIMSC11Test1() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-imsc11-1.xml", 0, 0);
     }
 
     @Test
-    public void testTTML2IMSC11Ruby2() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby-2.xml", 0, 0);
+    public void testTTML2RubyIMSC11Test2() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-imsc11-2.xml", 0, 0);
     }
 
     @Test
-    public void testTTML2IMSC11Ruby3() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby-3.xml", 0, 0);
+    public void testTTML2RubyIMSC11Test3() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-imsc11-3.xml", 0, 0);
     }
 
     @Test
-    public void testTTML2IMSC11Ruby4() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby-4.xml", 0, 0);
+    public void testTTML2RubyIMSC11Test4() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-imsc11-4.xml", 0, 0);
     }
 
     @Test
-    public void testTTML2IMSC11Ruby5() throws Exception {
-        performPresentationTest("ttml2-prstn-imsc11-ruby-5.xml", 0, 0);
+    public void testTTML2RubyIMSC11Test5() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-imsc11-5.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyAlignIMSC11Test1() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-align-imsc11-1.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyAlignIMSC11Test2() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-align-imsc11-2.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyAlignIMSC11Test3() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-align-imsc11-3.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyAlignIMSC11Test4() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-align-imsc11-4.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyAlignWithBase() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-align-with-base.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyPositionAfter() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-position-after.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyPositionBefore() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-position-before.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyPositionOutside() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-position-outside.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyReserveIMSC11Test1() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-reserve-imsc11-1.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyReserveIMSC11Test2() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-reserve-imsc11-2.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2RubyReserveIMSC11Test3() throws Exception {
+        performPresentationTest("ttml2-prstn-ruby-reserve-imsc11-3.xml", 0, 0);
     }
 
 }
