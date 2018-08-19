@@ -25,7 +25,6 @@
 
 package com.skynav.ttv.verifier.ttml;
 
-import java.math.BigInteger;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -61,7 +60,6 @@ import com.skynav.ttv.verifier.ttml.parameter.ProfilesVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ValidationActionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ValidationVerifier;
-import com.skynav.ttv.verifier.ttml.parameter.VersionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.XlinkHrefVerifier;
 
 import com.skynav.xml.helpers.XML;

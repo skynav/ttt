@@ -30,19 +30,14 @@ import java.math.BigInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.xml.sax.Locator;
-
 import com.skynav.ttv.model.value.Pitch;
 import com.skynav.ttv.util.Location;
-import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 
 public class Pitches {
 
     private static final Pattern pitchPattern = Pattern.compile("([\\+\\-]?(?:\\d*\\.\\d+|\\d+))(\\w+|%)?");
     public static boolean isPitch(String value, Location location, VerifierContext context, Pitch[] outputPitch) {
-        Reporter reporter = context.getReporter();
-        Locator locator = location.getLocator();
         Matcher m = pitchPattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() > 0;

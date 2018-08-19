@@ -25,17 +25,10 @@
 
 package com.skynav.ttv.verifier.ttml;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.Data;
-import com.skynav.ttv.util.IOUtil;
-import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.AbstractVerifier;
 import com.skynav.ttv.verifier.DataVerifier;

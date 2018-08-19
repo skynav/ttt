@@ -109,8 +109,6 @@ public class Shadows {
     }
 
     public static boolean isShadows(String value, Location location, VerifierContext context, List<TextShadow> outputShadows) {
-        Reporter reporter = (context != null) ? context.getReporter() : null;
-        Locator locator = location.getLocator();
         List<TextShadow> shadows = new java.util.ArrayList<TextShadow>();
         String [] shadowValues = value.split(",");
         for (String s : shadowValues) {

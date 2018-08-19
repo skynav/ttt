@@ -26,16 +26,11 @@
 
 package com.xfsi.xav.validation.fonts.ttf;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-
 import com.xfsi.xav.test.TestInfo;
 import com.xfsi.xav.test.TestManager;
 import com.xfsi.xav.util.Error;
 import com.xfsi.xav.util.Result;
 import com.xfsi.xav.validation.util.AbstractLoggingValidator;
-import com.xfsi.xav.validation.util.Util.AppType;
 
 /**
  * Parses and validates TrueType fonts
@@ -46,6 +41,7 @@ public final class TrueTypeValidator extends AbstractLoggingValidator {
     {
     }
 
+    @SuppressWarnings("unused")
     private State s = null;
 
     public TrueTypeValidator() {

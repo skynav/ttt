@@ -1230,9 +1230,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     protected boolean verifyFontAttributes(Object font) {
         boolean failed = false;
         VerifierContext context = getContext();
-        Reporter reporter = context.getReporter();
         Location location = getLocation(font);
-        Locator locator = location.getLocator();
         // @family
         String family = getFontFamilyAttribute(font);
         if (family != null) {

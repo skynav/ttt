@@ -26,7 +26,6 @@
 package com.skynav.ttv.verifier.ttml.style;
 
 import com.skynav.ttv.util.Location;
-import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.StyleValueVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.NegativeTreatment;

@@ -28,9 +28,7 @@ package com.skynav.ttv.verifier.ttml.parameter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.xml.bind.JAXBElement;import javax.xml.bind.JAXBElement;
-
-import org.xml.sax.Locator;
+import javax.xml.bind.JAXBElement;
 
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.util.Location;
@@ -56,7 +54,7 @@ public class XlinkHrefVerifier implements ParameterValueVerifier {
                     if (hrefParent != null) {
                         Reporter reporter = context.getReporter();
                         reporter.logInfo(reporter.message(location.getLocator(), "*KEY*",
-                            "Nested {0} not permitted.", location.getAttributeName()));
+                            "Nested {0} with reference to ''{1}'' not permitted.", location.getAttributeName(), hrefUri.toString()));
                         failed = true;
                         break;
                     }

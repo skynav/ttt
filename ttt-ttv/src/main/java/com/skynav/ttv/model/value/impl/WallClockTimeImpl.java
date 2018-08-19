@@ -31,7 +31,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import com.skynav.ttv.model.value.WallClockTime;
-import com.skynav.ttv.model.value.TimeBase;
 import com.skynav.ttv.model.value.TimeParameters;
 
 public class WallClockTimeImpl implements WallClockTime {
