@@ -53,6 +53,21 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2FontShearNoRuby() throws Exception {
+        performPresentationTest("ttml2-prstn-font-shear-no-ruby.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2FontShearRubyMultiple() throws Exception {
+        performPresentationTest("ttml2-prstn-font-shear-ruby-multiple.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2FontShearRubySingle() throws Exception {
+        performPresentationTest("ttml2-prstn-font-shear-ruby-single.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2ImageIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-image-imsc11-1.xml", 0, 0);
     }
@@ -95,6 +110,21 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2LengthRootContainerRelativeIMSC11Test6() throws Exception {
         performPresentationTest("ttml2-prstn-length-root-container-relative-imsc11-6.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2LineShearNoRuby() throws Exception {
+        performPresentationTest("ttml2-prstn-line-shear-no-ruby.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2LineShearRubyMultiple() throws Exception {
+        performPresentationTest("ttml2-prstn-line-shear-ruby-multiple.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2LineShearRubySingle() throws Exception {
+        performPresentationTest("ttml2-prstn-line-shear-ruby-single.xml", 0, 0);
     }
 
     @Test
