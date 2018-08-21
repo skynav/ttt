@@ -25,12 +25,102 @@
  
 package com.skynav.ttpe.w3c.ttml2.presentation.valid;
 
-//import org.junit.Ignore;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.skynav.ttpe.app.PresenterTestDriver;
 
 public class TTML2PresenterTestCases extends PresenterTestDriver {
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/204
+    public void testTTML2BackgroundClipBorder() throws Exception {
+        performPresentationTest("ttml2-prstn-background-clip-border.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/204
+    public void testTTML2BackgroundClipContent() throws Exception {
+        performPresentationTest("ttml2-prstn-background-clip-content.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/204
+    public void testTTML2BackgroundClipPadding() throws Exception {
+        performPresentationTest("ttml2-prstn-background-clip-padding.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/202
+    public void testTTML2BackgroundExtent() throws Exception {
+        performPresentationTest("ttml2-prstn-background-extent.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/201
+    public void testTTML2BackgroundImage() throws Exception {
+        performPresentationTest("ttml2-prstn-background-image.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/205
+    public void testTTML2BackgroundOriginBorder() throws Exception {
+        performPresentationTest("ttml2-prstn-background-origin-border.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/205
+    public void testTTML2BackgroundOriginContent() throws Exception {
+        performPresentationTest("ttml2-prstn-background-origin-content.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/205
+    public void testTTML2BackgroundOriginPadding() throws Exception {
+        performPresentationTest("ttml2-prstn-background-origin-padding.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/206
+    public void testTTML2BackgroundPositionBottomRight() throws Exception {
+        performPresentationTest("ttml2-prstn-background-position-bottom-right.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/206
+    public void testTTML2BackgroundPositionTopLeft() throws Exception {
+        performPresentationTest("ttml2-prstn-background-position-top-left.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/206
+    public void testTTML2BackgroundPositionCenter() throws Exception {
+        performPresentationTest("ttml2-prstn-background-position-center.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/203
+    public void testTTML2BackgroundRepeat() throws Exception {
+        performPresentationTest("ttml2-prstn-background-repeat.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/203
+    public void testTTML2BackgroundRepeatNone() throws Exception {
+        performPresentationTest("ttml2-prstn-background-repeat-none.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/203
+    public void testTTML2BackgroundRepeatX() throws Exception {
+        performPresentationTest("ttml2-prstn-background-repeat-x.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/203
+    public void testTTML2BackgroundRepeatY() throws Exception {
+        performPresentationTest("ttml2-prstn-background-repeat-y.xml", 0, 0);
+    }
 
     @Test
     public void testTTML2DisplayAspectRatioIMSC11Test1() throws Exception {
