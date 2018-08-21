@@ -123,6 +123,48 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/207
+    public void testTTML2BorderBlock() throws Exception {
+        performPresentationTest("ttml2-prstn-border-block.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/207
+    public void testTTML2BorderBlockRadii1() throws Exception {
+        performPresentationTest("ttml2-prstn-border-block-radii-1.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/207
+    public void testTTML2BorderInline() throws Exception {
+        performPresentationTest("ttml2-prstn-border-inline.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/207
+    public void testTTML2BorderInlineRadii1() throws Exception {
+        performPresentationTest("ttml2-prstn-border-inline-radii-1.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/207
+    public void testTTML2BorderRegion() throws Exception {
+        performPresentationTest("ttml2-prstn-border-region.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/207
+    public void testTTML2BorderRegionRadii1() throws Exception {
+        performPresentationTest("ttml2-prstn-border-region-radii-1.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/207
+    public void testTTML2BorderRegionRadii2() throws Exception {
+        performPresentationTest("ttml2-prstn-border-region-radii-2.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2DisplayAspectRatioIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-display-aspect-ratio-imsc11-1.xml", 0, 0);
     }
