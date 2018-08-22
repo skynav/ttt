@@ -260,19 +260,19 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    //@Ignore // pending https://github.com/skynav/ttt/issues/208
+    @Ignore // pending https://github.com/skynav/ttt/issues/208
     public void testTTML2OpacityBlock() throws Exception {
         performPresentationTest("ttml2-prstn-opacity-block.xml", 0, 0);
     }
 
     @Test
-    //@Ignore // pending https://github.com/skynav/ttt/issues/208
+    @Ignore // pending https://github.com/skynav/ttt/issues/208
     public void testTTML2OpacityInline() throws Exception {
         performPresentationTest("ttml2-prstn-opacity-inline.xml", 0, 0);
     }
 
     @Test
-    //@Ignore // pending https://github.com/skynav/ttt/issues/208
+    @Ignore // pending https://github.com/skynav/ttt/issues/208
     public void testTTML2OpacityRegion() throws Exception {
         performPresentationTest("ttml2-prstn-opacity-region.xml", 0, 0);
     }
