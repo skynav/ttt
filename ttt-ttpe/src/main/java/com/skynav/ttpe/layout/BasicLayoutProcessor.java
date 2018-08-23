@@ -581,7 +581,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     private void alignBlockAreas(ReferenceArea r, BlockAlignment alignment) {
-        double measure = r.isVertical() ? r.getWidth() : r.getHeight();
+        double measure = r.getBPD();
         double consumed = 0;
         for (AreaNode c : r.getChildren()) {
             consumed += c.getBPD();
@@ -611,7 +611,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     private void alignLineAreas(BlockArea b, LayoutState ls) {
         BlockAlignment alignment = ls.getReferenceAlignment();
         ReferenceArea r = ls.getReferenceArea();
-        double measure = r.isVertical() ? r.getWidth() : r.getHeight();
+        double measure = r.getBPD();
         double consumed = 0;
         int numChildren = 0;
         for (AreaNode c : b.getChildren()) {

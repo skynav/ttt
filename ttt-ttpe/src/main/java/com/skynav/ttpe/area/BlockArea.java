@@ -250,12 +250,13 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public double getBorder(Dimension dimension) {
-        if (dimension == Dimension.BPD)
-            return border[0] + border[2];
-        else if (dimension == Dimension.IPD)
-            return border[0] + border[2];
-        else
-            return 0;
+        if (border != null) {
+            if (dimension == Dimension.BPD)
+                return border[0] + border[2];
+            else if (dimension == Dimension.IPD)
+                return border[1] + border[3];
+        }
+        return 0;
     }
 
     public double getBorderWidth() {
@@ -275,13 +276,14 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public double getBorderX(Dimension dimension) {
-        Direction direction = getWritingMode().getDirection(dimension);
-        if (direction == Direction.LR)
-            return border[1];
-        else if (direction == Direction.RL)
-            return border[3];
-        else
-            return 0;
+        if (border != null) {
+            Direction direction = getWritingMode().getDirection(dimension);
+            if (direction == Direction.LR)
+                return border[1];
+            else if (direction == Direction.RL)
+                return border[3];
+        }
+        return 0;
     }
 
     public double getBorderX() {
@@ -292,13 +294,14 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public double getBorderY(Dimension dimension) {
-        Direction direction = getWritingMode().getDirection(dimension);
-        if (direction == Direction.TB)
-            return border[0];
-        else if (direction == Direction.BT)
-            return border[2];
-        else
-            return 0;
+        if (border != null) {
+            Direction direction = getWritingMode().getDirection(dimension);
+            if (direction == Direction.TB)
+                return border[0];
+            else if (direction == Direction.BT)
+                return border[2];
+        }
+        return 0;
     }
 
     public double getBorderY() {
@@ -325,12 +328,13 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public double getPadding(Dimension dimension) {
-        if (dimension == Dimension.BPD)
-            return padding[0] + padding[2];
-        else if (dimension == Dimension.IPD)
-            return padding[0] + padding[2];
-        else
-            return 0;
+        if (padding != null) {
+            if (dimension == Dimension.BPD)
+                return padding[0] + padding[2];
+            else if (dimension == Dimension.IPD)
+                return padding[1] + padding[3];
+        }
+        return 0;
     }
 
     public double getPaddingWidth() {
@@ -350,13 +354,14 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public double getPaddingX(Dimension dimension) {
-        Direction direction = getWritingMode().getDirection(dimension);
-        if (direction == Direction.LR)
-            return padding[1];
-        else if (direction == Direction.RL)
-            return padding[3];
-        else
-            return 0;
+        if (padding != null) {
+            Direction direction = getWritingMode().getDirection(dimension);
+            if (direction == Direction.LR)
+                return padding[1];
+            else if (direction == Direction.RL)
+                return padding[3];
+        }
+        return 0;
     }
 
     public double getPaddingX() {
@@ -367,13 +372,14 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public double getPaddingY(Dimension dimension) {
-        Direction direction = getWritingMode().getDirection(dimension);
-        if (direction == Direction.TB)
-            return padding[0];
-        else if (direction == Direction.BT)
-            return padding[2];
-        else
-            return 0;
+        if (padding != null) {
+            Direction direction = getWritingMode().getDirection(dimension);
+            if (direction == Direction.TB)
+                return padding[0];
+            else if (direction == Direction.BT)
+                return padding[2];
+        }
+        return 0;
     }
 
     public double getPaddingY() {

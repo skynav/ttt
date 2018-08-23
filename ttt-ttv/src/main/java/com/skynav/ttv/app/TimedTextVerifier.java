@@ -199,6 +199,7 @@ public class TimedTextVerifier implements VerifierContext {
         { "reporter-file-encoding",     "ENCODING", "specify character encoding of reporter output (default: utf-8)" },
         { "reporter-file-append",       "",         "if reporter file already exists, then append output to it" },
         { "reporter-include-source",    "",         "include source context in report messages" },
+        { "retain-reporter",            "",         "retain (rather than reset) reporter upon run completion" },
         { "servlet",                    "",         "configure defaults for servlet operation" },
         { "show-models",                "",         "show built-in verification models (use with --verbose to show more details)" },
         { "show-repository",            "",         "show source code repository information" },
@@ -309,6 +310,7 @@ public class TimedTextVerifier implements VerifierContext {
     private boolean includeSource;
     private String modelName;
     private boolean quiet;
+    private boolean retainReporter;
     private boolean showModels;
     private boolean showRepository;
     private boolean showValidator;
@@ -498,7 +500,8 @@ public class TimedTextVerifier implements VerifierContext {
 
     private void resetReporter() {
         reporter.flush();
-        setReporter(Reporters.getDefaultReporter(), null, null, false, true);
+        if (!retainReporter)
+            setReporter(Reporters.getDefaultReporter(), null, null, false, true);
     }
 
     private void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource) {
@@ -699,6 +702,8 @@ public class TimedTextVerifier implements VerifierContext {
                     reporterFileAppend = true;
                 } else if (option.equals("reporter-include-source")) {
                     reporterIncludeSource = true;
+                } else if (option.equals("retain-reporter")) {
+                    retainReporter = true;
                 } else {
                     skippedArgs.add(arg);
                 }

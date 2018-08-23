@@ -278,6 +278,24 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/210
+    public void testTTML2PaddingBlock() throws Exception {
+        performPresentationTest("ttml2-prstn-padding-block.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/210
+    public void testTTML2PaddingInline() throws Exception {
+        performPresentationTest("ttml2-prstn-padding-inline.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/210
+    public void testTTML2PaddingRegion() throws Exception {
+        performPresentationTest("ttml2-prstn-padding-region.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2PositionIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-position-imsc11-1.xml", 0, 0);
     }

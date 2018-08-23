@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-16 Skynav, Inc. All rights reserved.
+ * Copyright 2013-18 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,9 @@ import org.xmlunit.diff.Diff;
 
 import com.skynav.ttv.app.TimedTextVerifier;
 import com.skynav.ttv.util.IOUtil;
+import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.TextReporter;
+import com.skynav.ttx.transformer.TransformerContext;
 
 public class PresenterTestDriver {
 
@@ -87,14 +89,12 @@ public class PresenterTestDriver {
         maybeAddConfiguration(args, input);
         maybeAddFontDirectory(args, input);
         maybeAddOutputDirectory(args);
-        if (additionalOptions != null) {
-            args.addAll(java.util.Arrays.asList(additionalOptions));
-        }
+        maybeAddOtherOptions(args, additionalOptions);
         args.add(urlString);
         Presenter ttpe = new Presenter();
         List<URI> output = ttpe.present(args, new TextReporter());
         assertNotNull("Presentation failed, no output produced.", output);
-        maybeCheckDifferences(output, input);
+        maybeCheckDifferences(output, input, ttpe);
         TimedTextVerifier.Results r = ttpe.getResults(urlString);
         int resultCode = r.getCode();
         int resultFlags = r.getFlags();
@@ -192,10 +192,20 @@ public class PresenterTestDriver {
             return false;
     }
 
-    private void maybeCheckDifferences(List<URI> output, URI input) {
+    private void maybeAddOtherOptions(List<String> args, String[] additionalOptions) {
+        args.add("--retain-reporter");
+        if (additionalOptions != null) {
+            args.addAll(java.util.Arrays.asList(additionalOptions));
+        }
+    }
+
+    private void maybeCheckDifferences(List<URI> output, URI input, TransformerContext context) {
+        boolean checkedDifferences = false;
+        URI outputURI = null;
+        URI controlURI = null;
         if ((output != null) && !output.isEmpty()) {
             if (output.size() == 1) {
-                URI outputURI = output.get(0);
+                outputURI = output.get(0);
                 if (outputURI != null) {
                     String outputURIPath = outputURI.getPath();
                     if ((outputURIPath != null) && outputURIPath.endsWith(".zip")) {
@@ -203,13 +213,27 @@ public class PresenterTestDriver {
                         if (hasFileScheme(components)) {
                             File control = new File(joinComponents(components, ".expected.zip"));
                             if (control.exists()) {
-                                checkDifferences(control.toURI(), outputURI);
+                                controlURI = control.toURI();
+                                checkDifferences(controlURI, outputURI);
+                                checkedDifferences = true;
                             }
                         }
                     }
                 }
             }
         }
+        Reporter reporter = context.getReporter();
+        if (!checkedDifferences) {
+            if (outputURI == null)
+                reporter.logWarning(reporter.message("*KEY*", "Comparing output failed, no output produced from input {0}.", input));
+            else
+                reporter.logWarning(reporter.message("*KEY*", "Comparing output failed, no control for input {0}.", input));
+        } else {
+            assertTrue(outputURI != null);
+            assertTrue(controlURI != null);
+            reporter.logInfo(reporter.message("*KEY*", "Compared output {0} with {1}.", outputURI, controlURI));
+        }
+        reporter.flush();
     }
 
     private void checkDifferences(URI uri1, URI uri2) {
