@@ -499,6 +499,8 @@ public class LineLayout {
             features.add(FontFeature.BIDI.parameterize(bidiLevel));
         if (kerned)
             features.add(FontFeature.KERN.parameterize(Boolean.TRUE));
+        else
+            features.add(FontFeature.KERN.parameterize(Boolean.FALSE));
         if ((orientation != null) && orientation.isRotated())
             features.add(FontFeature.ORNT.parameterize(orientation));
         if ((combination != null) && !combination.isNone())

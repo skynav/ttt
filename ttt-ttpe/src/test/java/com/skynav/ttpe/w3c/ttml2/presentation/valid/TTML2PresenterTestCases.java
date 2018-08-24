@@ -185,6 +185,17 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2FontKerning() throws Exception {
+        performPresentationTest("ttml2-prstn-font-kerning.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/211
+    public void testTTML2FontSelectionStrategy() throws Exception {
+        performPresentationTest("ttml2-prstn-font-selection-strategy.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2FontShearNoRuby() throws Exception {
         performPresentationTest("ttml2-prstn-font-shear-no-ruby.xml", 0, 0);
     }
@@ -197,6 +208,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2FontShearRubySingle() throws Exception {
         performPresentationTest("ttml2-prstn-font-shear-ruby-single.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2FontVariantWidth() throws Exception {
+        performPresentationTest("ttml2-prstn-font-variant-width.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2FontVariantScript() throws Exception {
+        performPresentationTest("ttml2-prstn-font-variant-script.xml", 0, 0);
     }
 
     @Test
@@ -242,6 +263,12 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2LengthRootContainerRelativeIMSC11Test6() throws Exception {
         performPresentationTest("ttml2-prstn-length-root-container-relative-imsc11-6.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/212
+    public void testTTML2LetterSpacing() throws Exception {
+        performPresentationTest("ttml2-prstn-letter-spacing.xml", 0, 0);
     }
 
     @Test
