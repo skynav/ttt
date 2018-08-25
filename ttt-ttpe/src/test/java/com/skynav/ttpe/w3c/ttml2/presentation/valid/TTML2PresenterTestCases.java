@@ -165,13 +165,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2DisplayAspectRatioIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-display-aspect-ratio-imsc11-1.xml", 0, 0);
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2DisplayAspectRatioIMSC11Test2() throws Exception {
         performPresentationTest("ttml2-prstn-display-aspect-ratio-imsc11-2.xml", 0, 0);
     }
@@ -223,19 +221,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2InitialIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-initial-imsc11-1.xml", 0, 0);
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2InitialIMSC11Test2() throws Exception {
         performPresentationTest("ttml2-prstn-initial-imsc11-2.xml", 0, 0);
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2LengthRootContainerRelativeIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-length-root-container-relative-imsc11-1.xml", 0, 0);
     }
@@ -251,19 +246,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2LengthRootContainerRelativeIMSC11Test4() throws Exception {
         performPresentationTest("ttml2-prstn-length-root-container-relative-imsc11-4.xml", 0, 0);
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2LengthRootContainerRelativeIMSC11Test5() throws Exception {
         performPresentationTest("ttml2-prstn-length-root-container-relative-imsc11-5.xml", 0, 0);
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2LengthRootContainerRelativeIMSC11Test6() throws Exception {
         performPresentationTest("ttml2-prstn-length-root-container-relative-imsc11-6.xml", 0, 0);
     }
@@ -331,7 +323,6 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2PositionIMSC11Test2() throws Exception {
         performPresentationTest("ttml2-prstn-position-imsc11-2.xml", 0, 0);
     }
@@ -407,19 +398,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2RubyReserveIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-ruby-reserve-imsc11-1.xml", 0, 0);
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2RubyReserveIMSC11Test2() throws Exception {
         performPresentationTest("ttml2-prstn-ruby-reserve-imsc11-2.xml", 0, 0);
     }
 
     @Test
-    @Ignore // pending https://github.com/skynav/ttt/issues/?
     public void testTTML2RubyReserveIMSC11Test3() throws Exception {
         performPresentationTest("ttml2-prstn-ruby-reserve-imsc11-3.xml", 0, 0);
     }
