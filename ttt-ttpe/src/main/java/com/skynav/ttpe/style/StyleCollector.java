@@ -539,7 +539,11 @@ public class StyleCollector {
             if (com.skynav.ttv.verifier.util.Emphasis.isEmphasis(s.getValue(), new Location(), context, retEmphasis)) {
                 com.skynav.ttv.model.value.TextEmphasis te = retEmphasis[0];
                 com.skynav.ttv.model.value.Color teColor = te.getColor();
-                Color c = (teColor != null) ? new Color(teColor.getRed(), teColor.getGreen(), teColor.getBlue(), teColor.getAlpha()) : color;
+                Color c;
+                if ((teColor == null) || teColor.isCurrent())
+                    c = null;
+                else
+                    c = new Color(teColor.getRed(), teColor.getGreen(), teColor.getBlue(), teColor.getAlpha());
                 v = new Emphasis(te.getStyle().name(), te.getText(), te.getPosition().name(), c);
             }
         }

@@ -428,8 +428,28 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2TextAlignAbsolute() throws Exception {
+        performPresentationTest("ttml2-prstn-text-align-absolute.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2TextAlignJustify() throws Exception {
+        performPresentationTest("ttml2-prstn-text-align-justify.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2TextAlignRelative() throws Exception {
+        performPresentationTest("ttml2-prstn-text-align-relative.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2TextCombineIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-text-combine-imsc11-1.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2TextEmphasisColor() throws Exception {
+        performPresentationTest("ttml2-prstn-text-emphasis-color.xml", 0, 0);
     }
 
     @Test
@@ -445,6 +465,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2TextEmphasisIMSC11Test3() throws Exception {
         performPresentationTest("ttml2-prstn-text-emphasis-imsc11-3.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2TextEmphasisQuotedString() throws Exception {
+        performPresentationTest("ttml2-prstn-text-emphasis-quoted-string.xml", 0, 0);
     }
 
     @Test

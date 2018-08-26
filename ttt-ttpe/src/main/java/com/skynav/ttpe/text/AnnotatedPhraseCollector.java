@@ -36,6 +36,7 @@ import org.w3c.dom.Text;
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.style.Annotation;
 import com.skynav.ttpe.style.AnnotationStyleCollector;
+import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Defaults;
 import com.skynav.ttpe.style.Emphasis;
 import com.skynav.ttpe.style.Outline;
@@ -123,6 +124,9 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
                             eText = Documents.createElement(d, ttSpanElementName);
                             StyleSet styles = styleCollector.addStyles(eText);
                             styles.merge(ttsRubyPositionAttrName, getRubyPosition(emphasis));
+                            Color emphasisColor = emphasis.getColor();
+                            if (emphasisColor != null)
+                                styles.merge(ttsColorAttrName, getColor(emphasisColor));
                             Outline outline = b.getOutline(-1, defaults);
                             if ((outline != null) && !outline.isNone())
                                 styles.merge(ttsTextOutlineAttrName, getOutline(outline));
@@ -143,6 +147,10 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
             return "after";
         else
             return "auto";
+    }
+
+    private String getColor(Color c) {
+        return c.toRGBAString(true);
     }
 
     private String getOutline(Outline o) {

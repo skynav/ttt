@@ -225,13 +225,13 @@ public class PresenterTestDriver {
         Reporter reporter = context.getReporter();
         if (!checkedDifferences) {
             if (outputURI == null)
-                reporter.logWarning(reporter.message("*KEY*", "Comparing output failed, no output produced from input {0}.", input));
+                reporter.logWarning(reporter.message("*KEY*", "[T]:Control comparison failed, no output produced from input {0}.", input));
             else
-                reporter.logWarning(reporter.message("*KEY*", "Comparing output failed, no control for input {0}.", input));
+                reporter.logWarning(reporter.message("*KEY*", "[T]:Control comparison failed, no control for input {0}.", input));
         } else {
             assertTrue(outputURI != null);
             assertTrue(controlURI != null);
-            reporter.logInfo(reporter.message("*KEY*", "Compared output {0} with {1}.", outputURI, controlURI));
+            reporter.logInfo(reporter.message("*KEY*", "[T]:Control comparison passed, compared output {0} with control {1}.", outputURI, controlURI));
         }
         reporter.flush();
     }
