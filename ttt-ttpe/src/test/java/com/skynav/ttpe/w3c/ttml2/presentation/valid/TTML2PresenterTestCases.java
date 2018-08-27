@@ -165,6 +165,27 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/214
+    public void testTTML2DisplayAlignBlock() throws Exception {
+        performPresentationTest("ttml2-prstn-display-align-block.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2DisplayAlignJustify() throws Exception {
+        performPresentationTest("ttml2-prstn-display-align-justify.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2DisplayAlignRegion() throws Exception {
+        performPresentationTest("ttml2-prstn-display-align-region.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2DisplayAlignRelative() throws Exception {
+        performPresentationTest("ttml2-prstn-display-align-relative.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2DisplayAspectRatioIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-display-aspect-ratio-imsc11-1.xml", 0, 0);
     }
