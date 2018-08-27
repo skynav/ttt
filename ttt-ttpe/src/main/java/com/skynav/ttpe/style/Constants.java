@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-18 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -71,6 +71,7 @@ public class Constants {
     public static final QName ttsTextCombineAttrName                    = new QName(NAMESPACE_TT_STYLE, "textCombine");
     public static final QName ttsTextEmphasisAttrName                   = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
     public static final QName ttsTextOutlineAttrName                    = new QName(NAMESPACE_TT_STYLE, "textOutline");
+    public static final QName ttsTextOrientationAttrName                = new QName(NAMESPACE_TT_STYLE, "textOrientation");
     public static final QName ttsUnicodeBidiAttrName                    = new QName(NAMESPACE_TT_STYLE, "unicodeBidi");
     public static final QName ttsVisibilityAttrName                     = new QName(NAMESPACE_TT_STYLE, "visibility");
     public static final QName ttsWrapOptionAttrName                     = new QName(NAMESPACE_TT_STYLE, "wrapOption");

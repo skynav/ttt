@@ -824,6 +824,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         boolean areaVisible = a.isVisible();
         for (int i = 0, n = advances.length; i < n; ++i) {
             double ga = advances[i];
+            double x = 0 /* [TBD] FIXME (bpdGlyphs - ga) / 2 */;
             double y = btt ? yCurrent - ga : yCurrent;
             int j = i + 1;
             String tGlyphs = text.substring(i, j);
@@ -899,11 +900,15 @@ public class SVGRenderProcessor extends RenderProcessor {
                 gOuter.appendChild(gInner);
             } else {
                 if (tOutline != null) {
+                    if (x != 0)
+                        Documents.setAttribute(tOutline, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
                     if (y != 0)
                         Documents.setAttribute(tOutline, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
                     gOuter.appendChild(tOutline);
                 }
                 if (t != null) {
+                    if (x != 0)
+                        Documents.setAttribute(t, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
                     if (y != 0)
                         Documents.setAttribute(t, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
                     gOuter.appendChild(t);

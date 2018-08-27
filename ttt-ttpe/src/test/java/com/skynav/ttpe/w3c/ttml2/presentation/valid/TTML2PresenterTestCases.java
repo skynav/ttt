@@ -473,6 +473,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2TextOrientation() throws Exception {
+        performPresentationTest("ttml2-prstn-text-orientation.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2TextShadowIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-text-shadow-imsc11-1.xml", 0, 0);
     }

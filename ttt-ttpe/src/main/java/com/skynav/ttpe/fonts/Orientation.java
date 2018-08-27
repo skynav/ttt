@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-18 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,5 +43,14 @@ public enum Orientation {
             return ROTATE000;
         else
             return ROTATE090;
+    }
+
+    public static Orientation fromTextOrientation(String value) {
+        if (value.equals("UPRIGHT"))
+            return ROTATE000;
+        else if (value.equals("SIDEWAYS"))
+            return ROTATE090;
+        else
+            return null;
     }
 }

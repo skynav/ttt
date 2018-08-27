@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-18 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -337,7 +337,7 @@ public class StyleCollector {
         }
     }
 
-    public void collectContentStyles(String content, int begin, int end) {
+    public void collectContentStyles(Element e, String content, int begin, int end) {
         int contentLength = content.length();
         if (begin < 0)
             begin = 0;
@@ -347,29 +347,36 @@ public class StyleCollector {
             end = contentLength;
         if (begin > end)
             begin = end;
-        collectContentOrientation(content, begin, end);
-        collectContentBidiLevels(content, begin, end);
+        collectContentOrientation(e, content, begin, end);
+        collectContentBidiLevels(e, content, begin, end);
     }
 
-    public void collectContentOrientation(String content, int begin, int end) {
+    public void collectContentOrientation(Element e, String content, int begin, int end) {
         if (isVertical()) {
-            int lastBegin = begin;
-            int lastEnd = lastBegin;
-            Orientation lastOrientation = null;
-            for (int i = begin, n = end; i < n; ++i) {
-                int c = content.charAt(i);
-                Orientation o = Orientation.fromCharacter(c);
-                if (o != lastOrientation) {
-                    if ((lastOrientation != null) && (lastOrientation != getDefaults().getOrientation()) && (lastEnd > lastBegin))
-                        addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, i);
-                    lastOrientation = o;
-                    lastBegin = i;
+            StyleSet styles = getStyles(e);
+            StyleSpecification s = styles.get(ttsTextOrientationAttrName);
+            Orientation eOrientation = null;
+            if (s != null)
+                eOrientation = Orientation.fromTextOrientation(s.getValue().toUpperCase());
+            if (eOrientation == null) { // if null, then element orientation is mixed, so content orientation applies
+                int lastBegin = begin;
+                int lastEnd = lastBegin;
+                Orientation lastOrientation = null;
+                for (int i = begin, n = end; i < n; ++i) {
+                    int c = content.charAt(i);
+                    Orientation o = Orientation.fromCharacter(c);
+                    if (o != lastOrientation) {
+                        if ((lastOrientation != null) && (lastOrientation != getDefaults().getOrientation()) && (lastEnd > lastBegin))
+                            addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, i);
+                        lastOrientation = o;
+                        lastBegin = i;
+                    }
+                    lastEnd = i + 1;
                 }
-                lastEnd = i + 1;
-            }
-            if (lastBegin < end) {
-                if ((lastOrientation != null) && (lastOrientation != getDefaults().getOrientation()) && (lastEnd > lastBegin))
-                    addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, lastEnd);
+                if (lastBegin < end) {
+                    if ((lastOrientation != null) && (lastOrientation != getDefaults().getOrientation()) && (lastEnd > lastBegin))
+                        addAttribute(StyleAttribute.ORIENTATION, lastOrientation, lastBegin, lastEnd);
+                }
             }
         }
     }
@@ -378,7 +385,7 @@ public class StyleCollector {
         return writingMode.getAxis(IPD) == Axis.VERTICAL;
     }
 
-    protected void collectContentBidiLevels(String content, int begin, int end) {
+    protected void collectContentBidiLevels(Element e, String content, int begin, int end) {
         int defaultLevel = getDefaultBidiLevel();
         int index = 0;
         for (int limit : getBidiRunLimits(begin, end)) {
@@ -569,6 +576,14 @@ public class StyleCollector {
         }
         if (v != null)
             addAttribute(StyleAttribute.OUTLINE, v, begin, end);
+
+        // TEXT_ORIENTATION
+        s = styles.get(ttsTextOrientationAttrName);
+        v = null;
+        if (s != null)
+            v = Orientation.fromTextOrientation(s.getValue().toUpperCase());
+        if ((v != null) && isVertical())
+            addAttribute(StyleAttribute.ORIENTATION, v, begin, end);
 
         // VISIBILITY
         s = styles.get(ttsVisibilityAttrName);

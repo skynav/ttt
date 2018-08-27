@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-18 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -277,7 +277,7 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
     private void collectBase(Element e, String content) {
         StyleCollector sc = new AnnotationStyleCollector(styleCollector, null);
         sc.collectSpanStyles(e, -1, -1);
-        sc.collectContentStyles(content, 0, content.length());
+        sc.collectContentStyles(e, content, 0, content.length());
         addBase(e, content, sc.extract());
     }
 
@@ -304,7 +304,7 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
             StyleCollector sc = new AnnotationStyleCollector(styleCollector, (currentBase < 0) ? null : bases.get(currentBase).getElement());
             sc.collectSpanStyles(e, -1, -1);
             String content = text.toString();
-            sc.collectContentStyles(content, 0, content.length());
+            sc.collectContentStyles(e, content, 0, content.length());
             if (!emphasis || !bases.get(currentBase).isWhitespace())
                 addAnnotation(e, content, sc.extract());
             ++currentBase;
