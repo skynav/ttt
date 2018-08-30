@@ -33,6 +33,48 @@ import com.skynav.ttpe.app.PresenterTestDriver;
 public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2AnimateFill() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-fill.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2AnimateLinearColor() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-linear-color.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2AnimateLinearOpacity() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-linear-opacity.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2AnimateLinearPosition() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-linear-position.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2AnimatePacedPosition() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-paced-position.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2AnimateRepeat() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-repeat.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2AnimateSplinePosition() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-spline-position.xml", 0, 0);
+    }
+
+    @Test
     @Ignore // pending https://github.com/skynav/ttt/issues/204
     public void testTTML2BackgroundClipBorder() throws Exception {
         performPresentationTest("ttml2-prstn-background-clip-border.xml", 0, 0);
