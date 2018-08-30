@@ -75,6 +75,12 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/216
+    public void testTTML2AnimationOutOfLine() throws Exception {
+        performPresentationTest("ttml2-prstn-animation-out-of-line.xml", 0, 0);
+    }
+
+    @Test
     @Ignore // pending https://github.com/skynav/ttt/issues/204
     public void testTTML2BackgroundClipBorder() throws Exception {
         performPresentationTest("ttml2-prstn-background-clip-border.xml", 0, 0);
