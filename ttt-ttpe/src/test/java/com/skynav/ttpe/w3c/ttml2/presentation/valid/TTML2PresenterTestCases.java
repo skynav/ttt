@@ -361,6 +361,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2MetadataItem() throws Exception {
+        performPresentationTest("ttml2-prstn-metadata-item.xml", 0, 0);
+    }
+
+    @Test
     @Ignore // pending https://github.com/skynav/ttt/issues/208
     public void testTTML2OpacityBlock() throws Exception {
         performPresentationTest("ttml2-prstn-opacity-block.xml", 0, 0);
