@@ -569,4 +569,9 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-prstn-text-shadow-imsc11-1.xml", 0, 0);
     }
 
+    @Test
+    public void testTTML2VisibilityImage() throws Exception {
+        performPresentationTest("ttml2-prstn-visibility-image.xml", 0, 0);
+    }
+
 }

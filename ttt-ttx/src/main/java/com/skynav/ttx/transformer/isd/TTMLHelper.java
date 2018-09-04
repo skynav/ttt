@@ -144,6 +144,10 @@ public abstract class TTMLHelper extends ISDHelper {
                 return true;
             else if (localName.equals("br"))
                 return true;
+            else if (localName.equals("image"))
+                return true;
+            else if (localName.equals("audio"))
+                return true;
             else
                 return false;
         }

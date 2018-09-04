@@ -665,8 +665,13 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             if (initialValueAsString == null)
                 initialValueAsString = (initialValue != null) ? initialValue.toString() : null;
             accessors.put(styleName,
-                new StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString));
+                makeAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString));
         }
+    }
+
+    protected StyleAccessor makeAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
+        int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
+        return new TTML1StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
     }
 
     protected void setStyleInitialValue(Object content, StyleAccessor sa, Object initialValue, VerifierContext context) {
@@ -919,6 +924,15 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
                     return null;
             } else
                 return null;
+        }
+
+    }
+
+    protected class TTML1StyleAccessor extends StyleAccessor {
+
+        public TTML1StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
+            int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
+            super(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
         }
 
     }

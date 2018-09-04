@@ -534,15 +534,17 @@ public class SVGRenderProcessor extends RenderProcessor {
 
     private Element renderImage(Element parent, BlockImageArea a, Document d) {
         Element e = parent;
-        Image image = a.getImage();
-        if ((image != null) && !image.isNone()) {
-            FrameResource resource = addResource(image);
-            Element eImage = Documents.createElement(d, SVGDocumentFrame.svgImageEltName);
-            Documents.setAttribute(eImage, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {image.getWidth()}));
-            Documents.setAttribute(eImage, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {image.getHeight()}));
-            Documents.setAttribute(eImage, SVGDocumentFrame.preserveAspectRatioAttrName, "xMinYMin slice");
-            Documents.setAttribute(eImage, SVGDocumentFrame.xlinkHrefAttrName, resource.getName());
-            e.appendChild(eImage);
+        if (a.isVisible()) {
+            Image image = a.getImage();
+            if ((image != null) && !image.isNone()) {
+                FrameResource resource = addResource(image);
+                Element eImage = Documents.createElement(d, SVGDocumentFrame.svgImageEltName);
+                Documents.setAttribute(eImage, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {image.getWidth()}));
+                Documents.setAttribute(eImage, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {image.getHeight()}));
+                Documents.setAttribute(eImage, SVGDocumentFrame.preserveAspectRatioAttrName, "xMinYMin slice");
+                Documents.setAttribute(eImage, SVGDocumentFrame.xlinkHrefAttrName, resource.getName());
+                e.appendChild(eImage);
+            }
         }
         double bpd = a.getBPD();
         if (a.isVertical()) {

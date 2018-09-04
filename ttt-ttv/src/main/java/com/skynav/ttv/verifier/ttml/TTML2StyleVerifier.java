@@ -731,7 +731,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             "Visibility",
             Visibility.class,
             VisibilityVerifier.class,
-            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION),
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION|APPLIES_TO_IMAGE),
             Boolean.FALSE,
             Boolean.TRUE,
             Visibility.VISIBLE,
@@ -769,6 +769,12 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     protected void populateAccessors(Map<QName, StyleAccessor> accessors) {
         super.populateAccessors(accessors);
         populateAccessors(accessors, styleAccessorMap);
+    }
+
+    @Override
+    protected StyleAccessor makeAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
+        int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
+        return new TTML2StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
     }
 
     @Override
@@ -960,6 +966,33 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
     public static final String getAudioStyleNamespaceUri() {
         return NAMESPACE_AUDIO;
+    }
+
+    protected class TTML2StyleAccessor extends StyleAccessor {
+
+        public TTML2StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
+            int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
+            super(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
+        }
+
+        @Override
+        public boolean doesStyleApply(QName eltName) {
+            if (super.doesStyleApply(eltName))
+                return true;
+            else {
+                String nsUri = eltName.getNamespaceURI();
+                if ((nsUri == null) || !nsUri.equals(NAMESPACE_TT)) {
+                    return false;
+                } else {
+                    String localName = eltName.getLocalPart();
+                    if (localName.equals("image"))
+                        return (applicability & APPLIES_TO_IMAGE) == APPLIES_TO_IMAGE;
+                    else
+                        return false;
+                }
+            }
+        }
+
     }
 
 }
