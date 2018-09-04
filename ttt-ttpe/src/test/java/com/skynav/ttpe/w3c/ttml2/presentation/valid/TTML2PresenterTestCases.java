@@ -482,6 +482,24 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2SetFill() throws Exception {
+        performPresentationTest("ttml2-prstn-set-fill.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2SetMultipleStyles() throws Exception {
+        performPresentationTest("ttml2-prstn-set-multiple-styles.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/215
+    public void testTTML2SetRepeat() throws Exception {
+        performPresentationTest("ttml2-prstn-set-repeat.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2ShearIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-shear-imsc11-1.xml", 0, 0);
     }
