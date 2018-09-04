@@ -154,6 +154,8 @@ public class TTML1StandardDesignations extends Profile.StandardDesignations {
     };
 
     private static final String[] ttml1ExtensionDesignationStrings = new String[] {
+        "#supported",                           // used for testing purposes
+        "#unsupported"                          // used for testing purposes
     };
 
     private Set<URI> featureDesignations;

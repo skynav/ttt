@@ -286,6 +286,8 @@ public class TTML2StandardDesignations extends TTML1StandardDesignations {
     };
 
     private static final String[] ttml2ExtensionDesignationStrings = new String[] {
+        "#supported",                           // used for testing purposes
+        "#unsupported"                          // used for testing purposes
     };
 
     public static TTML2StandardDesignations getInstance() {

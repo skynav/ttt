@@ -213,6 +213,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2ContentProfiles() throws Exception {
+        performPresentationTest("ttml2-prstn-content-profiles.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2ContentProfilesCombined() throws Exception {
+        performPresentationTest("ttml2-prstn-content-profiles-combined.xml", 0, 0);
+    }
+
+    @Test
     @Ignore // pending https://github.com/skynav/ttt/issues/214
     public void testTTML2DisplayAlignBlock() throws Exception {
         performPresentationTest("ttml2-prstn-display-align-block.xml", 0, 0);
@@ -387,6 +397,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2PermitFeatureNarrowing() throws Exception {
+        performPresentationTest("ttml2-prstn-permit-feature-narrowing.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2PermitFeatureWidening() throws Exception {
+        performPresentationTest("ttml2-prstn-permit-feature-widening.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2PositionIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-position-imsc11-1.xml", 0, 0);
     }
@@ -399,6 +419,21 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2PositionIMSC11Test3() throws Exception {
         performPresentationTest("ttml2-prstn-position-imsc11-3.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2ProcessorProfiles() throws Exception {
+        performPresentationTest("ttml2-prstn-processor-profiles.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2ProcessorProfilesCombined() throws Exception {
+        performPresentationTest("ttml2-prstn-processor-profiles-combined.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2ProfileNesting() throws Exception {
+        performPresentationTest("ttml2-prstn-profile-nesting.xml", 0, 0);
     }
 
     @Test
