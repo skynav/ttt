@@ -614,4 +614,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-prstn-visibility-image.xml", 0, 0);
     }
 
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/220
+    public void testTTML2XLinkImage() throws Exception {
+        performPresentationTest("ttml2-prstn-xlink-image.xml", 0, 0);
+    }
+
+    @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/220
+    public void testTTML2XLinkSpan() throws Exception {
+        performPresentationTest("ttml2-prstn-xlink-span.xml", 0, 0);
+    }
+
 }
