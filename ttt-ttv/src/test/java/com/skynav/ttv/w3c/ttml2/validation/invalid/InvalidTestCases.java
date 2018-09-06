@@ -271,11 +271,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2BadBackgroundImageUnresolvableExternalUri() throws Exception {
-        performInvalidityTest("ttml2-invld-bad-background-image-unresolvable-external-uri.xml", -1, -1);
-    }
-
-    @Test
     public void testInvalidTTML2BadBackgroundOriginAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-bad-background-origin-all-space.xml", -1, -1);
     }
@@ -1376,11 +1371,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2ImageUnresolvableExternalUri() throws Exception {
-        performInvalidityTest("ttml2-invld-image-unresolvable-external-uri.xml", -1, -1);
-    }
-
-    @Test
     public void testInvalidTTML2InferProcessorProfileMethodAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-infer-processor-profile-method-all-space.xml", -1, -1);
     }
@@ -1645,11 +1635,6 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2XlinkHrefEmpty() throws Exception {
         performInvalidityTest("ttml2-invld-xlink-href-empty.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidTTML2XlinkHrefNestedImage() throws Exception {
-        performInvalidityTest("ttml2-invld-xlink-href-nested-image.xml", -1, -1);
     }
 
     @Test

@@ -264,6 +264,12 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/221
+    public void testTTML2ExtentImage() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-image.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2FontKerning() throws Exception {
         performPresentationTest("ttml2-prstn-font-kerning.xml", 0, 0);
     }
