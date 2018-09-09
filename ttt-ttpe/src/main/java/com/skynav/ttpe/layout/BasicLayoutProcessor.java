@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-18 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -462,6 +462,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutRegion(Element e, LayoutState ls) {
+        if (ls.isExcluded(e))
+            return;
         Display display = ls.getDisplay(e);
         if (display == Display.NONE)
             return;
@@ -489,6 +491,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutBody(Element e, LayoutState ls) {
+        if (ls.isExcluded(e))
+            return;
         Display display = ls.getDisplay(e);
         if (display == Display.NONE)
             return;
@@ -502,6 +506,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutDivision(Element e, LayoutState ls) {
+        if (ls.isExcluded(e))
+            return;
         Display display = ls.getDisplay(e);
         if (display == Display.NONE)
             return;
@@ -520,6 +526,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutParagraph(Element e, LayoutState ls) {
+        if (ls.isExcluded(e))
+            return;
         Display display = ls.getDisplay(e);
         if (display == Display.NONE)
             return;
@@ -550,6 +558,8 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     protected void layoutImage(Element e, LayoutState ls) {
+        if (ls.isExcluded(e))
+            return;
         Display display = ls.getDisplay(e);
         if (display == Display.NONE)
             return;

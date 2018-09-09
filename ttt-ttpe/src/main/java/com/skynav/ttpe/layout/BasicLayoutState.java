@@ -328,6 +328,30 @@ public class BasicLayoutState implements LayoutState {
         return WritingMode.LRTB;                                // [TBD] get from context
     }
 
+    public boolean isExcluded(Element e) {
+        Condition condition = getCondition(e);
+        if (condition != null) {
+            try {
+                if (!condition.evaluate(context.getConditionEvaluatorState()))
+                    return true;
+            } catch (Condition.EvaluatorException x) {
+            } catch (IllegalStateException x) {
+            }
+        }
+        return false;
+    }
+
+    private Condition getCondition(Element e) {
+        String condition = Documents.getAttribute(e, conditionAttrName, null);
+        if (condition != null) {
+            try {
+                return Condition.valueOf(condition);
+            } catch (Condition.ParserException x) {
+            }
+        }
+        return null;
+    }
+
     public void saveStyles(Element e) {
         assert Documents.isElement(e, isdComputedStyleSetElementName);
         String id = Documents.getAttribute(e, xmlIdAttrName, null);

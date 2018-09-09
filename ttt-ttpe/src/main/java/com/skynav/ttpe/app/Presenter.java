@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-16 Skynav, Inc. All rights reserved.
+ * Copyright 2014-18 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -76,7 +76,10 @@ import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
 import com.skynav.ttv.app.RestartOptions;
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.util.IOUtil;
+import com.skynav.ttv.util.MediaQuery;
 import com.skynav.ttv.util.NullReporter;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Reporters;
@@ -250,6 +253,27 @@ public class Presenter extends TimedTextTransformer {
                 return parsedExternalExtent[0] / parsedExternalExtent[1];
         } else
             return 1;
+    }
+
+    @Override
+    protected Map<String,Object> getConditionMediaParameters() {
+        Map<String,Object> parameters = new java.util.HashMap<String,Object>();
+        MediaQuery.populateDefaultMediaParameters(parameters);
+        return parameters;
+    }
+
+    @Override
+    protected Set<String> getConditionSupportedFeatures() {
+        Set<String> features = new java.util.HashSet<String>();
+        Model model = getModel();
+        Profile.StandardDesignations designations = model.getStandardDesignations();
+        for (String fd : designations.getFeatureDesignationStrings()) {
+            features.add(fd);
+        }
+        for (String ed : designations.getExtensionDesignationStrings()) {
+            features.add(ed);
+        }
+        return features;
     }
 
     @Override

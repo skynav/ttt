@@ -213,6 +213,26 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2ConditionMedia() throws Exception {
+        performPresentationTest("ttml2-prstn-condition-media.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2ConditionParameter() throws Exception {
+        performPresentationTest("ttml2-prstn-condition-parameter.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2ConditionPrimary() throws Exception {
+        performPresentationTest("ttml2-prstn-condition-primary.xml", 0, 0);
+    }
+
+    @Test
+    public void testTTML2ConditionSupports() throws Exception {
+        performPresentationTest("ttml2-prstn-condition-supports.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2ContentProfiles() throws Exception {
         performPresentationTest("ttml2-prstn-content-profiles.xml", 0, 0);
     }

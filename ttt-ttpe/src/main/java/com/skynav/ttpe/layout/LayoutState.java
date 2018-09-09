@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-18 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -101,6 +101,8 @@ public interface LayoutState {
     Overflow getExternalOverflow();
     TransformMatrix getExternalTransform();
     WritingMode getExternalWritingMode();
+    // element computed state (other than styles)
+    boolean isExcluded(Element e);
     // element computed styles
     void saveStyles(Element e);
     Map<String,StyleSet> getStyles();
