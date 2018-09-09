@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -54,11 +54,11 @@ public class Colors {
     }
 
     public static boolean isColor(String value, Location location, VerifierContext context, Color[] outputColor) {
-        if (isRGBHash(value, outputColor))
+        if (isRGBHash(value, context, outputColor))
             return true;
-        else if (isRGBFunction(value, outputColor))
+        else if (isRGBFunction(value, context, outputColor))
             return true;
-        else if (isNamedColor(value, outputColor))
+        else if (isNamedColor(value, context, outputColor))
             return true;
         else
             return false;
@@ -110,7 +110,7 @@ public class Colors {
         namedColors = Collections.unmodifiableMap(m);
     }
 
-    private static boolean isNamedColor(String value, Color[] outputColor) {
+    private static boolean isNamedColor(String value, VerifierContext context, Color[] outputColor) {
         if (namedColors.containsKey(value)) {
             if (outputColor != null)
                 outputColor[0] = namedColors.get(value);
@@ -168,7 +168,8 @@ public class Colors {
         }
     }
 
-    private static boolean isRGBComponents(String components, int[][] valueLimits, Color[] outputColor) {
+    private static boolean isRGBComponents(String components, int[][] valueLimits, VerifierContext context, Color[] outputColor) {
+        int ttmlVersion = context.getModel().getTTMLVersion();
         String[] colorComponents = components.split(",");
         int numComponents = colorComponents.length;
         if (numComponents != valueLimits.length)
@@ -178,7 +179,12 @@ public class Colors {
         double b = 0;
         double a = 1;
         int componentIndex = 0;
-        for (String component : colorComponents) {
+        for (String colorComponent : colorComponents) {
+            String component;
+            if (ttmlVersion > 1)
+                component = colorComponent.trim();
+            else
+                component = colorComponent;
             int[] limits = valueLimits[componentIndex++];
             int minValue = limits[0];
             int maxValue = limits[1];
@@ -200,6 +206,7 @@ public class Colors {
     }
 
     private static void badRGBComponents(String components, Location location, VerifierContext context, int[][] valueLimits) {
+        int ttmlVersion = context.getModel().getTTMLVersion();
         String[] colorComponents = components.split(",");
         int numComponents = valueLimits.length;
         if (colorComponents.length != numComponents) {
@@ -218,7 +225,12 @@ public class Colors {
             reporter.logInfo(message);
         }
         int componentIndex = 0;
-        for (String component : colorComponents) {
+        for (String colorComponent : colorComponents) {
+            String component;
+            if (ttmlVersion > 1)
+                component = colorComponent.trim();
+            else
+                component = colorComponent;
             // if extra component, then use last limits
             int[] limits = (componentIndex < numComponents) ? valueLimits[componentIndex++] : valueLimits[numComponents - 1];
             int minValue = limits[0];
@@ -230,7 +242,7 @@ public class Colors {
 
     private static final int[][] rgbComponentLimits = new int[][] { { 0, 255 }, { 0, 255 }, { 0, 255 } };
     private static final int[][] rgbaComponentLimits = new int[][] { { 0, 255 }, { 0, 255 }, { 0, 255 }, { 0, 255 } };
-    private static boolean isRGBFunction(String value, Color[] outputColor) {
+    private static boolean isRGBFunction(String value, VerifierContext context, Color[] outputColor) {
         int componentsStart;
         int[][] valueLimits;
         if (value.indexOf("rgb(") == 0) {
@@ -243,7 +255,7 @@ public class Colors {
             return false;
         if (value.charAt(value.length() - 1) != ')')
             return false;
-        return isRGBComponents(value.substring(componentsStart, value.length() - 1), valueLimits, outputColor);
+        return isRGBComponents(value.substring(componentsStart, value.length() - 1), valueLimits, context, outputColor);
     }
 
     private static void badRGBFunction(String value, Location location, VerifierContext context) {
@@ -283,7 +295,7 @@ public class Colors {
         }
     }
 
-    private static boolean isRGBHash(String value, Color[] outputColor) {
+    private static boolean isRGBHash(String value, VerifierContext context, Color[] outputColor) {
         if (value.length() < 7)
             return false;
         else if (value.charAt(0) != '#')

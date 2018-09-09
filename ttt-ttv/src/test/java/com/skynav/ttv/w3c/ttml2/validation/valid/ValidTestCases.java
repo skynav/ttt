@@ -97,6 +97,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2BackgroundColorRGBFunctionPaddedComponent() throws Exception {
+        performValidityTest("ttml2-valid-background-color-rgb-function-padded-component.xml", -1, -1);
+    }
+    
+    @Test
+    public void testValidTTML2BackgroundColorRGBAFunctionPaddedComponent() throws Exception {
+        performValidityTest("ttml2-valid-background-color-rgba-function-padded-component.xml", -1, -1);
+    }
+    
+    @Test
     public void testValidTTML2BackgroundExtent() throws Exception {
         performValidityTest("ttml2-valid-background-extent.xml", -1, -1);
     }

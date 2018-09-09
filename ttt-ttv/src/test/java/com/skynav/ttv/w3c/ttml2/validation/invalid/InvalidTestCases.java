@@ -126,11 +126,6 @@ public class InvalidTestCases {
     }
     
     @Test
-    public void testInvalidTTML2BadBackgroundColorRGBFunctionPaddedComponent() throws Exception {
-        performInvalidityTest("ttml2-invld-bad-background-color-rgb-function-padded-component.xml", -1, -1);
-    }
-    
-    @Test
     public void testInvalidTTML2BadBackgroundColorRGBHashExtraDigit() throws Exception {
         performInvalidityTest("ttml2-invld-bad-background-color-rgb-hash-extra-digit.xml", -1, -1);
     }
@@ -188,11 +183,6 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadBackgroundColorRGBAFunctionOutOfRangeComponent() throws Exception {
         performInvalidityTest("ttml2-invld-bad-background-color-rgba-function-out-of-range-component.xml", -1, -1);
-    }
-    
-    @Test
-    public void testInvalidTTML2BadBackgroundColorRGBAFunctionPaddedComponent() throws Exception {
-        performInvalidityTest("ttml2-invld-bad-background-color-rgba-function-padded-component.xml", -1, -1);
     }
     
     @Test
@@ -713,6 +703,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadLetterSpacingExtraLength() throws Exception {
         performInvalidityTest("ttml2-invld-bad-letter-spacing-extra-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadLetterSpacingUnknownKeyword() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-letter-spacing-unknown-keyword.xml", -1, -1);
     }
 
     @Test
@@ -1323,11 +1318,6 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2FontEmbeddingRangeUnknownKeyword() throws Exception {
         performInvalidityTest("ttml2-invld-font-embedding-range-unknown-keyword.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidTTML2FontEmbeddingRangeWildcardTooMany() throws Exception {
-        performInvalidityTest("ttml2-invld-font-embedding-range-wildcard-too-many.xml", -1, -1);
     }
 
     @Test
