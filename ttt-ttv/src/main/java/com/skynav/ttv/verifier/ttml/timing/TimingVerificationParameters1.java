@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2018 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,13 @@
 package com.skynav.ttv.verifier.ttml.timing;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import com.skynav.ttv.model.ttml1.tt.TimedText;
-import com.skynav.ttv.model.value.ClockMode;
-import com.skynav.ttv.model.value.DropMode;
-import com.skynav.ttv.model.value.TimeBase;
+import com.skynav.ttv.model.ttml1.ttd.ClockMode;
+import com.skynav.ttv.model.ttml1.ttd.DropMode;
+import com.skynav.ttv.model.ttml1.ttd.MarkerMode;
+import com.skynav.ttv.model.ttml1.ttd.TimeBase;
 import com.skynav.ttv.util.ExternalParameters;
 
 public class TimingVerificationParameters1 extends TimingVerificationParameters {
@@ -43,16 +45,34 @@ public class TimingVerificationParameters1 extends TimingVerificationParameters 
     protected void populate(Object content, ExternalParameters externalParameters) {
         assert content instanceof TimedText;
         TimedText tt = (TimedText) content;
-        this.timeBase = TimeBase.valueOf(tt.getTimeBase().name());
-        this.clockMode = ClockMode.valueOf(tt.getClockMode().name());
-        this.dropMode = DropMode.valueOf(tt.getDropMode().name());
-        this.allowDuration = (timeBase != TimeBase.SMPTE) || !tt.getMarkerMode().name().equals("DISCONTINUOUS");
-        this.frameRate = tt.getFrameRate().intValue();
-        this.subFrameRate = tt.getSubFrameRate().intValue();
-        BigDecimal multiplier = parseFrameRateMultiplier(tt.getFrameRateMultiplier());
+        TimeBase timeBase = tt.getTimeBase();
+        if (timeBase != null)
+            this.timeBase = com.skynav.ttv.model.value.TimeBase.valueOf(timeBase.name());
+        ClockMode clockMode = tt.getClockMode();
+        if (clockMode != null)
+            this.clockMode = com.skynav.ttv.model.value.ClockMode.valueOf(clockMode.name());
+        DropMode dropMode = tt.getDropMode();
+        if (dropMode != null)
+            this.dropMode = com.skynav.ttv.model.value.DropMode.valueOf(dropMode.name());
+        MarkerMode markerMode = tt.getMarkerMode();
+        if (markerMode == null)
+            markerMode = MarkerMode.CONTINUOUS;
+        this.allowDuration = (this.timeBase != com.skynav.ttv.model.value.TimeBase.SMPTE) || !markerMode.name().equals("DISCONTINUOUS");
+        BigInteger frameRate = tt.getFrameRate();
+        if (frameRate != null)
+            this.frameRate = frameRate.intValue();
+        BigInteger subFrameRate = tt.getSubFrameRate();
+        if (subFrameRate != null)
+            this.subFrameRate = tt.getSubFrameRate().intValue();
+        String frameRateMultiplier = tt.getFrameRateMultiplier();
+        if (frameRateMultiplier == null)
+            frameRateMultiplier = "1 1";
+        BigDecimal multiplier = parseFrameRateMultiplier(frameRateMultiplier);
         this.frameRateMultiplier = multiplier.doubleValue();
-        this.effectiveFrameRate = new BigDecimal(tt.getFrameRate()).multiply(multiplier).doubleValue();
-        this.tickRate = tt.getTickRate().intValue();
+        this.effectiveFrameRate = new BigDecimal(BigInteger.valueOf(this.frameRate)).multiply(multiplier).doubleValue();
+        BigInteger tickRate = tt.getTickRate();
+        if (tickRate != null)
+            this.tickRate = tickRate.intValue();
         if (externalParameters != null) {
             Double externalDuration = (Double) externalParameters.getParameter("externalDuration");
             if (externalDuration != null)

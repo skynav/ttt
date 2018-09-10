@@ -43,14 +43,14 @@ public class TimingVerificationParameters implements VerificationParameters {
 
     public static final int frameRateMultiplierScale = 16;
 
-    protected TimeBase timeBase;
-    protected ClockMode clockMode;
-    protected DropMode dropMode;
+    protected TimeBase timeBase                 = TimeBase.MEDIA;
+    protected ClockMode clockMode               = ClockMode.UTC;
+    protected DropMode dropMode                 = DropMode.NON_DROP;
     protected boolean allowDuration;
-    protected int frameRate;
-    protected double frameRateMultiplier;
-    protected int subFrameRate;
-    protected double effectiveFrameRate;
+    protected int frameRate                     = 30;
+    protected double frameRateMultiplier        = 1;
+    protected int subFrameRate                  = 1;
+    protected double effectiveFrameRate         = 1;
     protected int tickRate;
     protected double externalDuration;
 

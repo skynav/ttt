@@ -161,7 +161,8 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
     }
 
     protected void setReporter(Reporter reporter, PrintWriter reporterOutput, String reporterOutputEncoding, boolean reporterIncludeSource, boolean closeOldReporter) {
-        verifier.setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource, closeOldReporter);
+        if (verifier != null)
+            verifier.setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource, closeOldReporter);
     }
 
     @Override

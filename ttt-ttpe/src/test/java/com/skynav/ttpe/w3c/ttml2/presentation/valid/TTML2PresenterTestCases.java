@@ -636,6 +636,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2ValidationProhibitedValid() throws Exception {
+        performPresentationTest("ttml2-prstn-validation-prohibited-valid.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2VisibilityImage() throws Exception {
         performPresentationTest("ttml2-prstn-visibility-image.xml", 0, 0);
     }

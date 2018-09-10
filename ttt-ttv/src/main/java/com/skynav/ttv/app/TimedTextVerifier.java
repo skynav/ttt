@@ -96,6 +96,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
 import com.skynav.ttv.model.Profile;
+import com.skynav.ttv.model.ttml.TTML;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
 import com.skynav.ttv.model.value.TimeParameters;
@@ -1582,6 +1583,7 @@ public class TimedTextVerifier implements VerifierContext {
         boolean configureReporter = false;
         if (attributes != null) {
             String annotationsNamespace = Annotations.getNamespace();
+            String parameterNamespace = TTML.Constants.NAMESPACE_TT_PARAMETER;
             // first process model annotation, as processing others may depend on this
             for (int i = 0, n = attributes.getLength(); i < n; ++i) {
                 if (attributes.getURI(i).equals(annotationsNamespace)) {
@@ -1600,9 +1602,10 @@ public class TimedTextVerifier implements VerifierContext {
                 resourceModel.configureReporter(reporter);
             // now process other annotations
             for (int i = 0, n = attributes.getLength(); i < n; ++i) {
-                if (attributes.getURI(i).equals(annotationsNamespace)) {
-                    String localName = attributes.getLocalName(i);
-                    String value = attributes.getValue(i);
+                String nsURI = attributes.getURI(i);
+                String localName = attributes.getLocalName(i);
+                String value = attributes.getValue(i);
+                if (nsURI.equals(annotationsNamespace)) {
                     if (localName.equals("expectedErrors")) {
                         resourceExpectedErrors = parseAnnotationAsInteger(value, -1);
                     } else if (localName.equals("expectedWarnings")) {
@@ -1635,6 +1638,12 @@ public class TimedTextVerifier implements VerifierContext {
                         }
                     } else {
                         throw new InvalidAnnotationException(localName, "unknown annotation");
+                    }
+                } else if (nsURI.equals(parameterNamespace)) {
+                    if (localName.equals("validation")) {
+                        if ((value != null) && value.equals("prohibited"))
+                            lastPhase = Phase.WellFormedness;
+                    } else if (localName.equals("validationAction")) {
                     }
                 }
             }
@@ -2132,12 +2141,6 @@ public class TimedTextVerifier implements VerifierContext {
 
     private boolean verifySemantics() {
         Reporter reporter = getReporter();
-        currentPhase = Phase.Semantics;
-        if (!lastPhase.isEnabled(Phase.Semantics)) {
-            reporter.logInfo(reporter.message("*KEY*", "Skipping semantics verification phase ({0}).", currentPhase.ordinal()));
-            return true;
-        } else
-            reporter.logInfo(reporter.message("*KEY*", "Verifying semantics phase {0} using ''{1}'' model...", currentPhase.ordinal(), getModel().getName()));
         try {
             // construct source pipeline
             SAXParserFactory pf = SAXParserFactory.newInstance();
@@ -2180,7 +2183,17 @@ public class TimedTextVerifier implements VerifierContext {
                     this.rootBinding = root.getValue();
                     this.rootName = root.getName();
                     setResourceDocumentContextState();
-                    getModel().getSemanticsVerifier().verify(this.rootBinding, this);
+                    currentPhase = Phase.Semantics;
+                    if (!lastPhase.isEnabled(Phase.Semantics)) {
+                        reporter.logInfo(reporter.message("*KEY*",
+                            "Skipping semantics verification phase ({0}).", currentPhase.ordinal()));
+                        return true;
+                    } else {
+                        reporter.logInfo(reporter.message("*KEY*",
+                            "Verifying semantics phase {0} using ''{1}'' model...", currentPhase.ordinal(), getModel().getName()));
+                        getModel().getSemanticsVerifier().verify(this.rootBinding, this);
+                    }
+
                 }
             }
         } catch (UnmarshalException e) {
