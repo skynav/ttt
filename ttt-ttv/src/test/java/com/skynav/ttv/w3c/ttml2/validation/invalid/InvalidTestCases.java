@@ -1236,11 +1236,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2DataReferenceExternalMissingType() throws Exception {
-        performInvalidityTest("ttml2-invld-data-reference-external-missing-type.xml", -1, -1);
-    }
-
-    @Test
     public void testInvalidTTML2DataReferenceInternalWithType() throws Exception {
         performInvalidityTest("ttml2-invld-data-reference-internal-with-type.xml", -1, -1);
     }
