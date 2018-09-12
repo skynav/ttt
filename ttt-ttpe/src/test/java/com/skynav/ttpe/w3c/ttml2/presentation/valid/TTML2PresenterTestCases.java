@@ -636,6 +636,12 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    @Ignore // pending https://github.com/skynav/ttt/issues/222
+    public void testTTML2UnicodeBidiIsolate() throws Exception {
+        performPresentationTest("ttml2-prstn-unicode-bidi-isolate.xml", 0, 0);
+    }
+
+    @Test
     public void testTTML2ValidationProhibitedValid() throws Exception {
         performPresentationTest("ttml2-prstn-validation-prohibited-valid.xml", 0, 0);
     }
