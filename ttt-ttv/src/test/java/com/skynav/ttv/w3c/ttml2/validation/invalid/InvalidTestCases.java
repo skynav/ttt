@@ -1141,18 +1141,8 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidTTML2BaseEmpty() throws Exception {
-        performInvalidityTest("ttml2-invld-base-empty.xml", -1, -1);
-    }
-
-    @Test
     public void testInvalidTTML2BaseGeneralAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-base-general-all-space.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidTTML2BaseGeneralEmpty() throws Exception {
-        performInvalidityTest("ttml2-invld-base-general-empty.xml", -1, -1);
     }
 
     @Test

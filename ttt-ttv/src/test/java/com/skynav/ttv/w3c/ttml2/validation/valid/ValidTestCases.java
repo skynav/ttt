@@ -917,11 +917,6 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidTTML2TextOrientationSideways() throws Exception {
-        performValidityTest("ttml2-valid-text-orientation-sideways.xml", -1, -1);
-    }
-
-    @Test
     public void testValidTTML2TextShadow() throws Exception {
         performValidityTest("ttml2-valid-text-shadow.xml", -1, -1);
     }
