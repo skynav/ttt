@@ -33,27 +33,27 @@ public class IMSC1PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testIMSC1DivisionImage1() throws Exception {
-        performPresentationTest("imsc1-div-image-1.xml", 0, 0);
+        performPresentationTest("imsc1-div-image-1.xml");
     }
 
     @Test
     public void testIMSC1FontSizePercentageOfInitialFontSize() throws Exception {
-        performPresentationTest("imsc1-font-size-percentage-of-initial-font-size.xml", 0, 0);
+        performPresentationTest("imsc1-font-size-percentage-of-initial-font-size.xml");
     }
 
     @Test
     public void testIMSC1ForcedDisplayEnabled() throws Exception {
-        performPresentationTest("imsc1-forced-display-enabled.xml", 0, 0);
+        performPresentationTest("imsc1-forced-display-enabled.xml");
     }
 
     @Test
     public void testIMSC1ForcedDisplayDisabled() throws Exception {
-        performPresentationTest("imsc1-forced-display-disabled.xml", 0, 0);
+        performPresentationTest("imsc1-forced-display-disabled.xml");
     }
 
     @Test
     public void testIMSC1MultiRowAlign() throws Exception {
-        performPresentationTest("imsc1-multirow-align.xml", 0, 0);
+        performPresentationTest("imsc1-multirow-align.xml");
     }
 
 }

@@ -33,57 +33,57 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML1BackgroundColorBlock() throws Exception {
-        performPresentationTest("ttml1-background-color-block.xml", 0, 0);
+        performPresentationTest("ttml1-background-color-block.xml");
     }
 
     @Test
     public void testTTML1BackgroundColorInlineLRTB() throws Exception {
-        performPresentationTest("ttml1-background-color-inline-lrtb.xml", 0, 0);
+        performPresentationTest("ttml1-background-color-inline-lrtb.xml");
     }
 
     @Test
     public void testTTML1BackgroundColorInlineSpacesLRTB() throws Exception {
-        performPresentationTest("ttml1-background-color-inline-spaces-lrtb.xml", 0, 0);
+        performPresentationTest("ttml1-background-color-inline-spaces-lrtb.xml");
     }
 
     @Test
     public void testTTML1BackgroundColorRegion() throws Exception {
-        performPresentationTest("ttml1-background-color-region.xml", 0, 0);
+        performPresentationTest("ttml1-background-color-region.xml");
     }
 
     @Test
     public void testTTML1Display1() throws Exception {
-        performPresentationTest("ttml1-display-1.xml", 0, 0);
+        performPresentationTest("ttml1-display-1.xml");
     }
 
     @Test
     public void testTTML1Display2() throws Exception {
-        performPresentationTest("ttml1-display-2.xml", 0, 0);
+        performPresentationTest("ttml1-display-2.xml");
     }
 
     @Test
     public void testTTML1ForegroundColor() throws Exception {
-        performPresentationTest("ttml1-foreground-color.xml", 0, 0);
+        performPresentationTest("ttml1-foreground-color.xml");
     }
 
     @Test
     public void testTTML1PaddingRegion() throws Exception {
-        performPresentationTest("ttml1-padding-region.xml", 0, 0);
+        performPresentationTest("ttml1-padding-region.xml");
     }
 
     @Test
     public void testTTML1ShowBackground() throws Exception {
-        performPresentationTest("ttml1-show-background.xml", 0, 0);
+        performPresentationTest("ttml1-show-background.xml");
     }
 
     @Test
     public void testTTML1Visibility1() throws Exception {
-        performPresentationTest("ttml1-visibility-1.xml", 0, 0);
+        performPresentationTest("ttml1-visibility-1.xml");
     }
 
     @Test
     public void testTTML1Visibility2() throws Exception {
-        performPresentationTest("ttml1-visibility-2.xml", 0, 0);
+        performPresentationTest("ttml1-visibility-2.xml");
     }
 
 }

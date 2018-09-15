@@ -33,7 +33,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2ValidationProhibitedInvalid() throws Exception {
-        performPresentationTest("ttml2-prstn-validation-prohibited-invalid.xml", 0, 0);
+        performPresentationTest("ttml2-prstn-validation-prohibited-invalid.xml");
     }
 
 }

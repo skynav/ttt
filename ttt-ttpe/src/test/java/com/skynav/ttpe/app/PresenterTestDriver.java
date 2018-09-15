@@ -58,11 +58,19 @@ import com.skynav.ttx.transformer.TransformerContext;
 
 public class PresenterTestDriver {
 
-    protected void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
-        performPresentationTest(resourceName, expectedErrors, expectedWarnings, null);
+    protected void performPresentationTest(String resourceName) {
+        performPresentationTest(resourceName, false, 0, 0, null);
     }
 
-    protected void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings, String[] additionalOptions) {
+    protected void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
+        performPresentationTest(resourceName, false, expectedErrors, expectedWarnings, null);
+    }
+
+    protected void performPresentationTest(String resourceName, boolean dontCheckDifference, int expectedErrors, int expectedWarnings) {
+        performPresentationTest(resourceName, dontCheckDifference, expectedErrors, expectedWarnings, null);
+    }
+
+    protected void performPresentationTest(String resourceName, boolean dontCheckDifference, int expectedErrors, int expectedWarnings, String[] additionalOptions) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
@@ -94,7 +102,12 @@ public class PresenterTestDriver {
         Presenter ttpe = new Presenter();
         List<URI> output = ttpe.present(args, new TextReporter());
         assertNotNull("Presentation failed, no output produced.", output);
-        maybeCheckDifferences(output, input, ttpe);
+        Reporter reporter = ttpe.getReporter();
+        if (!dontCheckDifference)
+            maybeCheckDifferences(output, input, ttpe);
+        else
+            reporter.logWarning(reporter.message("*KEY*", "[T]:Skipping control comparison.", input));
+        reporter.flush();
         TimedTextVerifier.Results r = ttpe.getResults(urlString);
         int resultCode = r.getCode();
         int resultFlags = r.getFlags();
@@ -233,7 +246,6 @@ public class PresenterTestDriver {
             assertTrue(controlURI != null);
             reporter.logInfo(reporter.message("*KEY*", "[T]:Control comparison passed, compared output {0} with control {1}.", outputURI, controlURI));
         }
-        reporter.flush();
     }
 
     private void checkDifferences(URI uri1, URI uri2) {
