@@ -62,6 +62,10 @@ public class PresenterTestDriver {
         performPresentationTest(resourceName, false, 0, 0, null);
     }
 
+    protected void performPresentationTest(String resourceName, boolean dontCheckDifference) {
+        performPresentationTest(resourceName, dontCheckDifference, 0, 0, null);
+    }
+
     protected void performPresentationTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performPresentationTest(resourceName, false, expectedErrors, expectedWarnings, null);
     }

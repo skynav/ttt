@@ -34,169 +34,169 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2AnimateFill() throws Exception {
-        performPresentationTest("ttml2-prstn-animate-fill.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-animate-fill.xml", true);
     }
 
     @Test
     public void testTTML2AnimateLinearColor() throws Exception {
-        performPresentationTest("ttml2-prstn-animate-linear-color.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-animate-linear-color.xml", true);
     }
 
     @Test
     public void testTTML2AnimateLinearOpacity() throws Exception {
-        performPresentationTest("ttml2-prstn-animate-linear-opacity.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-animate-linear-opacity.xml", true);
     }
 
     @Test
     public void testTTML2AnimateLinearPosition() throws Exception {
-        performPresentationTest("ttml2-prstn-animate-linear-position.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-animate-linear-position.xml", true);
     }
 
     @Test
     public void testTTML2AnimatePacedPosition() throws Exception {
-        performPresentationTest("ttml2-prstn-animate-paced-position.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-animate-paced-position.xml", true);
     }
 
     @Test
     public void testTTML2AnimateRepeat() throws Exception {
-        performPresentationTest("ttml2-prstn-animate-repeat.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-animate-repeat.xml", true);
     }
 
     @Test
     public void testTTML2AnimateSplinePosition() throws Exception {
-        performPresentationTest("ttml2-prstn-animate-spline-position.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-animate-spline-position.xml", true);
     }
 
     @Test
     public void testTTML2AnimationOutOfLine() throws Exception {
-        performPresentationTest("ttml2-prstn-animation-out-of-line.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-animation-out-of-line.xml", true);
     }
 
     @Test
     public void testTTML2AudioEmbeddingChunked() throws Exception {
-        performPresentationTest("ttml2-prstn-audio-embedding-chunked.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-audio-embedding-chunked.xml", true);
     }
 
     @Test
     @Ignore
     public void testTTML2AudioEmbeddingSourced() throws Exception {
-        performPresentationTest("ttml2-prstn-audio-embedding-sourced.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-audio-embedding-sourced.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundClipBorder() throws Exception {
-        performPresentationTest("ttml2-prstn-background-clip-border.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-clip-border.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundClipContent() throws Exception {
-        performPresentationTest("ttml2-prstn-background-clip-content.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-clip-content.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundClipPadding() throws Exception {
-        performPresentationTest("ttml2-prstn-background-clip-padding.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-clip-padding.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundExtent() throws Exception {
-        performPresentationTest("ttml2-prstn-background-extent.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-extent.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundImage() throws Exception {
-        performPresentationTest("ttml2-prstn-background-image.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-image.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundOriginBorder() throws Exception {
-        performPresentationTest("ttml2-prstn-background-origin-border.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-origin-border.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundOriginContent() throws Exception {
-        performPresentationTest("ttml2-prstn-background-origin-content.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-origin-content.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundOriginPadding() throws Exception {
-        performPresentationTest("ttml2-prstn-background-origin-padding.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-origin-padding.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundPositionBottomRight() throws Exception {
-        performPresentationTest("ttml2-prstn-background-position-bottom-right.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-position-bottom-right.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundPositionTopLeft() throws Exception {
-        performPresentationTest("ttml2-prstn-background-position-top-left.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-position-top-left.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundPositionCenter() throws Exception {
-        performPresentationTest("ttml2-prstn-background-position-center.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-position-center.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundRepeat() throws Exception {
-        performPresentationTest("ttml2-prstn-background-repeat.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-repeat.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundRepeatNone() throws Exception {
-        performPresentationTest("ttml2-prstn-background-repeat-none.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-repeat-none.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundRepeatX() throws Exception {
-        performPresentationTest("ttml2-prstn-background-repeat-x.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-repeat-x.xml", true);
     }
 
     @Test
     public void testTTML2BackgroundRepeatY() throws Exception {
-        performPresentationTest("ttml2-prstn-background-repeat-y.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-background-repeat-y.xml", true);
     }
 
     @Test
     @Ignore
     public void testTTML2BaseImage() throws Exception {
-        performPresentationTest("ttml2-prstn-base-image.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-base-image.xml", true);
     }
 
     @Test
     public void testTTML2BorderBlock() throws Exception {
-        performPresentationTest("ttml2-prstn-border-block.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-border-block.xml", true);
     }
 
     @Test
     public void testTTML2BorderBlockRadii1() throws Exception {
-        performPresentationTest("ttml2-prstn-border-block-radii-1.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-border-block-radii-1.xml", true);
     }
 
     @Test
     public void testTTML2BorderInline() throws Exception {
-        performPresentationTest("ttml2-prstn-border-inline.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-border-inline.xml", true);
     }
 
     @Test
     public void testTTML2BorderInlineRadii1() throws Exception {
-        performPresentationTest("ttml2-prstn-border-inline-radii-1.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-border-inline-radii-1.xml", true);
     }
 
     @Test
     public void testTTML2BorderRegion() throws Exception {
-        performPresentationTest("ttml2-prstn-border-region.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-border-region.xml", true);
     }
 
     @Test
     public void testTTML2BorderRegionRadii1() throws Exception {
-        performPresentationTest("ttml2-prstn-border-region-radii-1.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-border-region-radii-1.xml", true);
     }
 
     @Test
     public void testTTML2BorderRegionRadii2() throws Exception {
-        performPresentationTest("ttml2-prstn-border-region-radii-2.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-border-region-radii-2.xml", true);
     }
 
     @Test
@@ -231,7 +231,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2DisplayAlignBlock() throws Exception {
-        performPresentationTest("ttml2-prstn-display-align-block.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-display-align-block.xml", true);
     }
 
     @Test
@@ -271,7 +271,12 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2ExtentImage() throws Exception {
-        performPresentationTest("ttml2-prstn-extent-image.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-extent-image.xml", true);
+    }
+
+    @Test
+    public void testTTML2FontEmbedding() throws Exception {
+        performPresentationTest("ttml2-prstn-font-embedding.xml", true);
     }
 
     @Test
@@ -281,7 +286,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2FontSelectionStrategy() throws Exception {
-        performPresentationTest("ttml2-prstn-font-selection-strategy.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-font-selection-strategy.xml", true);
     }
 
     @Test
@@ -306,13 +311,13 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2ImageEmbeddingChunked() throws Exception {
-        performPresentationTest("ttml2-prstn-image-embedding-chunked.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-image-embedding-chunked.xml", true);
     }
 
     @Test
     @Ignore
     public void testTTML2ImageEmbeddingSourced() throws Exception {
-        performPresentationTest("ttml2-prstn-image-embedding-sourced.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-image-embedding-sourced.xml", true);
     }
 
     @Test
@@ -362,7 +367,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2LetterSpacing() throws Exception {
-        performPresentationTest("ttml2-prstn-letter-spacing.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-letter-spacing.xml", true);
     }
 
     @Test
@@ -387,32 +392,32 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2OpacityBlock() throws Exception {
-        performPresentationTest("ttml2-prstn-opacity-block.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-opacity-block.xml", true);
     }
 
     @Test
     public void testTTML2OpacityInline() throws Exception {
-        performPresentationTest("ttml2-prstn-opacity-inline.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-opacity-inline.xml", true);
     }
 
     @Test
     public void testTTML2OpacityRegion() throws Exception {
-        performPresentationTest("ttml2-prstn-opacity-region.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-opacity-region.xml", true);
     }
 
     @Test
     public void testTTML2PaddingBlock() throws Exception {
-        performPresentationTest("ttml2-prstn-padding-block.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-padding-block.xml", true);
     }
 
     @Test
     public void testTTML2PaddingInline() throws Exception {
-        performPresentationTest("ttml2-prstn-padding-inline.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-padding-inline.xml", true);
     }
 
     @Test
     public void testTTML2PaddingRegion() throws Exception {
-        performPresentationTest("ttml2-prstn-padding-region.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-padding-region.xml", true);
     }
 
     @Test
@@ -537,17 +542,17 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2SetFill() throws Exception {
-        performPresentationTest("ttml2-prstn-set-fill.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-set-fill.xml", true);
     }
 
     @Test
     public void testTTML2SetMultipleStyles() throws Exception {
-        performPresentationTest("ttml2-prstn-set-multiple-styles.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-set-multiple-styles.xml", true);
     }
 
     @Test
     public void testTTML2SetRepeat() throws Exception {
-        performPresentationTest("ttml2-prstn-set-repeat.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-set-repeat.xml", true);
     }
 
     @Test
@@ -622,7 +627,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2UnicodeBidiIsolate() throws Exception {
-        performPresentationTest("ttml2-prstn-unicode-bidi-isolate.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-unicode-bidi-isolate.xml", true);
     }
 
     @Test
@@ -637,12 +642,12 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2XLinkImage() throws Exception {
-        performPresentationTest("ttml2-prstn-xlink-image.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-xlink-image.xml", true);
     }
 
     @Test
     public void testTTML2XLinkSpan() throws Exception {
-        performPresentationTest("ttml2-prstn-xlink-span.xml", true, 0, 0);
+        performPresentationTest("ttml2-prstn-xlink-span.xml", true);
     }
 
 }
