@@ -446,6 +446,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2LuminanceGain() throws Exception {
+        performPresentationTest("ttml2-prstn-luminance-gain.xml");
+    }
+
+    @Test
     public void testTTML2MetadataItem() throws Exception {
         performPresentationTest("ttml2-prstn-metadata-item.xml");
     }
