@@ -290,6 +290,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2Disparity() throws Exception {
+        performPresentationTest("ttml2-prstn-disparity.xml");
+    }
+
+    @Test
     public void testTTML2DisplayAlignBlock() throws Exception {
         performPresentationTest("ttml2-prstn-display-align-block.xml", true);
     }
