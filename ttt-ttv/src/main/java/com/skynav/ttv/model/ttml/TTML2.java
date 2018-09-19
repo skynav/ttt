@@ -275,6 +275,8 @@ public class TTML2 {
                 return false;
             else if (type.equals("audio/mpeg"))
                 return true;
+            else if (type.equals("audio/vnd.wave"))
+                return true;
             else if (type.equals("font/collection"))
                 return true;
             else if (type.equals("font/otf"))

@@ -37,7 +37,7 @@ public class MimeType {
     public static final String AUDIO_MP2_TYPE                   = "audio/mpeg";
     public static final String AUDIO_MP3_TYPE                   = "audio/mpeg";
     public static final String AUDIO_AC3_TYPE                   = "audio/ac3";
-    public static final String AUDIO_WAV_TYPE                   = "audio/wav";
+    public static final String AUDIO_WAV_TYPE                   = "audio/vnd.wave";
     public static final String AUDIO_OGG_TYPE                   = "audio/ogg";
 
     public static final String FONT_OTF_TYPE                    = "font/otf";

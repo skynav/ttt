@@ -33,6 +33,16 @@ import com.skynav.ttpe.app.PresenterTestDriver;
 public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
+    public void testTTML2AnimateAudioGain() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-audio-gain.xml");
+    }
+    
+    @Test
+    public void testTTML2AnimateAudioPan() throws Exception {
+        performPresentationTest("ttml2-prstn-animate-audio-pan.xml");
+    }
+    
+    @Test
     public void testTTML2AnimateFill() throws Exception {
         performPresentationTest("ttml2-prstn-animate-fill.xml", true);
     }
@@ -74,9 +84,59 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2AudioEmbeddingChunked() throws Exception {
-        performPresentationTest("ttml2-prstn-audio-embedding-chunked.xml", true);
+        performPresentationTest("ttml2-prstn-audio-embedding-chunked.xml");
     }
 
+    @Test
+    public void testTTML2AudioGainMix() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-gain-mix.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioGainOnAudio() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-gain-on-audio.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioGainOnParagraph() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-gain-on-p.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioPanMix() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-pan-mix.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioPanOnAudio() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-pan-on-audio.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioPanOnParagraph() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-pan-on-p.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioPitchOnParagraph() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-pitch-on-p.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioPitchOnSpan() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-pitch-on-span.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioSpeakOnParagraph() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-speak-on-p.xml");
+    }
+    
+    @Test
+    public void testTTML2AudioSpeakOnSpan() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-speak-on-span.xml");
+    }
+    
     @Test
     @Ignore
     public void testTTML2AudioEmbeddingSourced() throws Exception {

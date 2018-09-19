@@ -49,6 +49,7 @@ import com.xfsi.xav.util.MimeType;
 import com.xfsi.xav.util.Progress;
 import com.xfsi.xav.util.Result;
 import com.xfsi.xav.validation.audio.mpeg.MpegValidator;
+import com.xfsi.xav.validation.audio.wave.WaveValidator;
 import com.xfsi.xav.validation.util.AbstractTestInfo;
 import com.xfsi.xav.validation.util.AbstractTestManager;
 
@@ -98,8 +99,10 @@ public class TTML2AudioVerifier extends AbstractVerifier implements AudioVerifie
         return !failed;
     }
 
-    private static final short[]        mp3Signature            =
+    private static final short[]        mp3Signature1           =       // MPEG-1, ISO/IEC 11172-3
         new short[] { 0xFF, 0xFB };
+    private static final short[]        mp3Signature2           =       // MPEG-2, ISO/IEC 13818-3
+        new short[] { 0xFF, 0xF3 };
     private static final MimeType       mp3Type                 =
         new MimeType(MimeType.AUDIO_MP3_TYPE);
     private static final short[]        oggSignature            =
@@ -114,7 +117,8 @@ public class TTML2AudioVerifier extends AbstractVerifier implements AudioVerifie
         new MimeType();
     private static final Signature[]    signatures              =
     {
-        new Signature(mp3Signature, mp3Type.getType()),
+        new Signature(mp3Signature1, mp3Type.getType()),
+        new Signature(mp3Signature2, mp3Type.getType()),
         new Signature(oggSignature, oggType.getType()),
         new Signature(wavSignature, wavType.getType()),
     };
@@ -244,6 +248,8 @@ public class TTML2AudioVerifier extends AbstractVerifier implements AudioVerifie
     private Test getAudioValidator(MimeType mimeType) {
         if (mimeType.equals(mp3Type))
             return new MpegValidator();
+        else if (mimeType.equals(wavType))
+            return new WaveValidator();
         else
             return null;
     }

@@ -112,8 +112,9 @@ class HeaderParser {
         this.s.setAlgorithmBit(id == 1);
         if (this.s.isAlgorithmBit())
             this.mh.logAll(MPA01I004);
-        else
-            this.mh.logResult(MPA01E002, this.s.getFrameCount(), this.bis.getTotalBytesRead());         
+        else {
+            // this.mh.logResult(MPA01E002, this.s.getFrameCount(), this.bis.getTotalBytesRead());
+        }
     }
         
     private void validateLayer(int layer) throws CannotContinueValidationException {

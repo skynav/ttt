@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2018 Skynav, Inc. All rights reserved.
  * Portions Copyright 2009 Extensible Formatting Systems, Inc (XFSI).
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,19 +83,21 @@ public class Error {
         public static final int AUDIO_AC3_TYPE                  = 5;
         public static final int AUDIO_MP2_TYPE                  = 6;
         public static final int AUDIO_MP3_TYPE                  = 7;
-        public static final int IMAGE_PNG_TYPE                  = 8;
-        public static final int IMAGE_JPG_TYPE                  = 9;
-        public static final int IMAGE_MPG_TYPE                  = 10;
-        public static final int FONT_OTF_TYPE                   = 11;
-        public static final int FONT_TTF_TYPE                   = 12;
-        public static final int FONT_TTC_TYPE                   = 13;
-        public static final int FONT_WOFF_TYPE                  = 14;
+        public static final int AUDIO_WAV_TYPE                  = 8;
+        public static final int IMAGE_PNG_TYPE                  = 9;
+        public static final int IMAGE_JPG_TYPE                  = 10;
+        public static final int IMAGE_MPG_TYPE                  = 11;
+        public static final int FONT_OTF_TYPE                   = 12;
+        public static final int FONT_TTF_TYPE                   = 13;
+        public static final int FONT_TTC_TYPE                   = 14;
+        public static final int FONT_WOFF_TYPE                  = 15;
 
         public static final ContentType UNSPECIFIED             = new ContentType(UNSPECIFIED_TYPE);
         public static final ContentType OTHER                   = new ContentType(OTHER_TYPE);
         public static final ContentType AUDIO_AC3               = new ContentType(AUDIO_AC3_TYPE);
         public static final ContentType AUDIO_MP2               = new ContentType(AUDIO_MP2_TYPE);
         public static final ContentType AUDIO_MP3               = new ContentType(AUDIO_MP3_TYPE);
+        public static final ContentType AUDIO_WAV               = new ContentType(AUDIO_WAV_TYPE);
         public static final ContentType IMAGE_PNG               = new ContentType(IMAGE_PNG_TYPE);
         public static final ContentType IMAGE_JPG               = new ContentType(IMAGE_JPG_TYPE);
         public static final ContentType IMAGE_MPG               = new ContentType(IMAGE_MPG_TYPE);
@@ -120,6 +122,8 @@ public class Error {
                 return "MP2 audio";
             case AUDIO_MP3_TYPE:
                 return "MP3 audio";
+            case AUDIO_WAV_TYPE:
+                return "WAVE audio";
             case IMAGE_PNG_TYPE:
                 return "PNG image";
             case IMAGE_JPG_TYPE:
