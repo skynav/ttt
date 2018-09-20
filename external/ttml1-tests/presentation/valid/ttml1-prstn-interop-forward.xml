@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="dfxp-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml1"
+    ttva:processingOptions="ttpe { treat-foreign-as: allow; }">
+  <head tts:fontSize="7.5c">
+    <metadata> 
+      <ttm:desc>Test TT attributes outside of the content model.</ttm:desc>
+    </metadata>
+  </head>
+  <body>
+    <div>
+      <p>This text must not be half the height of the root container.</p>
+    </div>
+  </body>
+</tt>

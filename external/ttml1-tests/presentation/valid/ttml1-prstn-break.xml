@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="dfxp-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head>
+    <metadata> 
+      <ttm:desc>Test the br element.</ttm:desc>
+    </metadata>
+  </head>
+  <body>
+    <div>
+      <p begin="0s" end="10s">This text must be on the first line.<br tts:display="none"/>This text on a second line.</p>
+    </div>
+  </body>
+</tt>
