@@ -627,17 +627,17 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2ShearIMSC11Test1() throws Exception {
-        performPresentationTest("ttml2-prstn-shear-imsc11-1.xml");
+        performPresentationTest("ttml2-prstn-shear-imsc11-1.xml", true);
     }
 
     @Test
     public void testTTML2ShearIMSC11Test2() throws Exception {
-        performPresentationTest("ttml2-prstn-shear-imsc11-2.xml");
+        performPresentationTest("ttml2-prstn-shear-imsc11-2.xml", true);
     }
 
     @Test
     public void testTTML2ShearIMSC11Test3() throws Exception {
-        performPresentationTest("ttml2-prstn-shear-imsc11-3.xml");
+        performPresentationTest("ttml2-prstn-shear-imsc11-3.xml", true);
     }
 
     @Test
