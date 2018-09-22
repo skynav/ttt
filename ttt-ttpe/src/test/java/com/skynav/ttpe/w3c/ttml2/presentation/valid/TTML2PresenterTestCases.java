@@ -437,17 +437,17 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2LineShearNoRuby() throws Exception {
-        performPresentationTest("ttml2-prstn-line-shear-no-ruby.xml");
+        performPresentationTest("ttml2-prstn-line-shear-no-ruby.xml", true);
     }
 
     @Test
     public void testTTML2LineShearRubyMultiple() throws Exception {
-        performPresentationTest("ttml2-prstn-line-shear-ruby-multiple.xml");
+        performPresentationTest("ttml2-prstn-line-shear-ruby-multiple.xml", true);
     }
 
     @Test
     public void testTTML2LineShearRubySingle() throws Exception {
-        performPresentationTest("ttml2-prstn-line-shear-ruby-single.xml");
+        performPresentationTest("ttml2-prstn-line-shear-ruby-single.xml", true);
     }
 
     @Test

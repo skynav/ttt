@@ -85,7 +85,7 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
     
     @Test
     public void testTTML1FontSizeRegionEm() throws Exception {
-        performPresentationTest("ttml1-prstn-font-size-region-em");
+        performPresentationTest("ttml1-prstn-font-size-region-em.xml");
     }
     
     @Test
