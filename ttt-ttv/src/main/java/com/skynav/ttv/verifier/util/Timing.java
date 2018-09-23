@@ -55,7 +55,7 @@ public class Timing {
         else if (isOffsetTime(value, location, context, timeParameters, outputTime))
             return true;
         else if (isWallClockTime(value, location, context, timeParameters, outputTime)) {
-            if (context.getModel().isTTMLVersion(2))
+            if ((context == null) || context.getModel().isTTMLVersion(2))
                 return true;
             else
                 return false;

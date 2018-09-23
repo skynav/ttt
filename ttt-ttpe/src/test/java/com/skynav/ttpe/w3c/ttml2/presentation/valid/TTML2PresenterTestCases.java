@@ -83,6 +83,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2AudioClipBeginEnd() throws Exception {
+        performPresentationTest("ttml2-prstn-audio-clip-begin-end.xml");
+    }
+
+    @Test
     public void testTTML2AudioEmbeddingChunked() throws Exception {
         performPresentationTest("ttml2-prstn-audio-embedding-chunked.xml");
     }
@@ -586,6 +591,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2RegionImpliedAnimationPosition() throws Exception {
+        performPresentationTest("ttml2-prstn-region-implied-animation-position.xml", true);
+    }
+
+    @Test
+    public void testTTML2RegionInline() throws Exception {
+        performPresentationTest("ttml2-prstn-region-inline.xml", true);
+    }
+
+    @Test
     public void testTTML2RubyIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-ruby-imsc11-1.xml");
     }
@@ -748,6 +763,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2TextShadowIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-text-shadow-imsc11-1.xml");
+    }
+
+    @Test
+    public void testTTML2TimeWallClock() throws Exception {
+        performPresentationTest("ttml2-prstn-time-wall-clock.xml");
     }
 
     @Test
