@@ -260,6 +260,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2BPDInlineBlock() throws Exception {
+        performPresentationTest("ttml2-prstn-bpd-inline-block.xml", true);
+    }
+
+    @Test
     public void testTTML2ConditionMedia() throws Exception {
         performPresentationTest("ttml2-prstn-condition-media.xml");
     }
@@ -326,17 +331,62 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2DisplayAspectRatioIMSC11Test3() throws Exception {
-        performPresentationTest("ttml2-prstn-display-aspect-ratio-imsc11-3.xml");
+        performPresentationTest("ttml2-prstn-display-aspect-ratio-imsc11-3.xml", false, 0, 0, new String[] { "--external-extent", "160px 120px" });
     }
 
     @Test
     public void testTTML2DisplayAspectRatioIMSC11Test4() throws Exception {
-        performPresentationTest("ttml2-prstn-display-aspect-ratio-imsc11-4.xml");
+        performPresentationTest("ttml2-prstn-display-aspect-ratio-imsc11-4.xml", false, 0, 0, new String[] { "--external-extent", "160px 90px" });
+    }
+
+    @Test
+    public void testTTML2DisplayInlineBlock() throws Exception {
+        performPresentationTest("ttml2-prstn-display-inline-block.xml");
     }
 
     @Test
     public void testTTML2ExtentImage() throws Exception {
         performPresentationTest("ttml2-prstn-extent-image.xml", true);
+    }
+
+    @Test
+    public void testTTML2ExtentImageContain() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-image-contain.xml", true);
+    }
+
+    @Test
+    public void testTTML2ExtentImageCover() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-image-cover.xml", true);
+    }
+
+    @Test
+    public void testTTML2ExtentRegionMeasureAuto() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-region-measure-auto.xml", true);
+    }
+
+    @Test
+    public void testTTML2ExtentRegionMeasureFitContent() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-region-measure-fit-content.xml", true);
+    }
+
+    @Test
+    public void testTTML2ExtentRegionMeasureMinContent() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-region-measure-min-content.xml", true);
+    }
+
+    @Test
+    public void testTTML2ExtentRegionMeasureMaxContent() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-region-measure-max-content.xml", true);
+    }
+
+    @Test
+    public void testTTML2ExtentRegionRootContainerRelative() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-region-root-container-relative.xml");
+    }
+
+    @Test
+    public void testTTML2ExtentRootAutoWithDAR() throws Exception {
+        performPresentationTest("ttml2-prstn-extent-root-auto-with-dar.xml", false, 0, 0, new String[] { "--external-extent", "640px 480px" });
     }
 
     @Test
@@ -398,6 +448,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2InitialIMSC11Test2() throws Exception {
         performPresentationTest("ttml2-prstn-initial-imsc11-2.xml");
+    }
+
+    @Test
+    public void testTTML2IPDInlineBlock() throws Exception {
+        performPresentationTest("ttml2-prstn-ipd-inline-block.xml", true);
     }
 
     @Test
@@ -507,7 +562,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2PositionIMSC11Test2() throws Exception {
-        performPresentationTest("ttml2-prstn-position-imsc11-2.xml");
+        performPresentationTest("ttml2-prstn-position-imsc11-2.xml", false, 0, 0, new String[] { "--external-extent", "640px 480px" });
     }
 
     @Test

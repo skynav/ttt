@@ -160,15 +160,15 @@ public class Helpers {
     private static double getLengthReference(Element e, Length.Unit units, Axis axis, Extent external, Extent reference, Extent font, Extent cellResolution) {
         if (units == Length.Unit.Pixel)
             return 1;
-        else if (units == Length.Unit.Percentage)
+        else if ((units == Length.Unit.Percentage) && (reference != null))
             return getPercentageReference(e, axis, external, reference);
-        else if (units == Length.Unit.Em)
+        else if ((units == Length.Unit.Em) && (font != null))
             return getFontSizeReference(e, axis, font);
-        else if (units == Length.Unit.Cell)
+        else if ((units == Length.Unit.Cell) && (cellResolution != null))
             return getCellSizeReference(axis, external, cellResolution);
-        else if (units == Length.Unit.ViewportHeight)
+        else if ((units == Length.Unit.ViewportHeight) && (external != null))
             return getViewportReference(Axis.VERTICAL, external);
-        else if (units == Length.Unit.ViewportWidth)
+        else if ((units == Length.Unit.ViewportWidth) && (external != null))
             return getViewportReference(Axis.HORIZONTAL, external);
         else
             return 1;

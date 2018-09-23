@@ -427,7 +427,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
             if (cellResolution == null)
                 cellResolution = defaults.getCellResolution();
             ls.pushCanvas(e, begin, end, cellResolution);
-            Extent extent = ls.getExternalExtent();
+            Extent extent = ls.getExtent(e);
             double w = extent.getWidth();
             double h = extent.getHeight();
             boolean clip = ls.getExternalOverflow().clips();
