@@ -767,7 +767,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2TimeWallClock() throws Exception {
-        performPresentationTest("ttml2-prstn-time-wall-clock.xml");
+        performPresentationTest("ttml2-prstn-time-wall-clock.xml", true);
     }
 
     @Test
