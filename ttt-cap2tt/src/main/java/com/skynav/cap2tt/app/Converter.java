@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -64,6 +64,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -112,8 +113,8 @@ import com.skynav.ttv.model.ttml2.tt.Region;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.AnnotationPosition;
 import com.skynav.ttv.model.ttml2.ttd.FontStyle;
-import com.skynav.ttv.model.ttml2.ttd.RubyPosition;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.Length;
@@ -355,73 +356,74 @@ public class Converter implements ConverterContext {
     // known attribute specifications { name, context, count, minCount, maxCount }
     private static final Object[][] knownAttributeSpecifications = new Object[][] {
         // line placement (9.1.1)
-        { "横下",               AttrContext.Attribute,    AttrCount.None               }, // horizontal bottom
-        { "横上",               AttrContext.Attribute,    AttrCount.None               }, // horizontal top
-        { "横適",               AttrContext.Attribute,    AttrCount.None               }, // horizontal full
-        { "横中",               AttrContext.Attribute,    AttrCount.None               }, // horizontal center
-        { "縦右",               AttrContext.Attribute,    AttrCount.None               }, // vertical right
-        { "縦左",               AttrContext.Attribute,    AttrCount.None               }, // vertical left
-        { "縦適",               AttrContext.Attribute,    AttrCount.None               }, // vertical full
-        { "縦中",               AttrContext.Attribute,    AttrCount.None               }, // vertical center
+        { "横下",               AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal bottom
+        { "横上",               AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal top
+        { "横適",               AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal full
+        { "横中",               AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal center
+        { "縦右",               AttrContext.Attribute,  null,                   AttrCount.None               }, // vertical right
+        { "縦左",               AttrContext.Attribute,  null,                   AttrCount.None               }, // vertical left
+        { "縦適",               AttrContext.Attribute,  null,                   AttrCount.None               }, // vertical full
+        { "縦中",               AttrContext.Attribute,  null,                   AttrCount.None               }, // vertical center
         // alignment (9.1.2)
-        { "中央",               AttrContext.Attribute,    AttrCount.None               }, // center
-        { "行頭",               AttrContext.Attribute,    AttrCount.None               }, // start
-        { "行末",               AttrContext.Attribute,    AttrCount.None               }, // end
-        { "中頭",               AttrContext.Attribute,    AttrCount.None               }, // center start
-        { "中末",               AttrContext.Attribute,    AttrCount.None               }, // center end
-        { "両端",               AttrContext.Attribute,    AttrCount.None               }, // justify
+        { "中央",               AttrContext.Attribute,  null,                   AttrCount.None               }, // center
+        { "行頭",               AttrContext.Attribute,  null,                   AttrCount.None               }, // start
+        { "行末",               AttrContext.Attribute,  null,                   AttrCount.None               }, // end
+        { "中頭",               AttrContext.Attribute,  null,                   AttrCount.None               }, // center start
+        { "中末",               AttrContext.Attribute,  null,                   AttrCount.None               }, // center end
+        { "両端",               AttrContext.Attribute,  null,                   AttrCount.None               }, // justify
         // mixed placement and alignment (9.1.3)
-        { "横中央",             AttrContext.Attribute,    AttrCount.None               }, // horizontal bottom, center
-        { "横中頭",             AttrContext.Attribute,    AttrCount.None               }, // horizontal bottom, center start
-        { "横中末",             AttrContext.Attribute,    AttrCount.None               }, // horizontal bottom, center end
-        { "横行頭",             AttrContext.Attribute,    AttrCount.None               }, // horizontal bottom, start
-        { "横行末",             AttrContext.Attribute,    AttrCount.None               }, // horizontal bottom, end
-        { "縦右頭",             AttrContext.Attribute,    AttrCount.None               }, // vertical right, start
-        { "縦左頭",             AttrContext.Attribute,    AttrCount.None               }, // vertical left, start
-        { "縦中頭",             AttrContext.Attribute,    AttrCount.None               }, // vertical full, center start
+        { "横中央",             AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal bottom, center
+        { "横中頭",             AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal bottom, center start
+        { "横中末",             AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal bottom, center end
+        { "横行頭",             AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal bottom, start
+        { "横行末",             AttrContext.Attribute,  null,                   AttrCount.None               }, // horizontal bottom, end
+        { "縦右頭",             AttrContext.Attribute,  null,                   AttrCount.None               }, // vertical right, start
+        { "縦左頭",             AttrContext.Attribute,  null,                   AttrCount.None               }, // vertical left, start
+        { "縦中頭",             AttrContext.Attribute,  null,                   AttrCount.None               }, // vertical full, center start
         // font style (9.1.4)
-        { "正体",               AttrContext.Both,         AttrCount.None               }, // normal
-        { "斜",                 AttrContext.Both,         AttrCount.Optional,  (Integer) 0, (Integer) 5 }, // italic
+        { "正体",               AttrContext.Both,       TextAttribute.SHEAR,    AttrCount.None               }, // normal
+        { "斜",                 AttrContext.Both,       TextAttribute.SHEAR,    AttrCount.Optional,  (Integer) 0, (Integer) 5 }, // italic
         // kerning (9.1.5)
-        { "詰",                 AttrContext.Both,         AttrCount.Mandatory, (Integer) 0, (Integer) 1 }, // kerning disabled
+        { "詰",                 AttrContext.Both,       TextAttribute.KERNING,  AttrCount.Mandatory, (Integer) 0, (Integer) 1 }, // kerning disabled
         // font width/size (9.1.6)
-        { "幅広",               AttrContext.Text,         AttrCount.None               }, // wide
-        { "倍角",               AttrContext.Text,         AttrCount.None               }, // double
-        { "半角",               AttrContext.Text,         AttrCount.None               }, // half
-        { "拗音",               AttrContext.Text,         AttrCount.None               }, // contracted sound
-        { "幅",                 AttrContext.Text,         AttrCount.Mandatory, (Integer) 5, (Integer) 20 }, // width (scale in x or y, whichever is advancement dimension
-        { "寸",                 AttrContext.Text,         AttrCount.Mandatory, (Integer) 5, (Integer) 20 }, // dimension (scale x and y)
+        { "幅広",               AttrContext.Text,       TextAttribute.WIDTH,    AttrCount.None               }, // wide
+        { "倍角",               AttrContext.Text,       TextAttribute.WIDTH,    AttrCount.None               }, // double
+        { "半角",               AttrContext.Text,       TextAttribute.WIDTH,    AttrCount.None               }, // half
+        { "拗音",               AttrContext.Text,       TextAttribute.WIDTH,    AttrCount.None               }, // contracted sound
+        { "幅",                 AttrContext.Text,       TextAttribute.WIDTH,    AttrCount.Mandatory, (Integer) 5, (Integer) 20 }, // width (scale x|y)
+        { "寸",                 AttrContext.Text,       TextAttribute.SIZE,     AttrCount.Mandatory, (Integer) 5, (Integer) 20 }, // size (scale x&y)
         // ruby (9.1.7)
-        { "ルビ",               AttrContext.Text,         AttrCount.None               }, // ruby auto
-        { "ルビ上",             AttrContext.Text,         AttrCount.None               }, // ruby above
-        { "ルビ下",             AttrContext.Text,         AttrCount.None               }, // ruby below
-        { "ルビ右",             AttrContext.Text,         AttrCount.None               }, // ruby right
-        { "ルビ左",             AttrContext.Text,         AttrCount.None               }, // ruby left
+        { "ルビ",               AttrContext.Text,       TextAttribute.RUBY,     AttrCount.None               }, // ruby auto
+        { "ルビ上",             AttrContext.Text,       TextAttribute.RUBY,     AttrCount.None               }, // ruby above
+        { "ルビ下",             AttrContext.Text,       TextAttribute.RUBY,     AttrCount.None               }, // ruby below
+        { "ルビ右",             AttrContext.Text,       TextAttribute.RUBY,     AttrCount.None               }, // ruby right
+        { "ルビ左",             AttrContext.Text,       TextAttribute.RUBY,     AttrCount.None               }, // ruby left
         // continuation
-        { "継続",               AttrContext.Attribute,    AttrCount.None               }, // continuation
+        { "継続",               AttrContext.Attribute,  null,                   AttrCount.None               }, // continuation
         // font family (9.1.8)
-        { "丸ゴ",               AttrContext.Attribute,    AttrCount.None               }, // maru go
-        { "丸ゴシック",         AttrContext.Attribute,    AttrCount.None               }, // maru gothic
-        { "角ゴ",               AttrContext.Attribute,    AttrCount.None               }, // kaku go
-        { "太角ゴ",             AttrContext.Attribute,    AttrCount.None               }, // futo kaku go
-        { "太角ゴシック",       AttrContext.Attribute,    AttrCount.None               }, // futo kaku gothic
-        { "太明",               AttrContext.Attribute,    AttrCount.None               }, // futa min
-        { "太明朝",             AttrContext.Attribute,    AttrCount.None               }, // futa mincho
-        { "シネマ",             AttrContext.Attribute,    AttrCount.None               }, // cinema
+        { "丸ゴ",               AttrContext.Attribute,  null,                   AttrCount.None               }, // maru go
+        { "丸ゴシック",         AttrContext.Attribute,  null,                   AttrCount.None               }, // maru gothic
+        { "角ゴ",               AttrContext.Attribute,  null,                   AttrCount.None               }, // kaku go
+        { "太角ゴ",             AttrContext.Attribute,  null,                   AttrCount.None               }, // futo kaku go
+        { "太角ゴシック",       AttrContext.Attribute,  null,                   AttrCount.None               }, // futo kaku gothic
+        { "太明",               AttrContext.Attribute,  null,                   AttrCount.None               }, // futa min
+        { "太明朝",             AttrContext.Attribute,  null,                   AttrCount.None               }, // futa mincho
+        { "シネマ",             AttrContext.Attribute,  null,                   AttrCount.None               }, // cinema
         // extensions
-        { "組",                 AttrContext.Text,         AttrCount.None               }, // tate-chu-yoko
+        { "組",                 AttrContext.Text,       TextAttribute.COMBINE,  AttrCount.None               }, // tate-chu-yoko (combine)
     };
     private static final Map<String, AttributeSpecification> knownAttributes;
     static {
         knownAttributes = new java.util.HashMap<String,AttributeSpecification>();
         for (Object[] spec : knownAttributeSpecifications) {
-            assert spec.length >= 3;
+            assert spec.length >= 4;
             String name = (String) spec[0];
             AttrContext context = (AttrContext) spec[1];
-            AttrCount count = (AttrCount) spec[2];
-            int minCount = (count != AttrCount.None) ? (Integer) spec[3] : 0;
-            int maxCount = (count != AttrCount.None) ? (Integer) spec[4] : 0;
-            knownAttributes.put(name, new AttributeSpecification(name, context, count, minCount, maxCount));
+            TextAttribute textAttribute = (TextAttribute) spec[2];
+            AttrCount count = (AttrCount) spec[3];
+            int minCount = (count != AttrCount.None) ? (Integer) spec[4] : 0;
+            int maxCount = (count != AttrCount.None) ? (Integer) spec[5] : 0;
+            knownAttributes.put(name, new AttributeSpecification(name, context, textAttribute, count, minCount, maxCount));
         }
     }
 
@@ -1554,7 +1556,7 @@ public class Converter implements ConverterContext {
         resourceExpectedErrors = -1;
         resourceExpectedWarnings = -1;
         outputDocument = null;
-        getReporter().resetResourceState();
+        getReporter().resetResourceState(false);
         // parsing state
         screens = new java.util.ArrayList<Screen>();
         indices = new int[GenerationIndex.values().length];
@@ -2019,6 +2021,14 @@ public class Converter implements ConverterContext {
         return !fail;
     }
 
+    /**
+     * Parse content line. If successful, create a Screen object and
+     * add it to the list of screens in the per-resource parsing state.
+     *
+     * @param line to parse
+     * @param locator locator for line
+     * @return boolean indicating if parse was successful
+     */
     private boolean parseContentLine(String line, LocatorImpl locator) {
         boolean fail = false;
         int[][] types = new int[1][];
@@ -2026,7 +2036,7 @@ public class Converter implements ConverterContext {
         int partCount = parts.length;
         int partIndexNext = 0;
         Screen s = new Screen(locator, getLastScreenNumber());
-        // screen part
+        // screen part - (separator* screen)?
         if (!fail) {
             int partIndex;
             partIndexNext = maybeSkipSeparators(parts, partIndexNext);
@@ -2037,7 +2047,7 @@ public class Converter implements ConverterContext {
                     fail = true;
             }
         }
-        // time field
+        // time field - (separator* time)?
         if (!fail) {
             int partIndex;
             partIndexNext = maybeSkipSeparators(parts, partIndexNext);
@@ -2048,7 +2058,7 @@ public class Converter implements ConverterContext {
                     fail = true;
             }
         }
-        // text fields
+        // text fields - (separator* text)*
         if (!fail) {
             StringBuffer sb = new StringBuffer();
             int lastTextPartIndex = -1;
@@ -2058,7 +2068,7 @@ public class Converter implements ConverterContext {
                 } else {
                     i = maybeSkipSeparators(parts, i);
                     if ((j = hasTextField(locator, parts, i, NonTextAttributeTreatment.Warning)) >= 0) {
-                        // insert encoded preceding separator text
+                        // if this isn't the first (non-empty) text field, then insert encoded preceding separator text
                         if (sb.length() > 0) {
                             if (i > 0) {
                                 String p = parts[i - 1];
@@ -2081,8 +2091,10 @@ public class Converter implements ConverterContext {
                 else
                     fail = true;
             }
+            // reset text attribute parse state
+            inTextAttribute = false;
         }
-        // attribute fields
+        // attribute fields - (separator* attribute)*
         if (!fail) {
             while ((partIndexNext < partCount) && !fail) {
                 int partIndex;
@@ -2109,6 +2121,16 @@ public class Converter implements ConverterContext {
         FIELD;
     }
 
+    /**
+     * Separate content line into sequence of parts, where each part is either a
+     * separator part (consisting wholly of separator characters) or a field part
+     * (containing no separator character). Separator characters are <tt>U+0009
+     * (HORIZONTAL TAB)</tt> and <tt>U+0020 (SPACE)</tt>.
+     * 
+     * @param line string containing entire line
+     * @param retTypes receives types array as output parameter, one type for each part
+     * @return (possibly empty) array of parts
+     */
     private String[] splitContentLine(String line, int[][] retTypes) {
         List<String> parts = new java.util.ArrayList<String>();
         List<Integer> types = new java.util.ArrayList<Integer>();
@@ -2141,6 +2163,14 @@ public class Converter implements ConverterContext {
         return parts.toArray(new String[parts.size()]);
     }
 
+    /**
+     * Skip separator parts starting from <i>partIndex</i>, returning
+     * index of first part encountered that is not empty or a separator part.
+     *
+     * @param parts array of parts
+     * @param partIndex first part index to start skipping from
+     * @return index of first part that is not empty or a separator part
+     */
     private int maybeSkipSeparators(String[] parts, int partIndex) {
         assert parts != null;
         assert partIndex >= 0;
@@ -2387,14 +2417,16 @@ public class Converter implements ConverterContext {
             if (field.length() == 0) {
                 return -1;
             } else {
-                int[] delims = countTextAttributeDelimiters(field);
+                int[] delims    = countTextAttributeDelimiters(field);  // count text attribute starts and ends
+                int   ntas      = delims[0];                            // # of text attribute starts
+                int   ntae      = delims[1];                            // # of text attribute ends
                 if (inTextAttribute) {
-                    if ((delims[1] > 0) && (delims[0] < delims[1]))
+                    if ((ntae > 0) && (ntas < ntae))
                         inTextAttribute = false;
                     return partIndex;
                 } else if (isTextField(locator, field, partIndex, nonTextAttributeTreatment)) {
                     return partIndex;
-                } else if ((delims[0] > 0) && (delims[0] > delims[1])) {
+                } else if ((ntas > 0) && (ntas > ntae)) {
                     inTextAttribute = true;
                     return partIndex;
                 } else
@@ -2423,7 +2455,9 @@ public class Converter implements ConverterContext {
                 String part = parts[i];
                 if (isTextEscape(part))
                     continue;
-                else if (isTextAttribute(part))
+                else if (isTextAttributeStart(part))
+                    continue;
+                else if (isTextAttributeEnd(part))
                     continue;
                 else if (isNonTextAttribute(part)) {
                     if (nonTextAttributeTreatment == NonTextAttributeTreatment.Ignore)
@@ -2448,99 +2482,104 @@ public class Converter implements ConverterContext {
                         }
                     }
                     continue;
-                } else if (isText(part))
+                } else if (isText(part)) {
                     continue;
-                else
+                } else {
                     return false;
+                }
             }
             return true;
         }
     }
 
-    private static final char attributePrefix = '\uFF20';   // U+FF20 FULLWIDTH COMMERCIAL AT '＠'
-    private static final String[] splitTextField(String field) {
+    private static final char attributePrefix           = '\uFF20';   // U+FF20 FULLWIDTH COMMERCIAL AT '＠'
+    private static final char attributeTextStart        = '\uFF3B';   // U+FF3B FULLWIDTH OPEN SQUARE BRACKET
+    private static final char attributeTextEnd          = '\uFF3D';   // U+FF3D FULLWIDTH CLOSE SQUARE BRACKET
+    private enum SplitTextState {
+        Text,
+        AttrStart,
+        AttrEnd;
+    };
+    private final String[] splitTextField(String field) {
         List<String> parts = new java.util.ArrayList<String>();
-        boolean inText = false;
-        boolean inAttribute = false;
+        SplitTextState s = SplitTextState.Text;
         StringBuffer sb = new StringBuffer();
         for (int i = 0, n = field.length(); i < n; ++i) {
             char c = field.charAt(i);
             if (c == attributePrefix) {
-                if (inText) {
+                if (s == SplitTextState.Text) {
+                    // emit text if accumulator is non-empty
+                    if (sb.length() > 0) {
+                        parts.add(sb.toString());
+                        sb.setLength(0);
+                    }
+                    sb.append(c);
+                    s = SplitTextState.AttrStart;
+                } else if (s == SplitTextState.AttrStart) {
+                    if (sb.length() == 2) {
+                        // emit text escape
+                        sb.append(c);
+                        parts.add(sb.toString());
+                        // reset state
+                        sb.setLength(0);
+                        s = SplitTextState.Text;
+                    } else {
+                        throw new IllegalArgumentException(getReporter().message("x.022",
+                            "''{0}'' can only appear in attribute start when attribute is a text escape", c).toText());
+                    }
+                } else /* if (s == SplitTextState.AttrEnd) */ {
+                    // emit attribute end
+                    sb.append(c);
                     parts.add(sb.toString());
+                    // reset state
                     sb.setLength(0);
-                    sb.append(c);
-                    inText = false;
-                    inAttribute = true;
-                } else if (inAttribute) {
-                    sb.append(c);
-                    parts.add(sb.toString());
-                    sb.setLength(0);
-                    inAttribute = false;
-                } else {
-                    sb.append(c);
-                    inAttribute = true;
+                    s = SplitTextState.Text;
                 }
-            } else if (inText) {
-                sb.append(c);
-            } else if (inAttribute) {
-                sb.append(c);
+            } else if (c == attributeTextStart) {
+                if (s == SplitTextState.Text) {
+                    sb.append(c);
+                } else if (s == SplitTextState.AttrStart) {
+                    // emit attribute start
+                    sb.append(c);
+                    parts.add(sb.toString());
+                    // reset state
+                    sb.setLength(0);
+                    s = SplitTextState.Text;
+                } else /* if (s == SplitTextState.AttrEnd) */ {
+                    throw new IllegalArgumentException(getReporter().message("x.023",
+                        "''{0}'' not permitted in attribute end", c).toText());
+                }
+            } else if (c == attributeTextEnd) {
+                if (s == SplitTextState.Text) {
+                    if (((i + 1) < n) && (field.charAt(i + 1) == attributePrefix)) {
+                        // emit text if accumulator is non-empty
+                        if (sb.length() > 0) {
+                            parts.add(sb.toString());
+                            sb.setLength(0);
+                        }
+                        sb.append(c);
+                        s = SplitTextState.AttrEnd;
+                    } else
+                        sb.append(c);
+                } else if (s == SplitTextState.AttrStart) {
+                    throw new IllegalArgumentException(getReporter().message("x.024",
+                        "''{0}'' not permitted in attribute start", c).toText());
+                } else /* if (s == SplitTextState.AttrEnd) */ {
+                    throw new IllegalStateException();
+                }
             } else {
-                sb.append(c);
-                inText = true;
+                if (s == SplitTextState.Text) {
+                    sb.append(c);
+                } else if (s == SplitTextState.AttrStart) {
+                    sb.append(c);
+                } else /* if (s == SplitTextState.AttrEnd) */ {
+                    throw new IllegalStateException();
+                }
             }
         }
         if (sb.length() > 0)
             parts.add(sb.toString());
-        // FIXME - short term fix for use of nested designations
-        if (hasNestedDesignations(parts))
-            parts = stripNestedDesignations(parts);
         return parts.toArray(new String[parts.size()]);
-    }
-
-    private static boolean hasNestedDesignations(List<String> parts) {
-        int numAttributePrefix = 0;
-        for (String part : parts)
-            numAttributePrefix += countAttributePrefixes(part);
-        return (numAttributePrefix > 2) && ((numAttributePrefix & 1) == 0);
-    }
-
-    private static int countAttributePrefixes(String s) {
-        int numAttributePrefix = 0;
-        for (int i = 0, n = s.length(); i < n; ++i) {
-            char c = s.charAt(i);
-            if (c == attributePrefix)
-                ++numAttributePrefix;
-        }
-        return numAttributePrefix;
-    }
-
-    private static List<String> stripNestedDesignations(List<String> parts) {
-        List<String> strippedParts = new java.util.ArrayList<String>();
-        StringBuffer sb = new StringBuffer();
-        int nesting = 0;
-        for (int i = 0, n = parts.size(); i < n; ++i) {
-            String part = parts.get(i);
-            if (beginsWithTextAttributeStart(part)) {
-                if (!endsWithTextAttributeEnd(part)) {
-                    sb.append(part);
-                    nesting++;
-                } else
-                    strippedParts.add(part);
-            } else if (endsWithTextAttributeEnd(part)) {
-                sb.append(part);
-                if (nesting > 0)
-                    nesting--;
-                if (nesting == 0) {
-                    strippedParts.add(stripNestedDesignations(sb.toString()));
-                    sb.setLength(0);
-                }
-            } else if (nesting > 0) {
-                sb.append(part);
-            } else
-                strippedParts.add(part);
-        }
-        return strippedParts;
     }
 
     private static int[] countTextAttributeDelimiters(String s) {
@@ -2576,13 +2615,13 @@ public class Converter implements ConverterContext {
                     break;
                 else if (c == '\uFF01')
                     break;
-                else if (c == '\uFF20')
+                else if (c == '\uFF20')                 // never part of attribute start
                     break;
                 else if (c == '\uFF3B')
                     break;
-                else if (c == '\uFF5C')
+                else if (c == '\uFF5C')                 // never part of attribute start
                     break;
-                else if (c == '\uFF3D')
+                else if (c == '\uFF3D')                 // never part of attribute start
                     break;
                 else {
                     sb.append(c);
@@ -2599,9 +2638,9 @@ public class Converter implements ConverterContext {
                     ++i;
             }
             if (i < n)
-                return s.charAt(i) == '\uFF3B';
+                return s.charAt(i) == '\uFF3B';         // text attribute start terminates with U+FF3B
             else
-                return false;
+                return false;                           // otherwise, this is not the start of a text attribute
         }
     }
 
@@ -2629,68 +2668,6 @@ public class Converter implements ConverterContext {
         if (ignoreLeadingWhitespace)
             s = trimLeadingWhitespace(s);
         return s.startsWith(textAttributeEnd);
-    }
-
-    private static boolean endsWithTextAttributeEnd(String s) {
-        return endsWithTextAttributeEnd(s, false);
-    }
-
-    private static boolean endsWithTextAttributeEnd(String s, boolean ignoreTrailingWhitespace) {
-        if (ignoreTrailingWhitespace)
-            s = trimTrailingWhitespace(s);
-        return s.endsWith(textAttributeEnd);
-    }
-
-    private static String trimTrailingWhitespace(String s) {
-        int i = 0;
-        int n = s.length();
-        for (; i < n; ++i) {
-            int k = n - i - 1;
-            char c = s.charAt(k);
-            if (c == '\u0009')
-                continue;
-            else if (c == '\u0020')
-                continue;
-            else
-                break;
-        }
-        return (i < n) ? s.substring(0, i) : s;
-    }
-
-    private static String stripNestedDesignations(String field) {
-        StringBuffer sb = new StringBuffer();
-        int numAttributePrefix = 0;
-        for (int i = 0, n = field.length(); i < n;) {
-            char c = field.charAt(i);
-            if (c == attributePrefix) {
-                if (++numAttributePrefix > 1) {
-                    int j = i + 1;
-                    int k = field.indexOf(attributePrefix, i + 1);
-                    if (j < k) {
-                        String nestedTextAttribute = field.substring(i, ++k);
-                        Attribute[] retAttr = new Attribute[1];
-                        if (parseTextAttribute(nestedTextAttribute, retAttr) != null) {
-                            Attribute a = retAttr[0];
-                            if (a.isEmphasis()) {
-                                sb.append(a.getText());
-                            } else if (a.isRuby()) {
-                                sb.append(a.getText());
-                                sb.append('(');
-                                sb.append(a.getAnnotation());
-                                sb.append(')');
-                            } else {
-                                sb.append(a.getText());
-                            }
-                            i = k;
-                            continue;
-                        }
-                    }
-                }
-            }
-            sb.append(c);
-            ++i;
-        }
-        return sb.toString();
     }
 
     private static boolean isTextEscape(String text) {
@@ -2738,20 +2715,28 @@ public class Converter implements ConverterContext {
             return null;
         else {
             StringBuffer sb = new StringBuffer();
-            List<AnnotatedRange> annotations = new java.util.ArrayList<AnnotatedRange>();
+            Stack<AnnotatedRange> ranges = new Stack<AnnotatedRange>();
+            List<AnnotatedRange> resolvedRanges = new java.util.ArrayList<AnnotatedRange>();
             Attribute[] ra = new Attribute[1];
             for (String part : splitTextField(field)) {
                 String t;
                 if ((t = parseTextEscape(part)) != null) {
                     sb.append(t);
-                } else if ((t = parseTextAttribute(part, ra)) != null) {
+                } else if ((t = parseTextAttributeStart(part, ra)) != null) {
                     int start = sb.length();
-                    sb.append(t);
+                    ranges.push(new AnnotatedRange(new Annotation(ra[0]), start, -1));
+                } else if ((t = parseTextAttributeEnd(part, ra)) != null) {
                     int end = sb.length();
-                    annotations.add(new AnnotatedRange(new Annotation(ra[0]), start, end));
+                    if (!ranges.empty()) {
+                        AnnotatedRange r = ranges.pop();
+                        r.end = end;
+                        resolvedRanges.add(r);
+                    } else {
+                        throw new IllegalStateException(getReporter().message("x.025", "unexpected text attribute end").toText());
+                    }
                 } else if (isNonTextAttribute(part)) {
                     continue;
-                } else if ((t = parseText(part, true)) != null) {
+                } else if ((t = parseTextAttributeText(part, ranges.peek())) != null) {
                     sb.append(t);
                 } else {
                     throw new IllegalStateException(getReporter().message("x.021", "unexpected text field parse state: part {0}", part).toText());
@@ -2759,8 +2744,13 @@ public class Converter implements ConverterContext {
             }
             if (sb.length() > 0) {
                 AttributedString as = new AttributedString(sb.toString());
-                for (AnnotatedRange r : annotations) {
-                    as.addAttribute(TextAttribute.ANNOTATION, r.annotation, r.start, r.end);
+                for (AnnotatedRange r : resolvedRanges) {
+                    Annotation          annotation      = r.annotation;
+                    Attribute           a               = (Attribute) annotation.getValue();
+                    TextAttribute       ta              = a.getSpecification().getTextAttribute();
+                    if (ta != null) {
+                        as.addAttribute(ta, a, r.start, r.end);
+                    }
                 }
                 assert s.text == null;
                 s.text = as;
@@ -2769,6 +2759,15 @@ public class Converter implements ConverterContext {
         }
     }
 
+    /*
+    ** Parse a text escape, which is one of the following character sequences:
+    ** <tt>{0xFF20, 0xFF20, 0xFF20}</tt>, <tt>{0xFF20, 0x005F, 0xFF20}</tt>, <tt>{0xFF20, 0xFF3F, 0xFF20}</tt>.
+    ** <p>
+    ** Returns the escaped text or <tt>null</tt> if the input text is not one of the above sequences.
+    ** 
+    ** @param text string possibly containing a text escape
+    ** @return unescaped text or null (if not a text escape sequence)
+    */
     private static String parseTextEscape(String text) {
         int i = 0;
         int n = text.length();
@@ -2802,16 +2801,42 @@ public class Converter implements ConverterContext {
         return sb.toString();
     }
 
-    private static String parseTextAttribute(String text, Attribute[] retAttr) {
-        Attribute a = parseTextAttribute(text);
+    private static String parseTextAttributeStart(String text, Attribute[] retAttr) {
+        Attribute a = parseTextAttributeStart(text);
         if (a != null) {
             if (retAttr != null)
                 retAttr[0] = a;
-            return a.text;
+            return new String();
         } else
             return null;
     }
 
+    private static String parseTextAttributeEnd(String text, Attribute[] retAttr) {
+        Attribute a = parseTextAttributeEnd(text);
+        if (a != null) {
+            if (retAttr != null)
+                retAttr[0] = a;
+            return new String();
+        } else
+            return null;
+    }
+
+    private static String parseTextAttributeText(String text, AnnotatedRange range) {
+        Attribute a = (range != null) ? range.getAttribute() : null;
+        if ((a != null) && a.isRuby()) {
+            return parseRubyAttributeText(text, a);
+        } else {
+            return parseText(text, true);
+        }
+    }
+
+    private static String parseRubyAttributeText(String text, Attribute a) {
+        if (parseTextAttributeRubyText(text, a) == a)
+            return parseText(a.getText(), false);
+        else
+            return null;
+    }
+    
     private static String parseText(String text, boolean mapInitialSpaceToNBSP) {
         int escapedSpaces = 0;
         for (int i = 0, n = text.length(); i < n; ++i) {
@@ -2858,8 +2883,12 @@ public class Converter implements ConverterContext {
         return s;
     }
 
-    private static boolean isTextAttribute(String field) {
-        return parseTextAttribute(field) != null;
+    private static boolean isTextAttributeStart(String field) {
+        return parseTextAttributeStart(field) != null;
+    }
+
+    private static boolean isTextAttributeEnd(String field) {
+        return parseTextAttributeEnd(field) != null;
     }
 
     private static boolean isNonTextAttribute(String field) {
@@ -2907,16 +2936,13 @@ public class Converter implements ConverterContext {
     private static final String ncDigits        = "\\p{Digit}\\uFF10-\\uFF19";
     private static final String ncPunct         = "\\uFF01\\uFF20\\uFF3B\\uFF3D";
     private static final String ncTextPunct     = "\\uFF20\\uFF3D\\uFF5C";
-    private static final String ncRetainMark    = "\\uFF01";
     private static final String ncWhite         = "\\u0009\\u000A\\u000D\\u0020\\u3000";
     private static final String ncTextWhite     = "\\u0009";
     private static final String ncAttrName      = "[^" + ncWhite + ncDigits + ncPunct + "]";
     private static final String ncCount         = "[" + ncDigits + "]";
     private static final String ncText          = "[^" + ncTextWhite + ncTextPunct + "]";
-    private static final String ncRetain        = "[" + ncRetainMark + "]";
     private static final String ngAttrName      = "(" + ncAttrName + "+" + ")";
     private static final String ngOptCount      = "(" + ncCount + "+" + ")?";
-    private static final String ngOptRetain     = "(" + ncRetain + "+" + ")?";
     private static final String ngText          = "(" + ncText + "+" + ")";
     private static final String ngOptText       = "(" + taTextStart + ngText + "(" + taTextSep + ngText + ")?" + taTextEnd + ")?";
     private static final String taPatternString = taDelim + ngAttrName + ngOptCount + ngOptText + taDelim;
@@ -2934,14 +2960,60 @@ public class Converter implements ConverterContext {
                 for (int i = 1; i < groups.length; ++i) {
                     groups[i] = m.group(i);
                 }
-                return new Attribute(as, parseCount(m.group(2)), false, m.group(4), m.group(6));
+                return new Attribute(as, parseCount(m.group(2)), false);
             }
         } else
             return null;
     }
 
+    private static final String taStartPatternString = taDelim + ngAttrName + ngOptCount + taTextStart;
+    private static final Pattern taStartPattern = Pattern.compile(taStartPatternString);
+    private static Attribute parseTextAttributeStart(String attribute) {
+        Matcher m = taStartPattern.matcher(attribute);
+        if (m.matches()) {
+            String name = m.group(1);
+            AttributeSpecification as = knownAttributes.get(name);
+            if (as == null)
+                return null;
+            else {
+                String[] groups = new String[m.groupCount() + 1];
+                for (int i = 1; i < groups.length; ++i) {
+                    groups[i] = m.group(i);
+                }
+                return new Attribute(as, parseCount(m.group(2)), false);
+            }
+        } else
+            return null;
+    }
+
+    private static final String taEndPatternString = taTextEnd + taDelim;
+    private static final Pattern taEndPattern   = Pattern.compile(taEndPatternString);
+    private static Attribute parseTextAttributeEnd(String attribute) {
+        Matcher m = taEndPattern.matcher(attribute);
+        if (m.matches()) {
+            return Attribute.END;
+        } else
+            return null;
+    }
+
+    private static final String taRubyPatternString = ngText + taTextSep + ngText;
+    private static final Pattern taRubyPattern = Pattern.compile(taRubyPatternString);
+    private static Attribute parseTextAttributeRubyText(String attribute, Attribute a) {
+        Matcher m = taRubyPattern.matcher(attribute);
+        if (m.matches()) {
+            assert m.groupCount() == 2;
+            a.setText(m.group(1));
+            a.setAnnotation(m.group(2));
+            return a;
+        } else
+            return null;
+    }
+
+    private static final String ncRetainMark    = "\\uFF01";
+    private static final String ncRetain        = "[" + ncRetainMark + "]";
+    private static final String ngOptRetain     = "(" + ncRetain + "+" + ")?";
     private static final String ntaPatternString = taDelim + ngAttrName + ngOptCount + ngOptRetain;
-    private static final Pattern ntaPattern      = Pattern.compile(ntaPatternString);
+    private static final Pattern ntaPattern     = Pattern.compile(ntaPatternString);
     private static Attribute parseNonTextAttribute(String attribute) {
         Matcher m = ntaPattern.matcher(attribute);
         if (m.matches()) {
@@ -2950,7 +3022,7 @@ public class Converter implements ConverterContext {
             if (as == null)
                 return null;
             else
-                return new Attribute(as, parseCount(m.group(2)), m.group(3) != null, null, null);
+                return new Attribute(as, parseCount(m.group(2)), m.group(3) != null);
         } else
             return null;
     }
@@ -3075,7 +3147,6 @@ public class Converter implements ConverterContext {
             state.populate(head);
             // populate root (tt)
             TimedText tt = ttmlFactory.createTimedText();
-            tt.setVersion(java.math.BigInteger.valueOf(2));
             tt.getOtherAttributes().put(ttvaModelAttrName, model.getName());
             if (defaultLanguage != null)
                 tt.setLang(defaultLanguage);
@@ -3837,12 +3908,14 @@ public class Converter implements ConverterContext {
     public static class AttributeSpecification {
         private String name;
         private AttrContext context;
+        private TextAttribute textAttribute;
         private AttrCount count;
         private int minCount;
         private int maxCount;
-        public AttributeSpecification(String name, AttrContext context, AttrCount count, int minCount, int maxCount) {
+        public AttributeSpecification(String name, AttrContext context, TextAttribute textAttribute, AttrCount count, int minCount, int maxCount) {
             this.name = name;
             this.context = context;
+            this.textAttribute = textAttribute;
             this.count = count;
             this.minCount = minCount;
             this.maxCount = maxCount;
@@ -3852,6 +3925,9 @@ public class Converter implements ConverterContext {
         }
         public AttrContext getContext() {
             return context;
+        }
+        public TextAttribute getTextAttribute() {
+            return textAttribute;
         }
         public AttrCount getCount() {
             return count;
@@ -3865,18 +3941,19 @@ public class Converter implements ConverterContext {
     }
 
     public static class Attribute {
+        private static Attribute END = new Attribute();
         private AttributeSpecification specification;
         private int count;
         private boolean retain;
         private String text;
         private String annotation;
-        public Attribute(AttributeSpecification specification, int count, boolean retain, String text, String annotation) {
+        private Attribute() {
+        }
+        public Attribute(AttributeSpecification specification, int count, boolean retain) {
             assert specification != null;
             this.specification = specification;
             this.count = count;
             this.retain = retain;
-            this.text = normalize(text, false);
-            this.annotation = normalize(annotation, true);
         }
         private static String normalize(String s, boolean trim) {
             if (s != null) {
@@ -3889,7 +3966,6 @@ public class Converter implements ConverterContext {
             } else
                 return null;
         }
-
         public AttributeSpecification getSpecification() {
             return specification;
         }
@@ -3899,8 +3975,14 @@ public class Converter implements ConverterContext {
         public boolean getRetain() {
             return retain;
         }
+        public void setText(String text) {
+            this.text = normalize(text, false);
+        }
         public String getText() {
             return text;
+        }
+        public void setAnnotation(String annotation) {
+            this.annotation = normalize(annotation, true);
         }
         public String getAnnotation() {
             return annotation;
@@ -4080,30 +4162,30 @@ public class Converter implements ConverterContext {
                 retGlobal[0] = retain;
             return v;
         }
-        private RubyPosition getRubyPosition(Direction blockDirection) {
-            RubyPosition v = null;
+        private AnnotationPosition getRubyPosition(Direction blockDirection) {
+            AnnotationPosition v = null;
             String name = specification.name;
             int l = name.length();
             if (name.startsWith("ルビ")) {
                 if (l == 2)
-                    v = RubyPosition.AUTO;
+                    v = AnnotationPosition.OUTSIDE;
                 else if (l > 2) {
                     char c = name.charAt(2);
                     if (blockDirection == Direction.TB) {
                         if (c == '上')
-                            v = RubyPosition.BEFORE;
+                            v = AnnotationPosition.BEFORE;
                         else if (c == '下')
-                            v = RubyPosition.AFTER;
+                            v = AnnotationPosition.AFTER;
                     } else if (blockDirection == Direction.RL) {
                         if (c == '右')
-                            v = RubyPosition.BEFORE;
+                            v = AnnotationPosition.BEFORE;
                         else if (c == '左')
-                            v = RubyPosition.AFTER;
+                            v = AnnotationPosition.AFTER;
                     } else if (blockDirection == Direction.LR) {
                         if (c == '右')
-                            v = RubyPosition.AFTER;
+                            v = AnnotationPosition.AFTER;
                         else if (c == '左')
-                            v = RubyPosition.BEFORE;
+                            v = AnnotationPosition.BEFORE;
                     }
                 }
             }
@@ -4384,6 +4466,9 @@ public class Converter implements ConverterContext {
             this.start = start;
             this.end = end;
         }
+        public Attribute getAttribute() {
+            return (annotation != null) ? (Attribute) annotation.getValue() : null;
+        }
     };
 
     private static class TextAttribute extends AttributedCharacterIterator.Attribute {
@@ -4391,7 +4476,12 @@ public class Converter implements ConverterContext {
         public TextAttribute(String name) {
             super(name);
         }
-        public static final TextAttribute ANNOTATION = new TextAttribute("ANNOTATION");
+        public static final TextAttribute RUBY          = new TextAttribute("RUBY");
+        public static final TextAttribute KERNING       = new TextAttribute("KERNING");
+        public static final TextAttribute SHEAR         = new TextAttribute("SHEAR");
+        public static final TextAttribute SIZE          = new TextAttribute("SIZE");
+        public static final TextAttribute COMBINE       = new TextAttribute("COMBINE");
+        public static final TextAttribute WIDTH         = new TextAttribute("WIDTH");
     }
 
     public static class Screen {
@@ -4744,36 +4834,79 @@ public class Converter implements ConverterContext {
                 while (aci.current() != CharacterIterator.DONE) {
                     int i = aci.getRunStart();
                     int e = aci.getRunLimit();
-                    Annotation annotation = (Annotation) aci.getAttribute(TextAttribute.ANNOTATION);
+                    Map<AttributedCharacterIterator.Attribute,Object> attributes = aci.getAttributes();
                     while (i < e) {
                         sb.append(aci.setIndex(i++));
                     }
                     String text = sb.toString();
-                    if (annotation != null)
-                        content.add(ttmlFactory.createSpan(createSpan(text, (Attribute) annotation.getValue(), blockDirection)));
-                    else
-                        content.add(text);
+                    if (!text.isEmpty()) {
+                        if (!attributes.isEmpty()) {
+                            populateAttributedText(content, text, attributes, blockDirection);
+                        } else {
+                            content.add(text);
+                        }
+                    }
                     sb.setLength(0);
                     aci.setIndex(e);
                 }
             }
         }
-        private Span createSpan(String text, Attribute a, Direction blockDirection) {
-            if (a.isEmphasis())
-                return createEmphasis(text, a, blockDirection);
-            else if (a.isRuby())
-                return createRuby(text, a, blockDirection);
-            else if (a.isCombine())
-                return createCombine(text, a, blockDirection);
-            else
-                return createStyledSpan(text, a);
+        private void populateAttributedText(List<Serializable> content, String text, Map<AttributedCharacterIterator.Attribute,Object> attributes, Direction blockDirection) {
+            Span sEmphasis      = null;
+            Span sRuby          = null;
+            Span sCombine       = null;
+            Span sOuter         = null;
+            int numExclusive    = 0;
+            for (AttributedCharacterIterator.Attribute k : attributes.keySet()) {
+                Attribute a = (Attribute) attributes.get(k);
+                if (a.isEmphasis()) {
+                    sEmphasis = createEmphasis(text, a, blockDirection);
+                    ++numExclusive;
+                } else if (a.isRuby()) {
+                    sRuby = createRuby(text, a, blockDirection);
+                    ++numExclusive;
+                } else if (a.isCombine()) {
+                    sCombine = createCombine(text, a, blockDirection);
+                    ++numExclusive;
+                } else {
+                    if (sOuter == null)
+                        sOuter = createStyledSpan(null, a);
+                    else
+                        sOuter = augmentStyledSpan(sOuter, a);
+                }
+            }
+            if (numExclusive > 1)
+                throw new IllegalStateException();
+            if (sOuter == null) {
+                if (sEmphasis != null)
+                    sOuter = sEmphasis;
+                else if (sRuby != null)
+                    sOuter = sRuby;
+                else if (sCombine != null)
+                    sOuter = sCombine;
+            } else {
+                Span sInner = null;
+                if (sEmphasis != null)
+                    sInner = sEmphasis;
+                else if (sRuby != null)
+                    sInner = sRuby;
+                else if (sCombine != null)
+                    sInner = sCombine;
+                if (sInner != null) {
+                    sOuter.getContent().add(ttmlFactory.createSpan(sInner));
+                } else {
+                    sOuter.getContent().add(text);
+                }
+            }
+            if (sOuter != null)
+                content.add(ttmlFactory.createSpan(sOuter));
         }
         private Span createEmphasis(String text, Attribute a, Direction blockDirection) {
             Span s = ttmlFactory.createSpan();
             StringBuffer sb = new StringBuffer();
             sb.append("dot");
-            RubyPosition rp = a.getRubyPosition(blockDirection);
-            if ((rp != null) && (rp != RubyPosition.AUTO)) {
+            AnnotationPosition rp = a.getRubyPosition(blockDirection);
+            if ((rp != null) && (rp != AnnotationPosition.OUTSIDE)) {
                 sb.append(' ');
                 sb.append(rp.name().toLowerCase());
             }
@@ -4788,7 +4921,7 @@ public class Converter implements ConverterContext {
             Span sText = ttmlFactory.createSpan();
             sText.getOtherAttributes().put(ttsRubyAttrName, "text");
             sText.getContent().add(a.annotation);
-            RubyPosition rp = a.getRubyPosition(blockDirection);
+            AnnotationPosition rp = a.getRubyPosition(blockDirection);
             if (rp != null)
                 sText.setRubyPosition(rp);
             Span sCont = ttmlFactory.createSpan();
@@ -4809,7 +4942,12 @@ public class Converter implements ConverterContext {
         private Span createStyledSpan(String text, Attribute a) {
             Span s = ttmlFactory.createSpan();
             populateStyles(s, a);
-            s.getContent().add(text);
+            if (text != null)
+                s.getContent().add(text);
+            return s;
+        }
+        private Span augmentStyledSpan(Span s, Attribute a) {
+            populateStyles(s, a);
             return s;
         }
         private List<Attribute> mergeDefaults(List<Attribute> attributes) {
@@ -4842,7 +4980,7 @@ public class Converter implements ConverterContext {
                 if (v != null) {
                     AttributeSpecification as = knownAttributes.get(v);
                     if (as != null)
-                        mergedAttributes.add(new Attribute(as, -1, false, null, null));
+                        mergedAttributes.add(new Attribute(as, -1, false));
                 }
             }
             if (!hasKerning) {
@@ -4858,7 +4996,7 @@ public class Converter implements ConverterContext {
                         } catch (NumberFormatException e) {
                             count = -1;
                         }
-                        mergedAttributes.add(new Attribute(as, count, false, null, null));
+                        mergedAttributes.add(new Attribute(as, count, false));
                     }
                 }
             }
@@ -4869,7 +5007,7 @@ public class Converter implements ConverterContext {
                 if (v != null) {
                     AttributeSpecification as = knownAttributes.get(v);
                     if (as != null)
-                        mergedAttributes.add(new Attribute(as, -1, false, null, null));
+                        mergedAttributes.add(new Attribute(as, -1, false));
                 }
             }
             if (!hasShear) {
@@ -4885,7 +5023,7 @@ public class Converter implements ConverterContext {
                         } catch (NumberFormatException e) {
                             count = -1;
                         }
-                        mergedAttributes.add(new Attribute(as, count, false, null, null));
+                        mergedAttributes.add(new Attribute(as, count, false));
                     }
                 }
             }
@@ -4896,7 +5034,7 @@ public class Converter implements ConverterContext {
                 if (v != null) {
                     AttributeSpecification as = knownAttributes.get(v);
                     if (as != null)
-                        mergedAttributes.add(new Attribute(as, -1, false, null, null));
+                        mergedAttributes.add(new Attribute(as, -1, false));
                 }
             }
             return mergedAttributes;
