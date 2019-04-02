@@ -223,7 +223,7 @@ public class TextTransformer extends Transformer {
     }
 
     private void serialize(Writer w, Text t) throws IOException {
-        serialize(w, t.getWholeText());
+        serialize(w, t.getData());
     }
 
     private void serialize(Writer w, String s) throws IOException {

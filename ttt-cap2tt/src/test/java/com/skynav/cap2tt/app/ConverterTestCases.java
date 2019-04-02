@@ -134,8 +134,8 @@ public class ConverterTestCases {
     }
 
     @Test
-    public void testConversion018NestedDesignationsStripped() throws Exception {
-        performConversionTest("test-018-nested-designations-stripped.cap", 0, 0);
+    public void testConversion018NestedDesignations1() throws Exception {
+        performConversionTest("test-018-nested-designations-1.cap", 0, 0);
     }
 
     @Test
@@ -186,6 +186,11 @@ public class ConverterTestCases {
     @Test
     public void testConversion028FalseAttributePrefixIssue145() throws Exception {
         performConversionTest("test-028-false-attribute-prefix-issue-145.cap", 0, 0);
+    }
+
+    @Test
+    public void testConversion029NestedDesignations2() throws Exception {
+        performConversionTest("test-029-nested-designations-2.cap", 0, 0);
     }
 
     private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
