@@ -2736,7 +2736,7 @@ public class Converter implements ConverterContext {
                     }
                 } else if (isNonTextAttribute(part)) {
                     continue;
-                } else if ((t = parseTextAttributeText(part, ranges.peek())) != null) {
+                } else if ((t = parseTextAttributeText(part, ranges)) != null) {
                     sb.append(t);
                 } else {
                     throw new IllegalStateException(getReporter().message("x.021", "unexpected text field parse state: part {0}", part).toText());
@@ -2821,10 +2821,15 @@ public class Converter implements ConverterContext {
             return null;
     }
 
-    private static String parseTextAttributeText(String text, AnnotatedRange range) {
-        Attribute a = (range != null) ? range.getAttribute() : null;
-        if ((a != null) && a.isRuby()) {
-            return parseRubyAttributeText(text, a);
+    private static String parseTextAttributeText(String text, Stack<AnnotatedRange> ranges) {
+        if (!ranges.empty()) {
+            AnnotatedRange range = ranges.peek();
+            Attribute a = range.getAttribute();
+            if ((a != null) && a.isRuby()) {
+                return parseRubyAttributeText(text, a);
+            } else {
+                return parseText(text, true);
+            }
         } else {
             return parseText(text, true);
         }
