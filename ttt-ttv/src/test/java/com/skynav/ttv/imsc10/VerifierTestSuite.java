@@ -1,6 +1,6 @@
 /*
  * Copyright 2013-2019 Skynav, Inc. All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,21 +22,18 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+package com.skynav.ttv.imsc10;
 
-package com.skynav.ttv.verifier.imsc.style;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import com.skynav.ttv.util.Location;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
-
-public class MultiRowAlignVerifier implements StyleValueVerifier {
-
-    public boolean verify(Object value, Location location, VerifierContext context) {
-        // Schema validation phase (3) reports invalid values.
-        if (value instanceof com.skynav.ttv.model.imsc10.ebuttd.MultiRowAlign)
-            return true;
-        else
-            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
-    }
-
+@RunWith(Suite.class)
+@SuiteClasses({
+    ValidTestCases.class,
+    InvalidTestCases.class
+})
+public class VerifierTestSuite {
 }
+

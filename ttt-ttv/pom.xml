@@ -129,17 +129,17 @@
             </configuration>
           </execution>
           <execution>
-            <id>xjc-imsc1</id>
+            <id>xjc-imsc10</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
               <specVersion>2.1</specVersion>
-              <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/imsc1</schemaDirectory>
+              <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/imsc10</schemaDirectory>
               <schemaIncludes>
-                <include>imsc1.xsd</include>
+                <include>imsc10.xsd</include>
               </schemaIncludes>
-              <generateDirectory>target/generated-sources/xjc-imsc1</generateDirectory>
+              <generateDirectory>target/generated-sources/xjc-imsc10</generateDirectory>
               <episode>false</episode>
               <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
             </configuration>

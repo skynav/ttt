@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,20 +23,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier.imsc.style;
+package com.skynav.ttv.verifier.imsc;
 
-import com.skynav.ttv.util.Location;
-import com.skynav.ttv.verifier.StyleValueVerifier;
-import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.verifier.ttml.TTML2ImageVerifier;
 
-public class MultiRowAlignVerifier implements StyleValueVerifier {
+public class IMSC10ImageVerifier extends TTML2ImageVerifier {
 
-    public boolean verify(Object value, Location location, VerifierContext context) {
-        // Schema validation phase (3) reports invalid values.
-        if (value instanceof com.skynav.ttv.model.imsc10.ebuttd.MultiRowAlign)
-            return true;
-        else
-            throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());
+    public IMSC10ImageVerifier(Model model) {
+        super(model);
     }
 
 }

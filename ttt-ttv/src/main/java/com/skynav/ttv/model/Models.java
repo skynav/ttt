@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.skynav.ttv.model.ebuttd.EBUTTD;
-import com.skynav.ttv.model.imsc.IMSC1;
+import com.skynav.ttv.model.imsc.IMSC10;
 import com.skynav.ttv.model.smpte.ST20522010;
 import com.skynav.ttv.model.smpte.ST20522013;
 import com.skynav.ttv.model.ttml.TTML1;
@@ -46,7 +46,7 @@ public class Models {
         m.put(ST20522010.MODEL_NAME, ST20522010.ST20522010Model.class);
         m.put(ST20522013.MODEL_NAME, ST20522013.ST20522013Model.class);
         m.put(EBUTTD.MODEL_NAME, EBUTTD.EBUTTDModel.class);
-        m.put(IMSC1.MODEL_NAME, IMSC1.IMSC1Model.class);
+        m.put(IMSC10.MODEL_NAME, IMSC10.IMSC10Model.class);
         modelMap = Collections.unmodifiableMap(m);
     }
 
