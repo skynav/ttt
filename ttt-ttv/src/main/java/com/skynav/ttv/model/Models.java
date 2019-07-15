@@ -47,6 +47,7 @@ public class Models {
         m.put(ST20522013.MODEL_NAME, ST20522013.ST20522013Model.class);
         m.put(EBUTTD.MODEL_NAME, EBUTTD.EBUTTDModel.class);
         m.put(IMSC10.MODEL_NAME, IMSC10.IMSC10Model.class);
+        m.put(IMSC10.MODEL_NAME_ALIAS_1, IMSC10.IMSC10Model.class);
         modelMap = Collections.unmodifiableMap(m);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-16 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,22 +36,22 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.skynav.ttv.model.imsc.IMSC1;
+import com.skynav.ttv.model.imsc.IMSC10;
 import com.skynav.ttv.model.smpte.ST20522010;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
-import com.skynav.ttv.verifier.imsc.IMSC1SemanticsVerifier;
+import com.skynav.ttv.verifier.imsc.IMSC10SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1StyleVerifier;
 import com.skynav.ttx.transformer.TransformerContext;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.XML;
 
-public class IMSC1Helper extends TTML2Helper {
+public class IMSC10Helper extends TTML2Helper {
 
-    public static final String NAMESPACE_IMSC_STYLING           = IMSC1.Constants.NAMESPACE_IMSC_STYLING;
+    public static final String NAMESPACE_IMSC_STYLING           = IMSC10.Constants.NAMESPACE_IMSC_STYLING;
     public static final String NAMESPACE_ST20522010             = ST20522010.Constants.NAMESPACE_2010;
-    public static final String NAMESPACE_EBUTT_STYLING          = IMSC1.Constants.NAMESPACE_EBUTT_STYLING;
+    public static final String NAMESPACE_EBUTT_STYLING          = IMSC10.Constants.NAMESPACE_EBUTT_STYLING;
 
     public static final QName  backgroundImageAttributeName     = new QName(NAMESPACE_ST20522010,       "backgroundImage");
     public static final QName  forcedDisplayAttributeName       = new QName(NAMESPACE_IMSC_STYLING,     "forcedDisplay");
@@ -79,7 +79,7 @@ public class IMSC1Helper extends TTML2Helper {
     }
 
     private void transformBackgroundImage(final Document doc, final TransformerContext context) {
-        if (IMSC1SemanticsVerifier.isIMSCImageProfile(context)) {
+        if (IMSC10SemanticsVerifier.isIMSCImageProfile(context)) {
             try {
                 Traverse.traverseElements(doc, new PreVisitor() {
                     public boolean visit(Object content, Object parent, Visitor.Order order) {
@@ -208,7 +208,7 @@ public class IMSC1Helper extends TTML2Helper {
     }
 
     private void transformMultiRowAlign(final Document doc, final TransformerContext context) {
-        if (IMSC1SemanticsVerifier.isIMSCTextProfile(context)) {
+        if (IMSC10SemanticsVerifier.isIMSCTextProfile(context)) {
             final List<Element> styles = new java.util.ArrayList<Element>();
             final List<Element> paragraphs = new java.util.ArrayList<Element>();
             try {

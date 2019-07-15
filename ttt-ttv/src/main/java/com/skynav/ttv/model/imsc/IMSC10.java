@@ -85,6 +85,7 @@ public class IMSC10 {
     }
 
     public static final String MODEL_NAME = "imsc10";
+    public static final String MODEL_NAME_ALIAS_1 = "imsc1";
 
     public static boolean inIMSC10MetadataNamespace(QName name) {
         String nsUri = name.getNamespaceURI();
@@ -147,6 +148,7 @@ public class IMSC10 {
         private static final QName altTextElementName = new com.skynav.ttv.model.imsc10.ittm.ObjectFactory().createAltText(new AltText()).getName();
         private static final String[] contextPaths = new String[] { "com.skynav.ttv.model.imsc10.ittm" };
 
+        private String[] nameAliases;
         private String[] schemaResourceNames;
         private URI[] namespaceURIs;
         private URI profileNamespaceUri;
@@ -164,8 +166,15 @@ public class IMSC10 {
         }
 
         private void populate() {
+            populateNameAliases();
             populateSchemaResourceNames();
             populateNamespaceURIs();
+        }
+
+        private void populateNameAliases() {
+            List<String> nameAliases = new java.util.ArrayList<String>();
+            nameAliases.add(MODEL_NAME_ALIAS_1);
+            this.nameAliases = nameAliases.toArray(new String[nameAliases.size()]);
         }
 
         private void populateSchemaResourceNames() {
@@ -195,6 +204,10 @@ public class IMSC10 {
 
         public String getName() {
             return MODEL_NAME;
+        }
+
+        public String[] getNameAliases() {
+            return this.nameAliases;
         }
 
         public String[] getIMSC10SchemaResourceNames() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -168,7 +168,7 @@ public abstract class ISDHelper {
         assert model != null;
         String modelName = model.getName();
         if (modelName.startsWith("imsc")) {
-            return new IMSC1Helper();
+            return new IMSC10Helper();
         } else {
             int version = model.getTTMLVersion();
             if (version > 2)

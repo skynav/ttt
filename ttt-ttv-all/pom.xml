@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>ttt-ttxv-all</artifactId>
+  <artifactId>ttt-ttv-all</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>Timed Text Transforming Verifier with Dependencies</description>
+  <description>Timed Text Verifier with Dependencies</description>
   <packaging>pom</packaging>
   
   <parent>
@@ -17,16 +17,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>ttt-ttv</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>ttt-ttx</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>ttt-ttxv</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -49,7 +39,7 @@
               <archive>
                 <manifest>
                   <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                  <mainClass>com.skynav.ttxv.app.TimedTextTransformingVerifier</mainClass>
+                  <mainClass>com.skynav.ttv.app.TimedTextVerifier</mainClass>
                 </manifest>
               </archive>
               <descriptors>

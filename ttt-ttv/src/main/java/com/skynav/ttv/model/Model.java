@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,12 @@ public interface Model {
      * @return model name
      */
     String getName();
+
+    /**
+     * Obtain model name aliases.
+     * @return model name aliases
+     */
+    String[] getNameAliases();
 
     /**
      * Return TTML version number.
