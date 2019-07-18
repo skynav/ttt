@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,10 +30,10 @@ import java.net.URI;
 import com.skynav.ttv.model.Profile.Specification;
 import com.skynav.ttv.model.Profile.Usage;
 
-import static com.skynav.ttv.model.smpte.ST20522010.Constants.NAMESPACE_2010_EXTENSION;
+import static com.skynav.ttv.model.smpte.ST20522010TTML1.Constants.NAMESPACE_2010_EXTENSION;
 import static com.skynav.ttv.model.ttml.TTML1.Constants.PROFILE_TTML1_FULL_ABSOLUTE;
 
-public class ST20522010FullProfileSpecification extends Specification {
+public class ST20522010TTML1FullProfileSpecification extends Specification {
 
     private static final Object[][] extensionMapEntries = new Object[][] {
         { "#data", Usage.REQUIRED },
@@ -41,7 +41,7 @@ public class ST20522010FullProfileSpecification extends Specification {
         { "#information", Usage.REQUIRED },
     };
 
-    public ST20522010FullProfileSpecification(URI profileUri) {
+    public ST20522010TTML1FullProfileSpecification(URI profileUri) {
         super(profileUri, PROFILE_TTML1_FULL_ABSOLUTE, null, extensionsMap(NAMESPACE_2010_EXTENSION, extensionMapEntries));
     }
 }

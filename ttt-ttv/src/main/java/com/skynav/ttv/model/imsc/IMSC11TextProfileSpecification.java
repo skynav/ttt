@@ -33,9 +33,9 @@ import com.skynav.ttv.model.Profile.Usage;
 import com.skynav.ttv.model.smpte.ST20522010TTML1;
 import com.skynav.ttv.model.ttml.TTML1;
 
-import static com.skynav.ttv.model.imsc.IMSC10.Constants.NAMESPACE_IMSC_EXTENSION;
+import static com.skynav.ttv.model.imsc.IMSC11.Constants.NAMESPACE_IMSC_EXTENSION;
 
-public class IMSC10TextProfileSpecification extends Specification {
+public class IMSC11TextProfileSpecification extends Specification {
 
     private static final Object[][] featureMapEntries = new Object[][] {
         { "#animation", Usage.REQUIRED },
@@ -158,7 +158,7 @@ public class IMSC10TextProfileSpecification extends Specification {
         { "#image", Usage.OPTIONAL },
     };
 
-    private static final Object[][] imsc10ExtensionMapEntries = new Object[][] {
+    private static final Object[][] imsc11ExtensionMapEntries = new Object[][] {
         { "#altText", Usage.REQUIRED },
         { "#aspectRatio", Usage.REQUIRED },
         { "#forcedDisplay", Usage.REQUIRED },
@@ -167,14 +167,14 @@ public class IMSC10TextProfileSpecification extends Specification {
         { "#progressivelyDecodable", Usage.REQUIRED },
     };
 
-    public IMSC10TextProfileSpecification(URI profileUri) {
+    public IMSC11TextProfileSpecification(URI profileUri) {
         super(profileUri, null, featuresMap(TTML1.Constants.NAMESPACE_TT_FEATURE, featureMapEntries), makeExtensionsMap());
     }
 
     private static Map<URI,Usage> makeExtensionsMap() {
         Map<URI,Usage> fm = new java.util.HashMap<URI,Usage>();
         fm.putAll(featuresMap(ST20522010TTML1.Constants.NAMESPACE_2010_EXTENSION, smpteExtensionMapEntries));
-        fm.putAll(featuresMap(NAMESPACE_IMSC_EXTENSION, imsc10ExtensionMapEntries));
+        fm.putAll(featuresMap(NAMESPACE_IMSC_EXTENSION, imsc11ExtensionMapEntries));
         return fm;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ import com.skynav.ttv.model.smpte.tt.rel2013.Information;
 
 import static com.skynav.ttv.model.smpte.ST20522013.Constants.*;
 
-public class ST20522013SemanticsVerifier extends ST20522010SemanticsVerifier {
+public class ST20522013SemanticsVerifier extends ST20522010TTML1SemanticsVerifier {
 
     public ST20522013SemanticsVerifier(Model model) {
         super(model);

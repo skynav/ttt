@@ -75,7 +75,7 @@ import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML1SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters1;
@@ -90,7 +90,7 @@ import com.skynav.xml.helpers.Documents;
 
 import static com.skynav.ttv.model.imsc.IMSC10.Constants.*;
 
-public class IMSC10SemanticsVerifier extends ST20522010SemanticsVerifier {
+public class IMSC10SemanticsVerifier extends ST20522010TTML1SemanticsVerifier {
 
     public IMSC10SemanticsVerifier(Model model) {
         super(model);

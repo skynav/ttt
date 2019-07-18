@@ -34,9 +34,9 @@ import com.skynav.ttv.model.ttml1.tt.TimedText;
 import com.skynav.ttv.model.ttml1.ttd.TimeBase;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.smpte.ST20522010ParameterVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML1ParameterVerifier;
 
-public class IMSC10ParameterVerifier extends ST20522010ParameterVerifier {
+public class IMSC10ParameterVerifier extends ST20522010TTML1ParameterVerifier {
 
     public IMSC10ParameterVerifier(Model model) {
         super(model);

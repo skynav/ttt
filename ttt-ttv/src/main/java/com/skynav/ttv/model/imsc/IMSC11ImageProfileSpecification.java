@@ -33,31 +33,31 @@ import com.skynav.ttv.model.Profile.Usage;
 import com.skynav.ttv.model.smpte.ST20522010TTML1;
 import com.skynav.ttv.model.ttml.TTML1;
 
-import static com.skynav.ttv.model.imsc.IMSC10.Constants.NAMESPACE_IMSC_EXTENSION;
+import static com.skynav.ttv.model.imsc.IMSC11.Constants.NAMESPACE_IMSC_EXTENSION;
 
-public class IMSC10TextProfileSpecification extends Specification {
+public class IMSC11ImageProfileSpecification extends Specification {
 
     private static final Object[][] featureMapEntries = new Object[][] {
         { "#animation", Usage.REQUIRED },
-        { "#backgroundColor", Usage.REQUIRED },
-        { "#backgroundColor-block", Usage.REQUIRED },
-        { "#backgroundColor-inline", Usage.REQUIRED },
-        { "#backgroundColor-region", Usage.REQUIRED },
-        { "#bidi", Usage.REQUIRED },
+        { "#backgroundColor", Usage.OPTIONAL },
+        { "#backgroundColor-block", Usage.OPTIONAL },
+        { "#backgroundColor-inline", Usage.OPTIONAL },
+        { "#backgroundColor-region", Usage.OPTIONAL },
+        { "#bidi", Usage.OPTIONAL },
         { "#cellResolution", Usage.REQUIRED },
         { "#clockMode", Usage.OPTIONAL },
         { "#clockMode-gps", Usage.OPTIONAL },
         { "#clockMode-local", Usage.OPTIONAL },
         { "#clockMode-utc", Usage.OPTIONAL },
-        { "#color", Usage.REQUIRED },
+        { "#color", Usage.OPTIONAL },
         { "#content", Usage.REQUIRED },
         { "#core", Usage.REQUIRED },
-        { "#direction", Usage.REQUIRED },
+        { "#direction", Usage.OPTIONAL },
         { "#display", Usage.REQUIRED },
         { "#display-block", Usage.REQUIRED },
         { "#display-inline", Usage.REQUIRED },
         { "#display-region", Usage.REQUIRED },
-        { "#displayAlign", Usage.REQUIRED },
+        { "#displayAlign", Usage.OPTIONAL },
         { "#dropMode", Usage.OPTIONAL },
         { "#dropMode-dropNTSC", Usage.OPTIONAL },
         { "#dropMode-dropPAL", Usage.OPTIONAL },
@@ -65,17 +65,17 @@ public class IMSC10TextProfileSpecification extends Specification {
         { "#extent", Usage.REQUIRED },
         { "#extent-region", Usage.REQUIRED },
         { "#extent-root", Usage.REQUIRED },
-        { "#fontFamily", Usage.REQUIRED },
-        { "#fontFamily-generic", Usage.REQUIRED },
-        { "#fontFamily-non-generic", Usage.REQUIRED },
-        { "#fontSize", Usage.REQUIRED },
-        { "#fontSize-anamorphic", Usage.REQUIRED },
-        { "#fontSize-isomorphic", Usage.REQUIRED },
-        { "#fontStyle", Usage.REQUIRED },
-        { "#fontStyle-italic", Usage.REQUIRED },
-        { "#fontStyle-oblique", Usage.REQUIRED },
-        { "#fontWeight", Usage.REQUIRED },
-        { "#fontWeight-bold", Usage.REQUIRED },
+        { "#fontFamily", Usage.OPTIONAL },
+        { "#fontFamily-generic", Usage.OPTIONAL },
+        { "#fontFamily-non-generic", Usage.OPTIONAL },
+        { "#fontSize", Usage.OPTIONAL },
+        { "#fontSize-anamorphic", Usage.OPTIONAL },
+        { "#fontSize-isomorphic", Usage.OPTIONAL },
+        { "#fontStyle", Usage.OPTIONAL },
+        { "#fontStyle-italic", Usage.OPTIONAL },
+        { "#fontStyle-oblique", Usage.OPTIONAL },
+        { "#fontWeight", Usage.OPTIONAL },
+        { "#fontWeight-bold", Usage.OPTIONAL },
         { "#frameRate", Usage.REQUIRED },
         { "#frameRateMultiplier", Usage.REQUIRED },
         { "#layout", Usage.REQUIRED },
@@ -89,22 +89,22 @@ public class IMSC10TextProfileSpecification extends Specification {
         { "#length-positive", Usage.REQUIRED },
         { "#length-real", Usage.REQUIRED },
         { "#lineBreak-uax14", Usage.OPTIONAL },
-        { "#lineHeight", Usage.REQUIRED },
+        { "#lineHeight", Usage.OPTIONAL },
         { "#markerMode", Usage.OPTIONAL },
         { "#markerMode-continuous", Usage.OPTIONAL },
         { "#markerMode-discontinuous", Usage.OPTIONAL },
         { "#metadata", Usage.REQUIRED },
-        { "#nested-div", Usage.REQUIRED },
-        { "#nested-span", Usage.REQUIRED },
+        { "#nested-div", Usage.OPTIONAL },
+        { "#nested-span", Usage.OPTIONAL },
         { "#opacity", Usage.REQUIRED },
         { "#origin", Usage.REQUIRED },
         { "#overflow", Usage.REQUIRED },
         { "#overflow-visible", Usage.REQUIRED },
-        { "#padding", Usage.REQUIRED },
-        { "#padding-1", Usage.REQUIRED },
-        { "#padding-2", Usage.REQUIRED },
-        { "#padding-3", Usage.REQUIRED },
-        { "#padding-4", Usage.REQUIRED },
+        { "#padding", Usage.OPTIONAL },
+        { "#padding-1", Usage.OPTIONAL },
+        { "#padding-2", Usage.OPTIONAL },
+        { "#padding-3", Usage.OPTIONAL },
+        { "#padding-4", Usage.OPTIONAL },
         { "#pixelAspectRatio", Usage.OPTIONAL },
         { "#presentation", Usage.REQUIRED },
         { "#profile", Usage.REQUIRED },
@@ -118,16 +118,16 @@ public class IMSC10TextProfileSpecification extends Specification {
         { "#styling-nested", Usage.REQUIRED },
         { "#styling-referential", Usage.REQUIRED },
         { "#subFrameRate", Usage.OPTIONAL },
-        { "#textAlign", Usage.REQUIRED },
-        { "#textAlign-absolute", Usage.REQUIRED },
-        { "#textAlign-relative", Usage.REQUIRED },
-        { "#textDecoration", Usage.REQUIRED },
-        { "#textDecoration-over", Usage.REQUIRED },
-        { "#textDecoration-through", Usage.REQUIRED },
-        { "#textDecoration-under", Usage.REQUIRED },
-        { "#textOutline", Usage.REQUIRED },
-        { "#textOutline-blurred", Usage.REQUIRED },
-        { "#textOutline-unblurred", Usage.REQUIRED },
+        { "#textAlign", Usage.OPTIONAL },
+        { "#textAlign-absolute", Usage.OPTIONAL },
+        { "#textAlign-relative", Usage.OPTIONAL },
+        { "#textDecoration", Usage.OPTIONAL },
+        { "#textDecoration-over", Usage.OPTIONAL },
+        { "#textDecoration-through", Usage.OPTIONAL },
+        { "#textDecoration-under", Usage.OPTIONAL },
+        { "#textOutline", Usage.OPTIONAL },
+        { "#textOutline-blurred", Usage.OPTIONAL },
+        { "#textOutline-unblurred", Usage.OPTIONAL },
         { "#tickRate", Usage.REQUIRED },
         { "#time-clock", Usage.REQUIRED },
         { "#time-clock-with-frames", Usage.REQUIRED },
@@ -140,41 +140,41 @@ public class IMSC10TextProfileSpecification extends Specification {
         { "#timeContainer", Usage.REQUIRED },
         { "#timing", Usage.REQUIRED },
         { "#transformation", Usage.REQUIRED },
-        { "#unicodeBidi", Usage.REQUIRED },
+        { "#unicodeBidi", Usage.OPTIONAL },
         { "#visibility", Usage.REQUIRED },
         { "#visibility-block", Usage.REQUIRED },
         { "#visibility-inline", Usage.REQUIRED },
         { "#visibility-region", Usage.REQUIRED },
-        { "#wrapOption", Usage.REQUIRED },
-        { "#writingMode", Usage.REQUIRED },
+        { "#wrapOption", Usage.OPTIONAL },
+        { "#writingMode", Usage.OPTIONAL },
         { "#writingMode-horizontal", Usage.REQUIRED },
         { "#writingMode-horizontal-lr", Usage.REQUIRED },
         { "#writingMode-horizontal-rl", Usage.REQUIRED },
-        { "#writingMode-vertical", Usage.REQUIRED },
+        { "#writingMode-vertical", Usage.OPTIONAL },
         { "#zIndex", Usage.REQUIRED },
     };
 
     private static final Object[][] smpteExtensionMapEntries = new Object[][] {
-        { "#image", Usage.OPTIONAL },
+        { "#image", Usage.REQUIRED },
     };
 
-    private static final Object[][] imsc10ExtensionMapEntries = new Object[][] {
+    private static final Object[][] imsc11ExtensionMapEntries = new Object[][] {
         { "#altText", Usage.REQUIRED },
         { "#aspectRatio", Usage.REQUIRED },
         { "#forcedDisplay", Usage.REQUIRED },
-        { "#linePadding", Usage.REQUIRED },
-        { "#multiRowAlign", Usage.REQUIRED },
+        { "#linePadding", Usage.OPTIONAL },
+        { "#multiRowAlign", Usage.OPTIONAL },
         { "#progressivelyDecodable", Usage.REQUIRED },
     };
 
-    public IMSC10TextProfileSpecification(URI profileUri) {
+    public IMSC11ImageProfileSpecification(URI profileUri) {
         super(profileUri, null, featuresMap(TTML1.Constants.NAMESPACE_TT_FEATURE, featureMapEntries), makeExtensionsMap());
     }
 
     private static Map<URI,Usage> makeExtensionsMap() {
         Map<URI,Usage> fm = new java.util.HashMap<URI,Usage>();
         fm.putAll(featuresMap(ST20522010TTML1.Constants.NAMESPACE_2010_EXTENSION, smpteExtensionMapEntries));
-        fm.putAll(featuresMap(NAMESPACE_IMSC_EXTENSION, imsc10ExtensionMapEntries));
+        fm.putAll(featuresMap(NAMESPACE_IMSC_EXTENSION, imsc11ExtensionMapEntries));
         return fm;
     }
 

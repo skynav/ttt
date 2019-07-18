@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,9 +31,9 @@ import java.util.Set;
 import com.skynav.ttv.model.ttml.TTML1StandardDesignations;
 import com.skynav.ttv.util.URIs;
 
-import static com.skynav.ttv.model.smpte.ST20522010.Constants.NAMESPACE_2010_EXTENSION;
+import static com.skynav.ttv.model.smpte.ST20522010TTML1.Constants.NAMESPACE_2010_EXTENSION;
 
-public class ST20522010StandardDesignations extends TTML1StandardDesignations {
+public class ST20522010TTML1StandardDesignations extends TTML1StandardDesignations {
 
     private static final String[] extensionDesignationStrings = new String[] {
         "#data",
@@ -43,7 +43,7 @@ public class ST20522010StandardDesignations extends TTML1StandardDesignations {
 
     private Set<URI> extensionDesignations;
 
-    protected ST20522010StandardDesignations() {
+    protected ST20522010TTML1StandardDesignations() {
         populateExtensionDesignations();
     }
 
@@ -58,8 +58,8 @@ public class ST20522010StandardDesignations extends TTML1StandardDesignations {
         }
     }
 
-    public static ST20522010StandardDesignations getInstance() {
-        return new ST20522010StandardDesignations();
+    public static ST20522010TTML1StandardDesignations getInstance() {
+        return new ST20522010TTML1StandardDesignations();
     }
 
     @Override

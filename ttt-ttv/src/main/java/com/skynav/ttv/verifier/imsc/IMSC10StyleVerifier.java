@@ -41,7 +41,7 @@ import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.imsc.style.MultiRowAlignVerifier;
-import com.skynav.ttv.verifier.smpte.ST20522010StyleVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML1StyleVerifier;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
@@ -50,7 +50,7 @@ import com.skynav.ttv.verifier.util.Outlines;
 
 import static com.skynav.ttv.model.imsc.IMSC10.Constants.*;
 
-public class IMSC10StyleVerifier extends ST20522010StyleVerifier {
+public class IMSC10StyleVerifier extends ST20522010TTML1StyleVerifier {
 
     public static final QName forcedDisplayAttributeName        = new QName(NAMESPACE_IMSC_STYLING,"forcedDisplay");
     public static final QName linePaddingAttributeName          = new QName(NAMESPACE_EBUTT_STYLING,"linePadding");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,8 +28,8 @@ package com.skynav.ttv.verifier.smpte;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.verifier.ttml.TTML1TimingVerifier;
 
-public class ST20522010TimingVerifier extends TTML1TimingVerifier {
-    public ST20522010TimingVerifier(Model model) {
+public class ST20522010TTML1TimingVerifier extends TTML1TimingVerifier {
+    public ST20522010TTML1TimingVerifier(Model model) {
         super(model);
     }
 }

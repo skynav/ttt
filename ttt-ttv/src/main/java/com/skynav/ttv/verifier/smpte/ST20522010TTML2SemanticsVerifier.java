@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.smpte.ST20522010;
+import com.skynav.ttv.model.smpte.ST20522010TTML2;
 import com.skynav.ttv.model.smpte.tt.rel2010.Data;
 import com.skynav.ttv.model.smpte.tt.rel2010.Image;
 import com.skynav.ttv.model.smpte.tt.rel2010.Information;
@@ -47,7 +47,7 @@ import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.URIs;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.ttml.TTML1SemanticsVerifier;
+import com.skynav.ttv.verifier.ttml.TTML2SemanticsVerifier;
 import com.skynav.ttv.verifier.util.Base64;
 import com.skynav.ttv.verifier.util.IdReferences;
 import com.skynav.ttv.verifier.util.Keywords;
@@ -56,20 +56,20 @@ import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.xml.helpers.Nodes;
 
-import static com.skynav.ttv.model.smpte.ST20522010.Constants.*;
+import static com.skynav.ttv.model.smpte.ST20522010TTML2.Constants.*;
 
-public class ST20522010SemanticsVerifier extends TTML1SemanticsVerifier {
+public class ST20522010TTML2SemanticsVerifier extends TTML2SemanticsVerifier {
 
-    public ST20522010SemanticsVerifier(Model model) {
+    public ST20522010TTML2SemanticsVerifier(Model model) {
         super(model);
     }
 
     public boolean inSMPTEPrimaryNamespace(QName name) {
-        return ST20522010.inSMPTEPrimaryNamespace(name);
+        return ST20522010TTML2.inSMPTEPrimaryNamespace(name);
     }
 
     public boolean inSMPTESecondaryNamespace(QName name) {
-        return ST20522010.inSMPTESecondaryNamespace(name);
+        return ST20522010TTML2.inSMPTESecondaryNamespace(name);
     }
 
     public boolean inSMPTENamespace(QName name) {

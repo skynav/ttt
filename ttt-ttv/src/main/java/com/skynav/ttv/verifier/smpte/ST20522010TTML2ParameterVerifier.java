@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,15 +23,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.verifier.imsc;
+package com.skynav.ttv.verifier.smpte;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.verifier.smpte.ST20522010TTML1TimingVerifier;
+import com.skynav.ttv.verifier.ttml.TTML2ParameterVerifier;
 
-public class IMSC10TimingVerifier extends ST20522010TTML1TimingVerifier {
-
-    public IMSC10TimingVerifier(Model model) {
+public class ST20522010TTML2ParameterVerifier extends TTML2ParameterVerifier {
+    public ST20522010TTML2ParameterVerifier(Model model) {
         super(model);
     }
-
 }

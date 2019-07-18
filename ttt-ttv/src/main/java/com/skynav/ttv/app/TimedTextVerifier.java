@@ -1392,7 +1392,7 @@ public class TimedTextVerifier implements VerifierContext {
                         return null;
                     } else if (r.isError()) {
                         Message message = reporter.message("*KEY*",
-                            "Can't decode as {0} at byte offset {1}{2,choice,0# of zero bytes|1# of one byte|1< of {2,number,integer} bytes}.",
+                            "Can''t decode as {0} at byte offset {1}{2,choice,0# of zero bytes|1# of one byte|1< of {2,number,integer} bytes}.",
                             encoding.name(), bb.position(), r.length());
                         reporter.logError(message);
                         return null;
@@ -1800,7 +1800,7 @@ public class TimedTextVerifier implements VerifierContext {
 
     private URL getSchemaResource(String resourceName) throws SchemaValidationErrorException {
         Reporter reporter = getReporter();
-        reporter.logDebug(reporter.message("*KEY*", "Searching for built-in schema at {0}...", resourceName));
+        reporter.logDebug(reporter.message("*KEY*", "Searching for built-in schema at '{'{0}'}'...", resourceName));
         try {
             URL urlSchema = null;
             Enumeration<URL> resources = getClass().getClassLoader().getResources(resourceName);
@@ -1816,9 +1816,8 @@ public class TimedTextVerifier implements VerifierContext {
                 }
             }
             if (urlSchema == null) {
-                Message message = reporter.message("*KEY*:", "Can't find schema resource '{'{0}'}'.", resourceName);
-                reporter.logDebug(message);
-                throw new SchemaValidationErrorException(new MissingResourceException(message.toString(), getClass().getName(), resourceName));
+                Message message = reporter.message("*KEY*", "Can''t find schema resource '{'{0}'}'.", resourceName);
+                throw new SchemaValidationErrorException(new MissingResourceException(message.toText(), getClass().getName(), resourceName));
             }
             return urlSchema;
         } catch (IOException e) {

@@ -30,7 +30,7 @@ import java.util.Map;
 
 import com.skynav.ttv.model.Profile.Specification;
 import com.skynav.ttv.model.Profile.Usage;
-import com.skynav.ttv.model.smpte.ST20522010;
+import com.skynav.ttv.model.smpte.ST20522010TTML1;
 import com.skynav.ttv.model.ttml.TTML1;
 
 import static com.skynav.ttv.model.imsc.IMSC10.Constants.NAMESPACE_IMSC_EXTENSION;
@@ -173,7 +173,7 @@ public class IMSC10ImageProfileSpecification extends Specification {
 
     private static Map<URI,Usage> makeExtensionsMap() {
         Map<URI,Usage> fm = new java.util.HashMap<URI,Usage>();
-        fm.putAll(featuresMap(ST20522010.Constants.NAMESPACE_2010_EXTENSION, smpteExtensionMapEntries));
+        fm.putAll(featuresMap(ST20522010TTML1.Constants.NAMESPACE_2010_EXTENSION, smpteExtensionMapEntries));
         fm.putAll(featuresMap(NAMESPACE_IMSC_EXTENSION, imsc10ExtensionMapEntries));
         return fm;
     }

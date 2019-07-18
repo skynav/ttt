@@ -35,8 +35,8 @@ import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Profile;
 import com.skynav.ttv.model.imsc10.ittm.AltText;
-import com.skynav.ttv.model.smpte.ST20522010;
-import com.skynav.ttv.model.smpte.ST20522010.ST20522010Model;
+import com.skynav.ttv.model.smpte.ST20522010TTML1;
+import com.skynav.ttv.model.smpte.ST20522010TTML1.ST20522010TTML1Model;
 import com.skynav.ttv.model.ttml.TTML1;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.ImageVerifier;
@@ -143,7 +143,7 @@ public class IMSC10 {
             return false;
     }
 
-    public static class IMSC10Model extends ST20522010Model {
+    public static class IMSC10Model extends ST20522010TTML1Model {
 
         private static final QName altTextElementName = new com.skynav.ttv.model.imsc10.ittm.ObjectFactory().createAltText(new AltText()).getName();
         private static final String[] contextPaths = new String[] { "com.skynav.ttv.model.imsc10.ittm" };
@@ -180,7 +180,7 @@ public class IMSC10 {
         private void populateSchemaResourceNames() {
             List<String> resourceNames = new java.util.ArrayList<String>();
             resourceNames.addAll(Arrays.asList(super.getTTSchemaResourceNames()));
-            resourceNames.add(ST20522010.Constants.XSD_2010);
+            resourceNames.add(ST20522010TTML1.Constants.XSD_2010);
             resourceNames.add(Constants.XSD_IMSC10);
             this.schemaResourceNames = resourceNames.toArray(new String[resourceNames.size()]);
         }
@@ -189,7 +189,7 @@ public class IMSC10 {
             List<URI> namespaceURIs = new java.util.ArrayList<URI>();
             namespaceURIs.addAll(Arrays.asList(super.getTTNamespaceURIs()));
             try {
-                namespaceURIs.add(new URI(ST20522010.Constants.NAMESPACE_2010));
+                namespaceURIs.add(new URI(ST20522010TTML1.Constants.NAMESPACE_2010));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_IMSC_METADATA));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_IMSC_PARAMETER));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_IMSC_STYLING));

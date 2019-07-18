@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,12 +40,12 @@ import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
 import com.skynav.ttv.verifier.StyleVerifier;
 import com.skynav.ttv.verifier.TimingVerifier;
-import com.skynav.ttv.verifier.smpte.ST20522010ParameterVerifier;
-import com.skynav.ttv.verifier.smpte.ST20522010SemanticsVerifier;
-import com.skynav.ttv.verifier.smpte.ST20522010StyleVerifier;
-import com.skynav.ttv.verifier.smpte.ST20522010TimingVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML1ParameterVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML1SemanticsVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML1StyleVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML1TimingVerifier;
 
-public class ST20522010 {
+public class ST20522010TTML1 {
 
     public static class Constants {
 
@@ -81,7 +81,8 @@ public class ST20522010 {
 
     }
 
-    public static final String MODEL_NAME = "st2052-2010";
+    public static final String MODEL_NAME = "st2052-2010-ttml1";
+    public static final String MODEL_NAME_ALIAS_1 = "st2052-2010";
 
     public static boolean inSMPTEPrimaryNamespace(QName name) {
         String nsUri = name.getNamespaceURI();
@@ -97,11 +98,12 @@ public class ST20522010 {
         return inSMPTEPrimaryNamespace(name) || inSMPTESecondaryNamespace(name);
     }
 
-    public static class ST20522010Model extends TTML1Model {
+    public static class ST20522010TTML1Model extends TTML1Model {
 
         private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createInformation(new Information()).getName();
         private static final String[] contextPaths = new String[] { "com.skynav.ttv.model.smpte.tt.rel2010" };
 
+        private String[] nameAliases;
         private String[] schemaResourceNames;
         private URI[] namespaceURIs;
         private URI profileNamespaceUri;
@@ -113,13 +115,20 @@ public class ST20522010 {
         private StyleVerifier styleVerifier;
         private TimingVerifier timingVerifier;
 
-        public ST20522010Model() {
+        public ST20522010TTML1Model() {
             populate();
         }
 
         private void populate() {
+            populateNameAliases();
             populateSchemaResourceNames();
             populateNamespaceURIs();
+        }
+
+        private void populateNameAliases() {
+            List<String> nameAliases = new java.util.ArrayList<String>();
+            nameAliases.add(MODEL_NAME_ALIAS_1);
+            this.nameAliases = nameAliases.toArray(new String[nameAliases.size()]);
         }
 
         private void populateSchemaResourceNames() {
@@ -146,6 +155,10 @@ public class ST20522010 {
 
         public String getName() {
             return MODEL_NAME;
+        }
+
+        public String[] getNameAliases() {
+            return this.nameAliases;
         }
 
         public String[] getST20522010SchemaResourceNames() {
@@ -181,14 +194,14 @@ public class ST20522010 {
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {
             if (profileSpecificationClasses == null) {
                 profileSpecificationClasses = new java.util.HashMap<URI,Class<?>>(super.getProfileSpecificationClasses());
-                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_2010_FULL), ST20522010FullProfileSpecification.class);
+                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_2010_FULL), ST20522010TTML1FullProfileSpecification.class);
             }
             return profileSpecificationClasses;
         }
 
         public Profile.StandardDesignations getStandardDesignations() {
             if (standardDesignations == null) {
-                standardDesignations = ST20522010StandardDesignations.getInstance();
+                standardDesignations = ST20522010TTML1StandardDesignations.getInstance();
             }
             return standardDesignations;
         }
@@ -318,28 +331,28 @@ public class ST20522010 {
 
         public ParameterVerifier getParameterVerifier() {
             if (parameterVerifier == null) {
-                parameterVerifier = new ST20522010ParameterVerifier(this);
+                parameterVerifier = new ST20522010TTML1ParameterVerifier(this);
             }
             return parameterVerifier;
         }
 
         public SemanticsVerifier getSemanticsVerifier() {
             if (semanticsVerifier == null) {
-                semanticsVerifier = new ST20522010SemanticsVerifier(this);
+                semanticsVerifier = new ST20522010TTML1SemanticsVerifier(this);
             }
             return semanticsVerifier;
         }
 
         public StyleVerifier getStyleVerifier() {
             if (styleVerifier == null) {
-                styleVerifier = new ST20522010StyleVerifier(this);
+                styleVerifier = new ST20522010TTML1StyleVerifier(this);
             }
             return styleVerifier;
         }
 
         public TimingVerifier getTimingVerifier() {
             if (timingVerifier == null) {
-                timingVerifier = new ST20522010TimingVerifier(this);
+                timingVerifier = new ST20522010TTML1TimingVerifier(this);
             }
             return timingVerifier;
         }

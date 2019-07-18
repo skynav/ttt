@@ -34,64 +34,42 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Profile;
-import com.skynav.ttv.model.smpte.tt.rel2013.Information;
-import com.skynav.ttv.model.smpte.tt.rel2013.m708.Service;
+import com.skynav.ttv.model.smpte.tt.rel2010.Information;
+import com.skynav.ttv.model.ttml.TTML2.TTML2Model;
+import com.skynav.ttv.verifier.ParameterVerifier;
 import com.skynav.ttv.verifier.SemanticsVerifier;
-import com.skynav.ttv.verifier.smpte.ST20522013SemanticsVerifier;
+import com.skynav.ttv.verifier.StyleVerifier;
+import com.skynav.ttv.verifier.TimingVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML2ParameterVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML2SemanticsVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML2StyleVerifier;
+import com.skynav.ttv.verifier.smpte.ST20522010TTML2TimingVerifier;
 
-public class ST20522013 {
+public class ST20522010TTML2 {
 
     public static class Constants extends ST20522010TTML1.Constants {
-
-        public static final String MODEL_NAME = "st2052-2013";
-
-        public static final String NAMESPACE_2013 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt";
-        public static final String NAMESPACE_2013_PROFILE = "http://www.smpte-ra.org/schemas/2052-1/2013/profiles/";
-        public static final String NAMESPACE_2013_EXTENSION = "http://www.smpte-ra.org/23b/smpte-tt/extension/";
-        public static final String XSD_2013 = "com/skynav/ttv/xsd/smpte/2013/smpte-tt.xsd";
-
-        public static final String NAMESPACE_2013_CEA608 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608";
-        public static final String XSD_2013_CEA608 = "com/skynav/ttv/xsd/smpte/2013/smpte-tt-608.xsd";
-
-        public static final String NAMESPACE_2013_CEA708 = "http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea708";
-        public static final String XSD_2013_CEA708 = "com/skynav/ttv/xsd/smpte/2013/smpte-tt-708.xsd";
-
-        public static final String PROFILE_2013_FULL = "smpte-tt-full";
-        public static final String PROFILE_2013_FULL_ABSOLUTE = NAMESPACE_2013_PROFILE + PROFILE_2010_FULL;
-
-        public static final String DATA_TYPE_608 = NAMESPACE_2013_CEA608;
-        public static final String DATA_TYPE_708 = NAMESPACE_2013_CEA708;
-
-        public static final String ELT_SERVICE = "service";
-
-        public static final String ATTR_ASPECT_RATIO = "aspectRatio";
-        public static final String ATTR_EASY_READER = "easyReader";
-        public static final String ATTR_FCC_MINIMUM = "fccMinimum";
-        public static final String ATTR_NUMBER = "number";
-
     }
 
-    public static final String MODEL_NAME = "st2052-2013";
+    public static final String MODEL_NAME = "st2052-2010-ttml2";
 
     public static boolean inSMPTEPrimaryNamespace(QName name) {
         String nsUri = name.getNamespaceURI();
-        return nsUri.equals(Constants.NAMESPACE_2013);
+        return nsUri.equals(Constants.NAMESPACE_2010);
     }
 
     public static boolean inSMPTESecondaryNamespace(QName name) {
         String nsUri = name.getNamespaceURI();
-        return nsUri.equals(Constants.NAMESPACE_2013_CEA608) || nsUri.equals(Constants.NAMESPACE_2013_CEA708);
+        return nsUri.equals(Constants.NAMESPACE_2010_CEA608);
     }
 
     public static boolean inSMPTENamespace(QName name) {
         return inSMPTEPrimaryNamespace(name) || inSMPTESecondaryNamespace(name);
     }
 
-    public static class ST20522013Model extends ST20522010TTML1.ST20522010TTML1Model {
+    public static class ST20522010TTML2Model extends TTML2Model {
 
-        private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2013.ObjectFactory().createInformation(new Information()).getName();
-        private static final QName serviceElementName = new com.skynav.ttv.model.smpte.tt.rel2013.m708.ObjectFactory().createService(new Service()).getName();
-        private static final String[] contextPaths = new String[] { "com.skynav.ttv.model.smpte.tt.rel2013", "com.skynav.ttv.model.smpte.tt.rel2013.m708", };
+        private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2010.ObjectFactory().createInformation(new Information()).getName();
+        private static final String[] contextPaths = new String[] { "com.skynav.ttv.model.smpte.tt.rel2010" };
 
         private String[] schemaResourceNames;
         private URI[] namespaceURIs;
@@ -99,9 +77,12 @@ public class ST20522013 {
         private URI extensionNamespaceUri;
         private Map<URI,Class<?>> profileSpecificationClasses;
         private Profile.StandardDesignations standardDesignations;
+        private ParameterVerifier parameterVerifier;
         private SemanticsVerifier semanticsVerifier;
+        private StyleVerifier styleVerifier;
+        private TimingVerifier timingVerifier;
 
-        public ST20522013Model() {
+        public ST20522010TTML2Model() {
             populate();
         }
 
@@ -113,9 +94,8 @@ public class ST20522013 {
         private void populateSchemaResourceNames() {
             List<String> resourceNames = new java.util.ArrayList<String>();
             resourceNames.addAll(Arrays.asList(super.getTTSchemaResourceNames()));
-            resourceNames.add(Constants.XSD_2013);
-            resourceNames.add(Constants.XSD_2013_CEA608);
-            resourceNames.add(Constants.XSD_2013_CEA708);
+            resourceNames.add(Constants.XSD_2010);
+            resourceNames.add(Constants.XSD_2010_CEA608);
             this.schemaResourceNames = resourceNames.toArray(new String[resourceNames.size()]);
         }
 
@@ -123,12 +103,11 @@ public class ST20522013 {
             List<URI> namespaceURIs = new java.util.ArrayList<URI>();
             namespaceURIs.addAll(Arrays.asList(super.getTTNamespaceURIs()));
             try {
-                namespaceURIs.add(new URI(Constants.NAMESPACE_2013));
-                namespaceURIs.add(new URI(Constants.NAMESPACE_2013_CEA608));
-                namespaceURIs.add(new URI(Constants.NAMESPACE_2013_CEA708));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_2010));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_2010_CEA608));
                 this.namespaceURIs = namespaceURIs.toArray(new URI[namespaceURIs.size()]);
-                this.profileNamespaceUri = new URI(Constants.NAMESPACE_2013_PROFILE);
-                this.extensionNamespaceUri = new URI(Constants.NAMESPACE_2013_EXTENSION);
+                this.profileNamespaceUri = new URI(Constants.NAMESPACE_2010_PROFILE);
+                this.extensionNamespaceUri = new URI(Constants.NAMESPACE_2010_EXTENSION);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -138,12 +117,20 @@ public class ST20522013 {
             return MODEL_NAME;
         }
 
-        public String[] getSchemaResourceNames() {
+        public String[] getST20522010SchemaResourceNames() {
             return this.schemaResourceNames;
         }
 
-        public URI[] getNamespaceURIs() {
+        public String[] getSchemaResourceNames() {
+            return getST20522010SchemaResourceNames();
+        }
+
+        public URI[] getST20522010NamespaceURIs() {
             return this.namespaceURIs;
+        }
+
+        public URI[] getNamespaceURIs() {
+            return getST20522010NamespaceURIs();
         }
 
         public URI getProfileNamespaceUri() {
@@ -156,21 +143,21 @@ public class ST20522013 {
 
         public Map<String,String> getNormalizedPrefixes() {
             Map<String,String> normalizedPrefixes = super.getNormalizedPrefixes();
-            normalizedPrefixes.put(Constants.NAMESPACE_2013, "smpte");
+            normalizedPrefixes.put(Constants.NAMESPACE_2010, "smpte");
             return normalizedPrefixes;
         }
 
         protected Map<URI,Class<?>> getProfileSpecificationClasses() {
             if (profileSpecificationClasses == null) {
                 profileSpecificationClasses = new java.util.HashMap<URI,Class<?>>(super.getProfileSpecificationClasses());
-                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_2013_FULL), ST20522013FullProfileSpecification.class);
+                profileSpecificationClasses.put(profileNamespaceUri.resolve(Constants.PROFILE_2010_FULL), ST20522010TTML2FullProfileSpecification.class);
             }
             return profileSpecificationClasses;
         }
 
         public Profile.StandardDesignations getStandardDesignations() {
             if (standardDesignations == null) {
-                standardDesignations = ST20522013StandardDesignations.getInstance();
+                standardDesignations = ST20522010TTML2StandardDesignations.getInstance();
             }
             return standardDesignations;
         }
@@ -189,7 +176,7 @@ public class ST20522013 {
                         return true;
                 } else if (inSMPTESecondaryNamespace(name)) {
                     String nsUri = name.getNamespaceURI();
-                    if (nsUri.equals(Constants.NAMESPACE_2013_CEA608)) {
+                    if (nsUri.equals(Constants.NAMESPACE_2010_CEA608)) {
                         if (ln.equals(Constants.ATTR_CHANNEL))
                             return true;
                         else if (ln.equals(Constants.ATTR_FIELD_START))
@@ -204,15 +191,6 @@ public class ST20522013 {
                             return true;
                         else if (ln.equals(Constants.ATTR_COPY_AND_REDISTRIBUTION_CONTROL))
                             return true;
-                    } else if (nsUri.equals(Constants.NAMESPACE_2013_CEA708)) {
-                        if (ln.equals(Constants.ATTR_NUMBER))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_EASY_READER))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_FCC_MINIMUM))
-                            return true;
                     }
                 }
             }
@@ -221,10 +199,6 @@ public class ST20522013 {
 
         public boolean isSMPTEInformationElement(QName name) {
             return name.equals(informationElementName);
-        }
-
-        public boolean isSMPTEServiceElement(QName name) {
-            return name.equals(serviceElementName);
         }
 
         public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
@@ -243,7 +217,7 @@ public class ST20522013 {
                     }
                 } else if (inSMPTESecondaryNamespace(attributeName)) {
                     String nsUri = attributeName.getNamespaceURI();
-                    if (nsUri.equals(Constants.NAMESPACE_2013_CEA608)) {
+                    if (nsUri.equals(Constants.NAMESPACE_2010_CEA608)) {
                         if (isSMPTEInformationElement(elementName)) {
                             if (ln.equals(Constants.ATTR_CHANNEL))
                                 return true;
@@ -258,17 +232,6 @@ public class ST20522013 {
                             else if (ln.equals(Constants.ATTR_CAPTION_SERVICE))
                                 return true;
                             else if (ln.equals(Constants.ATTR_COPY_AND_REDISTRIBUTION_CONTROL))
-                                return true;
-                        }
-                    } else if (nsUri.equals(Constants.NAMESPACE_2013_CEA708)) {
-                        if (isSMPTEInformationElement(elementName) || isSMPTEServiceElement(elementName) ) {
-                            if (ln.equals(Constants.ATTR_NUMBER))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_EASY_READER))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_FCC_MINIMUM))
                                 return true;
                         }
                     }
@@ -288,9 +251,6 @@ public class ST20522013 {
                     else if (ln.equals(Constants.ELT_IMAGE))
                         return true;
                     else if (ln.equals(Constants.ELT_INFORMATION))
-                        return true;
-                } else if (name.getNamespaceURI().equals(Constants.NAMESPACE_2013_CEA708)) {
-                    if (ln.equals(Constants.ELT_SERVICE))
                         return true;
                 }
             }
@@ -320,21 +280,37 @@ public class ST20522013 {
                     ancestors.add(metadataElementName);
                     ancestors.add(headElementName);
                     permissibleAncestors.add(ancestors);
-                } else if (localName.equals(Constants.ELT_SERVICE) && elementName.getNamespaceURI().equals(Constants.NAMESPACE_2013_CEA708)) {
-                    List<QName> ancestors = new java.util.ArrayList<QName>();
-                    ancestors.add(informationElementName);
-                    ancestors.add(metadataElementName);
-                    permissibleAncestors.add(ancestors);
                 }
             }
             return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
         }
 
+        public ParameterVerifier getParameterVerifier() {
+            if (parameterVerifier == null) {
+                parameterVerifier = new ST20522010TTML2ParameterVerifier(this);
+            }
+            return parameterVerifier;
+        }
+
         public SemanticsVerifier getSemanticsVerifier() {
             if (semanticsVerifier == null) {
-                semanticsVerifier = new ST20522013SemanticsVerifier(this);
+                semanticsVerifier = new ST20522010TTML2SemanticsVerifier(this);
             }
             return semanticsVerifier;
+        }
+
+        public StyleVerifier getStyleVerifier() {
+            if (styleVerifier == null) {
+                styleVerifier = new ST20522010TTML2StyleVerifier(this);
+            }
+            return styleVerifier;
+        }
+
+        public TimingVerifier getTimingVerifier() {
+            if (timingVerifier == null) {
+                timingVerifier = new ST20522010TTML2TimingVerifier(this);
+            }
+            return timingVerifier;
         }
 
     }

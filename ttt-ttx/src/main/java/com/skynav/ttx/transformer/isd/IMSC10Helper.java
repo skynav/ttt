@@ -37,7 +37,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.skynav.ttv.model.imsc.IMSC10;
-import com.skynav.ttv.model.smpte.ST20522010;
+import com.skynav.ttv.model.smpte.ST20522010TTML1;
 import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
@@ -50,7 +50,7 @@ import com.skynav.xml.helpers.XML;
 public class IMSC10Helper extends TTML2Helper {
 
     public static final String NAMESPACE_IMSC_STYLING           = IMSC10.Constants.NAMESPACE_IMSC_STYLING;
-    public static final String NAMESPACE_ST20522010             = ST20522010.Constants.NAMESPACE_2010;
+    public static final String NAMESPACE_ST20522010             = ST20522010TTML1.Constants.NAMESPACE_2010;
     public static final String NAMESPACE_EBUTT_STYLING          = IMSC10.Constants.NAMESPACE_EBUTT_STYLING;
 
     public static final QName  backgroundImageAttributeName     = new QName(NAMESPACE_ST20522010,       "backgroundImage");
