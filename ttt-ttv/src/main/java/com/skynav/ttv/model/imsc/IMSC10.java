@@ -58,7 +58,8 @@ public class IMSC10 {
         public static final String NAMESPACE_IMSC_METADATA = NAMESPACE_IMSC_PREFIX + "#metadata";
         public static final String NAMESPACE_IMSC_PARAMETER = NAMESPACE_IMSC_PREFIX + "#parameter";
         public static final String NAMESPACE_IMSC_STYLING = NAMESPACE_IMSC_PREFIX + "#styling";
-        public static final String NAMESPACE_IMSC_PROFILE = NAMESPACE_IMSC_PREFIX + "/";
+        public static final String NAMESPACE_IMSC10_PROFILE = NAMESPACE_IMSC_PREFIX + "/";
+        public static final String NAMESPACE_IMSC_PROFILE = NAMESPACE_IMSC10_PROFILE;
         public static final String NAMESPACE_IMSC_EXTENSION = NAMESPACE_IMSC_PREFIX + "/extension/";
 
         public static final String NAMESPACE_EBUTT_PREFIX = "urn:ebu:tt";
@@ -195,7 +196,7 @@ public class IMSC10 {
                 namespaceURIs.add(new URI(Constants.NAMESPACE_IMSC_STYLING));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_EBUTT_STYLING));
                 this.namespaceURIs = namespaceURIs.toArray(new URI[namespaceURIs.size()]);
-                this.profileNamespaceUri = new URI(Constants.NAMESPACE_IMSC_PROFILE);
+                this.profileNamespaceUri = new URI(Constants.NAMESPACE_IMSC10_PROFILE);
                 this.extensionNamespaceUri = new URI(Constants.NAMESPACE_IMSC_EXTENSION);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);

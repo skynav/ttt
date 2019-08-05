@@ -219,11 +219,11 @@ public class ST20522013 {
             return false;
         }
 
-        public boolean isSMPTEInformationElement(QName name) {
+        static public boolean isSMPTEInformationElement(QName name) {
             return name.equals(informationElementName);
         }
 
-        public boolean isSMPTEServiceElement(QName name) {
+        static public boolean isSMPTEServiceElement(QName name) {
             return name.equals(serviceElementName);
         }
 

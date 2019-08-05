@@ -25,49 +25,9 @@
 
 package com.skynav.ttv.model.smpte;
 
-import java.net.URI;
-import java.util.Set;
-
-import com.skynav.ttv.model.ttml.TTML2StandardDesignations;
-import com.skynav.ttv.util.URIs;
-
-import static com.skynav.ttv.model.smpte.ST20522010TTML1.Constants.NAMESPACE_2010_EXTENSION;
-
-public class ST20522010TTML2StandardDesignations extends TTML2StandardDesignations {
-
-    private static final String[] extensionDesignationStrings = new String[] {
-        "#data",
-        "#image",
-        "#information"
-    };
-
-    private Set<URI> extensionDesignations;
+public class ST20522010TTML2StandardDesignations extends ST20522010TTML1StandardDesignations {
 
     protected ST20522010TTML2StandardDesignations() {
-        populateExtensionDesignations();
-    }
-
-    private void populateExtensionDesignations() {
-        URI extensionNamespaceUri = URIs.makeURISafely(NAMESPACE_2010_EXTENSION);
-        if (extensionNamespaceUri != null) {
-            Set<URI> extensionDesignations = new java.util.HashSet<URI>(extensionDesignationStrings.length);
-            for (String designation : extensionDesignationStrings) {
-                extensionDesignations.add(extensionNamespaceUri.resolve(designation));
-            }
-            this.extensionDesignations = extensionDesignations;
-        }
-    }
-
-    public static ST20522010TTML2StandardDesignations getInstance() {
-        return new ST20522010TTML2StandardDesignations();
-    }
-
-    @Override
-    public boolean isStandardExtensionDesignation(URI uri) {
-        if (super.isStandardExtensionDesignation(uri))
-            return true;
-        else
-            return (extensionDesignations != null) && extensionDesignations.contains(uri);
     }
 
 }

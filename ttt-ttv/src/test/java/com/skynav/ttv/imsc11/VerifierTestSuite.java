@@ -1,6 +1,6 @@
 /*
  * Copyright 2013-2019 Skynav, Inc. All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,14 +22,18 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+package com.skynav.ttv.imsc11;
 
-package com.skynav.ttv.model.smpte;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import java.net.URI;
-
-public class ST20522010TTML2FullProfileSpecification extends ST20522010TTML1FullProfileSpecification {
-
-    public ST20522010TTML2FullProfileSpecification(URI profileUri) {
-        super(profileUri);
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+    ValidTestCases.class,
+    InvalidTestCases.class
+})
+public class VerifierTestSuite {
 }
+

@@ -144,6 +144,22 @@
               <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
             </configuration>
           </execution>
+          <execution>
+            <id>xjc-imsc11</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <specVersion>2.1</specVersion>
+              <schemaDirectory>src/main/resources/com/skynav/ttv/xsd/imsc11</schemaDirectory>
+              <schemaIncludes>
+                <include>imsc11.xsd</include>
+              </schemaIncludes>
+              <generateDirectory>target/generated-sources/xjc-imsc11</generateDirectory>
+              <episode>false</episode>
+              <addIfExistsToEpisodeSchemaBindings>false</addIfExistsToEpisodeSchemaBindings>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

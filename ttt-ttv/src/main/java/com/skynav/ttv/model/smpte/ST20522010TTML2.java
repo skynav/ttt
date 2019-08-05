@@ -165,36 +165,8 @@ public class ST20522010TTML2 {
         public boolean isGlobalAttribute(QName name) {
             if (super.isGlobalAttribute(name))
                 return true;
-            else {
-                String ln = name.getLocalPart();
-                if (inSMPTEPrimaryNamespace(name)) {
-                    if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE))
-                        return true;
-                    else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_HORIZONTAL))
-                        return true;
-                    else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_VERTICAL))
-                        return true;
-                } else if (inSMPTESecondaryNamespace(name)) {
-                    String nsUri = name.getNamespaceURI();
-                    if (nsUri.equals(Constants.NAMESPACE_2010_CEA608)) {
-                        if (ln.equals(Constants.ATTR_CHANNEL))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_FIELD_START))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_PROGRAM_NAME))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_PROGRAM_TYPE))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_CONTENT_ADVISORY))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_CAPTION_SERVICE))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_COPY_AND_REDISTRIBUTION_CONTROL))
-                            return true;
-                    }
-                }
-            }
-            return false;
+            else
+                return ST20522010TTML1.ST20522010TTML1Model.isGlobalAttributeHelper(name);
         }
 
         public boolean isSMPTEInformationElement(QName name) {
@@ -204,57 +176,15 @@ public class ST20522010TTML2 {
         public boolean isGlobalAttributePermitted(QName attributeName, QName elementName) {
             if (super.isGlobalAttributePermitted(attributeName, elementName))
                 return true;
-            else {
-                String ln = attributeName.getLocalPart();
-                if (inSMPTEPrimaryNamespace(attributeName)) {
-                    if (isTTDivElement(elementName)) {
-                        if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_HORIZONTAL))
-                            return true;
-                        else if (ln.equals(Constants.ATTR_BACKGROUND_IMAGE_VERTICAL))
-                            return true;
-                    }
-                } else if (inSMPTESecondaryNamespace(attributeName)) {
-                    String nsUri = attributeName.getNamespaceURI();
-                    if (nsUri.equals(Constants.NAMESPACE_2010_CEA608)) {
-                        if (isSMPTEInformationElement(elementName)) {
-                            if (ln.equals(Constants.ATTR_CHANNEL))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_FIELD_START))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_PROGRAM_NAME))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_PROGRAM_TYPE))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_CONTENT_ADVISORY))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_CAPTION_SERVICE))
-                                return true;
-                            else if (ln.equals(Constants.ATTR_COPY_AND_REDISTRIBUTION_CONTROL))
-                                return true;
-                        }
-                    }
-                }
-            }
-            return false;
+            else
+                return ST20522010TTML1.ST20522010TTML1Model.isGlobalAttributePermittedHelper(attributeName, elementName);
         }
 
         public boolean isElement(QName name) {
             if (super.isElement(name))
                 return true;
-            else {
-                String ln = name.getLocalPart();
-                if (inSMPTEPrimaryNamespace(name)) {
-                    if (ln.equals(Constants.ELT_DATA))
-                        return true;
-                    else if (ln.equals(Constants.ELT_IMAGE))
-                        return true;
-                    else if (ln.equals(Constants.ELT_INFORMATION))
-                        return true;
-                }
-            }
-            return false;
+            else
+                return ST20522010TTML1.ST20522010TTML1Model.isElementHelper(name);
         }
 
         public String getJAXBContextPath() {
@@ -268,20 +198,9 @@ public class ST20522010TTML2 {
 
         public List<List<QName>> getElementPermissibleAncestors(QName elementName) {
             List<List<QName>> permissibleAncestors = super.getElementPermissibleAncestors(elementName);
-            if (permissibleAncestors == null) {
-                permissibleAncestors = new java.util.ArrayList<List<QName>>();
-                String localName = elementName.getLocalPart();
-                if ((localName.equals(Constants.ELT_DATA) || localName.equals(Constants.ELT_IMAGE)) && inSMPTEPrimaryNamespace(elementName)) {
-                    List<QName> ancestors = new java.util.ArrayList<QName>();
-                    ancestors.add(metadataElementName);
-                    permissibleAncestors.add(ancestors);
-                } else if (localName.equals(Constants.ELT_INFORMATION) && inSMPTEPrimaryNamespace(elementName)) {
-                    List<QName> ancestors = new java.util.ArrayList<QName>();
-                    ancestors.add(metadataElementName);
-                    ancestors.add(headElementName);
-                    permissibleAncestors.add(ancestors);
-                }
-            }
+            if (permissibleAncestors == null)
+                permissibleAncestors =
+                    ST20522010TTML1.ST20522010TTML1Model.getElementPermissibleAncestorsHelper(new java.util.ArrayList<List<QName>>(), elementName);
             return (permissibleAncestors.size() > 0) ? permissibleAncestors : null;
         }
 

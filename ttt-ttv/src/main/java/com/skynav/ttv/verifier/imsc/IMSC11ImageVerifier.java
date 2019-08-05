@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,13 +23,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.model.smpte;
+package com.skynav.ttv.verifier.imsc;
 
-import java.net.URI;
+import com.skynav.ttv.model.Model;
+import com.skynav.ttv.verifier.ttml.TTML2ImageVerifier;
 
-public class ST20522010TTML2FullProfileSpecification extends ST20522010TTML1FullProfileSpecification {
+public class IMSC11ImageVerifier extends TTML2ImageVerifier {
 
-    public ST20522010TTML2FullProfileSpecification(URI profileUri) {
-        super(profileUri);
+    public IMSC11ImageVerifier(Model model) {
+        super(model);
     }
+
 }
