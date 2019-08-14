@@ -293,12 +293,15 @@ public class LineLayout {
             return new IgnoredControlRun(s);
         }
         boolean inBreakingWhitespace = Characters.isBreakingWhitespace(c);
+        WhitespaceState startingWhitespaceState = getWhitespaceState(s, iterator.getIndex());
         while ((c = iterator.next()) != CharacterIterator.DONE) {
             if (c == Characters.UC_OBJECT)
                 break;
             else if (isIgnoredControl(c))
                 break;
             else if (inBreakingWhitespace ^ Characters.isBreakingWhitespace(c))
+                break;
+            else if (inBreakingWhitespace && startingWhitespaceState == WhitespaceState.PRESERVE)
                 break;
             else if (hasTextRunBreakingAttribute(iterator))
                 break;

@@ -29,7 +29,9 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttpe.style.StyleAttribute;
 import com.skynav.ttpe.style.StyleAttributeInterval;
+import com.skynav.ttpe.style.Whitespace;
 import com.skynav.ttpe.util.Characters;
 
 public class BreakPhrase extends Phrase {
@@ -41,8 +43,8 @@ public class BreakPhrase extends Phrase {
 
     private Break type;
 
-    public BreakPhrase(Element e, Break type, List<StyleAttributeInterval> attributes) {
-        super(e, getBreakText(type), attributes);
+    public BreakPhrase(Element e, Break type) {
+        super(e, getBreakText(type), getBreakAttributes());
         this.type = type;
     }
 
@@ -52,6 +54,14 @@ public class BreakPhrase extends Phrase {
 
     public boolean isParagraphBreak() {
         return type == Break.PARAGRAPH;
+    }
+
+    private static List<StyleAttributeInterval>  getBreakAttributes()
+    {
+        // Don't collapse the break text using default whitespace rules.
+        List<StyleAttributeInterval> attributes = new java.util.ArrayList<StyleAttributeInterval>();
+        attributes.add(new StyleAttributeInterval(StyleAttribute.WHITESPACE, Whitespace.PRESERVE, 0, 1));
+        return attributes;
     }
 
     private static String getBreakText(Break type) {
