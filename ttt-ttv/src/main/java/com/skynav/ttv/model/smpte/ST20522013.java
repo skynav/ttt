@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ import com.skynav.ttv.verifier.smpte.ST20522013SemanticsVerifier;
 
 public class ST20522013 {
 
-    public static class Constants extends ST20522010.Constants {
+    public static class Constants extends ST20522010TTML1.Constants {
 
         public static final String MODEL_NAME = "st2052-2013";
 
@@ -87,7 +87,7 @@ public class ST20522013 {
         return inSMPTEPrimaryNamespace(name) || inSMPTESecondaryNamespace(name);
     }
 
-    public static class ST20522013Model extends ST20522010.ST20522010Model {
+    public static class ST20522013Model extends ST20522010TTML1.ST20522010TTML1Model {
 
         private static final QName informationElementName = new com.skynav.ttv.model.smpte.tt.rel2013.ObjectFactory().createInformation(new Information()).getName();
         private static final QName serviceElementName = new com.skynav.ttv.model.smpte.tt.rel2013.m708.ObjectFactory().createService(new Service()).getName();
@@ -219,11 +219,11 @@ public class ST20522013 {
             return false;
         }
 
-        public boolean isSMPTEInformationElement(QName name) {
+        static public boolean isSMPTEInformationElement(QName name) {
             return name.equals(informationElementName);
         }
 
-        public boolean isSMPTEServiceElement(QName name) {
+        static public boolean isSMPTEServiceElement(QName name) {
             return name.equals(serviceElementName);
         }
 

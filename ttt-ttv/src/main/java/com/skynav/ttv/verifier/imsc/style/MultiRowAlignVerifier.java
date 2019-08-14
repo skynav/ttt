@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ public class MultiRowAlignVerifier implements StyleValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
         // Schema validation phase (3) reports invalid values.
-        if (value instanceof com.skynav.ttv.model.imsc1.ebuttd.MultiRowAlign)
+        if (value instanceof com.skynav.ttv.model.imsc10.ebuttd.MultiRowAlign)
             return true;
         else
             throw new IllegalStateException("Unexpected value of type '" + value.getClass().getName());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -157,6 +157,10 @@ public class TTML1 {
 
         public String getName() {
             return MODEL_NAME;
+        }
+
+        public String[] getNameAliases() {
+            return new String[0];
         }
 
         public int getTTMLVersion() {
@@ -355,31 +359,31 @@ public class TTML1 {
             return (namespaceUri == null) || (namespaceUri.length() == 0);
         }
 
-        protected boolean isTTElement(QName name) {
+        static public boolean isTTElement(QName name) {
             return name.equals(timedTextElementName);
         }
 
-        protected boolean isTTBodyElement(QName name) {
+        static public boolean isTTBodyElement(QName name) {
             return name.equals(bodyElementName);
         }
 
-        protected boolean isTTDivElement(QName name) {
+        static public boolean isTTDivElement(QName name) {
             return name.equals(divisionElementName);
         }
 
-        protected boolean isTTParagraphElement(QName name) {
+        static public boolean isTTParagraphElement(QName name) {
             return name.equals(paragraphElementName);
         }
 
-        protected boolean isTTSpanElement(QName name) {
+        static public boolean isTTSpanElement(QName name) {
             return name.equals(spanElementName);
         }
 
-        protected boolean isTTBreakElement(QName name) {
+        static public boolean isTTBreakElement(QName name) {
             return name.equals(breakElementName);
         }
 
-        protected boolean isTTContentElement(QName name) {
+        static public boolean isTTContentElement(QName name) {
             if (isTTBodyElement(name))
                 return true;
             else if (isTTDivElement(name))
@@ -394,15 +398,15 @@ public class TTML1 {
                 return false;
         }
 
-        protected boolean isTTStyleElement(QName name) {
+        static public boolean isTTStyleElement(QName name) {
             return name.equals(styleElementName);
         }
 
-        protected boolean isTTRegionElement(QName name) {
+        static public boolean isTTRegionElement(QName name) {
             return name.equals(regionElementName);
         }
 
-        protected boolean isTTContentOrRegionElement(QName name) {
+        static public boolean isTTContentOrRegionElement(QName name) {
             if (isTTContentElement(name))
                 return true;
             else if (isTTRegionElement(name))

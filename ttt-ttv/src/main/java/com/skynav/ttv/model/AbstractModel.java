@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,10 @@ import com.skynav.ttv.verifier.TimingVerifier;
 public class AbstractModel implements Model {
 
     public String getName() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String[] getNameAliases() {
         throw new UnsupportedOperationException();
     }
 
