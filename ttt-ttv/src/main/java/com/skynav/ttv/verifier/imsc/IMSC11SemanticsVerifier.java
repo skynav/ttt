@@ -52,15 +52,15 @@ import com.skynav.ttv.model.imsc.IMSC11;
 import com.skynav.ttv.model.imsc11.ittm.AltText;
 import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.ttv.model.ttml.TTML2.TTML2Model;
-import com.skynav.ttv.model.ttml1.tt.Body;
-import com.skynav.ttv.model.ttml1.tt.Break;
-import com.skynav.ttv.model.ttml1.tt.Division;
-import com.skynav.ttv.model.ttml1.tt.Head;
-import com.skynav.ttv.model.ttml1.tt.Layout;
-import com.skynav.ttv.model.ttml1.tt.Paragraph;
-import com.skynav.ttv.model.ttml1.tt.Region;
-import com.skynav.ttv.model.ttml1.tt.Span;
-import com.skynav.ttv.model.ttml1.tt.TimedText;
+import com.skynav.ttv.model.ttml2.tt.Body;
+import com.skynav.ttv.model.ttml2.tt.Break;
+import com.skynav.ttv.model.ttml2.tt.Division;
+import com.skynav.ttv.model.ttml2.tt.Head;
+import com.skynav.ttv.model.ttml2.tt.Layout;
+import com.skynav.ttv.model.ttml2.tt.Paragraph;
+import com.skynav.ttv.model.ttml2.tt.Region;
+import com.skynav.ttv.model.ttml2.tt.Span;
+import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.model.value.Time;
@@ -78,7 +78,7 @@ import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010TTML2SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
-import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters1;
+import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters2;
 import com.skynav.ttv.verifier.util.Integers;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
@@ -412,7 +412,7 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
     }
 
     private static TimingVerificationParameters makeTimingVerificationParameters(Object content, VerifierContext context) {
-        return new TimingVerificationParameters1(content, context != null ? context.getExternalParameters() : null);
+        return new TimingVerificationParameters2(content, context != null ? context.getExternalParameters() : null);
     }
 
     private boolean verifyTimedContent(Object content, Locator locator, VerifierContext context, VerificationParameters parameters) {
@@ -834,7 +834,7 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
             Model model = getModel();
             if (model.isNamespace(name.getNamespaceURI())) {
                 String nsLabel;
-                if (name.getNamespaceURI().indexOf(NAMESPACE_IMSC_PREFIX) == 0)
+                if (name.getNamespaceURI().indexOf(NAMESPACE_IMSC11_PREFIX) == 0)
                     nsLabel = "IMSC";
                 else if (name.getNamespaceURI().indexOf(NAMESPACE_EBUTT_PREFIX) == 0)
                     nsLabel = "EBUTT";

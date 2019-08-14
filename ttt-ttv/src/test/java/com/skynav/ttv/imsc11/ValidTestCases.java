@@ -36,8 +36,68 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
 
     @Test
-    public void testValidIMSC11AllTTML2StylesInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-all-ttml2-styles-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11AllTTML1StylesInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-all-ttml1-styles-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11EBUTTSLinePadding() throws Exception {
+        performValidityTest("imsc11-valid-ebutts-line-padding.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11EBUTTSMultiRowAlign() throws Exception {
+        performValidityTest("imsc11-valid-ebutts-multirow-align.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11LuminanceGainInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-luminance-gain-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11PositionInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-position-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11RubyInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-ruby-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11RubyAlignInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-ruby-align-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11RubyPositionInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-ruby-position-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11RubyReserveInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-ruby-reserve-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11ShearInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-shear-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11TextCombineInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-text-combine-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11TextEmphasisInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-text-emphasis-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11TextShadowInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-text-shadow-in-text-profile.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

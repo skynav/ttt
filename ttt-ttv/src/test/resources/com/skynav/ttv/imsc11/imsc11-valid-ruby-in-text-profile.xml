@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- valid - tts:ruby property permitted with imsc11 text profile -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
+    tts:extent="640px 480px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 480px"/>
+    </layout>
+  </head>
+  <body region="r1" begin="0s" end="1s">
+    <div>
+      <p>
+        <!-- all legal #ruby values -->
+        <!-- canonical structures -->
+        <span tts:ruby="container">
+          <span tts:ruby="baseContainer">
+            <span tts:ruby="base"/>
+          </span>
+          <span tts:ruby="textContainer">
+            <span tts:ruby="text"/>
+          </span>
+        </span>
+        <span tts:ruby="container">
+          <span tts:ruby="baseContainer">
+            <span tts:ruby="base"/>
+          </span>
+          <span tts:ruby="textContainer">
+            <span tts:ruby="text"/>
+          </span>
+          <span tts:ruby="textContainer">
+            <span tts:ruby="text"/>
+          </span>
+        </span>
+        <!-- canonical structures with delimiters -->
+        <span tts:ruby="container">
+          <span tts:ruby="baseContainer">
+            <span tts:ruby="base"/>
+          </span>
+          <span tts:ruby="textContainer">
+            <span tts:ruby="delimiter"/>
+            <span tts:ruby="text"/>
+            <span tts:ruby="delimiter"/>
+          </span>
+        </span>
+        <span tts:ruby="container">
+          <span tts:ruby="baseContainer">
+            <span tts:ruby="base"/>
+          </span>
+          <span tts:ruby="textContainer">
+            <span tts:ruby="delimiter"/>
+            <span tts:ruby="text"/>
+            <span tts:ruby="delimiter"/>
+          </span>
+          <span tts:ruby="textContainer">
+            <span tts:ruby="delimiter"/>
+            <span tts:ruby="text"/>
+            <span tts:ruby="delimiter"/>
+          </span>
+        </span>
+        <!-- shorthand structures -->
+        <span tts:ruby="container">
+          <span tts:ruby="base"/>
+          <span tts:ruby="text"/>
+        </span>
+        <!-- shorthand structures with delimiters -->
+        <span tts:ruby="container">
+          <span tts:ruby="base"/>
+          <span tts:ruby="delimiter"/>
+          <span tts:ruby="text"/>
+          <span tts:ruby="delimiter"/>
+        </span>
+      </p>
+    </div>
+  </body>
+</tt>

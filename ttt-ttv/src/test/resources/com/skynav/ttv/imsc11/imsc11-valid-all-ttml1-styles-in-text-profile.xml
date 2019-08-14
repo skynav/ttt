@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- valid - all defined ttml1 style properties permitted with imsc1 text profile -->
+<!-- valid - all defined ttml1 style properties permitted with imsc11 text profile -->
 <tt xml:lang="en"
     xmlns="http://www.w3.org/ns/ttml"
     xmlns:tts="http://www.w3.org/ns/ttml#styling"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
-    ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1/text"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
     tts:extent="640px 480px"
-    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc10">
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>
     <layout>
       <region xml:id="r1" tts:extent="640px 480px">
