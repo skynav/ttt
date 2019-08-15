@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2019 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,9 +32,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.w3c.dom.Document;
@@ -43,161 +43,18 @@ import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
 
+import com.skynav.cap2tt.app.Converter;
+import com.skynav.cap2tt.converter.ConverterContext;
 import com.skynav.ttv.util.TextReporter;
 import com.skynav.ttv.util.Reporter;
 
-public class ConverterTestCases {
+public class ConverterTestDriver {
 
-    @Test
-    public void testConversion001Mixed() throws Exception {
-        performConversionTest("test-001-mixed.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion002Mixed() throws Exception {
-        performConversionTest("test-002-mixed.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion003ScreenAttrItalics() throws Exception {
-        performConversionTest("test-003-screen-attr-italics.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion004SpaceBeforeNonTextAttribute() throws Exception {
-        performConversionTest("test-004-space-before-non-text-attribute.cap", 0, 1);
-    }
-
-    @Test
-    public void testConversion005PlacementAndAlignmentContinuation() throws Exception {
-        performConversionTest("test-005-placement-and-alignment-continuation.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion006RegionPositionInitialValue() throws Exception {
-        performConversionTest("test-006-region-position-initial-value.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion007TateChuYoko() throws Exception {
-        performConversionTest("test-007-tate-chu-yoko.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion008EscapedHalfWidthSpace() throws Exception {
-        performConversionTest("test-008-escaped-half-width-space.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion009EscapedFullWidthSpace() throws Exception {
-        performConversionTest("test-009-escaped-full-width-space.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion010PlacementContinuation() throws Exception {
-        performConversionTest("test-010-placement-continuation.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion011PlacementAndAlignmentContinuation() throws Exception {
-        performConversionTest("test-011-placement-and-alignment-continuation.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion012PlacementAndAlignmentRetained() throws Exception {
-        performConversionTest("test-012-placement-and-alignment-retained.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion013PlacementAndAlignmentDefault() throws Exception {
-        performConversionTest("test-013-placement-and-alignment-default.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion014SniffUTF8NoBOM() throws Exception {
-        performConversionTest("test-014-sniff-utf8-no-bom.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion015RubyPosition() throws Exception {
-        performConversionTest("test-015-ruby-position.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion016EmphasisPosition() throws Exception {
-        performConversionTest("test-016-emphasis-position.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion017EmphasisMixed() throws Exception {
-        performConversionTest("test-017-emphasis-mixed.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion018NestedDesignations1() throws Exception {
-        performConversionTest("test-018-nested-designations-1.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion019SpaceInAnnotationEmphasis() throws Exception {
-        performConversionTest("test-019-space-in-annotation-emphasis.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion020SpaceInAnnotationIssue113() throws Exception {
-        performConversionTest("test-020-space-in-annotation-issue-113.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion021SpaceInAnnotationIssue112() throws Exception {
-        performConversionTest("test-021-space-in-annotation-issue-112.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion022MultipleSpacesIssue110() throws Exception {
-        performConversionTest("test-022-multiple-spaces-issue-110.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion023SpaceInAnnotationIssue133Case1() throws Exception {
-        performConversionTest("test-023-space-in-annotation-issue-133-case-1.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion024SpaceInAnnotationIssue133Case2() throws Exception {
-        performConversionTest("test-024-space-in-annotation-issue-133-case-2.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion025FalseScreenNumberIssue138Case1() throws Exception {
-        performConversionTest("test-025-false-screen-number-issue-138-case-1.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion026FalseScreenNumberIssue138Case2() throws Exception {
-        performConversionTest("test-026-false-screen-number-issue-138-case-2.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion027FalseScreenNumberIssue138Case3() throws Exception {
-        performConversionTest("test-027-false-screen-number-issue-138-case-3.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion028FalseAttributePrefixIssue145() throws Exception {
-        performConversionTest("test-028-false-attribute-prefix-issue-145.cap", 0, 0);
-    }
-
-    @Test
-    public void testConversion029NestedDesignations2() throws Exception {
-        performConversionTest("test-029-nested-designations-2.cap", 0, 0);
-    }
-
-    private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
+    protected void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings) {
         performConversionTest(resourceName, expectedErrors, expectedWarnings, null);
     }
 
-    private void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings, String[] additionalOptions) {
+    protected void performConversionTest(String resourceName, int expectedErrors, int expectedWarnings, String[] additionalOptions) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
             fail("Can't find test resource: " + resourceName + ".");
@@ -222,7 +79,6 @@ public class ConverterTestCases {
             args.add("--expect-warnings");
             args.add(Integer.toString(expectedWarnings));
         }
-        args.add("--output-disable");
         args.add("--retain-document");
         maybeAddConfiguration(args, uri);
         if (additionalOptions != null) {
@@ -231,10 +87,10 @@ public class ConverterTestCases {
         args.add(urlString);
         Converter cvt = new Converter();
         Reporter reporter = new TextReporter();
-        Document d = cvt.convert(args, uri, reporter, (Document) null);
+        Document output = cvt.convert(args, uri, reporter, (Document) null);
         Converter.Results r = cvt.getResults(urlString);
-        assertEquals(d, r.getDocument());
-        maybeCheckDifferences(d, uri);
+        assertEquals(output, r.getDocument());
+        maybeCheckDifferences(output, uri, cvt);
         int resultCode = r.getCode();
         int resultFlags = r.getFlags();
         if (resultCode == Converter.RV_SUCCESS) {
@@ -256,6 +112,7 @@ public class ConverterTestCases {
             }
         } else
             fail("Unexpected result code " + resultCode + ".");
+        reporter.flush();
     }
 
     private void maybeAddConfiguration(List<String> args, URI u) {
@@ -283,20 +140,35 @@ public class ConverterTestCases {
         return null;
     }
 
-    private void maybeCheckDifferences(Document d, URI u) {
-        String[] components = getComponents(u);
+    private void maybeCheckDifferences(Document output, URI input, ConverterContext context) {
+        boolean checkedDifferences = false;
+        URI controlURI = null;
+        String[] components = getComponents(input);
         if (hasFileScheme(components)) {
-            File f = new File(joinComponents(components, ".expected.xml"));
-            if (f.exists()) {
-                checkDifferences(d, f);
+            File control = new File(joinComponents(components, ".expected.xml"));
+            if (control.exists()) {
+                controlURI = control.toURI();
+                checkDifferences(output, control);
+                checkedDifferences = true;
             }
+        }
+        Reporter reporter = context.getReporter();
+        if (!checkedDifferences) {
+            if (output == null)
+                reporter.logWarning(reporter.message("w.012", "[T]:Control comparison failed, no output produced from input {0}.", input));
+            else
+                reporter.logWarning(reporter.message("w.013", "[T]:Control comparison failed, no control for input {0}.", input));
+        } else {
+            assertTrue(output != null);
+            assertTrue(controlURI != null);
+            reporter.logInfo(reporter.message("w.014", "[T]:Control comparison passed, compared output with control {0}.", controlURI));
         }
     }
 
-    private void checkDifferences(Document d, File f) {
+    private void checkDifferences(Document output, File control) {
         Diff diff = DiffBuilder
-            .compare(Input.fromFile(f).build())
-            .withTest(Input.fromDocument(d).build())
+            .compare(Input.fromFile(control).build())
+            .withTest(Input.fromDocument(output).build())
             .ignoreWhitespace()
             .build();
         assertFalse(diff.toString(), diff.hasDifferences());

@@ -9,6 +9,7 @@
 <option name="default-shear">0</option>
 <option name="default-whitespace">preserve</option>
 <option name="merge-styles">true</option>
+<option name="output-disable">true</option>
 <option name="style-id-pattern">s{0}</option>
 <option name="style-id-sequence-start">1</option>
 <tt xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
