@@ -28,6 +28,7 @@ package com.skynav.cap2tt.converter;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.skynav.ttv.model.Model;
@@ -35,6 +36,12 @@ import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.Reporter;
 
 public interface ConverterContext {
+
+    /**
+     * Obtain parameters from configuration.
+     * @return list of parameters
+     */
+    public List<Attr> getConfigurationParameters();
 
     /**
      * Obtain initials from configuration.
