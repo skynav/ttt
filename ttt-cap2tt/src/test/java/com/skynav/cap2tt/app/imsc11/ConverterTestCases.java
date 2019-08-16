@@ -31,7 +31,6 @@ import com.skynav.cap2tt.app.ConverterTestDriver;
 
 public class ConverterTestCases extends ConverterTestDriver {
 
-    /*
     @Test
     public void testConversion001Mixed() throws Exception {
         performConversionTest("test-001-mixed.cap", 0, 0);
@@ -176,6 +175,5 @@ public class ConverterTestCases extends ConverterTestDriver {
     public void testConversion029NestedDesignations2() throws Exception {
         performConversionTest("test-029-nested-designations-2.cap", 0, 0);
     }
-    */
 
 }

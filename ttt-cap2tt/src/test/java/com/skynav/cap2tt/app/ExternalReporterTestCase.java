@@ -52,6 +52,7 @@ public class ExternalReporterTestCase {
         "--warn-on",            "empty-input",
         "--expect-errors",      "0",
         "--expect-warnings",    "1",
+        "--model",              "ttml2",
         "--output-disable"
     };
 

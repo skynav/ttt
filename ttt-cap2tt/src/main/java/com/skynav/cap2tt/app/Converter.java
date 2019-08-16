@@ -80,6 +80,7 @@ import com.skynav.cap2tt.converter.Attribute;
 import com.skynav.cap2tt.converter.AttributeSpecification;
 import com.skynav.cap2tt.converter.ConverterContext;
 import com.skynav.cap2tt.converter.ExternalParametersStore;
+import com.skynav.cap2tt.converter.ResourceConverters;
 import com.skynav.cap2tt.converter.Results;
 import com.skynav.cap2tt.converter.Screen;
 import com.skynav.cap2tt.converter.TextAttribute;
@@ -1028,7 +1029,11 @@ public class Converter implements ConverterContext {
                 throw new MissingOptionArgumentException("--" + option);
             outputPattern = args.get(++index);
         } else if (option.equals("output-indent")) {
-            outputIndent = true;
+            Boolean b = Boolean.TRUE;
+            if ((index + 1 < numArgs) && isBoolean(args.get(index + 1))) {
+                b = parseBoolean(args.get(++index));
+            }
+            outputIndent = b.booleanValue();
         } else if (option.equals("quiet")) {
             quiet = true;
         } else if (option.equals("retain-document")) {
@@ -3186,7 +3191,7 @@ public class Converter implements ConverterContext {
                 break;
             if (!parseResource())
                 break;
-            if (!new com.skynav.cap2tt.converter.ttml.TTML2ResourceConverter(this).convert(screens))
+            if (!ResourceConverters.getConverter(model,this).convert(screens))
                 break;
         } while (false);
         int rv = rvValue();
