@@ -182,6 +182,18 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
     // implementation support
 
     private void mergeConfiguration(Document d) {
+        List<Attr> parameters = new java.util.ArrayList<Attr>(context.getConfigurationParameters());
+        if (!parameters.isEmpty()) {
+            Element e = Documents.findElementByName(d, ttTimedTextEltName);
+            if (e != null) {
+                for (Attr attr : parameters) {
+                    String ns = attr.getNamespaceURI();
+                    String qn = attr.getName();
+                    String v = attr.getValue();
+                    e.setAttributeNS(ns, qn, v);
+                }
+            }
+        }
         List<Element> initials = new java.util.ArrayList<Element>(context.getConfigurationInitials());
         Collections.reverse(initials);
         if (!initials.isEmpty()) {

@@ -31,18 +31,25 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
-import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.xml.helpers.Documents;
-import com.skynav.xml.helpers.XML;
+import  com.skynav.xml.helpers.XML;
+
+import static com.skynav.ttv.model.ttml.TTML.Constants.*;
+
 
 public class Configuration extends com.skynav.ttv.util.Configuration {
 
-    private static final QName ttInitialEltName                 = new QName(TTML2.Constants.NAMESPACE_TT, "initial");
-    private static final QName ttRegionEltName                  = new QName(TTML2.Constants.NAMESPACE_TT, "region");
+    private static final QName ttTimedTextEltName               = new QName(NAMESPACE_TT, "tt");
+    private static final QName ttInitialEltName                 = new QName(NAMESPACE_TT, "initial");
+    private static final QName ttRegionEltName                  = new QName(NAMESPACE_TT, "region");
 
+    private List<Attr> parameters;
     private List<Element> initials;
     private List<Element> regions;
 
@@ -61,8 +68,13 @@ public class Configuration extends com.skynav.ttv.util.Configuration {
     @Override
     protected void populate(Document d) {
         super.populate(d);
+        populateParameters(d);
         populateInitials(d);
         populateRegions(d);
+    }
+
+    public List<Attr> getParameters() {
+        return parameters;
     }
 
     public List<Element> getInitials() {
@@ -84,6 +96,27 @@ public class Configuration extends com.skynav.ttv.util.Configuration {
             }
         }
         return null;
+    }
+
+    private void populateParameters(Document d) {
+        List<Attr> attributes = new java.util.ArrayList<Attr>();
+        if (d != null) {
+            Element e = Documents.findElementByName(d, ttTimedTextEltName);
+            if (e != null) {
+                NamedNodeMap attrs = e.getAttributes();
+                for (int i = 0, n = attrs.getLength(); i < n; ++i) {
+                    Node node = attrs.item(i);
+                    if (node instanceof Attr) {
+                        Attr a = (Attr) node;
+                        String ns = a.getNamespaceURI();
+                        if ((ns != null) && ns.equals(NAMESPACE_TT_PARAMETER)) {
+                            attributes.add(a);
+                        }
+                    }
+                }
+            }
+        }
+        this.parameters = Collections.unmodifiableList(attributes);
     }
 
     private void populateInitials(Document d) {

@@ -69,6 +69,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -169,6 +170,7 @@ public class Converter implements ConverterContext {
     public static final QName ttRegionEltName = new QName(NAMESPACE_TT, "region");
     public static final QName ttSpanEltName = new QName(NAMESPACE_TT, "span");
     public static final QName ttStylingEltName = new QName(NAMESPACE_TT, "styling");
+    public static final QName ttTimedTextEltName = new QName(NAMESPACE_TT, "tt");
     public static final QName ttmItemEltName = new QName(NAMESPACE_TT_METADATA, "item");
 
     // ttml1 attribute names
@@ -482,6 +484,10 @@ public class Converter implements ConverterContext {
 
     // ConverterContext implementation
     
+    public List<Attr> getConfigurationParameters() {
+        return configuration.getParameters();
+    }
+
     public List<Element> getConfigurationInitials() {
         return configuration.getInitials();
     }
