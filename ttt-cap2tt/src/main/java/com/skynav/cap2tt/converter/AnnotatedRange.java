@@ -25,4 +25,19 @@
 
 package com.skynav.cap2tt.converter;
 
-public interface ConversionParameters {}
+import java.text.Annotation;
+
+public class AnnotatedRange {
+    public Annotation annotation;
+    public int start;
+    public int end;
+    public AnnotatedRange(Annotation annotation, int start, int end) {
+        this.annotation = annotation;
+        this.start = start;
+        this.end = end;
+    }
+    public Attribute getAttribute() {
+        return (annotation != null) ? (Attribute) annotation.getValue() : null;
+    }
+};
+

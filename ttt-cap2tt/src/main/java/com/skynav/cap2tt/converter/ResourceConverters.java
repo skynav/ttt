@@ -25,4 +25,22 @@
 
 package com.skynav.cap2tt.converter;
 
-public interface ConversionParameters {}
+import com.skynav.cap2tt.converter.imsc.IMSC11ResourceConverter;
+import com.skynav.cap2tt.converter.ttml.TTML2ResourceConverter;
+
+import com.skynav.ttv.model.Model;
+
+public class ResourceConverters {
+    public static ResourceConverter getConverter(Model model, ConverterContext context) {
+        if (model == null)
+            throw new IllegalArgumentException();
+        String modelName = model.getName();
+        if (modelName.equals("ttml2"))
+            return new TTML2ResourceConverter(context);
+        else if (modelName.equals("imsc11"))
+            return new IMSC11ResourceConverter(context);
+        else
+            throw new UnsupportedOperationException();
+    }
+}
+

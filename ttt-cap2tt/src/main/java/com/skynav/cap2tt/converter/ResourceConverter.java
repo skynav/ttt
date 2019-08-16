@@ -25,4 +25,11 @@
 
 package com.skynav.cap2tt.converter;
 
-public interface ConversionParameters {}
+import java.util.List;
+import java.util.Map;
+
+public interface ResourceConverter {
+    public boolean convert(List<Screen> screens);
+    public String getOption(String name);
+    public Map<String, AttributeSpecification> getKnownAttributes();
+}

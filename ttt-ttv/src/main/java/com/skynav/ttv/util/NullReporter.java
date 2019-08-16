@@ -69,6 +69,10 @@ public class NullReporter implements Reporter {
     public void setResourceURI(URI uri) {
     }
 
+    public URI getResourceURI() {
+        return null;
+    }
+
     public void setLines(String[] lines) {
     }
 

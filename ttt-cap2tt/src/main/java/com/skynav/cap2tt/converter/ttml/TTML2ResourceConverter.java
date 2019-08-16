@@ -1,0 +1,83 @@
+/*
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SKYNAV, INC. AND ITS CONTRIBUTORS “AS IS” AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL SKYNAV, INC. OR ITS CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package com.skynav.cap2tt.converter.ttml;
+
+import java.util.List;
+
+import com.skynav.cap2tt.converter.AbstractResourceConverter;
+import com.skynav.cap2tt.converter.ConverterContext;
+import com.skynav.cap2tt.converter.Screen;
+
+import com.skynav.ttv.model.ttml2.tt.Body;
+import com.skynav.ttv.model.ttml2.tt.Head;
+import com.skynav.ttv.model.ttml2.tt.ObjectFactory;
+import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.util.Reporter;
+
+import static com.skynav.cap2tt.app.Converter.*;
+
+public class TTML2ResourceConverter extends AbstractResourceConverter {
+
+    public TTML2ResourceConverter(ConverterContext context) {
+        super(context);
+    }
+
+    protected static final ObjectFactory ttmlFactory = new ObjectFactory();
+
+    @Override
+    public boolean convert(List<Screen> screens) {
+        boolean fail = false;
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message("i.014", "Converting resource ..."));
+        try {
+            //  convert screens to a div of paragraphs
+            TTML2ResourceConverterState state = new TTML2ResourceConverterState(this, ttmlFactory);
+            state.process(screens);
+            // populate body, extracting division from state object, must be performed prior to populating head
+            Body body = ttmlFactory.createBody();
+            state.populate(body, defaultRegion);
+            // populate head
+            Head head = ttmlFactory.createHead();
+            state.populate(head);
+            // populate root (tt)
+            TimedText tt = ttmlFactory.createTimedText();
+            tt.getOtherAttributes().put(ttvaModelAttrName, model.getName());
+            if (defaultLanguage != null)
+                tt.setLang(defaultLanguage);
+            if ((head.getStyling() != null) || (head.getLayout() != null))
+                tt.setHead(head);
+            if (!body.getDiv().isEmpty())
+                tt.setBody(body);
+            // marshal and serialize
+            if (!convertResource(ttmlFactory.createTt(tt)))
+                fail = true;
+        } catch (Exception e) {
+            reporter.logError(e);
+        }
+        return !fail && (reporter.getResourceErrors() == 0);
+    }
+
+}

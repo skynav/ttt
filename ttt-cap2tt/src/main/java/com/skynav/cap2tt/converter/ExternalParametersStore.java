@@ -25,4 +25,17 @@
 
 package com.skynav.cap2tt.converter;
 
-public interface ConversionParameters {}
+import java.util.Map;
+
+import com.skynav.ttv.util.ExternalParameters;
+
+public class ExternalParametersStore implements ExternalParameters {
+    private Map<String, Object> parameters = new java.util.HashMap<String, Object>();
+    public Object getParameter(String name) {
+        return parameters.get(name);
+    }
+    public Object setParameter(String name, Object value) {
+        return parameters.put(name, value);
+    }
+}
+

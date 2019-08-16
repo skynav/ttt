@@ -25,4 +25,9 @@
 
 package com.skynav.cap2tt.converter;
 
-public interface ConversionParameters {}
+import java.util.List;
+
+public interface ResourceConverterState {
+    public void process(List<Screen> screens);
+    public void process(Screen screen);
+}

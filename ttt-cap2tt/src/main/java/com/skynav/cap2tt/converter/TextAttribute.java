@@ -25,4 +25,17 @@
 
 package com.skynav.cap2tt.converter;
 
-public interface ConversionParameters {}
+import java.text.AttributedCharacterIterator;
+
+public class TextAttribute extends AttributedCharacterIterator.Attribute {
+    private static final long serialVersionUID = -2459432329768198134L;
+    public TextAttribute(String name) {
+        super(name);
+    }
+    public static final TextAttribute RUBY          = new TextAttribute("RUBY");
+    public static final TextAttribute KERNING       = new TextAttribute("KERNING");
+    public static final TextAttribute SHEAR         = new TextAttribute("SHEAR");
+    public static final TextAttribute SIZE          = new TextAttribute("SIZE");
+    public static final TextAttribute COMBINE       = new TextAttribute("COMBINE");
+    public static final TextAttribute WIDTH         = new TextAttribute("WIDTH");
+}
