@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,10 +25,28 @@
 
 package com.skynav.cap2tt.converter;
 
+import java.util.List;
+import java.util.Map;
+
+import org.w3c.dom.Element;
+
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.Reporter;
 
 public interface ConverterContext {
+
+    /**
+     * Obtain initials from configuration.
+     * @return list of initials
+     */
+    public List<Element> getConfigurationInitials();
+
+    /**
+     * Obtain region from configuration.
+     * @param name of region
+     * @return region
+     */
+    public Element getConfigurationRegion(String id);
 
     /**
      * Obtain external parameters.
@@ -55,5 +73,46 @@ public interface ConverterContext {
      * @return value of state variable or null if unknown key
      */
     public Object getResourceState(String key);
+
+    /**
+     * Obtain named option.
+     * @param name of option
+     * @return value of option
+     */
+    public String getOption(String name);
+
+    /**
+     * Obtain named boolean option.
+     * @param name of option
+     * @return value of option
+     */
+    public boolean getOptionBoolean(String name);
+
+    /**
+     * Obtain named integer option.
+     * @param name of option
+     * @return value of option
+     */
+    public int getOptionInteger(String name);
+
+    /**
+     * Obtain named object reference option.
+     * @param name of option
+     * @return value of option
+     */
+    public Object getOptionObject(String name);
+
+    /**
+     * Set named object reference option.
+     * @param name of option
+     * @param value of option
+     */
+    public void setOptionObject(String name, Object object);
+    
+    /**
+     * Obtain known attribute specification map.
+     * @return map of known attribute specifications
+     */
+    public Map<String, AttributeSpecification> getKnownAttributes();
 
 }

@@ -25,4 +25,39 @@
 
 package com.skynav.cap2tt.converter;
 
-public interface ConversionParameters {}
+import static com.skynav.cap2tt.app.Converter.*;
+
+public class AttributeSpecification {
+    private String name;
+    private AttrContext context;
+    private TextAttribute textAttribute;
+    private AttrCount count;
+    private int minCount;
+    private int maxCount;
+    public AttributeSpecification(String name, AttrContext context, TextAttribute textAttribute, AttrCount count, int minCount, int maxCount) {
+        this.name = name;
+        this.context = context;
+        this.textAttribute = textAttribute;
+        this.count = count;
+        this.minCount = minCount;
+        this.maxCount = maxCount;
+    }
+    public String getName() {
+        return name;
+    }
+    public AttrContext getContext() {
+        return context;
+    }
+    public TextAttribute getTextAttribute() {
+        return textAttribute;
+    }
+    public AttrCount getCount() {
+        return count;
+    }
+    public int getMinCount() {
+        return minCount;
+    }
+    public int getMaxCount() {
+        return maxCount;
+    }
+}

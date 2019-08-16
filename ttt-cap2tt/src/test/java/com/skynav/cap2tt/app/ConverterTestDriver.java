@@ -45,6 +45,7 @@ import org.xmlunit.diff.Diff;
 
 import com.skynav.cap2tt.app.Converter;
 import com.skynav.cap2tt.converter.ConverterContext;
+import com.skynav.cap2tt.converter.Results;
 import com.skynav.ttv.util.TextReporter;
 import com.skynav.ttv.util.Reporter;
 
@@ -88,7 +89,7 @@ public class ConverterTestDriver {
         Converter cvt = new Converter();
         Reporter reporter = new TextReporter();
         Document output = cvt.convert(args, uri, reporter, (Document) null);
-        Converter.Results r = cvt.getResults(urlString);
+        Results r = cvt.getResults(urlString);
         assertEquals(output, r.getDocument());
         maybeCheckDifferences(output, uri, cvt);
         int resultCode = r.getCode();

@@ -47,6 +47,7 @@ public interface Reporter {
     public void resetAllState(boolean restart);
     public void setResourceURI(String uri);
     public void setResourceURI(URI uri);
+    public URI getResourceURI();
     public void setLines(String[] lines);
     public void hidePath();
     public void showPath();

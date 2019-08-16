@@ -175,6 +175,10 @@ public class TextReporter implements Reporter {
         resourceUri = uri;
     }
 
+    public URI getResourceURI() {
+        return resourceUri;
+    }
+
     public void setLines(String[] lines) {
         String[] sa = new String[lines.length];
         System.arraycopy(lines, 0, sa, 0, sa.length);

@@ -34,10 +34,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -49,15 +47,12 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.text.Annotation;
-import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
-import java.text.CharacterIterator;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -71,28 +66,23 @@ import java.util.regex.Pattern;
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import org.xml.sax.Locator;
 import org.xml.sax.helpers.LocatorImpl;
 
+import com.skynav.cap2tt.converter.AnnotatedRange;
+import com.skynav.cap2tt.converter.Attribute;
+import com.skynav.cap2tt.converter.AttributeSpecification;
 import com.skynav.cap2tt.converter.ConverterContext;
+import com.skynav.cap2tt.converter.ExternalParametersStore;
+import com.skynav.cap2tt.converter.Results;
+import com.skynav.cap2tt.converter.Screen;
+import com.skynav.cap2tt.converter.TextAttribute;
 
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
@@ -103,19 +93,7 @@ import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.app.UsageException;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
-import com.skynav.ttv.model.ttml2.tt.Body;
-import com.skynav.ttv.model.ttml2.tt.Division;
-import com.skynav.ttv.model.ttml2.tt.Head;
-import com.skynav.ttv.model.ttml2.tt.Layout;
-import com.skynav.ttv.model.ttml2.tt.ObjectFactory;
-import com.skynav.ttv.model.ttml2.tt.Paragraph;
-import com.skynav.ttv.model.ttml2.tt.Region;
-import com.skynav.ttv.model.ttml2.tt.Span;
-import com.skynav.ttv.model.ttml2.tt.Styling;
-import com.skynav.ttv.model.ttml2.tt.TimedText;
-import com.skynav.ttv.model.ttml2.ttd.AnnotationPosition;
-import com.skynav.ttv.model.ttml2.ttd.FontStyle;
-import com.skynav.ttv.model.ttml2.ttd.TextAlign;
+import com.skynav.ttv.model.ttml2.tt.TimedText;         // [TBD] remove dependency
 import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
@@ -123,26 +101,16 @@ import com.skynav.ttv.model.value.TimeParameters;
 import com.skynav.ttv.model.value.impl.ClockTimeImpl;
 import com.skynav.ttv.util.Annotations;
 import com.skynav.ttv.util.Base64;
-import com.skynav.ttv.util.ComparableQName;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Message;
-import com.skynav.ttv.util.Namespaces;
 import com.skynav.ttv.util.NullReporter;
-import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.Reporters;
-import com.skynav.ttv.util.StyleSet;
-import com.skynav.ttv.util.StyleSpecification;
-import com.skynav.ttv.util.TextTransformer;
-import com.skynav.ttv.util.Traverse;
-import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.util.Lengths;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.Timing;
-import com.skynav.xml.helpers.Documents;
-import com.skynav.xml.helpers.Nodes;
 import com.skynav.xml.helpers.Sniffer;
 import com.skynav.xml.helpers.XML;
 
@@ -161,23 +129,23 @@ public class Converter implements ConverterContext {
     public static final int RV_FLAG_WARNING_EXPECTED_MATCH      = 0x000020;
     public static final int RV_FLAG_WARNING_EXPECTED_MISMATCH   = 0x000040;
 
-    private static final String DEFAULT_INPUT_ENCODING          = "UTF-8";
-    private static final String DEFAULT_OUTPUT_ENCODING         = "UTF-8";
+    public static final String DEFAULT_INPUT_ENCODING           = "UTF-8";
+    public static final String DEFAULT_OUTPUT_ENCODING          = "UTF-8";
 
     // uri related constants
-    private static final String uriFileDescriptorScheme         = "fd";
-    private static final String uriFileDescriptorStandardIn     = "stdin";
-    private static final String uriFileDescriptorStandardOut    = "stdout";
-    private static final String uriStandardInput                = uriFileDescriptorScheme + ":" + uriFileDescriptorStandardIn;
-    private static final String uriStandardOutput               = uriFileDescriptorScheme + ":" + uriFileDescriptorStandardOut;
-    private static final String uriFileScheme                   = "file";
+    public static final String uriFileDescriptorScheme          = "fd";
+    public static final String uriFileDescriptorStandardIn      = "stdin";
+    public static final String uriFileDescriptorStandardOut     = "stdout";
+    public static final String uriStandardInput                 = uriFileDescriptorScheme + ":" + uriFileDescriptorStandardIn;
+    public static final String uriStandardOutput                = uriFileDescriptorScheme + ":" + uriFileDescriptorStandardOut;
+    public static final String uriFileScheme                    = "file";
 
     // miscelaneous defaults
-    private static final String defaultReporterFileEncoding     = Reporters.getDefaultEncoding();
-    private static Charset defaultEncoding;
-    private static Charset defaultOutputEncoding;
-    private static final String defaultOutputFileNamePattern    = "tt{0,number,0000}.xml";
-    private static final String defaultStyleIdPattern           = "s{0}";
+    public static final String defaultReporterFileEncoding      = Reporters.getDefaultEncoding();
+    public static Charset defaultEncoding;
+    public static Charset defaultOutputEncoding;
+    public static final String defaultOutputFileNamePattern     = "tt{0,number,0000}.xml";
+    public static final String defaultStyleIdPattern            = "s{0}";
 
     static {
         try {
@@ -193,45 +161,45 @@ public class Converter implements ConverterContext {
     }
 
     // element names
-    private static final QName ttBreakEltName = new QName(NAMESPACE_TT, "br");
-    private static final QName ttHeadEltName = new QName(NAMESPACE_TT, "head");
-    private static final QName ttInitialEltName = new QName(NAMESPACE_TT, "initial");
-    private static final QName ttParagraphEltName = new QName(NAMESPACE_TT, "p");
-    private static final QName ttRegionEltName = new QName(NAMESPACE_TT, "region");
-    private static final QName ttSpanEltName = new QName(NAMESPACE_TT, "span");
-    private static final QName ttStylingEltName = new QName(NAMESPACE_TT, "styling");
-    private static final QName ttmItemEltName = new QName(NAMESPACE_TT_METADATA, "item");
+    public static final QName ttBreakEltName = new QName(NAMESPACE_TT, "br");
+    public static final QName ttHeadEltName = new QName(NAMESPACE_TT, "head");
+    public static final QName ttInitialEltName = new QName(NAMESPACE_TT, "initial");
+    public static final QName ttParagraphEltName = new QName(NAMESPACE_TT, "p");
+    public static final QName ttRegionEltName = new QName(NAMESPACE_TT, "region");
+    public static final QName ttSpanEltName = new QName(NAMESPACE_TT, "span");
+    public static final QName ttStylingEltName = new QName(NAMESPACE_TT, "styling");
+    public static final QName ttmItemEltName = new QName(NAMESPACE_TT_METADATA, "item");
 
     // ttml1 attribute names
-    private static final QName regionAttrName = new QName("", "region");
-    private static final QName ttsFontFamilyAttrName = new QName(NAMESPACE_TT_STYLE, "fontFamily");
-    private static final QName ttsFontSizeAttrName = new QName(NAMESPACE_TT_STYLE, "fontSize");
-    private static final QName ttsFontStyleAttrName = new QName(NAMESPACE_TT_STYLE, "fontStyle");
-    private static final QName ttsTextAlignAttrName = new QName(NAMESPACE_TT_STYLE, "textAlign");
-    private static final QName xmlSpaceAttrName = new QName(XML.xmlNamespace, "space");
+    public static final QName regionAttrName = new QName("", "region");
+    public static final QName ttsFontFamilyAttrName = new QName(NAMESPACE_TT_STYLE, "fontFamily");
+    public static final QName ttsFontSizeAttrName = new QName(NAMESPACE_TT_STYLE, "fontSize");
+    public static final QName ttsFontStyleAttrName = new QName(NAMESPACE_TT_STYLE, "fontStyle");
+    public static final QName ttsTextAlignAttrName = new QName(NAMESPACE_TT_STYLE, "textAlign");
+    public static final QName xmlSpaceAttrName = new QName(XML.xmlNamespace, "space");
 
     // ttml2 attribute names
-    private static final QName ttsFontKerningAttrName = new QName(NAMESPACE_TT_STYLE, "fontKerning");
-    private static final QName ttsFontShearAttrName = new QName(NAMESPACE_TT_STYLE, "fontShear");
-    private static final QName ttsRubyAttrName = new QName(NAMESPACE_TT_STYLE, "ruby");
-    private static final QName ttsTextEmphasisAttrName = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
-    private static final QName ttsTextCombineAttrName = new QName(NAMESPACE_TT_STYLE, "textCombine");
+    public static final QName ttsFontKerningAttrName = new QName(NAMESPACE_TT_STYLE, "fontKerning");
+    public static final QName ttsFontShearAttrName = new QName(NAMESPACE_TT_STYLE, "fontShear");
+    public static final QName ttsRubyAttrName = new QName(NAMESPACE_TT_STYLE, "ruby");
+    public static final QName ttsTextEmphasisAttrName = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
+    public static final QName ttsTextCombineAttrName = new QName(NAMESPACE_TT_STYLE, "textCombine");
 
     // ttv annotation names
-    private static final QName ttvaModelAttrName = new QName(Annotations.getNamespace(), "model");
+    public static final QName ttvaModelAttrName = new QName(Annotations.getNamespace(), "model");
 
     // miscellaneous
-    private static final float[] shears = new float[] { 0, 6.345103f, 11.33775f, 16.78842f, 21.99875f, 27.97058f };
+    public static final float[] shears = new float[] { 0, 6.345103f, 11.33775f, 16.78842f, 21.99875f, 27.97058f };
 
     // banner text
-    private static final String title = "CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2014-16 Skynav, Inc.";
-    private static final String banner = title + " " + copyright;
-    private static final String creationSystem = "CAP2TT/" + Version.CURRENT;
+    public static final String title = "CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
+    public static final String copyright = "Copyright 2014-16 Skynav, Inc.";
+    public static final String banner = title + " " + copyright;
+    public static final String creationSystem = "CAP2TT/" + Version.CURRENT;
 
     // usage text
-    private static final String repositoryURL = "https://github.com/skynav/cap2tt";
-    private static final String repositoryInfo = "Source Repository: " + repositoryURL;
+    public static final String repositoryURL = "https://github.com/skynav/cap2tt";
+    public static final String repositoryInfo = "Source Repository: " + repositoryURL;
 
     // option and usage info
     private static final String[][] shortOptionSpecifications = new String[][] {
@@ -427,10 +395,6 @@ public class Converter implements ConverterContext {
         }
     }
 
-    protected enum GenerationIndex {
-        styleSetIndex;
-    };
-
     // options state
     private boolean allowModifiedUTF8;
     private String defaultAlignment;
@@ -449,6 +413,7 @@ public class Converter implements ConverterContext {
     private String forceEncodingName;
     private boolean includeSource;
     private boolean mergeStyles;
+    @SuppressWarnings("unused")
     private boolean metadataCreation;
     private String outputDirectoryPath;
     private boolean outputDisabled;
@@ -482,11 +447,11 @@ public class Converter implements ConverterContext {
     private Model model;
     private Reporter reporter;
     private Map<String,Results> results = new java.util.HashMap<String,Results>();
-    private int outputFileSequence;
 
     // per-resource processing state
     private String resourceUriString;
     private Map<String,Object> resourceState;
+    @SuppressWarnings("unused")
     private URI resourceUri;
     private Charset resourceEncoding;
     private CharBuffer resourceBuffer;
@@ -496,7 +461,6 @@ public class Converter implements ConverterContext {
 
     // per-resource parsing state
     private List<Screen> screens;
-    private int[] indices;
     private boolean inTextAttribute;
 
     public Converter() {
@@ -514,6 +478,117 @@ public class Converter implements ConverterContext {
         this.model = Models.getModel("ttml2");
     }
 
+    // ConverterContext implementation
+    
+    public List<Element> getConfigurationInitials() {
+        return configuration.getInitials();
+    }
+
+    public Element getConfigurationRegion(String id) {
+        return configuration.getRegion(id);
+    }
+
+    public ExternalParameters getExternalParameters() {
+        return externalParameters;
+    }
+
+    public Reporter getReporter() {
+        return reporter;
+    }
+
+    public void setResourceState(String key, Object value) {
+        if (resourceState != null)
+            resourceState.put(key, value);
+    }
+
+    public Object getResourceState(String key) {
+        if (resourceState != null)
+            return resourceState.get(key);
+        else
+            return null;
+    }
+
+    public String getOption(String name) {
+        if (name == null)
+            return null;
+        else if (name.equals("defaultAlignment"))
+            return defaultAlignment;
+        else if (name.equals("defaultKerning"))
+            return defaultKerning;
+        else if (name.equals("defaultLanguage"))
+            return defaultLanguage;
+        else if (name.equals("defaultPlacement"))
+            return defaultPlacement;
+        else if (name.equals("defaultRegion"))
+            return defaultRegion;
+        else if (name.equals("defaultShear"))
+            return defaultShear;
+        else if (name.equals("defaultTypeface"))
+            return defaultTypeface;
+        else if (name.equals("defaultWhitespace"))
+            return defaultWhitespace;
+        else
+            return null;
+    }
+    
+    public boolean getOptionBoolean(String name) {
+        if (name == null)
+            return false;
+        else if (name.equals("mergeStyles"))
+            return mergeStyles;
+        else if (name.equals("outputDisabled"))
+            return outputDisabled;
+        else if (name.equals("outputIndent"))
+            return outputIndent;
+        else if (name.equals("retainDocument"))
+            return retainDocument;
+        else
+            return false;
+    }
+    
+    public int getOptionInteger(String name) {
+        if (name == null)
+            return 0;
+        else if (name.equals("styleIdSequenceStart"))
+            return styleIdSequenceStart;
+        else
+            return 0;
+    }
+    
+    public Object getOptionObject(String name) {
+        if (name == null)
+            return null;
+        else if (name.equals("gmtDateTimeFormat"))
+            return gmtDateTimeFormat;
+        else if (name.equals("model"))
+            return model;
+        else if (name.equals("outputDirectory"))
+            return outputDirectory;
+        else if (name.equals("outputDocument"))
+            return outputDocument;
+        else if (name.equals("outputEncoding"))
+            return outputEncoding;
+        else if (name.equals("outputFile"))
+            return outputFile;
+        else if (name.equals("outputPatternFormatter"))
+            return outputPatternFormatter;
+        else if (name.equals("styleIdPatternFormatter"))
+            return styleIdPatternFormatter;
+        else
+            return null;
+    }
+    
+    public void setOptionObject(String name, Object object) {
+        if (name.equals("outputDocument"))
+            outputDocument = (Document) object;
+    }
+    
+    public Map<String, AttributeSpecification> getKnownAttributes() {
+        return knownAttributes;
+    }
+
+    // Converter implementation
+    
     private void resetReporter() {
         setReporter(Reporters.getDefaultReporter(), null, null, false, true);
     }
@@ -597,16 +672,6 @@ public class Converter implements ConverterContext {
         }
     }
 
-    @Override
-    public ExternalParameters getExternalParameters() {
-        return externalParameters;
-    }
-
-    @Override
-    public Reporter getReporter() {
-        return reporter;
-    }
-
     public Charset getEncoding() {
         if (this.forceEncoding != null)
             return this.forceEncoding;
@@ -614,20 +679,6 @@ public class Converter implements ConverterContext {
             return this.resourceEncoding;
         else
             return defaultEncoding;
-    }
-
-    @Override
-    public void setResourceState(String key, Object value) {
-        if (resourceState != null)
-            resourceState.put(key, value);
-    }
-
-    @Override
-    public Object getResourceState(String key) {
-        if (resourceState != null)
-            return resourceState.get(key);
-        else
-            return null;
     }
 
     private List<String> preProcessOptions(List<String> args, OptionProcessor optionProcessor) {
@@ -1342,7 +1393,7 @@ public class Converter implements ConverterContext {
             return uri.toURL().openStream();
     }
 
-    private boolean isStandardInput(URI uri) {
+    public static boolean isStandardInput(URI uri) {
         String scheme = uri.getScheme();
         if ((scheme == null) || !scheme.equals(uriFileDescriptorScheme))
             return false;
@@ -1352,7 +1403,7 @@ public class Converter implements ConverterContext {
         return true;
     }
 
-    private boolean isStandardOutput(String uri) {
+    public static boolean isStandardOutput(String uri) {
         try {
             return isStandardOutput(new URI(uri));
         } catch (URISyntaxException e) {
@@ -1360,7 +1411,7 @@ public class Converter implements ConverterContext {
         }
     }
 
-    private boolean isStandardOutput(URI uri) {
+    public static boolean isStandardOutput(URI uri) {
         String scheme = uri.getScheme();
         if ((scheme == null) || !scheme.equals(uriFileDescriptorScheme))
             return false;
@@ -1370,7 +1421,7 @@ public class Converter implements ConverterContext {
         return true;
     }
 
-    private boolean isFile(URI uri) {
+    public static boolean isFile(URI uri) {
         String scheme = uri.getScheme();
         if ((scheme == null) || !scheme.equals(uriFileScheme))
             return false;
@@ -1559,7 +1610,6 @@ public class Converter implements ConverterContext {
         getReporter().resetResourceState(false);
         // parsing state
         screens = new java.util.ArrayList<Screen>();
-        indices = new int[GenerationIndex.values().length];
         inTextAttribute = false;
     }
 
@@ -2219,8 +2269,8 @@ public class Converter implements ConverterContext {
             for (int i = screens.size(); i > 0; --i) {
                 int k = i - 1;
                 Screen s = screens.get(k);
-                if (s.number > 0)
-                    return s.number;
+                if (s.getNumber() > 0)
+                    return s.getNumber();
             }
             return 0;
         }
@@ -2276,10 +2326,8 @@ public class Converter implements ConverterContext {
         }
         if (i == n) {
             try {
-                assert s.number == 0;
-                s.number = Integer.parseInt(count.toString());
-                assert s.letter == 0;
-                s.letter = (letter.length() == 1) ? letter.charAt(0) : 0;
+                s.setNumber(Integer.parseInt(count.toString()));
+                s.setLetter((letter.length() == 1) ? letter.charAt(0) : 0);
             } catch (NumberFormatException e) {
                 s = null;
             }
@@ -2385,10 +2433,8 @@ public class Converter implements ConverterContext {
         }
         if ((i - j) != 8)
             return null;
-        assert s.in == null;
-        s.in = parseTimeCode(ic.toString());
-        assert s.out == null;
-        s.out = parseTimeCode(oc.toString());
+        s.setInTime(parseTimeCode(ic.toString()));
+        s.setOutTime(parseTimeCode(oc.toString()));
         return s;
     }
 
@@ -2752,8 +2798,7 @@ public class Converter implements ConverterContext {
                         as.addAttribute(ta, a, r.start, r.end);
                     }
                 }
-                assert s.text == null;
-                s.text = as;
+                s.setText(as);
             }
             return s;
         }
@@ -2842,7 +2887,7 @@ public class Converter implements ConverterContext {
             return null;
     }
     
-    private static String parseText(String text, boolean mapInitialSpaceToNBSP) {
+    public static String parseText(String text, boolean mapInitialSpaceToNBSP) {
         int escapedSpaces = 0;
         for (int i = 0, n = text.length(); i < n; ++i) {
             char c = text.charAt(i);
@@ -2909,10 +2954,10 @@ public class Converter implements ConverterContext {
             for (String attribute : field.split(attributeSeparatorPatternString)) {
                 Attribute a = parseAttribute(attribute);
                 if (a != null) {
-                    if ((context == AttrContext.Attribute) && (a.specification.context == AttrContext.Text)) {
+                    if ((context == AttrContext.Attribute) && (a.getSpecification().getContext() == AttrContext.Text)) {
                         // text attribute in non-text attribute context
                         return null;
-                    } else if ((context == AttrContext.Text) && (a.specification.context == AttrContext.Attribute)) {
+                    } else if ((context == AttrContext.Text) && (a.getSpecification().getContext() == AttrContext.Attribute)) {
                         // non-text attribute in text attribute context
                         return null;
                     } else
@@ -3081,39 +3126,6 @@ public class Converter implements ConverterContext {
             return c;
     }
 
-    private static String makeTimeExpression(ClockTime time) {
-        return toString(time, ':');
-    }
-
-    private static String toString(ClockTime time, char sep) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(pad(time.getHours(), 2, '0'));
-        if (sep != 0)
-            sb.append(sep);
-        sb.append(pad(time.getMinutes(), 2, '0'));
-        if (sep != 0)
-            sb.append(sep);
-        sb.append(pad((int) time.getSeconds(), 2, '0'));
-        if (sep != 0)
-            sb.append(sep);
-        sb.append(pad((int) time.getFrames(), 2, '0'));
-        return sb.toString();
-    }
-
-    private static String digits = "0123456789";
-    private static String pad(int value, int width, char padding) {
-        assert value >= 0;
-        StringBuffer sb = new StringBuffer(width);
-        while (value > 0) {
-            sb.append(digits.charAt(value % 10));
-            value /= 10;
-        }
-        while (sb.length() < width) {
-            sb.append(padding);
-        }
-        return sb.reverse().toString();
-    }
-
     private static String dump(String s) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0, n = s.length(); i < n; ++i) {
@@ -3136,459 +3148,6 @@ public class Converter implements ConverterContext {
         }
     }
 
-    private boolean convertResource() {
-        boolean fail = false;
-        Reporter reporter = getReporter();
-        reporter.logInfo(reporter.message("i.014", "Converting resource ..."));
-        try {
-            //  convert screens to a div of paragraphs
-            State state = new State();
-            state.process(screens);
-            // populate body, extracting division from state object, must be performed prior to populating head
-            Body body = ttmlFactory.createBody();
-            state.populate(body, defaultRegion);
-            // populate head
-            Head head = ttmlFactory.createHead();
-            state.populate(head);
-            // populate root (tt)
-            TimedText tt = ttmlFactory.createTimedText();
-            tt.getOtherAttributes().put(ttvaModelAttrName, model.getName());
-            if (defaultLanguage != null)
-                tt.setLang(defaultLanguage);
-            if ((head.getStyling() != null) || (head.getLayout() != null))
-                tt.setHead(head);
-            if (!body.getDiv().isEmpty())
-                tt.setBody(body);
-            // marshal and serialize
-            if (!convertResource(tt))
-                fail = true;
-        } catch (Exception e) {
-            reporter.logError(e);
-        }
-        return !fail && (reporter.getResourceErrors() == 0);
-    }
-
-    private boolean convertResource(TimedText tt) {
-        boolean fail = false;
-        try {
-            JAXBContext jc = JAXBContext.newInstance(model.getJAXBContextPath());
-            Marshaller m = jc.createMarshaller();
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document d = db.newDocument();
-            m.marshal(ttmlFactory.createTt(tt), d);
-            mergeConfiguration(d);
-            elideInitials(d, getInitials(d, model));
-            if (mergeStyles)
-                mergeStyles(d, indices);
-            if (metadataCreation)
-                addCreationMetadata(d);
-            Map<String, String> prefixes = model.getNormalizedPrefixes();
-            Namespaces.normalize(d, prefixes);
-            if (!outputDisabled && !writeDocument(d, prefixes))
-                fail = true;
-            if (outputDisabled || retainDocument)
-                outputDocument = d;
-        } catch (ParserConfigurationException e) {
-            reporter.logError(e);
-        } catch (JAXBException e) {
-            reporter.logError(e);
-        }
-        return !fail && (reporter.getResourceErrors() == 0);
-    }
-
-    private void mergeConfiguration(Document d) {
-        assert configuration != null;
-        List<Element> initials = new java.util.ArrayList<Element>(configuration.getInitials());
-        Collections.reverse(initials);
-        if (!initials.isEmpty()) {
-            Element e = Documents.findElementByName(d, ttStylingEltName);
-            if (e != null) {
-                for (Element initial : initials) {
-                    e.insertBefore(d.importNode(initial, true), e.getFirstChild());
-                }
-            }
-        }
-        List<Element> regions = Documents.findElementsByName(d, ttRegionEltName);
-        for (Element e : regions) {
-            Element eConfig = configuration.getRegion(e.getAttributeNS(XML.xmlNamespace, "id"));
-            if (eConfig != null)
-                mergeStyles(e, eConfig);
-        }
-    }
-
-    private void mergeStyles(Element dst, Element src) {
-        NamedNodeMap attrs = src.getAttributes();
-        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
-            Node node = attrs.item(i);
-            if (node instanceof Attr) {
-                Attr a = (Attr) node;
-                String ns = a.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                    String ln = a.getLocalName();
-                    String v = a.getValue();
-                    dst.setAttributeNS(ns, ln, v);
-                }
-            }
-        }
-    }
-
-    private void addCreationMetadata(Document d) {
-        Element e;
-        if ((e = Documents.findElementByName(d, ttHeadEltName)) != null) {
-            Node m, f;
-            m = createMetadataItemElement(d, "creationSystem", creationSystem);
-            assert m != null;
-            f = e.getFirstChild();
-            e.insertBefore(m, f);
-            m = createMetadataItemElement(d, "creationDate", getXSDDateString(new Date()));
-            assert m != null;
-            f = e.getFirstChild();
-            e.insertBefore(m, f);
-        }
-    }
-
-    private Element createMetadataItemElement(Document d, String name, String value) {
-        QName qn = ttmItemEltName;
-        Element e = d.createElementNS(qn.getNamespaceURI(), qn.getLocalPart());
-        e.setAttribute("name", name);
-        e.appendChild(d.createTextNode(value));
-        return e;
-    }
-
-    private String getXSDDateString(Date date) {
-        return gmtDateTimeFormat.format(date);
-    }
-
-    private void mergeStyles(final Document d, int[] indices) {
-        try {
-            final Map<Element,StyleSet> styleSets = getUniqueSpecifiedStyles(d, indices, styleIdPatternFormatter, styleIdSequenceStart);
-            final Set<String> styleIds = new java.util.HashSet<String>();
-            final Element styling = Documents.findElementByName(d, ttStylingEltName);
-            if (styling != null) {
-                Traverse.traverseElements(d, new PreVisitor() {
-                    public boolean visit(Object content, Object parent, Visitor.Order order) {
-                        assert content instanceof Element;
-                        Element e = (Element) content;
-                        if (styleSets.containsKey(e)) {
-                            StyleSet ss = styleSets.get(e);
-                            String id = ss.getId();
-                            if (!id.isEmpty()) {
-                                e.setAttribute("style", id);
-                                if (!styleIds.contains(id)) {
-                                    Element ttStyle = d.createElementNS(NAMESPACE_TT, "style");
-                                    generateAttributes(ss, ttStyle);
-                                    styling.appendChild(ttStyle);
-                                    styleIds.add(id);
-                                }
-                            }
-                            pruneStyles(e);
-                        }
-                        return true;
-                    }
-                });
-            }
-        } catch (Exception e) {
-            getReporter().logError(e);
-        }
-    }
-
-    private static void generateAttributes(StyleSet ss, Element e) {
-        String id = ss.getId();
-        if ((id != null) && !id.isEmpty()) {
-            for (StyleSpecification s : ss.getStyles().values()) {
-                ComparableQName n = s.getName();
-                e.setAttributeNS(n.getNamespaceURI(), n.getLocalPart(), s.getValue());
-            }
-            e.setAttributeNS(XML.xmlNamespace, "id", id);
-        }
-    }
-
-    private Map<QName,String> getInitials(Document d, Model model) {
-        Map<QName,String> initials = new java.util.HashMap<QName,String>();
-        // get initials from model
-        for (QName qn : model.getDefinedStyleNames()) {
-            initials.put(qn, model.getInitialStyleValue(null, qn));
-        }
-        // get initials from document
-        for (Element e : Documents.findElementsByName(d, ttInitialEltName)) {
-            NamedNodeMap attrs = e.getAttributes();
-            for (int i = 0, n = attrs.getLength(); i < n; ++i) {
-                Node node = attrs.item(i);
-                if (node instanceof Attr) {
-                    Attr a = (Attr) node;
-                    String ns = a.getNamespaceURI();
-                    if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                        String ln = a.getLocalName();
-                        String v = a.getValue();
-                        initials.put(new QName(ns, ln), v);
-                    }
-                }
-            }
-        }
-        return initials;
-    }
-
-    private void elideInitials(Document d, final Map<QName,String> initials) {
-        try {
-            Traverse.traverseElements(d, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element e = (Element) content;
-                    if (isRegionOrContentElement(e))
-                        elideInitials(e, initials);
-                    return true;
-                }
-            });
-        } catch (Exception e) {
-            getReporter().logError(e);
-        }
-    }
-
-    private static void elideInitials(Element e, final Map<QName,String> initials) {
-        List<Attr> elide = new java.util.ArrayList<Attr>();
-        NamedNodeMap attrs = e.getAttributes();
-        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
-            Node node = attrs.item(i);
-            if (node instanceof Attr) {
-                Attr a = (Attr) node;
-                String ns = a.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                    QName qn = new QName(ns, a.getLocalName());
-                    String initial = initials.get(qn);
-                    if ((initial != null) && a.getValue().equals(initial)) {
-                        if (!isSpan(e) || !isTextAlign(a))
-                            elide.add(a);
-                    }
-                }
-            }
-        }
-        for (Attr a: elide) {
-            e.removeAttributeNode(a);
-        }
-    }
-
-    private static boolean isSpan(Element e) {
-        return Nodes.matchesName(e, ttSpanEltName);
-    }
-
-    private static boolean isTextAlign(Attr a) {
-        return Nodes.matchesName(a, ttsTextAlignAttrName);
-    }
-
-    private static Map<Element, StyleSet> getUniqueSpecifiedStyles(Document d, int[] indices, MessageFormat styleIdPatternFormatter, int styleIdStart) {
-        // get specified style sets
-        Map<Element, StyleSet> specifiedStyleSets = getSpecifiedStyles(d, indices);
-
-        // obtain ordered set of SSs, ordered by SS generation
-        Set<StyleSet> orderedStyles = new java.util.TreeSet<StyleSet>(StyleSet.getGenerationComparator());
-        orderedStyles.addAll(specifiedStyleSets.values());
-
-        // obtain unique set of SSs
-        Set<StyleSet> uniqueStyles = new java.util.TreeSet<StyleSet>(StyleSet.getValuesComparator());
-        uniqueStyles.addAll(orderedStyles);
-
-        // final reorder by generation
-        orderedStyles.clear();
-        orderedStyles.addAll(uniqueStyles);
-        List<StyleSet> styles = new java.util.ArrayList<StyleSet>(orderedStyles);
-
-        // assign identifiers to unique SSs
-        int uniqueStyleIndex = styleIdStart;
-        for (StyleSet ss : styles)
-            ss.setId(styleIdPatternFormatter.format(new Object[]{Integer.valueOf(uniqueStyleIndex++)}));
-
-        // remap SS map entries to unique SSs
-        for (Map.Entry<Element,StyleSet> e : specifiedStyleSets.entrySet()) {
-            StyleSet ss = e.getValue();
-            int index = styles.indexOf(ss);
-            if (index >= 0) {
-                StyleSet ssUnique = styles.get(index);
-                if (ss != ssUnique) // N.B. must not use equals() here
-                    e.setValue(ssUnique);
-            }
-        }
-
-        return specifiedStyleSets;
-    }
-
-    private static Map<Element, StyleSet> getSpecifiedStyles(Document d, int[] indices) {
-        Map<Element, StyleSet> specifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
-        specifiedStyleSets = getSpecifiedStyles(getContentElements(d), specifiedStyleSets, indices);
-        return specifiedStyleSets;
-    }
-
-    private static List<Element> getContentElements(Document d) {
-        final List<Element> elements = new java.util.ArrayList<Element>();
-        try {
-            Traverse.traverseElements(d, new PreVisitor() {
-                public boolean visit(Object content, Object parent, Visitor.Order order) {
-                    assert content instanceof Element;
-                    Element e = (Element) content;
-                    if (isContentElement(e))
-                        elements.add(e);
-                    return true;
-                }
-            });
-        } catch (Exception e) {
-        }
-        return elements;
-    }
-
-    private static boolean isRegionOrContentElement(Element e) {
-        return isRegionElement(e) || isContentElement(e);
-    }
-
-    private static boolean isRegionElement(Element e) {
-        String ns = e.getNamespaceURI();
-        if ((ns == null) || !ns.equals(NAMESPACE_TT))
-            return false;
-        else {
-            String localName = e.getLocalName();
-            if (localName.equals("region"))
-                return true;
-            else
-                return false;
-        }
-    }
-
-    private static boolean isContentElement(Element e) {
-        String ns = e.getNamespaceURI();
-        if ((ns == null) || !ns.equals(NAMESPACE_TT))
-            return false;
-        else {
-            String localName = e.getLocalName();
-            if (localName.equals("body"))
-                return true;
-            else if (localName.equals("div"))
-                return true;
-            else if (localName.equals("p"))
-                return true;
-            else if (localName.equals("span"))
-                return true;
-            else if (localName.equals("br"))
-                return true;
-            else
-                return false;
-        }
-    }
-
-    private static Map<Element, StyleSet> getSpecifiedStyles(List<Element> elements, Map<Element, StyleSet> specifiedStyleSets, int[] indices) {
-        for (Element e : elements) {
-            assert !specifiedStyleSets.containsKey(e);
-            StyleSet ss = getInlineStyles(e, indices);
-            if (!ss.isEmpty())
-                specifiedStyleSets.put(e, ss);
-        }
-        return specifiedStyleSets;
-    }
-
-    private static StyleSet getInlineStyles(Element e, int[] indices) {
-        StyleSet styles = new StyleSet(generateStyleSetIndex(indices));
-        NamedNodeMap attrs = e.getAttributes();
-        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
-            Node node = attrs.item(i);
-            if (node instanceof Attr) {
-                Attr a = (Attr) node;
-                String ns = a.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                    styles.merge(new StyleSpecification(new ComparableQName(a.getNamespaceURI(), a.getLocalName()), a.getValue()));
-                }
-            }
-        }
-        return styles;
-    }
-
-    private static int generateStyleSetIndex(int[] indices) {
-        return indices[GenerationIndex.styleSetIndex.ordinal()]++;
-    }
-
-    private void pruneStyles(Element e) {
-        List<Attr> prune = new java.util.ArrayList<Attr>();
-        NamedNodeMap attrs = e.getAttributes();
-        for (int i = 0, n = attrs.getLength(); i < n; ++i) {
-            Node node = attrs.item(i);
-            if (node instanceof Attr) {
-                Attr a = (Attr) node;
-                String ns = a.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                    prune.add(a);
-                }
-            }
-        }
-        for (Attr a : prune) {
-            e.removeAttributeNode(a);
-        }
-    }
-
-    private static Set<QName> startTagIndentExclusions;
-    private static Set<QName> endTagIndentExclusions;
-    static {
-        startTagIndentExclusions = new java.util.HashSet<QName>();
-        startTagIndentExclusions.add(ttParagraphEltName);
-        startTagIndentExclusions.add(ttSpanEltName);
-        startTagIndentExclusions.add(ttBreakEltName);
-        startTagIndentExclusions.add(ttmItemEltName);
-        endTagIndentExclusions = new java.util.HashSet<QName>();
-        endTagIndentExclusions.add(ttSpanEltName);
-        endTagIndentExclusions.add(ttBreakEltName);
-    }
-
-    private boolean writeDocument(Document d, Map<String, String> prefixes) {
-        boolean fail = false;
-        Reporter reporter = getReporter();
-        BufferedWriter bw = null;
-        try {
-            DOMSource source = new DOMSource(d);
-            File[] retOutputFile = new File[1];
-            bw = new BufferedWriter(new OutputStreamWriter(getOutputStream(retOutputFile), outputEncoding));
-            StreamResult result = new StreamResult(bw);
-            Transformer t = new TextTransformer(outputEncoding.name(), outputIndent, prefixes, startTagIndentExclusions, endTagIndentExclusions);
-            t.transform(source, result);
-            File outputFile = retOutputFile[0];
-            reporter.logInfo(reporter.message("i.015", "Wrote TTML ''{0}''.", (outputFile != null) ? outputFile.getAbsolutePath() : uriStandardOutput));
-        } catch (IOException e) {
-            reporter.logError(e);
-        } catch (TransformerException e) {
-            reporter.logError(e);
-        } finally {
-            if (bw != null) {
-                try { bw.close(); } catch (IOException e) {}
-            }
-        }
-        return !fail && (reporter.getResourceErrors() == 0);
-    }
-
-    private OutputStream getOutputStream(File[] retOutputFile) throws IOException {
-        assert resourceUri != null;
-        StringBuffer sb = new StringBuffer();
-        if (isFile(resourceUri)) {
-            String path = resourceUri.getPath();
-            int s = 0;
-            int e = path.length();
-            int lastPathSeparator = path.lastIndexOf('/');
-            if (lastPathSeparator >= 0)
-                s = lastPathSeparator + 1;
-            int lastExtensionSeparator = path.lastIndexOf('.');
-            if (lastExtensionSeparator >= 0)
-                e = lastExtensionSeparator;
-            sb.append(path.substring(s, e));
-            sb.append(".xml");
-        } else {
-            sb.append(outputPatternFormatter.format(new Object[]{Integer.valueOf(++outputFileSequence)}));
-        }
-        String outputFileName = sb.toString();
-        if (isStandardOutput(outputFileName))
-            return System.out;
-        else {
-            File f = (outputFile != null) ? outputFile : new File(outputDirectory, outputFileName).getCanonicalFile();
-            if (retOutputFile != null)
-                retOutputFile[0] = f;
-            return new FileOutputStream(f);
-        }
-    }
-
     private int convert(List<String> args, String uri) {
         Reporter reporter = getReporter();
         if (!reporter.isHidingLocation())
@@ -3601,7 +3160,7 @@ public class Converter implements ConverterContext {
                 break;
             if (!parseResource())
                 break;
-            if (!convertResource())
+            if (!new com.skynav.cap2tt.converter.ttml.TTML2ResourceConverter(this).convert(screens))
                 break;
         } while (false);
         int rv = rvValue();
@@ -3843,14 +3402,14 @@ public class Converter implements ConverterContext {
 
     public int getResultCode(String uri) {
         if (results.containsKey(uri))
-            return results.get(uri).code;
+            return results.get(uri).getCode();
         else
             return -1;
     }
 
     public int getResultFlags(String uri) {
         if (results.containsKey(uri))
-            return results.get(uri).flags;
+            return results.get(uri).getFlags();
         else
             return -1;
     }
@@ -3908,1264 +3467,6 @@ public class Converter implements ConverterContext {
                 sb.append(c);
         }
         return sb.toString();
-    }
-
-    public static class AttributeSpecification {
-        private String name;
-        private AttrContext context;
-        private TextAttribute textAttribute;
-        private AttrCount count;
-        private int minCount;
-        private int maxCount;
-        public AttributeSpecification(String name, AttrContext context, TextAttribute textAttribute, AttrCount count, int minCount, int maxCount) {
-            this.name = name;
-            this.context = context;
-            this.textAttribute = textAttribute;
-            this.count = count;
-            this.minCount = minCount;
-            this.maxCount = maxCount;
-        }
-        public String getName() {
-            return name;
-        }
-        public AttrContext getContext() {
-            return context;
-        }
-        public TextAttribute getTextAttribute() {
-            return textAttribute;
-        }
-        public AttrCount getCount() {
-            return count;
-        }
-        public int getMinCount() {
-            return minCount;
-        }
-        public int getMaxCount() {
-            return maxCount;
-        }
-    }
-
-    public static class Attribute {
-        private static Attribute END = new Attribute();
-        private AttributeSpecification specification;
-        private int count;
-        private boolean retain;
-        private String text;
-        private String annotation;
-        private Attribute() {
-        }
-        public Attribute(AttributeSpecification specification, int count, boolean retain) {
-            assert specification != null;
-            this.specification = specification;
-            this.count = count;
-            this.retain = retain;
-        }
-        private static String normalize(String s, boolean trim) {
-            if (s != null) {
-                String t = parseText(s, false);
-                if (t != null)
-                    s = t;
-                if (trim)
-                    s = s.trim();
-                return s;
-            } else
-                return null;
-        }
-        public AttributeSpecification getSpecification() {
-            return specification;
-        }
-        public int getCount() {
-            return count;
-        }
-        public boolean getRetain() {
-            return retain;
-        }
-        public void setText(String text) {
-            this.text = normalize(text, false);
-        }
-        public String getText() {
-            return text;
-        }
-        public void setAnnotation(String annotation) {
-            this.annotation = normalize(annotation, true);
-        }
-        public String getAnnotation() {
-            return annotation;
-        }
-        @Override
-        public int hashCode() {
-            return specification.hashCode();
-        }
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof Attribute) {
-                Attribute other = (Attribute) obj;
-                return other.specification.equals(specification);
-            } else
-                return false;
-        }
-        public boolean isRuby() {
-            return specification.name.startsWith("ルビ");
-        }
-        public boolean isEmphasis() {
-            return specification.name.startsWith("ルビ") && isEmphasisAnnotation();
-        }
-        public boolean isCombine() {
-            return specification.name.equals("組");
-        }
-        public boolean isEmphasisAnnotation() {
-            if (annotation != null) {
-                int i = 0;
-                int n = annotation.length();
-                for (; i < n; ++i) {
-                    char c = annotation.charAt(i);
-                    if (c == '\u2191')                  // U+2191 UPWARDS ARROW
-                        continue;
-                    else if (c == '\u2193')             // U+2193 DOWNWARDS ARROW
-                        continue;
-                    else if (c == '\u30FB')             // U+30FB KATAKANA MIDDLE DOT '・'
-                        continue;
-                    else if (c == '\uFF3E')             // U+FF3E FULLWIDTH CIRCUMFLEX ACCENT
-                        continue;
-                    else
-                        break;
-                }
-                return i == n;
-            } else
-                return false;
-        }
-        public boolean hasPlacement() {
-            String name = specification.name;
-            if (name.startsWith("横"))
-                return true;
-            else if (name.startsWith("縦"))
-                return true;
-            else
-                return false;
-        }
-        public String getPlacement(boolean[] retGlobal) {
-            String v;
-            String name = specification.name;
-            if (name.startsWith("横")) {
-                if (name.equals("横下"))
-                    v = name;
-                else if (name.equals("横上"))
-                    v = name;
-                else if (name.equals("横適"))
-                    v = name;
-                else if (name.equals("横中"))
-                    v = name;
-                else if (name.equals("横中央"))
-                    v = "横下";
-                else if (name.equals("横中頭"))
-                    v = "横下";
-                else if (name.equals("横中末"))
-                    v = "横下";
-                else if (name.equals("横行頭"))
-                    v = "横下";
-                else if (name.equals("横行末"))
-                    v = "横下";
-                else
-                    v = null;
-            } else if (name.startsWith("縦")) {
-                if (name.equals("縦右"))
-                    v = name;
-                else if (name.equals("縦左"))
-                    v = name;
-                else if (name.equals("縦適"))
-                    v = name;
-                else if (name.equals("縦中"))
-                    v = name;
-                else if (name.equals("縦右頭"))
-                    v = "縦右";
-                else if (name.equals("縦左頭"))
-                    v = "縦左";
-                else if (name.equals("縦中頭"))
-                    v = "縦中";
-                else
-                    v = null;
-            } else
-                v = null;
-            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
-                retGlobal[0] = retain;
-            return v;
-        }
-        private static final String[] alignments = new String[] {
-            "右頭",
-            "行頭",
-            "行末",
-            "左頭",
-            "中央",
-            "中頭",
-            "中末",
-            "両端"
-        };
-        public boolean hasAlignment() {
-            String name = specification.name;
-            for (String a : alignments) {
-                if (name.equals(a))
-                    return true;
-                else if (name.endsWith(a))
-                    return true;
-            }
-            return false;
-        }
-        private String getAlignment(boolean[] retGlobal) {
-            String v = null;
-            String name = specification.name;
-            for (String a : alignments) {
-                if (name.equals(a)) {
-                    v = a;
-                    break;
-                } else if (name.endsWith(a)) {
-                    v = a;
-                    break;
-                }
-            }
-            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
-                retGlobal[0] = retain;
-            return v;
-        }
-        public boolean hasShear() {
-            String name = specification.name;
-            if (name.equals("正体"))
-                return true;
-            else if (name.equals("斜"))
-                return true;
-            else
-                return false;
-        }
-        private String getShear(boolean[] retGlobal) {
-            String v;
-            String name = specification.name;
-            if (name.equals("正体"))
-                v = "0";
-            else if (name.equals("斜")) {
-                if (count < 0)
-                    v = "3";
-                else if (count < shears.length) {
-                    v = Integer.toString(count);
-                } else
-                    v = Integer.toString(shears.length - 1);
-            } else
-                v = null;
-            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
-                retGlobal[0] = retain;
-            return v;
-        }
-        public boolean hasKerning() {
-            return specification.name.equals("詰");
-        }
-        private String getKerning(boolean[] retGlobal) {
-            String v;
-            String name = specification.name;
-            if (name.equals("詰"))
-                v = Integer.toString((count == 0) ? 0 : 1);
-            else
-                v = null;
-            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
-                retGlobal[0] = retain;
-            return v;
-        }
-        private AnnotationPosition getRubyPosition(Direction blockDirection) {
-            AnnotationPosition v = null;
-            String name = specification.name;
-            int l = name.length();
-            if (name.startsWith("ルビ")) {
-                if (l == 2)
-                    v = AnnotationPosition.OUTSIDE;
-                else if (l > 2) {
-                    char c = name.charAt(2);
-                    if (blockDirection == Direction.TB) {
-                        if (c == '上')
-                            v = AnnotationPosition.BEFORE;
-                        else if (c == '下')
-                            v = AnnotationPosition.AFTER;
-                    } else if (blockDirection == Direction.RL) {
-                        if (c == '右')
-                            v = AnnotationPosition.BEFORE;
-                        else if (c == '左')
-                            v = AnnotationPosition.AFTER;
-                    } else if (blockDirection == Direction.LR) {
-                        if (c == '右')
-                            v = AnnotationPosition.AFTER;
-                        else if (c == '左')
-                            v = AnnotationPosition.BEFORE;
-                    }
-                }
-            }
-            return v;
-        }
-        private static final String[] typefaces = new String[] {
-            "丸ゴ",
-            "丸ゴシック",
-            "角ゴ",
-            "太角ゴ",
-            "太角ゴシック",
-            "太明",
-            "太明朝",
-            "シネマ"
-        };
-        public boolean hasTypeface() {
-            String name = specification.name;
-            for (String t : typefaces) {
-                if (name.equals(t))
-                    return true;
-            }
-            return false;
-        }
-        private String getTypeface(boolean[] retGlobal) {
-            String v = null;
-            String name = specification.name;
-            for (String t : typefaces) {
-                if (name.equals(t)) {
-                    v = t;
-                    break;
-                }
-            }
-            if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
-                retGlobal[0] = retain;
-            return v;
-        }
-        public void populate(Paragraph p, Set<QName> styles, String defaultRegion) {
-            String name = specification.name;
-            Map<QName, String> attributes = p.getOtherAttributes();
-            if (name.equals("横下")) {
-                attributes.put(regionAttrName, "横下");
-            } else if (name.equals("横上")) {
-                attributes.put(regionAttrName, "横上");
-            } else if (name.equals("横適")) {
-                attributes.put(regionAttrName, "横適");
-            } else if (name.equals("横中")) {
-                attributes.put(regionAttrName, "横中");
-            } else if (name.equals("縦右")) {
-                attributes.put(regionAttrName, "縦右");
-            } else if (name.equals("縦左")) {
-                attributes.put(regionAttrName, "縦左");
-            } else if (name.equals("縦適")) {
-                attributes.put(regionAttrName, "縦適");
-            } else if (name.equals("縦中")) {
-                attributes.put(regionAttrName, "縦中");
-            } else if (name.equals("中央")) {
-                p.setTextAlign(TextAlign.CENTER);
-            } else if (name.equals("行頭")) {
-                p.setTextAlign(TextAlign.START);
-            } else if (name.equals("行末")) {
-                p.setTextAlign(TextAlign.END);
-            } else if (name.equals("中頭")) {
-                p.setTextAlign(TextAlign.CENTER);
-            } else if (name.equals("中末")) {
-                p.setTextAlign(TextAlign.CENTER);
-            } else if (name.equals("両端")) {
-                p.setTextAlign(TextAlign.JUSTIFY);
-            } else if (name.equals("横中央")) {
-                attributes.put(regionAttrName, "横下");
-                p.setTextAlign(TextAlign.CENTER);
-            } else if (name.equals("横中頭")) {
-                attributes.put(regionAttrName, "横下");
-                p.setTextAlign(TextAlign.CENTER);
-            } else if (name.equals("横中末")) {
-                attributes.put(regionAttrName, "横下");
-                p.setTextAlign(TextAlign.CENTER);
-            } else if (name.equals("横行頭")) {
-                attributes.put(regionAttrName, "横下");
-                p.setTextAlign(TextAlign.START);
-            } else if (name.equals("横行末")) {
-                attributes.put(regionAttrName, "横下");
-                p.setTextAlign(TextAlign.END);
-            } else if (name.equals("縦右頭")) {
-                attributes.put(regionAttrName, "縦右");
-            } else if (name.equals("縦左頭")) {
-                attributes.put(regionAttrName, "縦左");
-            } else if (name.equals("縦中頭")) {
-                attributes.put(regionAttrName, "縦中");
-                p.setTextAlign(TextAlign.CENTER);
-            } else if (name.equals("正体")) {
-                p.setFontStyle(FontStyle.NORMAL);
-                attributes.put(ttsFontShearAttrName, "0%");
-            } else if (name.equals("斜")) {
-                float shear;
-                if (count < 0)
-                    shear = shears[3];
-                else if (count < shears.length)
-                    shear = shears[count];
-                else
-                    shear = shears[shears.length - 1];
-                StringBuffer sb = new StringBuffer();
-                if (shear == 0)
-                    sb.append('0');
-                else
-                    sb.append(Float.toString(shear));
-                sb.append('%');
-                attributes.put(ttsFontShearAttrName, sb.toString());
-            } else if (name.equals("詰")) {
-                String kerning;
-                if (count < 0)
-                    kerning = "normal";
-                else if (count == 0)
-                    kerning = "none";
-                else
-                    kerning = "normal";
-                attributes.put(ttsFontKerningAttrName, kerning);
-            } else if (name.equals("幅広")) {
-                p.setFontSize("1.5em 1.0em");
-            } else if (name.equals("倍角")) {
-                p.setFontSize("2.0em 1.0em");
-            } else if (name.equals("半角")) {
-                p.setFontSize("0.5em 1.0em");
-            } else if (name.equals("拗音")) {
-                p.setFontSize("0.9em 1.0em");
-            } else if (name.equals("幅")) {
-                int stretch;
-                if (count < 0)
-                    stretch = 100;
-                else if (count < 5)
-                    stretch = 50;
-                else if (count < 20)
-                    stretch = count * 10;
-                else
-                    stretch = 200;
-                p.setFontSize("" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
-            } else if (name.equals("寸")) {
-                int scale;
-                if (count < 0)
-                    scale = 100;
-                else if (count < 5)
-                    scale = 50;
-                else if (count < 20)
-                    scale = count * 10;
-                else
-                    scale = 200;
-                p.setFontSize(((double) scale / 100.0) + "em");
-            } else if (name.equals("継続")) {
-            } else if (name.equals("丸ゴ")) {
-                p.setFontFamily("丸ゴ");
-            } else if (name.equals("丸ゴシック")) {
-                p.setFontFamily("丸ゴシック");
-            } else if (name.equals("角ゴ")) {
-                p.setFontFamily("角ゴ");
-            } else if (name.equals("太角ゴ")) {
-                p.setFontFamily("太角ゴ");
-            } else if (name.equals("太角ゴシック")) {
-                p.setFontFamily("太角ゴシック");
-            } else if (name.equals("太明")) {
-                p.setFontFamily("太明");
-            } else if (name.equals("太明朝")) {
-                p.setFontFamily("太明朝");
-            } else if (name.equals("シネマ")) {
-                p.setFontFamily("シネマ");
-            }
-            String region = attributes.get(regionAttrName);
-            if ((region != null) && (defaultRegion != null) && region.equals(defaultRegion))
-                attributes.remove(regionAttrName);
-            updateStyles(p, styles);
-        }
-        public void updateStyles(Paragraph p, Set<QName> styles) {
-            if (p.getFontFamily() != null) {
-                styles.add(ttsFontFamilyAttrName);
-            }
-            if (p.getFontSize() != null) {
-                styles.add(ttsFontSizeAttrName);
-            }
-            if (p.getFontStyle() != null) {
-                styles.add(ttsFontStyleAttrName);
-            }
-            if (p.getTextAlign() != null) {
-                styles.add(ttsTextAlignAttrName);
-            }
-            for (QName qn : p.getOtherAttributes().keySet()) {
-                String ns = qn.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE))
-                    styles.add(qn);
-            }
-        }
-        public void populate(Span s, Set<QName> styles) {
-            String name = specification.name;
-            Map<QName, String> attributes = s.getOtherAttributes();
-            if (name.equals("正体")) {
-                attributes.put(ttsFontShearAttrName, "0%");
-            } else if (name.equals("斜")) {
-                float shear;
-                if (count < 0)
-                    shear = shears[3];
-                else if (count < shears.length)
-                    shear = shears[count];
-                else
-                    shear = shears[shears.length - 1];
-                StringBuffer sb = new StringBuffer();
-                if (shear == 0)
-                    sb.append('0');
-                else
-                    sb.append(Float.toString(shear));
-                sb.append('%');
-                attributes.put(ttsFontShearAttrName, sb.toString());
-            } else if (name.equals("詰")) {
-                String kerning;
-                if (count < 0)
-                    kerning = "auto";
-                else if (count == 0)
-                    kerning = "none";
-                else
-                    kerning = "normal";
-                attributes.put(ttsFontKerningAttrName, kerning);
-            } else if (name.equals("幅広")) {
-                attributes.put(ttsFontSizeAttrName, "1.5em 1.0em");
-            } else if (name.equals("倍角")) {
-                attributes.put(ttsFontSizeAttrName, "2.0em 1.0em");
-            } else if (name.equals("半角")) {
-                attributes.put(ttsFontSizeAttrName, "0.5em 1.0em");
-            } else if (name.equals("拗音")) {
-                attributes.put(ttsFontSizeAttrName, "0.9em 1.0em");
-            } else if (name.equals("幅")) {
-                int stretch;
-                if (count < 0)
-                    stretch = 100;
-                else if (count < 5)
-                    stretch = 50;
-                else if (count < 20)
-                    stretch = count * 10;
-                else
-                    stretch = 200;
-                attributes.put(ttsFontSizeAttrName, "" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
-            } else if (name.equals("寸")) {
-                int scale;
-                if (count < 0)
-                    scale = 100;
-                else if (count < 5)
-                    scale = 50;
-                else if (count < 20)
-                    scale = count * 10;
-                else
-                    scale = 200;
-                attributes.put(ttsFontSizeAttrName, ((double) scale / 100.0) + "em");
-            }
-            updateStyles(s, styles);
-        }
-        public void updateStyles(Span s, Set<QName> styles) {
-            if (s.getFontFamily() != null) {
-                styles.add(ttsFontFamilyAttrName);
-            }
-            if (s.getFontSize() != null) {
-                styles.add(ttsFontSizeAttrName);
-            }
-            if (s.getFontStyle() != null) {
-                styles.add(ttsFontStyleAttrName);
-            }
-            if (s.getTextAlign() != null) {
-                styles.add(ttsTextAlignAttrName);
-            }
-            for (QName qn : s.getOtherAttributes().keySet()) {
-                String ns = qn.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE))
-                    styles.add(qn);
-            }
-        }
-    }
-
-    private static class AnnotatedRange {
-        public Annotation annotation;
-        public int start;
-        public int end;
-        public AnnotatedRange(Annotation annotation, int start, int end) {
-            this.annotation = annotation;
-            this.start = start;
-            this.end = end;
-        }
-        public Attribute getAttribute() {
-            return (annotation != null) ? (Attribute) annotation.getValue() : null;
-        }
-    };
-
-    private static class TextAttribute extends AttributedCharacterIterator.Attribute {
-        private static final long serialVersionUID = -2459432329768198134L;
-        public TextAttribute(String name) {
-            super(name);
-        }
-        public static final TextAttribute RUBY          = new TextAttribute("RUBY");
-        public static final TextAttribute KERNING       = new TextAttribute("KERNING");
-        public static final TextAttribute SHEAR         = new TextAttribute("SHEAR");
-        public static final TextAttribute SIZE          = new TextAttribute("SIZE");
-        public static final TextAttribute COMBINE       = new TextAttribute("COMBINE");
-        public static final TextAttribute WIDTH         = new TextAttribute("WIDTH");
-    }
-
-    public static class Screen {
-        private Locator locator;
-        private int number;
-        private int lastNumber;
-        private char letter;
-        private ClockTime in;
-        private ClockTime out;
-        private List<Attribute> attributes;
-        private AttributedString text;
-        public Screen(Locator locator, int lastNumber) {
-            this.locator = locator;
-            this.lastNumber = lastNumber;
-        }
-        public Locator getLocator() {
-            return locator;
-        }
-        public int getNumber() {
-            return number;
-        }
-        public int getLetter() {
-            return letter;
-        }
-        public ClockTime getInTime() {
-            return in;
-        }
-        public ClockTime getOutTime() {
-            return out;
-        }
-        public AttributedString getText() {
-            return text;
-        }
-        public boolean sameNumberAsLastScreen() {
-            return (number == 0) || (number == lastNumber);
-        }
-        public boolean empty() {
-            if (hasInOutCodes())
-                return false;
-            else if ((attributes != null) && (attributes.size() > 0))
-                return false;
-            else if (text != null)
-                return false;
-            else
-                return true;
-        }
-        public boolean hasInOutCodes() {
-            return (in != null) && (out != null);
-        }
-        public String getInTimeExpression() {
-            return makeTimeExpression(in);
-        }
-        public String getOutTimeExpression() {
-            return makeTimeExpression(out);
-        }
-        public void addAttribute(Attribute a) {
-            if (attributes == null)
-                attributes = new java.util.ArrayList<Attribute>();
-            attributes.add(a);
-        }
-        public String getPlacement(boolean[] retGlobal) {
-            if (attributes != null) {
-                for (Attribute a : attributes) {
-                    if (a.hasPlacement()) {
-                        return a.getPlacement(retGlobal);
-                    }
-                }
-            }
-            return null;
-        }
-        public String getAlignment(boolean[] retGlobal) {
-            if (attributes != null) {
-                for (Attribute a : attributes) {
-                    if (a.hasAlignment()) {
-                        return a.getAlignment(retGlobal);
-                    }
-                }
-            }
-            return null;
-        }
-        public String getShear(boolean[] retGlobal) {
-            if (attributes != null) {
-                for (Attribute a : attributes) {
-                    if (a.hasShear()) {
-                        return a.getShear(retGlobal);
-                    }
-                }
-            }
-            return null;
-        }
-        public String getKerning(boolean[] retGlobal) {
-            if (attributes != null) {
-                for (Attribute a : attributes) {
-                    if (a.hasKerning()) {
-                        return a.getKerning(retGlobal);
-                    }
-                }
-            }
-            return null;
-        }
-        public String getTypeface(boolean[] retGlobal) {
-            if (attributes != null) {
-                for (Attribute a : attributes) {
-                    if (a.hasTypeface()) {
-                        return a.getTypeface(retGlobal);
-                    }
-                }
-            }
-            return null;
-        }
-    }
-
-    private static final ObjectFactory ttmlFactory = new ObjectFactory();
-    private class State {
-        private Division division;              // current division being constructed
-        private Paragraph paragraph;            // current pargraph being constructed
-        private String globalPlacement;         // global placement
-        private String placement;               // current screen placement
-        private String globalAlignment;         // global alignment
-        private String alignment;               // current screen alignment
-        private String globalShear;             // global italics
-        private String shear;                   // current screen shear
-        private String globalKerning;           // global kerning
-        private String kerning;                 // current screen kerning
-        private String globalTypeface;          // global typeface
-        private String typeface;                // current screen kerning
-        private Map<String,Region> regions;     // active regions
-        private Set<QName> styles;
-        public State() {
-            this.division = ttmlFactory.createDivision();
-            this.globalPlacement = defaultPlacement;
-            this.globalAlignment = defaultAlignment;
-            this.globalShear = defaultShear;
-            this.globalKerning = defaultKerning;
-            this.globalTypeface = defaultTypeface;
-            this.regions = new java.util.TreeMap<String,Region>();
-            this.styles = new java.util.HashSet<QName>();
-        }
-        public void process(List<Screen> screens) {
-            for (Screen s: screens)
-                process(s);
-            finish();
-        }
-        public void populate(Head head) {
-            // styling
-            Styling styling = ttmlFactory.createStyling();
-            head.setStyling(styling);
-            // layout
-            Layout layout = ttmlFactory.createLayout();
-            for (Region r : regions.values())
-                layout.getRegion().add(r);
-            head.setLayout(layout);
-        }
-        public void populate(Body body, String defaultRegion) {
-            if (hasParagraph()) {
-                if (defaultRegion != null) {
-                    body.getOtherAttributes().put(regionAttrName, defaultRegion);
-                    maybeAddRegion(defaultRegion);
-                }
-                if (defaultWhitespace != null)
-                    body.getOtherAttributes().put(xmlSpaceAttrName, defaultWhitespace);
-                body.getDiv().add(division);
-            }
-        }
-        private void finish() {
-            process((Screen) null);
-        }
-        private boolean hasParagraph() {
-            return !division.getBlockOrEmbeddedClass().isEmpty();
-        }
-        private void process(Screen s) {
-            Paragraph p = this.paragraph;
-            if (isNonContinuation(s)) {
-                Paragraph pNew = populate(division, p);
-                if (s != null) {
-                    String begin;
-                    String end;
-                    if (s.hasInOutCodes()) {
-                        begin = s.getInTimeExpression();
-                        end = s.getOutTimeExpression();
-                    } else {
-                        begin = p.getBegin();
-                        end = p.getEnd();
-                    }
-                    pNew.setBegin(begin);
-                    pNew.setEnd(end);
-                    resetScreenAttributes();
-                    populateStyles(pNew, mergeDefaults(s.attributes));
-                    populateText(pNew, s.text, false, getBlockDirection(s));
-                    updateScreenAttributes(s);
-                }
-                this.paragraph = pNew;
-            } else {
-                populateText(p, s.text, true, getBlockDirection(s));
-            }
-        }
-        private Direction getBlockDirection(Screen s) {
-            Direction d;
-            String p = getPlacement(s, null);
-            if (p == null)
-                p = placement;
-            if (p == null)
-                p = globalPlacement;
-            if (p.startsWith("縦"))
-                d = Direction.RL;
-            else
-                d = Direction.TB;
-            return d;
-        }
-        private void resetScreenAttributes() {
-            placement = globalPlacement;
-            shear = globalShear;
-            kerning = globalKerning;
-            typeface = globalTypeface;
-        }
-        private void updateScreenAttributes(Screen s) {
-            boolean global[] = new boolean[1];
-            placement = getPlacement(s, global);
-            if (global[0])
-                globalPlacement = placement;
-            alignment = getAlignment(s, global);
-            if (global[0])
-                globalAlignment = alignment;
-            shear = getShear(s, global);
-            if (global[0])
-                globalShear = shear;
-            kerning = getKerning(s, global);
-            if (global[0])
-                globalKerning = kerning;
-            typeface = getTypeface(s, global);
-            if (global[0])
-                globalTypeface = typeface;
-        }
-        private String getPlacement(Screen s, boolean[] retGlobal) {
-            return s.getPlacement(retGlobal);
-        }
-        private String getAlignment(Screen s, boolean[] retGlobal) {
-            return s.getAlignment(retGlobal);
-        }
-        private String getShear(Screen s, boolean[] retGlobal) {
-            return s.getShear(retGlobal);
-        }
-        private String getKerning(Screen s, boolean[] retGlobal) {
-            return s.getKerning(retGlobal);
-        }
-        private String getTypeface(Screen s, boolean[] retGlobal) {
-            return s.getTypeface(retGlobal);
-        }
-        private boolean isNonContinuation(Screen s) {
-            if (s == null)                                                              // special 'final' screen, never treat as continuation
-                return true;
-            else if (!s.sameNumberAsLastScreen())                                       // a screen with a different number is considered a non-continuation
-                return true;
-            else if (s.hasInOutCodes())                                                 // a screen with time codes is considered a non-continuation
-                return true;
-            else if (isNewPlacement(s))                                                 // a screen with new placement is considered a non-continuation
-                return true;
-            else if (isNewAlignment(s))                                                 // a screen with new alignment is considered a non-continuation
-                return true;
-            else if (isNewShear(s))                                                     // a screen with new shear is considered a non-continuation
-                return true;
-            else if (isNewKerning(s))                                                   // a screen with new kerning is considered a non-continuation
-                return true;
-            else if (isNewTypeface(s))                                                  // a screen with new typeface is considered a non-continuation
-                return true;
-            else
-                return false;
-        }
-        private boolean isNewPlacement(Screen s) {
-            String newPlacement = s.getPlacement(null);
-            if (newPlacement != null) {
-                if ((placement != null) || !newPlacement.equals(placement))
-                    return true;                                                        // new placement is different from current placement
-                else
-                    return false;                                                       // new placement is same as current placement, treat as continuation
-            } else {
-                return false;                                                           // new placement not specified, treat as continuation
-            }
-        }
-        private boolean isNewAlignment(Screen s) {
-            String newAlignment = s.getAlignment(null);
-            if (newAlignment != null) {
-                if ((alignment != null) || !newAlignment.equals(alignment))
-                    return true;                                                        // new alignment is different from current alignment
-                else
-                    return false;                                                       // new alignment is same as current alignment, treat as continuation
-            } else {
-                return false;                                                           // new alignment not specified, treat as continuation
-            }
-        }
-        private boolean isNewShear(Screen s) {
-            String newShear = s.getShear(null);
-            if (newShear != null) {
-                if ((shear != null) || !newShear.equals(shear))
-                    return true;                                                        // new shear is different from current shear
-                else
-                    return false;                                                       // new shear is same as current shear, treat as continuation
-            } else {
-                return false;                                                           // new shear not specified, treat as continuation
-            }
-        }
-        private boolean isNewKerning(Screen s) {
-            String newKerning = s.getKerning(null);
-            if (newKerning != null) {
-                if ((kerning != null) || !newKerning.equals(kerning))
-                    return true;                                                        // new kerning is different from current kerning
-                else
-                    return false;                                                       // new kerning is same as current kerning, treat as continuation
-            } else {
-                return false;                                                           // new kerning not specified, treat as continuation
-            }
-        }
-        private boolean isNewTypeface(Screen s) {
-            String newTypeface = s.getTypeface(null);
-            if (newTypeface != null) {
-                if ((typeface != null) || !newTypeface.equals(typeface))
-                    return true;                                                        // new typeface is different from current typeface
-                else
-                    return false;                                                       // new typeface is same as current typeface, treat as continuation
-            } else {
-                return false;                                                           // new typeface not specified, treat as continuation
-            }
-        }
-        private Paragraph populate(Division d, Paragraph p) {
-            if ((p != null) && (p.getContent().size() > 0)) {
-                maybeWrapContentInSpan(p);
-                maybeAddRegion(p.getOtherAttributes().get(regionAttrName));
-                d.getBlockOrEmbeddedClass().add(p);
-            }
-            return ttmlFactory.createParagraph();
-        }
-        private void maybeAddRegion(String id) {
-            if (id != null) {
-                if (!regions.containsKey(id)) {
-                    Region r = ttmlFactory.createRegion();
-                    r.setId(id);
-                    populateStyles(r, id);
-                    regions.put(id, r);
-                }
-            }
-        }
-        private void populateText(Paragraph p, AttributedString as, boolean insertBreakBefore, Direction blockDirection) {
-            if (as != null) {
-                List<Serializable> content = p.getContent();
-                if (insertBreakBefore)
-                    content.add(ttmlFactory.createBr(ttmlFactory.createBreak()));
-                AttributedCharacterIterator aci = as.getIterator();
-                aci.first();
-                StringBuffer sb = new StringBuffer();
-                while (aci.current() != CharacterIterator.DONE) {
-                    int i = aci.getRunStart();
-                    int e = aci.getRunLimit();
-                    Map<AttributedCharacterIterator.Attribute,Object> attributes = aci.getAttributes();
-                    while (i < e) {
-                        sb.append(aci.setIndex(i++));
-                    }
-                    String text = sb.toString();
-                    if (!text.isEmpty()) {
-                        if (!attributes.isEmpty()) {
-                            populateAttributedText(content, text, attributes, blockDirection);
-                        } else {
-                            content.add(text);
-                        }
-                    }
-                    sb.setLength(0);
-                    aci.setIndex(e);
-                }
-            }
-        }
-        private void populateAttributedText(List<Serializable> content, String text, Map<AttributedCharacterIterator.Attribute,Object> attributes, Direction blockDirection) {
-            Span sEmphasis      = null;
-            Span sRuby          = null;
-            Span sCombine       = null;
-            Span sOuter         = null;
-            int numExclusive    = 0;
-            for (AttributedCharacterIterator.Attribute k : attributes.keySet()) {
-                Attribute a = (Attribute) attributes.get(k);
-                if (a.isEmphasis()) {
-                    sEmphasis = createEmphasis(text, a, blockDirection);
-                    ++numExclusive;
-                } else if (a.isRuby()) {
-                    sRuby = createRuby(text, a, blockDirection);
-                    ++numExclusive;
-                } else if (a.isCombine()) {
-                    sCombine = createCombine(text, a, blockDirection);
-                    ++numExclusive;
-                } else {
-                    if (sOuter == null)
-                        sOuter = createStyledSpan(null, a);
-                    else
-                        sOuter = augmentStyledSpan(sOuter, a);
-                }
-            }
-            if (numExclusive > 1)
-                throw new IllegalStateException();
-            if (sOuter == null) {
-                if (sEmphasis != null)
-                    sOuter = sEmphasis;
-                else if (sRuby != null)
-                    sOuter = sRuby;
-                else if (sCombine != null)
-                    sOuter = sCombine;
-            } else {
-                Span sInner = null;
-                if (sEmphasis != null)
-                    sInner = sEmphasis;
-                else if (sRuby != null)
-                    sInner = sRuby;
-                else if (sCombine != null)
-                    sInner = sCombine;
-                if (sInner != null) {
-                    sOuter.getContent().add(ttmlFactory.createSpan(sInner));
-                } else {
-                    sOuter.getContent().add(text);
-                }
-            }
-            if (sOuter != null)
-                content.add(ttmlFactory.createSpan(sOuter));
-        }
-        private Span createEmphasis(String text, Attribute a, Direction blockDirection) {
-            Span s = ttmlFactory.createSpan();
-            StringBuffer sb = new StringBuffer();
-            sb.append("dot");
-            AnnotationPosition rp = a.getRubyPosition(blockDirection);
-            if ((rp != null) && (rp != AnnotationPosition.OUTSIDE)) {
-                sb.append(' ');
-                sb.append(rp.name().toLowerCase());
-            }
-            s.getOtherAttributes().put(ttsTextEmphasisAttrName, sb.toString());
-            s.getContent().add(text);
-            return s;
-        }
-        private Span createRuby(String text, Attribute a, Direction blockDirection) {
-            Span sBase = ttmlFactory.createSpan();
-            sBase.getOtherAttributes().put(ttsRubyAttrName, "base");
-            sBase.getContent().add(text);
-            Span sText = ttmlFactory.createSpan();
-            sText.getOtherAttributes().put(ttsRubyAttrName, "text");
-            sText.getContent().add(a.annotation);
-            AnnotationPosition rp = a.getRubyPosition(blockDirection);
-            if (rp != null)
-                sText.setRubyPosition(rp);
-            Span sCont = ttmlFactory.createSpan();
-            sCont.getOtherAttributes().put(ttsRubyAttrName, "container");
-            sCont.getContent().add(ttmlFactory.createSpan(sBase));
-            sCont.getContent().add(ttmlFactory.createSpan(sText));
-            return sCont;
-        }
-        private Span createCombine(String text, Attribute a, Direction blockDirection) {
-            if (blockDirection != Direction.TB) {
-                Span s = ttmlFactory.createSpan();
-                s.getOtherAttributes().put(ttsTextCombineAttrName, "all");
-                s.getContent().add(text);
-                return s;
-            } else
-                return createStyledSpan(text, a);
-        }
-        private Span createStyledSpan(String text, Attribute a) {
-            Span s = ttmlFactory.createSpan();
-            populateStyles(s, a);
-            if (text != null)
-                s.getContent().add(text);
-            return s;
-        }
-        private Span augmentStyledSpan(Span s, Attribute a) {
-            populateStyles(s, a);
-            return s;
-        }
-        private List<Attribute> mergeDefaults(List<Attribute> attributes) {
-            boolean hasAlignment = false;
-            boolean hasKerning = false;
-            boolean hasPlacement = false;
-            boolean hasShear = false;
-            boolean hasTypeface = false;
-            if (attributes != null) {
-                for (Attribute a : attributes) {
-                    if (a.hasAlignment())
-                        hasAlignment = true;
-                    if (a.hasKerning())
-                        hasKerning = true;
-                    if (a.hasPlacement())
-                        hasPlacement = true;
-                    if (a.hasShear())
-                        hasShear = true;
-                    if (a.hasTypeface())
-                        hasTypeface = true;
-                }
-            }
-            if (hasAlignment && hasKerning && hasPlacement && hasShear && hasTypeface)
-                return attributes;
-            List<Attribute> mergedAttributes = attributes != null ? new java.util.ArrayList<Attribute>(attributes) : new java.util.ArrayList<Attribute>();
-            if (!hasAlignment) {
-                String v = alignment;
-                if (v == null)
-                    v = globalAlignment;
-                if (v != null) {
-                    AttributeSpecification as = knownAttributes.get(v);
-                    if (as != null)
-                        mergedAttributes.add(new Attribute(as, -1, false));
-                }
-            }
-            if (!hasKerning) {
-                String v = kerning;
-                if (v == null)
-                    v = globalKerning;
-                if (v != null) {
-                    AttributeSpecification as = knownAttributes.get("詰");
-                    if (as != null) {
-                        int count;
-                        try {
-                            count = Integer.parseInt(v);
-                        } catch (NumberFormatException e) {
-                            count = -1;
-                        }
-                        mergedAttributes.add(new Attribute(as, count, false));
-                    }
-                }
-            }
-            if (!hasPlacement) {
-                String v = placement;
-                if (v == null)
-                    v = globalPlacement;
-                if (v != null) {
-                    AttributeSpecification as = knownAttributes.get(v);
-                    if (as != null)
-                        mergedAttributes.add(new Attribute(as, -1, false));
-                }
-            }
-            if (!hasShear) {
-                String v = shear;
-                if (v == null)
-                    v = globalShear;
-                if (v != null) {
-                    AttributeSpecification as = knownAttributes.get("斜");
-                    if (as != null) {
-                        int count;
-                        try {
-                            count = Integer.parseInt(v);
-                        } catch (NumberFormatException e) {
-                            count = -1;
-                        }
-                        mergedAttributes.add(new Attribute(as, count, false));
-                    }
-                }
-            }
-            if (!hasTypeface) {
-                String v = typeface;
-                if (v == null)
-                    v = globalTypeface;
-                if (v != null) {
-                    AttributeSpecification as = knownAttributes.get(v);
-                    if (as != null)
-                        mergedAttributes.add(new Attribute(as, -1, false));
-                }
-            }
-            return mergedAttributes;
-        }
-        private void populateStyles(Region r, String id) {
-        }
-        private void populateStyles(Paragraph p, List<Attribute> attributes) {
-            if (attributes != null) {
-                for (Attribute a : attributes) {
-                    a.populate(p, styles, defaultRegion);
-                }
-            }
-        }
-        private void populateStyles(Span s, Attribute a) {
-            a.populate(s, styles);
-        }
-        private void maybeWrapContentInSpan(Paragraph p) {
-            String a = (alignment != null) ? alignment : globalAlignment;
-            if (isMixedAlignment(a)) {
-                TextAlign sa, pa;
-                if (a.equals("中頭")) {
-                    pa = TextAlign.CENTER;
-                    sa = TextAlign.START;
-                } else if (a.equals("中末")) {
-                    pa = TextAlign.CENTER;
-                    sa = TextAlign.END;
-                } else {
-                    pa = TextAlign.CENTER;
-                    sa = null;
-                }
-                if (sa != null) {
-                    Span s = ttmlFactory.createSpan();
-                    s.getContent().addAll(p.getContent());
-                    s.setTextAlign(sa);
-                    p.getContent().clear();
-                    p.getContent().add(ttmlFactory.createSpan(s));
-                    p.setTextAlign(pa);
-                }
-            }
-        }
-        private boolean isMixedAlignment(String alignment) {
-            if (alignment == null)
-                return false;
-            else if (alignment.equals("中頭"))
-                return true;
-            else if (alignment.equals("中末"))
-                return true;
-            else
-                return false;
-        }
-    }
-
-    public static class Results {
-        private static final String NOURI = "*URI NOT AVAILABLE*";
-        private static final String NOENCODING = "*ENCODING NOT AVAILABLE*";
-        private String uriString;
-        private boolean succeeded;
-        private int code;
-        private int flags;
-        private int errorsExpected;
-        private int errors;
-        private int warningsExpected;
-        private int warnings;
-        private String encodingName;
-        private Document document;
-        public Results() {
-            this.uriString = NOURI;
-            this.succeeded = false;
-            this.code = RV_USAGE;
-            this.encodingName = NOENCODING;
-        }
-        Results(String uriString, int rv, int errorsExpected, int errors, int warningsExpected, int warnings, Charset encoding, Document document) {
-            this.uriString = uriString;
-            this.succeeded = rvSucceeded(rv);
-            this.code = rvCode(rv);
-            this.flags = rvFlags(rv);
-            this.errorsExpected = errorsExpected;
-            this.errors = errors;
-            this.warningsExpected = warningsExpected;
-            this.warnings = warnings;
-            if (encoding != null)
-                this.encodingName = encoding.name();
-            else
-                this.encodingName = "unknown";
-            this.document = document;
-        }
-        public String getURIString() {
-            return uriString;
-        }
-        public boolean getSucceeded() {
-            return succeeded;
-        }
-        public int getCode() {
-            return code;
-        }
-        public int getFlags() {
-            return flags;
-        }
-        public int getErrorsExpected() {
-            return errorsExpected;
-        }
-        public int getErrors() {
-            return errors;
-        }
-        public int getWarningsExpected() {
-            return warningsExpected;
-        }
-        public int getWarnings() {
-            return warnings;
-        }
-        public String getEncodingName() {
-            return encodingName;
-        }
-        public Document getDocument() {
-            return document;
-        }
-    }
-
-    public static class ExternalParametersStore implements ExternalParameters {
-        private Map<String, Object> parameters = new java.util.HashMap<String, Object>();
-        public Object getParameter(String name) {
-            return parameters.get(name);
-        }
-        public Object setParameter(String name, Object value) {
-            return parameters.put(name, value);
-        }
     }
 
 }

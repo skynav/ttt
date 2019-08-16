@@ -38,6 +38,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.skynav.cap2tt.converter.Results;
 import com.skynav.ttv.util.Base64;
 import com.skynav.ttv.util.TextReporter;
 
@@ -60,7 +61,7 @@ public class ExternalReporterTestCase {
         URI uri = getDataURI(testData);
         Converter cvt = new Converter();
         cvt.convert(Arrays.asList(arguments), uri, reporter);
-        Converter.Results r = cvt.getResults(uri.toString());
+        Results r = cvt.getResults(uri.toString());
         assertNotNull(r);
         assertTrue(r.getWarnings() == 1);
         assertTrue(reporter.containsMappedMessage);
