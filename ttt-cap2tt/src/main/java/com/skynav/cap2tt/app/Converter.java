@@ -130,6 +130,7 @@ public class Converter implements ConverterContext {
 
     public static final String DEFAULT_INPUT_ENCODING           = "UTF-8";
     public static final String DEFAULT_OUTPUT_ENCODING          = "UTF-8";
+    public static final String DEFAULT_MODEL_NAME               = "ttml2";
 
     // uri related constants
     public static final String uriFileDescriptorScheme          = "fd";
@@ -240,6 +241,7 @@ public class Converter implements ConverterContext {
         { "hide-warnings",              "",         "hide warnings (but count them)" },
         { "hide-resource-location",     "",         "hide resource location (default: show)" },
         { "hide-resource-path",         "",         "hide resource path (default: show)" },
+        { "model",                      "NAME",     "specify model name (default: " + DEFAULT_MODEL_NAME + ")" },
         { "merge-styles",               "[BOOLEAN]","merge styles (default: see configuration)" },
         { "no-warn-on",                 "TOKEN",    "disable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
         { "no-verbose",                 "",         "disable verbose output (resets verbosity level to 0)" },
@@ -412,6 +414,7 @@ public class Converter implements ConverterContext {
     private String forceEncodingName;
     private boolean includeSource;
     private boolean mergeStyles;
+    private String modelName;
     @SuppressWarnings("unused")
     private boolean metadataCreation;
     private String outputDirectoryPath;
@@ -474,7 +477,6 @@ public class Converter implements ConverterContext {
             reporter = Reporters.getDefaultReporter();
         setReporter(reporter, reporterOutput, reporterOutputEncoding, reporterIncludeSource);
         setShowOutput(showOutput);
-        this.model = Models.getModel("ttml2");
     }
 
     // ConverterContext implementation
@@ -493,6 +495,13 @@ public class Converter implements ConverterContext {
 
     public Reporter getReporter() {
         return reporter;
+    }
+
+    public Model getModel() {
+        if (this.model != null)
+            return this.model;
+        else
+            return Models.getModel(DEFAULT_MODEL_NAME);
     }
 
     public void setResourceState(String key, Object value) {
@@ -560,7 +569,7 @@ public class Converter implements ConverterContext {
         else if (name.equals("gmtDateTimeFormat"))
             return gmtDateTimeFormat;
         else if (name.equals("model"))
-            return model;
+            return getModel();
         else if (name.equals("outputDirectory"))
             return outputDirectory;
         else if (name.equals("outputDocument"))
@@ -981,6 +990,12 @@ public class Converter implements ConverterContext {
                 b = parseBoolean(args.get(++index));
             }
             mergeStyles = b.booleanValue();
+        } else if (option.equals("model")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            modelName = args.get(++index);
+            // unlike other options, we immediately perform derivation on the model option
+            processModelOption(modelName);
         } else if (option.equals("no-warn-on")) {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
@@ -1091,6 +1106,18 @@ public class Converter implements ConverterContext {
         if (optionProcessor != null)
             nonOptionArgs = optionProcessor.processNonOptionArguments(nonOptionArgs);
         return nonOptionArgs;
+    }
+
+    private void processModelOption(String modelName) {
+        Model model;
+        if (modelName != null) {
+            model = Models.getModel(modelName);
+            if (model == null)
+                throw new InvalidOptionUsageException("model", "unknown model: " + modelName);
+        } else
+            model = Models.getModel(DEFAULT_MODEL_NAME);
+        model.configureReporter(reporter);
+        this.model = model;
     }
 
     private void processDerivedOptions(OptionProcessor optionProcessor) {
@@ -3375,7 +3402,7 @@ public class Converter implements ConverterContext {
 
     private Object unmarshall(Document d) {
         try {
-            JAXBContext context = JAXBContext.newInstance(model.getJAXBContextPath());
+            JAXBContext context = JAXBContext.newInstance(getModel().getJAXBContextPath());
             Binder<Node> binder = context.createBinder();
             Object unmarshalled = binder.unmarshal(d);
             if (unmarshalled instanceof JAXBElement<?>)

@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ExternalParameters;
 import com.skynav.ttv.util.Reporter;
 
@@ -59,6 +60,12 @@ public interface ConverterContext {
      * @return reporter instance
      */
     public Reporter getReporter();
+
+    /**
+     * Obtain reference to model.
+     * @return model instance
+     */
+    public Model getModel();
 
     /**
      * Establish or update a per-resource context state variable.
