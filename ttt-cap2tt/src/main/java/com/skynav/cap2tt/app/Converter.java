@@ -93,7 +93,6 @@ import com.skynav.ttv.app.UnknownOptionException;
 import com.skynav.ttv.app.UsageException;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
-import com.skynav.ttv.model.ttml2.tt.TimedText;         // [TBD] remove dependency
 import com.skynav.ttv.model.value.ClockTime;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Time;
@@ -3365,25 +3364,22 @@ public class Converter implements ConverterContext {
         return outputDocument;
     }
 
-    public TimedText convert(List<String> args, File input, Reporter reporter) {
+    public Object convert(List<String> args, File input, Reporter reporter) {
         return convert(args, input.toURI(), reporter);
     }
 
-    public TimedText convert(List<String> args, URI input, Reporter reporter) {
+    public Object convert(List<String> args, URI input, Reporter reporter) {
         Document d = convert(args, input, reporter, (Document) null);
         return (d != null) ? unmarshall(d) : null;
     }
 
-    private TimedText unmarshall(Document d) {
+    private Object unmarshall(Document d) {
         try {
             JAXBContext context = JAXBContext.newInstance(model.getJAXBContextPath());
             Binder<Node> binder = context.createBinder();
             Object unmarshalled = binder.unmarshal(d);
-            if (unmarshalled instanceof JAXBElement<?>) {
-                Object content = ((JAXBElement<?>) unmarshalled).getValue();
-                if (content instanceof TimedText)
-                    return (TimedText) content;
-            }
+            if (unmarshalled instanceof JAXBElement<?>)
+                return ((JAXBElement<?>) unmarshalled).getValue();
         } catch (UnmarshalException e) {
             reporter.logError(e);
         } catch (Exception e) {
