@@ -49,33 +49,34 @@ public class IMSC11ResourceConverter extends AbstractResourceConverter {
 
     @Override
     public boolean convert(List<Screen> screens) {
-        boolean fail = false;
+        boolean fail = !super.convert(screens);
         Reporter reporter = context.getReporter();
-        reporter.logInfo(reporter.message("i.014", "Converting resource ..."));
-        try {
-            //  convert screens to a div of paragraphs
-            IMSC11ResourceConverterState state = new IMSC11ResourceConverterState(this, ttmlFactory);
-            state.process(screens);
-            // populate body, extracting division from state object, must be performed prior to populating head
-            Body body = ttmlFactory.createBody();
-            state.populate(body, defaultRegion);
-            // populate head
-            Head head = ttmlFactory.createHead();
-            state.populate(head);
-            // populate root (tt)
-            TimedText tt = ttmlFactory.createTimedText();
-            tt.getOtherAttributes().put(ttvaModelAttrName, model.getName());
-            if (defaultLanguage != null)
-                tt.setLang(defaultLanguage);
-            if ((head.getStyling() != null) || (head.getLayout() != null))
-                tt.setHead(head);
-            if (!body.getDiv().isEmpty())
-                tt.setBody(body);
-            // marshal and serialize
-            if (!convertResource(ttmlFactory.createTt(tt)))
-                fail = true;
-        } catch (Exception e) {
-            reporter.logError(e);
+        if (!fail) {
+            try {
+                //  convert screens to a div of paragraphs
+                IMSC11ResourceConverterState state = new IMSC11ResourceConverterState(this, ttmlFactory);
+                state.process(screens);
+                // populate body, extracting division from state object, must be performed prior to populating head
+                Body body = ttmlFactory.createBody();
+                state.populate(body, defaultRegion);
+                // populate head
+                Head head = ttmlFactory.createHead();
+                state.populate(head);
+                // populate root (tt)
+                TimedText tt = ttmlFactory.createTimedText();
+                tt.getOtherAttributes().put(ttvaModelAttrName, model.getName());
+                if (defaultLanguage != null)
+                    tt.setLang(defaultLanguage);
+                if ((head.getStyling() != null) || (head.getLayout() != null))
+                    tt.setHead(head);
+                if (!body.getDiv().isEmpty())
+                    tt.setBody(body);
+                // marshal and serialize
+                if (!convertResource(ttmlFactory.createTt(tt)))
+                    fail = true;
+            } catch (Exception e) {
+                reporter.logError(e);
+            }
         }
         return !fail && (reporter.getResourceErrors() == 0);
     }

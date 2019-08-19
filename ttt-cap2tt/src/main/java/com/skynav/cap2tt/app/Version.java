@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 package com.skynav.cap2tt.app;
 
 public class Version {
-    public static final String CURRENT = "1.0.0dev";
+    public static final String CURRENT = "7.0-SNAPSHOT";
 
     public static String getVersion() {
         return CURRENT;
@@ -36,7 +36,3 @@ public class Version {
         System.out.println(getVersion());
     }
 }
-
-
-
-

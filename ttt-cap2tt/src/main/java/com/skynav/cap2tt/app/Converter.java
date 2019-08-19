@@ -195,8 +195,8 @@ public class Converter implements ConverterContext {
     public static final float[] shears = new float[] { 0, 6.345103f, 11.33775f, 16.78842f, 21.99875f, 27.97058f };
 
     // banner text
-    public static final String title = "CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
-    public static final String copyright = "Copyright 2014-16 Skynav, Inc.";
+    public static final String title = "Lambda CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
+    public static final String copyright = "Copyright 2014-19 Skynav, Inc.";
     public static final String banner = title + " " + copyright;
     public static final String creationSystem = "CAP2TT/" + Version.CURRENT;
 
@@ -245,7 +245,7 @@ public class Converter implements ConverterContext {
         { "hide-resource-location",     "",         "hide resource location (default: show)" },
         { "hide-resource-path",         "",         "hide resource path (default: show)" },
         { "model",                      "NAME",     "specify model name (default: " + DEFAULT_MODEL_NAME + ")" },
-        { "merge-styles",               "[BOOLEAN]","merge styles (default: see configuration)" },
+        { "merge-styles",               "[BOOLEAN]", "merge styles (default: see configuration)" },
         { "no-warn-on",                 "TOKEN",    "disable warning specified by warning TOKEN, where multiple instances of this option may be specified" },
         { "no-verbose",                 "",         "disable verbose output (resets verbosity level to 0)" },
         { "output-directory",           "DIRECTORY","specify path to directory where TTML output is to be written; ignored if --output-file is specified" },
@@ -253,7 +253,7 @@ public class Converter implements ConverterContext {
         { "output-encoding",            "ENCODING", "specify character encoding of TTML output (default: " + defaultOutputEncoding.name() + ")" },
         { "output-file",                "FILE",     "specify path to TTML output file, in which case only single input URI may be specified" },
         { "output-pattern",             "PATTERN",  "specify TTML output file name pattern" },
-        { "output-indent",              "",         "indent TTML output (default: no indent)" },
+        { "output-indent",              "[BOOLEAN]","indent TTML output (default: false)" },
         { "quiet",                      "",         "don't show banner" },
         { "reporter",                   "REPORTER", "specify reporter, where REPORTER is " + Reporters.getReporterNamesJoined() + " (default: " +
              Reporters.getDefaultReporterName()+ ")" },
@@ -261,6 +261,7 @@ public class Converter implements ConverterContext {
         { "reporter-file-encoding",     "ENCODING", "specify character encoding of reporter output (default: utf-8)" },
         { "reporter-file-append",       "",         "if reporter file already exists, then append output to it" },
         { "retain-document",            "",         "retain document in results object (default: don't retain)" },
+        { "show-models",                "",         "show supported output models" },
         { "show-repository",            "",         "show source code repository information" },
         { "show-resource-location",     "",         "show resource location (default: show)" },
         { "show-resource-path",         "",         "show resource path (default: show)" },
@@ -428,6 +429,7 @@ public class Converter implements ConverterContext {
     private boolean outputIndent;
     private boolean quiet;
     private boolean retainDocument;
+    private boolean showModels;
     private boolean showRepository;
     private boolean showWarningTokens;
     private String styleIdPattern;
@@ -1030,20 +1032,22 @@ public class Converter implements ConverterContext {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             outputFilePath = args.get(++index);
-        } else if (option.equals("output-pattern")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
-            outputPattern = args.get(++index);
         } else if (option.equals("output-indent")) {
             Boolean b = Boolean.TRUE;
             if ((index + 1 < numArgs) && isBoolean(args.get(index + 1))) {
                 b = parseBoolean(args.get(++index));
             }
             outputIndent = b.booleanValue();
+        } else if (option.equals("output-pattern")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            outputPattern = args.get(++index);
         } else if (option.equals("quiet")) {
             quiet = true;
         } else if (option.equals("retain-document")) {
             retainDocument = true;
+        } else if (option.equals("show-models")) {
+            showModels = true;
         } else if (option.equals("show-repository")) {
             showRepository = true;
         } else if (option.equals("show-resource-location")) {
@@ -1125,10 +1129,21 @@ public class Converter implements ConverterContext {
             model = Models.getModel(modelName);
             if (model == null)
                 throw new InvalidOptionUsageException("model", "unknown model: " + modelName);
+            else if (!isModelSupported(modelName))
+                throw new InvalidOptionUsageException("model", "unsupported model: " + modelName);
         } else
             model = Models.getModel(DEFAULT_MODEL_NAME);
         model.configureReporter(reporter);
         this.model = model;
+    }
+
+    private static boolean isModelSupported(String modelName) {
+        if (modelName.equals("ttml2"))
+            return true;
+        else if (modelName.equals("imsc11"))
+            return true;
+        else
+            return false;
     }
 
     private void processDerivedOptions(OptionProcessor optionProcessor) {
@@ -1342,6 +1357,23 @@ public class Converter implements ConverterContext {
             reporter.logInfo(reporter.message("i.026", "No configuration."));
     }
 
+    private void showModels() {
+        String defaultModelName = DEFAULT_MODEL_NAME;
+        StringBuffer sb = new StringBuffer();
+        sb.append("Output Models:\n");
+        for (String modelName : Models.getModelNames()) {
+            if (isModelSupported(modelName)) {
+                sb.append("  ");
+                sb.append(modelName);
+                if (modelName.equals(defaultModelName)) {
+                    sb.append(" (default)");
+                }
+                sb.append('\n');
+            }
+        }
+        getShowOutput().println(sb.toString());
+    }
+    
     private void showRepository() {
         getShowOutput().println(repositoryInfo);
     }
@@ -3197,7 +3229,7 @@ public class Converter implements ConverterContext {
                 break;
             if (!parseResource())
                 break;
-            if (!ResourceConverters.getConverter(model,this).convert(screens))
+            if (!ResourceConverters.getConverter(getModel(),this).convert(screens))
                 break;
         } while (false);
         int rv = rvValue();
@@ -3357,9 +3389,11 @@ public class Converter implements ConverterContext {
         int rv = 0;
         try {
             List<String> argsPreProcessed = preProcessOptions(args, null);
+            List<String> nonOptionArgs = parseArgs(argsPreProcessed, null);
             showBanner(getShowOutput(), (OptionProcessor) null);
             getShowOutput().flush();
-            List<String> nonOptionArgs = parseArgs(argsPreProcessed, null);
+            if (showModels)
+                showModels();
             if (showRepository)
                 showRepository();
             if (showWarningTokens)
