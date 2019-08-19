@@ -136,7 +136,11 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         this.indices = new int[GenerationIndex.values().length];
     }
 
-    public abstract boolean convert(List<Screen> screens);
+    public boolean convert(List<Screen> screens) {
+        Reporter reporter = context.getReporter();
+        reporter.logInfo(reporter.message("i.014", "Converting resource using {0} model ...", context.getModel().getName()));
+        return true;
+    }
 
     public String getOption(String name) {
         return context.getOption(name);
