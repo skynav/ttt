@@ -51,6 +51,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11InitialDuplicate() throws Exception {
+        performValidityTest("imsc11-valid-initial-duplicate.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11InitialMultiple() throws Exception {
+        performValidityTest("imsc11-valid-initial-multiple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11InitialNone() throws Exception {
+        performValidityTest("imsc11-valid-initial-none.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11InitialSingle() throws Exception {
+        performValidityTest("imsc11-valid-initial-single.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11LuminanceGainInTextProfile() throws Exception {
         performValidityTest("imsc11-valid-luminance-gain-in-text-profile.xml", -1, -1);
     }

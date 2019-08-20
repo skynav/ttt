@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - initial - multiple tts:* attributes per initial element -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <styling>
+      <!-- visual style properties -->
+      <initial tts:backgroundColor="black" tts:visibility="hidden"/>
+      <initial tts:border="1px solid red" tts:visibility="hidden"/>
+      <initial tts:color="green" tts:visibility="hidden"/>
+      <initial tts:direction="rtl" tts:visibility="hidden"/>
+      <initial tts:disparity="1px" tts:visibility="hidden"/>
+      <initial tts:display="none" tts:visibility="hidden"/>
+      <initial tts:displayAlign="after" tts:visibility="hidden"/>
+      <initial tts:extent="1px 1px" tts:visibility="hidden"/>
+      <initial tts:fontFamily="monospace" tts:visibility="hidden"/>
+      <initial tts:fontSize="1px" tts:visibility="hidden"/>
+      <initial tts:fontStyle="italic" tts:visibility="hidden"/>
+      <initial tts:fontWeight="bold" tts:visibility="hidden"/>
+      <initial tts:lineHeight="1px" tts:visibility="hidden"/>
+      <initial tts:luminanceGain="0.9" tts:visibility="hidden"/>
+      <initial tts:opacity="0.9" tts:visibility="hidden"/>
+      <initial tts:overflow="visible" tts:visibility="hidden"/>
+      <initial tts:padding="1px" tts:visibility="hidden"/>
+      <initial tts:position="bottom right" tts:visibility="hidden"/>
+      <initial tts:ruby="base" tts:visibility="hidden"/>
+      <initial tts:rubyAlign="spaceBetween" tts:visibility="hidden"/>
+      <initial tts:rubyPosition="after" tts:visibility="hidden"/>
+      <initial tts:rubyReserve="both" tts:visibility="hidden"/>
+      <initial tts:shear="1%" tts:visibility="hidden"/>
+      <initial tts:showBackground="whenActive" tts:visibility="hidden"/>
+      <initial tts:textAlign="end" tts:visibility="hidden"/>
+      <initial tts:textCombine="all" tts:visibility="hidden"/>
+      <initial tts:textDecoration="underline" tts:visibility="hidden"/>
+      <initial tts:textEmphasis="dot" tts:visibility="hidden"/>
+      <initial tts:textOutline="red 1px" tts:visibility="hidden"/>
+      <initial tts:textShadow="1px 1px red" tts:visibility="hidden"/>
+      <initial tts:unicodeBidi="embed" tts:visibility="hidden"/>
+      <initial tts:visibility="hidden" tts:display="none"/>
+      <initial tts:wrapOption="noWrap" tts:visibility="hidden"/>
+      <initial tts:writingMode="tblr" tts:visibility="hidden"/>
+      <initial tts:zIndex="1" tts:visibility="hidden"/>
+    </styling>
+  </head>
+</tt>
+
+
