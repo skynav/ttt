@@ -260,7 +260,7 @@ public class Converter implements ConverterContext {
         { "reporter-file",              "FILE",     "specify path to file to which reporter output is to be written" },
         { "reporter-file-encoding",     "ENCODING", "specify character encoding of reporter output (default: utf-8)" },
         { "reporter-file-append",       "",         "if reporter file already exists, then append output to it" },
-        { "retain-document",            "",         "retain document in results object (default: don't retain)" },
+        { "retain-document",            "[BOOLEAN]","retain document in results object (default: false)" },
         { "show-models",                "",         "show supported output models" },
         { "show-repository",            "",         "show source code repository information" },
         { "show-resource-location",     "",         "show resource location (default: show)" },
@@ -1045,7 +1045,11 @@ public class Converter implements ConverterContext {
         } else if (option.equals("quiet")) {
             quiet = true;
         } else if (option.equals("retain-document")) {
-            retainDocument = true;
+            Boolean b = Boolean.TRUE;
+            if ((index + 1 < numArgs) && isBoolean(args.get(index + 1))) {
+                b = parseBoolean(args.get(++index));
+            }
+            retainDocument = b.booleanValue();
         } else if (option.equals("show-models")) {
             showModels = true;
         } else if (option.equals("show-repository")) {
