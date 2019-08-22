@@ -1,3 +1,6 @@
 [submodule "external/ttml2-tests"]
 	path = external/ttml2-tests
 	url = git@github.com:w3c/ttml2-tests.git
+[submodule "external/ttml1-tests"]
+	path = external/ttml1-tests
+	url = git@github.com:w3c/ttml1-tests.git
