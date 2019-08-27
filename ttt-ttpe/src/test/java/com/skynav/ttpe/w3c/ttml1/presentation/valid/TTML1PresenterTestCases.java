@@ -43,19 +43,44 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
     }
     
     @Test
-    public void testTTML1BreakDurationImplicit() throws Exception {
-        performPresentationTest("ttml1-prstn-break-duration-implicit.xml");
+    public void testTTML1BackgroundColorBlock() throws Exception {
+        performPresentationTest("ttml1-prstn-background-color-block.xml");
     }
-    
+
+    @Test
+    public void testTTML1BackgroundColorInlineLRTB() throws Exception {
+        performPresentationTest("ttml1-prstn-background-color-inline-lrtb.xml");
+    }
+
+    @Test
+    public void testTTML1BackgroundColorInlineSpacesLRTB() throws Exception {
+        performPresentationTest("ttml1-prstn-background-color-inline-spaces-lrtb.xml");
+    }
+
+    @Test
+    public void testTTML1BackgroundColorRegion() throws Exception {
+        performPresentationTest("ttml1-prstn-background-color-region.xml");
+    }
+
     @Test
     public void testTTML1Break() throws Exception {
         performPresentationTest("ttml1-prstn-break.xml");
     }
     
     @Test
-    @Ignore
+    public void testTTML1BreakDurationImplicit() throws Exception {
+        performPresentationTest("ttml1-prstn-break-duration-implicit.xml");
+    }
+    
+    @Test
     public void testTTML1Color() throws Exception {
         performPresentationTest("ttml1-prstn-color.xml");
+    }
+
+    @Test
+    @Ignore
+    public void testTTML1ColorRGBWithLWSP() throws Exception {
+        performPresentationTest("ttml1-prstn-color-rgb-with-lwsp.xml");
     }
     
     @Test
@@ -63,6 +88,16 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml1-prstn-direction.xml");
     }
     
+    @Test
+    public void testTTML1Display1() throws Exception {
+        performPresentationTest("ttml1-prstn-display-1.xml");
+    }
+
+    @Test
+    public void testTTML1Display2() throws Exception {
+        performPresentationTest("ttml1-prstn-display-2.xml");
+    }
+
     @Test
     public void testTTML1FontFamily() throws Exception {
         performPresentationTest("ttml1-prstn-font-family.xml");
@@ -94,24 +129,28 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
     }
     
     @Test
-    @Ignore
-    public void testTTML1InteropForward() throws Exception {
-        performPresentationTest("ttml1-prstn-interop-forward.xml");
-    }
-    
-    @Test
     public void testTTML1LineHeight() throws Exception {
         performPresentationTest("ttml1-prstn-line-height.xml");
     }
     
+    @Test
+    public void testTTML1PaddingRegion() throws Exception {
+        performPresentationTest("ttml1-prstn-padding-region.xml");
+    }
+
     @Test
     public void testTTML1SetDurationImplicit() throws Exception {
         performPresentationTest("ttml1-prstn-set-duration-implicit.xml");
     }
     
     @Test
+    public void testTTML1ShowBackground() throws Exception {
+        performPresentationTest("ttml1-prstn-show-background.xml");
+    }
+
+    @Test
     public void testTTML1SpanImplicitDuration() throws Exception {
-        performPresentationTest("ttml1-prstn-span-implicit-duration.xml");
+        performPresentationTest("ttml1-prstn-span-duration-implicit.xml");
     }
     
     @Test
@@ -135,6 +174,16 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml1-prstn-visibility.xml");
     }
     
+    @Test
+    public void testTTML1Visibility1() throws Exception {
+        performPresentationTest("ttml1-prstn-visibility-1.xml");
+    }
+
+    @Test
+    public void testTTML1Visibility2() throws Exception {
+        performPresentationTest("ttml1-prstn-visibility-2.xml");
+    }
+
     @Test
     public void testTTML1ZIndex() throws Exception {
         performPresentationTest("ttml1-prstn-z-index.xml");
