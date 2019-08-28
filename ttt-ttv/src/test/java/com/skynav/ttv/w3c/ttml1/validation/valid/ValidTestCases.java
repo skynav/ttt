@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.ttml1;
+package com.skynav.ttv.w3c.ttml1.validation.valid;
 
 import java.net.URL;
 import java.util.List;
@@ -216,6 +216,12 @@ public class ValidTestCases {
             }
             if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MISMATCH) != 0) {
                 fail("Unexpected failure with expected error(s) mismatch.");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0) {
+                fail("Unexpected failure with unexpected warning(s).");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_EXPECTED_MISMATCH) != 0) {
+                fail("Unexpected failure with expected warning(s) mismatch.");
             }
         } else
             fail("Unexpected result code " + resultCode + ".");
