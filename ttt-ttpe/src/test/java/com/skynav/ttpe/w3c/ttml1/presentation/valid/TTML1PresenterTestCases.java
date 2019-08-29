@@ -139,6 +139,11 @@ public class TTML1PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML1RegionTiming() throws Exception {
+        performPresentationTest("ttml1-prstn-region-timing.xml");
+    }
+
+    @Test
     public void testTTML1SetDurationImplicit() throws Exception {
         performPresentationTest("ttml1-prstn-set-duration-implicit.xml");
     }
