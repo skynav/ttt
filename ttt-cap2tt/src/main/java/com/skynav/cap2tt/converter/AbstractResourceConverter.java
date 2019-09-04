@@ -146,6 +146,10 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         return context.getOption(name);
     }
     
+    public Object getOptionObject(String name) {
+        return context.getOptionObject(name);
+    }
+    
     public Map<String, AttributeSpecification> getKnownAttributes() {
         return context.getKnownAttributes();
     }

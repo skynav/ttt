@@ -36,8 +36,9 @@ import com.skynav.ttv.model.ttml2.ttd.AnnotationPosition;
 import com.skynav.ttv.model.ttml2.ttd.FontStyle;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 
-import static com.skynav.cap2tt.app.Converter.*;
-import static com.skynav.ttv.model.ttml.TTML2.Constants.*;
+import com.skynav.cap2tt.app.Converter;
+
+import static com.skynav.ttv.model.ttml.TTML2.Constants.NAMESPACE_TT_STYLE;
 
 public class Attribute {
     public static Attribute END = new Attribute();
@@ -56,7 +57,7 @@ public class Attribute {
     }
     private static String normalize(String s, boolean trim) {
         if (s != null) {
-            String t = parseText(s, false);
+            String t = Converter.parseText(s, false);
             if (t != null)
                 s = t;
             if (trim)
@@ -237,10 +238,10 @@ public class Attribute {
         else if (name.equals("斜")) {
             if (count < 0)
                 v = "3";
-            else if (count < shears.length) {
+            else if (count < Converter.defaultShearMap.length) {
                 v = Integer.toString(count);
             } else
-                v = Integer.toString(shears.length - 1);
+                v = Integer.toString(Converter.defaultShearMap.length - 1);
         } else
             v = null;
         if ((v != null) && (retGlobal != null) && (retGlobal.length > 0))
@@ -261,7 +262,7 @@ public class Attribute {
             retGlobal[0] = retain;
         return v;
     }
-    public AnnotationPosition getRubyPosition(Direction blockDirection) {
+    public AnnotationPosition getRubyPosition(Converter.Direction blockDirection) {
         AnnotationPosition v = null;
         String name = specification.getName();
         int l = name.length();
@@ -270,17 +271,17 @@ public class Attribute {
                 v = AnnotationPosition.OUTSIDE;
             else if (l > 2) {
                 char c = name.charAt(2);
-                if (blockDirection == Direction.TB) {
+                if (blockDirection == Converter.Direction.TB) {
                     if (c == '上')
                         v = AnnotationPosition.BEFORE;
                     else if (c == '下')
                         v = AnnotationPosition.AFTER;
-                } else if (blockDirection == Direction.RL) {
+                } else if (blockDirection == Converter.Direction.RL) {
                     if (c == '右')
                         v = AnnotationPosition.BEFORE;
                     else if (c == '左')
                         v = AnnotationPosition.AFTER;
-                } else if (blockDirection == Direction.LR) {
+                } else if (blockDirection == Converter.Direction.LR) {
                     if (c == '右')
                         v = AnnotationPosition.AFTER;
                     else if (c == '左')
@@ -321,25 +322,25 @@ public class Attribute {
             retGlobal[0] = retain;
         return v;
     }
-    public void populate(Paragraph p, Set<QName> styles, String defaultRegion) {
+    public void populate(Paragraph p, Set<QName> styles, String defaultRegion, float[] shears) {
         String name = specification.getName();
         Map<QName, String> attributes = p.getOtherAttributes();
         if (name.equals("横下")) {
-            attributes.put(regionAttrName, "横下");
+            attributes.put(Converter.regionAttrName, "横下");
         } else if (name.equals("横上")) {
-            attributes.put(regionAttrName, "横上");
+            attributes.put(Converter.regionAttrName, "横上");
         } else if (name.equals("横適")) {
-            attributes.put(regionAttrName, "横適");
+            attributes.put(Converter.regionAttrName, "横適");
         } else if (name.equals("横中")) {
-            attributes.put(regionAttrName, "横中");
+            attributes.put(Converter.regionAttrName, "横中");
         } else if (name.equals("縦右")) {
-            attributes.put(regionAttrName, "縦右");
+            attributes.put(Converter.regionAttrName, "縦右");
         } else if (name.equals("縦左")) {
-            attributes.put(regionAttrName, "縦左");
+            attributes.put(Converter.regionAttrName, "縦左");
         } else if (name.equals("縦適")) {
-            attributes.put(regionAttrName, "縦適");
+            attributes.put(Converter.regionAttrName, "縦適");
         } else if (name.equals("縦中")) {
-            attributes.put(regionAttrName, "縦中");
+            attributes.put(Converter.regionAttrName, "縦中");
         } else if (name.equals("中央")) {
             p.setTextAlign(TextAlign.CENTER);
         } else if (name.equals("行頭")) {
@@ -353,30 +354,30 @@ public class Attribute {
         } else if (name.equals("両端")) {
             p.setTextAlign(TextAlign.JUSTIFY);
         } else if (name.equals("横中央")) {
-            attributes.put(regionAttrName, "横下");
+            attributes.put(Converter.regionAttrName, "横下");
             p.setTextAlign(TextAlign.CENTER);
         } else if (name.equals("横中頭")) {
-            attributes.put(regionAttrName, "横下");
+            attributes.put(Converter.regionAttrName, "横下");
             p.setTextAlign(TextAlign.CENTER);
         } else if (name.equals("横中末")) {
-            attributes.put(regionAttrName, "横下");
+            attributes.put(Converter.regionAttrName, "横下");
             p.setTextAlign(TextAlign.CENTER);
         } else if (name.equals("横行頭")) {
-            attributes.put(regionAttrName, "横下");
+            attributes.put(Converter.regionAttrName, "横下");
             p.setTextAlign(TextAlign.START);
         } else if (name.equals("横行末")) {
-            attributes.put(regionAttrName, "横下");
+            attributes.put(Converter.regionAttrName, "横下");
             p.setTextAlign(TextAlign.END);
         } else if (name.equals("縦右頭")) {
-            attributes.put(regionAttrName, "縦右");
+            attributes.put(Converter.regionAttrName, "縦右");
         } else if (name.equals("縦左頭")) {
-            attributes.put(regionAttrName, "縦左");
+            attributes.put(Converter.regionAttrName, "縦左");
         } else if (name.equals("縦中頭")) {
-            attributes.put(regionAttrName, "縦中");
+            attributes.put(Converter.regionAttrName, "縦中");
             p.setTextAlign(TextAlign.CENTER);
         } else if (name.equals("正体")) {
             p.setFontStyle(FontStyle.NORMAL);
-            attributes.put(ttsFontShearAttrName, "0%");
+            attributes.put(Converter.ttsFontShearAttrName, "0%");
         } else if (name.equals("斜")) {
             float shear;
             if (count < 0)
@@ -391,7 +392,7 @@ public class Attribute {
             else
                 sb.append(Float.toString(shear));
             sb.append('%');
-            attributes.put(ttsFontShearAttrName, sb.toString());
+            attributes.put(Converter.ttsFontShearAttrName, sb.toString());
         } else if (name.equals("詰")) {
             String kerning;
             if (count < 0)
@@ -400,7 +401,7 @@ public class Attribute {
                 kerning = "none";
             else
                 kerning = "normal";
-            attributes.put(ttsFontKerningAttrName, kerning);
+            attributes.put(Converter.ttsFontKerningAttrName, kerning);
         } else if (name.equals("幅広")) {
             p.setFontSize("1.5em 1.0em");
         } else if (name.equals("倍角")) {
@@ -449,23 +450,23 @@ public class Attribute {
         } else if (name.equals("シネマ")) {
             p.setFontFamily("シネマ");
         }
-        String region = attributes.get(regionAttrName);
+        String region = attributes.get(Converter.regionAttrName);
         if ((region != null) && (defaultRegion != null) && region.equals(defaultRegion))
-            attributes.remove(regionAttrName);
+            attributes.remove(Converter.regionAttrName);
         updateStyles(p, styles);
     }
     public void updateStyles(Paragraph p, Set<QName> styles) {
         if (p.getFontFamily() != null) {
-            styles.add(ttsFontFamilyAttrName);
+            styles.add(Converter.ttsFontFamilyAttrName);
         }
         if (p.getFontSize() != null) {
-            styles.add(ttsFontSizeAttrName);
+            styles.add(Converter.ttsFontSizeAttrName);
         }
         if (p.getFontStyle() != null) {
-            styles.add(ttsFontStyleAttrName);
+            styles.add(Converter.ttsFontStyleAttrName);
         }
         if (p.getTextAlign() != null) {
-            styles.add(ttsTextAlignAttrName);
+            styles.add(Converter.ttsTextAlignAttrName);
         }
         for (QName qn : p.getOtherAttributes().keySet()) {
             String ns = qn.getNamespaceURI();
@@ -473,11 +474,11 @@ public class Attribute {
                 styles.add(qn);
         }
     }
-    public void populate(Span s, Set<QName> styles) {
+    public void populate(Span s, Set<QName> styles, float[] shears) {
         String name = specification.getName();
         Map<QName, String> attributes = s.getOtherAttributes();
         if (name.equals("正体")) {
-            attributes.put(ttsFontShearAttrName, "0%");
+            attributes.put(Converter.ttsFontShearAttrName, "0%");
         } else if (name.equals("斜")) {
             float shear;
             if (count < 0)
@@ -492,7 +493,7 @@ public class Attribute {
             else
                 sb.append(Float.toString(shear));
             sb.append('%');
-            attributes.put(ttsFontShearAttrName, sb.toString());
+            attributes.put(Converter.ttsFontShearAttrName, sb.toString());
         } else if (name.equals("詰")) {
             String kerning;
             if (count < 0)
@@ -501,15 +502,15 @@ public class Attribute {
                 kerning = "none";
             else
                 kerning = "normal";
-            attributes.put(ttsFontKerningAttrName, kerning);
+            attributes.put(Converter.ttsFontKerningAttrName, kerning);
         } else if (name.equals("幅広")) {
-            attributes.put(ttsFontSizeAttrName, "1.5em 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, "1.5em 1.0em");
         } else if (name.equals("倍角")) {
-            attributes.put(ttsFontSizeAttrName, "2.0em 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, "2.0em 1.0em");
         } else if (name.equals("半角")) {
-            attributes.put(ttsFontSizeAttrName, "0.5em 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, "0.5em 1.0em");
         } else if (name.equals("拗音")) {
-            attributes.put(ttsFontSizeAttrName, "0.9em 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, "0.9em 1.0em");
         } else if (name.equals("幅")) {
             int stretch;
             if (count < 0)
@@ -520,7 +521,7 @@ public class Attribute {
                 stretch = count * 10;
             else
                 stretch = 200;
-            attributes.put(ttsFontSizeAttrName, "" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, "" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
         } else if (name.equals("寸")) {
             int scale;
             if (count < 0)
@@ -531,22 +532,22 @@ public class Attribute {
                 scale = count * 10;
             else
                 scale = 200;
-            attributes.put(ttsFontSizeAttrName, ((double) scale / 100.0) + "em");
+            attributes.put(Converter.ttsFontSizeAttrName, ((double) scale / 100.0) + "em");
         }
         updateStyles(s, styles);
     }
     public void updateStyles(Span s, Set<QName> styles) {
         if (s.getFontFamily() != null) {
-            styles.add(ttsFontFamilyAttrName);
+            styles.add(Converter.ttsFontFamilyAttrName);
         }
         if (s.getFontSize() != null) {
-            styles.add(ttsFontSizeAttrName);
+            styles.add(Converter.ttsFontSizeAttrName);
         }
         if (s.getFontStyle() != null) {
-            styles.add(ttsFontStyleAttrName);
+            styles.add(Converter.ttsFontStyleAttrName);
         }
         if (s.getTextAlign() != null) {
-            styles.add(ttsTextAlignAttrName);
+            styles.add(Converter.ttsTextAlignAttrName);
         }
         for (QName qn : s.getOtherAttributes().keySet()) {
             String ns = qn.getNamespaceURI();
