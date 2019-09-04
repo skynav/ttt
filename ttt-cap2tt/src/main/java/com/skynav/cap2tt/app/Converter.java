@@ -147,6 +147,7 @@ public class Converter implements ConverterContext {
     public static Charset defaultEncoding;
     public static Charset defaultOutputEncoding;
     public static final String defaultOutputFileNamePattern     = "tt{0,number,0000}.xml";
+    public static final float[] defaultShearMap                 = new float[] { 0, 6.345103f, 11.33775f, 16.78842f, 21.99875f, 27.97058f };
     public static final String defaultStyleIdPattern            = "s{0}";
 
     static {
@@ -190,9 +191,6 @@ public class Converter implements ConverterContext {
 
     // ttv annotation names
     public static final QName ttvaModelAttrName = new QName(Annotations.getNamespace(), "model");
-
-    // miscellaneous
-    public static final float[] shears = new float[] { 0, 6.345103f, 11.33775f, 16.78842f, 21.99875f, 27.97058f };
 
     // banner text
     public static final String title = "Lambda CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
@@ -261,6 +259,7 @@ public class Converter implements ConverterContext {
         { "reporter-file-encoding",     "ENCODING", "specify character encoding of reporter output (default: utf-8)" },
         { "reporter-file-append",       "",         "if reporter file already exists, then append output to it" },
         { "retain-document",            "[BOOLEAN]","retain document in results object (default: false)" },
+        { "shear-map",                  "SHEARS",   "specify shear map (default: \"" + getDefaultShearMap() + "\")" },
         { "show-models",                "",         "show supported output models" },
         { "show-repository",            "",         "show source code repository information" },
         { "show-resource-location",     "",         "show resource location (default: show)" },
@@ -429,6 +428,7 @@ public class Converter implements ConverterContext {
     private boolean outputIndent;
     private boolean quiet;
     private boolean retainDocument;
+    private String shearMap;
     private boolean showModels;
     private boolean showRepository;
     private boolean showWarningTokens;
@@ -445,6 +445,7 @@ public class Converter implements ConverterContext {
     private double parsedExternalFrameRate;
     private double parsedExternalDuration;
     private double[] parsedExternalExtent;
+    private float[] parsedShearMap;
     private MessageFormat styleIdPatternFormatter;
 
     // global processing state
@@ -589,6 +590,8 @@ public class Converter implements ConverterContext {
             return outputFile;
         else if (name.equals("outputPatternFormatter"))
             return outputPatternFormatter;
+        else if (name.equals("shears"))
+            return parsedShearMap;
         else if (name.equals("styleIdPatternFormatter"))
             return styleIdPatternFormatter;
         else
@@ -719,17 +722,17 @@ public class Converter implements ConverterContext {
                 String option = arg.substring(2);
                 if (option.equals("reporter")) {
                     if (i + 1 >= numArgs)
-                        throw new MissingOptionArgumentException("--" + option);
+                        throw new MissingOptionArgumentException(option);
                     reporterName = args.get(i + 1);
                     ++i;
                 } else if (option.equals("reporter-file")) {
                     if (i + 1 >= numArgs)
-                        throw new MissingOptionArgumentException("--" + option);
+                        throw new MissingOptionArgumentException(option);
                     reporterFileName = args.get(i + 1);
                     ++i;
                 } else if (option.equals("reporter-file-encoding")) {
                     if (i + 1 >= numArgs)
-                        throw new MissingOptionArgumentException("--" + option);
+                        throw new MissingOptionArgumentException(option);
                     reporterFileEncoding = args.get(i + 1);
                     ++i;
                 } else if (option.equals("reporter-file-append")) {
@@ -756,7 +759,7 @@ public class Converter implements ConverterContext {
                 String option = arg.substring(2);
                 if (option.equals("config")) {
                     if (i + 1 >= numArgs)
-                        throw new MissingOptionArgumentException("--" + option);
+                        throw new MissingOptionArgumentException(option);
                     configFilePath = args.get(i + 1);
                     ++i;
                 } else {
@@ -913,8 +916,8 @@ public class Converter implements ConverterContext {
                 debug = 2;
             reporter.setDebugLevel(debug);
         } else if (option.equals("debug-level")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             String level = args.get(++index);
             int debugNew;
             try {
@@ -926,64 +929,64 @@ public class Converter implements ConverterContext {
             if (debugNew > debug)
                 reporter.setDebugLevel(debugNew);
         } else if (option.equals("default-alignment")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             defaultAlignment = args.get(++index);
         } else if (option.equals("default-kerning")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             defaultKerning = args.get(++index);
         } else if (option.equals("default-language")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             defaultLanguage = args.get(++index);
         } else if (option.equals("default-placement")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             defaultPlacement = args.get(++index);
         } else if (option.equals("default-region")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             defaultRegion = args.get(++index);
         } else if (option.equals("default-shear")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             defaultShear = args.get(++index);
         } else if (option.equals("default-typeface")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             defaultTypeface = args.get(++index);
         } else if (option.equals("default-whitespace")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             defaultWhitespace = args.get(++index);
             if (!defaultWhitespace.equals("default") && !defaultWhitespace.equals("preserve"))
                 throw new InvalidOptionUsageException("default-whitespace", getReporter().message("x.020", "unknown whitespace value: {0}", arg));
         } else if (option.equals("disable-warnings")) {
             reporter.disableWarnings();
         } else if (option.equals("expect-errors")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             expectedErrors = args.get(++index);
         } else if (option.equals("expect-warnings")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             expectedWarnings = args.get(++index);
         } else if (option.equals("external-duration")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             externalDuration = args.get(++index);
         } else if (option.equals("external-extent")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             externalExtent = args.get(++index);
         } else if (option.equals("external-frame-rate")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             externalFrameRate = args.get(++index);
         } else if (option.equals("force-encoding")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             forceEncodingName = args.get(++index);
         } else if (option.equals("help")) {
             throw new ShowUsageException();
@@ -1000,23 +1003,23 @@ public class Converter implements ConverterContext {
             }
             mergeStyles = b.booleanValue();
         } else if (option.equals("model")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             modelName = args.get(++index);
             // unlike other options, we immediately perform derivation on the model option
             processModelOption(modelName);
         } else if (option.equals("no-warn-on")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             String token = args.get(++index);
             if (!reporter.hasDefaultWarning(token))
-                throw new InvalidOptionUsageException("--" + option, reporter.message("x.005", "token ''{0}'' is not a recognized warning token", token));
+                throw new InvalidOptionUsageException(option, reporter.message("x.005", "token ''{0}'' is not a recognized warning token", token));
             reporter.disableWarning(token);
         } else if (option.equals("no-verbose")) {
             reporter.setVerbosityLevel(0);
         } else if (option.equals("output-directory")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             outputDirectoryPath = args.get(++index);
         } else if (option.equals("output-disable")) {
             Boolean b = Boolean.TRUE;
@@ -1025,12 +1028,12 @@ public class Converter implements ConverterContext {
             }
             outputDisabled = b.booleanValue();
         } else if (option.equals("output-encoding")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             outputEncodingName = args.get(++index);
         } else if (option.equals("output-file")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             outputFilePath = args.get(++index);
         } else if (option.equals("output-indent")) {
             Boolean b = Boolean.TRUE;
@@ -1039,8 +1042,8 @@ public class Converter implements ConverterContext {
             }
             outputIndent = b.booleanValue();
         } else if (option.equals("output-pattern")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             outputPattern = args.get(++index);
         } else if (option.equals("quiet")) {
             quiet = true;
@@ -1050,6 +1053,10 @@ public class Converter implements ConverterContext {
                 b = parseBoolean(args.get(++index));
             }
             retainDocument = b.booleanValue();
+        } else if (option.equals("shear-map")) {
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
+            shearMap = args.get(++index);
         } else if (option.equals("show-models")) {
             showModels = true;
         } else if (option.equals("show-repository")) {
@@ -1061,12 +1068,12 @@ public class Converter implements ConverterContext {
         } else if (option.equals("show-warning-tokens")) {
             showWarningTokens = true;
         } else if (option.equals("style-id-pattern")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             styleIdPattern = args.get(++index);
         } else if (option.equals("style-id-sequence-start")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             String optionArgument = args.get(++index);
             try {
                 int number = Integer.parseInt(optionArgument);
@@ -1074,23 +1081,23 @@ public class Converter implements ConverterContext {
                     throw new NumberFormatException();
                 styleIdSequenceStart = number;
             } catch (NumberFormatException e) {
-                throw new InvalidOptionUsageException("--" + option, reporter.message("x.006", "number ''{0}'' is not a non-negative integer", optionArgument));
+                throw new InvalidOptionUsageException(option, reporter.message("x.006", "number ''{0}'' is not a non-negative integer", optionArgument));
             }
         } else if (option.equals("treat-warning-as-error")) {
             reporter.setTreatWarningAsError(true);
         } else if (option.equals("verbose")) {
             reporter.incrementVerbosityLevel();
         } else if (option.equals("warn-on")) {
-            if (index + 1 > numArgs)
-                throw new MissingOptionArgumentException("--" + option);
+            if (index + 1 >= numArgs)
+                throw new MissingOptionArgumentException(option);
             String token = args.get(++index);
             if (!reporter.hasDefaultWarning(token))
-                throw new InvalidOptionUsageException("--" + option, reporter.message("x.005", "token ''{0}'' is not a recognized warning token", token));
+                throw new InvalidOptionUsageException(option, reporter.message("x.005", "token ''{0}'' is not a recognized warning token", token));
             reporter.enableWarning(token);
         } else if ((optionProcessor != null) && optionProcessor.hasOption(args.get(index))) {
             return optionProcessor.parseOption(args, index);
         } else
-            throw new UnknownOptionException("--" + option);
+            throw new UnknownOptionException(option);
         return index + 1;
     }
 
@@ -1245,6 +1252,29 @@ public class Converter implements ConverterContext {
             outputPattern = defaultOutputFileNamePattern;
         this.outputPattern = outputPattern;
         this.outputPatternFormatter = new MessageFormat(outputPattern, Locale.US);
+        // shear map
+        if (shearMap != null) {
+            String[] shears = shearMap.split("\\s+");
+            int expectedShearCount = defaultShearMap.length;
+            float[] map = new float[expectedShearCount];
+            for (int i = 0; i < expectedShearCount; ++i) {
+                if (i < shears.length) {
+                    String shear = shears[i];
+                    try {
+                        map[i] = Float.parseFloat(shear);
+                    } catch (NumberFormatException e) {
+                        throw new InvalidOptionUsageException("shear-map",
+                            reporter.message("x.026", "shear[{0,number,integer}] ''{1}'' is not a float", i, shear));
+                    }
+                } else {
+                    throw new InvalidOptionUsageException("shear-map",
+                        reporter.message("x.027", "missing shear value(s), expected {0,number,integer}, got {1,number,integer} values",
+                        expectedShearCount, shears.length));
+                }
+            }
+            parsedShearMap = map;
+        } else
+            parsedShearMap = defaultShearMap;
         // style id pattern formatter
         if (styleIdPattern == null)
             styleIdPattern = defaultStyleIdPattern;
@@ -3537,6 +3567,16 @@ public class Converter implements ConverterContext {
                 sb.append("%20");
             else
                 sb.append(c);
+        }
+        return sb.toString();
+    }
+
+    private static String getDefaultShearMap() {
+        StringBuffer sb = new StringBuffer();
+        for (float shear : defaultShearMap) {
+            if (sb.length() > 0)
+                sb.append(' ');
+            sb.append(Float.toString(shear));
         }
         return sb.toString();
     }

@@ -51,6 +51,7 @@ public abstract class AbstractResourceConverterState {
     protected String typeface;                // current screen kerning
     protected String defaultRegion;           // default region
     protected String defaultWhitespace;       // default whitespace
+    protected float[] shears;                 // shear map
     protected Set<QName> styles;              // styles
 
     protected AbstractResourceConverterState(ResourceConverter converter) {
@@ -62,6 +63,7 @@ public abstract class AbstractResourceConverterState {
         this.globalTypeface = converter.getOption("defaultTypeface");
         this.defaultRegion = converter.getOption("defaultRegion");
         this.defaultWhitespace = converter.getOption("defaultWhitespace");
+        this.shears = (float[]) converter.getOptionObject("shears");
         this.styles = new java.util.HashSet<QName>();
     }
 

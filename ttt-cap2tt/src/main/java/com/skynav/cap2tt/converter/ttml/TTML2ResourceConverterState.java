@@ -294,13 +294,13 @@ public class TTML2ResourceConverterState extends AbstractResourceConverterState 
     private void populateStyles(Paragraph p, List<Attribute> attributes, String defaultRegion) {
         if (attributes != null) {
             for (Attribute a : attributes) {
-                a.populate(p, styles, defaultRegion);
+                a.populate(p, styles, defaultRegion, shears);
             }
         }
     }
 
     private void populateStyles(Span s, Attribute a) {
-        a.populate(s, styles);
+        a.populate(s, styles, shears);
     }
 
     private void maybeWrapContentInSpan(Paragraph p) {

@@ -31,5 +31,6 @@ import java.util.Map;
 public interface ResourceConverter {
     public boolean convert(List<Screen> screens);
     public String getOption(String name);
+    public Object getOptionObject(String name);
     public Map<String, AttributeSpecification> getKnownAttributes();
 }
