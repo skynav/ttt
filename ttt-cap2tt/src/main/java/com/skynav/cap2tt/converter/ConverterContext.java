@@ -129,4 +129,10 @@ public interface ConverterContext {
      */
     public Map<String, AttributeSpecification> getKnownAttributes();
 
+    /**
+     * Determine if IMSC constraints apply.
+     * @return true if IMSC constraints apply
+     */
+    public boolean useIMSCConstraints();
+
 }

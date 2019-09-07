@@ -80,7 +80,6 @@ public class ConverterTestDriver {
             args.add("--expect-warnings");
             args.add(Integer.toString(expectedWarnings));
         }
-        args.add("--retain-document");
         maybeAddConfiguration(args, uri);
         if (additionalOptions != null) {
             args.addAll(java.util.Arrays.asList(additionalOptions));

@@ -154,6 +154,10 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         return context.getKnownAttributes();
     }
 
+    public boolean useIMSCConstraints() {
+        return context.useIMSCConstraints();
+    }
+
     // concrete subclass support
 
     protected boolean convertResource(JAXBElement<?> tt) {

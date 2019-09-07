@@ -53,6 +53,7 @@ public abstract class AbstractResourceConverterState {
     protected String defaultWhitespace;       // default whitespace
     protected float[] shears;                 // shear map
     protected Set<QName> styles;              // styles
+    protected boolean imsc;                   // imsc constraints apply
 
     protected AbstractResourceConverterState(ResourceConverter converter) {
         this.converter = converter;
@@ -65,6 +66,7 @@ public abstract class AbstractResourceConverterState {
         this.defaultWhitespace = converter.getOption("defaultWhitespace");
         this.shears = (float[]) converter.getOptionObject("shears");
         this.styles = new java.util.HashSet<QName>();
+        this.imsc = converter.useIMSCConstraints();
     }
 
     public void process(List<Screen> screens) {
