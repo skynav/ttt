@@ -322,7 +322,7 @@ public class Attribute {
             retGlobal[0] = retain;
         return v;
     }
-    public void populate(Paragraph p, Set<QName> styles, String defaultRegion, float[] shears) {
+    public void populate(Paragraph p, Set<QName> styles, String defaultRegion, float[] shears, boolean imsc) {
         String name = specification.getName();
         Map<QName, String> attributes = p.getOtherAttributes();
         if (name.equals("横下")) {
@@ -377,7 +377,7 @@ public class Attribute {
             p.setTextAlign(TextAlign.CENTER);
         } else if (name.equals("正体")) {
             p.setFontStyle(FontStyle.NORMAL);
-            attributes.put(Converter.ttsFontShearAttrName, "0%");
+            attributes.put(!imsc ? Converter.ttsFontShearAttrName : Converter.ttsShearAttrName, "0%");
         } else if (name.equals("斜")) {
             float shear;
             if (count < 0)
@@ -392,8 +392,8 @@ public class Attribute {
             else
                 sb.append(Float.toString(shear));
             sb.append('%');
-            attributes.put(Converter.ttsFontShearAttrName, sb.toString());
-        } else if (name.equals("詰")) {
+            attributes.put(!imsc ? Converter.ttsFontShearAttrName : Converter.ttsShearAttrName, sb.toString());
+        } else if (name.equals("詰") && !imsc) {
             String kerning;
             if (count < 0)
                 kerning = "normal";
@@ -403,35 +403,43 @@ public class Attribute {
                 kerning = "normal";
             attributes.put(Converter.ttsFontKerningAttrName, kerning);
         } else if (name.equals("幅広")) {
-            p.setFontSize("1.5em 1.0em");
+            p.setFontSize(!imsc ? "1.5em 1.0em" : "1.0em");
         } else if (name.equals("倍角")) {
-            p.setFontSize("2.0em 1.0em");
+            p.setFontSize(!imsc ? "2.0em 1.0em" : "1.0em");
         } else if (name.equals("半角")) {
-            p.setFontSize("0.5em 1.0em");
+            p.setFontSize(!imsc ? "0.5em 1.0em" : "1.0em");
         } else if (name.equals("拗音")) {
-            p.setFontSize("0.9em 1.0em");
+            p.setFontSize(!imsc ? "0.9em 1.0em" : "1.0em");
         } else if (name.equals("幅")) {
-            int stretch;
-            if (count < 0)
-                stretch = 100;
-            else if (count < 5)
-                stretch = 50;
-            else if (count < 20)
-                stretch = count * 10;
-            else
-                stretch = 200;
-            p.setFontSize("" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
+            if (!imsc) {
+                int stretch;
+                if (count < 0)
+                    stretch = 100;
+                else if (count < 5)
+                    stretch = 50;
+                else if (count < 20)
+                    stretch = count * 10;
+                else
+                    stretch = 200;
+                p.setFontSize("" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
+            } else {
+                p.setFontSize("1.0em");
+            }
         } else if (name.equals("寸")) {
-            int scale;
-            if (count < 0)
-                scale = 100;
-            else if (count < 5)
-                scale = 50;
-            else if (count < 20)
-                scale = count * 10;
-            else
-                scale = 200;
-            p.setFontSize(((double) scale / 100.0) + "em");
+            if (!imsc) {
+                int scale;
+                if (count < 0)
+                    scale = 100;
+                else if (count < 5)
+                    scale = 50;
+                else if (count < 20)
+                    scale = count * 10;
+                else
+                    scale = 200;
+                p.setFontSize(((double) scale / 100.0) + "em");
+            } else {
+                p.setFontSize("1.0em");
+            }
         } else if (name.equals("継続")) {
         } else if (name.equals("丸ゴ")) {
             p.setFontFamily("丸ゴ");
@@ -474,11 +482,14 @@ public class Attribute {
                 styles.add(qn);
         }
     }
-    public void populate(Span s, Set<QName> styles, float[] shears) {
+    public void populate(Span s, Set<QName> styles, float[] shears, boolean imsc) {
         String name = specification.getName();
         Map<QName, String> attributes = s.getOtherAttributes();
         if (name.equals("正体")) {
-            attributes.put(Converter.ttsFontShearAttrName, "0%");
+            if (imsc)
+                attributes.put(Converter.ttsFontStyleAttrName, "normal");
+            else
+                attributes.put(Converter.ttsFontShearAttrName, "0%");
         } else if (name.equals("斜")) {
             float shear;
             if (count < 0)
@@ -487,14 +498,18 @@ public class Attribute {
                 shear = shears[count];
             else
                 shear = shears[shears.length - 1];
-            StringBuffer sb = new StringBuffer();
-            if (shear == 0)
-                sb.append('0');
-            else
-                sb.append(Float.toString(shear));
-            sb.append('%');
-            attributes.put(Converter.ttsFontShearAttrName, sb.toString());
-        } else if (name.equals("詰")) {
+            if (imsc) {
+                attributes.put(Converter.ttsFontStyleAttrName, (shear == 0) ? "normal" : "oblique");
+            } else {
+                StringBuffer sb = new StringBuffer();
+                if (shear == 0)
+                    sb.append('0');
+                else
+                    sb.append(Float.toString(shear));
+                sb.append('%');
+                attributes.put(Converter.ttsFontShearAttrName, sb.toString());
+            }
+        } else if (name.equals("詰") && !imsc) {
             String kerning;
             if (count < 0)
                 kerning = "auto";
@@ -504,35 +519,43 @@ public class Attribute {
                 kerning = "normal";
             attributes.put(Converter.ttsFontKerningAttrName, kerning);
         } else if (name.equals("幅広")) {
-            attributes.put(Converter.ttsFontSizeAttrName, "1.5em 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, !imsc ? "1.5em 1.0em" : "1.0em");
         } else if (name.equals("倍角")) {
-            attributes.put(Converter.ttsFontSizeAttrName, "2.0em 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, !imsc ? "2.0em 1.0em" : "1.0em");
         } else if (name.equals("半角")) {
-            attributes.put(Converter.ttsFontSizeAttrName, "0.5em 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, !imsc ? "0.5em 1.0em" : "1.0em");
         } else if (name.equals("拗音")) {
-            attributes.put(Converter.ttsFontSizeAttrName, "0.9em 1.0em");
+            attributes.put(Converter.ttsFontSizeAttrName, !imsc ? "0.9em 1.0em" : "1.0em");
         } else if (name.equals("幅")) {
-            int stretch;
-            if (count < 0)
-                stretch = 100;
-            else if (count < 5)
-                stretch = 50;
-            else if (count < 20)
-                stretch = count * 10;
-            else
-                stretch = 200;
-            attributes.put(Converter.ttsFontSizeAttrName, "" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
+            if (imsc) {
+                attributes.put(Converter.ttsFontSizeAttrName, "1.0em");
+            } else {
+                int stretch;
+                if (count < 0)
+                    stretch = 100;
+                else if (count < 5)
+                    stretch = 50;
+                else if (count < 20)
+                    stretch = count * 10;
+                else
+                    stretch = 200;
+                attributes.put(Converter.ttsFontSizeAttrName, "" + Double.toString((double) stretch / 100.0) + "em" + " 1.0em");
+            }
         } else if (name.equals("寸")) {
-            int scale;
-            if (count < 0)
-                scale = 100;
-            else if (count < 5)
-                scale = 50;
-            else if (count < 20)
-                scale = count * 10;
-            else
-                scale = 200;
-            attributes.put(Converter.ttsFontSizeAttrName, ((double) scale / 100.0) + "em");
+            if (imsc) {
+                attributes.put(Converter.ttsFontSizeAttrName, "1.0em");
+            } else {
+                int scale;
+                if (count < 0)
+                    scale = 100;
+                else if (count < 5)
+                    scale = 50;
+                else if (count < 20)
+                    scale = count * 10;
+                else
+                    scale = 200;
+                attributes.put(Converter.ttsFontSizeAttrName, ((double) scale / 100.0) + "em");
+            }
         }
         updateStyles(s, styles);
     }

@@ -186,6 +186,7 @@ public class Converter implements ConverterContext {
     public static final QName ttsFontKerningAttrName = new QName(NAMESPACE_TT_STYLE, "fontKerning");
     public static final QName ttsFontShearAttrName = new QName(NAMESPACE_TT_STYLE, "fontShear");
     public static final QName ttsRubyAttrName = new QName(NAMESPACE_TT_STYLE, "ruby");
+    public static final QName ttsShearAttrName = new QName(NAMESPACE_TT_STYLE, "shear");
     public static final QName ttsTextEmphasisAttrName = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
     public static final QName ttsTextCombineAttrName = new QName(NAMESPACE_TT_STYLE, "textCombine");
 
@@ -605,6 +606,14 @@ public class Converter implements ConverterContext {
     
     public Map<String, AttributeSpecification> getKnownAttributes() {
         return knownAttributes;
+    }
+
+    public boolean useIMSCConstraints() {
+        String modelName = getModel().getName();
+        if (modelName.equals("imsc11"))
+            return true;
+        else
+            return false;
     }
 
     // Converter implementation

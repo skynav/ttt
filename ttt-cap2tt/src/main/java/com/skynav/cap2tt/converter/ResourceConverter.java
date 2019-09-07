@@ -33,4 +33,5 @@ public interface ResourceConverter {
     public String getOption(String name);
     public Object getOptionObject(String name);
     public Map<String, AttributeSpecification> getKnownAttributes();
+    public boolean useIMSCConstraints();
 }
