@@ -41,6 +41,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11DivisionWithBackgroundImageMissingTiming() throws Exception {
+        performValidityTest("imsc11-valid-division-with-background-image-missing-timing.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11EBUTTSLinePadding() throws Exception {
         performValidityTest("imsc11-valid-ebutts-line-padding.xml", -1, -1);
     }
@@ -73,6 +78,36 @@ public class ValidTestCases {
     @Test
     public void testValidIMSC11LuminanceGainInTextProfile() throws Exception {
         performValidityTest("imsc11-valid-luminance-gain-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11MissingProfileAttribute() throws Exception {
+        performValidityTest("imsc11-valid-missing-profile-attribute.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11NestedDivisionInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-nested-division-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11NestedSpanInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-nested-span-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11NonEmptyParagraphMissingTiming() throws Exception {
+        performValidityTest("imsc11-valid-non-empty-paragraph-missing-timing.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11NonEmptySpanMissingTiming() throws Exception {
+        performValidityTest("imsc11-valid-non-empty-span-missing-timing.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11NonEmptyTimeablesWithTiming() throws Exception {
+        performValidityTest("imsc11-valid-non-empty-timeables-with-timing.xml", -1, -1);
     }
 
     @Test
@@ -118,6 +153,21 @@ public class ValidTestCases {
     @Test
     public void testValidIMSC11TextShadowInTextProfile() throws Exception {
         performValidityTest("imsc11-valid-text-shadow-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11TimeablesWithBackgroundImageWithTimingOnAncestor() throws Exception {
+        performValidityTest("imsc11-valid-timeables-with-background-image-with-timing-on-ancestor.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11TimeablesWithBackgroundImageWithTimingOnSelf() throws Exception {
+        performValidityTest("imsc11-valid-timeables-with-background-image-with-timing-on-self.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11WritingModeInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-writing-mode-in-text-profile.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

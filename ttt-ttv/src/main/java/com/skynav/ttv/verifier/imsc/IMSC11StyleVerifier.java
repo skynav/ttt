@@ -33,8 +33,8 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.imsc10.ebuttd.MultiRowAlign;
-import com.skynav.ttv.model.ttml1.ttd.WritingMode;
+import com.skynav.ttv.model.imsc11.ebuttd.MultiRowAlign;
+import com.skynav.ttv.model.ttml2.ttd.WritingMode;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.util.Location;

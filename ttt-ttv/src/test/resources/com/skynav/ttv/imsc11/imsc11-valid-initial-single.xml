@@ -8,7 +8,6 @@
     <styling>
       <!-- visual style properties -->
       <initial tts:backgroundColor="black"/>
-      <initial tts:border="1px solid red"/>
       <initial tts:color="green"/>
       <initial tts:direction="rtl"/>
       <initial tts:disparity="1px"/>

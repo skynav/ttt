@@ -30,8 +30,8 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.ttml1.tt.TimedText;
-import com.skynav.ttv.model.ttml1.ttd.TimeBase;
+import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.TimeBase;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010TTML2ParameterVerifier;
