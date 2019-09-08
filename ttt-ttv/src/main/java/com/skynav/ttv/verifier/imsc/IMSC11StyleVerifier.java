@@ -33,8 +33,8 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
-import com.skynav.ttv.model.imsc10.ebuttd.MultiRowAlign;
-import com.skynav.ttv.model.ttml1.ttd.WritingMode;
+import com.skynav.ttv.model.imsc11.ebuttd.MultiRowAlign;
+import com.skynav.ttv.model.ttml2.ttd.WritingMode;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.util.Location;
@@ -171,7 +171,23 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
         Object value = sa.getStyleValue(content);
         if (value != null) {
             QName name = sa.getStyleName();
-            if (name.equals(colorAttributeName))
+            if (name.equals(backgroundClipAttributeName))
+                return false;
+            else if (name.equals(backgroundExtentAttributeName))
+                return false;
+            else if (name.equals(backgroundImageAttributeName))
+                return false;
+            else if (name.equals(backgroundOriginAttributeName))
+                return false;
+            else if (name.equals(backgroundPositionAttributeName))
+                return false;
+            else if (name.equals(backgroundRepeatAttributeName))
+                return false;
+            else if (name.equals(borderAttributeName))
+                return false;
+            else if (name.equals(bpdAttributeName))
+                return false;
+            else if (name.equals(colorAttributeName))
                 return false;
             else if (name.equals(directionAttributeName))
                 return false;
@@ -179,21 +195,51 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
                 return false;
             else if (name.equals(fontFamilyAttributeName))
                 return false;
+            else if (name.equals(fontKerningAttributeName))
+                return false;
+            else if (name.equals(fontSelectionStrategyAttributeName))
+                return false;
+            else if (name.equals(fontShearAttributeName))
+                return false;
             else if (name.equals(fontSizeAttributeName))
                 return false;
             else if (name.equals(fontStyleAttributeName))
                 return false;
+            else if (name.equals(fontVariantAttributeName))
+                return false;
             else if (name.equals(fontWeightAttributeName))
+                return false;
+            else if (name.equals(ipdAttributeName))
+                return false;
+            else if (name.equals(letterSpacingAttributeName))
                 return false;
             else if (name.equals(lineHeightAttributeName))
                 return false;
+            else if (name.equals(lineShearAttributeName))
+                return false;
             else if (name.equals(paddingAttributeName))
+                return false;
+            else if (name.equals(rubyAttributeName))
+                return false;
+            else if (name.equals(rubyAlignAttributeName))
+                return false;
+            else if (name.equals(rubyPositionAttributeName))
+                return false;
+            else if (name.equals(rubyReserveAttributeName))
                 return false;
             else if (name.equals(textAlignAttributeName))
                 return false;
+            else if (name.equals(textCombineAttributeName))
+                return false;
             else if (name.equals(textDecorationAttributeName))
                 return false;
+            else if (name.equals(textEmphasisAttributeName))
+                return false;
             else if (name.equals(textOutlineAttributeName))
+                return false;
+            else if (name.equals(textOrientationAttributeName))
+                return false;
+            else if (name.equals(textShadowAttributeName))
                 return false;
             else if (name.equals(unicodeBidiAttributeName))
                 return false;
@@ -204,6 +250,42 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
     }
 
     private boolean verifyAttributePermittedInTextProfile(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        Object value = sa.getStyleValue(content);
+        if (value != null) {
+            QName name = sa.getStyleName();
+            if (name.equals(backgroundClipAttributeName))
+                return false;
+            else if (name.equals(backgroundExtentAttributeName))
+                return false;
+            else if (name.equals(backgroundImageAttributeName))
+                return false;
+            else if (name.equals(backgroundOriginAttributeName))
+                return false;
+            else if (name.equals(backgroundPositionAttributeName))
+                return false;
+            else if (name.equals(backgroundRepeatAttributeName))
+                return false;
+            else if (name.equals(borderAttributeName))
+                return false;
+            else if (name.equals(bpdAttributeName))
+                return false;
+            else if (name.equals(fontKerningAttributeName))
+                return false;
+            else if (name.equals(fontSelectionStrategyAttributeName))
+                return false;
+            else if (name.equals(fontShearAttributeName))
+                return false;
+            else if (name.equals(fontVariantAttributeName))
+                return false;
+            else if (name.equals(ipdAttributeName))
+                return false;
+            else if (name.equals(letterSpacingAttributeName))
+                return false;
+            else if (name.equals(lineShearAttributeName))
+                return false;
+            else if (name.equals(textOrientationAttributeName))
+                return false;
+        }
         return true;
     }
 
