@@ -40,6 +40,201 @@ public class InvalidTestCases {
         performInvalidityTest("imsc11-invalid-bad-ebutts-line-padding.xml", -1, -1);
     }
 
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundClipInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-clip-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundClipInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-clip-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundExtentInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-extent-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundExtentInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-extent-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundImageInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-image-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundImageInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-image-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundOriginInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-origin-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundOriginInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-origin-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundPositionInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-position-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundPositionInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-position-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundRepeatInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-repeat-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBackgroundRepeatInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-background-repeat-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBorderInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-border-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBorderInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-border-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBPDInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-bpd-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedBPDInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-bpd-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontKerningInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-kerning-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontKerningInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-kerning-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontSelectionStrategyInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-selection-strategy-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontSelectionStrategyInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-selection-strategy-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontShearInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-shear-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontShearInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-shear-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontVariantInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-variant-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontVariantInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-variant-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedIPDInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-ipd-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedIPDInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-ipd-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedLetterSpacingInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-letter-spacing-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedLetterSpacingInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-letter-spacing-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedLineShearInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-line-shear-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedLineShearInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-line-shear-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedRubyInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-ruby-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedRubyAlignInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-ruby-align-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedRubyPositionInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-ruby-position-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedRubyReserveInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-ruby-reserve-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedTextCombineInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-text-combine-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedTextEmphasisInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-text-emphasis-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedTextOrientationInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-text-orientation-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedTextOrientationInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-text-orientation-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedTextShadowInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-text-shadow-in-image-profile.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)
