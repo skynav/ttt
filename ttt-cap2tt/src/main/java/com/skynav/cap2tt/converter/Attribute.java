@@ -108,6 +108,14 @@ public class Attribute {
     public boolean isCombine() {
         return specification.getName().equals("組");
     }
+    public boolean isStretchWide() {
+        if (specification.getName().equals("幅広"))
+            return true;
+        else if (specification.getName().equals("幅") && (count == 15))
+            return true;
+        else
+            return false;
+    }
     public boolean isEmphasisAnnotation() {
         if (annotation != null) {
             int i = 0;

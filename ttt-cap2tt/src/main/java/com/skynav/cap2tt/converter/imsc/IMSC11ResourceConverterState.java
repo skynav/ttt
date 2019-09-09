@@ -187,6 +187,7 @@ public class IMSC11ResourceConverterState extends AbstractResourceConverterState
         Span sEmphasis      = null;
         Span sRuby          = null;
         Span sCombine       = null;
+        Span sWideBar       = null;
         Span sOuter         = null;
         int numExclusive    = 0;
         for (AttributedCharacterIterator.Attribute k : attributes.keySet()) {
@@ -199,6 +200,9 @@ public class IMSC11ResourceConverterState extends AbstractResourceConverterState
                 ++numExclusive;
             } else if (a.isCombine()) {
                 sCombine = createCombine(text, a, blockDirection);
+                ++numExclusive;
+            } else if (a.isStretchWide() && isHorizontalBar(text)) {
+                sWideBar = createWideBar(text, a, blockDirection);
                 ++numExclusive;
             } else {
                 if (sOuter == null)
@@ -216,6 +220,8 @@ public class IMSC11ResourceConverterState extends AbstractResourceConverterState
                 sOuter = sRuby;
             else if (sCombine != null)
                 sOuter = sCombine;
+            else if (sWideBar != null)
+                sOuter = sWideBar;
         } else {
             Span sInner = null;
             if (sEmphasis != null)
@@ -224,6 +230,8 @@ public class IMSC11ResourceConverterState extends AbstractResourceConverterState
                 sInner = sRuby;
             else if (sCombine != null)
                 sInner = sCombine;
+            else if (sWideBar != null)
+                sInner = sWideBar;
             if (sInner != null) {
                 sOuter.getContent().add(ttmlFactory.createSpan(sInner));
             } else {
@@ -275,12 +283,28 @@ public class IMSC11ResourceConverterState extends AbstractResourceConverterState
             return createStyledSpan(text, a);
     }
 
+    private Span createWideBar(String text, Attribute a, Direction blockDirection) {
+        return createStyledSpan(maybeMapHorizontalBar(text), a);
+    }
+
     private Span createStyledSpan(String text, Attribute a) {
         Span s = ttmlFactory.createSpan();
         populateStyles(s, a);
         if (text != null)
             s.getContent().add(text);
         return s;
+    }
+
+    private static final String twoEmDash = new String(new char[] { '\u2E3A' });
+    private String maybeMapHorizontalBar(String text) {
+        if (isHorizontalBar(text))
+            return twoEmDash;
+        else
+            return text;
+    }
+
+    private boolean isHorizontalBar(String text) {
+        return (text.length() == 1) && (text.charAt(0) == '\u2015');
     }
 
     private Span augmentStyledSpan(Span s, Attribute a) {
