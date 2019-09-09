@@ -176,4 +176,9 @@ public class ConverterTestCases extends ConverterTestDriver {
         performConversionTest("test-029-nested-designations-2.cap", 0, 0);
     }
 
+    @Test
+    public void testConversion030WideHorizontalBar() throws Exception {
+        performConversionTest("test-030-wide-horizontal-bar.cap", 0, 0);
+    }
+
 }
