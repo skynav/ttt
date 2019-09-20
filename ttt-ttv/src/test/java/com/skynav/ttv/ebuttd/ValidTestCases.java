@@ -55,6 +55,8 @@ public class ValidTestCases {
         args.add("-v");
         args.add("--warn-on");
         args.add("all");
+        args.add("--no-warn-on");
+        args.add("missing-profile");
         args.add("--model");
         args.add("ebuttd");
         if (expectedErrors >= 0) {
@@ -89,6 +91,12 @@ public class ValidTestCases {
             }
             if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MISMATCH) != 0) {
                 fail("Unexpected failure with expected error(s) mismatch.");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0) {
+                fail("Unexpected failure with unexpected warning(s).");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_EXPECTED_MISMATCH) != 0) {
+                fail("Unexpected failure with expected warning(s) mismatch.");
             }
         } else
             fail("Unexpected result code " + resultCode + ".");

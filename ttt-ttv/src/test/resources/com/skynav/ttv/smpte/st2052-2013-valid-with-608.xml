@@ -6,7 +6,7 @@
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="http://www.smpte-ra.org/schemas/2052-1/2013/profiles/smpte-tt-full"
     xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt"
     xmlns:m608="http://www.smpte-ra.org/schemas/2052-1/2013/smpte-tt#cea608"
-    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="st2052-2013">
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="1" ttva:model="st2052-2013">
   <head>
     <ttm:title>CEAv1.2zeroTT-CC1</ttm:title>
     <ttm:desc>Translation example of 608 CC1 from CEAv1.2zero.trp</ttm:desc>
