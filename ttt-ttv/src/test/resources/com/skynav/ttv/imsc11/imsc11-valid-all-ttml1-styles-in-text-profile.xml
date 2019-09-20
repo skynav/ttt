@@ -3,8 +3,7 @@
 <tt xml:lang="en"
     xmlns="http://www.w3.org/ns/ttml"
     xmlns:tts="http://www.w3.org/ns/ttml#styling"
-    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
-    ttp:profile="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
     tts:extent="640px 480px"
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>

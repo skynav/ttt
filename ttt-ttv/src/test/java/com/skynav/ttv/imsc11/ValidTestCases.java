@@ -41,6 +41,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11BaseInImageProfile() throws Exception {
+        performValidityTest("imsc11-valid-base-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11BaseInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-base-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11DivisionWithBackgroundImageMissingTiming() throws Exception {
         performValidityTest("imsc11-valid-division-with-background-image-missing-timing.xml", -1, -1);
     }

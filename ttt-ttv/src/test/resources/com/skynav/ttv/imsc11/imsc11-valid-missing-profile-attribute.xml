@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- valid - missing ttp:profile attribute on root element -->
+<!-- valid - missing ttp:contentProfiles attribute on root element -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="1" ttva:model="imsc11">
   <head>

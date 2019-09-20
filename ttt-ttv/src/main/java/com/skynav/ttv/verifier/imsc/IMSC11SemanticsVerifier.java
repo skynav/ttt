@@ -554,18 +554,20 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
         boolean failed = false;
         assert root instanceof TimedText;
         TimedText tt = (TimedText) root;
-        String profile = tt.getProfile();
-        if (profile == null) {
+        String contentProfiles = tt.getContentProfiles();
+        if (contentProfiles == null) {
             Reporter reporter = getContext().getReporter();
-            Message message = reporter.message(getLocator(tt),
-                "*KEY*", "Root element ''{0}'' should have a ''{1}'' attribute, but it is missing.",
-                TTML2Model.timedTextElementName, TTML2ProfileVerifier.profileAttributeName);
-            if (reporter.logWarning(message)) {
-                reporter.logError(message);
-                failed = true;
+            if (reporter.isWarningEnabled("missing-profile")) {
+                Message message = reporter.message(getLocator(tt),
+                    "*KEY*", "Root element ''{0}'' should have a ''{1}'' attribute, but it is missing.",
+                    TTML2Model.timedTextElementName, TTML2ProfileVerifier.contentProfilesAttributeName);
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
+                    failed = true;
+                }
             }
         } else
-            getContext().setResourceState(getModel().makeResourceStateName("profile"), profile);
+            getContext().setResourceState(getModel().makeResourceStateName("profile"), contentProfiles);
         if (!super.verifyTimedText(root))
             failed = true;
         return !failed;
