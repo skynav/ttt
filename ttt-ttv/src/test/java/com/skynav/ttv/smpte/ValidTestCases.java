@@ -112,6 +112,12 @@ public class ValidTestCases {
             if ((resultFlags & TimedTextVerifier.RV_FLAG_ERROR_EXPECTED_MISMATCH) != 0) {
                 fail("Unexpected failure with expected error(s) mismatch.");
             }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_UNEXPECTED) != 0) {
+                fail("Unexpected failure with unexpected warning(s).");
+            }
+            if ((resultFlags & TimedTextVerifier.RV_FLAG_WARNING_EXPECTED_MISMATCH) != 0) {
+                fail("Unexpected failure with expected warning(s) mismatch.");
+            }
         } else
             fail("Unexpected result code " + resultCode + ".");
     }
