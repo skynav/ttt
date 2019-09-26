@@ -707,7 +707,20 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
         }
     }
 
-    public boolean inIMSCNamespace(QName name) {
+    @Override
+    protected boolean verifyInitial(Object initial) {
+        VerifierContext context = getContext();
+        if (isIMSCImageProfile(context)) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(getLocator(initial),
+                "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(initial)));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean inIMSCNamespace(QName name) {
         return IMSC11.inIMSCNamespace(name);
     }
 

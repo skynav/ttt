@@ -693,7 +693,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return false;
     }
 
-    protected boolean verifyInitial(Initial initial) {
+    protected boolean verifyInitial(Object initial) {
         boolean failed = false;
         if (!verifyParameterAttributes(initial))
             failed = true;

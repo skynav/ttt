@@ -306,6 +306,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11ProhibitedInitialInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-initial-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11ProhibitedIPDInImageProfile() throws Exception {
         performInvalidityTest("imsc11-invalid-prohibited-ipd-in-image-profile.xml", -1, -1);
     }
