@@ -125,6 +125,14 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
+    public boolean verifyOtherElement(Object content, Locator locator, VerifierContext context) {
+        if (content instanceof Data)
+            return verifyData(content);
+        else
+            return super.verifyOtherElement(content, locator, context);
+    }
+
+    @Override
     protected boolean verifyHead(Object head, Object tt) {
         boolean failed = false;
         if (!verifyParameterAttributes(head))
@@ -248,6 +256,46 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
+    protected boolean verifyBody(Object body) {
+        boolean failed = false;
+        if (!verifyParameterAttributes(body))
+            failed = true;
+        if (!verifyMetadataAttributes(metadataVerifier, body))
+            failed = true;
+        if (!verifyStyleAttributes(body))
+            failed = true;
+        if (!verifyTimingAttributes(body))
+            failed = true;
+        if (!verifyOtherAttributes(body))
+            failed = true;
+        for (Object m : getBodyMetadata(body)) {
+            if (!verifyMetadataItem(m))
+                failed = true;
+        }
+        for (Object a : getBodyAnimations(body)) {
+            if (!verifyAnimation(a))
+                failed = true;
+        }
+        for (Object d : getBodyDivisionsAndEmbeddings(body)) {
+            if (!verifyDivisionOrEmbedding(d))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected Collection<? extends Object> getBodyDivisionsAndEmbeddings(Object body) {
+        assert body instanceof Body;
+        return ((Body) body).getDivOrEmbeddedClass();
+    }
+
+    protected boolean verifyDivisionOrEmbedding(Object divisionOrEmbedding) {
+        if (divisionOrEmbedding instanceof Division)
+            return verifyDivision(divisionOrEmbedding);
+        else
+            return verifyEmbedding(divisionOrEmbedding);
+    }
+    
+    @Override
     protected boolean verifyDivision(Object division) {
         boolean failed = false;
         if (!super.verifyDivision(division))
@@ -265,6 +313,15 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return ((Division) division).getLayoutClass();
     }
 
+    protected boolean verifyEmbedding(Object embedding) {
+        if (embedding instanceof Audio)
+            return verifyAudio(embedding);
+        else if (embedding instanceof Image)
+            return verifyImage(embedding);
+        else
+            return unexpectedContent(embedding);
+    }
+    
     @Override
     protected boolean verifyBlock(Object block) {
         if (block instanceof Division)
@@ -521,12 +578,6 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     }
 
     @Override
-    protected Collection<? extends Object> getBodyDivisions(Object body) {
-        assert body instanceof Body;
-        return ((Body) body).getDiv();
-    }
-
-    @Override
     protected Collection<? extends Object> getDivisionMetadata(Object division) {
         assert division instanceof Division;
         return ((Division) division).getMetadataClass();
@@ -636,7 +687,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
     @Override
     protected Collection<? extends Object> getMetadataAny(Object metadata) {
         assert metadata instanceof Metadata;
-        return ((Metadata) metadata).getAny();
+        return ((Metadata) metadata).getDataOrAny();
     }
 
     // new elements

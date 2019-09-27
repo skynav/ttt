@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- invalid - uses anamorphic tts:fontSize -->
+<!-- invalid - uses font element in image profile -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
-    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="640px 480px"
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>
+    <resources>
+      <font/>
+    </resources>
   </head>
-  <body>
-    <div tts:fontSize="40px 40px"/>     <!-- not ok - two lengths with equal values -->
-    <div tts:fontSize="5% 6%"/>         <!-- not ok - two lengths with unequal values -->
-  </body>
+  <body/>
 </tt>

@@ -96,6 +96,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11ProhibitedAudioInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-audio-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedAudioInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-audio-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11ProhibitedBackgroundClipInImageProfile() throws Exception {
         performInvalidityTest("imsc11-invalid-prohibited-background-clip-in-image-profile.xml", -1, -1);
     }
@@ -211,8 +221,28 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11ProhibitedChunkInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-chunk-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedChunkInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-chunk-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11ProhibitedColorInImageProfile() throws Exception {
         performInvalidityTest("imsc11-invalid-prohibited-color-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedDataInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-data-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedDataInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-data-in-text-profile.xml", -1, -1);
     }
 
     @Test
@@ -223,6 +253,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11ProhibitedDisplayAlignInImageProfile() throws Exception {
         performInvalidityTest("imsc11-invalid-prohibited-display-align-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedDisplayAlignInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-display-align-in-text-profile.xml", -1, -1);
     }
 
     @Test
@@ -238,6 +273,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11ProhibitedExtentLengthUnitInTextProfile() throws Exception {
         performInvalidityTest("imsc11-invalid-prohibited-extent-length-unit-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedFontInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-font-in-text-profile.xml", -1, -1);
     }
 
     @Test
@@ -376,6 +421,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11ProhibitedResourcesInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-resources-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedResourcesInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-resources-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11ProhibitedRubyInImageProfile() throws Exception {
         performInvalidityTest("imsc11-invalid-prohibited-ruby-in-image-profile.xml", -1, -1);
     }
@@ -428,6 +483,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11ProhibitedSMPTEImageInTextProfile() throws Exception {
         performInvalidityTest("imsc11-invalid-prohibited-smpte-image-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedSourceInImageProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-source-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedSourceInTextProfile() throws Exception {
+        performInvalidityTest("imsc11-invalid-prohibited-source-in-text-profile.xml", -1, -1);
     }
 
     @Test

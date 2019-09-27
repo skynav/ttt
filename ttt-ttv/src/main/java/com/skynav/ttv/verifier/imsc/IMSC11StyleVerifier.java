@@ -34,6 +34,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.imsc11.ebuttd.MultiRowAlign;
+import com.skynav.ttv.model.ttml2.ttd.DisplayAlign;
 import com.skynav.ttv.model.ttml2.ttd.WritingMode;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
@@ -115,7 +116,9 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
                         name, context.getBindingElementName(content), getModel().getName()));
                     failed = true;
                 } else {
-                    if (name.equals(fontSizeAttributeName))
+                    if (name.equals(displayAlignAttributeName))
+                        failed = !verifyDisplayAlignAttributeItem(content, locator, sa, context);
+                    else if (name.equals(fontSizeAttributeName))
                         failed = !verifyFontSizeAttributeItem(content, locator, sa, context);
                     else if (name.equals(lineHeightAttributeName))
                         failed = !verifyLineHeightAttributeItem(content, locator, sa, context);
@@ -289,6 +292,34 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
         return true;
     }
 
+    private boolean verifyDisplayAlignAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        boolean failed = false;
+        String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
+        if (profile == null)
+            profile = PROFILE_TEXT_ABSOLUTE;
+        QName name = sa.getStyleName();
+        Object value = sa.getStyleValue(content);
+        if (value != null) {
+            assert value instanceof DisplayAlign;
+            DisplayAlign align = (DisplayAlign) value;
+            if (profile.equals(PROFILE_TEXT_ABSOLUTE)) {
+                Reporter reporter = context.getReporter();
+                if (isBlock(content, context)) {
+                    reporter.logError(reporter.message(locator,
+                        "*KEY*", "Attribute ''{0}'' prohibited on ''{1}'' in {2} text profile.",
+                        name, context.getBindingElementName(content), getModel().getName()));
+                    failed = true;
+                } else if (align == DisplayAlign.JUSTIFY) {
+                    reporter.logError(reporter.message(locator,
+                        "*Key*", "Prohibited value ''{0}'' on ''{1}'' in {2} text profile.",
+                        align.value(), name, getModel().getName()));
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
     private boolean verifyFontSizeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         Object value = sa.getStyleValue(content);
         QName name = sa.getStyleName();
@@ -301,13 +332,9 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
             List<Length> lengths = new java.util.ArrayList<Length>();
             if (Lengths.isLengths(s, location, context, minMax, treatments, lengths)) {
                 if (lengths.size() > 1) {
-                    Length w = lengths.get(0);
-                    Length h = lengths.get(1);
-                    if (!w.equals(h)) {
-                        Reporter reporter = context.getReporter();
-                        reporter.logError(reporter.message(locator, "*KEY*", "Anamorphic font size ''{0}'' prohibited.", s));
-                        return false;
-                    }
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator, "*KEY*", "Anamorphic font size ''{0}'' prohibited.", s));
+                    return false;
                 }
             }
         }
@@ -366,9 +393,9 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
     }
 
     private static final boolean isVertical(WritingMode wm) {
-        if (wm == WritingMode.LRTB)
+        if (wm == WritingMode.TBLR)
             return true;
-        else if (wm == WritingMode.RLTB)
+        else if (wm == WritingMode.TBRL)
             return true;
         else if (wm == WritingMode.TB)
             return true;

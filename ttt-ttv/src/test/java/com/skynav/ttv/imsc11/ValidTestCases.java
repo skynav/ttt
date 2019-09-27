@@ -36,6 +36,11 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
 
     @Test
+    public void testValidIMSC11AllTTML1StylesInImageProfile() throws Exception {
+        performValidityTest("imsc11-valid-all-ttml1-styles-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11AllTTML1StylesInTextProfile() throws Exception {
         performValidityTest("imsc11-valid-all-ttml1-styles-in-text-profile.xml", -1, -1);
     }

@@ -988,6 +988,19 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             return false;
     }
 
+    protected boolean isBlock(Object content, VerifierContext context) {
+        if (content instanceof Body)
+            return true;
+        else if (content instanceof Division)
+            return true;
+        else if (content instanceof Paragraph)
+            return true;
+        else if (content instanceof Image)
+            return isBlock(context.getBindingElementParent(content), context);
+        else
+            return false;
+    }
+
     public static final String getAudioStyleNamespaceUri() {
         return NAMESPACE_AUDIO;
     }

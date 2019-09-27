@@ -720,6 +720,52 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
         }
     }
 
+    @Override
+    protected boolean verifyAudio(Object audio) {
+        return unsupportedElement(audio);
+    }
+
+    @Override
+    protected boolean verifyChunk(Object source) {
+        return unsupportedElement(source);
+    }
+
+    @Override
+    protected boolean verifyData(Object data) {
+        // report non-support of chunk element
+        unsupportedElement(data);
+        // give opportunity to report non-supported children of data element
+        super.verifyData(data);
+        return false;
+    }
+
+    @Override
+    protected boolean verifyFont(Object font) {
+        return unsupportedElement(font);
+    }
+
+    @Override
+    protected boolean verifyResources(Object resources) {
+        // report non-support of resources element
+        unsupportedElement(resources);
+        // give opportunity to report non-supported children of resources element
+        super.verifyResources(resources);
+        return false;
+    }
+
+    @Override
+    protected boolean verifySource(Object source) {
+        return unsupportedElement(source);
+    }
+
+    protected boolean unsupportedElement(Object content) {
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        reporter.logError(reporter.message(getLocator(content),
+            "*KEY*", "Element ''{0}'' prohibited in {1} profile.", context.getBindingElementName(content), getIMSCProfileShortName(context)));
+        return false;
+    }
+
     public static boolean inIMSCNamespace(QName name) {
         return IMSC11.inIMSCNamespace(name);
     }
@@ -949,6 +995,33 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
 
     private QName isdCSSAttributeName = new QName(TTML2.Constants.NAMESPACE_TT_ISD, "css");
 
+    private boolean verifyLineHeight(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
+        boolean failed = false;
+        String style = Documents.getAttribute(elt, isdCSSAttributeName, null);
+        String av = null;
+        if (style != null) {
+            StyleSet css = styleSets.get(style);
+            if (css != null) {
+                StyleSpecification ss = css.get(IMSC11StyleVerifier.lineHeightAttributeName);
+                if (ss != null)
+                    av = ss.getValue();
+            }
+        }
+        if (av == null)
+            av = "normal";
+        if (av.equals("normal")) {
+            Reporter reporter = context.getReporter();
+            if (reporter.isWarningEnabled("uses-line-height-normal")) {
+                Message message = reporter.message(getLocator(elt), "*KEY*", "Computed value of line height is ''{0}''.", av);
+                if (reporter.logWarning(message)) {
+                    reporter.logError(message);
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
+    }
+
     private boolean verifyFontFamily(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
         boolean failed = false;
         String style = Documents.getAttribute(elt, isdCSSAttributeName, null);
@@ -986,33 +1059,6 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
             return true;
         else
             return false;
-    }
-
-    private boolean verifyLineHeight(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
-        boolean failed = false;
-        String style = Documents.getAttribute(elt, isdCSSAttributeName, null);
-        String av = null;
-        if (style != null) {
-            StyleSet css = styleSets.get(style);
-            if (css != null) {
-                StyleSpecification ss = css.get(IMSC11StyleVerifier.lineHeightAttributeName);
-                if (ss != null)
-                    av = ss.getValue();
-            }
-        }
-        if (av == null)
-            av = "normal";
-        if (av.equals("normal")) {
-            Reporter reporter = context.getReporter();
-            if (reporter.isWarningEnabled("uses-line-height-normal")) {
-                Message message = reporter.message(getLocator(elt), "*KEY*", "Computed value of line height is ''{0}''.", av);
-                if (reporter.logWarning(message)) {
-                    reporter.logError(message);
-                    failed = true;
-                }
-            }
-        }
-        return !failed;
     }
 
     private boolean verifyTextOutlineThickness(Object root, Document isd, Element elt, Map<String,StyleSet> styleSets, VerifierContext context) {
@@ -1115,6 +1161,15 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
     public static boolean isIMSCImageProfile(VerifierContext context) {
         String profile = (String) context.getResourceState(context.getModel().makeResourceStateName("profile"));
         return (profile != null) && profile.equals(PROFILE_IMAGE_ABSOLUTE);
+    }
+
+    public static String getIMSCProfileShortName(VerifierContext context) {
+        if (isIMSCTextProfile(context))
+            return "text";
+        else if (isIMSCImageProfile(context))
+            return "image";
+        else
+            return "unknown";
     }
 
 }

@@ -228,7 +228,6 @@
         <style tts:fontFamily='"Fun\&apos;ny Fam\&quot;ily", default'/>
         <!-- legal fontSize values (not exhaustive) -->
         <style tts:fontSize="40px"/>
-        <style tts:fontSize="40px 40px"/>
         <!-- legal fontStyle values -->
         <style tts:fontStyle="normal"/>
         <style tts:fontStyle="italic"/>
