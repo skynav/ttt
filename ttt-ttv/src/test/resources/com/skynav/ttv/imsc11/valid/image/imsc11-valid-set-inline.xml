@@ -21,7 +21,7 @@
       <metadata>
         <ttm:item name="altText">My name is no one</ttm:item>
       </metadata>
-      <image src="resources/outis.png" type="image/png" tts:extent="640px 120px"/>
+      <image src="../../resources/images/outis.png" type="image/png" tts:extent="640px 120px"/>
     </div>
   </body>
 </tt>

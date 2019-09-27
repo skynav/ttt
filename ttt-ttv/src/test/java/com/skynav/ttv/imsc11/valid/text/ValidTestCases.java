@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-package com.skynav.ttv.imsc11;
+package com.skynav.ttv.imsc11.valid.text;
 
 import java.net.URL;
 import java.util.List;
@@ -36,23 +36,13 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
 
     @Test
-    public void testValidIMSC11AllTTML1StylesInImageProfile() throws Exception {
-        performValidityTest("imsc11-valid-all-ttml1-styles-in-image-profile.xml", -1, -1);
+    public void testValidIMSC11AllTTML1Styles() throws Exception {
+        performValidityTest("imsc11-valid-all-ttml1-styles.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11AllTTML1StylesInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-all-ttml1-styles-in-text-profile.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC11BaseInImageProfile() throws Exception {
-        performValidityTest("imsc11-valid-base-in-image-profile.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC11BaseInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-base-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11Base() throws Exception {
+        performValidityTest("imsc11-valid-base.xml", -1, -1);
     }
 
     @Test
@@ -91,8 +81,8 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidIMSC11LuminanceGainInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-luminance-gain-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11LuminanceGain() throws Exception {
+        performValidityTest("imsc11-valid-luminance-gain.xml", -1, -1);
     }
 
     @Test
@@ -101,13 +91,13 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidIMSC11NestedDivisionInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-nested-division-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11NestedDivision() throws Exception {
+        performValidityTest("imsc11-valid-nested-division.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11NestedSpanInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-nested-span-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11NestedSpan() throws Exception {
+        performValidityTest("imsc11-valid-nested-span.xml", -1, -1);
     }
 
     @Test
@@ -126,58 +116,53 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidIMSC11PositionInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-position-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11Position() throws Exception {
+        performValidityTest("imsc11-valid-position.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11RubyInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-ruby-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11Ruby() throws Exception {
+        performValidityTest("imsc11-valid-ruby.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11RubyAlignInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-ruby-align-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11RubyAlign() throws Exception {
+        performValidityTest("imsc11-valid-ruby-align.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11RubyPositionInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-ruby-position-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11RubyPosition() throws Exception {
+        performValidityTest("imsc11-valid-ruby-position.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11RubyReserveInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-ruby-reserve-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11RubyReserve() throws Exception {
+        performValidityTest("imsc11-valid-ruby-reserve.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11SetInlineInImageProfile() throws Exception {
-        performValidityTest("imsc11-valid-set-inline-in-image-profile.xml", -1, -1);
+    public void testValidIMSC11SetInline() throws Exception {
+        performValidityTest("imsc11-valid-set-inline.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11SetInlineInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-set-inline-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11Shear() throws Exception {
+        performValidityTest("imsc11-valid-shear.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11ShearInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-shear-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11TextCombine() throws Exception {
+        performValidityTest("imsc11-valid-text-combine.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11TextCombineInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-text-combine-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11TextEmphasis() throws Exception {
+        performValidityTest("imsc11-valid-text-emphasis.xml", -1, -1);
     }
 
     @Test
-    public void testValidIMSC11TextEmphasisInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-text-emphasis-in-text-profile.xml", -1, -1);
-    }
-
-    @Test
-    public void testValidIMSC11TextShadowInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-text-shadow-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11TextShadow() throws Exception {
+        performValidityTest("imsc11-valid-text-shadow.xml", -1, -1);
     }
 
     @Test
@@ -191,8 +176,8 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidIMSC11WritingModeInTextProfile() throws Exception {
-        performValidityTest("imsc11-valid-writing-mode-in-text-profile.xml", -1, -1);
+    public void testValidIMSC11WritingMode() throws Exception {
+        performValidityTest("imsc11-valid-writing-mode.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
