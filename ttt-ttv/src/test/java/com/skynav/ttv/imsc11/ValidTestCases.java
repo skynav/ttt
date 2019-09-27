@@ -151,6 +151,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11SetInlineInImageProfile() throws Exception {
+        performValidityTest("imsc11-valid-set-inline-in-image-profile.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11SetInlineInTextProfile() throws Exception {
+        performValidityTest("imsc11-valid-set-inline-in-text-profile.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11ShearInTextProfile() throws Exception {
         performValidityTest("imsc11-valid-shear-in-text-profile.xml", -1, -1);
     }
