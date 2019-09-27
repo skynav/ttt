@@ -5,12 +5,12 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="3" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>
     <resources>
-      <data/>
+      <data type="application/octet-stream"/>
     </resources>
   </head>
   <body>
     <metadata>
-      <data/>
+      <data type="application/octet-stream"/>
     </metadata>
   </body>
 </tt>
