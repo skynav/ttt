@@ -131,21 +131,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidIMSC11DropModeNone() throws Exception {
-        performInvalidityTest("imsc11-invld-drop-mode-none.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidIMSC11DropModeNTSC() throws Exception {
-        performInvalidityTest("imsc11-invld-drop-mode-ntsc.xml", -1, -1);
-    }
-
-    @Test
-    public void testInvalidIMSC11DropModePAL() throws Exception {
-        performInvalidityTest("imsc11-invld-drop-mode-pal.xml", -1, -1);
-    }
-
-    @Test
     public void testInvalidIMSC11ConditionMedia() throws Exception {
         performInvalidityTest("imsc11-invld-condition-media.xml", -1, -1);
     }
@@ -166,6 +151,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11ContentProfileCombination() throws Exception {
+        performInvalidityTest("imsc11-invld-content-profile-combination.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11Data() throws Exception {
         performInvalidityTest("imsc11-invld-data.xml", -1, -1);
     }
@@ -173,6 +163,21 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11DisplayAlign() throws Exception {
         performInvalidityTest("imsc11-invld-display-align.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11DropModeNone() throws Exception {
+        performInvalidityTest("imsc11-invld-drop-mode-none.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11DropModeNTSC() throws Exception {
+        performInvalidityTest("imsc11-invld-drop-mode-ntsc.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11DropModePAL() throws Exception {
+        performInvalidityTest("imsc11-invld-drop-mode-pal.xml", -1, -1);
     }
 
     @Test
@@ -236,6 +241,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11Gain() throws Exception {
+        performInvalidityTest("imsc11-invld-gain.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11InferProcessorProfileMethod() throws Exception {
+        performInvalidityTest("imsc11-invld-infer-processor-profile-method.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11InferProcessorProfileSource() throws Exception {
+        performInvalidityTest("imsc11-invld-infer-processor-profile-source.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11IPD() throws Exception {
         performInvalidityTest("imsc11-invld-ipd.xml", -1, -1);
     }
@@ -271,8 +291,38 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11Pan() throws Exception {
+        performInvalidityTest("imsc11-invld-pan.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11PermitFeatureNarrowing() throws Exception {
+        performInvalidityTest("imsc11-invld-permit-feature-narrowing.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11PermitFeatureWidening() throws Exception {
+        performInvalidityTest("imsc11-invld-permit-feature-widening.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11Pitch() throws Exception {
+        performInvalidityTest("imsc11-invld-pitch.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11PixelAspectRatio() throws Exception {
         performInvalidityTest("imsc11-invld-pixel-aspect-ratio.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProcessorProfiles() throws Exception {
+        performInvalidityTest("imsc11-invld-processor-profiles.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProcessorProfileCombination() throws Exception {
+        performInvalidityTest("imsc11-invld-processor-profile-combination.xml", -1, -1);
     }
 
     @Test
@@ -303,6 +353,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11SMPTEImage() throws Exception {
         performInvalidityTest("imsc11-invld-smpte-image.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11Speak() throws Exception {
+        performInvalidityTest("imsc11-invld-speak.xml", -1, -1);
     }
 
     @Test
@@ -368,6 +423,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11UsesTicksMetricWithoutTickRate() throws Exception {
         performInvalidityTest("imsc11-invld-uses-ticks-metric-without-tick-rate.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11Validation() throws Exception {
+        performInvalidityTest("imsc11-invld-validation.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ValidationAction() throws Exception {
+        performInvalidityTest("imsc11-invld-validation-action.xml", -1, -1);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

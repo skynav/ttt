@@ -126,6 +126,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11ContentProfileCombination() throws Exception {
+        performInvalidityTest("imsc11-invld-content-profile-combination.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11Data() throws Exception {
         performInvalidityTest("imsc11-invld-data.xml", -1, -1);
     }
@@ -211,6 +216,21 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11Gain() throws Exception {
+        performInvalidityTest("imsc11-invld-gain.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11InferProcessorProfileMethod() throws Exception {
+        performInvalidityTest("imsc11-invld-infer-processor-profile-method.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11InferProcessorProfileSource() throws Exception {
+        performInvalidityTest("imsc11-invld-infer-processor-profile-source.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11Initial() throws Exception {
         performInvalidityTest("imsc11-invld-initial.xml", -1, -1);
     }
@@ -266,8 +286,28 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11Pan() throws Exception {
+        performInvalidityTest("imsc11-invld-pan.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11Paragraph() throws Exception {
         performInvalidityTest("imsc11-invld-paragraph.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11PermitFeatureNarrowing() throws Exception {
+        performInvalidityTest("imsc11-invld-permit-feature-narrowing.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11PermitFeatureWidening() throws Exception {
+        performInvalidityTest("imsc11-invld-permit-feature-widening.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11Pitch() throws Exception {
+        performInvalidityTest("imsc11-invld-pitch.xml", -1, -1);
     }
 
     @Test
@@ -278,6 +318,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11Position() throws Exception {
         performInvalidityTest("imsc11-invld-position.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProcessorProfiles() throws Exception {
+        performInvalidityTest("imsc11-invld-processor-profiles.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProcessorProfileCombination() throws Exception {
+        performInvalidityTest("imsc11-invld-processor-profile-combination.xml", -1, -1);
     }
 
     @Test
@@ -336,6 +386,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11Speak() throws Exception {
+        performInvalidityTest("imsc11-invld-speak.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11SubFrameRate() throws Exception {
         performInvalidityTest("imsc11-invld-sub-frame-rate.xml", -1, -1);
     }
@@ -378,6 +433,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11UnicodeBidi() throws Exception {
         performInvalidityTest("imsc11-invld-unicode-bidi.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11Validation() throws Exception {
+        performInvalidityTest("imsc11-invld-validation.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ValidationAction() throws Exception {
+        performInvalidityTest("imsc11-invld-validation-action.xml", -1, -1);
     }
 
     @Test

@@ -876,6 +876,16 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
         return super.isStyleNamespace(s) || s.equals(getAudioStyleNamespaceUri());
     }
 
+    protected boolean hasNonAudioStyleNamespace(QName name) {
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(getStyleNamespaceUri());
+    }
+
+    protected boolean hasAudioStyleNamespace(QName name) {
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(getAudioStyleNamespaceUri());
+    }
+
     @Override
     protected boolean verifyAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         if (!super.verifyAttributeItem(content, locator, sa, context))

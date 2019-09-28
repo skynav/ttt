@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- invalid - uses smpte:image in text profile -->
+<!-- invalid - uses smpte:image in image profile -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
     xmlns:smpte="http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"
