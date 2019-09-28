@@ -36,358 +36,358 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
-    public void testInvalidIMSC11NotPermittedClockModeLocal() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-clock-mode-local.xml", -1, -1);
+    public void testInvalidIMSC11Audio() throws Exception {
+        performInvalidityTest("imsc11-invld-audio.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedClockModeUTC() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-clock-mode-utc.xml", -1, -1);
+    public void testInvalidIMSC11BackgroundClip() throws Exception {
+        performInvalidityTest("imsc11-invld-background-clip.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedDropModeDropNTSC() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-drop-mode-drop-ntsc.xml", -1, -1);
+    public void testInvalidIMSC11BackgroundExtent() throws Exception {
+        performInvalidityTest("imsc11-invld-background-extent.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedDropModeDropPAL() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-drop-mode-drop-pal.xml", -1, -1);
+    public void testInvalidIMSC11BackgroundImage() throws Exception {
+        performInvalidityTest("imsc11-invld-background-image.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedDropModeNonDrop() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-drop-mode-non-drop.xml", -1, -1);
+    public void testInvalidIMSC11BackgroundOrigin() throws Exception {
+        performInvalidityTest("imsc11-invld-background-origin.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedMarkerModeContinuous() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-marker-mode-continuous.xml", -1, -1);
+    public void testInvalidIMSC11BackgroundPosition() throws Exception {
+        performInvalidityTest("imsc11-invld-background-position.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedMarkerModeDiscontinuous() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-marker-mode-discontinuous.xml", -1, -1);
+    public void testInvalidIMSC11BackgroundRepeat() throws Exception {
+        performInvalidityTest("imsc11-invld-background-repeat.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedPixelAspectRatio() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-pixel-aspect-ratio.xml", -1, -1);
+    public void testInvalidIMSC11Border() throws Exception {
+        performInvalidityTest("imsc11-invld-border.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedSubFrameRate() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-sub-frame-rate.xml", -1, -1);
+    public void testInvalidIMSC11BPD() throws Exception {
+        performInvalidityTest("imsc11-invld-bpd.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedAudio() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-audio.xml", -1, -1);
+    public void testInvalidIMSC11Break() throws Exception {
+        performInvalidityTest("imsc11-invld-break.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBackgroundClip() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-background-clip.xml", -1, -1);
+    public void testInvalidIMSC11Chunk() throws Exception {
+        performInvalidityTest("imsc11-invld-chunk.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBackgroundExtent() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-background-extent.xml", -1, -1);
+    public void testInvalidIMSC11ClockModeLocal() throws Exception {
+        performInvalidityTest("imsc11-invld-clock-mode-local.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBackgroundImage() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-background-image.xml", -1, -1);
+    public void testInvalidIMSC11ClockModeUTC() throws Exception {
+        performInvalidityTest("imsc11-invld-clock-mode-utc.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBackgroundOrigin() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-background-origin.xml", -1, -1);
+    public void testInvalidIMSC11Color() throws Exception {
+        performInvalidityTest("imsc11-invld-color.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBackgroundPosition() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-background-position.xml", -1, -1);
+    public void testInvalidIMSC11ConditionMedia() throws Exception {
+        performInvalidityTest("imsc11-invld-condition-media.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBackgroundRepeat() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-background-repeat.xml", -1, -1);
+    public void testInvalidIMSC11ConditionParameter() throws Exception {
+        performInvalidityTest("imsc11-invld-condition-parameter.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBorder() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-border.xml", -1, -1);
+    public void testInvalidIMSC11ConditionPrimary() throws Exception {
+        performInvalidityTest("imsc11-invld-condition-primary.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBPD() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-bpd.xml", -1, -1);
+    public void testInvalidIMSC11ConditionSupports() throws Exception {
+        performInvalidityTest("imsc11-invld-condition-supports.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedBreak() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-break.xml", -1, -1);
+    public void testInvalidIMSC11Data() throws Exception {
+        performInvalidityTest("imsc11-invld-data.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedChunk() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-chunk.xml", -1, -1);
+    public void testInvalidIMSC11Direction() throws Exception {
+        performInvalidityTest("imsc11-invld-direction.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedColor() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-color.xml", -1, -1);
+    public void testInvalidIMSC11DisplayAlign() throws Exception {
+        performInvalidityTest("imsc11-invld-display-align.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedConditionMedia() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-condition-media.xml", -1, -1);
+    public void testInvalidIMSC11DropModeNone() throws Exception {
+        performInvalidityTest("imsc11-invld-drop-mode-none.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedConditionParameter() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-condition-parameter.xml", -1, -1);
+    public void testInvalidIMSC11DropModeNTSC() throws Exception {
+        performInvalidityTest("imsc11-invld-drop-mode-ntsc.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedConditionPrimary() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-condition-primary.xml", -1, -1);
+    public void testInvalidIMSC11DropModePAL() throws Exception {
+        performInvalidityTest("imsc11-invld-drop-mode-pal.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedConditionSupports() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-condition-supports.xml", -1, -1);
+    public void testInvalidIMSC11EmUnit() throws Exception {
+        performInvalidityTest("imsc11-invld-em-unit.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedData() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-data.xml", -1, -1);
+    public void testInvalidIMSC11ExtentLengthUnit() throws Exception {
+        performInvalidityTest("imsc11-invld-extent-length-unit.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedDirection() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-direction.xml", -1, -1);
+    public void testInvalidIMSC11Font() throws Exception {
+        performInvalidityTest("imsc11-invld-font.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedDisplayAlign() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-display-align.xml", -1, -1);
+    public void testInvalidIMSC11FontFamily() throws Exception {
+        performInvalidityTest("imsc11-invld-font-family.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedEmUnit() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-em-unit.xml", -1, -1);
+    public void testInvalidIMSC11FontKerning() throws Exception {
+        performInvalidityTest("imsc11-invld-font-kerning.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedExtentLengthUnit() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-extent-length-unit.xml", -1, -1);
+    public void testInvalidIMSC11FontSelectionStrategy() throws Exception {
+        performInvalidityTest("imsc11-invld-font-selection-strategy.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFont() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font.xml", -1, -1);
+    public void testInvalidIMSC11FontShear() throws Exception {
+        performInvalidityTest("imsc11-invld-font-shear.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFontFamily() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font-family.xml", -1, -1);
+    public void testInvalidIMSC11FontSize() throws Exception {
+        performInvalidityTest("imsc11-invld-font-size.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFontKerning() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font-kerning.xml", -1, -1);
+    public void testInvalidIMSC11FontStyle() throws Exception {
+        performInvalidityTest("imsc11-invld-font-style.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFontSelectionStrategy() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font-selection-strategy.xml", -1, -1);
+    public void testInvalidIMSC11FontVariant() throws Exception {
+        performInvalidityTest("imsc11-invld-font-variant.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFontShear() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font-shear.xml", -1, -1);
+    public void testInvalidIMSC11FontWeight() throws Exception {
+        performInvalidityTest("imsc11-invld-font-weight.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFontSize() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font-size.xml", -1, -1);
+    public void testInvalidIMSC11Initial() throws Exception {
+        performInvalidityTest("imsc11-invld-initial.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFontStyle() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font-style.xml", -1, -1);
+    public void testInvalidIMSC11IPD() throws Exception {
+        performInvalidityTest("imsc11-invld-ipd.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFontVariant() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font-variant.xml", -1, -1);
+    public void testInvalidIMSC11LetterSpacing() throws Exception {
+        performInvalidityTest("imsc11-invld-letter-spacing.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedFontWeight() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-font-weight.xml", -1, -1);
+    public void testInvalidIMSC11LineHeight() throws Exception {
+        performInvalidityTest("imsc11-invld-line-height.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedInitial() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-initial.xml", -1, -1);
+    public void testInvalidIMSC11LineShear() throws Exception {
+        performInvalidityTest("imsc11-invld-line-shear.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedIPD() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-ipd.xml", -1, -1);
+    public void testInvalidIMSC11MarkerModeContinuous() throws Exception {
+        performInvalidityTest("imsc11-invld-marker-mode-continuous.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedLetterSpacing() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-letter-spacing.xml", -1, -1);
+    public void testInvalidIMSC11MarkerModeDiscontinuous() throws Exception {
+        performInvalidityTest("imsc11-invld-marker-mode-discontinuous.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedLineHeight() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-line-height.xml", -1, -1);
+    public void testInvalidIMSC11NestedDivision() throws Exception {
+        performInvalidityTest("imsc11-invld-nested-division.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedLineShear() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-line-shear.xml", -1, -1);
+    public void testInvalidIMSC11NestedSpan() throws Exception {
+        performInvalidityTest("imsc11-invld-nested-span.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedNestedDivision() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-nested-division.xml", -1, -1);
+    public void testInvalidIMSC11OriginLengthUnit() throws Exception {
+        performInvalidityTest("imsc11-invld-origin-length-unit.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedNestedSpan() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-nested-span.xml", -1, -1);
+    public void testInvalidIMSC11Padding() throws Exception {
+        performInvalidityTest("imsc11-invld-padding.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedOriginLengthUnit() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-origin-length-unit.xml", -1, -1);
+    public void testInvalidIMSC11Paragraph() throws Exception {
+        performInvalidityTest("imsc11-invld-paragraph.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedPadding() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-padding.xml", -1, -1);
+    public void testInvalidIMSC11PixelAspectRatio() throws Exception {
+        performInvalidityTest("imsc11-invld-pixel-aspect-ratio.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedParagraph() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-paragraph.xml", -1, -1);
+    public void testInvalidIMSC11Position() throws Exception {
+        performInvalidityTest("imsc11-invld-position.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedPosition() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-position.xml", -1, -1);
+    public void testInvalidIMSC11Resources() throws Exception {
+        performInvalidityTest("imsc11-invld-resources.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedResources() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-resources.xml", -1, -1);
+    public void testInvalidIMSC11Ruby() throws Exception {
+        performInvalidityTest("imsc11-invld-ruby.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedRuby() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-ruby.xml", -1, -1);
+    public void testInvalidIMSC11RubyAlign() throws Exception {
+        performInvalidityTest("imsc11-invld-ruby-align.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedRubyAlign() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-ruby-align.xml", -1, -1);
+    public void testInvalidIMSC11RubyPosition() throws Exception {
+        performInvalidityTest("imsc11-invld-ruby-position.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedRubyPosition() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-ruby-position.xml", -1, -1);
+    public void testInvalidIMSC11RubyReserve() throws Exception {
+        performInvalidityTest("imsc11-invld-ruby-reserve.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedRubyReserve() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-ruby-reserve.xml", -1, -1);
+    public void testInvalidIMSC11Shear() throws Exception {
+        performInvalidityTest("imsc11-invld-shear.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedShear() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-shear.xml", -1, -1);
+    public void testInvalidIMSC11SMPTEBackgroundImageHorizontal() throws Exception {
+        performInvalidityTest("imsc11-invld-smpte-background-image-horizontal.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedSMPTEBackgroundImageHorizontal() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-smpte-background-image-horizontal.xml", -1, -1);
+    public void testInvalidIMSC11SMPTEBackgroundImageVertical() throws Exception {
+        performInvalidityTest("imsc11-invld-smpte-background-image-vertical.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedSMPTEBackgroundImageVertical() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-smpte-background-image-vertical.xml", -1, -1);
+    public void testInvalidIMSC11SMPTEImage() throws Exception {
+        performInvalidityTest("imsc11-invld-smpte-image.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedSMPTEImage() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-smpte-image.xml", -1, -1);
+    public void testInvalidIMSC11Source() throws Exception {
+        performInvalidityTest("imsc11-invld-source.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedSource() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-source.xml", -1, -1);
+    public void testInvalidIMSC11Span() throws Exception {
+        performInvalidityTest("imsc11-invld-span.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedSpan() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-span.xml", -1, -1);
+    public void testInvalidIMSC11SubFrameRate() throws Exception {
+        performInvalidityTest("imsc11-invld-sub-frame-rate.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedTextAlign() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-text-align.xml", -1, -1);
+    public void testInvalidIMSC11TextAlign() throws Exception {
+        performInvalidityTest("imsc11-invld-text-align.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedTextCombine() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-text-combine.xml", -1, -1);
+    public void testInvalidIMSC11TextCombine() throws Exception {
+        performInvalidityTest("imsc11-invld-text-combine.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedTextDecoration() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-text-decoration.xml", -1, -1);
+    public void testInvalidIMSC11TextDecoration() throws Exception {
+        performInvalidityTest("imsc11-invld-text-decoration.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedTextEmphasis() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-text-emphasis.xml", -1, -1);
+    public void testInvalidIMSC11TextEmphasis() throws Exception {
+        performInvalidityTest("imsc11-invld-text-emphasis.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedTextOrientation() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-text-orientation.xml", -1, -1);
+    public void testInvalidIMSC11TextOrientation() throws Exception {
+        performInvalidityTest("imsc11-invld-text-orientation.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedTextOutline() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-text-outline.xml", -1, -1);
+    public void testInvalidIMSC11TextOutline() throws Exception {
+        performInvalidityTest("imsc11-invld-text-outline.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedTextShadow() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-text-shadow.xml", -1, -1);
+    public void testInvalidIMSC11TextShadow() throws Exception {
+        performInvalidityTest("imsc11-invld-text-shadow.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedUnicodeBidi() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-unicode-bidi.xml", -1, -1);
+    public void testInvalidIMSC11UnicodeBidi() throws Exception {
+        performInvalidityTest("imsc11-invld-unicode-bidi.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedWrapOption() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-wrap-option.xml", -1, -1);
+    public void testInvalidIMSC11WrapOption() throws Exception {
+        performInvalidityTest("imsc11-invld-wrap-option.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11ProhibitedWritingMode() throws Exception {
-        performInvalidityTest("imsc11-invld-prohibited-writing-mode.xml", -1, -1);
+    public void testInvalidIMSC11WritingMode() throws Exception {
+        performInvalidityTest("imsc11-invld-writing-mode.xml", -1, -1);
     }
 
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
