@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- invalid - prohibited tts:padding attribute in image profile -->
-<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
-    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="imsc11">
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="640px 480px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="4" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>
     <layout>
-      <region tts:padding="0%" tts:extent="10% 10%"/>
+      <region tts:extent="10% 10%">
+        <style tts:padding="1px"/>
+        <style tts:padding="1px 2px"/>
+        <style tts:padding="1px 2px 3px"/>
+        <style tts:padding="1px 2px 3px 4px"/>
+      </region>
     </layout>
   </head>
   <body/>
