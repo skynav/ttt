@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- invalid - use non-permitted ttp:clockMode attribute -->
+<!-- invalid - use non-permitted ttp:dropMode attribute - dropNTSC -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
-    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text" ttp:clockMode="local"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text" ttp:dropMode="dropNTSC"
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head/>
   <body/>

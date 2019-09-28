@@ -71,18 +71,43 @@ public class InvalidTestCases {
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedClockMode() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-clock-mode.xml", -1, -1);
+    public void testInvalidIMSC11NotPermittedClockModeGPS() throws Exception {
+        performInvalidityTest("imsc11-invld-not-permitted-clock-mode-gps.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedDropMode() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-drop-mode.xml", -1, -1);
+    public void testInvalidIMSC11NotPermittedClockModeLocal() throws Exception {
+        performInvalidityTest("imsc11-invld-not-permitted-clock-mode-local.xml", -1, -1);
     }
 
     @Test
-    public void testInvalidIMSC11NotPermittedMarkerMode() throws Exception {
-        performInvalidityTest("imsc11-invld-not-permitted-marker-mode.xml", -1, -1);
+    public void testInvalidIMSC11NotPermittedClockModeUTC() throws Exception {
+        performInvalidityTest("imsc11-invld-not-permitted-clock-mode-utc.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11NotPermittedDropModeDropNTSC() throws Exception {
+        performInvalidityTest("imsc11-invld-not-permitted-drop-mode-drop-ntsc.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11NotPermittedDropModeDropPAL() throws Exception {
+        performInvalidityTest("imsc11-invld-not-permitted-drop-mode-drop-pal.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11NotPermittedDropModeNonDrop() throws Exception {
+        performInvalidityTest("imsc11-invld-not-permitted-drop-mode-non-drop.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11NotPermittedMarkerModeContinuous() throws Exception {
+        performInvalidityTest("imsc11-invld-not-permitted-marker-mode-continuous.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11NotPermittedMarkerModeDiscontinuous() throws Exception {
+        performInvalidityTest("imsc11-invld-not-permitted-marker-mode-discontinuous.xml", -1, -1);
     }
 
     @Test
@@ -173,6 +198,26 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11ProhibitedChunk() throws Exception {
         performInvalidityTest("imsc11-invld-prohibited-chunk.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedConditionMedia() throws Exception {
+        performInvalidityTest("imsc11-invld-prohibited-condition-media.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedConditionParameter() throws Exception {
+        performInvalidityTest("imsc11-invld-prohibited-condition-parameter.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedConditionPrimary() throws Exception {
+        performInvalidityTest("imsc11-invld-prohibited-condition-primary.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedConditionSupports() throws Exception {
+        performInvalidityTest("imsc11-invld-prohibited-condition-supports.xml", -1, -1);
     }
 
     @Test
@@ -268,6 +313,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11ProhibitedSource() throws Exception {
         performInvalidityTest("imsc11-invld-prohibited-source.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProhibitedTextAlignJusity() throws Exception {
+        performInvalidityTest("imsc11-invld-prohibited-text-align-justify.xml", -1, -1);
     }
 
     @Test

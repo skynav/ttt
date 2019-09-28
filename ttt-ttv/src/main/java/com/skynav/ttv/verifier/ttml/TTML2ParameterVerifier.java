@@ -30,9 +30,14 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml2.tt.Animation;
 import com.skynav.ttv.model.ttml2.tt.Chunk;
+import com.skynav.ttv.model.ttml2.tt.Head;
 import com.skynav.ttv.model.ttml2.tt.Image;
+import com.skynav.ttv.model.ttml2.tt.Layout;
+import com.skynav.ttv.model.ttml2.tt.Resources;
 import com.skynav.ttv.model.ttml2.tt.Span;
+import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.ClockMode;
 import com.skynav.ttv.model.ttml2.ttd.DropMode;
@@ -47,6 +52,7 @@ import com.skynav.ttv.model.ttml2.ttp.Extension;
 import com.skynav.ttv.model.ttml2.ttp.Extensions;
 import com.skynav.ttv.model.ttml2.ttp.Feature;
 import com.skynav.ttv.model.ttml2.ttp.Features;
+import com.skynav.ttv.model.ttml2.ttp.Profile;
 import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ConditionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DisplayAspectRatioVerifier;
@@ -233,14 +239,30 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
 
     @Override
     protected boolean permitsParameterAttribute(Object content, QName name) {
-        if (content instanceof TimedText)
-            return true;
-        else if (name.equals(XML.getBaseAttributeName())) {
-            if (content instanceof Chunk)
+        if (name.equals(conditionAttributeName)) {
+            if (content instanceof Animation)
+                return false;
+            else if (content instanceof Chunk)
+                return false;
+            else if (content instanceof Extension)
+                return false;
+            else if (content instanceof Extensions)
                 return false;
             else if (content instanceof Feature)
                 return false;
-            else if (content instanceof Extension)
+            else if (content instanceof Features)
+                return false;
+            else if (content instanceof Head)
+                return false;
+            else if (content instanceof Layout)
+                return false;
+            else if (content instanceof Profile)
+                return false;
+            else if (content instanceof Resources)
+                return false;
+            else if (content instanceof Styling)
+                return false;
+            else if (content instanceof TimedText)
                 return false;
             else
                 return true;
@@ -251,6 +273,17 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
                 return true;
             else
                 return false;
+        } else if (name.equals(XML.getBaseAttributeName())) {
+            if (content instanceof Chunk)
+                return false;
+            else if (content instanceof Feature)
+                return false;
+            else if (content instanceof Extension)
+                return false;
+            else
+                return true;
+        } else if (content instanceof TimedText) {
+            return true;
         } else
             return false;
     }
@@ -258,6 +291,12 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     @Override
     protected boolean isParameterAttribute(QName name) {
         if (super.isParameterAttribute(name))
+            return true;
+        else if (name.equals(conditionAttributeName))
+            return true;
+        else if (name.equals(xlinkHrefAttributeName))
+            return true;
+        else if (name.equals(XML.getBaseAttributeName()))
             return true;
         else
             return false;

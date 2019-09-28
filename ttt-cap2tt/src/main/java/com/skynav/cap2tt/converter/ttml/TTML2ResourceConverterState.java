@@ -85,7 +85,7 @@ public class TTML2ResourceConverterState extends AbstractResourceConverterState 
             }
             if (defaultWhitespace != null)
                 body.getOtherAttributes().put(xmlSpaceAttrName, defaultWhitespace);
-            body.getDiv().add(division);
+            body.getDivOrEmbeddedClass().add(division);
         }
     }
 

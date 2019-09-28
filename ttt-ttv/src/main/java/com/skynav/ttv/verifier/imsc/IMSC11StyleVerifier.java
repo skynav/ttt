@@ -230,6 +230,8 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
                 return false;
             else if (name.equals(rubyReserveAttributeName))
                 return false;
+            else if (name.equals(shearAttributeName))
+                return false;
             else if (name.equals(textAlignAttributeName))
                 return false;
             else if (name.equals(textCombineAttributeName))

@@ -57,7 +57,9 @@ public class IMSC11ParameterVerifier extends ST20522010TTML2ParameterVerifier {
     }
 
     protected boolean permitsParameterAttribute(Object content, QName name) {
-        if (content instanceof TimedText) {
+        if (name.equals(conditionAttributeName)) {
+            return false;
+        } else if (content instanceof TimedText) {
             String ln = name.getLocalPart();
             if (ln.equals("clockMode"))
                 return false;
@@ -69,7 +71,7 @@ public class IMSC11ParameterVerifier extends ST20522010TTML2ParameterVerifier {
                 return false;
             else if (ln.equals("subFrameRate"))
                 return false;
-        };
+        }
         return super.permitsParameterAttribute(content, name);
     }
 

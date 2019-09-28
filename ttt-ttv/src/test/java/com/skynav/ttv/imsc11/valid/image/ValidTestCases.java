@@ -46,6 +46,21 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11Disparity() throws Exception {
+        performValidityTest("imsc11-valid-disparity.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11LuminanceGain() throws Exception {
+        performValidityTest("imsc11-valid-luminance-gain.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11MetadataItem() throws Exception {
+        performValidityTest("imsc11-valid-metadata-item.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11SetInline() throws Exception {
         performValidityTest("imsc11-valid-set-inline.xml", -1, -1);
     }

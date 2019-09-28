@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:disparity in image profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="640px 480px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 120px">
+        <!-- legal disparity values (not exhaustive) -->
+        <style tts:disparity="0px"/>
+        <style tts:disparity="+0px"/>
+        <style tts:disparity="-0px"/>
+        <style tts:disparity="0%"/>
+        <style tts:disparity="+0%"/>
+        <style tts:disparity="-0%"/>
+        <style tts:disparity="5px"/>
+        <style tts:disparity="+5px"/>
+        <style tts:disparity="-5px"/>
+        <style tts:disparity="5%"/>
+        <style tts:disparity="+5%"/>
+        <style tts:disparity="-5%"/>
+        <style tts:disparity="99.99%"/>
+        <style tts:disparity="+99.99%"/>
+        <style tts:disparity="-99.99%"/>
+        <style tts:disparity="100.001%"/>
+        <style tts:disparity="+100.001%"/>
+        <style tts:disparity="-100.001%"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1" begin="0s" end="1s"/>
+</tt>

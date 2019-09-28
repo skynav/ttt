@@ -266,6 +266,15 @@ public class TTML1ParameterVerifier extends AbstractVerifier implements Paramete
                         name, context.getBindingElementName(content)));
                     failed = true;
                 }
+            } else {
+                Reporter reporter = context.getReporter();
+                if (isParameterAttribute(name)) {
+                    if (!permitsParameterAttribute(content, name)) {
+                        reporter.logError(reporter.message(locator, "*KEY*", "Non-TT Parameter attribute ''{0}'' not permitted on ''{1}''.",
+                            name, context.getBindingElementName(content)));
+                        failed = true;
+                    }
+                }
             }
         }
         return !failed;

@@ -762,7 +762,8 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
         VerifierContext context = getContext();
         Reporter reporter = context.getReporter();
         reporter.logError(reporter.message(getLocator(content),
-            "*KEY*", "Element ''{0}'' prohibited in {1} profile.", context.getBindingElementName(content), getIMSCProfileShortName(context)));
+            "*KEY*", "Element ''{0}'' prohibited in {1} {1} profile.",
+            context.getBindingElementName(content), context.getModel().getName(), getIMSCProfileShortName(context)));
         return false;
     }
 

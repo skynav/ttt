@@ -158,8 +158,12 @@ public class TTML2Helper extends TTML1Helper {
         if (!v.preVisit(body, parent))
             return;
         traverseAnimations(body.getAnimationClass(), body, v);
-        for (Division d : body.getDiv())
-            traverse(d, body, v);
+        for (Object content : body.getDivOrEmbeddedClass()) {
+            if (content instanceof Division) {
+                Division d = (Division) content;
+                traverse(d, body, v);
+            }
+        }
         if (!v.postVisit(body, parent))
             return;
     }
@@ -321,7 +325,7 @@ public class TTML2Helper extends TTML1Helper {
         } else if (content instanceof Layout) {
             children = ((Layout) content).getRegion();
         } else if (content instanceof Body) {
-            children = ((Body) content).getDiv();
+            children = ((Body) content).getDivOrEmbeddedClass();
         } else if (content instanceof Division) {
             children = ((Division) content).getBlockOrEmbeddedClass();
         } else if (content instanceof Paragraph) {
