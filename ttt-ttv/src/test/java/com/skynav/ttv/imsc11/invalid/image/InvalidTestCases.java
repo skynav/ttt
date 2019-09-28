@@ -221,6 +221,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11Image() throws Exception {
+        performInvalidityTest("imsc11-invld-image.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11InferProcessorProfileMethod() throws Exception {
         performInvalidityTest("imsc11-invld-infer-processor-profile-method.xml", -1, -1);
     }

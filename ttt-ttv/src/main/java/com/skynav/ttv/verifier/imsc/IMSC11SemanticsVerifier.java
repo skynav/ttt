@@ -695,15 +695,14 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
     @Override
     protected boolean verifyBreak(Object br) {
         VerifierContext context = getContext();
-        if (!super.verifyBreak(br)) {
-            return false;
-        } else if (isIMSCImageProfile(context)) {
-            Reporter reporter = context.getReporter();
-            reporter.logError(reporter.message(getLocator(br),
-                "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(br)));
+        if (isIMSCImageProfile(context)) {
+            // report non-support of br element
+            unsupportedElement(br);
+            // give opportunity to report invalid, but unsupported br element
+            super.verifyBreak(br);
             return false;
         } else {
-            return true;
+            return super.verifyBreak(br);
         }
     }
 
@@ -711,58 +710,106 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
     protected boolean verifyInitial(Object initial) {
         VerifierContext context = getContext();
         if (isIMSCImageProfile(context)) {
-            Reporter reporter = context.getReporter();
-            reporter.logError(reporter.message(getLocator(initial),
-                "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(initial)));
+            // report non-support of initial element
+            unsupportedElement(initial);
+            // give opportunity to report invalid, but unsupported initial element
+            super.verifyInitial(initial);
             return false;
         } else {
-            return true;
+            return super.verifyInitial(initial);
         }
     }
 
     @Override
-    protected boolean verifyAudio(Object audio) {
-        return unsupportedElement(audio);
+    protected boolean verifyAnimate(Object animate) {
+        // report non-support of animate element
+        unsupportedElement(animate);
+        // give opportunity to report invalid, but unsupported animate element
+        super.verifyAnimate(animate);
+        return false;
     }
 
     @Override
-    protected boolean verifyChunk(Object source) {
-        return unsupportedElement(source);
+    protected boolean verifyAnimations(Object animations) {
+        // report non-support of animations element
+        unsupportedElement(animations);
+        // give opportunity to report invalid, but unsupported animations element
+        super.verifyAnimations(animations);
+        return false;
+    }
+
+    @Override
+    protected boolean verifyAudio(Object audio) {
+        // report non-support of audio element
+        unsupportedElement(audio);
+        // give opportunity to report invalid, but unsupported audio element
+        super.verifyAudio(audio);
+        return false;
+    }
+
+    @Override
+    protected boolean verifyChunk(Object chunk) {
+        // report non-support of chunk element
+        unsupportedElement(chunk);
+        // give opportunity to report invalid, but unsupported chunk element
+        super.verifyChunk(chunk);
+        return false;
     }
 
     @Override
     protected boolean verifyData(Object data) {
-        // report non-support of chunk element
+        // report non-support of data element
         unsupportedElement(data);
-        // give opportunity to report non-supported children of data element
+        // give opportunity to report invalid, but unsupported data element
         super.verifyData(data);
         return false;
     }
 
     @Override
     protected boolean verifyFont(Object font) {
-        return unsupportedElement(font);
+        // report non-support of font element
+        unsupportedElement(font);
+        // give opportunity to report invalid, but unsupported font element
+        super.verifyFont(font);
+        return false;
+    }
+
+    @Override
+    protected boolean verifyImage(Object image) {
+        if (isIMSCTextProfile(getContext())) {
+            // report non-support of image element
+            unsupportedElement(image);
+            // give opportunity to report invalid, but unsupported image element
+            super.verifyImage(image);
+            return false;
+        } else {
+            return super.verifyImage(image);
+        }
     }
 
     @Override
     protected boolean verifyResources(Object resources) {
         // report non-support of resources element
         unsupportedElement(resources);
-        // give opportunity to report non-supported children of resources element
+        // give opportunity to report invalid, but unsupported resources element
         super.verifyResources(resources);
         return false;
     }
 
     @Override
     protected boolean verifySource(Object source) {
-        return unsupportedElement(source);
+        // report non-support of source element
+        unsupportedElement(source);
+        // give opportunity to report invalid, but unsupported source element
+        super.verifySource(source);
+        return false;
     }
 
     protected boolean unsupportedElement(Object content) {
         VerifierContext context = getContext();
         Reporter reporter = context.getReporter();
         reporter.logError(reporter.message(getLocator(content),
-            "*KEY*", "Element ''{0}'' prohibited in {1} {1} profile.",
+            "*KEY*", "Element ''{0}'' prohibited in {1} {2} profile.",
             context.getBindingElementName(content), context.getModel().getName(), getIMSCProfileShortName(context)));
         return false;
     }

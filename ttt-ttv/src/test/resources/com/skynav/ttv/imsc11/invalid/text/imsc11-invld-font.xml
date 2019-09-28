@@ -5,7 +5,7 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>
     <resources>
-      <font/>
+      <font src="../../resources/fonts/test.otf" type="image/otf" family="test" style="normal" weight="normal"/>
     </resources>
   </head>
   <body/>
