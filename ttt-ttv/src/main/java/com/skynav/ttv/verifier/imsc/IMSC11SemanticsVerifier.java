@@ -75,6 +75,7 @@ import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.imsc.parameter.ActiveAreaVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010TTML2SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
@@ -943,7 +944,7 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
             Model model = getModel();
             if (model.isNamespace(name.getNamespaceURI())) {
                 String nsLabel;
-                if (name.getNamespaceURI().indexOf(NAMESPACE_IMSC11_PREFIX) == 0)
+                if (name.getNamespaceURI().indexOf(NAMESPACE_IMSC10_PREFIX) == 0)
                     nsLabel = "IMSC";
                 else if (name.getNamespaceURI().indexOf(NAMESPACE_EBUTT_PREFIX) == 0)
                     nsLabel = "EBUTT";
@@ -984,8 +985,25 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
 
     protected boolean verifyIMSCAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {
         boolean failed = false;
-        // [TBD] - IMPLEMENT ME
+        if (isActiveAreaAttribute(name)) {
+            if (!verifyIMSCActiveArea(content, name, value, locator, context))
+                failed = true;
+        }
         return !failed;
+    }
+
+    private static final QName activeAreaAttributeName = new QName(NAMESPACE_IMSC11_PARAMETER, ATTR_ACTIVE_AREA);
+    protected QName getActiveAreaAttributeName() {
+        return activeAreaAttributeName;
+    }
+
+    private boolean isActiveAreaAttribute(QName name) {
+        return name.equals(getActiveAreaAttributeName());
+    }
+
+    protected boolean verifyIMSCActiveArea(Object content, QName name, String value, Locator locator, VerifierContext context) {
+        return (new ActiveAreaVerifier()).verify(
+            value, new Location(content, context.getBindingElementName(content), getActiveAreaAttributeName(), locator), context);
     }
 
     protected boolean verifyEBUTTAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {

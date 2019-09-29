@@ -36,6 +36,11 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class ValidTestCases {
 
     @Test
+    public void testValidIMSC11ActiveArea() throws Exception {
+        performValidityTest("imsc11-valid-active-area.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11AllTTML1Styles() throws Exception {
         performValidityTest("imsc11-valid-all-ttml1-styles.xml", -1, -1);
     }

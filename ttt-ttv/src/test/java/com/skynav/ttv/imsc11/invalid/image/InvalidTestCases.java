@@ -36,6 +36,21 @@ import com.skynav.ttv.app.TimedTextVerifier;
 public class InvalidTestCases {
 
     @Test
+    public void testInvalidIMSC11ActiveAreaBadUnits() throws Exception {
+        performInvalidityTest("imsc11-invld-active-area-bad-units.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ActiveAreaMissingComponent() throws Exception {
+        performInvalidityTest("imsc11-invld-active-area-missing-component.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ActiveAreaMixedUnits() throws Exception {
+        performInvalidityTest("imsc11-invld-active-area-mixed-units.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11Audio() throws Exception {
         performInvalidityTest("imsc11-invld-audio.xml", -1, -1);
     }

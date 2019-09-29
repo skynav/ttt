@@ -74,6 +74,7 @@ public class IMSC11 {
 
         public static final String ELT_ALT_TEXT = "altText";
 
+        public static final String ATTR_ACTIVE_AREA = "activeArea";
         public static final String ATTR_ASPECT_RATIO = "aspectRatio";
         public static final String ATTR_FORCED_DISPLAY = "forcedDisplay";
         public static final String ATTR_LINE_PADDING = "linePadding";
@@ -266,7 +267,9 @@ public class IMSC11 {
             else {
                 String ln = name.getLocalPart();
                 if (inIMSC11ParameterNamespace(name)) {
-                    if (ln.equals(Constants.ATTR_ASPECT_RATIO))
+                    if (ln.equals(Constants.ATTR_ACTIVE_AREA))
+                        return true;
+                    else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
                         return true;
                     else if (ln.equals(Constants.ATTR_PROGRESSIVELY_DECODABLE))
                         return true;
@@ -294,7 +297,9 @@ public class IMSC11 {
                 String ln = attributeName.getLocalPart();
                 if (inIMSC11ParameterNamespace(attributeName)) {
                     if (isTTElement(elementName)) {
-                        if (ln.equals(Constants.ATTR_ASPECT_RATIO))
+                        if (ln.equals(Constants.ATTR_ACTIVE_AREA))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
                             return true;
                         else if (ln.equals(Constants.ATTR_PROGRESSIVELY_DECODABLE))
                             return true;
