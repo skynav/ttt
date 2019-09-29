@@ -46,6 +46,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11AspectRatio() throws Exception {
+        performValidityTest("imsc11-valid-aspect-ratio.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11Base() throws Exception {
         performValidityTest("imsc11-valid-base.xml", -1, -1);
     }
@@ -56,6 +61,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11Image() throws Exception {
+        performValidityTest("imsc11-valid-image.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11LuminanceGain() throws Exception {
         performValidityTest("imsc11-valid-luminance-gain.xml", -1, -1);
     }
@@ -63,6 +73,11 @@ public class ValidTestCases {
     @Test
     public void testValidIMSC11MetadataItem() throws Exception {
         performValidityTest("imsc11-valid-metadata-item.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11ProgressivelyDecodable() throws Exception {
+        performValidityTest("imsc11-valid-progressively-decodable.xml", -1, -1);
     }
 
     @Test

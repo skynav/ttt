@@ -46,6 +46,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11AspectRatio() throws Exception {
+        performValidityTest("imsc11-valid-aspect-ratio.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11Base() throws Exception {
         performValidityTest("imsc11-valid-base.xml", -1, -1);
     }
@@ -133,6 +138,11 @@ public class ValidTestCases {
     @Test
     public void testValidIMSC11Position() throws Exception {
         performValidityTest("imsc11-valid-position.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11ProgressivelyDecodable() throws Exception {
+        performValidityTest("imsc11-valid-progressively-decodable.xml", -1, -1);
     }
 
     @Test

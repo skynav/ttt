@@ -8,12 +8,8 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>
     <layout>
-      <region xml:id="r1" tts:extent="640px 480px" tts:position="center"/>
+      <region xml:id="r1" tts:extent="640px 480px" tts:origin="320px 120px"/>
     </layout>
   </head>
-  <body region="r1" begin="0s" end="1s">
-    <div>
-      <p>Active Area</p>
-    </div>
-  </body>
+  <body/>
 </tt>

@@ -76,6 +76,8 @@ import com.skynav.ttv.util.Visitor;
 import com.skynav.ttv.verifier.VerificationParameters;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.imsc.parameter.ActiveAreaVerifier;
+import com.skynav.ttv.verifier.imsc.parameter.AspectRatioVerifier;
+import com.skynav.ttv.verifier.imsc.parameter.ProgressivelyDecodableVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010TTML2SemanticsVerifier;
 import com.skynav.ttv.verifier.ttml.TTML2ProfileVerifier;
 import com.skynav.ttv.verifier.ttml.timing.TimingVerificationParameters;
@@ -988,6 +990,12 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
         if (isActiveAreaAttribute(name)) {
             if (!verifyIMSCActiveArea(content, name, value, locator, context))
                 failed = true;
+        } else if (isAspectRatioAttribute(name)) {
+            if (!verifyIMSCAspectRatio(content, name, value, locator, context))
+                failed = true;
+        } else if (isProgressivelyDecodableAttribute(name)) {
+            if (!verifyIMSCProgressivelyDecodable(content, name, value, locator, context))
+                failed = true;
         }
         return !failed;
     }
@@ -1002,8 +1010,56 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
     }
 
     protected boolean verifyIMSCActiveArea(Object content, QName name, String value, Locator locator, VerifierContext context) {
-        return (new ActiveAreaVerifier()).verify(
-            value, new Location(content, context.getBindingElementName(content), getActiveAreaAttributeName(), locator), context);
+        boolean failed = false;
+        if (!(new ActiveAreaVerifier()).verify(value,
+            new Location(content, context.getBindingElementName(content), getActiveAreaAttributeName(), locator), context))
+            failed = true;
+        if (!unappliedParameterAttribute(content, name, locator, context))
+            failed = true;
+        return !failed;
+    }
+
+    private static final QName aspectRatioAttributeName = new QName(NAMESPACE_IMSC11_PARAMETER, ATTR_ASPECT_RATIO);
+    protected QName getAspectRatioAttributeName() {
+        return aspectRatioAttributeName;
+    }
+
+    private boolean isAspectRatioAttribute(QName name) {
+        return name.equals(getAspectRatioAttributeName());
+    }
+
+    protected boolean verifyIMSCAspectRatio(Object content, QName name, String value, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (!(new AspectRatioVerifier()).verify(value,
+            new Location(content, context.getBindingElementName(content), getAspectRatioAttributeName(), locator), context))
+            failed = true;
+        if (!unappliedParameterAttribute(content, name, locator, context))
+            failed = true;
+        return !failed;
+    }
+
+    private static final QName progressivelyDecodableAttributeName = new QName(NAMESPACE_IMSC11_PARAMETER, ATTR_PROGRESSIVELY_DECODABLE);
+    protected QName getProgressivelyDecodableAttributeName() {
+        return progressivelyDecodableAttributeName;
+    }
+
+    private boolean isProgressivelyDecodableAttribute(QName name) {
+        return name.equals(getProgressivelyDecodableAttributeName());
+    }
+
+    protected boolean verifyIMSCProgressivelyDecodable(Object content, QName name, String value, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (!(new ProgressivelyDecodableVerifier()).verify(value,
+            new Location(content, context.getBindingElementName(content), getProgressivelyDecodableAttributeName(), locator), context))
+            failed = true;
+        if (!unappliedParameterAttribute(content, name, locator, context))
+            failed = true;
+        return !failed;
+    }
+
+    protected boolean unappliedParameterAttribute(Object content, QName name, Locator locator, VerifierContext context) {
+        // [TBD] - IMPLEMENT ME - emit warning on unapplied (non-significant) parameter attribute
+        return true;
     }
 
     protected boolean verifyEBUTTAttribute(Object content, Locator locator, VerifierContext context, QName name, String value) {

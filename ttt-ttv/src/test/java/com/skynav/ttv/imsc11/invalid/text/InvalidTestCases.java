@@ -51,6 +51,31 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11AspectRatioMissingComponent() throws Exception {
+        performInvalidityTest("imsc11-invld-aspect-ratio-missing-component.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11AspectRatioNegativeDenominator() throws Exception {
+        performInvalidityTest("imsc11-invld-aspect-ratio-negative-denominator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11AspectRatioNegativeNumerator() throws Exception {
+        performInvalidityTest("imsc11-invld-aspect-ratio-negative-numerator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11AspectRatioZeroDenominator() throws Exception {
+        performInvalidityTest("imsc11-invld-aspect-ratio-zero-denominator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11AspectRatioZeroNumerator() throws Exception {
+        performInvalidityTest("imsc11-invld-aspect-ratio-zero-numerator.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11Audio() throws Exception {
         performInvalidityTest("imsc11-invld-audio.xml", -1, -1);
     }
@@ -348,6 +373,21 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11ProfileAttribute() throws Exception {
         performInvalidityTest("imsc11-invld-profile-attribute.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProgressivelyDecodableCase() throws Exception {
+        performInvalidityTest("imsc11-invld-progressively-decodable-case.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProgressivelyDecodableEmpty() throws Exception {
+        performInvalidityTest("imsc11-invld-progressively-decodable-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11ProgressivelyDecodableUnknown() throws Exception {
+        performInvalidityTest("imsc11-invld-progressively-decodable-unknown.xml", -1, -1);
     }
 
     @Test
