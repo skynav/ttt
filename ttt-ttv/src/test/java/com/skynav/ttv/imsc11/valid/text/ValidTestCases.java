@@ -76,6 +76,16 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11ForcedDisplay() throws Exception {
+        performValidityTest("imsc11-valid-forced-display.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11FillLineGap() throws Exception {
+        performValidityTest("imsc11-valid-fill-line-gap.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11InitialDuplicate() throws Exception {
         performValidityTest("imsc11-valid-initial-duplicate.xml", -1, -1);
     }
@@ -96,6 +106,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11LinePadding() throws Exception {
+        performValidityTest("imsc11-valid-line-padding.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11LuminanceGain() throws Exception {
         performValidityTest("imsc11-valid-luminance-gain.xml", -1, -1);
     }
@@ -108,6 +123,11 @@ public class ValidTestCases {
     @Test
     public void testValidIMSC11MissingProfileAttribute() throws Exception {
         performValidityTest("imsc11-valid-missing-profile-attribute.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11MultiRowAlign() throws Exception {
+        performValidityTest("imsc11-valid-multi-row-align.xml", -1, -1);
     }
 
     @Test

@@ -41,6 +41,9 @@ import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.imsc.style.FillLineGapVerifier;
+import com.skynav.ttv.verifier.imsc.style.ForcedDisplayVerifier;
+import com.skynav.ttv.verifier.imsc.style.LinePaddingVerifier;
 import com.skynav.ttv.verifier.imsc.style.MultiRowAlignVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010TTML2StyleVerifier;
 import com.skynav.ttv.verifier.util.Lengths;
@@ -48,16 +51,49 @@ import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.Outlines;
 
-
 import static com.skynav.ttv.model.imsc.IMSC11.Constants.*;
 
 public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
 
-    public static final QName forcedDisplayAttributeName        = new QName(NAMESPACE_IMSC11_STYLING,"forcedDisplay");
-    public static final QName linePaddingAttributeName          = new QName(NAMESPACE_EBUTT_STYLING,"linePadding");
-    public static final QName multiRowAlignAttributeName        = new QName(NAMESPACE_EBUTT_STYLING,"multiRowAlign");
+    public static final QName fillLineGapAttributeName          = new QName(NAMESPACE_IMSC11_STYLING,ATTR_FILL_LINE_GAP);
+    public static final QName forcedDisplayAttributeName        = new QName(NAMESPACE_IMSC11_STYLING,ATTR_FORCED_DISPLAY);
+    public static final QName linePaddingAttributeName          = new QName(NAMESPACE_EBUTT_STYLING,ATTR_LINE_PADDING);
+    public static final QName multiRowAlignAttributeName        = new QName(NAMESPACE_EBUTT_STYLING,ATTR_MULTI_ROW_ALIGN);
 
     private static final Object[][] styleAccessorMap            = new Object[][] {
+        {
+            fillLineGapAttributeName,
+            "FillLineGap",
+            Boolean.class,
+            FillLineGapVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            Boolean.FALSE,
+            Boolean.FALSE.toString(),
+        },
+        {
+            forcedDisplayAttributeName,
+            "ForcedDisplay",
+            Boolean.class,
+            ForcedDisplayVerifier.class,
+            Integer.valueOf(APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            Boolean.FALSE,
+            Boolean.FALSE.toString(),
+        },
+        {
+            linePaddingAttributeName,
+            "LinePadding",
+            String.class,
+            LinePaddingVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "0c",
+            null
+        },
         {
             multiRowAlignAttributeName,
             "MultiRowAlign",

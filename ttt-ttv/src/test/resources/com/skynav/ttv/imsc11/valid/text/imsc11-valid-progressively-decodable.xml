@@ -13,7 +13,7 @@
   </head>
   <body region="r1" begin="0s" end="1s">
     <div>
-      <p>16:9 Aspect Ratio</p>
+      <p>Progressively Decodable</p>
     </div>
   </body>
 </tt>
