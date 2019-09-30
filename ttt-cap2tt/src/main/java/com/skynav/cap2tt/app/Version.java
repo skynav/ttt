@@ -26,7 +26,7 @@
 package com.skynav.cap2tt.app;
 
 public class Version {
-    public static final String CURRENT = "7.0-SNAPSHOT";
+    public static final String CURRENT = "7.0";
 
     public static String getVersion() {
         return CURRENT;
