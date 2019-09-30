@@ -51,6 +51,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11AnimateInline() throws Exception {
+        performInvalidityTest("imsc11-invld-animate-inline.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11AspectRatioMissingComponent() throws Exception {
         performInvalidityTest("imsc11-invld-aspect-ratio-missing-component.xml", -1, -1);
     }
