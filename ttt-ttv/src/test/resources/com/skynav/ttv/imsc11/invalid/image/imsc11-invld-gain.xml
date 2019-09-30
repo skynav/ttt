@@ -2,7 +2,7 @@
 <!-- invalid - prohibited tta:gain attribute in image profile -->
 <tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tta="http://www.w3.org/ns/ttml#audio"
     xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
-    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="4" ttva:expectedWarnings="0" ttva:model="imsc11">
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="6" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head/>
   <body begin="0s" end="1s" tta:gain="0.9">
     <div tta:gain="0.8">

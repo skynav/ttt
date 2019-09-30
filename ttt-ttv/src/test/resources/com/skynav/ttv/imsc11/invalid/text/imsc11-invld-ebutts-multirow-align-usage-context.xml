@@ -12,7 +12,7 @@
       <region xml:id="r0" tts:extent="100% 100%" ebutts:multiRowAlign="start"/>
     </layout>
   </head>
-  <body begin="0s" end="1s" ebutts:multiRowAlign="start">
+  <body region="r0" begin="0s" end="1s" ebutts:multiRowAlign="start">
     <div ebutts:multiRowAlign="start">
       <p ebutts:multiRowAlign="start">
         <span ebutts:multiRowAlign="start"/>

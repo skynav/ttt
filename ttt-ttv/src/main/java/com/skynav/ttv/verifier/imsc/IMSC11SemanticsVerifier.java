@@ -52,6 +52,7 @@ import com.skynav.ttv.model.imsc.IMSC11;
 import com.skynav.ttv.model.imsc11.ittm.AltText;
 import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.ttv.model.ttml.TTML2.TTML2Model;
+import com.skynav.ttv.model.ttml2.tt.Animation;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Division;
@@ -604,15 +605,17 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
 
     @Override
     protected boolean verifyDivision(Object division) {
+        boolean failed = false;
         VerifierContext context = getContext();
-        if (!super.verifyDivision(division)) {
-            return false;
-        } else if (isIMSCImageProfile(context) && isNestedDivision(division)) {
+        if (!super.verifyDivision(division))
+            failed = true;
+        if (isIMSCImageProfile(context) && isNestedDivision(division)) {
             Reporter reporter = context.getReporter();
             reporter.logError(reporter.message(getLocator(division),
                 "*KEY*", "Nested ''{0}'' prohibited in image profile.", context.getBindingElementName(division)));
-            return false;
-        } else {
+            failed = true;
+        }
+        if (!failed) {
             String timeablesKey = getModel().makeResourceStateName("timeables");
             @SuppressWarnings("unchecked")
             List<Object> timeables = (List<Object>) getContext().getResourceState(timeablesKey);
@@ -621,8 +624,8 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
                 getContext().setResourceState(timeablesKey, timeables);
             }
             timeables.add(division);
-            return true;
         }
+        return !failed;
     }
 
     private boolean isNestedDivision(Object division) {
@@ -636,15 +639,17 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
 
     @Override
     protected boolean verifyParagraph(Object paragraph) {
+        boolean failed = false;
         VerifierContext context = getContext();
-        if (!super.verifyParagraph(paragraph)) {
-            return false;
-        } else if (isIMSCImageProfile(context)) {
+        if (!super.verifyParagraph(paragraph))
+            failed = true;
+        if (isIMSCImageProfile(context)) {
             Reporter reporter = context.getReporter();
             reporter.logError(reporter.message(getLocator(paragraph),
                 "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(paragraph)));
-            return false;
-        } else {
+            failed = true;
+        }
+        if (!failed) {
             String timeablesKey = getModel().makeResourceStateName("timeables");
             @SuppressWarnings("unchecked")
             List<Object> timeables = (List<Object>) context.getResourceState(timeablesKey);
@@ -653,16 +658,17 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
                 context.setResourceState(timeablesKey, timeables);
             }
             timeables.add(paragraph);
-            return true;
         }
+        return !failed;
     }
 
     @Override
     protected boolean verifySpan(Object span) {
+        boolean failed = false;
         VerifierContext context = getContext();
-        if (!super.verifySpan(span)) {
-            return false;
-        } else if (isIMSCImageProfile(context)) {
+        if (!super.verifySpan(span))
+            failed = true;
+        if (isIMSCImageProfile(context)) {
             Reporter reporter = context.getReporter();
             reporter.logError(reporter.message(getLocator(span),
                 "*KEY*", "Element ''{0}'' prohibited in image profile.", context.getBindingElementName(span)));
@@ -670,8 +676,9 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
                 reporter.logError(reporter.message(getLocator(span),
                     "*KEY*", "Nested ''{0}'' prohibited in image profile.", context.getBindingElementName(span)));
             }
-            return false;
-        } else {
+            failed = true;
+        }
+        if (!failed) {
             String timeablesKey = getModel().makeResourceStateName("timeables");
             @SuppressWarnings("unchecked")
             List<Object> timeables = (List<Object>) context.getResourceState(timeablesKey);
@@ -680,8 +687,8 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
                 context.setResourceState(timeablesKey, timeables);
             }
             timeables.add(span);
-            return true;
         }
+        return !failed;
     }
 
     private boolean isNestedSpan(Object span) {
@@ -697,115 +704,127 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
 
     @Override
     protected boolean verifyBreak(Object br) {
-        VerifierContext context = getContext();
-        if (isIMSCImageProfile(context)) {
-            // report non-support of br element
-            unsupportedElement(br);
-            // give opportunity to report invalid, but unsupported br element
-            super.verifyBreak(br);
-            return false;
-        } else {
-            return super.verifyBreak(br);
-        }
+        boolean failed = false;
+        if (isIMSCImageProfile(getContext()))
+            failed = unsupportedElement(br);
+        if (!super.verifyBreak(br))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyInitial(Object initial) {
-        VerifierContext context = getContext();
-        if (isIMSCImageProfile(context)) {
-            // report non-support of initial element
-            unsupportedElement(initial);
-            // give opportunity to report invalid, but unsupported initial element
-            super.verifyInitial(initial);
-            return false;
-        } else {
-            return super.verifyInitial(initial);
-        }
+        boolean failed = false;
+        if (isIMSCImageProfile(getContext()))
+            failed = unsupportedElement(initial);
+        if (!super.verifyInitial(initial))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyAnimate(Object animate) {
-        // report non-support of animate element
-        unsupportedElement(animate);
-        // give opportunity to report invalid, but unsupported animate element
-        super.verifyAnimate(animate);
-        return false;
+        boolean failed = false;
+        if (unsupportedElement(animate))
+            failed = true;
+        if (!super.verifyAnimate(animate))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyAnimations(Object animations) {
-        // report non-support of animations element
-        unsupportedElement(animations);
-        // give opportunity to report invalid, but unsupported animations element
-        super.verifyAnimations(animations);
-        return false;
+        boolean failed = false;
+        if (unsupportedElement(animations))
+            failed = true;
+        if (!super.verifyAnimations(animations))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyAudio(Object audio) {
-        // report non-support of audio element
-        unsupportedElement(audio);
-        // give opportunity to report invalid, but unsupported audio element
-        super.verifyAudio(audio);
-        return false;
+        boolean failed = false;
+        if (unsupportedElement(audio))
+            failed = true;
+        if (!super.verifyAudio(audio))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyChunk(Object chunk) {
-        // report non-support of chunk element
-        unsupportedElement(chunk);
-        // give opportunity to report invalid, but unsupported chunk element
-        super.verifyChunk(chunk);
-        return false;
+        boolean failed = false;
+        if (unsupportedElement(chunk))
+            failed = true;
+        if (!super.verifyChunk(chunk))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyData(Object data) {
-        // report non-support of data element
-        unsupportedElement(data);
-        // give opportunity to report invalid, but unsupported data element
-        super.verifyData(data);
-        return false;
+        boolean failed = false;
+        if (unsupportedElement(data))
+            failed = true;
+        if (!super.verifyData(data))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyFont(Object font) {
-        // report non-support of font element
-        unsupportedElement(font);
-        // give opportunity to report invalid, but unsupported font element
-        super.verifyFont(font);
-        return false;
+        boolean failed = false;
+        if (unsupportedElement(font))
+            failed = true;
+        if (!super.verifyFont(font))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyImage(Object image) {
-        if (isIMSCTextProfile(getContext())) {
-            // report non-support of image element
-            unsupportedElement(image);
-            // give opportunity to report invalid, but unsupported image element
-            super.verifyImage(image);
-            return false;
-        } else {
-            return super.verifyImage(image);
-        }
+        boolean failed = false;
+        if (isIMSCTextProfile(getContext()))
+            failed = unsupportedElement(image);
+        if (!super.verifyImage(image))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifyResources(Object resources) {
-        // report non-support of resources element
-        unsupportedElement(resources);
-        // give opportunity to report invalid, but unsupported resources element
-        super.verifyResources(resources);
-        return false;
+        boolean failed = false;
+        if (unsupportedElement(resources))
+            failed = true;
+        if (!super.verifyResources(resources))
+            failed = true;
+        return !failed;
+    }
+
+    @Override
+    protected boolean verifySet(Object set) {
+        VerifierContext context = getContext();
+        boolean failed = false;
+        if (context.getBindingElementParent(set) instanceof Animation) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(getLocator(set),
+               "*KEY*", "Out-of-line ''{0}'' prohibited in {1}.", context.getBindingElementName(set), getModel().getName()));
+            failed = true;
+        }
+        if (!super.verifySet(set))
+            failed = true;
+        return !failed;
     }
 
     @Override
     protected boolean verifySource(Object source) {
-        // report non-support of source element
-        unsupportedElement(source);
-        // give opportunity to report invalid, but unsupported source element
-        super.verifySource(source);
-        return false;
+        boolean failed = false;
+        if (unsupportedElement(source))
+            failed = true;
+        if (!super.verifySource(source))
+            failed = true;
+        return !failed;
     }
 
     protected boolean unsupportedElement(Object content) {
@@ -814,7 +833,7 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
         reporter.logError(reporter.message(getLocator(content),
             "*KEY*", "Element ''{0}'' prohibited in {1} {2} profile.",
             context.getBindingElementName(content), context.getModel().getName(), getIMSCProfileShortName(context)));
-        return false;
+        return true;
     }
 
     public static boolean inIMSCNamespace(QName name) {

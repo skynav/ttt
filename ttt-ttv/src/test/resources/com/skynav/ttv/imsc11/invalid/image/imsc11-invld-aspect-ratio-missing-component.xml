@@ -11,5 +11,5 @@
       <region xml:id="r1" tts:extent="640px 480px" tts:origin="320px 120px"/>
     </layout>
   </head>
-  <body/>
+  <body region="r1"/>
 </tt>

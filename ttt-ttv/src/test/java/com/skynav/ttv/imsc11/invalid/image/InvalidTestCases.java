@@ -56,6 +56,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11AnimateOutOfLine() throws Exception {
+        performInvalidityTest("imsc11-invld-animate-out-of-line.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11AspectRatioMissingComponent() throws Exception {
         performInvalidityTest("imsc11-invld-aspect-ratio-missing-component.xml", -1, -1);
     }
@@ -443,6 +448,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidIMSC11RubyReserve() throws Exception {
         performInvalidityTest("imsc11-invld-ruby-reserve.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11SetOutOfLine() throws Exception {
+        performInvalidityTest("imsc11-invld-set-out-of-line.xml", -1, -1);
     }
 
     @Test

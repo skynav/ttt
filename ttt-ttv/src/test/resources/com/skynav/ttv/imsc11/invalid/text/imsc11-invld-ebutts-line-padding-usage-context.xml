@@ -12,7 +12,7 @@
       <region xml:id="r0" tts:extent="100% 100%" ebutts:linePadding="0.1c"/>
     </layout>
   </head>
-  <body begin="0s" end="1s" ebutts:linePadding="0.2c">
+  <body region="r0" begin="0s" end="1s" ebutts:linePadding="0.2c">
     <div ebutts:linePadding="0.3c">
       <p ebutts:linePadding="0.4c">
         <span ebutts:linePadding="0.5c"/>

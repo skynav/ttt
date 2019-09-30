@@ -8,8 +8,8 @@
       <style tts:extent="1c 1c"/>
     </styling>
     <layout>
-      <region tts:extent="1c 1c"/>
+      <region xml:id="r1" tts:extent="1c 1c"/>
     </layout>
   </head>
-  <body/>
+  <body region="r1"/>
 </tt>

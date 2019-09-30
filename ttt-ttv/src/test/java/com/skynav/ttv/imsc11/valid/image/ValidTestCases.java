@@ -66,6 +66,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11ForcedDisplay() throws Exception {
+        performValidityTest("imsc11-valid-forced-display.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11ImageWithAltTextElement() throws Exception {
         performValidityTest("imsc11-valid-image-with-alt-text-element.xml", -1, -1);
     }
@@ -93,6 +98,11 @@ public class ValidTestCases {
     @Test
     public void testValidIMSC11SetInline() throws Exception {
         performValidityTest("imsc11-valid-set-inline.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11Visibility() throws Exception {
+        performValidityTest("imsc11-valid-visibility.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

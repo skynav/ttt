@@ -5,8 +5,8 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>
     <layout>
-        <region tts:origin="12px 24px" tts:extent="240px 120px" tts:padding="12px"/>
+        <region xml:id="r1" tts:origin="12px 24px" tts:extent="240px 120px" tts:padding="12px"/>
     </layout>
   </head>
-  <body tts:fontSize="18px" tts:lineHeight="24px"/>
+  <body region="r1" tts:fontSize="18px" tts:lineHeight="24px"/>
 </tt>

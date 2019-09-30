@@ -5,12 +5,12 @@
     xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="3" ttva:expectedWarnings="0" ttva:model="imsc11">
   <head>
     <layout>
-      <region tts:extent="10% 10%">
+      <region xml:id="r1" tts:extent="10% 10%">
         <style tts:displayAlign="justify"/> 
       </region>
     </layout>
   </head>
-  <body tts:displayAlign="before">
+  <body region="r1" tts:displayAlign="before">
     <div tts:displayAlign="before"/>
   </body>
 </tt>

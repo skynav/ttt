@@ -231,6 +231,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11Visibility() throws Exception {
+        performValidityTest("imsc11-valid-visibility.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11WritingMode() throws Exception {
         performValidityTest("imsc11-valid-writing-mode.xml", -1, -1);
     }

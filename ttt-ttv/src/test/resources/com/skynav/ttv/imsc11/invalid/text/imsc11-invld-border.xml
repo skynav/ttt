@@ -13,7 +13,7 @@
       </region>
     </layout>
   </head>
-  <body tts:border="none">
+  <body region="r1" tts:border="none">
     <div tts:border="none">
       <p tts:border="none">
         <span tts:border="none"/>

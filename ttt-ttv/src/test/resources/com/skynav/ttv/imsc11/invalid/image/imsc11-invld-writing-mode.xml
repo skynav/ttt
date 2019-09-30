@@ -14,5 +14,5 @@
       <region xml:id="r6" tts:extent="auto" tts:writingMode="rl"/>       <!-- ok -->
     </layout>
   </head>
-  <body/>
+  <body region="r0"/>
 </tt>

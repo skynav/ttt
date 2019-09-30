@@ -10,5 +10,5 @@
       <region xml:id="r3" tts:origin="10em 10em"/>
     </layout>
   </head>
-  <body/>
+  <body region="r1"/>
 </tt>
