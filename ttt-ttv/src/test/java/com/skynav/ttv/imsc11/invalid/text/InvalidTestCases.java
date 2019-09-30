@@ -206,6 +206,31 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11DisplayAspectRatioMissingComponent() throws Exception {
+        performInvalidityTest("imsc11-invld-display-aspect-ratio-missing-component.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11DisplayAspectRatioNegativeDenominator() throws Exception {
+        performInvalidityTest("imsc11-invld-display-aspect-ratio-negative-denominator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11DisplayAspectRatioNegativeNumerator() throws Exception {
+        performInvalidityTest("imsc11-invld-display-aspect-ratio-negative-numerator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11DisplayAspectRatioZeroDenominator() throws Exception {
+        performInvalidityTest("imsc11-invld-display-aspect-ratio-zero-denominator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidIMSC11DisplayAspectRatioZeroNumerator() throws Exception {
+        performInvalidityTest("imsc11-invld-display-aspect-ratio-zero-numerator.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11DropModeNone() throws Exception {
         performInvalidityTest("imsc11-invld-drop-mode-none.xml", -1, -1);
     }

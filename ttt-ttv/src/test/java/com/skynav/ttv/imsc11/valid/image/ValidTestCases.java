@@ -61,8 +61,18 @@ public class ValidTestCases {
     }
 
     @Test
-    public void testValidIMSC11Image() throws Exception {
-        performValidityTest("imsc11-valid-image.xml", -1, -1);
+    public void testValidIMSC11DisplayAspectRatio() throws Exception {
+        performValidityTest("imsc11-valid-display-aspect-ratio.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11ImageWithAltTextElement() throws Exception {
+        performValidityTest("imsc11-valid-image-with-alt-text-element.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11ImageWithAltTextItem() throws Exception {
+        performValidityTest("imsc11-valid-image-with-alt-text-item.xml", -1, -1);
     }
 
     @Test

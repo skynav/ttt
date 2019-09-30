@@ -46,6 +46,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11AltText() throws Exception {
+        performValidityTest("imsc11-valid-alt-text.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11AspectRatio() throws Exception {
         performValidityTest("imsc11-valid-aspect-ratio.xml", -1, -1);
     }
@@ -58,6 +63,11 @@ public class ValidTestCases {
     @Test
     public void testValidIMSC11Disparity() throws Exception {
         performValidityTest("imsc11-valid-disparity.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC11DisplayAspectRatio() throws Exception {
+        performValidityTest("imsc11-valid-display-aspect-ratio.xml", -1, -1);
     }
 
     @Test
