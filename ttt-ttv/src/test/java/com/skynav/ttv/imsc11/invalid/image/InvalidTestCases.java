@@ -555,6 +555,11 @@ public class InvalidTestCases {
         performInvalidityTest("imsc11-invld-writing-mode.xml", -1, -1);
     }
 
+    @Test
+    public void testInvalidIMSC11XLink() throws Exception {
+        performInvalidityTest("imsc11-invld-xlink.xml", -1, -1);
+    }
+
     private void performInvalidityTest(String resourceName, int expectedErrors, int expectedWarnings) {
         URL url = getClass().getResource(resourceName);
         if (url == null)

@@ -36,6 +36,8 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010TTML2ParameterVerifier;
 
+import com.skynav.xml.helpers.XML;
+
 public class IMSC11ParameterVerifier extends ST20522010TTML2ParameterVerifier {
 
     public IMSC11ParameterVerifier(Model model) {
@@ -58,6 +60,8 @@ public class IMSC11ParameterVerifier extends ST20522010TTML2ParameterVerifier {
 
     protected boolean permitsParameterAttribute(Object content, QName name) {
         if (name.equals(conditionAttributeName)) {
+            return false;
+        } else if (XML.inXlinkNamespace(name)) {
             return false;
         } else if (content instanceof TimedText) {
             String ln = name.getLocalPart();
