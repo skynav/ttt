@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
 
     // banner text
     private static final String title = "Timed Text Transformer (TTX) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-16 Skynav, Inc.";
+    private static final String copyright = "Copyright 2013-19 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     // option and usage info

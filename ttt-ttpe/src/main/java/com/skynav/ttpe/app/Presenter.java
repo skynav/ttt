@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-18 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -92,7 +92,7 @@ public class Presenter extends TimedTextTransformer {
 
     // banner text
     private static final String title = "Timed Text Presentation Engine (TTPE) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2014-16 Skynav, Inc.";
+    private static final String copyright = "Copyright 2014-19 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     // option and usage info

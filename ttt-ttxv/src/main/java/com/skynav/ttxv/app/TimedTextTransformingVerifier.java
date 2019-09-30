@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,8 +37,11 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
 
     // banner text
     private static final String title = "Timed Text Transforming Verifier (TTXV) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-16 Skynav, Inc.";
+    private static final String copyright = "Copyright 2013-19 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
+
+    private static final String usageCommand =
+        "java -jar ttxv.jar [options] URL*";
 
     private static final String DEFAULT_TRANSFORMER = Transformers.getDefaultTransformerName();
 
@@ -62,6 +65,11 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
     @Override
     protected void showBanner(PrintWriter out, String banner) {
         super.showBanner(out, TimedTextTransformingVerifier.banner);
+    }
+
+    @Override
+    public String getShowUsageCommand() {
+        return usageCommand;
     }
 
     @Override
