@@ -4,6 +4,7 @@
   xmlns:tt="http://www.w3.org/ns/ttml"
   xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
   <xs:include schemaLocation="ttml2-core-attribs.xsd"/>
+  <xs:include schemaLocation="ttml2-embedded.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml#metadata"
     schemaLocation="ttml2-metadata-items.xsd"/>
   <xs:attributeGroup name="metadata.attlist">
@@ -13,7 +14,10 @@
   </xs:attributeGroup>
   <xs:complexType name="metadata.eltype">
     <xs:sequence>
-      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="tt:Data.class"/>
+        <xs:any namespace="##other" processContents="lax"/>
+      </xs:choice>
     </xs:sequence>
     <xs:attributeGroup ref="tt:metadata.attlist"/>
   </xs:complexType>

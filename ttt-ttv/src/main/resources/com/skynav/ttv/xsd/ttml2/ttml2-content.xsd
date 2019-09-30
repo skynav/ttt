@@ -63,7 +63,7 @@
     <xs:sequence>
       <xs:group ref="tt:Metadata.class" minOccurs="0" maxOccurs="unbounded"/>
       <xs:group ref="tt:Animation.class" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element ref="tt:div" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:group ref="tt:DivOrEmbedded.class" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attributeGroup ref="tt:body.attlist"/>
   </xs:complexType>
@@ -119,6 +119,12 @@
   <xs:group name="BlockOrEmbedded.class">
     <xs:choice>
       <xs:group ref="tt:Block.class"/>
+      <xs:group ref="tt:Embedded.class"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="DivOrEmbedded.class">
+    <xs:choice>
+      <xs:element ref="tt:div"/>
       <xs:group ref="tt:Embedded.class"/>
     </xs:choice>
   </xs:group>

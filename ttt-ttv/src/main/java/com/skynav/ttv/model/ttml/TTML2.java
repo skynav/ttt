@@ -34,7 +34,16 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Profile;
+import com.skynav.ttv.model.ttml2.tt.Animate;
+import com.skynav.ttv.model.ttml2.tt.Animation;
+import com.skynav.ttv.model.ttml2.tt.Audio;
+import com.skynav.ttv.model.ttml2.tt.Chunk;
+import com.skynav.ttv.model.ttml2.tt.Data;
+import com.skynav.ttv.model.ttml2.tt.Font;
+import com.skynav.ttv.model.ttml2.tt.Image;
+import com.skynav.ttv.model.ttml2.tt.Initial;
 import com.skynav.ttv.model.ttml2.tt.Region;
+import com.skynav.ttv.model.ttml2.tt.Resources;
 import com.skynav.ttv.model.ttml2.tt.Style;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
 import com.skynav.ttv.verifier.AudioVerifier;
@@ -84,6 +93,16 @@ public class TTML2 {
     public static final int MODEL_VERSION = 2;
 
     public static class TTML2Model extends TTML1.TTML1Model {
+
+        public static final QName animationElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createAnimation(new Animation()).getName();
+        public static final QName animateElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createAnimate(new Animate()).getName();
+        public static final QName audioElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createAudio(new Audio()).getName();
+        public static final QName chunkElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createChunk(new Chunk()).getName();
+        public static final QName dataElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createData(new Data()).getName();
+        public static final QName fontElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createFont(new Font()).getName();
+        public static final QName imageElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createImage(new Image()).getName();
+        public static final QName initialElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createInitial(new Initial()).getName();
+        public static final QName resourcesElementName = new com.skynav.ttv.model.ttml2.tt.ObjectFactory().createResources(new Resources()).getName();
 
         private String[] schemaResourceNames;
         private URI[] namespaceURIs;
@@ -198,6 +217,10 @@ public class TTML2 {
                     return Agent.class;
             }
             return Object.class;
+        }
+
+        static public boolean isTTInitialElement(QName name) {
+            return name.equals(timedTextElementName);
         }
 
         public SemanticsVerifier getSemanticsVerifier() {

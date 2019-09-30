@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - prohibited tts:textDecoration attributes in image profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="71" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region>
+        <style tts:textDecoration="none"/>
+        <style tts:textDecoration="underline"/>
+        <style tts:textDecoration="noUnderline"/>
+        <style tts:textDecoration="lineThrough"/>
+        <style tts:textDecoration="noLineThrough"/>
+        <style tts:textDecoration="overline"/>
+        <style tts:textDecoration="noOverline"/>
+        <style tts:textDecoration="noUnderline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough noUnderline"/>
+        <style tts:textDecoration="noUnderline lineThrough"/>
+        <style tts:textDecoration="lineThrough noUnderline"/>
+        <style tts:textDecoration="underline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough underline"/>
+        <style tts:textDecoration="underline lineThrough"/>
+        <style tts:textDecoration="lineThrough underline"/>
+        <style tts:textDecoration="noUnderline noOverline"/>
+        <style tts:textDecoration="noOverline noUnderline"/>
+        <style tts:textDecoration="noUnderline overline"/>
+        <style tts:textDecoration="overline noUnderline"/>
+        <style tts:textDecoration="underline noOverline"/>
+        <style tts:textDecoration="noOverline underline"/>
+        <style tts:textDecoration="underline overline"/>
+        <style tts:textDecoration="overline underline"/>
+        <style tts:textDecoration="noUnderline noLineThrough noOverline"/>
+        <style tts:textDecoration="noUnderline noOverline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough noUnderline noOverline"/>
+        <style tts:textDecoration="noLineThrough noOverline noUnderline"/>
+        <style tts:textDecoration="noOverline noUnderline noLineThrough"/>
+        <style tts:textDecoration="noOverline noLineThrough noUnderline"/>
+        <style tts:textDecoration="noUnderline noLineThrough overline"/>
+        <style tts:textDecoration="noUnderline overline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough noUnderline overline"/>
+        <style tts:textDecoration="noLineThrough overline noUnderline"/>
+        <style tts:textDecoration="overline noUnderline noLineThrough"/>
+        <style tts:textDecoration="overline noLineThrough noUnderline"/>
+        <style tts:textDecoration="noUnderline lineThrough noOverline"/>
+        <style tts:textDecoration="noUnderline noOverline lineThrough"/>
+        <style tts:textDecoration="lineThrough noUnderline noOverline"/>
+        <style tts:textDecoration="lineThrough noOverline noUnderline"/>
+        <style tts:textDecoration="noOverline noUnderline lineThrough"/>
+        <style tts:textDecoration="noOverline lineThrough noUnderline"/>
+        <style tts:textDecoration="noUnderline lineThrough overline"/>
+        <style tts:textDecoration="noUnderline overline lineThrough"/>
+        <style tts:textDecoration="lineThrough noUnderline overline"/>
+        <style tts:textDecoration="lineThrough overline noUnderline"/>
+        <style tts:textDecoration="overline noUnderline lineThrough"/>
+        <style tts:textDecoration="overline lineThrough noUnderline"/>
+        <style tts:textDecoration="underline noLineThrough noOverline"/>
+        <style tts:textDecoration="underline noOverline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough underline noOverline"/>
+        <style tts:textDecoration="noLineThrough noOverline underline"/>
+        <style tts:textDecoration="noOverline underline noLineThrough"/>
+        <style tts:textDecoration="noOverline noLineThrough underline"/>
+        <style tts:textDecoration="underline noLineThrough overline"/>
+        <style tts:textDecoration="underline overline noLineThrough"/>
+        <style tts:textDecoration="noLineThrough underline overline"/>
+        <style tts:textDecoration="noLineThrough overline underline"/>
+        <style tts:textDecoration="overline underline noLineThrough"/>
+        <style tts:textDecoration="overline noLineThrough underline"/>
+        <style tts:textDecoration="underline lineThrough noOverline"/>
+        <style tts:textDecoration="underline noOverline lineThrough"/>
+        <style tts:textDecoration="lineThrough underline noOverline"/>
+        <style tts:textDecoration="lineThrough noOverline underline"/>
+        <style tts:textDecoration="noOverline underline lineThrough"/>
+        <style tts:textDecoration="noOverline lineThrough underline"/>
+        <style tts:textDecoration="underline lineThrough overline"/>
+        <style tts:textDecoration="underline overline lineThrough"/>
+        <style tts:textDecoration="lineThrough underline overline"/>
+        <style tts:textDecoration="lineThrough overline underline"/>
+        <style tts:textDecoration="overline underline lineThrough"/>
+        <style tts:textDecoration="overline lineThrough underline"/>
+      </region>
+    </layout>
+  </head>
+  <body/>
+</tt>

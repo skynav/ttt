@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - animate element in inline context in image profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 120px" tts:origin="320px 580px">
+        <animate begin="0s" dur="5s" tts:opacity="0;1"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1">
+    <div>
+      <metadata>
+        <ttm:item name="altText">My name is no one</ttm:item>
+      </metadata>
+      <image src="../../resources/images/outis.png" type="image/png" tts:extent="640px 120px"/>
+    </div>
+  </body>
+</tt>

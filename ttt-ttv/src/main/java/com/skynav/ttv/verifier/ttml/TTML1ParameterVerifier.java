@@ -258,13 +258,25 @@ public class TTML1ParameterVerifier extends AbstractVerifier implements Paramete
             if (name.getNamespaceURI().equals(NAMESPACE)) {
                 Reporter reporter = context.getReporter();
                 if (!isParameterAttribute(name)) {
-                    reporter.logError(reporter.message(locator, "*KEY*", "Unknown attribute in TT Parameter namespace ''{0}'' not permitted on ''{1}''.",
-                        name, context.getBindingElementName(content)));
+                    reporter.logError(reporter.message(locator, "*KEY*",
+                        "Unknown attribute in TT Parameter namespace ''{0}'' not permitted on ''{1}'' in {2}.",
+                        name, context.getBindingElementName(content), getModel().getName()));
                     failed = true;
                 } else if (!permitsParameterAttribute(content, name)) {
-                    reporter.logError(reporter.message(locator, "*KEY*", "TT Parameter attribute ''{0}'' not permitted on ''{1}''.",
-                        name, context.getBindingElementName(content)));
+                    reporter.logError(reporter.message(locator, "*KEY*",
+                        "TT Parameter attribute ''{0}'' not permitted on ''{1}'' in {2}.",
+                        name, context.getBindingElementName(content), getModel().getName()));
                     failed = true;
+                }
+            } else {
+                Reporter reporter = context.getReporter();
+                if (isParameterAttribute(name)) {
+                    if (!permitsParameterAttribute(content, name)) {
+                        reporter.logError(reporter.message(locator, "*KEY*",
+                            "Non-TT Parameter attribute ''{0}'' not permitted on ''{1}'' in {2}.",
+                            name, context.getBindingElementName(content), getModel().getName()));
+                        failed = true;
+                    }
                 }
             }
         }

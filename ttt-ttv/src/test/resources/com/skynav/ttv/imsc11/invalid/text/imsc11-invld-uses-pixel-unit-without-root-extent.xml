@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - uses "px" unit without specifying extent on root element  -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+        <region xml:id="r1" tts:origin="12px 24px" tts:extent="240px 120px" tts:padding="12px"/>
+    </layout>
+  </head>
+  <body region="r1" tts:fontSize="18px" tts:lineHeight="24px"/>
+</tt>

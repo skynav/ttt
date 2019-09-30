@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - uses image element with alt text element in presentation context in image profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ittm="http://www.w3.org/ns/ttml/profile/imsc1#metadata"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 120px" tts:origin="320px 528px"/>
+    </layout>
+  </head>
+  <body region="r1">
+    <div>
+      <metadata><ittm:altText xml:lang="en">test image</ittm:altText></metadata>
+      <image src="../../resources/images/outis.png" type="image/png" tts:extent="640px 120px"/>
+    </div>
+  </body>
+</tt>

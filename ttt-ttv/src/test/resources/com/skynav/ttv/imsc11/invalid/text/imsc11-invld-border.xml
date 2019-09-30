@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - prohibited tts:border attributes in text profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
+     xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="640px 480px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="7" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 480px">
+        <style tts:border="none"/>
+        <style tts:border="radii(1px)"/>
+        <style tts:border="radii(1px,2px)"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1" tts:border="none">
+    <div tts:border="none">
+      <p tts:border="none">
+        <span tts:border="none"/>
+      </p>
+    </div>
+  </body>
+</tt>

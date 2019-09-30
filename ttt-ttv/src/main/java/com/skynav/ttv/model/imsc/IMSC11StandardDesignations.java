@@ -28,14 +28,15 @@ package com.skynav.ttv.model.imsc;
 import java.net.URI;
 import java.util.Set;
 
-import com.skynav.ttv.model.ttml.TTML1StandardDesignations;
+import com.skynav.ttv.model.ttml.TTML2StandardDesignations;
 import com.skynav.ttv.util.URIs;
 
 import static com.skynav.ttv.model.imsc.IMSC11.Constants.NAMESPACE_IMSC11_EXTENSION;
 
-public class IMSC11StandardDesignations extends TTML1StandardDesignations {
+public class IMSC11StandardDesignations extends TTML2StandardDesignations {
 
     private static final String[] extensionDesignationStrings = new String[] {
+        "#activeArea",
         "#altText",
         "#aspectRatio",
         "#forcedDisplay",

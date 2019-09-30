@@ -34,12 +34,16 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.imsc11.ebuttd.MultiRowAlign;
+import com.skynav.ttv.model.ttml2.ttd.DisplayAlign;
 import com.skynav.ttv.model.ttml2.ttd.WritingMode;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
+import com.skynav.ttv.verifier.imsc.style.FillLineGapVerifier;
+import com.skynav.ttv.verifier.imsc.style.ForcedDisplayVerifier;
+import com.skynav.ttv.verifier.imsc.style.LinePaddingVerifier;
 import com.skynav.ttv.verifier.imsc.style.MultiRowAlignVerifier;
 import com.skynav.ttv.verifier.smpte.ST20522010TTML2StyleVerifier;
 import com.skynav.ttv.verifier.util.Lengths;
@@ -47,16 +51,49 @@ import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.Outlines;
 
-
 import static com.skynav.ttv.model.imsc.IMSC11.Constants.*;
 
 public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
 
-    public static final QName forcedDisplayAttributeName        = new QName(NAMESPACE_IMSC11_STYLING,"forcedDisplay");
-    public static final QName linePaddingAttributeName          = new QName(NAMESPACE_EBUTT_STYLING,"linePadding");
-    public static final QName multiRowAlignAttributeName        = new QName(NAMESPACE_EBUTT_STYLING,"multiRowAlign");
+    public static final QName fillLineGapAttributeName          = new QName(NAMESPACE_IMSC11_STYLING,ATTR_FILL_LINE_GAP);
+    public static final QName forcedDisplayAttributeName        = new QName(NAMESPACE_IMSC11_STYLING,ATTR_FORCED_DISPLAY);
+    public static final QName linePaddingAttributeName          = new QName(NAMESPACE_EBUTT_STYLING,ATTR_LINE_PADDING);
+    public static final QName multiRowAlignAttributeName        = new QName(NAMESPACE_EBUTT_STYLING,ATTR_MULTI_ROW_ALIGN);
 
     private static final Object[][] styleAccessorMap            = new Object[][] {
+        {
+            fillLineGapAttributeName,
+            "FillLineGap",
+            Boolean.class,
+            FillLineGapVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            Boolean.FALSE,
+            Boolean.FALSE.toString(),
+        },
+        {
+            forcedDisplayAttributeName,
+            "ForcedDisplay",
+            Boolean.class,
+            ForcedDisplayVerifier.class,
+            Integer.valueOf(APPLIES_TO_BODY|APPLIES_TO_DIV|APPLIES_TO_P|APPLIES_TO_SPAN|APPLIES_TO_REGION),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            Boolean.FALSE,
+            Boolean.FALSE.toString(),
+        },
+        {
+            linePaddingAttributeName,
+            "LinePadding",
+            String.class,
+            LinePaddingVerifier.class,
+            Integer.valueOf(APPLIES_TO_P),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "0c",
+            null
+        },
         {
             multiRowAlignAttributeName,
             "MultiRowAlign",
@@ -115,7 +152,9 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
                         name, context.getBindingElementName(content), getModel().getName()));
                     failed = true;
                 } else {
-                    if (name.equals(fontSizeAttributeName))
+                    if (name.equals(displayAlignAttributeName))
+                        failed = !verifyDisplayAlignAttributeItem(content, locator, sa, context);
+                    else if (name.equals(fontSizeAttributeName))
                         failed = !verifyFontSizeAttributeItem(content, locator, sa, context);
                     else if (name.equals(lineHeightAttributeName))
                         failed = !verifyLineHeightAttributeItem(content, locator, sa, context);
@@ -171,80 +210,98 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
         Object value = sa.getStyleValue(content);
         if (value != null) {
             QName name = sa.getStyleName();
-            if (name.equals(backgroundClipAttributeName))
-                return false;
-            else if (name.equals(backgroundExtentAttributeName))
-                return false;
-            else if (name.equals(backgroundImageAttributeName))
-                return false;
-            else if (name.equals(backgroundOriginAttributeName))
-                return false;
-            else if (name.equals(backgroundPositionAttributeName))
-                return false;
-            else if (name.equals(backgroundRepeatAttributeName))
-                return false;
-            else if (name.equals(borderAttributeName))
-                return false;
-            else if (name.equals(bpdAttributeName))
-                return false;
-            else if (name.equals(colorAttributeName))
-                return false;
-            else if (name.equals(directionAttributeName))
-                return false;
-            else if (name.equals(displayAlignAttributeName))
-                return false;
-            else if (name.equals(fontFamilyAttributeName))
-                return false;
-            else if (name.equals(fontKerningAttributeName))
-                return false;
-            else if (name.equals(fontSelectionStrategyAttributeName))
-                return false;
-            else if (name.equals(fontShearAttributeName))
-                return false;
-            else if (name.equals(fontSizeAttributeName))
-                return false;
-            else if (name.equals(fontStyleAttributeName))
-                return false;
-            else if (name.equals(fontVariantAttributeName))
-                return false;
-            else if (name.equals(fontWeightAttributeName))
-                return false;
-            else if (name.equals(ipdAttributeName))
-                return false;
-            else if (name.equals(letterSpacingAttributeName))
-                return false;
-            else if (name.equals(lineHeightAttributeName))
-                return false;
-            else if (name.equals(lineShearAttributeName))
-                return false;
-            else if (name.equals(paddingAttributeName))
-                return false;
-            else if (name.equals(rubyAttributeName))
-                return false;
-            else if (name.equals(rubyAlignAttributeName))
-                return false;
-            else if (name.equals(rubyPositionAttributeName))
-                return false;
-            else if (name.equals(rubyReserveAttributeName))
-                return false;
-            else if (name.equals(textAlignAttributeName))
-                return false;
-            else if (name.equals(textCombineAttributeName))
-                return false;
-            else if (name.equals(textDecorationAttributeName))
-                return false;
-            else if (name.equals(textEmphasisAttributeName))
-                return false;
-            else if (name.equals(textOutlineAttributeName))
-                return false;
-            else if (name.equals(textOrientationAttributeName))
-                return false;
-            else if (name.equals(textShadowAttributeName))
-                return false;
-            else if (name.equals(unicodeBidiAttributeName))
-                return false;
-            else if (name.equals(wrapOptionAttributeName))
-                return false;
+            // TT Style Attributes
+            if (hasNonAudioStyleNamespace(name)) {
+                if (name.equals(backgroundClipAttributeName))
+                    return false;
+                else if (name.equals(backgroundExtentAttributeName))
+                    return false;
+                else if (name.equals(backgroundImageAttributeName))
+                    return false;
+                else if (name.equals(backgroundOriginAttributeName))
+                    return false;
+                else if (name.equals(backgroundPositionAttributeName))
+                    return false;
+                else if (name.equals(backgroundRepeatAttributeName))
+                    return false;
+                else if (name.equals(borderAttributeName))
+                    return false;
+                else if (name.equals(bpdAttributeName))
+                    return false;
+                else if (name.equals(colorAttributeName))
+                    return false;
+                else if (name.equals(directionAttributeName))
+                    return false;
+                else if (name.equals(displayAlignAttributeName))
+                    return false;
+                else if (name.equals(fontFamilyAttributeName))
+                    return false;
+                else if (name.equals(fontKerningAttributeName))
+                    return false;
+                else if (name.equals(fontSelectionStrategyAttributeName))
+                    return false;
+                else if (name.equals(fontShearAttributeName))
+                    return false;
+                else if (name.equals(fontSizeAttributeName))
+                    return false;
+                else if (name.equals(fontStyleAttributeName))
+                    return false;
+                else if (name.equals(fontVariantAttributeName))
+                    return false;
+                else if (name.equals(fontWeightAttributeName))
+                    return false;
+                else if (name.equals(ipdAttributeName))
+                    return false;
+                else if (name.equals(letterSpacingAttributeName))
+                    return false;
+                else if (name.equals(lineHeightAttributeName))
+                    return false;
+                else if (name.equals(lineShearAttributeName))
+                    return false;
+                else if (name.equals(paddingAttributeName))
+                    return false;
+                else if (name.equals(positionAttributeName))
+                    return false;
+                else if (name.equals(rubyAttributeName))
+                    return false;
+                else if (name.equals(rubyAlignAttributeName))
+                    return false;
+                else if (name.equals(rubyPositionAttributeName))
+                    return false;
+                else if (name.equals(rubyReserveAttributeName))
+                    return false;
+                else if (name.equals(shearAttributeName))
+                    return false;
+                else if (name.equals(textAlignAttributeName))
+                    return false;
+                else if (name.equals(textCombineAttributeName))
+                    return false;
+                else if (name.equals(textDecorationAttributeName))
+                    return false;
+                else if (name.equals(textEmphasisAttributeName))
+                    return false;
+                else if (name.equals(textOutlineAttributeName))
+                    return false;
+                else if (name.equals(textOrientationAttributeName))
+                    return false;
+                else if (name.equals(textShadowAttributeName))
+                    return false;
+                else if (name.equals(unicodeBidiAttributeName))
+                    return false;
+                else if (name.equals(wrapOptionAttributeName))
+                    return false;
+            }
+            // TT Audio Style Attributes
+            if (hasAudioStyleNamespace(name)) {
+                if (name.equals(gainAttributeName))
+                    return false;
+                else if (name.equals(panAttributeName))
+                    return false;
+                else if (name.equals(pitchAttributeName))
+                    return false;
+                else if (name.equals(speakAttributeName))
+                    return false;
+            }
         }
         return true;
     }
@@ -253,40 +310,82 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
         Object value = sa.getStyleValue(content);
         if (value != null) {
             QName name = sa.getStyleName();
-            if (name.equals(backgroundClipAttributeName))
-                return false;
-            else if (name.equals(backgroundExtentAttributeName))
-                return false;
-            else if (name.equals(backgroundImageAttributeName))
-                return false;
-            else if (name.equals(backgroundOriginAttributeName))
-                return false;
-            else if (name.equals(backgroundPositionAttributeName))
-                return false;
-            else if (name.equals(backgroundRepeatAttributeName))
-                return false;
-            else if (name.equals(borderAttributeName))
-                return false;
-            else if (name.equals(bpdAttributeName))
-                return false;
-            else if (name.equals(fontKerningAttributeName))
-                return false;
-            else if (name.equals(fontSelectionStrategyAttributeName))
-                return false;
-            else if (name.equals(fontShearAttributeName))
-                return false;
-            else if (name.equals(fontVariantAttributeName))
-                return false;
-            else if (name.equals(ipdAttributeName))
-                return false;
-            else if (name.equals(letterSpacingAttributeName))
-                return false;
-            else if (name.equals(lineShearAttributeName))
-                return false;
-            else if (name.equals(textOrientationAttributeName))
-                return false;
+            // TT Style Attributes
+            if (hasNonAudioStyleNamespace(name)) {
+                if (name.equals(backgroundClipAttributeName))
+                    return false;
+                else if (name.equals(backgroundExtentAttributeName))
+                    return false;
+                else if (name.equals(backgroundImageAttributeName))
+                    return false;
+                else if (name.equals(backgroundOriginAttributeName))
+                    return false;
+                else if (name.equals(backgroundPositionAttributeName))
+                    return false;
+                else if (name.equals(backgroundRepeatAttributeName))
+                    return false;
+                else if (name.equals(borderAttributeName))
+                    return false;
+                else if (name.equals(bpdAttributeName))
+                    return false;
+                else if (name.equals(fontKerningAttributeName))
+                    return false;
+                else if (name.equals(fontSelectionStrategyAttributeName))
+                    return false;
+                else if (name.equals(fontShearAttributeName))
+                    return false;
+                else if (name.equals(fontVariantAttributeName))
+                    return false;
+                else if (name.equals(ipdAttributeName))
+                    return false;
+                else if (name.equals(letterSpacingAttributeName))
+                    return false;
+                else if (name.equals(lineShearAttributeName))
+                    return false;
+                else if (name.equals(textOrientationAttributeName))
+                    return false;
+            }
+            // TT Audio Style Attributes
+            if (hasAudioStyleNamespace(name)) {
+                if (name.equals(gainAttributeName))
+                    return false;
+                else if (name.equals(panAttributeName))
+                    return false;
+                else if (name.equals(pitchAttributeName))
+                    return false;
+                else if (name.equals(speakAttributeName))
+                    return false;
+            }
         }
         return true;
+    }
+
+    private boolean verifyDisplayAlignAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
+        boolean failed = false;
+        String profile = (String) context.getResourceState(getModel().makeResourceStateName("profile"));
+        if (profile == null)
+            profile = PROFILE_TEXT_ABSOLUTE;
+        QName name = sa.getStyleName();
+        Object value = sa.getStyleValue(content);
+        if (value != null) {
+            assert value instanceof DisplayAlign;
+            DisplayAlign align = (DisplayAlign) value;
+            if (profile.equals(PROFILE_TEXT_ABSOLUTE)) {
+                Reporter reporter = context.getReporter();
+                if (isBlock(content, context)) {
+                    reporter.logError(reporter.message(locator,
+                        "*KEY*", "Attribute ''{0}'' prohibited on ''{1}'' in {2} text profile.",
+                        name, context.getBindingElementName(content), getModel().getName()));
+                    failed = true;
+                } else if (align == DisplayAlign.JUSTIFY) {
+                    reporter.logError(reporter.message(locator,
+                        "*Key*", "Prohibited value ''{0}'' on ''{1}'' in {2} text profile.",
+                        align.value(), name, getModel().getName()));
+                    failed = true;
+                }
+            }
+        }
+        return !failed;
     }
 
     private boolean verifyFontSizeAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
@@ -301,13 +400,9 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
             List<Length> lengths = new java.util.ArrayList<Length>();
             if (Lengths.isLengths(s, location, context, minMax, treatments, lengths)) {
                 if (lengths.size() > 1) {
-                    Length w = lengths.get(0);
-                    Length h = lengths.get(1);
-                    if (!w.equals(h)) {
-                        Reporter reporter = context.getReporter();
-                        reporter.logError(reporter.message(locator, "*KEY*", "Anamorphic font size ''{0}'' prohibited.", s));
-                        return false;
-                    }
+                    Reporter reporter = context.getReporter();
+                    reporter.logError(reporter.message(locator, "*KEY*", "Anamorphic font size ''{0}'' prohibited.", s));
+                    return false;
                 }
             }
         }
@@ -366,9 +461,9 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
     }
 
     private static final boolean isVertical(WritingMode wm) {
-        if (wm == WritingMode.LRTB)
+        if (wm == WritingMode.TBLR)
             return true;
-        else if (wm == WritingMode.RLTB)
+        else if (wm == WritingMode.TBRL)
             return true;
         else if (wm == WritingMode.TB)
             return true;

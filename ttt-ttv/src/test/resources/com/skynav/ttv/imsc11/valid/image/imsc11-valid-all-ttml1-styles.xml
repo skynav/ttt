@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- valid - all defined ttml1 style properties permitted with imsc11 image profile -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
+    tts:extent="640px 480px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 480px">
+        <!-- legal backgroundColor values (not exhaustive) -->
+        <style tts:backgroundColor="#000000"/>
+        <style tts:backgroundColor="#c0c0c0"/>
+        <style tts:backgroundColor="#808080"/>
+        <style tts:backgroundColor="#ffffff"/>
+        <style tts:backgroundColor="#800000"/>
+        <style tts:backgroundColor="#ff0000"/>
+        <style tts:backgroundColor="#800080"/>
+        <style tts:backgroundColor="#ff00ff"/>
+        <style tts:backgroundColor="#008000"/>
+        <style tts:backgroundColor="#00ff00"/>
+        <style tts:backgroundColor="#808000"/>
+        <style tts:backgroundColor="#ffff00"/>
+        <style tts:backgroundColor="#000080"/>
+        <style tts:backgroundColor="#0000ff"/>
+        <style tts:backgroundColor="#008080"/>
+        <style tts:backgroundColor="#00ffff"/>
+        <style tts:backgroundColor="#00000000"/>
+        <style tts:backgroundColor="#000000ff"/>
+        <style tts:backgroundColor="#c0c0c0ff"/>
+        <style tts:backgroundColor="#808080ff"/>
+        <style tts:backgroundColor="#ffffffff"/>
+        <style tts:backgroundColor="#800000ff"/>
+        <style tts:backgroundColor="#ff0000ff"/>
+        <style tts:backgroundColor="#800080ff"/>
+        <style tts:backgroundColor="#ff00ffff"/>
+        <style tts:backgroundColor="#008000ff"/>
+        <style tts:backgroundColor="#00ff00ff"/>
+        <style tts:backgroundColor="#808000ff"/>
+        <style tts:backgroundColor="#ffff00ff"/>
+        <style tts:backgroundColor="#000080ff"/>
+        <style tts:backgroundColor="#0000ffff"/>
+        <style tts:backgroundColor="#008080ff"/>
+        <style tts:backgroundColor="#00ffffff"/>
+        <style tts:backgroundColor="rgb(0,0,0)"/>
+        <style tts:backgroundColor="rgb(192,192,192)"/>
+        <style tts:backgroundColor="rgb(128,128,128)"/>
+        <style tts:backgroundColor="rgb(255,255,255)"/>
+        <style tts:backgroundColor="rgb(128,0,0)"/>
+        <style tts:backgroundColor="rgb(255,0,0)"/>
+        <style tts:backgroundColor="rgb(128,0,128)"/>
+        <style tts:backgroundColor="rgb(255,0,255)"/>
+        <style tts:backgroundColor="rgb(255,0,255)"/>
+        <style tts:backgroundColor="rgb(0,128,0)"/>
+        <style tts:backgroundColor="rgb(0,255,0)"/>
+        <style tts:backgroundColor="rgb(128,128,0)"/>
+        <style tts:backgroundColor="rgb(255,255,0)"/>
+        <style tts:backgroundColor="rgb(0,0,128)"/>
+        <style tts:backgroundColor="rgb(0,0,255)"/>
+        <style tts:backgroundColor="rgb(0,128,128)"/>
+        <style tts:backgroundColor="rgb(0,255,255)"/>
+        <style tts:backgroundColor="rgb(0,255,255)"/>
+        <style tts:backgroundColor="rgba(0,0,0,0)"/>
+        <style tts:backgroundColor="rgba(0,0,0,255)"/>
+        <style tts:backgroundColor="rgba(192,192,192,255)"/>
+        <style tts:backgroundColor="rgba(128,128,128,255)"/>
+        <style tts:backgroundColor="rgba(255,255,255,255)"/>
+        <style tts:backgroundColor="rgba(128,0,0,255)"/>
+        <style tts:backgroundColor="rgba(255,0,0,255)"/>
+        <style tts:backgroundColor="rgba(128,0,128,255)"/>
+        <style tts:backgroundColor="rgba(255,0,255,255)"/>
+        <style tts:backgroundColor="rgba(255,0,255,255)"/>
+        <style tts:backgroundColor="rgba(0,128,0,255)"/>
+        <style tts:backgroundColor="rgba(0,255,0,255)"/>
+        <style tts:backgroundColor="rgba(128,128,0,255)"/>
+        <style tts:backgroundColor="rgba(255,255,0,255)"/>
+        <style tts:backgroundColor="rgba(0,0,128,255)"/>
+        <style tts:backgroundColor="rgba(0,0,255,255)"/>
+        <style tts:backgroundColor="rgba(0,128,128,255)"/>
+        <style tts:backgroundColor="rgba(0,255,255,255)"/>
+        <style tts:backgroundColor="rgba(0,255,255,255)"/>
+        <style tts:backgroundColor="transparent"/>
+        <style tts:backgroundColor="black"/>
+        <style tts:backgroundColor="silver"/>
+        <style tts:backgroundColor="gray"/>
+        <style tts:backgroundColor="white"/>
+        <style tts:backgroundColor="maroon"/>
+        <style tts:backgroundColor="red"/>
+        <style tts:backgroundColor="purple"/>
+        <style tts:backgroundColor="fuchsia"/>
+        <style tts:backgroundColor="magenta"/>
+        <style tts:backgroundColor="green"/>
+        <style tts:backgroundColor="lime"/>
+        <style tts:backgroundColor="olive"/>
+        <style tts:backgroundColor="yellow"/>
+        <style tts:backgroundColor="navy"/>
+        <style tts:backgroundColor="blue"/>
+        <style tts:backgroundColor="teal"/>
+        <style tts:backgroundColor="aqua"/>
+        <style tts:backgroundColor="cyan"/>
+        <!-- legal display values -->
+        <style tts:display="auto"/>
+        <style tts:display="none"/>
+        <!-- legal extent values (not exhaustive) -->
+        <style tts:extent="auto"/>
+        <style tts:extent="620px 96px"/>
+        <!-- legal opacity values (not exhaustive) -->
+        <style tts:opacity="0"/>
+        <style tts:opacity="0.5"/>
+        <style tts:opacity="1"/>
+        <!-- legal origin values (not exhaustive) -->
+        <style tts:origin="auto"/>
+        <style tts:origin="10px 100px"/>
+        <!-- legal overflow values -->
+        <style tts:overflow="visible"/>
+        <style tts:overflow="hidden"/>
+        <!-- legal showBackground values -->
+        <style tts:showBackground="always"/>
+        <style tts:showBackground="whenActive"/>
+        <!-- legal visibility values -->
+        <style tts:visibility="visible"/>
+        <style tts:visibility="hidden"/>
+        <!-- legal writingMode values -->
+        <style tts:writingMode="lrtb"/>
+        <style tts:writingMode="rltb"/>
+        <style tts:writingMode="lr"/>
+        <style tts:writingMode="rl"/>
+        <!-- legal zIndex values (not exhaustive) -->
+        <style tts:zIndex="auto"/>
+        <style tts:zIndex="-99"/>
+        <style tts:zIndex="-1"/>
+        <style tts:zIndex="0"/>
+        <style tts:zIndex="1"/>
+        <style tts:zIndex="100"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1" begin="0s" end="1s"/>
+</tt>

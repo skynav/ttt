@@ -876,6 +876,16 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
         return super.isStyleNamespace(s) || s.equals(getAudioStyleNamespaceUri());
     }
 
+    protected boolean hasNonAudioStyleNamespace(QName name) {
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(getStyleNamespaceUri());
+    }
+
+    protected boolean hasAudioStyleNamespace(QName name) {
+        String nsUri = name.getNamespaceURI();
+        return nsUri.equals(getAudioStyleNamespaceUri());
+    }
+
     @Override
     protected boolean verifyAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         if (!super.verifyAttributeItem(content, locator, sa, context))
@@ -984,6 +994,19 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             return true;
         else if (content instanceof TimedText)
             return true;
+        else
+            return false;
+    }
+
+    protected boolean isBlock(Object content, VerifierContext context) {
+        if (content instanceof Body)
+            return true;
+        else if (content instanceof Division)
+            return true;
+        else if (content instanceof Paragraph)
+            return true;
+        else if (content instanceof Image)
+            return isBlock(context.getBindingElementParent(content), context);
         else
             return false;
     }

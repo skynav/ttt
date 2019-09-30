@@ -36,6 +36,8 @@ import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.smpte.ST20522010TTML2ParameterVerifier;
 
+import com.skynav.xml.helpers.XML;
+
 public class IMSC11ParameterVerifier extends ST20522010TTML2ParameterVerifier {
 
     public IMSC11ParameterVerifier(Model model) {
@@ -57,19 +59,41 @@ public class IMSC11ParameterVerifier extends ST20522010TTML2ParameterVerifier {
     }
 
     protected boolean permitsParameterAttribute(Object content, QName name) {
-        if (content instanceof TimedText) {
+        if (name.equals(conditionAttributeName)) {
+            return false;
+        } else if (XML.inXlinkNamespace(name)) {
+            return false;
+        } else if (content instanceof TimedText) {
             String ln = name.getLocalPart();
             if (ln.equals("clockMode"))
                 return false;
+            else if (ln.equals("contentProfileCombination"))
+                return false;
             else if (ln.equals("dropMode"))
+                return false;
+            else if (ln.equals("inferProcessorProfileMethod"))
+                return false;
+            else if (ln.equals("inferProcessorProfileSource"))
                 return false;
             else if (ln.equals("markerMode"))
                 return false;
+            else if (ln.equals("permitFeatureNarrowing"))
+                return false;
+            else if (ln.equals("permitFeatureWidening"))
+                return false;
             else if (ln.equals("pixelAspectRatio"))
+                return false;
+            else if (ln.equals("processorProfiles"))
+                return false;
+            else if (ln.equals("processorProfileCombination"))
                 return false;
             else if (ln.equals("subFrameRate"))
                 return false;
-        };
+            else if (ln.equals("validation"))
+                return false;
+            else if (ln.equals("validationAction"))
+                return false;
+        }
         return super.permitsParameterAttribute(content, name);
     }
 

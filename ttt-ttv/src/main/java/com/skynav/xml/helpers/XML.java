@@ -86,6 +86,10 @@ public class XML {
         return (nsUri != null) && nsUri.equals(getXlinkNamespaceUri());
     }
 
+    public static boolean inXlinkNamespace(QName name) {
+        return isXlinkNamespace(name.getNamespaceURI());
+    }
+
     public static boolean isAnyXMLNamespace(String nsUri) {
         if (isXMLNamespace(nsUri))
             return true;

@@ -236,6 +236,7 @@ public class TimedTextVerifier implements VerifierContext {
     // default warnings
     private static final Object[][] defaultWarningSpecifications = new Object[][] {
         { "all",                                        Boolean.FALSE,  "all warnings" },
+        { "deprecated",                                 Boolean.TRUE,   "deprecated feature or usage"},
         { "duplicate-idref-in-agent",                   Boolean.FALSE,  "duplicate IDREF in 'ttm:agent' attribute"},
         { "duplicate-idref-in-style",                   Boolean.FALSE,  "duplicate IDREF in 'style' attribute"},
         { "duplicate-idref-in-style-no-intervening",    Boolean.TRUE,   "duplicate IDREF in 'style' attribute without intervening IDREF"  },

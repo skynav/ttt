@@ -30,9 +30,14 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml2.tt.Animation;
 import com.skynav.ttv.model.ttml2.tt.Chunk;
+import com.skynav.ttv.model.ttml2.tt.Head;
 import com.skynav.ttv.model.ttml2.tt.Image;
+import com.skynav.ttv.model.ttml2.tt.Layout;
+import com.skynav.ttv.model.ttml2.tt.Resources;
 import com.skynav.ttv.model.ttml2.tt.Span;
+import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.ClockMode;
 import com.skynav.ttv.model.ttml2.ttd.DropMode;
@@ -47,6 +52,8 @@ import com.skynav.ttv.model.ttml2.ttp.Extension;
 import com.skynav.ttv.model.ttml2.ttp.Extensions;
 import com.skynav.ttv.model.ttml2.ttp.Feature;
 import com.skynav.ttv.model.ttml2.ttp.Features;
+import com.skynav.ttv.model.ttml2.ttp.Profile;
+import com.skynav.ttv.model.ttml2.xlink.XLinkShow;
 import com.skynav.ttv.verifier.ttml.parameter.ClockModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ConditionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DisplayAspectRatioVerifier;
@@ -60,7 +67,11 @@ import com.skynav.ttv.verifier.ttml.parameter.ProfilesVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ValidationActionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ValidationVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.XlinkArcRoleVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.XlinkHrefVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.XlinkRoleVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.XlinkShowVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.XlinkTitleVerifier;
 
 import com.skynav.xml.helpers.XML;
 
@@ -79,7 +90,11 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     public static final QName validationActionAttributeName             = new QName(NAMESPACE, "validationAction");
     public static final QName validationAttributeName                   = new QName(NAMESPACE, "validation");
     public static final QName versionAttributeName                      = new QName(NAMESPACE, "version");
-    public static final QName xlinkHrefAttributeName                    = XML.getXlinkHrefAttributeName();
+    public static final QName xlinkArcRoleAttributeName                 = new QName(XML.getXlinkNamespaceUri(), "arcrole");
+    public static final QName xlinkHrefAttributeName                    = new QName(XML.getXlinkNamespaceUri(), "href");
+    public static final QName xlinkRoleAttributeName                    = new QName(XML.getXlinkNamespaceUri(), "role");
+    public static final QName xlinkShowAttributeName                    = new QName(XML.getXlinkNamespaceUri(), "show");
+    public static final QName xlinkTitleAttributeName                   = new QName(XML.getXlinkNamespaceUri(), "title");
 
     private static final Object[][] parameterAccessorMap                = new Object[][] {
         {
@@ -210,12 +225,44 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             Boolean.FALSE,
             ValidationAction.WARN,
         },
-        // 'xlink:href' attribute applies only to span and image elements
+        // 'xlink:*' attribute applies only to span and image elements
+        {
+            xlinkArcRoleAttributeName,
+            "Arcrole",
+            String.class,
+            XlinkArcRoleVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
         {
             xlinkHrefAttributeName,
             "Href",
             String.class,
             XlinkHrefVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
+        {
+            xlinkRoleAttributeName,
+            "XlinkRole",
+            String.class,
+            XlinkRoleVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
+        {
+            xlinkShowAttributeName,
+            "Show",
+            XLinkShow.class,
+            XlinkShowVerifier.class,
+            Boolean.FALSE,
+            null,
+        },
+        {
+            xlinkTitleAttributeName,
+            "Title",
+            String.class,
+            XlinkTitleVerifier.class,
             Boolean.FALSE,
             null,
         },
@@ -233,9 +280,41 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
 
     @Override
     protected boolean permitsParameterAttribute(Object content, QName name) {
-        if (content instanceof TimedText)
-            return true;
-        else if (name.equals(XML.getBaseAttributeName())) {
+        if (name.equals(conditionAttributeName)) {
+            if (content instanceof Animation)
+                return false;
+            else if (content instanceof Chunk)
+                return false;
+            else if (content instanceof Extension)
+                return false;
+            else if (content instanceof Extensions)
+                return false;
+            else if (content instanceof Feature)
+                return false;
+            else if (content instanceof Features)
+                return false;
+            else if (content instanceof Head)
+                return false;
+            else if (content instanceof Layout)
+                return false;
+            else if (content instanceof Profile)
+                return false;
+            else if (content instanceof Resources)
+                return false;
+            else if (content instanceof Styling)
+                return false;
+            else if (content instanceof TimedText)
+                return false;
+            else
+                return true;
+        } else if (XML.inXlinkNamespace(name)) {
+            if (content instanceof Span)
+                return true;
+            else if (content instanceof Image)
+                return true;
+            else
+                return false;
+        } else if (name.equals(XML.getBaseAttributeName())) {
             if (content instanceof Chunk)
                 return false;
             else if (content instanceof Feature)
@@ -244,13 +323,8 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
                 return false;
             else
                 return true;
-        } else if (name.equals(xlinkHrefAttributeName)) {
-            if (content instanceof Span)
-                return true;
-            else if (content instanceof Image)
-                return true;
-            else
-                return false;
+        } else if (content instanceof TimedText) {
+            return true;
         } else
             return false;
     }
@@ -258,6 +332,12 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
     @Override
     protected boolean isParameterAttribute(QName name) {
         if (super.isParameterAttribute(name))
+            return true;
+        else if (name.equals(conditionAttributeName))
+            return true;
+        else if (XML.inXlinkNamespace(name))
+            return true;
+        else if (name.equals(XML.getBaseAttributeName()))
             return true;
         else
             return false;

@@ -284,9 +284,9 @@ public class IMSC10StyleVerifier extends ST20522010TTML1StyleVerifier {
     }
 
     private static final boolean isVertical(WritingMode wm) {
-        if (wm == WritingMode.LRTB)
+        if (wm == WritingMode.TBLR)
             return true;
-        else if (wm == WritingMode.RLTB)
+        else if (wm == WritingMode.TBRL)
             return true;
         else if (wm == WritingMode.TB)
             return true;

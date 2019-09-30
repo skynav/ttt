@@ -69,7 +69,7 @@ public class IMSC11ResourceConverter extends AbstractResourceConverter {
                     tt.setLang(defaultLanguage);
                 if ((head.getStyling() != null) || (head.getLayout() != null))
                     tt.setHead(head);
-                if (!body.getDiv().isEmpty())
+                if (!body.getDivOrEmbeddedClass().isEmpty())
                     tt.setBody(body);
                 // marshal and serialize
                 if (!convertResource(ttmlFactory.createTt(tt)))

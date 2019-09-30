@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- valid - tts:position property permitted with imsc11 text profile -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 480px">
+        <!-- legal position values (not exhaustive) -->
+        <!-- 1-component values -->
+        <style tts:position="1px"/>
+        <style tts:position="+1px"/>
+        <!-- 2-component values -->
+        <style tts:position="0% 0%"/>
+        <style tts:position="1px 1em"/>
+        <style tts:position="left 50%"/>
+        <style tts:position="left center"/>
+        <style tts:position="center left"/>
+        <style tts:position="center right"/>
+        <style tts:position="top center"/>
+        <style tts:position="bottom center"/>
+        <style tts:position="center center"/>
+        <!-- 3-component values -->
+        <style tts:position="center top 1px"/>
+        <style tts:position="top 1px center"/>
+        <style tts:position="left top 1px"/>
+        <style tts:position="right top 1px"/>
+        <style tts:position="center bottom 1px"/>
+        <style tts:position="bottom 1px center"/>
+        <style tts:position="left bottom 1px"/>
+        <style tts:position="right bottom 1px"/>
+        <style tts:position="center left 1px"/>
+        <style tts:position="left 1px center"/>
+        <style tts:position="top left 1px"/>
+        <style tts:position="bottom left 1px"/>
+        <style tts:position="center right 1px"/>
+        <style tts:position="right 1px center"/>
+        <style tts:position="top right 1px"/>
+        <style tts:position="bottom right 1px"/>
+        <!-- 4-component values -->
+        <style tts:position="left 1px top 100%"/>
+        <style tts:position="right 1px top 100%"/>
+        <style tts:position="left 50% bottom 1px"/>
+        <style tts:position="left 0% bottom 1px"/>
+        <style tts:position="left 100% bottom 1px"/>
+        <style tts:position="left 50% bottom 1px"/>
+        <style tts:position="left 1px top 50%"/>
+        <style tts:position="right 1px top 50%"/>
+        <style tts:position="left 50% top 1px"/>
+        <style tts:position="left 0% bottom 1px"/>
+        <style tts:position="left 0% top 1px"/>
+        <style tts:position="left 1px top 100%"/>
+        <style tts:position="left 1px top 50%"/>
+        <style tts:position="left 1px top 0%"/>
+        <style tts:position="left 100% bottom 1px"/>
+        <style tts:position="left 100% top 1px"/>
+        <style tts:position="right 1px top 100%"/>
+        <style tts:position="right 1px top 50%"/>
+        <style tts:position="right 1px top 0%"/>
+        <style tts:position="left 1px top 0%"/>
+        <style tts:position="right 1px top 0%"/>
+        <style tts:position="left 50% top 1px"/>
+        <style tts:position="left 100% top 1px"/>
+        <style tts:position="left 100% top 1px"/>
+        <style tts:position="bottom 10% left 10%"/>
+        <style tts:position="bottom 10% right 10%"/>
+        <style tts:position="top 10% left 10%"/>
+        <style tts:position="top 10% right 10%"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1" begin="0s" end="1s">
+    <div>
+      <p>Text 1</p>
+    </div>
+  </body>
+</tt>

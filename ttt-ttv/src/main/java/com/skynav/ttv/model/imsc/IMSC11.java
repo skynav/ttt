@@ -74,10 +74,12 @@ public class IMSC11 {
 
         public static final String ELT_ALT_TEXT = "altText";
 
+        public static final String ATTR_ACTIVE_AREA = "activeArea";
         public static final String ATTR_ASPECT_RATIO = "aspectRatio";
+        public static final String ATTR_FILL_LINE_GAP = "fillLineGap";
         public static final String ATTR_FORCED_DISPLAY = "forcedDisplay";
         public static final String ATTR_LINE_PADDING = "linePadding";
-        public static final String ATTR_MULTIROW_ALIGN = "multiRowAlign";
+        public static final String ATTR_MULTI_ROW_ALIGN = "multiRowAlign";
         public static final String ATTR_PROGRESSIVELY_DECODABLE = "progressivelyDecodable";
 
         public static final String CHARSET_REQUIRED = "UTF-8";
@@ -266,17 +268,21 @@ public class IMSC11 {
             else {
                 String ln = name.getLocalPart();
                 if (inIMSC11ParameterNamespace(name)) {
-                    if (ln.equals(Constants.ATTR_ASPECT_RATIO))
+                    if (ln.equals(Constants.ATTR_ACTIVE_AREA))
+                        return true;
+                    else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
                         return true;
                     else if (ln.equals(Constants.ATTR_PROGRESSIVELY_DECODABLE))
                         return true;
                 } else if (inIMSC11StylingNamespace(name)) {
                     if (ln.equals(Constants.ATTR_FORCED_DISPLAY))
                         return true;
+                    else if (ln.equals(Constants.ATTR_FILL_LINE_GAP))
+                        return true;
                 } else if (inEBUTTStylingNamespace(name)) {
                     if (ln.equals(Constants.ATTR_LINE_PADDING))
                         return true;
-                    else if (ln.equals(Constants.ATTR_MULTIROW_ALIGN))
+                    else if (ln.equals(Constants.ATTR_MULTI_ROW_ALIGN))
                         return true;
                 }
             }
@@ -294,25 +300,29 @@ public class IMSC11 {
                 String ln = attributeName.getLocalPart();
                 if (inIMSC11ParameterNamespace(attributeName)) {
                     if (isTTElement(elementName)) {
-                        if (ln.equals(Constants.ATTR_ASPECT_RATIO))
+                        if (ln.equals(Constants.ATTR_ACTIVE_AREA))
+                            return true;
+                        else if (ln.equals(Constants.ATTR_ASPECT_RATIO))
                             return true;
                         else if (ln.equals(Constants.ATTR_PROGRESSIVELY_DECODABLE))
                             return true;
                     }
                 } else if (inIMSC11StylingNamespace(attributeName)) {
                     if (ln.equals(Constants.ATTR_FORCED_DISPLAY))
-                        return isTTContentOrRegionElement(elementName);
+                        return isIMSCStylingUsageContext(elementName) | isTTSpanElement(elementName);
+                    if (ln.equals(Constants.ATTR_FILL_LINE_GAP))
+                        return isIMSCStylingUsageContext(elementName);
                 } else if (inEBUTTStylingNamespace(attributeName)) {
                     if (ln.equals(Constants.ATTR_LINE_PADDING))
-                        return isEBUTTStylingUsageContext(elementName);
-                    else if (ln.equals(Constants.ATTR_MULTIROW_ALIGN))
-                        return isEBUTTStylingUsageContext(elementName);
+                        return isIMSCStylingUsageContext(elementName);
+                    else if (ln.equals(Constants.ATTR_MULTI_ROW_ALIGN))
+                        return isIMSCStylingUsageContext(elementName);
                 }
             }
             return false;
         }
 
-        protected boolean isEBUTTStylingUsageContext(QName name) {
+        protected boolean isIMSCStylingUsageContext(QName name) {
             if (isTTBodyElement(name))
                 return true;
             else if (isTTDivElement(name))
@@ -322,6 +332,8 @@ public class IMSC11 {
             else if (isTTRegionElement(name))
                 return true;
             else if (isTTStyleElement(name))
+                return true;
+            else if (isTTInitialElement(name))
                 return true;
             else
                 return false;

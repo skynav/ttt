@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - set element in inline context in text profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 480px" tts:position="center">
+        <set begin="0s" dur="5s" tts:color="white"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1" begin="0s" end="5s">
+    <set begin="1s" dur="1s" tts:color="cyan"/>
+    <div>
+      <set begin="2s" dur="1s" tts:color="magenta"/>
+      <p>
+        <set begin="3s" dur="1s" tts:color="yellow"/>
+        <span>
+          <set begin="4s" dur="1s" tts:color="black"/>
+          CMYK
+        </span>
+      </p>
+    </div>
+  </body>
+</tt>

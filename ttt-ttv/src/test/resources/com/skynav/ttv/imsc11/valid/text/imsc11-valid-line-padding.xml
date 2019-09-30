@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- valid - ebutts:linePadding attribute permitted with imsc11 text profile -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text" ttp:cellResolution="32 15"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ebutts="urn:ebu:tt:style"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="640px 480px" tts:position="center" ebutts:linePadding="0c">
+        <style ebutts:linePadding="1c"/>
+        <style ebutts:linePadding="2c"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1" begin="0s" end="1s" ebutts:linePadding="3c">
+    <div ebutts:linePadding="4c">
+      <p ebutts:linePadding="5c">
+        <span>Line Padding</span>
+      </p>
+    </div>
+  </body>
+</tt>

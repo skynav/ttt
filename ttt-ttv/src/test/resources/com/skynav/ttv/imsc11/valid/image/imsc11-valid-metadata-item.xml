@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - ttm:item in image profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/image"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata" 
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+    <ttm:item name="altText">alternate text</ttm:item>
+    <ttm:item name="usesForced">false</ttm:item>
+  </head>
+  <body>
+    <ttm:item name="item:any" xmlns:item="urn:items:all"/>
+  </body>
+</tt>
