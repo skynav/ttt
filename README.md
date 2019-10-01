@@ -23,6 +23,7 @@ Prior to performing a build, the following requirements must be met:
 
 <pre>
     $ cd $TTT_HOME
+    $ git submodule update --init
     $ mvn -f ttt-deps/pom.xml install
 </pre>
 
