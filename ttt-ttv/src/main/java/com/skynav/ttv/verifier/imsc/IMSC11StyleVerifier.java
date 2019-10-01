@@ -192,11 +192,10 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
                 for (int i = 0, n = lengths.size(); i < n; ++i) {
                     Length l = lengths.get(i);
                     if (l != null) {
-                        Length.Unit u = l.getUnits();
-                        if ((u != Length.Unit.Pixel) && (u != Length.Unit.Percentage)) {
+                        if (!isPermittedLengthUnit(content, name, l, context)) {
                             Reporter reporter = context.getReporter();
                             reporter.logError(reporter.message(locator,
-                                "*KEY*", "Prohibited unit ''{0}'' used in length component ''{1}'' on {2}.", u, l, name));
+                                "*KEY*", "Prohibited unit ''{0}'' used in length component ''{1}'' on {2}.", l.getUnits(), l, name));
                             failed = true;
                         }
                     }
@@ -204,6 +203,36 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
             }
         }
         return !failed;
+    }
+
+    private boolean isPermittedLengthUnit(Object content, QName styleName, Length length, VerifierContext context) {
+        Length.Unit u = length.getUnits();
+        if (u == Length.Unit.Pixel)
+            return true;
+        else if (u == Length.Unit.Percentage)
+            return true;
+        else if ((u == Length.Unit.ViewportWidth) || (u == Length.Unit.ViewportHeight)) {
+            if (IMSC11SemanticsVerifier.isIMSCTextProfile(context)) {
+                if (styleName.equals(extentAttributeName))
+                    return true;
+                else if (styleName.equals(originAttributeName))
+                    return false;
+                else if (styleName.equals(positionAttributeName))
+                    return true;
+                else
+                    return true; // [TBD] - need to verify
+            } else
+                return false;
+        } else {
+            if (styleName.equals(extentAttributeName))
+                return false;
+            else if (styleName.equals(originAttributeName))
+                return false;
+            else if (styleName.equals(positionAttributeName))
+                return false;
+            else
+                return true; // [TBD] - need to verify
+        }
     }
 
     private boolean verifyAttributePermittedInImageProfile(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {

@@ -116,6 +116,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11LengthRootContainerRelative() throws Exception {
+        performValidityTest("imsc11-valid-length-root-container-relative.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11LinePadding() throws Exception {
         performValidityTest("imsc11-valid-line-padding.xml", -1, -1);
     }
