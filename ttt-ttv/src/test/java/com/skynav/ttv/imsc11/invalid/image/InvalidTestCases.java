@@ -326,6 +326,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidIMSC11LengthRootContainerRelative() throws Exception {
+        performInvalidityTest("imsc11-invld-length-root-container-relative.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidIMSC11LineHeight() throws Exception {
         performInvalidityTest("imsc11-invld-line-height.xml", -1, -1);
     }
