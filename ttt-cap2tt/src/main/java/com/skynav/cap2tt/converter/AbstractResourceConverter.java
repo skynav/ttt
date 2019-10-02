@@ -230,14 +230,16 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
             Node node = attrs.item(i);
             if (node instanceof Attr) {
                 Attr a = (Attr) node;
-                String ns = a.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                    String ln = a.getLocalName();
-                    String v = a.getValue();
-                    dst.setAttributeNS(ns, ln, v);
-                }
+                if (isMergedStyle(a))
+                    dst.setAttributeNS(a.getNamespaceURI(), a.getLocalName(), a.getValue());
             }
         }
+    }
+
+    protected boolean isMergedStyle(Attr a) {
+        assert a != null;
+        String ns = a.getNamespaceURI();
+        return (ns != null) && ns.equals(NAMESPACE_TT_STYLE);
     }
 
     private void addCreationMetadata(Document d) {
@@ -324,16 +326,18 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
                 Node node = attrs.item(i);
                 if (node instanceof Attr) {
                     Attr a = (Attr) node;
-                    String ns = a.getNamespaceURI();
-                    if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                        String ln = a.getLocalName();
-                        String v = a.getValue();
-                        initials.put(new QName(ns, ln), v);
-                    }
+                    if (isInitialStyle(a))
+                        initials.put(new QName(a.getNamespaceURI(), a.getLocalName()), a.getValue());
                 }
             }
         }
         return initials;
+    }
+
+    protected boolean isInitialStyle(Attr a) {
+        assert a != null;
+        String ns = a.getNamespaceURI();
+        return (ns != null) && ns.equals(NAMESPACE_TT_STYLE);
     }
 
     private void elideInitials(Document d, final Map<QName,String> initials) {
@@ -352,17 +356,15 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         }
     }
 
-    private static void elideInitials(Element e, final Map<QName,String> initials) {
+    private void elideInitials(Element e, final Map<QName,String> initials) {
         List<Attr> elide = new java.util.ArrayList<Attr>();
         NamedNodeMap attrs = e.getAttributes();
         for (int i = 0, n = attrs.getLength(); i < n; ++i) {
             Node node = attrs.item(i);
             if (node instanceof Attr) {
                 Attr a = (Attr) node;
-                String ns = a.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                    QName qn = new QName(ns, a.getLocalName());
-                    String initial = initials.get(qn);
+                if (isInitialStyle(a)) {
+                    String initial = initials.get(new QName(a.getNamespaceURI(), a.getLocalName()));
                     if ((initial != null) && a.getValue().equals(initial)) {
                         if (!isSpan(e) || !isTextAlign(a))
                             elide.add(a);
@@ -383,7 +385,7 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         return Nodes.matchesName(a, ttsTextAlignAttrName);
     }
 
-    private static Map<Element, StyleSet> getUniqueSpecifiedStyles(Document d, int[] indices, MessageFormat styleIdPatternFormatter, int styleIdStart) {
+    private Map<Element, StyleSet> getUniqueSpecifiedStyles(Document d, int[] indices, MessageFormat styleIdPatternFormatter, int styleIdStart) {
         // get specified style sets
         Map<Element, StyleSet> specifiedStyleSets = getSpecifiedStyles(d, indices);
 
@@ -419,7 +421,7 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         return specifiedStyleSets;
     }
 
-    private static Map<Element, StyleSet> getSpecifiedStyles(Document d, int[] indices) {
+    private Map<Element, StyleSet> getSpecifiedStyles(Document d, int[] indices) {
         Map<Element, StyleSet> specifiedStyleSets = new java.util.HashMap<Element, StyleSet>();
         specifiedStyleSets = getSpecifiedStyles(getContentElements(d), specifiedStyleSets, indices);
         return specifiedStyleSets;
@@ -480,7 +482,7 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         }
     }
 
-    private static Map<Element, StyleSet> getSpecifiedStyles(List<Element> elements, Map<Element, StyleSet> specifiedStyleSets, int[] indices) {
+    private Map<Element, StyleSet> getSpecifiedStyles(List<Element> elements, Map<Element, StyleSet> specifiedStyleSets, int[] indices) {
         for (Element e : elements) {
             assert !specifiedStyleSets.containsKey(e);
             StyleSet ss = getInlineStyles(e, indices);
@@ -490,7 +492,7 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         return specifiedStyleSets;
     }
 
-    private static StyleSet getInlineStyles(Element e, int[] indices) {
+    private StyleSet getInlineStyles(Element e, int[] indices) {
         StyleSet styles = new StyleSet(generateStyleSetIndex(indices));
         NamedNodeMap attrs = e.getAttributes();
         for (int i = 0, n = attrs.getLength(); i < n; ++i) {
@@ -498,12 +500,18 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
             if (node instanceof Attr) {
                 Attr a = (Attr) node;
                 String ns = a.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
-                    styles.merge(new StyleSpecification(new ComparableQName(a.getNamespaceURI(), a.getLocalName()), a.getValue()));
+                if (isInlinedStyle(a)) {
+                    styles.merge(new StyleSpecification(new ComparableQName(ns, a.getLocalName()), a.getValue()));
                 }
             }
         }
         return styles;
+    }
+
+    protected boolean isInlinedStyle(Attr a) {
+        assert a != null;
+        String ns = a.getNamespaceURI();
+        return (ns != null) && ns.equals(NAMESPACE_TT_STYLE);
     }
 
     private static int generateStyleSetIndex(int[] indices) {
@@ -517,8 +525,7 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
             Node node = attrs.item(i);
             if (node instanceof Attr) {
                 Attr a = (Attr) node;
-                String ns = a.getNamespaceURI();
-                if ((ns != null) && ns.equals(NAMESPACE_TT_STYLE)) {
+                if (isPrunedStyle(a)) {
                     prune.add(a);
                 }
             }
@@ -526,6 +533,12 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
         for (Attr a : prune) {
             e.removeAttributeNode(a);
         }
+    }
+
+    protected boolean isPrunedStyle(Attr a) {
+        assert a != null;
+        String ns = a.getNamespaceURI();
+        return (ns != null) && ns.equals(NAMESPACE_TT_STYLE);
     }
 
     private static Set<QName> startTagIndentExclusions;

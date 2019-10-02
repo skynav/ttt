@@ -27,6 +27,9 @@ package com.skynav.cap2tt.converter.imsc;
 
 import java.util.List;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+
 import com.skynav.cap2tt.converter.AbstractResourceConverter;
 import com.skynav.cap2tt.converter.ConverterContext;
 import com.skynav.cap2tt.converter.Screen;
@@ -38,6 +41,7 @@ import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.util.Reporter;
 
 import static com.skynav.cap2tt.app.Converter.*;
+import static com.skynav.ttv.model.imsc.IMSC11.Constants.*;
 
 public class IMSC11ResourceConverter extends AbstractResourceConverter {
 
@@ -79,6 +83,42 @@ public class IMSC11ResourceConverter extends AbstractResourceConverter {
             }
         }
         return !fail && (reporter.getResourceErrors() == 0);
+    }
+
+    protected boolean isMergedStyle(Attr a) {
+        assert a != null;
+        String ns = a.getNamespaceURI();
+        if ((ns != null) && ns.equals(NAMESPACE_EBUTT_STYLING))
+            return true;
+        else
+            return super.isMergedStyle(a);
+    }
+
+    protected boolean isInitialStyle(Attr a) {
+        assert a != null;
+        String ns = a.getNamespaceURI();
+        if ((ns != null) && ns.equals(NAMESPACE_EBUTT_STYLING))
+            return true;
+        else
+            return super.isInitialStyle(a);
+    }
+
+    protected boolean isInlinedStyle(Attr a) {
+        assert a != null;
+        String ns = a.getNamespaceURI();
+        if ((ns != null) && ns.equals(NAMESPACE_EBUTT_STYLING))
+            return true;
+        else
+            return super.isInlinedStyle(a);
+    }
+
+    protected boolean isPrunedStyle(Attr a) {
+        assert a != null;
+        String ns = a.getNamespaceURI();
+        if ((ns != null) && ns.equals(NAMESPACE_EBUTT_STYLING))
+            return true;
+        else
+            return super.isPrunedStyle(a);
     }
 
 }
