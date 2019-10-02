@@ -37,6 +37,7 @@ import com.skynav.cap2tt.converter.Attribute;
 import com.skynav.cap2tt.converter.ResourceConverter;
 import com.skynav.cap2tt.converter.Screen;
 
+import com.skynav.ttv.model.imsc11.ebuttd.MultiRowAlign;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Division;
 import com.skynav.ttv.model.ttml2.tt.Head;
@@ -50,9 +51,11 @@ import com.skynav.ttv.model.ttml2.ttd.AnnotationPosition;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 
 import static com.skynav.cap2tt.app.Converter.*;
+import static com.skynav.ttv.verifier.imsc.IMSC11StyleVerifier.*;
 
 public class IMSC11ResourceConverterState extends AbstractResourceConverterState {
 
+    // processing state
     private ObjectFactory ttmlFactory;      // jaxb object factory
     private Division division;              // current division being constructed
     private Paragraph paragraph;            // current pargraph being constructed
@@ -136,7 +139,7 @@ public class IMSC11ResourceConverterState extends AbstractResourceConverterState
 
     private Paragraph populate(Division d, Paragraph p) {
         if ((p != null) && (p.getContent().size() > 0)) {
-            maybeWrapContentInSpan(p);
+            maybeApplyMultiRowAlign(p);
             maybeAddRegion(p.getOtherAttributes().get(regionAttrName));
             d.getBlockOrEmbeddedClass().add(p);
         }
@@ -327,28 +330,24 @@ public class IMSC11ResourceConverterState extends AbstractResourceConverterState
         a.populate(s, styles, shears, imsc);
     }
 
-    private void maybeWrapContentInSpan(Paragraph p) {
+    private void maybeApplyMultiRowAlign(Paragraph p) {
         String a = (alignment != null) ? alignment : globalAlignment;
         if (isMixedAlignment(a)) {
-            TextAlign sa, pa;
+            TextAlign pa;
+            MultiRowAlign ma;
             if (a.equals("中頭")) {
                 pa = TextAlign.CENTER;
-                sa = TextAlign.START;
+                ma = MultiRowAlign.START;
             } else if (a.equals("中末")) {
                 pa = TextAlign.CENTER;
-                sa = TextAlign.END;
+                ma = MultiRowAlign.END;
             } else {
                 pa = TextAlign.CENTER;
-                sa = null;
+                ma = null;
             }
-            if (sa != null) {
-                Span s = ttmlFactory.createSpan();
-                s.getContent().addAll(p.getContent());
-                s.setTextAlign(sa);
-                p.getContent().clear();
-                p.getContent().add(ttmlFactory.createSpan(s));
-                p.setTextAlign(pa);
-            }
+            p.setTextAlign(pa);
+            if (ma != null)
+                p.getOtherAttributes().put(multiRowAlignAttributeName, ma.value());
         }
     }
 
