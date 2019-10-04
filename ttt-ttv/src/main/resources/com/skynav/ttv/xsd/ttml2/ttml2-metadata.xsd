@@ -4,9 +4,9 @@
   xmlns:tt="http://www.w3.org/ns/ttml"
   xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
   <xs:include schemaLocation="ttml2-core-attribs.xsd"/>
-  <xs:include schemaLocation="ttml2-embedded.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml#metadata"
     schemaLocation="ttml2-metadata-items.xsd"/>
+  <xs:include schemaLocation="ttml2-embedded.xsd"/>
   <xs:attributeGroup name="metadata.attlist">
     <xs:attributeGroup ref="tt:Core.attrib.class"/>
     <xs:attributeGroup ref="tt:Core.Condition.attrib.class"/>
