@@ -123,6 +123,10 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2BreakBreak() throws Exception {
+        performPresentationTest("ttml2-break-break.xml");
+    }
+
     public void testTTML2BreakFontShear() throws Exception {
         performPresentationTest("ttml2-break-font-shear.xml");
     }
