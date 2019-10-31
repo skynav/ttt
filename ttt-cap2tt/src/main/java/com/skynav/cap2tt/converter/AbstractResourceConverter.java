@@ -49,9 +49,9 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
@@ -72,9 +72,9 @@ import com.skynav.ttv.util.PreVisitor;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
+import com.skynav.ttv.util.TextTransformer;
 import com.skynav.ttv.util.Traverse;
 import com.skynav.ttv.util.Visitor;
-import com.skynav.ttv.util.TextTransformer;
 import com.skynav.xml.helpers.Documents;
 import com.skynav.xml.helpers.Nodes;
 import com.skynav.xml.helpers.XML;
@@ -145,11 +145,11 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
     public String getOption(String name) {
         return context.getOption(name);
     }
-    
+
     public Object getOptionObject(String name) {
         return context.getOptionObject(name);
     }
-    
+
     public Map<String, AttributeSpecification> getKnownAttributes() {
         return context.getKnownAttributes();
     }

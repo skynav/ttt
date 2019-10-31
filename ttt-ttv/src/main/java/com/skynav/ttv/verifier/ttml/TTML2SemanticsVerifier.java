@@ -294,7 +294,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         else
             return verifyEmbedding(divisionOrEmbedding);
     }
-    
+
     @Override
     protected boolean verifyDivision(Object division) {
         boolean failed = false;
@@ -307,7 +307,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         }
         return !failed;
     }
-    
+
     protected Region getDivisionRegion(Object division) {
         assert division instanceof Division;
         return ((Division) division).getLayoutClass();
@@ -321,7 +321,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         else
             return unexpectedContent(embedding);
     }
-    
+
     @Override
     protected boolean verifyBlock(Object block) {
         if (block instanceof Division)
@@ -1342,7 +1342,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
                         failed = true;
                     }
                 }
-            } 
+            }
         }
         if (failed)
             reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
@@ -1363,7 +1363,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             reporter.logError(reporter.message(locator, "*KEY*", "Invalid {0} value ''{1}''.", name, value));
         return !failed;
     }
-    
+
     private boolean verifyResourceFormatAttribute(String value, QName name, Object font, Location location, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();

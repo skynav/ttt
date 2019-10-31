@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -117,8 +117,8 @@ public class Numbers {
             return false;
     }
 
-    private static final String PLUS            = new String("+");
-    private static final String MINUS           = new String("-");
+    private static final String PLUS            = "+";
+    private static final String MINUS           = "-";
     public static void badNumber(String value, Location location, VerifierContext context, Object[] treatments) {
         Reporter reporter = context.getReporter();
         Locator locator = location.getLocator();
@@ -147,7 +147,7 @@ public class Numbers {
                 }
             } else {
                 reporter.logInfo(reporter.message(locator, "*KEY*",
-                    "Bad <number> expression, expected optional sign or non-negative-number, got ''{0}''.", value.substring(valueIndex)));
+                    "Bad <number> expression, expected optional sign or non-negative-number, got ''{0}''.", value));
                 break;
             }
 
@@ -302,7 +302,7 @@ public class Numbers {
             }
         }
     }
-    
+
     public static String normalize(double number) {
         if (Math.floor(number) == number)
             return Long.toString((long) number);

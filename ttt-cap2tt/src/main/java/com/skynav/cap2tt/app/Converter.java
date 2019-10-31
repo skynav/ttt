@@ -144,23 +144,27 @@ public class Converter implements ConverterContext {
 
     // miscelaneous defaults
     public static final String defaultReporterFileEncoding      = Reporters.getDefaultEncoding();
-    public static Charset defaultEncoding;
-    public static Charset defaultOutputEncoding;
+    public static final Charset defaultEncoding;
+    public static final Charset defaultOutputEncoding;
     public static final String defaultOutputFileNamePattern     = "tt{0,number,0000}.xml";
     public static final float[] defaultShearMap                 = new float[] { 0, 6.345103f, 11.33775f, 16.78842f, 21.99875f, 27.97058f };
     public static final String defaultStyleIdPattern            = "s{0}";
 
     static {
+        Charset de;
         try {
-            defaultEncoding = Charset.forName(DEFAULT_INPUT_ENCODING);
+            de = Charset.forName(DEFAULT_INPUT_ENCODING);
         } catch (RuntimeException e) {
-            defaultEncoding = Charset.defaultCharset();
+            de = Charset.defaultCharset();
         }
+        defaultEncoding = de;
+        Charset doe;
         try {
-            defaultOutputEncoding = Charset.forName(DEFAULT_OUTPUT_ENCODING);
+            doe = Charset.forName(DEFAULT_OUTPUT_ENCODING);
         } catch (RuntimeException e) {
-            defaultOutputEncoding = Charset.defaultCharset();
+            doe = Charset.defaultCharset();
         }
+        defaultOutputEncoding = doe;
     }
 
     // element names
@@ -487,7 +491,7 @@ public class Converter implements ConverterContext {
     }
 
     // ConverterContext implementation
-    
+
     public List<Attr> getConfigurationParameters() {
         return configuration.getParameters();
     }
@@ -549,7 +553,7 @@ public class Converter implements ConverterContext {
         else
             return null;
     }
-    
+
     public boolean getOptionBoolean(String name) {
         if (name == null)
             return false;
@@ -564,7 +568,7 @@ public class Converter implements ConverterContext {
         else
             return false;
     }
-    
+
     public int getOptionInteger(String name) {
         if (name == null)
             return 0;
@@ -573,7 +577,7 @@ public class Converter implements ConverterContext {
         else
             return 0;
     }
-    
+
     public Object getOptionObject(String name) {
         if (name == null)
             return null;
@@ -598,12 +602,12 @@ public class Converter implements ConverterContext {
         else
             return null;
     }
-    
+
     public void setOptionObject(String name, Object object) {
         if (name.equals("outputDocument"))
             outputDocument = (Document) object;
     }
-    
+
     public Map<String, AttributeSpecification> getKnownAttributes() {
         return knownAttributes;
     }
@@ -617,7 +621,7 @@ public class Converter implements ConverterContext {
     }
 
     // Converter implementation
-    
+
     private void resetReporter() {
         setReporter(Reporters.getDefaultReporter(), null, null, false, true);
     }
@@ -1416,7 +1420,7 @@ public class Converter implements ConverterContext {
         }
         getShowOutput().println(sb.toString());
     }
-    
+
     private void showRepository() {
         getShowOutput().println(repositoryInfo);
     }
@@ -2288,7 +2292,7 @@ public class Converter implements ConverterContext {
      * separator part (consisting wholly of separator characters) or a field part
      * (containing no separator character). Separator characters are <tt>U+0009
      * (HORIZONTAL TAB)</tt> and <tt>U+0020 (SPACE)</tt>.
-     * 
+     *
      * @param line string containing entire line
      * @param retTypes receives types array as output parameter, one type for each part
      * @return (possibly empty) array of parts
@@ -2921,7 +2925,7 @@ public class Converter implements ConverterContext {
     ** <tt>{0xFF20, 0xFF20, 0xFF20}</tt>, <tt>{0xFF20, 0x005F, 0xFF20}</tt>, <tt>{0xFF20, 0xFF3F, 0xFF20}</tt>.
     ** <p>
     ** Returns the escaped text or <tt>null</tt> if the input text is not one of the above sequences.
-    ** 
+    **
     ** @param text string possibly containing a text escape
     ** @return unescaped text or null (if not a text escape sequence)
     */
@@ -2963,7 +2967,7 @@ public class Converter implements ConverterContext {
         if (a != null) {
             if (retAttr != null)
                 retAttr[0] = a;
-            return new String();
+            return "";
         } else
             return null;
     }
@@ -2973,7 +2977,7 @@ public class Converter implements ConverterContext {
         if (a != null) {
             if (retAttr != null)
                 retAttr[0] = a;
-            return new String();
+            return "";
         } else
             return null;
     }
@@ -2998,7 +3002,7 @@ public class Converter implements ConverterContext {
         else
             return null;
     }
-    
+
     public static String parseText(String text, boolean mapInitialSpaceToNBSP) {
         int escapedSpaces = 0;
         for (int i = 0, n = text.length(); i < n; ++i) {

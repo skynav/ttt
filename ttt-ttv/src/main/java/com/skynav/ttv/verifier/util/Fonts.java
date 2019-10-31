@@ -48,8 +48,8 @@ import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.URIs;
-import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.ItemVerifier.ItemType;
+import com.skynav.ttv.verifier.VerifierContext;
 
 public class Fonts {
 

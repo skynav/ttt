@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2014-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -447,22 +447,15 @@ public class BasicLayoutState implements LayoutState {
     private Extent getISDExtent(Element e) {
         assert Documents.isElement(e, isdInstanceElementName);
         String v = e.getAttribute("extent");
-        if (v == null) {
-            Element p = Documents.findAncestorByName(e, isdSequenceElementName);
-            if (p != null)
-                v = p.getAttribute("extent");
+        Integer[] minMax = new Integer[] { 2, 2 };
+        Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
+        List<Length> lengths = new java.util.ArrayList<Length>();
+        if (Lengths.isLengths(v, getLocation(e, ttsExtentAttrName), context, minMax, treatments, lengths)) {
+            assert lengths.size() == 2;
+            double w = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, null, null, null, null);
+            double h = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, null, null, null, null);
+            return new Extent(w, h);
         }
-        if (v != null) {
-            Integer[] minMax = new Integer[] { 2, 2 };
-            Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Error };
-            List<Length> lengths = new java.util.ArrayList<Length>();
-            if (Lengths.isLengths(v, getLocation(e, ttsExtentAttrName), context, minMax, treatments, lengths)) {
-                assert lengths.size() == 2;
-                double w = Helpers.resolveLength(e, lengths.get(0), Axis.HORIZONTAL, null, null, null, null);
-                double h = Helpers.resolveLength(e, lengths.get(1), Axis.VERTICAL, null, null, null, null);
-                return new Extent(w, h);
-            }
-        }            
         return getExternalExtent();
     }
 

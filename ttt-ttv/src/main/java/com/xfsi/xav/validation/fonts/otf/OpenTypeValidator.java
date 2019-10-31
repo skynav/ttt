@@ -54,8 +54,8 @@ public final class OpenTypeValidator extends AbstractLoggingValidator {
         validate();
         return getErrorReported() ? Result.FAIL : Result.PASS;
     }
-        
-    public String getVersion() 
+
+    public String getVersion()
     {
         return "1.0.0";
     }

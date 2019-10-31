@@ -574,12 +574,9 @@ public class Timing {
             String years = m.group(1);
             String months = m.group(2);
             String days = m.group(3);
-            String hours = null;
-            String minutes = null;
-            String seconds = null;
             if ((timeParameters.getTimeBase() != TimeBase.CLOCK) && (timeParameters.getClockMode() != ClockMode.UTC))
                 return false;
-            WallClockTime t = new WallClockTimeImpl(years, months, days, hours, minutes, seconds);
+            WallClockTime t = new WallClockTimeImpl(years, months, days, null, null, null);
             if ((t.getMonths() < 1) || (t.getMonths() > 12))
                 return false;
             if ((t.getDays() < 1) || (t.getDays() > 31))

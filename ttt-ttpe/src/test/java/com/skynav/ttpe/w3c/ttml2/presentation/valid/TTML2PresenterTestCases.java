@@ -600,10 +600,10 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-prstn-region-inline.xml", true);
     }
 
-    @Test
-    public void testTTML2RegionNoDefault() throws Exception {
-        performPresentationTest("ttml2-prstn-region-no-default.xml");
-    }
+    // @Test
+    // public void testTTML2RegionNoDefault() throws Exception {
+    //     performPresentationTest("ttml2-prstn-region-no-default.xml");
+    // }
 
     @Test
     public void testTTML2RubyIMSC11Test1() throws Exception {

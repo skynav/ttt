@@ -81,7 +81,7 @@ class TagParser {
         }
         return false;
     }
-        
+
     private void findTagType(int syncword) throws IOException {
         if (syncword == 0x544 &&                                // 'T' && (('A' & 0xf0) >>> 4)
             this.bis.readBits(12) == 0x147) {                   // ('A' & 0xf) && 'G')
@@ -107,17 +107,17 @@ class TagParser {
             this.tt = (syncword & 0xff0) == 0x490 ? TagType.ID3V2 : TagType.ID3V2_FOOTER;
         }
     }
-        
+
     private void parseId3v2() throws IOException {
         for (int i = 0; i < this.size; i++)
             this.bis.readBits(8);
     }
-        
+
     private void parseId3v1() throws IOException {
         for (int i = 0; i < this.size; i++)
             this.bis.readBits(8);
     }
-        
+
     private void parseId3v2Footer() {
         // TODO: implement: throws IOException
     }

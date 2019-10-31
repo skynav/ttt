@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Skynav, Inc. All rights reserved.
+ * Copyright 2018-2019 Skynav, Inc. All rights reserved.
  * Portions Copyright 2009 Extensible Formatting Systems, Inc (XFSI).
  *
  * Redistribution and use in source and binary forms, with or without
@@ -116,7 +116,7 @@ class HeaderParser {
             // this.mh.logResult(MPA01E002, this.s.getFrameCount(), this.bis.getTotalBytesRead());
         }
     }
-        
+
     private void validateLayer(int layer) throws CannotContinueValidationException {
         switch (layer) {
         case 3:
@@ -139,7 +139,7 @@ class HeaderParser {
 
     private void validateProtectionBit(int protectionBit) {
         this.s.setAddedRedundancy(protectionBit == 0);
-        this.mh.logAll(MPA01I006, this.s.hasAddedRedundancy());         
+        this.mh.logAll(MPA01I006, this.s.hasAddedRedundancy());
     }
 
     private void validateBitRateIndex(int bitrateIndex) throws CannotContinueValidationException {
@@ -167,13 +167,14 @@ class HeaderParser {
         this.s.setSamplingFrequency(sampleRate);
         this.mh.logAll(MPA01I008, this.s.getSamplingFrequency());
     }
-        
+
     private void validatePaddingBit(int paddingBit) {
         this.s.setPaddingBit(paddingBit != 0);
     }
 
     private void validateMode(int mode) {
         switch (mode) {
+        default:
         case 0:
             this.s.setMode(State.Mode.STEREO);
             break;
@@ -187,12 +188,13 @@ class HeaderParser {
             this.s.setMode(State.Mode.SINGLE_CHANNEL);
             break;
         }
-        this.mh.logAll(MPA01I009, this.s.getMode().toString().toLowerCase());           
+        this.mh.logAll(MPA01I009, this.s.getMode().toString().toLowerCase());
     }
 
     private void validateModeExtension(int modeExtension) {
         if (this.s.getLayer() == State.Layer.LAYER_I || this.s.getLayer() == State.Layer.LAYER_II) {
             switch (modeExtension) {
+            default:
             case 0:
                 this.mh.logAll(MPA01I010, 4);
                 break;
@@ -208,6 +210,7 @@ class HeaderParser {
             }
         } else if (this.s.getLayer() == State.Layer.LAYER_III) {
             switch (modeExtension) {
+            default:
             case 0:
                 this.mh.logAll(MPA01I011, false, false);
                 break;
@@ -226,6 +229,7 @@ class HeaderParser {
 
     private void validateEmphasis(int emphasis) {
         switch (emphasis) {
+        default:
         case 0:
             this.mh.logAll(MPA01I014, "none");
             break;

@@ -62,6 +62,7 @@ public class TTML2ResourceConverterState extends AbstractResourceConverterState 
         super(converter);
         this.ttmlFactory = ttmlFactory;
         this.division = ttmlFactory.createDivision();
+        this.paragraph = null;
         this.regions = new java.util.TreeMap<String,Region>();
     }
 
@@ -189,8 +190,8 @@ public class TTML2ResourceConverterState extends AbstractResourceConverterState 
         Span sCombine       = null;
         Span sOuter         = null;
         int numExclusive    = 0;
-        for (AttributedCharacterIterator.Attribute k : attributes.keySet()) {
-            Attribute a = (Attribute) attributes.get(k);
+        for (Map.Entry<AttributedCharacterIterator.Attribute,Object> e : attributes.entrySet()) {
+            Attribute a = (Attribute) e.getValue();
             if (a.isEmphasis()) {
                 sEmphasis = createEmphasis(text, a, blockDirection);
                 ++numExclusive;

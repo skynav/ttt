@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2019 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,10 +44,14 @@ import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.util.URIs;
+import com.skynav.ttv.verifier.AbstractVerifier;
+import com.skynav.ttv.verifier.ProfileVerifier;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Profiles;
 
-public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
+import static com.skynav.ttv.verifier.ttml.TTML1ProfileVerifier.*;
+
+public class TTML2ProfileVerifier extends AbstractVerifier implements ProfileVerifier {
 
     public static final QName contentProfilesAttributeName              = new QName(TTML1ParameterVerifier.NAMESPACE, "contentProfiles");
     public static final QName designatorAttributeName                   = new QName("", "designator");
@@ -67,7 +71,14 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
         super(model);
     }
 
-    @Override
+    public boolean verify(Object content, Locator locator, VerifierContext context, ItemType type) {
+        setState(content, context);
+        if (type == ItemType.Element)
+            return verifyElementItem(content, locator, context);
+        else
+            throw new IllegalArgumentException();
+    }
+
     protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         if (content instanceof TimedText)
@@ -212,5 +223,4 @@ public class TTML2ProfileVerifier extends TTML1ProfileVerifier {
             throw new IllegalStateException("missing parent");
         return !failed;
     }
-    
 }
