@@ -122,7 +122,7 @@ public interface ConverterContext {
      * @param value of option
      */
     public void setOptionObject(String name, Object object);
-    
+
     /**
      * Obtain known attribute specification map.
      * @return map of known attribute specifications

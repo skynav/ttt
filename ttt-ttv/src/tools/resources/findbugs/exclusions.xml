@@ -9,55 +9,84 @@
     <Or>
       <And>
         <Class name="com.skynav.ttv.model.ebuttd.EBUTTD$EBUTTDModel"/>
-        <Method name="getNamespaceURIs"/>
+        <Or>
+          <Method name="getNamespaceURIs"/>
+          <Method name="getSchemaResourceNames"/>
+        </Or>
       </And>
       <And>
-        <Class name="com.skynav.ttv.model.ebuttd.EBUTTD$EBUTTDModel"/>
-        <Method name="getSchemaResourceNames"/>
+        <Class name="com.skynav.ttv.model.imsc.IMSC10$IMSC10Model"/>
+        <Or>
+          <Method name="getIMSC10NamespaceURIs"/>
+          <Method name="getIMSC10SchemaResourceNames"/>
+          <Method name="getNameAliases"/>
+        </Or>
       </And>
       <And>
-        <Class name="com.skynav.ttv.model.imsc.IMSC1$IMSC1Model"/>
-        <Method name="getIMSC1NamespaceURIs"/>
-      </And>
-      <And>
-        <Class name="com.skynav.ttv.model.imsc.IMSC1$IMSC1Model"/>
-        <Method name="getIMSC1SchemaResourceNames"/>
+        <Class name="com.skynav.ttv.model.imsc.IMSC11$IMSC11Model"/>
+        <Or>
+          <Method name="getIMSC11NamespaceURIs"/>
+          <Method name="getIMSC11SchemaResourceNames"/>
+          <Method name="getNameAliases"/>
+        </Or>
       </And>
       <And>
         <Class name="com.skynav.ttv.model.netflix.NFLXTT$NFLXTTModel"/>
-        <Method name="getNamespaceURIs"/>
+        <Or>
+          <Method name="getNamespaceURIs"/>
+          <Method name="getSchemaResourceNames"/>
+        </Or>
       </And>
       <And>
-        <Class name="com.skynav.ttv.model.netflix.NFLXTT$NFLXTTModel"/>
-        <Method name="getSchemaResourceNames"/>
+        <Class name="com.skynav.ttv.model.smpte.ST20522010TTML1$ST20522010TTML1Model"/>
+        <Or>
+          <Method name="getNameAliases"/>
+          <Method name="getST20522010NamespaceURIs"/>
+          <Method name="getST20522010SchemaResourceNames"/>
+        </Or>
       </And>
       <And>
-        <Class name="com.skynav.ttv.model.smpte.ST20522010$ST20522010Model"/>
-        <Method name="getST20522010NamespaceURIs"/>
-      </And>
-      <And>
-        <Class name="com.skynav.ttv.model.smpte.ST20522010$ST20522010Model"/>
-        <Method name="getST20522010SchemaResourceNames"/>
+        <Class name="com.skynav.ttv.model.smpte.ST20522010TTML2$ST20522010TTML2Model"/>
+        <Or>
+          <Method name="getNameAliases"/>
+          <Method name="getST20522010NamespaceURIs"/>
+          <Method name="getST20522010SchemaResourceNames"/>
+        </Or>
       </And>
       <And>
         <Class name="com.skynav.ttv.model.smpte.ST20522013$ST20522013Model"/>
-        <Method name="getNamespaceURIs"/>
-      </And>
-      <And>
-        <Class name="com.skynav.ttv.model.smpte.ST20522013$ST20522013Model"/>
-        <Method name="getSchemaResourceNames"/>
-      </And>
-      <And>
-        <Class name="com.skynav.ttv.model.ttml.TTML1$TTML1Model"/>
-        <Method name="getTTNamespaceURIs"/>
+        <Or>
+          <Method name="getNamespaceURIs"/>
+          <Method name="getSchemaResourceNames"/>
+        </Or>
       </And>
       <And>
         <Class name="com.skynav.ttv.model.ttml.TTML1$TTML1Model"/>
-        <Method name="getTTSchemaResourceNames"/>
+        <Or>
+          <Method name="getTTNamespaceURIs"/>
+          <Method name="getTTSchemaResourceNames"/>
+        </Or>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.ttml.TTML1StandardDesignations"/>
+        <Or>
+          <Method name="getExtensionDesignationStrings"/>
+          <Method name="getFeatureDesignationStrings"/>
+        </Or>
       </And>
       <And>
         <Class name="com.skynav.ttv.model.ttml.TTML2$TTML2Model"/>
-        <Method name="getTTSchemaResourceNames"/>
+        <Or>
+          <Method name="getTTNamespaceURIs"/>
+          <Method name="getTTSchemaResourceNames"/>
+        </Or>
+      </And>
+      <And>
+        <Class name="com.skynav.ttv.model.ttml.TTML2StandardDesignations"/>
+        <Or>
+          <Method name="getExtensionDesignationStrings"/>
+          <Method name="getFeatureDesignationStrings"/>
+        </Or>
       </And>
       <And>
         <Class name="com.skynav.ttv.util.Message"/>
@@ -79,12 +108,55 @@
     </Or>
   </Match>
   <Match>
+    <Bug pattern="MS_PKGPROTECT"/>
+    <Or>
+      <Class name="com.skynav.ttv.verifier.util.Borders"/>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="NM_CONFUSING"/>
+      <And>
+        <Class name="com.skynav.ttv.model.smpte.tt.rel2010.Data"/>
+        <Or>
+          <Method name="getDatatype"/>
+          <Method name="setDatatype"/>
+        </Or>
+      </And>
+  </Match>
+  <Match>
     <Bug pattern="PZLA_PREFER_ZERO_LENGTH_ARRAYS"/>
+  </Match>
+  <Match>
+    <Bug pattern="REC_CATCH_EXCEPTION"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttv.app.TimedTextVerifier"/>
+        <Method name="verifySemantics"/>
+      </And>
+    </Or>
   </Match>
   <Match>
     <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
     <Or>
       <Class name="com.skynav.ttv.util.TextTransformer$1"/>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="UC_USELESS_CONDITION"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttv.verifier.util.Borders"/>
+        <Method name="getLengthsFromRadiiFunction"/>
+      </And>
+    </Or>
+  </Match>
+  <Match>
+    <Bug pattern="UCF_USELESS_CONTROL_FLOW"/>
+    <Or>
+      <And>
+        <Class name="com.skynav.ttv.app.TimedTextVerifier"/>
+        <Method name="processAnnotations"/>
+      </And>
     </Or>
   </Match>
   <Match>
@@ -118,6 +190,26 @@
       <And>
         <Class name="com.skynav.ttv.verifier.ttml.profile.ComputedProfileFactory"/>
         <Field name="model"/>
+      </And>
+      <And>
+        <Class name="com.xfsi.xav.validation.audio.wave.WaveValidator"/>
+        <Field name="s"/>
+      </And>
+      <And>
+        <Class name="com.xfsi.xav.validation.fonts.otf.OpenTypeValidator"/>
+        <Field name="s"/>
+      </And>
+      <And>
+        <Class name="com.xfsi.xav.validation.fonts.ttc.TrueTypeCollectionValidator"/>
+        <Field name="s"/>
+      </And>
+      <And>
+        <Class name="com.xfsi.xav.validation.fonts.ttf.TrueTypeValidator"/>
+        <Field name="s"/>
+      </And>
+      <And>
+        <Class name="com.xfsi.xav.validation.fonts.woff.WebFontValidator"/>
+        <Field name="s"/>
       </And>
     </Or>
   </Match>

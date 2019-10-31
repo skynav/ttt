@@ -29,8 +29,8 @@ package com.xfsi.xav.validation.audio.mpeg;
 import java.io.EOFException;
 import java.io.IOException;
 
-import com.xfsi.xav.validation.util.BitInputStream;
 import com.xfsi.xav.validation.util.AbstractLoggingValidator;
+import com.xfsi.xav.validation.util.BitInputStream;
 
 import static com.xfsi.xav.validation.audio.mpeg.MpegValidator.MsgCode.*;
 
@@ -54,45 +54,43 @@ class Layer3AudioDataParser {
             if (this.s != null) { // always true, enter skipping code
                 for (int i = 0; i < this.s.getBytesToNextFrameBeginning() - (this.s.hasAddedRedundancy() ? 6 : 4); i++)
                     this.bis.readBits(8);
-                return false;
             }
             // TODO: end remove
-            if (this.s != null) {
-                this.s.setMainDataBegin(this.bis.readBits(9));
-                if (this.s.getMode() == State.Mode.SINGLE_CHANNEL)
-                    this.bis.readBits(5);
-                else
-                    this.bis.readBits(3);
-                for (int ch = 0; ch < this.s.getNumberOfChannels(); ch++) {
-                    for (int scfsiBand = 0; scfsiBand < 4; scfsiBand++)
-                        this.bis.readBits(1);
-                }
-                for (int gr=0; gr < 2; gr++) {
-                    for (int ch = 0; ch < this.s.getNumberOfChannels(); ch++) {
-                        this.bis.readBits(12);
-                        this.bis.readBits(9);
-                        this.bis.readBits(8);
-                        this.bis.readBits(4);
-                        if (this.bis.readBits(1) == 1) {
-                            this.bis.readBits(2);
-                            this.bis.readBits(1);
-                            for (int region = 0; region < 2;  region++)
-                                this.bis.readBits(5);
-                            for (int window = 0; window < 2;  window++)
-                                this.bis.readBits(3);
-                        } else {
-                            for (int region = 0; region < 2;  region++)
-                                this.bis.readBits(5);
-                            this.bis.readBits(4);
-                            this.bis.readBits(3);
-                                                        
-                        }
-                        this.bis.readBits(1);
-                        this.bis.readBits(1);
-                        this.bis.readBits(1);
-                    }
-                }
-            }
+            // if (this.s != null) {
+            //     this.s.setMainDataBegin(this.bis.readBits(9));
+            //     if (this.s.getMode() == State.Mode.SINGLE_CHANNEL)
+            //         this.bis.readBits(5);
+            //     else
+            //         this.bis.readBits(3);
+            //     for (int ch = 0; ch < this.s.getNumberOfChannels(); ch++) {
+            //         for (int scfsiBand = 0; scfsiBand < 4; scfsiBand++)
+            //             this.bis.readBits(1);
+            //     }
+            //     for (int gr=0; gr < 2; gr++) {
+            //         for (int ch = 0; ch < this.s.getNumberOfChannels(); ch++) {
+            //             this.bis.readBits(12);
+            //             this.bis.readBits(9);
+            //             this.bis.readBits(8);
+            //             this.bis.readBits(4);
+            //             if (this.bis.readBits(1) == 1) {
+            //                 this.bis.readBits(2);
+            //                 this.bis.readBits(1);
+            //                 for (int region = 0; region < 2;  region++)
+            //                     this.bis.readBits(5);
+            //                 for (int window = 0; window < 2;  window++)
+            //                     this.bis.readBits(3);
+            //             } else {
+            //                 for (int region = 0; region < 2;  region++)
+            //                     this.bis.readBits(5);
+            //                 this.bis.readBits(4);
+            //                 this.bis.readBits(3);
+            //             }
+            //             this.bis.readBits(1);
+            //             this.bis.readBits(1);
+            //             this.bis.readBits(1);
+            //         }
+            //     }
+            // }
             parseMainData();
         } catch (EOFException e) {
             return true;
@@ -104,7 +102,7 @@ class Layer3AudioDataParser {
         }
         return false;
     }
-        
+
     private void parseMainData() // TODO: implement: throws CannotContinueValidationException
     {
         // TODO: implement

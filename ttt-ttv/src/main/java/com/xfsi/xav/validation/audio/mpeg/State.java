@@ -53,7 +53,7 @@ class State {
     Integer samplingFrequency = 0;
     Mode mode = null;
     Layer layer = null;
-        
+
     int getNumberOfChannels() {
         return this.mode == Mode.SINGLE_CHANNEL ? 1 : 2;
     }
@@ -68,79 +68,79 @@ class State {
     void setAddedRedundancy(boolean bit) {
         this.protectionBit = bit;
     }
-        
+
     boolean hasAddedRedundancy() {
         return this.protectionBit;
     }
-        
+
     void setPaddingBit(boolean bit) {
         this.paddingBit = bit;
     }
-        
+
     boolean isPaddingBit() {
         return this.paddingBit;
     }
-        
+
     void setAlgorithmBit(boolean bit) {
         this.algorithmBit = bit;
     }
-        
+
     boolean isAlgorithmBit() {
         return this.algorithmBit;
     }
-        
+
     void incrementFrameCount() {
         this.frameCount++;
     }
-        
+
     Integer getFrameCount() {
         return this.frameCount;
     }
-        
+
     Integer getLayer3FrameCount() {
         return this.layer3FrameCount;
     }
-        
+
     void setMainDataBegin(int mainDataBegin) {
         this.mainDataBegin = mainDataBegin;
     }
-        
+
     Integer getMainDataBegin() {
         return this.mainDataBegin;
     }
-        
+
     void setBitRateIndex(int bitRateIndex) {
         this.bitRateIndex = bitRateIndex;
     }
-        
+
     Integer getBitRateIndex() {
         return this.bitRateIndex;
     }
-        
+
     void setBitRate(int bitRate) {
         this.bitRate = bitRate;
     }
-        
+
     Integer getBitRate() {
         return this.bitRate;
     }
-        
+
     void setSamplingFrequency(int samplingFrequency) {
         this.samplingFrequency = samplingFrequency;
     }
-        
+
     Integer getSamplingFrequency() {
         return this.samplingFrequency;
     }
-        
+
     void setMode(Mode mode) {
         this.mode = mode;
     }
-        
+
     Mode getMode() {
         return this.mode;
     }
-        
+
     void setLayer(Layer layer) {
         this.layer = layer;
         switch (this.layer) {
@@ -155,7 +155,7 @@ class State {
             break;
         }
     }
-        
+
     Layer getLayer() {
         return this.layer;
     }

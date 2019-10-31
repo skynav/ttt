@@ -835,7 +835,8 @@ public class Presenter extends TimedTextTransformer {
                 f.setFile(outputFile);
                 if (outputFileURIs == null)
                     outputFileURIs = new java.util.ArrayList<URI>();
-                outputFileURIs.add(outputFile.toURI());
+                if (outputFile != null)
+                    outputFileURIs.add(outputFile.toURI());
             }
             if (!writeFrameResources(uri, f))
                 fail = true;

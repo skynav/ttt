@@ -119,7 +119,7 @@ public class BitInputStream {
         int mask = 0x1 << this.bitBufferIndex;
         return (bitBuffer & mask) == 0 ? 0 : 1;
     }
-    
+
     private void loadBuffers() throws IOException {
         if (this.isEof) {
             if (this.nextBitBuffer != null) {
@@ -139,7 +139,7 @@ public class BitInputStream {
         }
         this.bitBuffer = this.nextBitBuffer;
         this.bitBufferIndex = this.nextBitBufferIndex;
-        fillNextBuffer();       
+        fillNextBuffer();
     }
 
     private void fillNextBuffer() throws IOException {

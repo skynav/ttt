@@ -289,7 +289,7 @@ public class ST20522010TTML1 {
             }
             return false;
         }
-        
+
         public boolean isElement(QName name) {
             if (super.isElement(name))
                 return true;
@@ -340,7 +340,7 @@ public class ST20522010TTML1 {
             }
             return permissibleAncestors;
         }
-        
+
         public ParameterVerifier getParameterVerifier() {
             if (parameterVerifier == null) {
                 parameterVerifier = new ST20522010TTML1ParameterVerifier(this);

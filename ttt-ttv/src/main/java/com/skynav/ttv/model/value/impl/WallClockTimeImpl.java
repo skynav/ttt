@@ -30,8 +30,8 @@ import java.math.BigInteger;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import com.skynav.ttv.model.value.WallClockTime;
 import com.skynav.ttv.model.value.TimeParameters;
+import com.skynav.ttv.model.value.WallClockTime;
 
 public class WallClockTimeImpl implements WallClockTime {
     public static final WallClockTime ZERO = new WallClockTimeImpl(0, 0, 0, 0, 0, 0);
@@ -178,6 +178,5 @@ public class WallClockTimeImpl implements WallClockTime {
      */
     public static int utcOffset() {
         return ZonedDateTime.now().getOffset().getTotalSeconds();
-    }        
+    }
 }
-

@@ -30,18 +30,18 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import com.skynav.cap2tt.app.Converter;
+
 import com.skynav.ttv.model.ttml2.tt.Paragraph;
 import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.ttd.AnnotationPosition;
 import com.skynav.ttv.model.ttml2.ttd.FontStyle;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
 
-import com.skynav.cap2tt.app.Converter;
-
 import static com.skynav.ttv.model.ttml.TTML2.Constants.NAMESPACE_TT_STYLE;
 
 public class Attribute {
-    public static Attribute END = new Attribute();
+    public static final Attribute END = new Attribute();
     private AttributeSpecification specification;
     private int count;
     private boolean retain;

@@ -39,7 +39,7 @@ public class Booleans {
             return false;
         else {
             if (outputBoolean != null)
-                outputBoolean[0] = Boolean.valueOf(b);
+                outputBoolean[0] = b;
             return true;
         }
     }

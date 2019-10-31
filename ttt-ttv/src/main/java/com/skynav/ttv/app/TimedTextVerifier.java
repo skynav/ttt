@@ -1507,7 +1507,7 @@ public class TimedTextVerifier implements VerifierContext {
     private void populateMediaParameters(Map<String,Object> parameters) {
         MediaQuery.populateDefaultMediaParameters(parameters);
     }
-    
+
     private void populateBoundParameters(Map<String,Object> parameters) {
         parameters.put("forced", Boolean.FALSE);
         parameters.put("mediaAspectRatio", Double.valueOf(16.0/9.0));
@@ -1525,7 +1525,7 @@ public class TimedTextVerifier implements VerifierContext {
             features.add(ed);
         }
     }
-    
+
     private boolean verifyResource() {
         Reporter reporter = getReporter();
         currentPhase = Phase.Resource;
@@ -1645,6 +1645,7 @@ public class TimedTextVerifier implements VerifierContext {
                         if ((value != null) && value.equals("prohibited"))
                             lastPhase = Phase.WellFormedness;
                     } else if (localName.equals("validationAction")) {
+                        /* [TBD] - IMPLEMENT ME */
                     }
                 }
             }
