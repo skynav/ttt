@@ -49,17 +49,16 @@ At present, `ttt` is being developed using the following versions of tools:
 
 <pre>
     $ java -version
-    java version "1.8.0_152"
-    Java(TM) SE Runtime Environment (build 1.8.0_152-b16)
-    Java HotSpot(TM) 64-Bit Server VM (build 25.152-b16, mixed mode)
+    java version "1.8.0_221"
+    Java(TM) SE Runtime Environment (build 1.8.0_221-b11)
+    Java HotSpot(TM) 64-Bit Server VM (build 25.221-b11, mixed mode)
 
     $ mvn -version
-    Apache Maven 3.5.3 (3383c37e1f9e9b3bc3df5050c29c8aff9f295297; 2018-02-24T12:49:05-07:00)
+    Apache Maven 3.6.2 (40f52333136460af0dc0d7232c0dc0bcf0d9e117; 2019-08-27T23:06:16+08:00)
     Maven home: /opt/local/share/java/maven3
-    Java version: 1.8.0_152, vendor: Oracle Corporation
-    Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/jre
+    Java version: 1.8.0_221, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/jre
     Default locale: en_US, platform encoding: UTF-8
-    OS name: "mac os x", version: "10.13.6", arch: "x86_64", family: "mac"
+    OS name: "mac os x", version: "10.14.6", arch: "x86_64", family: "mac"
 </pre>
 
 Additional dependencies are managed by maven.
