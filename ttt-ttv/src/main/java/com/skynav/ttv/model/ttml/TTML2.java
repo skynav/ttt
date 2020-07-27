@@ -142,6 +142,7 @@ public class TTML2 {
                 namespaceURIs.addAll(Arrays.asList(super.getTTNamespaceURIs()));
                 namespaceURIs.add(new URI(XML.getXlinkNamespaceUri()));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_TT_AUDIO));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_TT_ISD));
                 this.namespaceURIs = namespaceURIs.toArray(new URI[namespaceURIs.size()]);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
@@ -190,7 +191,7 @@ public class TTML2 {
         }
 
         public String getJAXBContextPath() {
-            return "com.skynav.ttv.model.ttml2.tt:com.skynav.ttv.model.ttml2.ttm:com.skynav.ttv.model.ttml2.ttp";
+            return "com.skynav.ttv.model.ttml2.tt:com.skynav.ttv.model.ttml2.ttm:com.skynav.ttv.model.ttml2.ttp:com.skynav.ttv.model.ttml2.isd";
         }
 
         public Map<Class<?>,String> getRootClasses() {
@@ -198,6 +199,8 @@ public class TTML2 {
                 rootClasses = new java.util.HashMap<Class<?>,String>();
                 rootClasses.put(com.skynav.ttv.model.ttml2.tt.TimedText.class, "createTt");
                 rootClasses.put(com.skynav.ttv.model.ttml2.ttp.Profile.class, "createProfile");
+                rootClasses.put(com.skynav.ttv.model.ttml2.isd.ISDSequence.class, "createISDSequence");
+                rootClasses.put(com.skynav.ttv.model.ttml2.isd.ISD.class, "createISD");
             }
             return rootClasses;
         }

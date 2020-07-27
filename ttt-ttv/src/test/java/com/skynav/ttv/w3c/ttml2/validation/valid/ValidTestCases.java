@@ -28,7 +28,7 @@ package com.skynav.ttv.w3c.ttml2.validation.valid;
 import java.net.URL;
 import java.util.List;
 
-//import org.junit.Ignore;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 
@@ -79,6 +79,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2AudioInBlock() throws Exception {
         performValidityTest("ttml2-valid-audio-in-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2AudioInBody() throws Exception {
+        performValidityTest("ttml2-valid-audio-in-body.xml", -1, -1);
     }
 
     @Test
@@ -267,8 +272,38 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2DataEmbeddingChunkedZeroLength() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-chunked-zero-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DataEmbeddingReference() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-reference.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DataEmbeddingReferenceMissingType() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-reference-missing-type.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DataEmbeddingReferenceWithMetadata() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-reference-with-metadata.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2DataEmbeddingSimple() throws Exception {
         performValidityTest("ttml2-valid-data-embedding-simple.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DataEmbeddingSimpleWithLWSP() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-simple-with-lwsp.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2DataEmbeddingSimpleZeroLength() throws Exception {
+        performValidityTest("ttml2-valid-data-embedding-simple-zero-length.xml", -1, -1);
     }
 
     @Test
@@ -417,6 +452,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2FontEmbeddingFamilyCaseSensitive() throws Exception {
+        performValidityTest("ttml2-valid-font-embedding-family-case-sensitive.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2FontKerning() throws Exception {
         performValidityTest("ttml2-valid-font-kerning.xml", -1, -1);
     }
@@ -469,6 +509,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ImageInBlockSimpleSourcePng() throws Exception {
         performValidityTest("ttml2-valid-image-in-block-simple-source-png.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ImageInBodyPng() throws Exception {
+        performValidityTest("ttml2-valid-image-in-body-png.xml", -1, -1);
     }
 
     @Test
@@ -547,6 +592,26 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2ISDSequenceSizeNonZero() throws Exception {
+        performValidityTest("ttml2-valid-isd-sequence-size-non-zero.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ISDSequenceSizeZero() throws Exception {
+        performValidityTest("ttml2-valid-isd-sequence-size-zero.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ISDSequenceVersion2() throws Exception {
+        performValidityTest("ttml2-valid-isd-sequence-version-2.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ISDSingleVersion2() throws Exception {
+        performValidityTest("ttml2-valid-isd-single-version-2.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Length1() throws Exception {
         performValidityTest("ttml2-valid-length-1.xml", -1, -1);
     }
@@ -559,6 +624,12 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2Length2RootContainerRelative() throws Exception {
         performValidityTest("ttml2-valid-length-2-root-container-relative.xml", -1, -1);
+    }
+
+    @Test
+    @Ignore
+    public void testValidTTML2LengthRealVersion2() throws Exception {
+        performValidityTest("ttml2-valid-length-real-version-2.xml", -1, -1);
     }
 
     @Test
@@ -587,6 +658,12 @@ public class ValidTestCases {
     }
 
     @Test
+    @Ignore
+    public void testValidTTML2NonRealNumber() throws Exception {
+        performValidityTest("ttml2-valid-non-real-number.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Opacity() throws Exception {
         performValidityTest("ttml2-valid-opacity.xml", -1, -1);
     }
@@ -594,6 +671,16 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2OpacityBlock() throws Exception {
         performValidityTest("ttml2-valid-opacity-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2OpacityImageBlock() throws Exception {
+        performValidityTest("ttml2-valid-opacity-image-block.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2OpacityImageInline() throws Exception {
+        performValidityTest("ttml2-valid-opacity-image-inline.xml", -1, -1);
     }
 
     @Test
@@ -677,6 +764,12 @@ public class ValidTestCases {
     }
 
     @Test
+    @Ignore
+    public void testValidTTML2PresentationAudio() throws Exception {
+        performValidityTest("ttml2-valid-presentation-audio.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2ProcessorProfileCombinationIgnore() throws Exception {
         performValidityTest("ttml2-valid-processor-profile-combination-ignore.xml", -1, -1);
     }
@@ -694,6 +787,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2ProcessorProfileCombinationReplace() throws Exception {
         performValidityTest("ttml2-valid-processor-profile-combination-replace.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ProfileCombineIgnore() throws Exception {
+        performValidityTest("ttml2-valid-profile-combine-ignore.xml", -1, -1);
     }
 
     @Test
@@ -872,6 +970,24 @@ public class ValidTestCases {
     }
 
     @Test
+    @Ignore
+    public void testValidTTML2SpeakImpliedAudio() throws Exception {
+        performValidityTest("ttml2-valid-speak-implied-audio.xml", -1, -1);
+    }
+
+    @Test
+    @Ignore
+    public void testValidTTML2SpeakImpliedAudioDisabled() throws Exception {
+        performValidityTest("ttml2-valid-speak-implied-audio-disabled.xml", -1, -1);
+    }
+
+    @Test
+    @Ignore
+    public void testValidTTML2SpeakImpliedAudioSource() throws Exception {
+        performValidityTest("ttml2-valid-speak-implied-audio-source.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2Speech() throws Exception {
         performValidityTest("ttml2-valid-speech.xml", -1, -1);
     }
@@ -1014,6 +1130,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2XlinkHrefSpan() throws Exception {
         performValidityTest("ttml2-valid-xlink-href-span.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2XmlIdMissing() throws Exception {
+        performValidityTest("ttml2-valid-xml-id-missing.xml", -1, -1);
     }
 
     private void performValidityTest(String resourceName, int expectedErrors, int expectedWarnings) {

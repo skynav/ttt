@@ -40,6 +40,8 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml.TTML2;
+import com.skynav.ttv.model.ttml2.isd.ISD;
+import com.skynav.ttv.model.ttml2.isd.ISDSequence;
 import com.skynav.ttv.model.ttml2.tt.Animate;
 import com.skynav.ttv.model.ttml2.tt.Animation;
 import com.skynav.ttv.model.ttml2.tt.Audio;
@@ -120,6 +122,10 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return verifyTimedText(root);
         else if (root instanceof Profile)
             return verifyProfile(root);
+        else if (root instanceof ISDSequence)
+            return verifyISDSequence(root);
+        else if (root instanceof ISD)
+            return verifyISD(root);
         else
             return unexpectedContent(root);
     }
@@ -191,6 +197,18 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         }
         if (!verifyProfileItem(profile))
             failed = true;
+        return !failed;
+    }
+
+    protected boolean verifyISD(Object isd) {
+        boolean failed = false;
+        // [TBD] - IMPLEMENT ME
+        return !failed;
+    }
+
+    protected boolean verifyISDSequence(Object isdSequence) {
+        boolean failed = false;
+        // [TBD] - IMPLEMENT ME
         return !failed;
     }
 
