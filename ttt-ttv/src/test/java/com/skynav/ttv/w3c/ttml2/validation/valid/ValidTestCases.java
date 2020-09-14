@@ -627,7 +627,6 @@ public class ValidTestCases {
     }
 
     @Test
-    @Ignore
     public void testValidTTML2LengthRealVersion2() throws Exception {
         performValidityTest("ttml2-valid-length-real-version-2.xml", -1, -1);
     }
@@ -655,12 +654,6 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2MetadataItemQualified() throws Exception {
         performValidityTest("ttml2-valid-metadata-item-qualified.xml", -1, -1);
-    }
-
-    @Test
-    @Ignore
-    public void testValidTTML2NonRealNumber() throws Exception {
-        performValidityTest("ttml2-valid-non-real-number.xml", -1, -1);
     }
 
     @Test
@@ -764,7 +757,6 @@ public class ValidTestCases {
     }
 
     @Test
-    @Ignore
     public void testValidTTML2PresentationAudio() throws Exception {
         performValidityTest("ttml2-valid-presentation-audio.xml", -1, -1);
     }
@@ -970,7 +962,6 @@ public class ValidTestCases {
     }
 
     @Test
-    @Ignore
     public void testValidTTML2SpeakImpliedAudio() throws Exception {
         performValidityTest("ttml2-valid-speak-implied-audio.xml", -1, -1);
     }

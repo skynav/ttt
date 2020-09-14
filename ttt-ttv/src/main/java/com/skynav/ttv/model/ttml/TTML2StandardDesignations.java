@@ -195,6 +195,7 @@ public class TTML2StandardDesignations extends TTML1StandardDesignations {
         "#pixelAspectRatio",
         "#position",
         "#presentation",
+        "#presentation-audio",
         "#presentation-version-2",
         "#processorProfiles",
         "#processorProfiles-combined",

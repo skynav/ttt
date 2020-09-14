@@ -67,10 +67,17 @@ public class Lengths {
         }
     }
 
-    private static final Pattern lengthPattern = Pattern.compile("([\\+\\-]?(?:\\d*\\.\\d+|\\d+))(\\w+|%)?");
+    private static final Pattern lengthPattern1 = Pattern.compile("([\\+\\-]?(?:\\d*\\.\\d+|\\d+))(\\w+|%)?");
+    private static final Pattern lengthPattern2 = Pattern.compile("([\\+\\-]?(?:\\d*\\.\\d+|\\d+\\.?))(\\w+|%)?");
     public static boolean isLength(String value, Location location, VerifierContext context, Object[] treatments, Length[] outputLength) {
         Reporter reporter = context.getReporter();
         Locator locator = location.getLocator();
+        int ttmlVersion = context.getModel().getTTMLVersion();
+        final Pattern lengthPattern;
+        if (ttmlVersion < 2)
+            lengthPattern = lengthPattern1;
+        else
+            lengthPattern = lengthPattern2;
         Matcher m = lengthPattern.matcher(value);
         if (m.matches()) {
             assert m.groupCount() > 0;
@@ -117,7 +124,6 @@ public class Lengths {
                     try {
                         unitsValue = Length.Unit.valueOfShorthand(units);
                         int unitVersion = unitsValue.fromVersion();
-                        int ttmlVersion = context.getModel().getTTMLVersion();
                         if (unitVersion > ttmlVersion) {
                             return false;
                         } else if (!isUnitsPermitted(unitsValue, location, context))
