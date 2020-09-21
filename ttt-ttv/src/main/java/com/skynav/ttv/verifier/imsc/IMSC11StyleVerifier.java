@@ -71,6 +71,7 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
             Boolean.TRUE,
             Boolean.FALSE,
             Boolean.FALSE.toString(),
+            Animatability.Discrete,
         },
         {
             forcedDisplayAttributeName,
@@ -82,6 +83,7 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
             Boolean.TRUE,
             Boolean.FALSE,
             Boolean.FALSE.toString(),
+            Animatability.Discrete,
         },
         {
             linePaddingAttributeName,
@@ -92,7 +94,8 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             "0c",
-            null
+            null,
+            Animatability.Discrete,
         },
         {
             multiRowAlignAttributeName,
@@ -104,6 +107,7 @@ public class IMSC11StyleVerifier extends ST20522010TTML2StyleVerifier {
             Boolean.FALSE,
             MultiRowAlign.AUTO,
             MultiRowAlign.AUTO.value(),
+            Animatability.Discrete,
         },
     };
 

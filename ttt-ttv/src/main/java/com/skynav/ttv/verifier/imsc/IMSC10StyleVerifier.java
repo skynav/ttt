@@ -67,6 +67,7 @@ public class IMSC10StyleVerifier extends ST20522010TTML1StyleVerifier {
             Boolean.FALSE,
             MultiRowAlign.AUTO,
             MultiRowAlign.AUTO.value(),
+            Animatability.Discrete,
         },
     };
 

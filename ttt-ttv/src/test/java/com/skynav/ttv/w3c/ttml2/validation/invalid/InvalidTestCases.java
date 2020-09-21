@@ -62,7 +62,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2BadAnimateNonAnimatable() throws Exception {
         performInvalidityTest("ttml2-invld-bad-animate-non-animatable.xml", -1, -1);
     }
@@ -642,6 +641,7 @@ public class InvalidTestCases {
     }
 
     @Test
+    @Ignore
     public void testInvalidTTML2BadFontShearRealSyntax() throws Exception {
         performInvalidityTest("ttml2-invld-bad-font-shear-real-syntax.xml", -1, -1);
     }
@@ -757,6 +757,7 @@ public class InvalidTestCases {
     }
 
     @Test
+    @Ignore
     public void testInvalidTTML2BadLineShearRealSyntax() throws Exception {
         performInvalidityTest("ttml2-invld-bad-line-shear-real-syntax.xml", -1, -1);
     }
@@ -1023,6 +1024,7 @@ public class InvalidTestCases {
     }
 
     @Test
+    @Ignore
     public void testInvalidTTML2BadShearRealSyntax() throws Exception {
         performInvalidityTest("ttml2-invld-bad-shear-real-syntax.xml", -1, -1);
     }
