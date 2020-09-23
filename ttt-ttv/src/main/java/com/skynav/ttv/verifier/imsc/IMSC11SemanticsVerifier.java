@@ -191,7 +191,7 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
         @SuppressWarnings("unchecked")
         Set<Locator> usage = (Set<Locator>) getContext().getResourceState("usageFrames");
         if ((usage != null) && (usage.size() > 0)) {
-            BigInteger frameRate = tt.getFrameRate();
+            String frameRate = tt.getFrameRate();
             if ((frameRate == null) || IMSC11ParameterVerifier.isFrameRateDefaulted(tt)) {
                 Reporter reporter = getContext().getReporter();
                 for (Locator locator : usage) {
@@ -210,7 +210,7 @@ public class IMSC11SemanticsVerifier extends ST20522010TTML2SemanticsVerifier {
         @SuppressWarnings("unchecked")
         Set<Locator> usage = (Set<Locator>) getContext().getResourceState("usageTicks");
         if ((usage != null) && (usage.size() > 0)) {
-            BigInteger tickRate = tt.getTickRate();
+            String tickRate = tt.getTickRate();
             if ((tickRate == null) || IMSC11ParameterVerifier.isTickRateDefaulted(tt)) {
                 Reporter reporter = getContext().getReporter();
                 for (Locator locator : usage) {

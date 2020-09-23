@@ -67,7 +67,7 @@
   </xs:simpleType>
   <xs:simpleType name="cellResolution">
     <xs:annotation>
-      <xs:documentation>positiveInteger positiveInteger</xs:documentation>
+      <xs:documentation>nonNegativeInteger nonNegativeInteger</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
@@ -104,7 +104,9 @@
     </xs:union>
   </xs:simpleType>
   <xs:simpleType name="dataLength">
-    <xs:restriction base="xs:nonNegativeInteger"/>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+"/>
+    </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="dataSource">
     <xs:restriction base="xs:anyURI"/>
@@ -141,7 +143,7 @@
   </xs:simpleType>
   <xs:simpleType name="displayAspectRatio">
     <xs:annotation>
-      <xs:documentation>positiveInteger positiveInteger</xs:documentation>
+      <xs:documentation>nonNegativeInteger nonNegativeInteger</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
@@ -266,11 +268,13 @@
     <xs:restriction base="xs:anyURI"/>
   </xs:simpleType>
   <xs:simpleType name="frameRate">
-    <xs:restriction base="xs:positiveInteger"/>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+"/>
+    </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="frameRateMultiplier">
     <xs:annotation>
-      <xs:documentation>positiveInteger positiveInteger</xs:documentation>
+      <xs:documentation>nonNegativeInteger nonNegativeInteger</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
@@ -445,7 +449,7 @@
   </xs:simpleType>
   <xs:simpleType name="pixelAspectRatio">
     <xs:annotation>
-      <xs:documentation>positiveInteger:positiveInteger</xs:documentation>
+      <xs:documentation>nonNegativeInteger nonNegativeInteger</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
@@ -563,7 +567,9 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="subFrameRate">
-    <xs:restriction base="xs:positiveInteger"/>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+"/>
+    </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="textAlign">
     <xs:restriction base="xs:token">
@@ -687,7 +693,9 @@
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="tickRate">
-    <xs:restriction base="xs:positiveInteger"/>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+"/>
+    </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="timeBase">
     <xs:restriction base="xs:token">

@@ -59,11 +59,14 @@ import com.skynav.ttv.verifier.ttml.parameter.ConditionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DisplayAspectRatioVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.DropModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.FeatureSemanticsVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.FrameRateVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.InferProcessorProfileMethodVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.InferProcessorProfileSourceVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.MarkerModeVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ProfileCombinationVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ProfilesVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.SubFrameRateVerifier;
+import com.skynav.ttv.verifier.ttml.parameter.TickRateVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.TimeBaseVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ValidationActionVerifier;
 import com.skynav.ttv.verifier.ttml.parameter.ValidationVerifier;
@@ -146,6 +149,14 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             DropMode.NON_DROP,
         },
         {
+            frameRateAttributeName,
+            "FrameRate",
+            String.class,
+            FrameRateVerifier.class,
+            Boolean.TRUE,
+            "30",
+        },
+        {
             inferProcessorProfileMethodAttributeName,
             "InferProcessorProfileMethod",
             InferProcessorProfileMethod.class,
@@ -200,6 +211,22 @@ public class TTML2ParameterVerifier extends TTML1ParameterVerifier {
             ProfilesVerifier.class,
             Boolean.FALSE,
             null
+        },
+        {
+            subFrameRateAttributeName,
+            "SubFrameRate",
+            String.class,
+            SubFrameRateVerifier.class,
+            Boolean.FALSE,
+            "1",
+        },
+        {
+            tickRateAttributeName,
+            "TickRate",
+            String.class,
+            TickRateVerifier.class,
+            Boolean.FALSE,
+            "1",
         },
         {
             timeBaseAttributeName,

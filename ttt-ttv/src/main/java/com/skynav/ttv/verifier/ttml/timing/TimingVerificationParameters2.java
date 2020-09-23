@@ -58,19 +58,34 @@ public class TimingVerificationParameters2 extends TimingVerificationParameters 
         if (markerMode == null)
             markerMode = MarkerMode.CONTINUOUS;
         this.allowDuration = (this.timeBase != com.skynav.ttv.model.value.TimeBase.SMPTE) || !markerMode.name().equals("DISCONTINUOUS");
-        BigInteger frameRate = tt.getFrameRate();
+        BigInteger frameRate;
+        try {
+            frameRate = new BigInteger(tt.getFrameRate());
+        } catch (RuntimeException e) {
+            frameRate = null;
+        }
         if (frameRate != null)
             this.frameRate = frameRate.intValue();
-        BigInteger subFrameRate = tt.getSubFrameRate();
+        BigInteger subFrameRate;
+        try {
+            subFrameRate = new BigInteger(tt.getSubFrameRate());
+        } catch (RuntimeException e) {
+            subFrameRate = null;
+        }
         if (subFrameRate != null)
-            this.subFrameRate = tt.getSubFrameRate().intValue();
+            this.subFrameRate = subFrameRate.intValue();
         String frameRateMultiplier = tt.getFrameRateMultiplier();
         if (frameRateMultiplier == null)
             frameRateMultiplier = "1 1";
         BigDecimal multiplier = parseFrameRateMultiplier(frameRateMultiplier);
         this.frameRateMultiplier = multiplier.doubleValue();
         this.effectiveFrameRate = new BigDecimal(BigInteger.valueOf(this.frameRate)).multiply(multiplier).doubleValue();
-        BigInteger tickRate = tt.getTickRate();
+        BigInteger tickRate;
+        try {
+            tickRate = new BigInteger(tt.getTickRate());
+        } catch (RuntimeException e) {
+            tickRate = null;
+        }
         if (tickRate != null)
             this.tickRate = tickRate.intValue();
         if (externalParameters != null) {

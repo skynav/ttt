@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2020 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -67,25 +67,21 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2BadAnimateNonAnimatableDiscreteDefault() throws Exception {
         performInvalidityTest("ttml2-invld-bad-animate-non-animatable-discrete-default.xml", -1, -1);
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2BadAnimateNonAnimatableDiscreteLinear() throws Exception {
         performInvalidityTest("ttml2-invld-bad-animate-non-animatable-discrete-linear.xml", -1, -1);
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2BadAnimateNonAnimatableDiscretePaced() throws Exception {
         performInvalidityTest("ttml2-invld-bad-animate-non-animatable-discrete-paced.xml", -1, -1);
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2BadAnimateNonAnimatableDiscreteSpline() throws Exception {
         performInvalidityTest("ttml2-invld-bad-animate-non-animatable-discrete-spline.xml", -1, -1);
     }
@@ -640,6 +636,7 @@ public class InvalidTestCases {
         performInvalidityTest("ttml2-invld-bad-font-shear-empty.xml", -1, -1);
     }
 
+    // remove test from test suite, as this is now valid in ttml2 2e
     @Test
     @Ignore
     public void testInvalidTTML2BadFontShearRealSyntax() throws Exception {
@@ -756,6 +753,7 @@ public class InvalidTestCases {
         performInvalidityTest("ttml2-invld-bad-line-shear-empty.xml", -1, -1);
     }
 
+    // remove test from test suite, as this is now valid in ttml2 2e
     @Test
     @Ignore
     public void testInvalidTTML2BadLineShearRealSyntax() throws Exception {
@@ -998,7 +996,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2BadSetNonAnimatable() throws Exception {
         performInvalidityTest("ttml2-invld-bad-set-non-animatable.xml", -1, -1);
     }
@@ -1023,6 +1020,7 @@ public class InvalidTestCases {
         performInvalidityTest("ttml2-invld-bad-shear-empty.xml", -1, -1);
     }
 
+    // remove test from test suite, as this is now valid in ttml2 2e
     @Test
     @Ignore
     public void testInvalidTTML2BadShearRealSyntax() throws Exception {
@@ -1266,7 +1264,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2DataChunkedBadLength() throws Exception {
         performInvalidityTest("ttml2-invld-data-chunked-bad-length.xml", -1, -1);
     }
@@ -1293,7 +1290,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2DataSimpleBadLength() throws Exception {
         performInvalidityTest("ttml2-invld-data-simple-bad-length.xml", -1, -1);
     }

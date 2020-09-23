@@ -657,15 +657,6 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
         return content instanceof Set;
     }
 
-    protected final boolean isAnimateOrSet(Object content) {
-        if (isAnimate(content))
-            return true;
-        else if (isSet(content))
-            return true;
-        else
-            return false;
-    }
-
     protected boolean isTimedText(Object content) {
         return content instanceof TimedText;
     }
@@ -816,7 +807,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
         }
 
         public boolean isDiscretelyAnimatable() {
-            return (animatability == Animatability.Discrete) || (animatability == Animatability.Continuous);
+            return (animatability == Animatability.Discrete);
         }
 
         public boolean isContinuouslyAnimatable() {

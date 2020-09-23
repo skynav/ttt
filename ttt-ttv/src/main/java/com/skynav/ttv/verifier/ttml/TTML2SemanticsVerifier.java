@@ -1200,7 +1200,13 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     protected BigInteger getDataLengthAttribute(Object data) {
         assert data instanceof Data;
-        return ((Data) data).getLength();
+        BigInteger dataLength;
+        try {
+            dataLength = new BigInteger(((Data) data).getLength());
+        } catch (RuntimeException e) {
+            dataLength = null;
+        }
+        return dataLength;
     }
 
     protected String getDataSourceAttribute(Object data) {

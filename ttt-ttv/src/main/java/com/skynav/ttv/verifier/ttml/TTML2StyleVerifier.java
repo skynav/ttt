@@ -50,6 +50,7 @@ import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.AnnotationPosition;
 import com.skynav.ttv.model.ttml2.ttd.AreaRectangle;
 import com.skynav.ttv.model.ttml2.ttd.BackgroundRepeat;
+import com.skynav.ttv.model.ttml2.ttd.CalcMode;
 import com.skynav.ttv.model.ttml2.ttd.Direction;
 import com.skynav.ttv.model.ttml2.ttd.Display;
 import com.skynav.ttv.model.ttml2.ttd.DisplayAlign;
@@ -995,13 +996,27 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
                 }
             }
             if (!failed) {
-                if (sa.isNonAnimatable()) {
-                    if (isAnimateOrSet(content)) {
-                        Object value = sa.getStyleValue(content);
-                        if (value != null) {
+                Object value = sa.getStyleValue(content);
+                if (value != null) {
+                    if (isAnimate(content)) {
+                        if (sa.isNonAnimatable()) {
                             failed = true;
-                            message = reporter.message(locator, "*KEY*", "Attribute ''{0}'' is not animatable on ''{1}''.",
+                            message = reporter.message(locator, "*KEY*",
+                                          "Attribute ''{0}'' is non-animatable on ''{1}''.", name, context.getBindingElementName(content));
+                        } else if (sa.isDiscretelyAnimatable()) {
+                            CalcMode calcMode = getCalcModeAttribute(content);
+                            if ((calcMode == null) || (calcMode != CalcMode.DISCRETE)) {
+                                failed = true;
+                                message = reporter.message(locator, "*KEY*",
+                      "Attribute ''{0}'' cannot be used with continuous (non-discrete) calculation mode on ''{1}'', try using discrete calculation mode.",
                                 name, context.getBindingElementName(content));
+                            }
+                        }
+                    } else if (isSet(content)) {
+                        if (sa.isNonAnimatable()) {
+                            failed = true;
+                            message = reporter.message(locator, "*KEY*",
+                                          "Attribute ''{0}'' is non-animatable on ''{1}''.", name, context.getBindingElementName(content));
                         }
                     }
                 }
@@ -1014,6 +1029,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             }
             return !failed;
         }
+    }
+
+    protected CalcMode getCalcModeAttribute(Object animate) {
+        assert animate instanceof Animate;
+        return ((Animate) animate).getCalcMode();
     }
 
     protected boolean permitsDisplayInlineBlock(Object content) {
