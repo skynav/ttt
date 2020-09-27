@@ -467,6 +467,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidTTML2FontShearRealSyntax() throws Exception {
+        performValidityTest("ttml2-valid-font-shear-real-syntax.xml", -1, -1);
+    }
+
+    @Test
     public void testValidTTML2FontSelectionStrategy() throws Exception {
         performValidityTest("ttml2-valid-font-selection-strategy.xml", -1, -1);
     }
@@ -639,6 +644,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2LineShear() throws Exception {
         performValidityTest("ttml2-valid-line-shear.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2LineShearRealSyntax() throws Exception {
+        performValidityTest("ttml2-valid-line-shear-real-syntax.xml", -1, -1);
     }
 
     @Test
@@ -954,6 +964,11 @@ public class ValidTestCases {
     @Test
     public void testValidTTML2Shear() throws Exception {
         performValidityTest("ttml2-valid-shear.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidTTML2ShearRealSyntax() throws Exception {
+        performValidityTest("ttml2-valid-shear-real-syntax.xml", -1, -1);
     }
 
     @Test
