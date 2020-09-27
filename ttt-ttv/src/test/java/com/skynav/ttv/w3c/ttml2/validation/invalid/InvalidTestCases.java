@@ -1212,7 +1212,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2ContentProfileExtentRootVersion2() throws Exception {
         performInvalidityTest("ttml2-invld-content-profile-extent-root-version-2.xml", -1, -1);
     }

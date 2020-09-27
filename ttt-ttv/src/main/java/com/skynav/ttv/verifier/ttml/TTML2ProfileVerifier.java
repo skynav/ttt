@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
+import com.skynav.ttv.model.ttml2.ttd.FeatureValue;
 import com.skynav.ttv.model.ttml2.ttd.ProfileCombination;
 import com.skynav.ttv.model.ttml2.ttd.ProfileType;
 import com.skynav.ttv.model.ttml2.ttp.Extension;
@@ -145,7 +146,7 @@ public class TTML2ProfileVerifier extends AbstractVerifier implements ProfileVer
         // @combine     - schema validation only, but handle defaulting here
         ProfileCombination combine = content.getCombine();
         if (combine == null) {
-            combine = ProfileCombination.IGNORE;        // N.B. spec currently say REPLACE, but should say IGNORE!!!
+            combine = ProfileCombination.IGNORE;
             content.setCombine(combine);
         }
         // @designator  - must be absolute
@@ -179,6 +180,35 @@ public class TTML2ProfileVerifier extends AbstractVerifier implements ProfileVer
                 reporter.logInfo(reporter.message(locator, "*KEY*",
                     "Invalid nested profile, this profile''s type ''{0}'' must match parent''s profile type ''{1}''", tThis.value(), tParent.value()));
                 failed = true;
+            }
+        }
+        // check content profile feature overconstraints
+        if (content.getType() == ProfileType.CONTENT) {
+            List<Feature> allowedFeatures = new java.util.ArrayList<Feature>();
+            List<Feature> prohibitedFeatures = new java.util.ArrayList<Feature>();
+            for (Features features : content.getFeatures()) {
+                for (Feature f : features.getFeature()) {
+                    if (f.getFeatureValue() == FeatureValue.PROHIBITED) {
+                        prohibitedFeatures.add(f);
+                    } else {
+                        allowedFeatures.add(f);
+                    }
+                }
+            }
+            for (Feature af : allowedFeatures) {
+                Features aff = (Features) context.getBindingElementParent(af);
+                String afb = aff.getBase();
+                String afd = af.getValue();
+                Location afl = new Location(af, context.getBindingElementName(af), null, locator);
+                for (Feature pf : prohibitedFeatures) {
+                    Features pff = (Features) context.getBindingElementParent(pf);
+                    String pfb = pff.getBase();
+                    String pfd = pf.getValue();
+                    Location pfl = new Location(pf, context.getBindingElementName(pf), null, locator);
+                    if (Profiles.violatesFeatureOverConstraint(afd, afb, afl, pfd, pfb, pfl, context)) {
+                        failed = true;
+                    }
+                }
             }
         }
         return !failed;
