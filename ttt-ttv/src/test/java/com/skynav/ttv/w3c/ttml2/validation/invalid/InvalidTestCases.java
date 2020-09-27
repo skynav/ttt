@@ -1267,7 +1267,11 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
+    public void testInvalidTTML2DataChunkedWithBase() throws Exception {
+        performInvalidityTest("ttml2-invld-data-chunked-with-base.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2DataChunkedWithCondition() throws Exception {
         performInvalidityTest("ttml2-invld-data-chunked-with-condition.xml", -1, -1);
     }
