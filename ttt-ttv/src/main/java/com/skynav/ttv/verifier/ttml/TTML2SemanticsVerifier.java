@@ -81,6 +81,7 @@ import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Audios;
+import com.skynav.ttv.verifier.util.Base64;
 import com.skynav.ttv.verifier.util.Characters;
 import com.skynav.ttv.verifier.util.Datas;
 import com.skynav.ttv.verifier.util.Fonts;
@@ -1014,7 +1015,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (!verifyOtherAttributes(data))
             failed = true;
         for (Serializable s : getDataContent(data)) {
-            if (!verifyDataContent(s, outputData[0], outputEncoding[0], outputLength[0]))
+            if (!verifyDataContent(s, data, outputData[0], outputEncoding[0], outputLength[0]))
                 failed = true;
         }
         return !failed;
@@ -1260,7 +1261,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return ((Data) data).getContent();
     }
 
-    protected boolean verifyDataContent(Serializable content, com.skynav.ttv.model.value.Data data, DataEncoding encoding, int length) {
+    protected boolean verifyDataContent(Serializable content, Object parent, com.skynav.ttv.model.value.Data data, DataEncoding encoding, int length) {
         if (content instanceof JAXBElement<?>) {
             Object element = ((JAXBElement<?>)content).getValue();
             if (isMetadataItem(element))
@@ -1272,7 +1273,24 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             else
                 return unexpectedContent(element);
         } else if (content instanceof String) {
-            return true;
+            boolean failed = false;
+            VerifierContext context = getContext();
+            Reporter reporter = context.getReporter();
+            Message message = null;
+            if (encoding == DataEncoding.BASE_64) {
+                try {
+                    Base64.decode((String) content);
+                } catch (IllegalArgumentException e) {
+                    Locator locator = getLocation(parent).getLocator();
+                    message = reporter.message(locator, "*KEY*",
+                        "Content of ''{0}'' element does not conform to Base64 encoding: {1}", context.getBindingElementName(parent), e.getMessage());
+                    failed = true;
+                }
+            }
+            if (message != null) {
+                reporter.logError(message);
+            }
+            return !failed;
         } else
             return unexpectedContent(content);
     }

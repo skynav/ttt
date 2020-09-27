@@ -1292,6 +1292,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2DataSimpleNonAlphabet() throws Exception {
+        performInvalidityTest("ttml2-invld-data-simple-non-alphabet.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2DisplayAspectRatioAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-display-aspect-ratio-all-space.xml", -1, -1);
     }
