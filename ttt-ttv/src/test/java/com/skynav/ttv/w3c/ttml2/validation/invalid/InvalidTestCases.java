@@ -1382,12 +1382,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
-    public void testInvalidTTML2FragmentProfileDesignator() throws Exception {
-        performInvalidityTest("ttml2-invld-fragment-profile-designator.xml", -1, -1);
-    }
-
-    @Test
     public void testInvalidTTML2ImageEmbeddingBadResource() throws Exception {
         performInvalidityTest("ttml2-invld-image-embedding-bad-resource.xml", -1, -1);
     }
@@ -1653,6 +1647,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2ProfileDesignatorFragmentNested() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-designator-fragment-nested.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ProfileDesignatorRegistryUndefined() throws Exception {
         performInvalidityTest("ttml2-invld-profile-designator-registry-undefined.xml", -1, -1);
     }
@@ -1678,7 +1677,6 @@ public class InvalidTestCases {
     }
 
     @Test
-    @Ignore
     public void testInvalidTTML2ProfileUseFragment() throws Exception {
         performInvalidityTest("ttml2-invld-profile-use-fragment.xml", -1, -1);
     }

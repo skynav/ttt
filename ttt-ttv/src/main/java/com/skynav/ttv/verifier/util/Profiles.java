@@ -239,22 +239,24 @@ public class Profiles {
             try {
                 uri = new URI(value);
                 if (!uri.isAbsolute()) {
-                    if (uri.getFragment() != null) {
-                        // [TBD] - IMPLEMENT ME
-                        throw new UnsupportedOperationException();
+                    if (uri.getFragment() == null) {
+                        uri = ttmlProfileNamespaceUri.resolve(uri);
                     }
-                    uri = ttmlProfileNamespaceUri.resolve(uri);
                 }
-                if (!designators.contains(uri)) {
-                    String s = uri.toString();
-                    if (s.indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
-                        // error - unknown designator in TTML profile namespace
-                        failed = true;
-                    } else {
-                        Reporter reporter = context.getReporter();
-                        if (reporter.isWarningEnabled("references-non-standard-profile")) {
-                            if (reporter.logWarning(reporter.message(location.getLocator(), "*KEY*", "Non-standard profile designator ''{0}''.", uri)))
-                                failed = true;
+                if (uri.isAbsolute()) {
+                    if (!designators.contains(uri)) {
+                        String s = uri.toString();
+                        if (s.indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
+                            // error - unknown designator in TTML profile namespace
+                            failed = true;
+                        } else {
+                            Reporter reporter = context.getReporter();
+                            if (reporter.isWarningEnabled("references-non-standard-profile")) {
+                                if (reporter.logWarning(reporter.message(location.getLocator(), "*KEY*",
+                                        "Non-standard profile designator ''{0}''.", uri))) {
+                                    failed = true;
+                                }
+                            }
                         }
                     }
                 }
