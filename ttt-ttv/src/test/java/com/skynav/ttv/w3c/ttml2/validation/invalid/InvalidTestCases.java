@@ -1453,6 +1453,81 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2IsdSequenceBadSize0Minus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-size-0-minus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadSize0Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-size-0-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadSize1Minus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-size-1-minus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadSize1Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-size-1-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion0() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-0.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion0Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-0-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion1() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion1Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-1-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion2Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-2-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion0() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-0.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion0Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-0-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion1() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion1Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-1-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion2Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-2-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleNestedBadVersion() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-nested-bad-version.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2Length2RootContainerRelative() throws Exception {
         performInvalidityTest("ttml2-invld-length-2-root-container-relative.xml", -1, -1);
     }

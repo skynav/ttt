@@ -201,16 +201,107 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return !failed;
     }
 
-    protected boolean verifyISD(Object isd) {
+    protected boolean verifyISDSequence(Object isdSequence) {
         boolean failed = false;
-        // [TBD] - IMPLEMENT ME
+        if (!verifyISDSequenceAttributes(isdSequence))
+            failed = true;
+        for (Object i : getISDs(isdSequence)) {
+            if (!verifyISD(i))
+                failed = true;
+        }
         return !failed;
     }
 
-    protected boolean verifyISDSequence(Object isdSequence) {
+    protected Collection<? extends Object> getISDs(Object isdSequence) {
+        assert isdSequence instanceof ISDSequence;
+        return ((ISDSequence) isdSequence).getIsd();
+    }
+
+    protected boolean verifyISDSequenceAttributes(Object isdSequence) {
         boolean failed = false;
-        // [TBD] - IMPLEMENT ME
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(isdSequence);
+        Locator locator = location.getLocator();
+        BigInteger version = getISDSequenceVersionAttribute(isdSequence);
+        if ((version != null) && (version.intValue() < 2)) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "Bad version attribute ''{0}'', must be greater than or equal to 2", version.intValue()));
+            failed = true;
+        }
+        BigInteger size = getISDSequenceSizeAttribute(isdSequence);
+        if ((size != null) && (size.intValue() < 0)) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "Bad size attribute ''{0}'', must be greater than or equal to 0", size.intValue()));
+            failed = true;
+        }
+        // [TBD] - VERIFY SIZE is EQUAL TO NUMBER OF COMPONENT ISD INSTANCES
         return !failed;
+    }
+    
+    protected BigInteger getISDSequenceVersionAttribute(Object isdSequence) {
+        assert isdSequence instanceof ISDSequence;
+        BigInteger version;
+        try {
+            version = new BigInteger(((ISDSequence) isdSequence).getVersion());
+        } catch (RuntimeException e) {
+            version = null;
+        }
+        return version;
+    }
+
+    protected BigInteger getISDSequenceSizeAttribute(Object isdSequence) {
+        assert isdSequence instanceof ISDSequence;
+        BigInteger size;
+        try {
+            size = new BigInteger(((ISDSequence) isdSequence).getSize());
+        } catch (RuntimeException e) {
+            size = null;
+        }
+        return size;
+    }
+
+    protected boolean verifyISD(Object isd) {
+        boolean failed = false;
+        if (!verifyISDAttributes(isd))
+            failed = true;
+        // [TBD] - IMPLEMENT REMAINDER
+        return !failed;
+    }
+
+    protected boolean verifyISDAttributes(Object isd) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(isd);
+        Locator locator = location.getLocator();
+        BigInteger version = getISDVersionAttribute(isd);
+        if (version != null) {
+            Object parent = context.getBindingElementParent(isd);
+            if (parent instanceof JAXBElement<?>)
+                parent = ((JAXBElement<?>)parent).getValue();
+            if ((parent != null) && (parent instanceof ISDSequence)) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "Bad version attribute, not permitted on nested ''{0}'' element.", context.getBindingElementName(isd)));
+                failed = true;
+            } else if (version.intValue() < 2) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "Bad version attribute, got {0}, expected {1} or greater.", version.intValue(), 2));
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+    
+    protected BigInteger getISDVersionAttribute(Object isd) {
+        assert isd instanceof ISD;
+        BigInteger version;
+        try {
+            version = new BigInteger(((ISD) isd).getVersion());
+        } catch (RuntimeException e) {
+            version = null;
+        }
+        return version;
     }
 
     @Override

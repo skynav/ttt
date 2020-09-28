@@ -67,9 +67,11 @@
   </xs:simpleType>
   <xs:simpleType name="cellResolution">
     <xs:annotation>
-      <xs:documentation>nonNegativeInteger nonNegativeInteger</xs:documentation>
+      <xs:documentation>non-negative-integer non-negative-integer</xs:documentation>
     </xs:annotation>
-    <xs:restriction base="xs:string"/>
+     <xs:restriction base="xs:string">
+       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
+     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="clockMode">
     <xs:restriction base="xs:token">
@@ -143,7 +145,7 @@
   </xs:simpleType>
   <xs:simpleType name="displayAspectRatio">
     <xs:annotation>
-      <xs:documentation>nonNegativeInteger nonNegativeInteger</xs:documentation>
+      <xs:documentation>non-negative-integer non-negative-integer</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
@@ -274,11 +276,14 @@
   </xs:simpleType>
   <xs:simpleType name="frameRateMultiplier">
     <xs:annotation>
-      <xs:documentation>nonNegativeInteger nonNegativeInteger</xs:documentation>
+      <xs:documentation>non-negative-integer non-negative-integer</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
     </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="gain">
+    <xs:restriction base="xs:string"/>   
   </xs:simpleType>
   <xs:simpleType name="inferProcessorProfileMethod">
     <xs:restriction base="xs:token">
@@ -444,12 +449,18 @@
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
+  <xs:simpleType name="pan">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:simpleType name="permitFeatureNarrowingOrWidening">
     <xs:restriction base="xs:boolean"/>
   </xs:simpleType>
+  <xs:simpleType name="pitch">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <xs:simpleType name="pixelAspectRatio">
     <xs:annotation>
-      <xs:documentation>nonNegativeInteger nonNegativeInteger</xs:documentation>
+      <xs:documentation>non-negative-integer non-negative-integer</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{Nd}+\s+\p{Nd}+"/>
@@ -485,7 +496,7 @@
     <xs:annotation>
       <xs:documentation>
         repeatCount
-          : count                          // value > 0
+          : count                          // value &gt; 0
           | "indefinite"
 
         count:
@@ -564,6 +575,22 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="always"/>
       <xs:enumeration value="whenActive"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="size">
+    <xs:annotation>
+      <xs:documentation>non-negative-integer</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="speak">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="fast"/>
+      <xs:enumeration value="slow"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="subFrameRate">
@@ -675,8 +702,6 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="mixed"/>
       <xs:enumeration value="sideways"/>
-      <xs:enumeration value="sidewaysLeft"/>
-      <xs:enumeration value="sidewaysRight"/>
       <xs:enumeration value="upright"/>
     </xs:restriction>
   </xs:simpleType>
@@ -744,6 +769,16 @@
       <xs:enumeration value="ignore"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="version">
+    <xs:annotation>
+      <xs:documentation>
+        non-negative-integer               // value &gt; 0
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{Nd}+"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="visibility">
     <xs:restriction base="xs:token">
       <xs:enumeration value="hidden"/>
@@ -772,22 +807,5 @@
       <xs:documentation>auto | integer</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
-  </xs:simpleType>
-  <xs:simpleType name="gain">
-    <xs:restriction base="xs:string"/>   
-  </xs:simpleType>
-  <xs:simpleType name="pan">
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
-  <xs:simpleType name="pitch">
-    <xs:restriction base="xs:string"/>
-  </xs:simpleType>
-  <xs:simpleType name="speak">
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="none"/>
-      <xs:enumeration value="normal"/>
-      <xs:enumeration value="fast"/>
-      <xs:enumeration value="slow"/>
-    </xs:restriction>
   </xs:simpleType>
 </xs:schema>
