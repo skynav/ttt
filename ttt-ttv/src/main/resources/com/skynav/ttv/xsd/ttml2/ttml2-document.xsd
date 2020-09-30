@@ -4,13 +4,16 @@
   xmlns:tt="http://www.w3.org/ns/ttml"
   xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
   xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
-  xmlns:tts="http://www.w3.org/ns/ttml#styling">
+  xmlns:tts="http://www.w3.org/ns/ttml#styling"
+  xmlns:isd="http://www.w3.org/ns/ttml#isd">
   <xs:import namespace="http://www.w3.org/ns/ttml#metadata"
     schemaLocation="ttml2-metadata-items.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml#parameter"
     schemaLocation="ttml2-parameter-items.xsd"/>
   <xs:import namespace="http://www.w3.org/ns/ttml#styling"
     schemaLocation="ttml2-styling-attribs.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#isd"
+    schemaLocation="ttml2-isd.xsd"/>
   <xs:include schemaLocation="ttml2-core-attribs.xsd"/>
   <xs:include schemaLocation="ttml2-timing-attribs.xsd"/>
   <xs:include schemaLocation="ttml2-head.xsd"/>

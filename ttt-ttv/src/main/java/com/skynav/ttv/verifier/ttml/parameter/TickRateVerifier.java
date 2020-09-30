@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,15 @@ import com.skynav.ttv.verifier.VerifierContext;
 public class TickRateVerifier implements ParameterValueVerifier {
 
     public boolean verify(Object value, Location location, VerifierContext context) {
-        assert value instanceof BigInteger;
+        // xsd prior to ttml2 2e returns BigInteger, but ttml2 2e returns String
+        assert (value instanceof BigInteger) || (value instanceof String);
+        if (value instanceof String) {
+            try {
+                value = new BigInteger((String) value);
+            } catch (RuntimeException e) {
+                throw new IllegalStateException("Unexpected value.");
+            }
+        }
         int rate = ((BigInteger) value).intValue();
         // Schema validation phase (3) detects and reports non-positive values.
         if (rate < 0)

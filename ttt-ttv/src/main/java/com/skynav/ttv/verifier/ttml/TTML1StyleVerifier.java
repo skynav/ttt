@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -141,6 +141,13 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
     public static final QName writingModeAttributeName                  = new QName(NAMESPACE,"writingMode");
     public static final QName zIndexAttributeName                       = new QName(NAMESPACE,"zIndex");
 
+    public enum Animatability {
+        Unspecified,                                                    // unspecified
+        None,                                                           // none
+        Discrete,                                                       // takes discrete values
+        Continuous                                                      // takes continuous values over some bounded or unbounded set
+    }
+
     private static final Object[][] styleAccessorMap                    = new Object[][] {
         {
             backgroundColorAttributeName,                               // attribute name
@@ -152,6 +159,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,                                              // inheritable
             "transparent",                                              // initial value (as object suitable for setter)
             null,                                                       // initial value as string (or null if same as previous)
+            Animatability.Discrete,                                     // animatability
         },
         {
             colorAttributeName,
@@ -163,6 +171,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             "white",
             null,
+            Animatability.Discrete,
         },
         {
             directionAttributeName,
@@ -174,6 +183,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             Direction.LTR,
             Direction.LTR.value(),
+            Animatability.Discrete,
         },
         {
             displayAttributeName,
@@ -185,6 +195,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             Display.AUTO,
             Display.AUTO.value(),
+            Animatability.Discrete,
         },
         {
             displayAlignAttributeName,
@@ -196,6 +207,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             DisplayAlign.BEFORE,
             DisplayAlign.BEFORE.value(),
+            Animatability.Discrete,
         },
         {
             extentAttributeName,
@@ -207,6 +219,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             "auto",
             null,
+            Animatability.Discrete,
         },
         {
             fontFamilyAttributeName,
@@ -218,6 +231,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             "default",
             null,
+            Animatability.Discrete,
         },
         {
             fontSizeAttributeName,
@@ -229,6 +243,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             "1c",
             null,
+            Animatability.Discrete,
         },
         {
             fontStyleAttributeName,
@@ -240,6 +255,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             FontStyle.NORMAL,
             FontStyle.NORMAL.value(),
+            Animatability.Discrete,
         },
         {
             fontWeightAttributeName,
@@ -251,6 +267,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             FontWeight.NORMAL,
             FontWeight.NORMAL.value(),
+            Animatability.Discrete,
         },
         {
             lineHeightAttributeName,
@@ -262,6 +279,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             "normal",
             null,
+            Animatability.Discrete,
         },
         {
             opacityAttributeName,
@@ -273,6 +291,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             "1.0",
             null,
+            Animatability.Discrete,
         },
         {
             originAttributeName,
@@ -283,7 +302,8 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             Boolean.FALSE,
             "auto",
-            null
+            null,
+            Animatability.Discrete,
         },
         {
             overflowAttributeName,
@@ -295,6 +315,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             Overflow.HIDDEN,
             Overflow.HIDDEN.value(),
+            Animatability.Discrete,
         },
         {
             paddingAttributeName,
@@ -306,6 +327,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             "0px",
             null,
+            Animatability.Discrete,
         },
         {
             regionAttributeName,
@@ -317,6 +339,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             null,
             null,
+            Animatability.None,
         },
         {
             showBackgroundAttributeName,
@@ -328,6 +351,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             ShowBackground.ALWAYS,
             ShowBackground.ALWAYS.value(),
+            Animatability.Discrete,
         },
         {
             styleAttributeName,
@@ -339,6 +363,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             null,
             null,
+            Animatability.None,
         },
         {
             textAlignAttributeName,
@@ -350,6 +375,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             TextAlign.START,
             TextAlign.START.value(),
+            Animatability.Discrete,
         },
         {
             textDecorationAttributeName,
@@ -361,6 +387,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             TextDecoration.NONE,
             TextDecoration.NONE.value(),
+            Animatability.Discrete,
         },
         {
             textOutlineAttributeName,
@@ -372,6 +399,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             "none",
             null,
+            Animatability.Discrete,
         },
         {
             unicodeBidiAttributeName,
@@ -383,6 +411,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             UnicodeBidi.NORMAL,
             UnicodeBidi.NORMAL.value(),
+            Animatability.Discrete,
         },
         {
             visibilityAttributeName,
@@ -394,6 +423,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             Visibility.VISIBLE,
             Visibility.VISIBLE.value(),
+            Animatability.Discrete,
         },
         {
             wrapOptionAttributeName,
@@ -405,6 +435,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.TRUE,
             WrapOption.WRAP,
             WrapOption.WRAP.value(),
+            Animatability.Discrete,
         },
         {
             writingModeAttributeName,
@@ -416,6 +447,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             WritingMode.LRTB,
             WritingMode.LRTB.value(),
+            Animatability.Discrete,
         },
         {
             zIndexAttributeName,
@@ -427,6 +459,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             Boolean.FALSE,
             "auto",
             null,
+            Animatability.Discrete,
         },
     };
 
@@ -652,7 +685,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
 
     protected void populateAccessors(Map<QName, StyleAccessor> accessors, Object[][] accessorMap) {
         for (Object[] styleAccessorEntry : accessorMap) {
-            assert styleAccessorEntry.length >= 9;
+            assert styleAccessorEntry.length >= 10;
             QName styleName = (QName) styleAccessorEntry[0];
             String accessorName = (String) styleAccessorEntry[1];
             Class<?> valueClass = (Class<?>) styleAccessorEntry[2];
@@ -662,16 +695,17 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             boolean inheritable = ((Boolean) styleAccessorEntry[6]).booleanValue();
             Object initialValue = styleAccessorEntry[7];
             String initialValueAsString = (String) styleAccessorEntry[8];
+            Animatability animatability = (Animatability) styleAccessorEntry[9];
             if (initialValueAsString == null)
                 initialValueAsString = (initialValue != null) ? initialValue.toString() : null;
             accessors.put(styleName,
-                makeAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString));
+                makeAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString, animatability));
         }
     }
 
     protected StyleAccessor makeAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
-        int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
-        return new TTML1StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
+        int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString, Animatability animatability) {
+        return new TTML1StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString, animatability);
     }
 
     protected void setStyleInitialValue(Object content, StyleAccessor sa, Object initialValue, VerifierContext context) {
@@ -708,10 +742,12 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
         boolean inheritable;
         Object initialValue;
         String initialValueAsString;
+        Animatability animatability;
 
-        public StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
-                             int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
-            populate(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
+        public StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, int applicability,
+                             boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString, Animatability animatability) {
+            populate(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable,
+                     initialValue, initialValueAsString, animatability);
         }
 
         public QName getStyleName() {
@@ -727,6 +763,8 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             sb.append(initialValue != null ? initialValue.toString() : "");
             sb.append(',');
             sb.append(inheritable);
+            sb.append(',');
+            sb.append(animatability);
             sb.append(']');
             return sb.toString();
         }
@@ -762,6 +800,18 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
 
         public String initialValueAsString() {
             return initialValueAsString;
+        }
+
+        public boolean isNonAnimatable() {
+            return (animatability == Animatability.Unspecified) || (animatability == Animatability.None);
+        }
+
+        public boolean isDiscretelyAnimatable() {
+            return (animatability == Animatability.Discrete);
+        }
+
+        public boolean isContinuouslyAnimatable() {
+            return (animatability == Animatability.Continuous);
         }
 
         protected boolean verify(Model model, Object content, Locator locator, VerifierContext context) {
@@ -838,8 +888,8 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             }
         }
 
-        private void populate(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
-                              int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
+        private void populate(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, int applicability,
+                              boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString, Animatability animatability) {
             this.styleName = styleName;
             this.getterName = "get" + accessorName;
             this.setterName = "set" + accessorName;
@@ -850,6 +900,7 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
             this.inheritable = inheritable;
             this.initialValue = initialValue;
             this.initialValueAsString = initialValueAsString;
+            this.animatability = animatability;
         }
 
         public Object getStyleValue(Object content) {
@@ -931,8 +982,9 @@ public class TTML1StyleVerifier extends AbstractVerifier implements StyleVerifie
     protected class TTML1StyleAccessor extends StyleAccessor {
 
         public TTML1StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
-            int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
-            super(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
+           int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString, Animatability animatability) {
+            super(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString,
+                  animatability);
         }
 
     }

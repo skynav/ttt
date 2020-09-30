@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,6 +36,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.ttml.TTML;
 import com.skynav.ttv.model.value.Audio;
+import com.skynav.ttv.model.value.impl.BuiltinAudioImpl;
 import com.skynav.ttv.model.value.impl.EmbeddedAudioImpl;
 import com.skynav.ttv.model.value.impl.ExternalAudioImpl;
 import com.skynav.ttv.util.Location;
@@ -90,6 +91,8 @@ public class Audios {
             URI uri = URIs.makeURISafely(value, base);
             if (uri == null)
                 return false;                                                   // bad syntax
+            else if (isBuiltinAudio(uri))
+                audio = builtinAudio(uri);                                      // builtin audio, e.g., speech data resource
             else
                 audio = externalAudio(uri);                                     // good non-local reference (though not necessarily resolvable)
         } else if (value.length() > 0) {
@@ -114,6 +117,14 @@ public class Audios {
 
     private static Audio internalAudio(URI uri, Object target) {
         return new EmbeddedAudioImpl(uri, target);
+    }
+
+    private static boolean isBuiltinAudio(URI uri) {
+        return (uri != null) && BuiltinAudioImpl.isSpeechDataResourceUri(uri.toString());
+    }
+
+    private static Audio builtinAudio(URI uri) {
+        return new BuiltinAudioImpl(uri);
     }
 
     private static Audio externalAudio(URI uri) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,8 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.ttml.TTML2;
+import com.skynav.ttv.model.ttml2.isd.ISD;
+import com.skynav.ttv.model.ttml2.isd.ISDSequence;
 import com.skynav.ttv.model.ttml2.tt.Animate;
 import com.skynav.ttv.model.ttml2.tt.Animation;
 import com.skynav.ttv.model.ttml2.tt.Audio;
@@ -63,6 +65,7 @@ import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.DataEncoding;
+import com.skynav.ttv.model.ttml2.ttd.Speak;
 import com.skynav.ttv.model.ttml2.ttm.Actor;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
 import com.skynav.ttv.model.ttml2.ttm.Copyright;
@@ -79,6 +82,7 @@ import com.skynav.ttv.util.Message;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
 import com.skynav.ttv.verifier.util.Audios;
+import com.skynav.ttv.verifier.util.Base64;
 import com.skynav.ttv.verifier.util.Characters;
 import com.skynav.ttv.verifier.util.Datas;
 import com.skynav.ttv.verifier.util.Fonts;
@@ -120,6 +124,10 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             return verifyTimedText(root);
         else if (root instanceof Profile)
             return verifyProfile(root);
+        else if (root instanceof ISDSequence)
+            return verifyISDSequence(root);
+        else if (root instanceof ISD)
+            return verifyISD(root);
         else
             return unexpectedContent(root);
     }
@@ -192,6 +200,109 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (!verifyProfileItem(profile))
             failed = true;
         return !failed;
+    }
+
+    protected boolean verifyISDSequence(Object isdSequence) {
+        boolean failed = false;
+        if (!verifyISDSequenceAttributes(isdSequence))
+            failed = true;
+        for (Object i : getISDs(isdSequence)) {
+            if (!verifyISD(i))
+                failed = true;
+        }
+        return !failed;
+    }
+
+    protected Collection<? extends Object> getISDs(Object isdSequence) {
+        assert isdSequence instanceof ISDSequence;
+        return ((ISDSequence) isdSequence).getIsd();
+    }
+
+    protected boolean verifyISDSequenceAttributes(Object isdSequence) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(isdSequence);
+        Locator locator = location.getLocator();
+        BigInteger version = getISDSequenceVersionAttribute(isdSequence);
+        if ((version != null) && (version.intValue() < 2)) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "Bad version attribute ''{0}'', must be greater than or equal to 2", version.intValue()));
+            failed = true;
+        }
+        BigInteger size = getISDSequenceSizeAttribute(isdSequence);
+        if ((size != null) && (size.intValue() < 0)) {
+            reporter.logError(reporter.message(locator, "*KEY*",
+                "Bad size attribute ''{0}'', must be greater than or equal to 0", size.intValue()));
+            failed = true;
+        }
+        // [TBD] - VERIFY SIZE is EQUAL TO NUMBER OF COMPONENT ISD INSTANCES
+        return !failed;
+    }
+    
+    protected BigInteger getISDSequenceVersionAttribute(Object isdSequence) {
+        assert isdSequence instanceof ISDSequence;
+        BigInteger version;
+        try {
+            version = new BigInteger(((ISDSequence) isdSequence).getVersion());
+        } catch (RuntimeException e) {
+            version = null;
+        }
+        return version;
+    }
+
+    protected BigInteger getISDSequenceSizeAttribute(Object isdSequence) {
+        assert isdSequence instanceof ISDSequence;
+        BigInteger size;
+        try {
+            size = new BigInteger(((ISDSequence) isdSequence).getSize());
+        } catch (RuntimeException e) {
+            size = null;
+        }
+        return size;
+    }
+
+    protected boolean verifyISD(Object isd) {
+        boolean failed = false;
+        if (!verifyISDAttributes(isd))
+            failed = true;
+        // [TBD] - IMPLEMENT REMAINDER
+        return !failed;
+    }
+
+    protected boolean verifyISDAttributes(Object isd) {
+        boolean failed = false;
+        VerifierContext context = getContext();
+        Reporter reporter = context.getReporter();
+        Location location = getLocation(isd);
+        Locator locator = location.getLocator();
+        BigInteger version = getISDVersionAttribute(isd);
+        if (version != null) {
+            Object parent = context.getBindingElementParent(isd);
+            if (parent instanceof JAXBElement<?>)
+                parent = ((JAXBElement<?>)parent).getValue();
+            if ((parent != null) && (parent instanceof ISDSequence)) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "Bad version attribute, not permitted on nested ''{0}'' element.", context.getBindingElementName(isd)));
+                failed = true;
+            } else if (version.intValue() < 2) {
+                reporter.logError(reporter.message(locator, "*KEY*",
+                    "Bad version attribute, got {0}, expected {1} or greater.", version.intValue(), 2));
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+    
+    protected BigInteger getISDVersionAttribute(Object isd) {
+        assert isd instanceof ISD;
+        BigInteger version;
+        try {
+            version = new BigInteger(((ISD) isd).getVersion());
+        } catch (RuntimeException e) {
+            version = null;
+        }
+        return version;
     }
 
     @Override
@@ -895,7 +1006,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             } else {
                 a = outputAudio[0];
             }
-        } else if (numSources == 0) {
+        } else if ((numSources == 0) && !hasImpliedAudioSource(audio)) {
             reporter.logError(reporter.message(locator, "*KEY*",
                 "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, resourceSourceAttributeName));
             failed = true;
@@ -905,7 +1016,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (type != null) {
             if ((a == null) || !a.isExternal()) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute must not specified for internal audio sources.", resourceTypeAttributeName));
+                    "A ''{0}'' attribute must not specified for non-external audio sources.", resourceTypeAttributeName));
                 failed = true;
             } else if (!ResourceTypes.isType(type, location, context, null)) {
                 ResourceTypes.badType(type, location, context);
@@ -930,6 +1041,24 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             }
         }
         return !failed;
+    }
+
+    protected boolean hasImpliedAudioSource(Object audio) {
+        Object parent = getContext().getBindingElementParent(audio);
+        if (parent instanceof JAXBElement<?>)
+            parent = ((JAXBElement<?>)parent).getValue();
+        if (parent instanceof Span) {
+            Speak speak = getSpeakAttribute(parent);
+            if (speak != Speak.NONE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected Speak getSpeakAttribute(Object span) {
+        assert span instanceof Span;
+        return ((Span) span).getSpeak();
     }
 
     protected String getAudioFormatAttribute(Object audio) {
@@ -996,7 +1125,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (!verifyOtherAttributes(data))
             failed = true;
         for (Serializable s : getDataContent(data)) {
-            if (!verifyDataContent(s, outputData[0], outputEncoding[0], outputLength[0]))
+            if (!verifyDataContent(s, data, outputData[0], outputEncoding[0], outputLength[0]))
                 failed = true;
         }
         return !failed;
@@ -1182,7 +1311,13 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
 
     protected BigInteger getDataLengthAttribute(Object data) {
         assert data instanceof Data;
-        return ((Data) data).getLength();
+        BigInteger dataLength;
+        try {
+            dataLength = new BigInteger(((Data) data).getLength());
+        } catch (RuntimeException e) {
+            dataLength = null;
+        }
+        return dataLength;
     }
 
     protected String getDataSourceAttribute(Object data) {
@@ -1236,7 +1371,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         return ((Data) data).getContent();
     }
 
-    protected boolean verifyDataContent(Serializable content, com.skynav.ttv.model.value.Data data, DataEncoding encoding, int length) {
+    protected boolean verifyDataContent(Serializable content, Object parent, com.skynav.ttv.model.value.Data data, DataEncoding encoding, int length) {
         if (content instanceof JAXBElement<?>) {
             Object element = ((JAXBElement<?>)content).getValue();
             if (isMetadataItem(element))
@@ -1248,7 +1383,24 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             else
                 return unexpectedContent(element);
         } else if (content instanceof String) {
-            return true;
+            boolean failed = false;
+            VerifierContext context = getContext();
+            Reporter reporter = context.getReporter();
+            Message message = null;
+            if (encoding == DataEncoding.BASE_64) {
+                try {
+                    Base64.decode((String) content);
+                } catch (IllegalArgumentException e) {
+                    Locator locator = getLocation(parent).getLocator();
+                    message = reporter.message(locator, "*KEY*",
+                        "Content of ''{0}'' element does not conform to Base64 encoding: {1}", context.getBindingElementName(parent), e.getMessage());
+                    failed = true;
+                }
+            }
+            if (message != null) {
+                reporter.logError(message);
+            }
+            return !failed;
         } else
             return unexpectedContent(content);
     }

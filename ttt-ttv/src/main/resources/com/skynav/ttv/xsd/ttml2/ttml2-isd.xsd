@@ -4,6 +4,7 @@
   xmlns:tt="http://www.w3.org/ns/ttml"
   xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
   xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:ttd="http://www.w3.org/ns/ttml#datatype"
   xmlns:tts="http://www.w3.org/ns/ttml#styling"
   xmlns:isd="http://www.w3.org/ns/ttml#isd">
   <xs:import namespace="http://www.w3.org/ns/ttml"
@@ -18,6 +19,8 @@
     schemaLocation="ttml2-animation.xsd"/>
   <xs:import namespace="http://www.w3.org/XML/1998/namespace"
     schemaLocation="xml.xsd"/>
+  <xs:import namespace="http://www.w3.org/ns/ttml#datatype"
+    schemaLocation="ttml2-datatypes.xsd"/>
   <xs:attributeGroup name="isd.parameter.attrib.class">
     <xs:attribute ref="ttp:cellResolution"/>
     <xs:attribute ref="ttp:displayAspectRatio"/>
@@ -35,8 +38,8 @@
   </xs:attributeGroup>
   <xs:attributeGroup name="sequence.attlist">
     <xs:attribute name="extent" type="xs:string"/>
-    <xs:attribute name="size" type="xs:nonNegativeInteger"/>
-    <xs:attribute name="version" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="size" type="ttd:size"/>
+    <xs:attribute name="version" type="ttd:version"/>
     <xs:attribute ref="xml:base"/>
     <xs:attribute ref="xml:id"/>
     <xs:attribute ref="xml:lang" use="required"/>
@@ -55,7 +58,7 @@
     <xs:attribute name="begin" type="xs:string" use="required"/>
     <xs:attribute name="end" type="xs:string" use="required"/>
     <xs:attribute name="extent" type="xs:string"/>
-    <xs:attribute name="version" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="version" type="ttd:version"/>
     <xs:attribute ref="xml:base"/>
     <xs:attribute ref="xml:id"/>
     <xs:attribute ref="xml:lang"/>

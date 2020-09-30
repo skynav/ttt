@@ -239,22 +239,24 @@ public class Profiles {
             try {
                 uri = new URI(value);
                 if (!uri.isAbsolute()) {
-                    if (uri.getFragment() != null) {
-                        // [TBD] - IMPLEMENT ME
-                        throw new UnsupportedOperationException();
+                    if (uri.getFragment() == null) {
+                        uri = ttmlProfileNamespaceUri.resolve(uri);
                     }
-                    uri = ttmlProfileNamespaceUri.resolve(uri);
                 }
-                if (!designators.contains(uri)) {
-                    String s = uri.toString();
-                    if (s.indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
-                        // error - unknown designator in TTML profile namespace
-                        failed = true;
-                    } else {
-                        Reporter reporter = context.getReporter();
-                        if (reporter.isWarningEnabled("references-non-standard-profile")) {
-                            if (reporter.logWarning(reporter.message(location.getLocator(), "*KEY*", "Non-standard profile designator ''{0}''.", uri)))
-                                failed = true;
+                if (uri.isAbsolute()) {
+                    if (!designators.contains(uri)) {
+                        String s = uri.toString();
+                        if (s.indexOf(ttmlProfileNamespaceUri.toString()) == 0) {
+                            // error - unknown designator in TTML profile namespace
+                            failed = true;
+                        } else {
+                            Reporter reporter = context.getReporter();
+                            if (reporter.isWarningEnabled("references-non-standard-profile")) {
+                                if (reporter.logWarning(reporter.message(location.getLocator(), "*KEY*",
+                                        "Non-standard profile designator ''{0}''.", uri))) {
+                                    failed = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -339,6 +341,67 @@ public class Profiles {
                     "Bad profile designator ''{0}'', invalid designator syntax.", value));
             }
         }
+    }
+
+    public static boolean violatesFeatureOverConstraint(
+        String allowedDesignator, String allowedBase, Location allowedLocation,
+        String prohibitedDesignator, String prohibitedBase, Location prohibitedLocation,
+        VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        Locator locator = prohibitedLocation.getLocator();
+        Message message = null;
+        URI afUri = getDesignatorUri(allowedDesignator, allowedBase, allowedLocation, context);
+        URI pfUri = getDesignatorUri(prohibitedDesignator, prohibitedBase, prohibitedLocation, context);
+        if ((afUri != null) && (pfUri != null)) {
+            // [TBD] -- use data driven approach based on per-model data
+            String afd = afUri.getFragment();
+            String pfd = pfUri.getFragment();
+            if (afd.equals("extent-root-version-2") && pfd.equals("extent-contain")) {
+                message = reporter.message(locator, "*KEY*",
+                    "Feature overconstraint violation, feature ''#{0}'' is permitted, but feature ''#{1}'' is prohibited.",
+                    afUri.getFragment(), pfUri.getFragment());
+            }
+        }
+        if (message != null) {
+            reporter.logError(message);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static URI getDesignatorUri(String value, String base, Location location, VerifierContext context) {
+        Reporter reporter = context.getReporter();
+        Locator locator = location.getLocator();
+        Message message = null;
+        try {
+            URI featureUri = new URI(base).resolve(value);
+            String uriString = featureUri.toString();
+            String uriFragment = featureUri.getFragment();
+            String featureNamespace = (uriFragment != null) ? uriString.substring(0, uriString.indexOf("#" + uriFragment)) : uriString;
+            String ttFeatureNamespace = context.getModel().getTTFeatureNamespaceUri().toString();
+            if (!featureNamespace.equals(ttFeatureNamespace)) {
+                message = reporter.message(locator, "*KEY*",
+                    "Unknown namespace in feature designation ''{0}'', expect TT Feature Namespace ''{1}''.", featureUri, ttFeatureNamespace);
+            } else if (uriFragment == null) {
+                message = reporter.message(locator, "*KEY*",
+                    "Missing designation in feature designation ''{0}''.", featureUri);
+            } else if (uriFragment.length() == 0) {
+                message = reporter.message(locator, "*KEY*",
+                    "Empty designation token in feature designation ''{0}''.", featureUri);
+            } else if (!context.getModel().isStandardFeatureDesignation(featureUri)) {
+                message = reporter.message(locator, "*KEY*",
+                    "Unknown designation token in feature designation ''{0}''.", featureUri);
+            } else {
+                return featureUri;
+            }
+        } catch (URISyntaxException e) {
+            message = reporter.message(locator, "*KEY*",
+                    "Bad syntax in feature designation base ''{0}'' or value ''{1}''.", base, value);
+        }
+        if (message != null)
+            reporter.logError(message);
+        return null;
     }
 
 }

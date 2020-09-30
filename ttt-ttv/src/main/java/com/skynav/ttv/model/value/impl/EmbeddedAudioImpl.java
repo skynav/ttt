@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,9 @@ public class EmbeddedAudioImpl extends AbstractAudioImpl {
         this.target = target;
     }
     public boolean isExternal() {
+        return false;
+    }
+    public boolean isBuiltin() {
         return false;
     }
     public Object getTarget() {

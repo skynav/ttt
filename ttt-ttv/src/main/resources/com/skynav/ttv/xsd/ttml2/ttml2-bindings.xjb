@@ -115,16 +115,25 @@
     </jxb:bindings>
   </jxb:bindings>
 
-  <!--
   <jxb:bindings schemaLocation="ttml2-isd.xsd">
-    <jxb:bindings node="//xs:complexType[@name='region.eltype']">
-      <jxb:class name="ISDRegionEltype"/>
+    <jxb:bindings node="/xs:schema">
+      <jxb:schemaBindings>
+        <jxb:package name="com.skynav.ttv.model.ttml2.isd"/>
+      </jxb:schemaBindings>
     </jxb:bindings>
-    <jxb:bindings node="//xs:element[@name='region']">
+    <jxb:bindings node="//xs:complexType[@name='isd.eltype']">
+      <jxb:class name="ISD"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='css.eltype']">
+      <jxb:class name="ISDCSS"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='region.eltype']">
       <jxb:class name="ISDRegion"/>
     </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='sequence.eltype']">
+      <jxb:class name="ISDSequence"/>
+    </jxb:bindings>
   </jxb:bindings>
-  -->
 
   <jxb:bindings schemaLocation="ttml2-layout.xsd">
     <jxb:bindings node="//xs:complexType[@name='layout.eltype']">

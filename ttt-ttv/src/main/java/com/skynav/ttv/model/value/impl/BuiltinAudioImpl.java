@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,21 +23,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttv.model.value;
+package com.skynav.ttv.model.value.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 
-public interface Resource {
-    URI getURI();
-    InputStream openStream() throws IOException;
-    String getSpecifiedType();
-    void setSpecifiedType(String type);
-    String getVerifiedType();
-    String getSpecifiedFormat();
-    void setSpecifiedFormat(String format);
-    String getVerifiedFormat();
-    boolean isExternal();
-    boolean isBuiltin();
+import com.skynav.ttv.model.value.Audio;
+
+public class BuiltinAudioImpl extends AbstractAudioImpl {
+    public BuiltinAudioImpl(URI uri) {
+        super(uri);
+    }
+    public boolean isExternal() {
+        return false;
+    }
+    public boolean isBuiltin() {
+        return true;
+    }
+    private static final String SPEECH_DATA_RESOURCE_URI = "http://www.w3.org/ns/ttml/resource/#speech";
+    public static boolean isSpeechDataResourceUri(String uriString) {
+        return uriString.equals(SPEECH_DATA_RESOURCE_URI);
+    }
+    public static boolean isSpeechAudio(Audio audio) {
+        return audio.isBuiltin() && isSpeechDataResourceUri(audio.getURI().toString());
+    }
 }

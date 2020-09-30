@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@ import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.AnnotationPosition;
 import com.skynav.ttv.model.ttml2.ttd.AreaRectangle;
 import com.skynav.ttv.model.ttml2.ttd.BackgroundRepeat;
+import com.skynav.ttv.model.ttml2.ttd.CalcMode;
 import com.skynav.ttv.model.ttml2.ttd.Direction;
 import com.skynav.ttv.model.ttml2.ttd.Display;
 import com.skynav.ttv.model.ttml2.ttd.DisplayAlign;
@@ -60,8 +61,6 @@ import com.skynav.ttv.model.ttml2.ttd.FontWeight;
 import com.skynav.ttv.model.ttml2.ttd.Overflow;
 import com.skynav.ttv.model.ttml2.ttd.Ruby;
 import com.skynav.ttv.model.ttml2.ttd.RubyAlign;
-// import com.skynav.ttv.model.ttml2.ttd.RubyOverflow;
-// import com.skynav.ttv.model.ttml2.ttd.RubyOverhang;
 import com.skynav.ttv.model.ttml2.ttd.ShowBackground;
 import com.skynav.ttv.model.ttml2.ttd.Speak;
 import com.skynav.ttv.model.ttml2.ttd.TextAlign;
@@ -82,6 +81,7 @@ import com.skynav.ttv.verifier.ttml.style.BackgroundImageVerifier;
 import com.skynav.ttv.verifier.ttml.style.BackgroundPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.BackgroundRepeatVerifier;
 import com.skynav.ttv.verifier.ttml.style.BorderVerifier;
+import com.skynav.ttv.verifier.ttml.style.ColorVerifier;
 import com.skynav.ttv.verifier.ttml.style.DirectionVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisparityVerifier;
 import com.skynav.ttv.verifier.ttml.style.DisplayAlignVerifier;
@@ -106,9 +106,6 @@ import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.ProgressionDimensionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
-// import com.skynav.ttv.verifier.ttml.style.RubyOverflowVerifier;
-// import com.skynav.ttv.verifier.ttml.style.RubyOverhangClassVerifier;
-// import com.skynav.ttv.verifier.ttml.style.RubyOverhangVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyReserveVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyVerifier;
@@ -121,6 +118,7 @@ import com.skynav.ttv.verifier.ttml.style.TextCombineVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextDecorationVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextEmphasisVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextOrientationVerifier;
+import com.skynav.ttv.verifier.ttml.style.TextOutlineVerifier;
 import com.skynav.ttv.verifier.ttml.style.TextShadowVerifier;
 import com.skynav.ttv.verifier.ttml.style.UnicodeBidiVerifier;
 import com.skynav.ttv.verifier.ttml.style.VisibilityVerifier;
@@ -164,9 +162,6 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     public static final QName rubyAttributeName                         = new QName(NAMESPACE,"ruby");
     public static final QName rubyAlignAttributeName                    = new QName(NAMESPACE,"rubyAlign");
     public static final QName rubyOffsetAttributeName                   = new QName(NAMESPACE,"rubyOffset");
-    // public static final QName rubyOverflowAttributeName                 = new QName(NAMESPACE,"rubyOverflow");
-    // public static final QName rubyOverhangAttributeName                 = new QName(NAMESPACE,"rubyOverhang");
-    // public static final QName rubyOverhangClassAttributeName            = new QName(NAMESPACE,"rubyOverhangClass");
     public static final QName rubyPositionAttributeName                 = new QName(NAMESPACE,"rubyPosition");
     public static final QName rubyReserveAttributeName                  = new QName(NAMESPACE,"rubyReserve");
     public static final QName scriptAttributeName                       = new QName(NAMESPACE,"script");
@@ -188,6 +183,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             AreaRectangle.BORDER,
             AreaRectangle.BORDER.value(),
+            Animatability.Discrete,
         },
         {
             backgroundColorAttributeName,
@@ -199,6 +195,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "transparent",
             null,
+            Animatability.Continuous,
         },
         {
             backgroundExtentAttributeName,
@@ -210,6 +207,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "auto",
             null,
+            Animatability.Discrete,
         },
         {
             backgroundImageAttributeName,
@@ -221,6 +219,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "none",
             null,
+            Animatability.Discrete,
         },
         {
             backgroundOriginAttributeName,
@@ -232,6 +231,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             AreaRectangle.PADDING,
             AreaRectangle.PADDING.value(),
+            Animatability.Discrete,
         },
         {
             backgroundPositionAttributeName,
@@ -243,6 +243,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "0% 0%",
             null,
+            Animatability.Discrete,
         },
         {
             backgroundRepeatAttributeName,
@@ -254,6 +255,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             BackgroundRepeat.REPEAT,
             BackgroundRepeat.REPEAT.value(),
+            Animatability.Discrete,
         },
         {
             borderAttributeName,
@@ -265,6 +267,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "none",
             null,
+            Animatability.Continuous,           // color only; otherwise, discrete
         },
         {
             bpdAttributeName,
@@ -276,6 +279,19 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "auto",
             null,
+            Animatability.Discrete,
+        },
+        {
+            colorAttributeName,
+            "Color",
+            String.class,
+            ColorVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "white",
+            null,
+            Animatability.Continuous,
         },
         {
             directionAttributeName,
@@ -287,17 +303,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             Direction.LTR,
             Direction.LTR.value(),
-        },
-        {
-            displayAttributeName,
-            "Display",
-            Display.class,
-            DisplayVerifier.class,
-            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION|APPLIES_TO_IMAGE),
-            Boolean.FALSE,
-            Boolean.FALSE,
-            Display.AUTO,
-            Display.AUTO.value(),
+            Animatability.Discrete,
         },
         {
             disparityAttributeName,
@@ -309,6 +315,19 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "0",
             null,
+            Animatability.Continuous,
+        },
+        {
+            displayAttributeName,
+            "Display",
+            Display.class,
+            DisplayVerifier.class,
+            Integer.valueOf(APPLIES_TO_CONTENT|APPLIES_TO_REGION|APPLIES_TO_IMAGE),
+            Boolean.FALSE,
+            Boolean.FALSE,
+            Display.AUTO,
+            Display.AUTO.value(),
+            Animatability.Discrete,
         },
         {
             displayAlignAttributeName,
@@ -320,6 +339,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             DisplayAlign.BEFORE,
             DisplayAlign.BEFORE.value(),
+            Animatability.Discrete,
         },
         {
             extentAttributeName,
@@ -331,6 +351,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "auto",
             null,
+            Animatability.Discrete,
         },
         {
             fontKerningAttributeName,
@@ -342,6 +363,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             FontKerning.NORMAL,
             FontKerning.NORMAL.value(),
+            Animatability.Discrete,
         },
         {
             fontSelectionStrategyAttributeName,
@@ -353,6 +375,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             FontSelectionStrategy.AUTO,
             FontSelectionStrategy.AUTO.value(),
+            Animatability.Discrete,
         },
         {
             fontShearAttributeName,
@@ -364,6 +387,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "0%",
             null,
+            Animatability.Discrete,
         },
         {
             fontStyleAttributeName,
@@ -375,6 +399,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             FontStyle.NORMAL,
             FontStyle.NORMAL.value(),
+            Animatability.Discrete,
         },
         {
             fontVariantAttributeName,
@@ -386,6 +411,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "normal",
             null,
+            Animatability.Discrete,
         },
         {
             fontWeightAttributeName,
@@ -397,6 +423,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             FontWeight.NORMAL,
             FontWeight.NORMAL.value(),
+            Animatability.Discrete,
         },
         {
             gainAttributeName,
@@ -408,6 +435,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "1",
             null,
+            Animatability.Continuous,
         },
         {
             ipdAttributeName,
@@ -419,6 +447,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "auto",
             null,
+            Animatability.Discrete,
         },
         {
             letterSpacingAttributeName,
@@ -430,6 +459,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "normal",
             null,
+            Animatability.Discrete,
         },
         {
             lineHeightAttributeName,
@@ -441,6 +471,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "normal",
             null,
+            Animatability.Discrete,
         },
         {
             lineShearAttributeName,
@@ -452,6 +483,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "0%",
             null,
+            Animatability.Discrete,
         },
         {
             luminanceGainAttributeName,
@@ -463,6 +495,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "1.0",
             null,
+            Animatability.Continuous,
         },
         {
             opacityAttributeName,
@@ -474,6 +507,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "1.0",
             null,
+            Animatability.Continuous,
         },
         {
             originAttributeName,
@@ -485,6 +519,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "auto",
             null,
+            Animatability.Discrete,
         },
         {
             overflowAttributeName,
@@ -496,6 +531,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Overflow.HIDDEN,
             Overflow.HIDDEN.value(),
+            Animatability.Discrete,
         },
         {
             paddingAttributeName,
@@ -507,6 +543,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "0px",
             null,
+            Animatability.Discrete,
         },
         {
             panAttributeName,
@@ -518,6 +555,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "0",
             null,
+            Animatability.Continuous,
         },
         {
             pitchAttributeName,
@@ -529,6 +567,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "0%",
             null,
+            Animatability.None,
         },
         {
             positionAttributeName,
@@ -540,6 +579,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             "center",
             null,
+            Animatability.Continuous,
         },
         {
             rubyAttributeName,
@@ -550,7 +590,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.FALSE,
             Ruby.NONE,
-            Ruby.NONE.value()
+            Ruby.NONE.value(),
+            Animatability.None,
         },
         {
             rubyAlignAttributeName,
@@ -561,52 +602,9 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             RubyAlign.CENTER,
-            RubyAlign.CENTER.value()
+            RubyAlign.CENTER.value(),
+            Animatability.Discrete,
         },
-        {
-            rubyOffsetAttributeName,
-            "RubyOffset",
-            String.class,
-            RubyOffsetVerifier.class,
-            Integer.valueOf(APPLIES_TO_SPAN),
-            Boolean.FALSE,
-            Boolean.TRUE,
-            "auto",
-            null,
-        },
-        // {
-        //     rubyOverflowAttributeName,
-        //     "RubyOverflow",
-        //     RubyOverflow.class,
-        //     RubyOverflowVerifier.class,
-        //     Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
-        //     Boolean.FALSE,
-        //     Boolean.TRUE,
-        //     RubyOverflow.SHIFT_RUBY,
-        //     RubyOverflow.SHIFT_RUBY.value()
-        // },
-        // {
-        //     rubyOverhangAttributeName,
-        //     "RubyOverhang",
-        //     RubyOverhang.class,
-        //     RubyOverhangVerifier.class,
-        //     Integer.valueOf(APPLIES_TO_P|APPLIES_TO_SPAN),
-        //     Boolean.FALSE,
-        //     Boolean.TRUE,
-        //     RubyOverhang.ALLOW,
-        //     RubyOverhang.ALLOW.value()
-        // },
-        // {
-        //     rubyOverhangClassAttributeName,
-        //     "RubyOverhangClass",
-        //     String.class,
-        //     RubyOverhangClassVerifier.class,
-        //     Integer.valueOf(APPLIES_TO_SPAN),
-        //     Boolean.FALSE,
-        //     Boolean.TRUE,
-        //     "auto",
-        //     null,
-        // },
         {
             rubyPositionAttributeName,
             "RubyPosition",
@@ -616,7 +614,8 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             Boolean.TRUE,
             AnnotationPosition.OUTSIDE,
-            AnnotationPosition.OUTSIDE.value()
+            AnnotationPosition.OUTSIDE.value(),
+            Animatability.Discrete,
         },
         {
             rubyReserveAttributeName,
@@ -628,6 +627,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "none",
             null,
+            Animatability.Discrete,
         },
         {
             scriptAttributeName,
@@ -639,6 +639,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "auto",
             null,
+            Animatability.Discrete,
         },
         {
             shearAttributeName,
@@ -650,6 +651,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "0%",
             null,
+            Animatability.Discrete,
         },
         {
             speakAttributeName,
@@ -661,6 +663,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             Speak.NONE,
             Speak.NONE.value(),
+            Animatability.None,
         },
         {
             showBackgroundAttributeName,
@@ -672,6 +675,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             ShowBackground.ALWAYS,
             ShowBackground.ALWAYS.value(),
+            Animatability.Discrete,
         },
         {
             textAlignAttributeName,
@@ -683,6 +687,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             TextAlign.START,
             TextAlign.START.value(),
+            Animatability.Discrete,
         },
         {
             textCombineAttributeName,
@@ -694,6 +699,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "none",
             null,
+            Animatability.Discrete,
         },
         {
             textDecorationAttributeName,
@@ -705,6 +711,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             TextDecoration.NONE,
             TextDecoration.NONE.value(),
+            Animatability.Discrete,
         },
         {
             textEmphasisAttributeName,
@@ -716,6 +723,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "none",
             null,
+            Animatability.Continuous,           // color only; otherwise, discrete
         },
         {
             textOrientationAttributeName,
@@ -727,6 +735,19 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             TextOrientation.MIXED,
             TextOrientation.MIXED.value(),
+            Animatability.Discrete,
+        },
+        {
+            textOutlineAttributeName,
+            "TextOutline",
+            String.class,
+            TextOutlineVerifier.class,
+            Integer.valueOf(APPLIES_TO_SPAN),
+            Boolean.FALSE,
+            Boolean.TRUE,
+            "none",
+            null,
+            Animatability.Continuous,           // color only; otherwise, discrete
         },
         {
             textShadowAttributeName,
@@ -738,6 +759,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             "none",
             null,
+            Animatability.Continuous,           // color only; otherwise, discrete
         },
         {
             unicodeBidiAttributeName,
@@ -749,6 +771,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             UnicodeBidi.NORMAL,
             UnicodeBidi.NORMAL.value(),
+            Animatability.Discrete,
         },
         {
             visibilityAttributeName,
@@ -760,6 +783,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             Visibility.VISIBLE,
             Visibility.VISIBLE.value(),
+            Animatability.Discrete,
         },
         {
             wrapOptionAttributeName,
@@ -771,6 +795,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.TRUE,
             WrapOption.WRAP,
             WrapOption.WRAP.value(),
+            Animatability.Discrete,
         },
         {
             writingModeAttributeName,
@@ -782,6 +807,7 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Boolean.FALSE,
             WritingMode.LRTB,
             WritingMode.LRTB.value(),
+            Animatability.Discrete,
         },
     };
 
@@ -796,9 +822,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     }
 
     @Override
-    protected StyleAccessor makeAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
-        int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
-        return new TTML2StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
+    protected StyleAccessor makeAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, int applicability,
+                                         boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString,
+                                         Animatability animatability) {
+        return new TTML2StyleAccessor(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable,
+                                      initialValue, initialValueAsString, animatability);
     }
 
     @Override
@@ -887,6 +915,33 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
     }
 
     @Override
+    protected boolean verifyElementItem(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        if (isAnimate(content))
+            failed = !verifyAnimate(content, locator, context);
+        else if (isSet(content))
+            failed = !verifySet(content, locator, context);
+        if (failed) {
+            Reporter reporter = context.getReporter();
+            reporter.logError(reporter.message(locator, "*KEY*", "Invalid ''{0}'' styled item.", context.getBindingElementName(content)));
+        }
+        return !failed;
+    }
+
+    protected boolean verifyAnimate(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        // [TBD] - aggregate per-element 'animate' semantic verficatiion tests
+        return !failed;
+    }
+    
+    @Override
+    protected boolean verifySet(Object content, Locator locator, VerifierContext context) {
+        boolean failed = false;
+        // allow multiple styles, i.e., bypass style count constraint in superclass
+        return !failed;
+    }
+    
+    @Override
     protected boolean verifyAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         if (!super.verifyAttributeItem(content, locator, sa, context))
             return false;
@@ -895,42 +950,73 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             Reporter reporter = context.getReporter();
             Message message = null;
             QName name = sa.getStyleName();
-            if (name.equals(displayAttributeName)) {
-                Object value = sa.getStyleValue(content);
-                if (value != null) {
-                    assert value instanceof Display;
-                    Display display = (Display) value;
-                    if (display == Display.INLINE_BLOCK) {
-                        if (!permitsDisplayInlineBlock(content)) {
-                            message = reporter.message(locator, "*KEY*", "Attribute ''{0}'' with value ''{1}'' is prohibited on ''{2}''.",
-                                name, display.value(), context.getBindingElementName(content));
-                            failed = true;
+            if (!failed) {
+                if (name.equals(displayAttributeName)) {
+                    Object value = sa.getStyleValue(content);
+                    if (value != null) {
+                        assert value instanceof Display;
+                        Display display = (Display) value;
+                        if (display == Display.INLINE_BLOCK) {
+                            if (!permitsDisplayInlineBlock(content)) {
+                                message = reporter.message(locator, "*KEY*", "Attribute ''{0}'' with value ''{1}'' is prohibited on ''{2}''.",
+                                    name, display.value(), context.getBindingElementName(content));
+                                failed = true;
+                            }
                         }
                     }
                 }
-            } else if (name.equals(extentAttributeName)) {
-                Object value = sa.getStyleValue(content);
-                if (value != null) {
-                    assert value instanceof String;
-                    String extent = (String) value;
-                    if (isTimedText(content)) {
-                        if (Extents.isCover(extent)) {
-                            failed = true;
-                        } else {
-                            Integer[] minMax = new Integer[] { 2, 2 };
-                            Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
-                            List<Measure> measures = new java.util.ArrayList<Measure>();
-                            Location location = new Location(content, context.getBindingElementName(content), name, locator);
-                            if (Measures.isMeasures(extent, location, context, minMax, treatments, measures)) {
-                                for (Measure m : measures) {
-                                    if (!m.isLength())
-                                        failed = true;
+            }
+            if (!failed) {
+                if (name.equals(extentAttributeName)) {
+                    Object value = sa.getStyleValue(content);
+                    if (value != null) {
+                        assert value instanceof String;
+                        String extent = (String) value;
+                        if (isTimedText(content)) {
+                            if (Extents.isCover(extent)) {
+                                failed = true;
+                            } else {
+                                Integer[] minMax = new Integer[] { 2, 2 };
+                                Object[] treatments = new Object[] { NegativeTreatment.Error, MixedUnitsTreatment.Allow };
+                                List<Measure> measures = new java.util.ArrayList<Measure>();
+                                Location location = new Location(content, context.getBindingElementName(content), name, locator);
+                                if (Measures.isMeasures(extent, location, context, minMax, treatments, measures)) {
+                                    for (Measure m : measures) {
+                                        if (!m.isLength())
+                                            failed = true;
+                                    }
                                 }
                             }
+                            if (failed) {
+                                message = reporter.message(locator, "*KEY*", "Attribute ''{0}'' with value ''{1}'' is prohibited on ''{2}''.",
+                                    name, value, context.getBindingElementName(content));
+                            }
                         }
-                        if (failed) {
-                            message = reporter.message(locator, "*KEY*", "Attribute ''{0}'' with value ''{1}'' is prohibited on ''{2}''.",
-                                name, value, context.getBindingElementName(content));
+                    }
+                }
+            }
+            if (!failed) {
+                Object value = sa.getStyleValue(content);
+                if (value != null) {
+                    if (isAnimate(content)) {
+                        if (sa.isNonAnimatable()) {
+                            failed = true;
+                            message = reporter.message(locator, "*KEY*",
+                                          "Attribute ''{0}'' is non-animatable on ''{1}''.", name, context.getBindingElementName(content));
+                        } else if (sa.isDiscretelyAnimatable()) {
+                            CalcMode calcMode = getCalcModeAttribute(content);
+                            if ((calcMode == null) || (calcMode != CalcMode.DISCRETE)) {
+                                failed = true;
+                                message = reporter.message(locator, "*KEY*",
+                      "Attribute ''{0}'' cannot be used with continuous (non-discrete) calculation mode on ''{1}'', try using discrete calculation mode.",
+                                name, context.getBindingElementName(content));
+                            }
+                        }
+                    } else if (isSet(content)) {
+                        if (sa.isNonAnimatable()) {
+                            failed = true;
+                            message = reporter.message(locator, "*KEY*",
+                                          "Attribute ''{0}'' is non-animatable on ''{1}''.", name, context.getBindingElementName(content));
                         }
                     }
                 }
@@ -943,6 +1029,11 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             }
             return !failed;
         }
+    }
+
+    protected CalcMode getCalcModeAttribute(Object animate) {
+        assert animate instanceof Animate;
+        return ((Animate) animate).getCalcMode();
     }
 
     protected boolean permitsDisplayInlineBlock(Object content) {
@@ -958,12 +1049,6 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
             return true;
         else
             return false;
-    }
-
-    @Override
-    protected boolean verifySet(Object content, Locator locator, VerifierContext context) {
-        // allow multiple styles, i.e., bypass style count constraint in superclass
-        return true;
     }
 
     @Override
@@ -1017,9 +1102,10 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
 
     protected class TTML2StyleAccessor extends StyleAccessor {
 
-        public TTML2StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass,
-            int applicability, boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString) {
-            super(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable, initialValue, initialValueAsString);
+        public TTML2StyleAccessor(QName styleName, String accessorName, Class<?> valueClass, Class<?> verifierClass, int applicability,
+            boolean paddingPermitted, boolean inheritable, Object initialValue, String initialValueAsString, Animatability animatability) {
+            super(styleName, accessorName, valueClass, verifierClass, applicability, paddingPermitted, inheritable,
+                  initialValue, initialValueAsString, animatability);
         }
 
         @Override

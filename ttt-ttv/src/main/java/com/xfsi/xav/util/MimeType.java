@@ -39,6 +39,7 @@ public class MimeType {
     public static final String AUDIO_AC3_TYPE                   = "audio/ac3";
     public static final String AUDIO_WAV_TYPE                   = "audio/vnd.wave";
     public static final String AUDIO_OGG_TYPE                   = "audio/ogg";
+    public static final String AUDIO_SPEECH_TYPE                = "audio/vnd.skynav.speech";
 
     public static final String FONT_OTF_TYPE                    = "font/otf";
     public static final String FONT_TTF_TYPE                    = "font/ttf";

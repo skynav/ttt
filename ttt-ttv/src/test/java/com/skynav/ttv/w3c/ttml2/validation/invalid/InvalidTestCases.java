@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2020 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@ package com.skynav.ttv.w3c.ttml2.validation.invalid;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 
@@ -58,6 +59,31 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2BadAnimateNegativeRepeatCount() throws Exception {
         performInvalidityTest("ttml2-invld-bad-animate-negative-repeat-count.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadAnimateNonAnimatable() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-animate-non-animatable.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadAnimateNonAnimatableDiscreteDefault() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-animate-non-animatable-discrete-default.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadAnimateNonAnimatableDiscreteLinear() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-animate-non-animatable-discrete-linear.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadAnimateNonAnimatableDiscretePaced() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-animate-non-animatable-discrete-paced.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2BadAnimateNonAnimatableDiscreteSpline() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-animate-non-animatable-discrete-spline.xml", -1, -1);
     }
 
     @Test
@@ -966,6 +992,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2BadSetNonAnimatable() throws Exception {
+        performInvalidityTest("ttml2-invld-bad-set-non-animatable.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2BadSetUnknownFill() throws Exception {
         performInvalidityTest("ttml2-invld-bad-set-unknown-fill.xml", -1, -1);
     }
@@ -1181,6 +1212,11 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2ContentProfileExtentRootVersion2() throws Exception {
+        performInvalidityTest("ttml2-invld-content-profile-extent-root-version-2.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ContentProfilesAllSpace() throws Exception {
         performInvalidityTest("ttml2-invld-content-profiles-all-space.xml", -1, -1);
     }
@@ -1221,8 +1257,23 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2DataChunkedBadLength() throws Exception {
+        performInvalidityTest("ttml2-invld-data-chunked-bad-length.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2DataChunkedMissingType() throws Exception {
         performInvalidityTest("ttml2-invld-data-chunked-missing-type.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DataChunkedWithBase() throws Exception {
+        performInvalidityTest("ttml2-invld-data-chunked-with-base.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DataChunkedWithCondition() throws Exception {
+        performInvalidityTest("ttml2-invld-data-chunked-with-condition.xml", -1, -1);
     }
 
     @Test
@@ -1233,6 +1284,16 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2DataSimpleMissingType() throws Exception {
         performInvalidityTest("ttml2-invld-data-simple-missing-type.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DataSimpleBadLength() throws Exception {
+        performInvalidityTest("ttml2-invld-data-simple-bad-length.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2DataSimpleNonAlphabet() throws Exception {
+        performInvalidityTest("ttml2-invld-data-simple-non-alphabet.xml", -1, -1);
     }
 
     @Test
@@ -1288,6 +1349,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2DisplayAspectRatioZeroNumerator() throws Exception {
         performInvalidityTest("ttml2-invld-display-aspect-ratio-zero-numerator.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2FontEmbeddingFamily() throws Exception {
+        performInvalidityTest("ttml2-invld-font-embedding-family.xml", -1, -1);
     }
 
     @Test
@@ -1378,6 +1444,81 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2InitialNestedStyle() throws Exception {
         performInvalidityTest("ttml2-invld-initial-nested-style.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadSize0Minus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-size-0-minus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadSize0Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-size-0-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadSize1Minus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-size-1-minus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadSize1Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-size-1-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion0() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-0.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion0Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-0-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion1() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion1Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-1-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSequenceBadVersion2Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-sequence-bad-version-2-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion0() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-0.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion0Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-0-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion1() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-1.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion1Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-1-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleBadVersion2Plus() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-bad-version-2-plus.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2IsdSingleNestedBadVersion() throws Exception {
+        performInvalidityTest("ttml2-invld-isd-single-nested-bad-version.xml", -1, -1);
     }
 
     @Test
@@ -1506,6 +1647,16 @@ public class InvalidTestCases {
     }
 
     @Test
+    public void testInvalidTTML2ProfileDesignatorFragmentNested() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-designator-fragment-nested.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2ProfileDesignatorRegistryUndefined() throws Exception {
+        performInvalidityTest("ttml2-invld-profile-designator-registry-undefined.xml", -1, -1);
+    }
+
+    @Test
     public void testInvalidTTML2ProfileNestedMixed() throws Exception {
         performInvalidityTest("ttml2-invld-profile-nested-mixed.xml", -1, -1);
     }
@@ -1525,12 +1676,10 @@ public class InvalidTestCases {
         performInvalidityTest("ttml2-invld-profile-type-unknown-keyword.xml", -1, -1);
     }
 
-    /*
     @Test
     public void testInvalidTTML2ProfileUseFragment() throws Exception {
-        performInvalidityTest("ttml2-invld-profile-use-fragment.xml", -1, -1, new String[] { "--debug-exceptions" });
+        performInvalidityTest("ttml2-invld-profile-use-fragment.xml", -1, -1);
     }
-    */
 
     @Test
     public void testInvalidTTML2RegionInlineDivMultiple() throws Exception {
@@ -1610,6 +1759,11 @@ public class InvalidTestCases {
     @Test
     public void testInvalidTTML2XlinkHrefEmpty() throws Exception {
         performInvalidityTest("ttml2-invld-xlink-href-empty.xml", -1, -1);
+    }
+
+    @Test
+    public void testInvalidTTML2XlinkHrefNestedImage() throws Exception {
+        performInvalidityTest("ttml2-invld-xlink-href-nested-image.xml", -1, -1);
     }
 
     @Test
