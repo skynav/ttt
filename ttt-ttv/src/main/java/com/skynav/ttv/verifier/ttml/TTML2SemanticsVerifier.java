@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -65,6 +65,7 @@ import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.tt.Styling;
 import com.skynav.ttv.model.ttml2.tt.TimedText;
 import com.skynav.ttv.model.ttml2.ttd.DataEncoding;
+import com.skynav.ttv.model.ttml2.ttd.Speak;
 import com.skynav.ttv.model.ttml2.ttm.Actor;
 import com.skynav.ttv.model.ttml2.ttm.Agent;
 import com.skynav.ttv.model.ttml2.ttm.Copyright;
@@ -1005,7 +1006,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             } else {
                 a = outputAudio[0];
             }
-        } else if (numSources == 0) {
+        } else if ((numSources == 0) && !hasImpliedAudioSource(audio)) {
             reporter.logError(reporter.message(locator, "*KEY*",
                 "At least one ''{0}'' child is required when ''{1}'' attribute is not specified.", sourceElementName, resourceSourceAttributeName));
             failed = true;
@@ -1015,7 +1016,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         if (type != null) {
             if ((a == null) || !a.isExternal()) {
                 reporter.logError(reporter.message(locator, "*KEY*",
-                    "A ''{0}'' attribute must not specified for internal audio sources.", resourceTypeAttributeName));
+                    "A ''{0}'' attribute must not specified for non-external audio sources.", resourceTypeAttributeName));
                 failed = true;
             } else if (!ResourceTypes.isType(type, location, context, null)) {
                 ResourceTypes.badType(type, location, context);
@@ -1040,6 +1041,24 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
             }
         }
         return !failed;
+    }
+
+    protected boolean hasImpliedAudioSource(Object audio) {
+        Object parent = getContext().getBindingElementParent(audio);
+        if (parent instanceof JAXBElement<?>)
+            parent = ((JAXBElement<?>)parent).getValue();
+        if (parent instanceof Span) {
+            Speak speak = getSpeakAttribute(parent);
+            if (speak != Speak.NONE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected Speak getSpeakAttribute(Object span) {
+        assert span instanceof Span;
+        return ((Span) span).getSpeak();
     }
 
     protected String getAudioFormatAttribute(Object audio) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@ import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.value.Audio;
+import com.skynav.ttv.model.value.impl.BuiltinAudioImpl;
 import com.skynav.ttv.util.IOUtil;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
@@ -113,6 +114,8 @@ public class TTML2AudioVerifier extends AbstractVerifier implements AudioVerifie
         new short[] { 0x52, 0x49, 0x46, 0x46, -1, -1, -1, -1, 0x57, 0x41, 0x56, 0x45 };
     private static final MimeType       wavType                 =
         new MimeType(MimeType.AUDIO_WAV_TYPE);
+    private static final MimeType       speechType              =
+        new MimeType(MimeType.AUDIO_SPEECH_TYPE);
     private static final MimeType       unknownType             =
         new MimeType();
     private static final Signature[]    signatures              =
@@ -138,27 +141,33 @@ public class TTML2AudioVerifier extends AbstractVerifier implements AudioVerifie
     private boolean sniffAudio(Audio audio, MimeType[] outputType, Location location, VerifierContext context) {
         boolean failed = false;
         Reporter reporter = context.getReporter();
-        MimeType mt = unknownType;
-        BufferedInputStream bis = null;
-        try {
-            bis = new BufferedInputStream(audio.getURI().toURL().openStream());
-            byte[] buf = new byte[signatureLengthMaximum];
-            int nb = IOUtil.readCompletely(bis, buf);
-            for (Signature s : signatures) {
-                MimeType mtSniffed = sniffAudio(buf, nb, s.getSignature(), s.getType());
-                if (mtSniffed != null) {
-                    mt = mtSniffed;
-                    break;
+        MimeType mt = null;
+        if (!audio.isBuiltin()) {
+            BufferedInputStream bis = null;
+            try {
+                bis = new BufferedInputStream(audio.getURI().toURL().openStream());
+                byte[] buf = new byte[signatureLengthMaximum];
+                int nb = IOUtil.readCompletely(bis, buf);
+                for (Signature s : signatures) {
+                    MimeType mtSniffed = sniffAudio(buf, nb, s.getSignature(), s.getType());
+                    if (mtSniffed != null) {
+                        mt = mtSniffed;
+                        break;
+                    }
                 }
+            } catch (MalformedURLException e) {
+                reporter.logError(e);
+                failed = true;
+            } catch (IOException e) {
+                reporter.logError(e);
+                failed = true;
+            } finally {
+                IOUtil.closeSafely(bis);
             }
-        } catch (MalformedURLException e) {
-            reporter.logError(e);
-            failed = true;
-        } catch (IOException e) {
-            reporter.logError(e);
-            failed = true;
-        } finally {
-            IOUtil.closeSafely(bis);
+        } else if (BuiltinAudioImpl.isSpeechAudio(audio)) {
+            mt = speechType;
+        } else {
+            mt = unknownType;
         }
         if (mt != null) {
             if ((outputType != null) && (outputType.length > 0))
@@ -231,6 +240,8 @@ public class TTML2AudioVerifier extends AbstractVerifier implements AudioVerifie
             } finally {
                 IOUtil.closeSafely(bis);
             }
+        } else if (mimeType == speechType) {
+            return true;
         } else {
             reporter.logError(reporter.message(locator, "*KEY*", "No audio validator for ''{0}''.", mimeType.toString()));
             return false;

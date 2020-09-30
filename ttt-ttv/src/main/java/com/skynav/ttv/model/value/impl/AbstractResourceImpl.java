@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2016-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -74,4 +74,5 @@ public abstract class AbstractResourceImpl implements Resource {
         return formatVerified;
     }
     public abstract boolean isExternal();
+    public abstract boolean isBuiltin();
 }

@@ -982,13 +982,11 @@ public class ValidTestCases {
     }
 
     @Test
-    @Ignore
     public void testValidTTML2SpeakImpliedAudioDisabled() throws Exception {
         performValidityTest("ttml2-valid-speak-implied-audio-disabled.xml", -1, -1);
     }
 
     @Test
-    @Ignore
     public void testValidTTML2SpeakImpliedAudioSource() throws Exception {
         performValidityTest("ttml2-valid-speak-implied-audio-source.xml", -1, -1);
     }

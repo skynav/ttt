@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -302,6 +302,8 @@ public class TTML2 {
             else if (type.equals("audio/mpeg"))
                 return true;
             else if (type.equals("audio/vnd.wave"))
+                return true;
+            else if (type.equals("audio/vnd.skynav.speech"))
                 return true;
             else if (type.equals("font/collection"))
                 return true;
