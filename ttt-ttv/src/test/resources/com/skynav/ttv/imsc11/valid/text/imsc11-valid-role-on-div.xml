@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - uses ttm:role on div in text profile -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:contentProfiles="http://www.w3.org/ns/ttml/profile/imsc1.1/text"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="imsc11">
+  <head>
+  </head>
+  <body begin="0s" end="1s">
+    <div ttm:role="caption">
+      <p><span>caption</span></p>
+    </div>
+  </body>
+</tt>

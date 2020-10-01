@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,9 +25,17 @@
 
 package com.skynav.ttv.verifier.ttml;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.Locator;
 
 import com.skynav.ttv.model.Model;
+import com.skynav.ttv.model.ttml2.tt.Body;
+import com.skynav.ttv.model.ttml2.tt.Break;
+import com.skynav.ttv.model.ttml2.tt.Division;
+import com.skynav.ttv.model.ttml2.tt.Metadata;
+import com.skynav.ttv.model.ttml2.tt.Paragraph;
+import com.skynav.ttv.model.ttml2.tt.Span;
 import com.skynav.ttv.model.ttml2.ttm.Item;
 import com.skynav.ttv.verifier.VerifierContext;
 
@@ -51,4 +59,22 @@ public class TTML2MetadataVerifier extends TTML1MetadataVerifier {
         return true;
     }
 
+
+    @Override
+    protected boolean permitsMetadataAttribute(Object content, QName name) {
+        if (content instanceof Body)
+            return true;
+        else if (content instanceof Division)
+            return true;
+        else if (content instanceof Paragraph)
+            return true;
+        else if (content instanceof Span)
+            return true;
+        else if (content instanceof Break)
+            return true;
+        else if (content instanceof Metadata)
+            return true;
+        else
+            return false;
+    }
 }
