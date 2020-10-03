@@ -166,6 +166,11 @@ public class ValidTestCases {
     }
 
     @Test
+    public void testValidIMSC11NonEmptyTimeablesWithDurTiming() throws Exception {
+        performValidityTest("imsc11-valid-non-empty-timeables-with-dur-timing.xml", -1, -1);
+    }
+
+    @Test
     public void testValidIMSC11NonEmptyTimeablesWithTiming() throws Exception {
         performValidityTest("imsc11-valid-non-empty-timeables-with-timing.xml", -1, -1);
     }

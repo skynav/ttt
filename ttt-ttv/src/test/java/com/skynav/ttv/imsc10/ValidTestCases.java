@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2013-2020 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -78,6 +78,11 @@ public class ValidTestCases {
     @Test
     public void testValidIMSC10NonEmptySpanMissingTiming() throws Exception {
         performValidityTest("imsc10-valid-non-empty-span-missing-timing.xml", -1, -1);
+    }
+
+    @Test
+    public void testValidIMSC10NonEmptyTimeablesWithDurTiming() throws Exception {
+        performValidityTest("imsc10-valid-non-empty-timeables-with-dur-timing.xml", -1, -1);
     }
 
     @Test
