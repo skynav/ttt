@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2015-2020 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -422,7 +422,7 @@ public class IMSC10SemanticsVerifier extends ST20522010TTML1SemanticsVerifier {
                 Reporter reporter = context.getReporter();
                 if (reporter.isWarningEnabled("missing-timing")) {
                     Message message = reporter.message(locator,
-                        "*KEY*", "Timeable content ''{0}'' is missing explicit @begin and/or @end on self or ancestor.", context.getBindingElementName(content));
+                        "*KEY*", "Timeable content ''{0}'' is missing explicit @begin and @end or @dur on self or ancestor.", context.getBindingElementName(content));
                     if (reporter.logWarning(message)) {
                         reporter.logError(message);
                         failed = true;
@@ -491,7 +491,9 @@ public class IMSC10SemanticsVerifier extends ST20522010TTML1SemanticsVerifier {
         TimeParameters timeParameters = ((TimingVerificationParameters) parameters).getTimeParameters();
         Time b = getBegin(content, locator, context, timeParameters);
         Time e = getEnd(content, locator, context, timeParameters);
-        return (b != null) && (e != null) && (b.getTime(timeParameters) <= e.getTime(timeParameters));
+        Time d = getDuration(content, locator, context, timeParameters);
+        return (b != null)
+            && (((e != null) && (b.getTime(timeParameters) <= e.getTime(timeParameters))) || ((d != null) && (d.getTime(timeParameters) >= 0)));
     }
 
     private Time getBegin(Object content, Locator locator, VerifierContext context, TimeParameters timeParameters) {
@@ -506,6 +508,16 @@ public class IMSC10SemanticsVerifier extends ST20522010TTML1SemanticsVerifier {
 
     private Time getEnd(Object content, Locator locator, VerifierContext context, TimeParameters timeParameters) {
         QName name = IMSC10TimingVerifier.endAttributeName;
+        Object value = getTimingValue(content, name);
+        if (value instanceof String) {
+            Location location = new Location(content, context.getBindingElementName(content), name, locator);
+            return parseTimeCoordinate((String) value, location, context, timeParameters);
+        } else
+            return null;
+    }
+
+    private Time getDuration(Object content, Locator locator, VerifierContext context, TimeParameters timeParameters) {
+        QName name = IMSC11TimingVerifier.durAttributeName;
         Object value = getTimingValue(content, name);
         if (value instanceof String) {
             Location location = new Location(content, context.getBindingElementName(content), name, locator);
