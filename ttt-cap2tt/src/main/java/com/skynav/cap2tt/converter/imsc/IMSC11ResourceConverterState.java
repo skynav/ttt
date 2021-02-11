@@ -308,7 +308,7 @@ public class IMSC11ResourceConverterState extends AbstractResourceConverterState
     }
 
     private boolean isHorizontalBar(String text) {
-        return (text.length() == 1) && (text.charAt(0) == '\u2015');
+        return (text.length() == 1) && ((text.charAt(0) == '\u2015') || (text.charAt(0) == '\u2014'));
     }
 
     private Span augmentStyledSpan(Span s, Attribute a) {
