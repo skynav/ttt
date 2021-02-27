@@ -53,22 +53,24 @@ The model used to perform phase 3 (validity) and phase 4 (semantics) verificatio
 
 ## Building
 
-In order to build **ttv**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-ttv` directory.
+In order to build **ttpe**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-ttv` directory.
+Next, change directory to the standalone JAR package, ``cd ../ttt-ttv-all``, then run `mvn clean install`.
 
 ## Running
 
-In order to run the verifier, use the following (or an equivalent):
+In order to run the presentation engine (from its standalone JAR), first change directory to the standalone JAR package, ``cd ../ttt-ttv-all``,
+then use the following (or equivalent):
 
-`java -jar target/ttt-ttv-3.0-SNAPSHOT.jar ttml.xml`
+`java -jar target/ttt-ttv-all-7.1-SNAPSHOT.jar ttml.xml`
 
 Usage information can be obtained by using:
 
-`java -jar target/ttt-ttv-3.0-SNAPSHOT.jar --help`
+`java -jar target/ttt-ttv-all-7.1-SNAPSHOT.jar --help`
 
 At present, this will output the following:
 
 <pre>
-Timed Text Verifier (TTV) [3.0-SNAPSHOT] Copyright 2013-18 Skynav, Inc.
+Timed Text Verifier (TTV) [7.1-SNAPSHOT] Copyright (c) 2013-19 Skynav, Inc.
 Usage: java -jar ttv.jar [options] URL*
   Short Options:
     -?                                  - see --help
@@ -103,6 +105,7 @@ Usage: java -jar ttv.jar [options] URL*
     --reporter-file-append              - if reporter file already exists, then append output to it
     --reporter-file-encoding ENCODING   - specify character encoding of reporter output (default: utf-8)
     --reporter-include-source           - include source context in report messages
+    --retain-reporter                   - retain (rather than reset) reporter upon run completion
     --servlet                           - configure defaults for servlet operation
     --show-models                       - show built-in verification models (use with --verbose to show more details)
     --show-repository                   - show source code repository information
@@ -125,17 +128,33 @@ As a convenience, if a URL argument takes a relative form, then `ttv` attempts t
 Run `ttv` with the `--show-models` option to determine which verification models are supported, and which is the default model. If the `-v` option is added, this will additionally show the built-in schemas used by each model, as demonstrated by the following console log:
 
 <pre>
-$ java -jar target/ttt-ttv-3.0-SNAPSHOT.jar -v --show-models
-Timed Text Verifier (TTV) [3.0-SNAPSHOT] Copyright 2013-18 Skynav, Inc.
+$ java -jar target/ttt-ttv-all-7.1-SNAPSHOT.jar -v --show-models
+Timed Text Verifier (TTV) [7.1-SNAPSHOT] Copyright (c) 2013-19 Skynav, Inc.
 Verification Models:
   ebuttd
     XSD: com/skynav/ttv/xsd/ebuttd/ebutt_d.xsd
   imsc1
     XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
     XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd
-    XSD: com/skynav/ttv/xsd/imsc1/imsc1.xsd
+    XSD: com/skynav/ttv/xsd/imsc10/imsc10.xsd
+  imsc10
+    XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd
+    XSD: com/skynav/ttv/xsd/imsc10/imsc10.xsd
+  imsc11
+    XSD: com/skynav/ttv/xsd/ttml2/ttml2.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd
+    XSD: com/skynav/ttv/xsd/imsc11/imsc11.xsd
   st2052-2010
     XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt-608.xsd
+  st2052-2010-ttml1
+    XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd
+    XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt-608.xsd
+  st2052-2010-ttml2
+    XSD: com/skynav/ttv/xsd/ttml2/ttml2.xsd
     XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt.xsd
     XSD: com/skynav/ttv/xsd/smpte/2010/smpte-tt-608.xsd
   st2052-2013
@@ -146,8 +165,7 @@ Verification Models:
   ttml1 (default)
     XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
   ttml2
-    XSD: com/skynav/ttv/xsd/ttml2/ttml2.xsd
-</pre>
+    XSD: com/skynav/ttv/xsd/ttml2/ttml2.xsd</pre>
 
 ## Testing
 
