@@ -4,12 +4,12 @@ Timed Text Presentation Engine
 
 ## Building
 
-In order to build **ttv**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-ttv` directory.
-Next, change directory to the standalone JAR package, ``cd ..\ttt-ttpe-all``, then run `mvn clean install`.
+In order to build **ttpe**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-ttpe` directory.
+Next, change directory to the standalone JAR package, ``cd ../ttt-ttpe-all``, then run `mvn clean install`.
 
 ## Running
 
-In order to run the presentation engine (from its standalone JAR), first change directory to the standalone JAR package, ``cd ..\ttt-ttpe-all``,
+In order to run the presentation engine (from its standalone JAR), first change directory to the standalone JAR package, ``cd ../ttt-ttpe-all``,
 then use the following (or equivalent):
 
 `java -jar target/ttt-ttpe-all-7.1-SNAPSHOT.jar ttml.xml`
