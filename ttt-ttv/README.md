@@ -53,7 +53,7 @@ The model used to perform phase 3 (validity) and phase 4 (semantics) verificatio
 
 ## Building
 
-In order to build **ttv**, run `mvn clean install`.
+In order to build **ttv**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-ttv` directory.
 
 ## Running
 
