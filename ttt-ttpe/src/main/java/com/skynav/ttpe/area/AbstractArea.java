@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -60,6 +60,10 @@ public abstract class AbstractArea implements Area {
 
     public int getBidiLevel() {
         return -1;
+    }
+
+    public double getShearAngle() {
+        return 0;
     }
 
     public void setIPD(double ipd) {

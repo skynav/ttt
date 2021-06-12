@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@ import com.skynav.ttpe.fonts.GlyphMapping;
 import com.skynav.ttpe.fonts.Orientation;
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Direction;
+import com.skynav.ttpe.geometry.Shear;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.AnnotationPosition;
 import com.skynav.ttpe.style.AnnotationReserve;
@@ -109,7 +110,9 @@ public class LineLayout {
     private AnnotationReserve annotationReserve;
     private int bidiLevel;
     private Color color;
+    private double lineShear;
     private Outline outline;
+    private double shear;
     private InlineAlignment textAlign;
     private Visibility visibility;
     private Wrap wrap;
@@ -118,6 +121,8 @@ public class LineLayout {
     // derived style state
     private Font font;
     private double lineHeight;
+    private double lineShearAngle;
+    private double shearAngle;
     private WhitespaceState whitespace;
 
     // other style state
@@ -139,13 +144,17 @@ public class LineLayout {
         // outer context styles
         this.annotationReserve = content.getAnnotationReserve(-1, defaults);
         this.color = content.getColor(-1, defaults);
+        this.lineShear = content.getLineShear(-1, defaults);
         this.outline = content.getOutline(-1, defaults);
+        this.shear = content.getShear(-1, defaults);
         this.textAlign = relativizeAlignment(content.getTextAlign(-1, defaults), this.writingMode);
         this.visibility = content.getVisibility(-1, defaults);
         this.wrap = content.getWrapOption(-1, defaults);
         // derived styles
         this.font = content.getFont(-1, defaults);
         this.lineHeight = content.getLineHeight(-1, defaults, font);
+        this.lineShearAngle = Shear.toAngle(this.lineShear);
+        this.shearAngle = Shear.toAngle(this.shear);
         this.whitespace = new WhitespaceState(state.getWhitespace());
         // other style state
         this.padding = new Stack<Padding>();
@@ -169,6 +178,9 @@ public class LineLayout {
 
     public List<? extends LineArea> layout(double available, Consume consume) {
         List<LineArea> lines = new java.util.ArrayList<LineArea>();
+        if (Math.abs(lineShearAngle) > 0.0001) {
+            available -= lineHeight * Math.tan(Math.toRadians(lineShearAngle));
+        }
         if (available > 0) {
             double consumed = 0;
             double sPadding = 0;
@@ -344,12 +356,12 @@ public class LineLayout {
                 consumed += endPadding;
             }
         }
-        LineArea la = newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, bidiLevel, visibility, textAlign, color, font);
+        LineArea la = newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, bidiLevel, lineShearAngle, visibility, textAlign, color, font);
         return addTextAreas(la, breaks);
     }
 
-    protected LineArea newLine(Phrase p, double ipd, double bpd, int bidiLevel, Visibility visibility, InlineAlignment textAlign, Color color, Font font) {
-        return new LineArea(p.getElement(), ipd, bpd, bidiLevel, visibility, textAlign, color, font, ++lineNumber, p.isEmbedding());
+    protected LineArea newLine(Phrase p, double ipd, double bpd, int bidiLevel, double lineShearAngle, Visibility visibility, InlineAlignment textAlign, Color color, Font font) {
+        return new LineArea(p.getElement(), ipd, bpd, bidiLevel, lineShearAngle, visibility, textAlign, color, font, ++lineNumber, p.isEmbedding());
     }
 
     protected int getNextLineNumber() {

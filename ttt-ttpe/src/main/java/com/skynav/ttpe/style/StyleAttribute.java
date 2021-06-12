@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-20 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -50,10 +50,12 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   LANGUAGE                  = new StyleAttribute("LANGUAGE");                  // String
     public static final StyleAttribute   LETTER_SPACING            = new StyleAttribute("LETTER_SPACING");            // Double
     public static final StyleAttribute   LINE_HEIGHT               = new StyleAttribute("LINE_HEIGHT");               // Double
+    public static final StyleAttribute   LINE_SHEAR                = new StyleAttribute("LINE_SHEAR");                // Double
     public static final StyleAttribute   ORIENTATION               = new StyleAttribute("ORIENTATION");               // com.skynav.ttpe.style.Orientation
     public static final StyleAttribute   OUTLINE                   = new StyleAttribute("OUTLINE");                   // com.skynav.ttpe.style.Outline
     public static final StyleAttribute   PADDING                   = new StyleAttribute("PADDING");                   // Padding
     public static final StyleAttribute   SCRIPT                    = new StyleAttribute("SCRIPT");                    // String
+    public static final StyleAttribute   SHEAR                     = new StyleAttribute("SHEAR");                     // Double
     public static final StyleAttribute   VISIBILITY                = new StyleAttribute("VISIBILITY");                // com.skynav.ttpe.style.Visibility
     public static final StyleAttribute   WHITESPACE                = new StyleAttribute("WHITESPACE");                // com.skynav.ttpe.style.Whitespace
     public static final StyleAttribute   WRAP                      = new StyleAttribute("WRAP");                      // com.skynav.ttpe.style.Wrap

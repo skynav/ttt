@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-21 Skynav, Inc. All rights reserved.
+ * Copyright 2021 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,39 +23,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttpe.area;
+package com.skynav.ttpe.geometry;
 
-import org.w3c.dom.Element;
+public class Shear {
 
-import com.skynav.ttpe.fonts.Font;
-import com.skynav.ttpe.style.AnnotationPosition;
-import com.skynav.ttpe.style.Color;
-import com.skynav.ttpe.style.InlineAlignment;
-import com.skynav.ttpe.style.Visibility;
-
-public class AnnotationArea extends LineArea implements Inline {
-
-    private double offset;
-    private AnnotationPosition position;
-
-    public AnnotationArea(Element e, double ipd, double bpd, int level, double shearAngle, Visibility visibility, InlineAlignment alignment, Color color, Font font, int annotationNumber) {
-        super(e, ipd, bpd, level, shearAngle, visibility, alignment, color, font, annotationNumber, false);
-    }
-
-    public void setOffset(double offset) {
-        this.offset = offset;
-    }
-
-    public double getOffset() {
-        return offset;
-    }
-
-    public void setPosition(AnnotationPosition position) {
-        this.position = position;
-    }
-
-    public AnnotationPosition getPosition() {
-        return position;
+    public static double toAngle(double shear) {
+        // Impose implementation specific limit of 99.9% font shear in order to ensure some visible output, even though it isn't legible.
+        if (shear > 0.999) {
+            shear = 0.999;
+        } else if (shear < -0.999) {
+            shear = -0.999;
+        }
+        return shear * 90;
     }
 
 }

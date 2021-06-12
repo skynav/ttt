@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -48,16 +48,6 @@ public interface Area extends AreaGeometry {
      * Obtain (xml) language of area's content, or null if none defined.
      */
     String getLanguage();
-
-    /**
-     * Obtain writing mode of area, or null if none defined.
-     */
-    WritingMode getWritingMode();
-
-    /**
-     * Determine if writing mode of area is vertical; if no writing mode defined, then false.
-     */
-    boolean isVertical();
 
     /**
      * Obtain visibility, or null if none defined.

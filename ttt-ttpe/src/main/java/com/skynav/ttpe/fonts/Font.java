@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ import java.util.SortedSet;
 
 import com.skynav.ttpe.geometry.Axis;
 import com.skynav.ttpe.geometry.Extent;
+import com.skynav.ttpe.geometry.Shear;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttv.util.Reporter;
 
@@ -172,15 +173,15 @@ public class Font {
     public TransformMatrix getTransform(Axis axis, boolean rotatedOrientation) {
         TransformMatrix t = TransformMatrix.IDENTITY;
         if (isSheared())
-            t = applyShear(t, getShear(), axis, rotatedOrientation);
+            t = applyShear(t, Shear.toAngle(getShear()), axis, rotatedOrientation);
         if (isAnamorphic())
             t = applyAnamorphic(t, getSize(), axis);
         return !t.isIdentity() ? t : null;
     }
 
-    private TransformMatrix applyShear(TransformMatrix t0, double shear, Axis axis, boolean rotatedOrientation) {
+    private TransformMatrix applyShear(TransformMatrix t0, double shearAngle, Axis axis, boolean rotatedOrientation) {
         TransformMatrix t = (TransformMatrix) t0.clone();
-        double s = -Math.tan(Math.toRadians(shear * 90));
+        double s = -Math.tan(Math.toRadians(shearAngle));
         double sx, sy;
         if (axis.isVertical()) {
             sx = 0;

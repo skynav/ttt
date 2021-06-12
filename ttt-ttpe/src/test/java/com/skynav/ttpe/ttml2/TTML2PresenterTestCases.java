@@ -497,4 +497,14 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-padding-inline-lrtb.xml");
     }
 
+    @Test
+    public void testTTML2LineShearLR() throws Exception {
+        performPresentationTest("ttml2-line-shear-lr.xml");
+    }
+
+    @Test
+    public void testTTML2LineShearRL() throws Exception {
+        performPresentationTest("ttml2-line-shear-rl.xml");
+    }
+
 }

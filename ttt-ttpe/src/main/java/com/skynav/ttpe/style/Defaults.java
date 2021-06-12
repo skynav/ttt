@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-20 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -70,6 +70,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private static final FontWeight defaultFontWeight                           = FontKey.DEFAULT_WEIGHT;
     private static final String defaultLanguage                                 = FontKey.DEFAULT_LANGUAGE;
     private static final double defaultLineHeight                               = defaultFontSize.getHeight() * 1.25;
+    private static final double defaultLineShear                                = 0;
     private static final Point defaultOrigin                                    = Point.ZERO;
     private static final Orientation defaultOrientation                         = Orientation.ROTATE000;
     private static final Outline defaultOutline                                 = Outline.NONE;
@@ -77,6 +78,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private static final double[] defaultPadding                                = new double[4];
     private static final String defaultPositionComponents                       = "center";
     private static final String defaultScript                                   = "auto";
+    private static final double defaultShear                                    = 0;
     private static final Visibility defaultVisibility                           = Visibility.VISIBLE;
     private static final Whitespace defaultWhitespace                           = Whitespace.DEFAULT;
     private static final InlineAlignment defaultTextAlign                       = InlineAlignment.START;
@@ -110,6 +112,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private FontWeight fontWeight                                               = defaultFontWeight;
     private String language                                                     = defaultLanguage;
     private double lineHeight                                                   = defaultLineHeight;
+    private double lineShear                                                    = defaultLineShear;
     private Point origin                                                        = defaultOrigin;
     private Orientation orientation                                             = defaultOrientation;
     private Outline outline                                                     = defaultOutline;
@@ -117,6 +120,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private double[] padding                                                    = defaultPadding;
     private String positionComponents                                           = defaultPositionComponents;
     private String script                                                       = defaultScript;
+    private double shear                                                        = defaultShear;
     private Whitespace whitespace                                               = defaultWhitespace;
     private InlineAlignment textAlign                                           = defaultTextAlign;
     private TransformMatrix transform                                           = defaultTransform;
@@ -347,6 +351,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
         return lineHeight;
     }
 
+    public void setLineShear(double lineShear) {
+        this.lineShear = lineShear;
+    }
+
+    public double getLineShear() {
+        return lineShear;
+    }
+
     public void setOrigin(Point origin) {
         this.origin = origin;
     }
@@ -401,6 +413,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public String getScript() {
         return script;
+    }
+
+    public void setShear(double shear) {
+        this.shear = shear;
+    }
+
+    public double getShear() {
+        return shear;
     }
 
     public void setWhitespace(Whitespace whitespace) {

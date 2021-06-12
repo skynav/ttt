@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -47,11 +47,11 @@ public class LineArea extends BlockArea {
     private double bpdAnnotationAfter;
 
     public LineArea() {
-        this(null, 0, 0, -1, null, null, null, null, 0, false);
+        this(null, 0, 0, -1, 0, null, null, null, null, 0, false);
     }
 
-    public LineArea(Element e, double ipd, double bpd, int level, Visibility visibility, InlineAlignment alignment, Color color, Font font, int lineNumber, boolean embedding) {
-        super(e, ipd, bpd, level, visibility);
+    public LineArea(Element e, double ipd, double bpd, int level, double shearAngle, Visibility visibility, InlineAlignment alignment, Color color, Font font, int lineNumber, boolean embedding) {
+        super(e, ipd, bpd, level, shearAngle, visibility);
         this.alignment = alignment;
         this.color = color;
         this.font = font;

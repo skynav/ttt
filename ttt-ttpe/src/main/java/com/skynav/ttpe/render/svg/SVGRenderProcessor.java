@@ -127,6 +127,8 @@ public class SVGRenderProcessor extends RenderProcessor {
     public static final MessageFormat doubleFormatter          = new MessageFormat("{0,number,#.####}", Locale.US);
     public static final MessageFormat matrixFormatter          = new MessageFormat("matrix({0})", Locale.US);
     public static final MessageFormat translateFormatter       = new MessageFormat("translate({0,number,#.####},{1,number,#.####})", Locale.US);
+    public static final MessageFormat translateSkewXFormatter  = new MessageFormat("translate({0,number,#.####},{1,number,#.####}),skewX({2,number,#.####})", Locale.US);
+    public static final MessageFormat translateSkewYFormatter  = new MessageFormat("translate({0,number,#.####},{1,number,#.####}),skewY({2,number,#.####})", Locale.US);
     public static final double        bgFuzz                   = 0.5;
 
     // options state
@@ -473,13 +475,32 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     private Element renderBlock(Element parent, BlockArea a, Document d) {
-        // Element e = hasBlockPresentationTraits(a) ? Documents.createElement(d, SVGDocumentFrame.svgGroupEltName) : parent;
         Element e = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         double xSaved = xCurrent;
         double ySaved = yCurrent;
-        // transform to current position, then reset current to zero
-        if ((xCurrent != 0) || (yCurrent != 0))
-            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
+        WritingMode wm = a.getWritingMode();
+        boolean vertical = wm.isVertical();
+        Direction bpdDirection = wm.getDirection(Dimension.BPD);
+        Direction ipdDirection = wm.getDirection(Dimension.IPD);
+        double shear = a.getShearAngle();
+        if (Math.abs(shear) > 0.0001) {
+            if (vertical) {
+                if (bpdDirection == Direction.RL) {
+                    shear = - shear;
+                }
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateSkewYFormatter.format(new Double[] {xCurrent, yCurrent, shear}));
+            } else {
+                if (ipdDirection == Direction.LR) {
+                    shear = - shear;
+                    double skewX = Math.tan(Math.toRadians(shear));
+                    xCurrent += - (skewX * a.getBPD());
+                }
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateSkewXFormatter.format(new Double[] {xCurrent, yCurrent, shear}));
+            }
+        } else {
+            if ((xCurrent != 0) || (yCurrent != 0))
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
+        }
         xCurrent = 0;
         yCurrent = 0;
         // render block presentation traits
@@ -508,7 +529,6 @@ public class SVGRenderProcessor extends RenderProcessor {
         // render children
         Element eBlockGroup = renderChildren(e, a, d);
         // update current position
-        WritingMode wm = a.getWritingMode();
         if (a instanceof Inline) {
             double ipd = a.getIPD();
             if (a.isVertical())
@@ -518,7 +538,6 @@ public class SVGRenderProcessor extends RenderProcessor {
         }
         double bpd = a.getBPD();
         if (a.isVertical()) {
-            Direction bpdDirection = wm.getDirection(Dimension.BPD);
             xCurrent = xSaved + bpd * ((bpdDirection == RL) ? -1 : 1);
         } else
             yCurrent = ySaved + bpd;
@@ -628,8 +647,25 @@ public class SVGRenderProcessor extends RenderProcessor {
         boolean vertical = wm.isVertical();
         Direction bpdDirection = wm.getDirection(Dimension.BPD);
         Direction ipdDirection = wm.getDirection(Dimension.IPD);
-        if ((xCurrent != 0) || (yCurrent != 0))
-            Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
+        double shear = a.getShearAngle();
+        if (Math.abs(shear) > 0.0001) {
+            if (vertical) {
+                if (bpdDirection == Direction.RL) {
+                    shear = - shear;
+                }
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateSkewYFormatter.format(new Double[] {xCurrent, yCurrent, shear}));
+            } else {
+                if (ipdDirection == Direction.LR) {
+                    shear = - shear;
+                    double skewX = Math.tan(Math.toRadians(shear));
+                    xCurrent += - (skewX * a.getBPD());
+                }
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateSkewXFormatter.format(new Double[] {xCurrent, yCurrent, shear}));
+            }
+        } else {
+            if ((xCurrent != 0) || (yCurrent != 0))
+                Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Double[] {xCurrent, yCurrent}));
+        }
         xCurrent = 0;
         yCurrent = 0;
         if (hasLineDecoration())

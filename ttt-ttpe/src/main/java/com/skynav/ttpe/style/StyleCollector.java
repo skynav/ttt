@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-18 Skynav, Inc. All rights reserved.
+ * Copyright 2014-20 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -232,6 +232,39 @@ public class StyleCollector {
             v = BlockAlignment.valueOf(s.getValue().toUpperCase());
         if (v != null)
             addAttribute(StyleAttribute.BLOCK_ALIGNMENT, v, begin, end);
+
+        // LINE_SHEAR
+        s = styles.get(ttsLineShearAttrName);
+        if (s != null) {
+            Integer[] minMax = new Integer[] { 1, 1 };
+            Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
+                assert lengths.size() == 1;
+                Length length = lengths.get(0);
+                if (length.getUnits() == Length.Unit.Percentage) {
+                    v = Double.valueOf(length.getValue() / 100.0);
+                    addAttribute(StyleAttribute.LINE_SHEAR, v, begin, end);
+                }
+            }
+        }
+
+        // SHEAR
+        s = styles.get(ttsShearAttrName);
+        if (s != null) {
+            Integer[] minMax = new Integer[] { 1, 1 };
+            Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
+            List<Length> lengths = new java.util.ArrayList<Length>();
+            if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
+                assert lengths.size() == 1;
+                Length length = lengths.get(0);
+                if (length.getUnits() == Length.Unit.Percentage) {
+                    v = Double.valueOf(length.getValue() / 100.0);
+                    addAttribute(StyleAttribute.SHEAR, v, begin, end);
+                }
+            }
+        }
+
     }
 
     public void collectSpanStyles(Element e, int begin, int end) {
@@ -710,7 +743,6 @@ public class StyleCollector {
                 if (length.getUnits() == Length.Unit.Percentage)
                     fontFeatures.add(new FontFeature("oblq", new Object[]{Double.valueOf(length.getValue() / 100.0)}));
             }
-
         }
         // kerning feature
         s = styles.get(ttsFontKerningAttrName);

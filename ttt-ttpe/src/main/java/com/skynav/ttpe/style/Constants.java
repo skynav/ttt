@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-18 Skynav, Inc. All rights reserved.
+ * Copyright 2014-20 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -55,6 +55,7 @@ public class Constants {
     public static final QName ttsFontWeightAttrName                     = new QName(NAMESPACE_TT_STYLE, "fontWeight");
     public static final QName ttsIPDAttrName                            = new QName(NAMESPACE_TT_STYLE, "ipd");
     public static final QName ttsLineHeightAttrName                     = new QName(NAMESPACE_TT_STYLE, "lineHeight");
+    public static final QName ttsLineShearAttrName                      = new QName(NAMESPACE_TT_STYLE, "lineShear");
     public static final QName ttsOriginAttrName                         = new QName(NAMESPACE_TT_STYLE, "origin");
     public static final QName ttsOverflowAttrName                       = new QName(NAMESPACE_TT_STYLE, "overflow");
     public static final QName ttsPaddingAttrName                        = new QName(NAMESPACE_TT_STYLE, "padding");
@@ -67,6 +68,7 @@ public class Constants {
     public static final QName ttsRubyOverhangClassAttrName              = new QName(NAMESPACE_TT_STYLE, "rubyOverhangClass");
     public static final QName ttsRubyPositionAttrName                   = new QName(NAMESPACE_TT_STYLE, "rubyPosition");
     public static final QName ttsRubyReserveAttrName                    = new QName(NAMESPACE_TT_STYLE, "rubyReserve");
+    public static final QName ttsShearAttrName                          = new QName(NAMESPACE_TT_STYLE, "shear");
     public static final QName ttsTextAlignAttrName                      = new QName(NAMESPACE_TT_STYLE, "textAlign");
     public static final QName ttsTextCombineAttrName                    = new QName(NAMESPACE_TT_STYLE, "textCombine");
     public static final QName ttsTextEmphasisAttrName                   = new QName(NAMESPACE_TT_STYLE, "textEmphasis");
