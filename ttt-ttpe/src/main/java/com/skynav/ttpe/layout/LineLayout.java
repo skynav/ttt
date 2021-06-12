@@ -176,10 +176,14 @@ public class LineLayout {
         return alignment;
     }
 
+    public List<? extends LineArea> layout(double bpdAvailable, double ipdAvailable, Consume consume) {
+        return layout(ipdAvailable, consume);
+    }
+    
     public List<? extends LineArea> layout(double available, Consume consume) {
         List<LineArea> lines = new java.util.ArrayList<LineArea>();
         if (Math.abs(lineShearAngle) > 0.0001) {
-            available -= lineHeight * Math.tan(Math.toRadians(lineShearAngle));
+            available -= Math.abs(lineHeight * Math.tan(Math.toRadians(lineShearAngle)));
         }
         if (available > 0) {
             double consumed = 0;
