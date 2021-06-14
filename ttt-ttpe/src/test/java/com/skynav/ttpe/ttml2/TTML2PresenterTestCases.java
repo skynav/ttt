@@ -303,8 +303,8 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    public void testTTML2ShearAdvanceTBRL() throws Exception {
-        performPresentationTest("ttml2-shear-advance-tbrl.xml");
+    public void testTTML2FontShearAdvanceTBRL() throws Exception {
+        performPresentationTest("ttml2-font-shear-advance-tbrl.xml");
     }
 
     @Test
