@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -270,6 +270,21 @@ public class Phrase {
             return null;
     }
 
+    private static final StyleAttribute[] bpdAttr = new StyleAttribute[] { StyleAttribute.BPD };
+    public Double getBPD(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(bpdAttr[0]);
+        else
+            v = content.getIterator(bpdAttr, index, index + 1).getAttribute(bpdAttr[0]);
+        if (v == null)
+            v = defaults.getBPD();
+        if (v instanceof Double)
+            return (Double) v;
+        else
+            return null;
+    }
+
     private static final StyleAttribute[] colorAttr = new StyleAttribute[] { StyleAttribute.COLOR };
     public Color getColor(int index, Defaults defaults) {
         Object v;
@@ -311,6 +326,21 @@ public class Phrase {
             return null;
     }
 
+    private static final StyleAttribute[] ipdAttr = new StyleAttribute[] { StyleAttribute.IPD };
+    public Double getIPD(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(ipdAttr[0]);
+        else
+            v = content.getIterator(ipdAttr, index, index + 1).getAttribute(ipdAttr[0]);
+        if (v == null)
+            v = defaults.getIPD();
+        if (v instanceof Double)
+            return (Double) v;
+        else
+            return null;
+    }
+
     private static final StyleAttribute[] languageAttr = new StyleAttribute[] { StyleAttribute.LANGUAGE };
     public String getLanguage(int index, Defaults defaults) {
         Object v;
@@ -345,6 +375,21 @@ public class Phrase {
             return null;
     }
 
+    private static final StyleAttribute[] lineShearAttr = new StyleAttribute[] { StyleAttribute.LINE_SHEAR };
+    public Double getLineShear(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(lineShearAttr[0]);
+        else
+            v = content.getIterator(lineShearAttr, index, index + 1).getAttribute(lineShearAttr[0]);
+        if (v == null)
+            v = defaults.getLineShear();
+        if (v instanceof Double)
+            return (Double) v;
+        else
+            return null;
+    }
+
     private static final StyleAttribute[] outlineAttr = new StyleAttribute[] { StyleAttribute.OUTLINE };
     public Outline getOutline(int index, Defaults defaults) {
         Object v;
@@ -371,6 +416,21 @@ public class Phrase {
             v = defaults.getScript();
         if (v instanceof String)
             return (String) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] shearAttr = new StyleAttribute[] { StyleAttribute.SHEAR };
+    public Double getShear(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(shearAttr[0]);
+        else
+            v = content.getIterator(shearAttr, index, index + 1).getAttribute(shearAttr[0]);
+        if (v == null)
+            v = defaults.getShear();
+        if (v instanceof Double)
+            return (Double) v;
         else
             return null;
     }

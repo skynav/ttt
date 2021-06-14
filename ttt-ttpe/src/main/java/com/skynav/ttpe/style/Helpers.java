@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,9 @@ import com.skynav.ttpe.geometry.Point;
 import com.skynav.ttpe.geometry.WritingMode;
 
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.Measure;
 import com.skynav.ttv.model.value.impl.LengthImpl;
+import com.skynav.ttv.model.value.impl.MeasureImpl;
 
 import com.skynav.xml.helpers.Documents;
 
@@ -205,6 +207,23 @@ public class Helpers {
             return reference.getHeight();
         else
             return reference.getWidth();
+    }
+
+    public static double resolveMeasure(Element e, Measure m, Axis axis, Extent external, Extent reference, Extent font, Extent cellResolution, Measure.Resolver resolver) {
+        if (m != null) {
+            Length l;
+            if (m.isResolved()) {
+                l = (Length) m;
+            } else {
+                if (resolver == null) {
+                    resolver = MeasureImpl.getDefaultResolver();
+                }
+                l = m.resolve(resolver);
+            }
+            return resolveLength(e, l, axis, external, reference, font, cellResolution);
+        } else {
+            return 0;
+        }
     }
 
 }

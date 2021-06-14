@@ -303,8 +303,8 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    public void testTTML2ShearAdvanceTBRL() throws Exception {
-        performPresentationTest("ttml2-shear-advance-tbrl.xml");
+    public void testTTML2FontShearAdvanceTBRL() throws Exception {
+        performPresentationTest("ttml2-font-shear-advance-tbrl.xml");
     }
 
     @Test
@@ -495,6 +495,26 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2PaddingInlineLRTB() throws Exception {
         performPresentationTest("ttml2-padding-inline-lrtb.xml");
+    }
+
+    @Test
+    public void testTTML2LineShearLR() throws Exception {
+        performPresentationTest("ttml2-line-shear-lr.xml");
+    }
+
+    @Test
+    public void testTTML2LineShearRL() throws Exception {
+        performPresentationTest("ttml2-line-shear-rl.xml");
+    }
+
+    @Test
+    public void testTTML2ShearLRWithBPD() throws Exception {
+        performPresentationTest("ttml2-shear-lr-with-bpd.xml");
+    }
+
+    @Test
+    public void testTTML2ShearRLWithBPD() throws Exception {
+        performPresentationTest("ttml2-shear-rl-with-bpd.xml");
     }
 
 }

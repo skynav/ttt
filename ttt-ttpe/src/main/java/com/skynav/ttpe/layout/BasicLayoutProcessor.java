@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-18 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,7 @@ import com.skynav.ttpe.area.ReferenceArea;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Point;
+import com.skynav.ttpe.geometry.Shear;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
@@ -497,7 +498,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         if (display == Display.NONE)
             return;
         Visibility visibility = ls.getVisibility(e);
-        ls.pushBlock(e, visibility);
+        ls.pushBlock(e, 0, visibility);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttDivisionElementName))
                 layoutDivision(c, ls);
@@ -512,7 +513,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         if (display == Display.NONE)
             return;
         Visibility visibility = ls.getVisibility(e);
-        ls.pushBlock(e, visibility);
+        ls.pushBlock(e, 0, visibility);
         for (Element c : getChildElements(e)) {
             if (isElement(c, ttDivisionElementName)) {
                 layoutDivision(c, ls);
@@ -546,8 +547,9 @@ public class BasicLayoutProcessor extends LayoutProcessor {
 
     protected void layoutParagraph(Paragraph p, LayoutState ls) {
         Element e = p.getElement();
+        double shearAngle = Shear.toAngle(ls.getShear(e));
         Visibility visibility = ls.getVisibility(e);
-        ls.pushBlock(e, visibility);
+        ls.pushBlock(e, shearAngle, visibility);
         for (LineArea l : new ParagraphLayout(p, ls).layout()) {
             ls.addLine(l);
         }

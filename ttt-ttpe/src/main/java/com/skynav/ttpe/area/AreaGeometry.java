@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,11 @@ public interface AreaGeometry {
      * Determine bidirectional level.
      */
     int getBidiLevel();
+
+    /**
+     * Determine shear angle.
+     */
+    double getShearAngle();
 
     /**
      * Set IPD of content rectangle of area.

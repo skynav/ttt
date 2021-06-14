@@ -410,6 +410,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2FontShearLinearMapping() throws Exception {
+        performPresentationTest("ttml2-prstn-font-shear-linear-mapping.xml");
+    }
+
+    @Test
     public void testTTML2FontShearNoRuby() throws Exception {
         performPresentationTest("ttml2-prstn-font-shear-no-ruby.xml");
     }
@@ -498,6 +503,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2LineShearNoRuby() throws Exception {
         performPresentationTest("ttml2-prstn-line-shear-no-ruby.xml", true);
+    }
+
+    @Test
+    public void testTTML2LineShearLinearMapping() throws Exception {
+        performPresentationTest("ttml2-prstn-line-shear-linear-mapping.xml");
     }
 
     @Test
@@ -713,6 +723,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2ShearIMSC11Test3() throws Exception {
         performPresentationTest("ttml2-prstn-shear-imsc11-3.xml", true);
+    }
+
+    @Test
+    public void testTTML2ShearLinearMapping() throws Exception {
+        performPresentationTest("ttml2-prstn-shear-linear-mapping.xml");
     }
 
     @Test

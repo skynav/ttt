@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-18 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ public interface LayoutState {
     NonLeafAreaNode pushCanvas(Element e, double begin, double end, Extent cellResolution);
     NonLeafAreaNode pushViewport(Element e, double width, double height, boolean clip);
     NonLeafAreaNode pushReference(Element e, double x, double y, double width, double height, WritingMode wm, TransformMatrix ctm, Visibility visibility);
-    NonLeafAreaNode pushBlock(Element e, Visibility visibility);
+    NonLeafAreaNode pushBlock(Element e, double shearAngle, Visibility visibility);
     NonLeafAreaNode push(NonLeafAreaNode a);
     NonLeafAreaNode addLine(LineArea l);
     NonLeafAreaNode pop();
@@ -117,6 +117,7 @@ public interface LayoutState {
     Point getPosition(Element e, Extent extent);
     Overflow getOverflow(Element e);
     TransformMatrix getTransform(Element e);
+    double getShear(Element e);
     Visibility getVisibility(Element e);
     WritingMode getWritingMode(Element e);
     // statistics

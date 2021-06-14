@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,7 @@ import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.Point;
+import com.skynav.ttpe.geometry.Shear;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;
@@ -158,10 +159,10 @@ public class BasicLayoutState implements LayoutState {
         return push(ra);
     }
 
-    public NonLeafAreaNode pushBlock(Element e, Visibility visibility) {
+    public NonLeafAreaNode pushBlock(Element e, double shearAngle, Visibility visibility) {
         ReferenceArea ra = getReferenceArea();
         if (ra != null) {
-            BlockArea ba = new BlockArea(e, ra.getIPD(), ra.getBPD(), getBidiLevel(), visibility);
+            BlockArea ba = new BlockArea(e, ra.getIPD(), ra.getBPD(), getBidiLevel(), shearAngle, visibility);
             processBlockTraits(ba, e);
             return push(ba);
         } else
@@ -560,6 +561,26 @@ public class BasicLayoutState implements LayoutState {
 
     public TransformMatrix getTransform(Element e) {
         return defaults.getTransform();
+    }
+
+    public double getShear(Element e) {
+        StyleSpecification s = getStyles(e).get(ttsShearAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            if (v != null) {
+                Integer[] minMax = new Integer[] { 1, 1 };
+                Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
+                List<Length> lengths = new java.util.ArrayList<Length>();
+                if (Lengths.isLengths(v, getLocation(e, ttsShearAttrName), context, minMax, treatments, lengths)) {
+                    assert lengths.size() == 1;
+                    Length length = lengths.get(0);
+                    if (length.getUnits() == Length.Unit.Percentage) {
+                        return length.getValue() / 100.0;
+                    }
+                }
+            }
+        }
+        return defaults.getShear();
     }
 
     public Visibility getVisibility(Element e) {

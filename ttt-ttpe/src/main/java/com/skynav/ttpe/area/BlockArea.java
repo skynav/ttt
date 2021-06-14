@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     private double[] border;                    // writing-mode relative border: { before, end, after, start }
     private double[] padding;                   // writing-mode relative padding: { before, end, after, start }
     private int level;
+    private double shearAngle;
     private Visibility visibility;
     private int reversals;
     private double overflow;
@@ -59,14 +60,15 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public BlockArea(Element e, Visibility visibility) {
-        this(e, Double.NaN, Double.NaN, -1, visibility);
+        this(e, Double.NaN, Double.NaN, -1, 0, visibility);
     }
 
-    public BlockArea(Element e, double ipd, double bpd, int level, Visibility visibility) {
+    public BlockArea(Element e, double ipd, double bpd, int level, double shearAngle, Visibility visibility) {
         super(e);
         this.ipd = ipd;
         this.bpd = bpd;
         this.level = level;
+        this.shearAngle = shearAngle;
         this.visibility = visibility;
     }
 
@@ -75,6 +77,11 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     @Override
     public int getBidiLevel() {
         return level;
+    }
+
+    @Override
+    public double getShearAngle() {
+        return shearAngle;
     }
 
     @Override
@@ -164,6 +171,8 @@ public class BlockArea extends NonLeafAreaNode implements Block {
             }
         }
     }
+
+    // Block methods
 
     public int getLineCount() {
         int numLines = 0;
