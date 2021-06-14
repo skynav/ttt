@@ -109,7 +109,9 @@ public class LineLayout {
     // style related state
     private AnnotationReserve annotationReserve;
     private int bidiLevel;
+    private double bpd;
     private Color color;
+    private double ipd;
     private double lineShear;
     private Outline outline;
     private double shear;
@@ -143,7 +145,9 @@ public class LineLayout {
         this.writingMode = state.getWritingMode();
         // outer context styles
         this.annotationReserve = content.getAnnotationReserve(-1, defaults);
+        this.bpd = content.getBPD(-1, defaults);
         this.color = content.getColor(-1, defaults);
+        this.ipd = content.getBPD(-1, defaults);
         this.lineShear = content.getLineShear(-1, defaults);
         this.outline = content.getOutline(-1, defaults);
         this.shear = content.getShear(-1, defaults);
@@ -177,6 +181,12 @@ public class LineLayout {
     }
 
     public List<? extends LineArea> layout(double bpdAvailable, double ipdAvailable, Consume consume) {
+        if (Math.abs(shearAngle) > 0.0001) {
+            double bpd = this.bpd;
+            if (bpd > 0) {
+                ipdAvailable -= Math.abs(bpd * Math.tan(Math.toRadians(shearAngle)));
+            }
+        }
         return layout(ipdAvailable, consume);
     }
     
@@ -1577,7 +1587,7 @@ public class LineLayout {
         }
         private InlineBlockArea layoutEmbedding(Paragraph embedding, double available) {
             InlineBlockArea area = new InlineBlockArea(embedding.getElement());
-            area.addChildren(new ParagraphLayout(embedding, state).layout(available, Consume.FIT), LineArea.EXPAND_LINE);
+            area.addChildren(new ParagraphLayout(embedding, state).layout(-1, available, Consume.FIT), LineArea.EXPAND_LINE);
             return area;
         }
     }

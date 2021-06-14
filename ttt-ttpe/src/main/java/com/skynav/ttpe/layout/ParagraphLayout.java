@@ -43,11 +43,11 @@ public class ParagraphLayout {
     }
 
     public List<LineArea> layout() {
-        return new java.util.ArrayList<LineArea>(layout(state.getAvailable(IPD), Consume.MAX));
+        return new java.util.ArrayList<LineArea>(layout(state.getAvailable(BPD), state.getAvailable(IPD), Consume.MAX));
     }
 
-    public List<? extends LineArea> layout(double available, Consume consume) {
-        return new LineLayout(paragraph, state).layout(available, consume);
+    public List<? extends LineArea> layout(double bpdAvailable, double ipdAvailable, Consume consume) {
+        return new LineLayout(paragraph, state).layout(bpdAvailable, ipdAvailable, consume);
     }
 
 }

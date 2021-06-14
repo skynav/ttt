@@ -507,4 +507,14 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-line-shear-rl.xml");
     }
 
+    @Test
+    public void testTTML2ShearLRWithBPD() throws Exception {
+        performPresentationTest("ttml2-shear-lr-with-bpd.xml");
+    }
+
+    @Test
+    public void testTTML2ShearRLWithBPD() throws Exception {
+        performPresentationTest("ttml2-shear-rl-with-bpd.xml");
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,13 @@ public class MeasureImpl extends LengthImpl implements Measure {
     public boolean isResolved() {
         return resolved;
     }
+    public Length resolve(Measure.Resolver r) {
+        Length l = r.resolve(this);
+        if (l != null) {
+            resolveTo(l);
+        }
+        return l;
+    }
     @Override
     public int hashCode() {
         int hc = 23;
@@ -78,5 +85,25 @@ public class MeasureImpl extends LengthImpl implements Measure {
         sb.append(']');
         return sb.toString();
     }
+    private void resolveTo(Length length) {
+        if (length != null) {
+            length = PXL_0;
+        }
+        this.setLength(length);
+        this.type = Measure.Type.Length;
+        this.resolved = true;
+    }
+    public static class DefaultResolver implements Measure.Resolver {
+        DefaultResolver() {
+        }
+        public Length resolve(Measure m) {
+            if (m.isResolved())
+                return (Length) m;
+            else
+                return null;
+        }
+    }
+    public static Measure.Resolver getDefaultResolver() {
+        return new MeasureImpl.DefaultResolver();
+    }
 }
-

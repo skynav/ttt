@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,10 @@ public class LengthImpl implements Length {
     }
     public Length negate() {
         return (value == 0) ? this : new LengthImpl(-value, units);
+    }
+    void setLength(Length l) {
+        this.value = l.getValue();
+        this.units = l.getUnits();
     }
     @Override
     public int hashCode() {

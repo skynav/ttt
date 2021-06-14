@@ -270,6 +270,21 @@ public class Phrase {
             return null;
     }
 
+    private static final StyleAttribute[] bpdAttr = new StyleAttribute[] { StyleAttribute.BPD };
+    public Double getBPD(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(bpdAttr[0]);
+        else
+            v = content.getIterator(bpdAttr, index, index + 1).getAttribute(bpdAttr[0]);
+        if (v == null)
+            v = defaults.getBPD();
+        if (v instanceof Double)
+            return (Double) v;
+        else
+            return null;
+    }
+
     private static final StyleAttribute[] colorAttr = new StyleAttribute[] { StyleAttribute.COLOR };
     public Color getColor(int index, Defaults defaults) {
         Object v;
@@ -307,6 +322,21 @@ public class Phrase {
             v = content.getIterator(fontAttr, index, index + 1).getAttribute(fontAttr[0]);
         if (v instanceof Font)
             return (Font) v;
+        else
+            return null;
+    }
+
+    private static final StyleAttribute[] ipdAttr = new StyleAttribute[] { StyleAttribute.IPD };
+    public Double getIPD(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(ipdAttr[0]);
+        else
+            v = content.getIterator(ipdAttr, index, index + 1).getAttribute(ipdAttr[0]);
+        if (v == null)
+            v = defaults.getIPD();
+        if (v instanceof Double)
+            return (Double) v;
         else
             return null;
     }

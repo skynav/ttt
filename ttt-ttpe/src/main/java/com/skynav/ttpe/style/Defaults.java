@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-20 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -54,6 +54,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private static final AnnotationReserve defaultAnnotationReserve             = AnnotationReserve.NONE;
     private static final Image defaultBackgroundImage                           = Image.NONE;
     private static final Color defaultBackgroundColor                           = Color.TRANSPARENT;
+    private static final double defaultBPD                                      = -1;
     private static final Color defaultColor                                     = Color.WHITE;
     private static final Combination defaultCombination                         = Combination.NONE;
     private static final Display defaultDisplay                                 = Display.AUTO;
@@ -68,6 +69,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private static final Extent defaultFontSize                                 = FontKey.DEFAULT_SIZE;
     private static final FontStyle defaultFontStyle                             = FontKey.DEFAULT_STYLE;
     private static final FontWeight defaultFontWeight                           = FontKey.DEFAULT_WEIGHT;
+    private static final double defaultIPD                                      = -1;
     private static final String defaultLanguage                                 = FontKey.DEFAULT_LANGUAGE;
     private static final double defaultLineHeight                               = defaultFontSize.getHeight() * 1.25;
     private static final double defaultLineShear                                = 0;
@@ -96,6 +98,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private AnnotationReserve annotationReserve                                 = defaultAnnotationReserve;
     private Image backgroundImage                                               = defaultBackgroundImage;
     private Color backgroundColor                                               = defaultBackgroundColor;
+    private double bpd                                                          = defaultBPD;
     private Color color                                                         = defaultColor;
     private Combination combination                                             = defaultCombination;
     private Display display                                                     = defaultDisplay;
@@ -110,6 +113,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private Extent fontSize                                                     = defaultFontSize;
     private FontStyle fontStyle                                                 = defaultFontStyle;
     private FontWeight fontWeight                                               = defaultFontWeight;
+    private double ipd                                                          = defaultIPD;
     private String language                                                     = defaultLanguage;
     private double lineHeight                                                   = defaultLineHeight;
     private double lineShear                                                    = defaultLineShear;
@@ -193,6 +197,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public AnnotationReserve getAnnotationReserve() {
         return annotationReserve;
+    }
+
+    public void setBPD(double bpd) {
+        this.bpd = bpd;
+    }
+
+    public double getBPD() {
+        return bpd;
     }
 
     public void setBackgroundColor(Color backgroundColor) {
@@ -333,6 +345,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public FontWeight getFontWeight() {
         return fontWeight;
+    }
+
+    public void setIPD(double ipd) {
+        this.ipd = ipd;
+    }
+
+    public double getIPD() {
+        return ipd;
     }
 
     public void setLanguage(String language) {

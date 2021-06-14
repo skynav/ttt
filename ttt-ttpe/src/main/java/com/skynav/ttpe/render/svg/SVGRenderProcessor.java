@@ -485,15 +485,29 @@ public class SVGRenderProcessor extends RenderProcessor {
         double shear = a.getShearAngle();
         if (Math.abs(shear) > 0.0001) {
             if (vertical) {
-                if (bpdDirection == Direction.RL) {
-                    shear = - shear;
+                double skewY = Math.abs(Math.tan(Math.toRadians(shear)));
+                if (bpdDirection == Direction.LR) {
+                    if (shear < 0) {
+                        yCurrent += (skewY * a.getBPD());
+                    }
+                } else if (bpdDirection == Direction.RL) {
+                    if (shear < 0) {
+                        yCurrent += (skewY * a.getBPD());
+                    }
+                    shear *= -1;
                 }
                 Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateSkewYFormatter.format(new Double[] {xCurrent, yCurrent, shear}));
             } else {
+                double skewX = Math.abs(Math.tan(Math.toRadians(shear)));
                 if (ipdDirection == Direction.LR) {
-                    shear = - shear;
-                    double skewX = Math.tan(Math.toRadians(shear));
-                    xCurrent += - (skewX * a.getBPD());
+                    if (shear > 0) {
+                        xCurrent += (skewX * a.getBPD());
+                    }
+                    shear *= -1;
+                } else if (ipdDirection == Direction.RL) {
+                    if (shear < 0) {
+                        xCurrent += (skewX * a.getBPD());
+                    }
                 }
                 Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateSkewXFormatter.format(new Double[] {xCurrent, yCurrent, shear}));
             }
@@ -653,19 +667,10 @@ public class SVGRenderProcessor extends RenderProcessor {
                 double skewY = Math.abs(Math.tan(Math.toRadians(shear)));
                 if (bpdDirection == Direction.LR) {
                     if (shear < 0) {
-                        skewY *=  1;
-                        yCurrent += (skewY * a.getBPD());
-                    } else {
-                        skewY *=  0;
                         yCurrent += (skewY * a.getBPD());
                     }
-                    shear *=  1;
                 } else if (bpdDirection == Direction.RL) {
                     if (shear < 0) {
-                        skewY *=  1;
-                        yCurrent += (skewY * a.getBPD());
-                    } else {
-                        skewY *=  0;
                         yCurrent += (skewY * a.getBPD());
                     }
                     shear *= -1;
@@ -674,23 +679,14 @@ public class SVGRenderProcessor extends RenderProcessor {
             } else {
                 double skewX = Math.abs(Math.tan(Math.toRadians(shear)));
                 if (ipdDirection == Direction.LR) {
-                    if (shear < 0) {
-                        skewX *=  0;
-                        xCurrent += (skewX * a.getBPD());
-                    } else {
-                        skewX *=  1;
+                    if (shear > 0) {
                         xCurrent += (skewX * a.getBPD());
                     }
                     shear *= -1;
                 } else if (ipdDirection == Direction.RL) {
                     if (shear < 0) {
-                        skewX *=  1;
-                        xCurrent += (skewX * a.getBPD());
-                    } else {
-                        skewX *=  0;
                         xCurrent += (skewX * a.getBPD());
                     }
-                    shear *=  1;
                 }
                 Documents.setAttribute(e, SVGDocumentFrame.transformAttrName, translateSkewXFormatter.format(new Double[] {xCurrent, yCurrent, shear}));
             }

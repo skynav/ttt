@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-20 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -52,12 +52,14 @@ import com.skynav.ttpe.util.Characters;
 import com.skynav.ttv.model.value.FontFamily;
 import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.Length;
+import com.skynav.ttv.model.value.Measure;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.verifier.util.Fonts;
 import com.skynav.ttv.verifier.util.Keywords;
 import com.skynav.ttv.verifier.util.Lengths;
+import com.skynav.ttv.verifier.util.Measures;
 import com.skynav.ttv.verifier.util.MixedUnitsTreatment;
 import com.skynav.ttv.verifier.util.NegativeTreatment;
 import com.skynav.ttv.verifier.util.QuotedGenericFontFamilyTreatment;
@@ -514,6 +516,28 @@ public class StyleCollector {
         StyleSpecification s;
         Object v;
 
+        // BPD
+        s = styles.get(ttsBPDAttrName);
+        v = null;
+        if (s != null) {
+            if (Keywords.isAuto(s.getValue())) {
+                v = Double.valueOf(-1);
+            } else {
+                Integer[] minMax = new Integer[] { 1, 1 };
+                Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
+                List<Measure> measures = new java.util.ArrayList<Measure>();
+                if (Measures.isMeasures(s.getValue(), new Location(), context, minMax, treatments, measures)) {
+                    assert measures.size() == 1;
+                    Measure m = measures.get(0);
+                    Axis axis = writingMode.getAxis(BPD);
+                    Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                    v = Double.valueOf(Helpers.resolveMeasure(e, m, axis, extBounds, refBounds, fs, cellResolution, null));
+                }
+            }
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.BPD, v, begin, end);
+
         // COLOR
         Color color = null;
         s = styles.get(ttsColorAttrName);
@@ -528,6 +552,28 @@ public class StyleCollector {
 
         // FONT
         collectCommonFontStyles(e, begin, end, styles);
+
+        // IPD
+        s = styles.get(ttsIPDAttrName);
+        v = null;
+        if (s != null) {
+            if (Keywords.isAuto(s.getValue())) {
+                v = Double.valueOf(-1);
+            } else {
+                Integer[] minMax = new Integer[] { 1, 1 };
+                Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Error };
+                List<Measure> measures = new java.util.ArrayList<Measure>();
+                if (Measures.isMeasures(s.getValue(), new Location(), context, minMax, treatments, measures)) {
+                    assert measures.size() == 1;
+                    Measure m = measures.get(0);
+                    Axis axis = writingMode.getAxis(IPD);
+                    Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                    v = Double.valueOf(Helpers.resolveMeasure(e, m, axis, extBounds, refBounds, fs, cellResolution, null));
+                }
+            }
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.IPD, v, begin, end);
 
         // PADDING
         s = styles.get(ttsPaddingAttrName);
