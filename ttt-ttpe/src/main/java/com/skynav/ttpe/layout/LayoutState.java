@@ -113,11 +113,12 @@ public interface LayoutState {
     BlockAlignment getDisplayAlign(Element e);
     Extent getExtent(Element e);
     Image getForegroundImage(Element e);
+    double getOpacity(Element e);
     Point getOrigin(Element e);
-    Point getPosition(Element e, Extent extent);
     Overflow getOverflow(Element e);
-    TransformMatrix getTransform(Element e);
+    Point getPosition(Element e, Extent extent);
     double getShear(Element e);
+    TransformMatrix getTransform(Element e);
     Visibility getVisibility(Element e);
     WritingMode getWritingMode(Element e);
     // statistics

@@ -536,6 +536,16 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2OpacityImageBlock() throws Exception {
+        performPresentationTest("ttml2-prstn-opacity-image-block.xml");
+    }
+
+    @Test
+    public void testTTML2OpacityImageInline() throws Exception {
+        performPresentationTest("ttml2-prstn-opacity-image-inline.xml", true);
+    }
+
+    @Test
     public void testTTML2OpacityInline() throws Exception {
         performPresentationTest("ttml2-prstn-opacity-inline.xml", true);
     }

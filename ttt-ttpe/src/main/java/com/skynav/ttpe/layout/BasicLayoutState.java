@@ -485,6 +485,34 @@ public class BasicLayoutState implements LayoutState {
         return getExternalExtent();
     }
 
+    public double getOpacity(Element e) {
+        StyleSpecification s = getStyles(e).get(ttsOpacityAttrName);
+        if (s != null) {
+            String v = s.getValue();
+            try {
+                Double d = Double.valueOf(v);
+                double opacity = d.doubleValue();
+                if (d.isNaN()) {
+                    opacity = 1;
+                } else if (d.isInfinite()) {
+                    if (opacity < 0) {
+                        opacity = 0;
+                    } else {
+                        opacity = 1;
+                    }
+                } else if (opacity < 0) {
+                    opacity = 0;
+                } else if (opacity > 1) {
+                    opacity = 1;
+                }
+                return opacity;
+            } catch (NumberFormatException x) {
+                return defaults.getOpacity();
+            }
+        } else
+            return defaults.getOpacity();
+    }
+
     public Point getOrigin(Element e) {
         StyleSpecification s = getStyles(e).get(ttsOriginAttrName);
         if (s != null) {

@@ -73,6 +73,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private static final String defaultLanguage                                 = FontKey.DEFAULT_LANGUAGE;
     private static final double defaultLineHeight                               = defaultFontSize.getHeight() * 1.25;
     private static final double defaultLineShear                                = 0;
+    private static final double defaultOpacity                                  = 1;
     private static final Point defaultOrigin                                    = Point.ZERO;
     private static final Orientation defaultOrientation                         = Orientation.ROTATE000;
     private static final Outline defaultOutline                                 = Outline.NONE;
@@ -117,6 +118,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private String language                                                     = defaultLanguage;
     private double lineHeight                                                   = defaultLineHeight;
     private double lineShear                                                    = defaultLineShear;
+    private double opacity                                                      = defaultOpacity;
     private Point origin                                                        = defaultOrigin;
     private Orientation orientation                                             = defaultOrientation;
     private Outline outline                                                     = defaultOutline;
@@ -377,6 +379,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public double getLineShear() {
         return lineShear;
+    }
+
+    public void setOpacity(double opacity) {
+        this.opacity = opacity;
+    }
+
+    public double getOpacity() {
+        return opacity;
     }
 
     public void setOrigin(Point origin) {

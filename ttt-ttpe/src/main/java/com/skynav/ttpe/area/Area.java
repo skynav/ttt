@@ -60,6 +60,11 @@ public interface Area extends AreaGeometry {
     boolean isVisible();
 
     /**
+     * Obtain opacity, or 1 if none defined.
+     */
+    double getOpacity();
+
+    /**
      * Obtain font of area, or null if none defined.
      */
     Font getFont();
