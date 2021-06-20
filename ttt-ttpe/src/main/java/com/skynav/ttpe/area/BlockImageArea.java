@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-16 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,11 +33,13 @@ import com.skynav.ttpe.style.Visibility;
 public class BlockImageArea extends LeafBlockArea {
 
     private Visibility visibility;
+    private double opacity;
     private Image image;
 
-    public BlockImageArea(Element e, double ipd, double bpd, Visibility visibility, Image image) {
+    public BlockImageArea(Element e, double ipd, double bpd, Visibility visibility, double opacity, Image image) {
         super(e, ipd, bpd);
         this.visibility = visibility;
+        this.opacity = opacity;
         this.image = image;
     }
 
@@ -48,6 +50,11 @@ public class BlockImageArea extends LeafBlockArea {
     @Override
     public Visibility getVisibility() {
         return visibility;
+    }
+
+    @Override
+    public double getOpacity() {
+        return opacity;
     }
 
 }

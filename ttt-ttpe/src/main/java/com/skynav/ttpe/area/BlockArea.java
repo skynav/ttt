@@ -46,6 +46,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     private int level;
     private double shearAngle;
     private Visibility visibility;
+    private double opacity;
     private int reversals;
     private double overflow;
     private Color backgroundColor;
@@ -60,16 +61,21 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     }
 
     public BlockArea(Element e, Visibility visibility) {
-        this(e, Double.NaN, Double.NaN, -1, 0, visibility);
+        this(e, Double.NaN, Double.NaN, -1, 0, visibility, 1);
     }
 
     public BlockArea(Element e, double ipd, double bpd, int level, double shearAngle, Visibility visibility) {
+        this(e, ipd, bpd, level, shearAngle, visibility, 1);
+    }
+    
+    public BlockArea(Element e, double ipd, double bpd, int level, double shearAngle, Visibility visibility, double opacity) {
         super(e);
         this.ipd = ipd;
         this.bpd = bpd;
         this.level = level;
         this.shearAngle = shearAngle;
         this.visibility = visibility;
+        this.opacity = opacity;
     }
 
     // AbstractArea overrides
@@ -87,6 +93,11 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     @Override
     public Visibility getVisibility() {
         return visibility;
+    }
+
+    @Override
+    public double getOpacity() {
+        return opacity;
     }
 
     @Override

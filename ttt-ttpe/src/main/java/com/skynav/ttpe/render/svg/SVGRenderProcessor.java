@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-16 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -576,6 +576,10 @@ public class SVGRenderProcessor extends RenderProcessor {
                 Documents.setAttribute(eImage, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {image.getHeight()}));
                 Documents.setAttribute(eImage, SVGDocumentFrame.preserveAspectRatioAttrName, "xMinYMin slice");
                 Documents.setAttribute(eImage, SVGDocumentFrame.xlinkHrefAttrName, resource.getName());
+                double opacity = a.getOpacity();
+                if (opacity < 1) {
+                    Documents.setAttribute(eImage, SVGDocumentFrame.opacityAttrName, doubleFormatter.format(new Object[] {opacity}));
+                }
                 e.appendChild(eImage);
             }
         }
