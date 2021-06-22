@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-19 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -448,6 +448,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2ImageIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-image-imsc11-1.xml");
+    }
+
+    @Test
+    public void testTTML2ImageInBody() throws Exception {
+        performPresentationTest("ttml2-prstn-image-in-body.xml");
     }
 
     @Test

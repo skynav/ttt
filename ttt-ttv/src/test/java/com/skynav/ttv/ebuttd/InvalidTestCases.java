@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, Michal Samek, (Michal.Samek at at.redbullmediahouse.com)
- * Copyright 2015 Skynav, Inc.
+ * Copyright 2015-21 Skynav, Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -110,6 +110,7 @@ public class InvalidTestCases {
             args.add("--expect-warnings");
             args.add(Integer.toString(expectedWarnings));
         }
+        args.add("--");
         args.add(urlString);
         TimedTextVerifier ttv = new TimedTextVerifier();
         ttv.run(args.toArray(new String[args.size()]));
