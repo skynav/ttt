@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -534,8 +534,14 @@ public class Presenter extends TimedTextTransformer {
     public List<String> processRestartArguments(List<String> args, List<String> nonOptionArgs, RestartOptions restartOptions) {
         if ((restartOptions != null) && !restartOptions.isEmpty()) {
             List<String> argsRestart = new java.util.ArrayList<String>();
-            for (int i = 0, n = args.size() - nonOptionArgs.size(); i < n; ++i)
-                argsRestart.add(args.get(i));
+            boolean addOptionsTerminator = false;
+            for (int i = 0, n = args.size() - nonOptionArgs.size(); i < n; ++i) {
+                String arg = args.get(i);
+                if (!arg.equals("--"))
+                    argsRestart.add(arg);
+                else
+                    addOptionsTerminator = true;
+            }
             for (RestartOptions.Section s : restartOptions.getSections()) {
                 if (s.getName().equals("ttpe")) {
                     for (Map.Entry<String,Object> e : s.getOptions().entrySet()) {
@@ -554,6 +560,8 @@ public class Presenter extends TimedTextTransformer {
                     }
                 }
             }
+            if (addOptionsTerminator)
+                argsRestart.add("--");
             for (int i = 0, n = nonOptionArgs.size(); i < n; ++i)
                 argsRestart.add(nonOptionArgs.get(i));
             args = argsRestart;
