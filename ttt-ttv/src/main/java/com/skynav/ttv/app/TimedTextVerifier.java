@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -212,6 +212,8 @@ public class TimedTextVerifier implements VerifierContext {
         { "verbose-level",              "LEVEL",    "enable verbose output at specified level (default: 0)" },
         { "treat-foreign-as",           "TOKEN",    "specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: " +
             ForeignTreatment.getDefault().name().toLowerCase() + ")" },
+        { "treat-optional-validation-as", "MODE",    "treat optional validation mode as specified mode, where MODE is required|prohibited (default: " +
+            ValidationMode.Required.name().toLowerCase() + ")" },
         { "treat-warning-as-error",     "",         "treat warning as error (overrides --disable-warnings)" },
         { "until-phase",                "PHASE",    "verify up to specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: " +
             Phase.getDefault().name().toLowerCase() + ")" },
@@ -318,6 +320,7 @@ public class TimedTextVerifier implements VerifierContext {
     private boolean showValidator;
     private boolean showWarningTokens;
     private String treatForeignAs;
+    private String treatOptionalValidationAs;
     private String untilPhase;
 
     // derived option state
@@ -327,10 +330,13 @@ public class TimedTextVerifier implements VerifierContext {
     private Model model;
     private ForeignTreatment foreignTreatment;
     private Phase lastPhase;
+    private ValidationMode optionalValidationTreatment;
     private double parsedExternalFrameRate;
     private double parsedExternalDuration;
     private double[] parsedExternalExtent;
     private WallClockTime parsedExternalWallClockBegin;
+    private ValidationMode validationMode;
+    private ValidationAction validationAction;
 
     // global processing state
     private boolean restarted;
@@ -406,6 +412,53 @@ public class TimedTextVerifier implements VerifierContext {
         }
     }
 
+    private enum ValidationMode {
+        Required,       // validation required, abort if cannot validate
+        Optional,       // validation optional, with implementation dependent semantics, e.g., may interpret as Required or as Prohibited
+        Prohibited;     // don't perform validation
+
+        public static ValidationMode valueOfIgnoringCase(String value) {
+            if (value == null)
+                throw new IllegalArgumentException();
+            for (ValidationMode v: values()) {
+                if (value.equalsIgnoreCase(v.name()))
+                    return v;
+            }
+            throw new IllegalArgumentException();
+        }
+
+        public static ValidationMode getDefault() {
+            return Optional;
+        }
+    }
+
+    private enum ValidationAction {
+        Abort,          // abort processing
+        Warn,           // warn, but do not abort processing
+        Ignore;         // don't warn and do not abort processing
+
+        public static ValidationAction valueOfIgnoringCase(String value) {
+            if (value == null)
+                throw new IllegalArgumentException();
+            for (ValidationAction v: values()) {
+                if (value.equalsIgnoreCase(v.name()))
+                    return v;
+            }
+            throw new IllegalArgumentException();
+        }
+
+        public static ValidationAction getDefault(ValidationMode mode) {
+            if (mode == ValidationMode.Required)
+                return Abort;
+            else if (mode == ValidationMode.Optional)
+                return Warn;
+            else if (mode == ValidationMode.Prohibited)
+                return Ignore;
+            else
+                throw new IllegalArgumentException();
+        }
+    }
+
     public TimedTextVerifier() {
         this(null, null, null, false, null);
     }
@@ -434,6 +487,7 @@ public class TimedTextVerifier implements VerifierContext {
         showValidator = false;
         showWarningTokens = false;
         treatForeignAs = null;
+        treatOptionalValidationAs = null;
         untilPhase = null;
     }
 
@@ -444,6 +498,7 @@ public class TimedTextVerifier implements VerifierContext {
         // model = null;
         foreignTreatment = null;
         lastPhase = restart ? Phase.Restarted : Phase.None;
+        optionalValidationTreatment = ValidationMode.Required;
         parsedExternalFrameRate = 0;
         parsedExternalDuration = 0;
         parsedExternalExtent = null;
@@ -964,6 +1019,10 @@ public class TimedTextVerifier implements VerifierContext {
             if (index + 1 > numArgs)
                 throw new MissingOptionArgumentException("--" + option);
             treatForeignAs = args.get(++index);
+        } else if (option.equals("treat-optional-validation-as")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            treatOptionalValidationAs = args.get(++index);
         } else if (option.equals("treat-warning-as-error")) {
             reporter.setTreatWarningAsError(true);
         } else if (option.equals("until-phase")) {
@@ -1055,6 +1114,16 @@ public class TimedTextVerifier implements VerifierContext {
             foreignTreatment = ForeignTreatment.getDefault();
         if (foreignTreatment == ForeignTreatment.Warning)
             reporter.enableWarning("foreign");
+        ValidationMode optionalValidationTreatment;
+        if (treatOptionalValidationAs != null) {
+            try {
+                optionalValidationTreatment = ValidationMode.valueOfIgnoringCase(treatOptionalValidationAs);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidOptionUsageException("treat-foreign-as", "unknown token: " + treatOptionalValidationAs);
+            }
+        } else
+            optionalValidationTreatment = ValidationMode.Required;
+        this.optionalValidationTreatment = optionalValidationTreatment;
         if (untilPhase != null) {
             try {
                 lastPhase = Phase.valueOfIgnoringCase(untilPhase);
@@ -1584,7 +1653,6 @@ public class TimedTextVerifier implements VerifierContext {
         boolean configureReporter = false;
         if (attributes != null) {
             String annotationsNamespace = Annotations.getNamespace();
-            String parameterNamespace = TTML.Constants.NAMESPACE_TT_PARAMETER;
             // first process model annotation, as processing others may depend on this
             for (int i = 0, n = attributes.getLength(); i < n; ++i) {
                 if (attributes.getURI(i).equals(annotationsNamespace)) {
@@ -1640,16 +1708,63 @@ public class TimedTextVerifier implements VerifierContext {
                     } else {
                         throw new InvalidAnnotationException(localName, "unknown annotation");
                     }
-                } else if (nsURI.equals(parameterNamespace)) {
+                }
+            }
+        }
+    }
+
+    private void processValidationParameters(Attributes attributes) {
+        ValidationMode mode = ValidationMode.getDefault();
+        ValidationAction action = ValidationAction.getDefault(mode);
+        if (attributes != null) {
+            String parameterNamespace = TTML.Constants.NAMESPACE_TT_PARAMETER;
+            // first, process ttp:validation
+            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+                String nsURI = attributes.getURI(i);
+                String localName = attributes.getLocalName(i);
+                String value = attributes.getValue(i);
+                if (nsURI.equals(parameterNamespace)) {
                     if (localName.equals("validation")) {
-                        if ((value != null) && value.equals("prohibited"))
-                            lastPhase = Phase.WellFormedness;
+                        if ((value != null) && value.equals("required"))
+                            mode = ValidationMode.Required;
+                        else if ((value != null) && value.equals("optional"))
+                            mode = ValidationMode.Optional;
+                        else if ((value != null) && value.equals("prohibited"))
+                            mode = ValidationMode.Prohibited;
                     } else if (localName.equals("validationAction")) {
-                        /* [TBD] - IMPLEMENT ME */
+                        if ((value != null) && value.equals("warn"))
+                            validationAction = ValidationAction.Warn;
+                        else if ((value != null) && value.equals("ignore"))
+                            validationAction = ValidationAction.Ignore;
+                        else if ((value != null) && value.equals("abort"))
+                            validationAction = ValidationAction.Abort;
+                    }
+                }
+            }
+            // next, process ttp:validationAction
+            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
+                String nsURI = attributes.getURI(i);
+                String localName = attributes.getLocalName(i);
+                String value = attributes.getValue(i);
+                if (nsURI.equals(parameterNamespace)) {
+                    if (localName.equals("validationAction")) {
+                        if ((value != null) && value.equals("warn"))
+                            validationAction = ValidationAction.Warn;
+                        else if ((value != null) && value.equals("ignore"))
+                            validationAction = ValidationAction.Ignore;
+                        else if ((value != null) && value.equals("abort"))
+                            validationAction = ValidationAction.Abort;
                     }
                 }
             }
         }
+        // update state
+        if (mode == ValidationMode.Required)
+            lastPhase = Phase.All;
+        else if (mode == ValidationMode.Optional)
+            lastPhase = Phase.All;
+        else if (mode == ValidationMode.Prohibited)
+            lastPhase = Phase.WellFormedness;
     }
 
     private void setRestartOptions(RestartOptions options) {
@@ -1706,6 +1821,7 @@ public class TimedTextVerifier implements VerifierContext {
                 public void startElement(String nsUri, String localName, String qualName, Attributes attrs) throws SAXException {
                     if (expectRootElement) {
                         processAnnotations(attrs);
+                        processValidationParameters(attrs);
                         expectRootElement = false;
                     }
                 }
