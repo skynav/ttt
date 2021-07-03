@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-18 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,11 @@ import org.junit.Test;
 import com.skynav.ttpe.app.PresenterTestDriver;
 
 public class TTML2PresenterTestCases extends PresenterTestDriver {
+
+    @Test
+    public void testTTML2FontEmbeddingFamilyInvalid() throws Exception {
+        performPresentationTest("ttml2-prstn-font-embedding-family-invalid.xml");
+    }
 
     @Test
     public void testTTML2ValidationProhibitedInvalid() throws Exception {
