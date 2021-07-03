@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-14 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -70,6 +70,8 @@ public interface Reporter {
     public int getDebugLevel();
     public Message message(String key, String format, Object... arguments);
     public Message message(Locator locator, String key, String format, Object... arguments);
+    public void setTreatErrorAsWarning(boolean treatErrorAsWarning);
+    public boolean isTreatingErrorAsWarning();
     public void logError(Message message);
     public void logError(Exception e);
     public void logError(Exception e, boolean rethrow);

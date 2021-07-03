@@ -503,6 +503,8 @@ public class TimedTextVerifier implements VerifierContext {
         parsedExternalDuration = 0;
         parsedExternalExtent = null;
         parsedExternalWallClockBegin = null;
+        validationMode = null;
+        validationAction = null;
     }
 
     private void resetGlobalProcessingState(Reporter reporter, PrintWriter showOutput, boolean restart) {
@@ -1714,11 +1716,10 @@ public class TimedTextVerifier implements VerifierContext {
     }
 
     private void processValidationParameters(Attributes attributes) {
-        ValidationMode mode = ValidationMode.getDefault();
-        ValidationAction action = ValidationAction.getDefault(mode);
+        ValidationMode mode = null;
+        ValidationAction action = null;
         if (attributes != null) {
             String parameterNamespace = TTML.Constants.NAMESPACE_TT_PARAMETER;
-            // first, process ttp:validation
             for (int i = 0, n = attributes.getLength(); i < n; ++i) {
                 String nsURI = attributes.getURI(i);
                 String localName = attributes.getLocalName(i);
@@ -1733,38 +1734,32 @@ public class TimedTextVerifier implements VerifierContext {
                             mode = ValidationMode.Prohibited;
                     } else if (localName.equals("validationAction")) {
                         if ((value != null) && value.equals("warn"))
-                            validationAction = ValidationAction.Warn;
+                            action = ValidationAction.Warn;
                         else if ((value != null) && value.equals("ignore"))
-                            validationAction = ValidationAction.Ignore;
+                            action = ValidationAction.Ignore;
                         else if ((value != null) && value.equals("abort"))
-                            validationAction = ValidationAction.Abort;
-                    }
-                }
-            }
-            // next, process ttp:validationAction
-            for (int i = 0, n = attributes.getLength(); i < n; ++i) {
-                String nsURI = attributes.getURI(i);
-                String localName = attributes.getLocalName(i);
-                String value = attributes.getValue(i);
-                if (nsURI.equals(parameterNamespace)) {
-                    if (localName.equals("validationAction")) {
-                        if ((value != null) && value.equals("warn"))
-                            validationAction = ValidationAction.Warn;
-                        else if ((value != null) && value.equals("ignore"))
-                            validationAction = ValidationAction.Ignore;
-                        else if ((value != null) && value.equals("abort"))
-                            validationAction = ValidationAction.Abort;
+                            action = ValidationAction.Abort;
                     }
                 }
             }
         }
-        // update state
+        if (mode == null)
+            mode = ValidationMode.getDefault();
+        if (mode == ValidationMode.Optional)
+            mode = optionalValidationTreatment;
+        assert mode != null;
         if (mode == ValidationMode.Required)
-            lastPhase = Phase.All;
-        else if (mode == ValidationMode.Optional)
             lastPhase = Phase.All;
         else if (mode == ValidationMode.Prohibited)
             lastPhase = Phase.WellFormedness;
+        else
+            throw new IllegalStateException();
+        if (action == null)
+            action = ValidationAction.getDefault(mode);
+        if (action == ValidationAction.Warn)
+            getReporter().setTreatErrorAsWarning(true);
+        this.validationMode = mode;
+        this.validationAction = action;
     }
 
     private void setRestartOptions(RestartOptions options) {

@@ -154,6 +154,13 @@ public class NullReporter implements Reporter {
         return new LocatedMessage(locator, key, format, arguments);
     }
 
+    public void setTreatErrorAsWarning(boolean treatErrorAsWarning) {
+    }
+
+    public boolean isTreatingErrorAsWarning() {
+        return false;
+    }
+
     public void logError(Message message) {
     }
 
