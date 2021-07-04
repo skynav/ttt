@@ -569,6 +569,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         if ((a != null) && (a instanceof BlockArea)) {
             BlockArea b = (BlockArea) a;
             Visibility visibility = ls.getVisibility(e);
+            double opacity = ls.getOpacity(e);
             Image image = ls.getForegroundImage(e);
             double w = image.getWidth();
             double h = image.getHeight();
@@ -580,7 +581,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
                 ipd = w;
                 bpd = h;
             }
-            b.addChild(new BlockImageArea(e, ipd, bpd, visibility, image));
+            b.addChild(new BlockImageArea(e, ipd, bpd, visibility, opacity, image));
         }
     }
 

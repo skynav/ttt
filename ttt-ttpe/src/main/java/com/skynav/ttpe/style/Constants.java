@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-20 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -57,6 +57,7 @@ public class Constants {
     public static final QName ttsLineHeightAttrName                     = new QName(NAMESPACE_TT_STYLE, "lineHeight");
     public static final QName ttsLineShearAttrName                      = new QName(NAMESPACE_TT_STYLE, "lineShear");
     public static final QName ttsOriginAttrName                         = new QName(NAMESPACE_TT_STYLE, "origin");
+    public static final QName ttsOpacityAttrName                        = new QName(NAMESPACE_TT_STYLE, "opacity");
     public static final QName ttsOverflowAttrName                       = new QName(NAMESPACE_TT_STYLE, "overflow");
     public static final QName ttsPaddingAttrName                        = new QName(NAMESPACE_TT_STYLE, "padding");
     public static final QName ttsPositionAttrName                       = new QName(NAMESPACE_TT_STYLE, "position");

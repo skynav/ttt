@@ -123,6 +123,10 @@ public abstract class AbstractArea implements Area {
         return (visibility == null) || (visibility != Visibility.HIDDEN);
     }
 
+    public double getOpacity() {
+        return 1;
+    }
+
     public Font getFont() {
         return null;
     }
