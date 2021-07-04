@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -53,6 +53,7 @@ public class TextReporter implements Reporter {
     private ResourceBundle bundle;
     /* options state */
     private int debug;
+    private boolean treatErrorAsWarning;
     private boolean disableWarnings;
     private Set<String> disabledWarnings;
     private Set<String> enabledWarnings;
@@ -163,6 +164,7 @@ public class TextReporter implements Reporter {
         hideLocation = false;
         hidePath = false;
         hideWarnings = false;
+        treatErrorAsWarning = false;
         treatWarningAsError = false;
         verbose = 0;
     }
@@ -328,9 +330,22 @@ public class TextReporter implements Reporter {
         return new LocatedMessage(uriString, locator.getLineNumber(), locator.getColumnNumber(), resourceLines, key, format, arguments);
     }
 
+    public void setTreatErrorAsWarning(boolean treatErrorAsWarning) {
+        if (!treatWarningAsError)
+            this.treatErrorAsWarning = treatErrorAsWarning;
+    }
+
+    public boolean isTreatingErrorAsWarning() {
+        return treatErrorAsWarning;
+    }
+
     public void logError(Message message) {
-        out(ReportType.Error, message);
-        ++resourceErrors;
+        if (!treatErrorAsWarning) {
+            out(ReportType.Error, message);
+            ++resourceErrors;
+        } else {
+            logWarning(message);
+        }
     }
 
     private Locator extractLocator(SAXParseException e) {
@@ -437,7 +452,8 @@ public class TextReporter implements Reporter {
     }
 
     public void setTreatWarningAsError(boolean treatWarningAsError) {
-        this.treatWarningAsError = treatWarningAsError;
+        if (!treatErrorAsWarning)
+            this.treatWarningAsError = treatWarningAsError;
     }
 
     public boolean isTreatingWarningAsError() {
