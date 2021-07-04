@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -151,6 +151,7 @@ public class InvalidTestCases {
             args.add("--expect-warnings");
             args.add(Integer.toString(expectedWarnings));
         }
+        args.add("--");
         args.add(urlString);
         TimedTextVerifier ttv = new TimedTextVerifier();
         ttv.run(args.toArray(new String[args.size()]));

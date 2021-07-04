@@ -500,8 +500,11 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         Visibility visibility = ls.getVisibility(e);
         ls.pushBlock(e, 0, visibility);
         for (Element c : getChildElements(e)) {
-            if (isElement(c, ttDivisionElementName))
+            if (isElement(c, ttDivisionElementName)) {
                 layoutDivision(c, ls);
+            } else if (isElement(c, ttImageElementName)) {
+                layoutImage(c, ls);
+            }
         }
         ls.pop();
     }

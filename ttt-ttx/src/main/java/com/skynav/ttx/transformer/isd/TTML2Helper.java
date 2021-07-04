@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ import org.w3c.dom.Node;
 
 import com.skynav.ttv.model.ttml.TTML2;
 import com.skynav.ttv.model.ttml2.tt.Animate;
+import com.skynav.ttv.model.ttml2.tt.Audio;
 import com.skynav.ttv.model.ttml2.tt.Body;
 import com.skynav.ttv.model.ttml2.tt.Break;
 import com.skynav.ttv.model.ttml2.tt.Division;
@@ -160,8 +161,11 @@ public class TTML2Helper extends TTML1Helper {
         traverseAnimations(body.getAnimationClass(), body, v);
         for (Object content : body.getDivOrEmbeddedClass()) {
             if (content instanceof Division) {
-                Division d = (Division) content;
-                traverse(d, body, v);
+                traverse((Division) content, body, v);
+            } else if (content instanceof Audio) {
+                traverse((Audio) content, body, v);
+            } else if (content instanceof Image) {
+                traverse((Image) content, body, v);
             }
         }
         if (!v.postVisit(body, parent))
@@ -204,6 +208,13 @@ public class TTML2Helper extends TTML1Helper {
             return;
     }
 
+    private static void traverse(Audio audio, Object parent, Visitor v) throws Exception {
+        if (!v.preVisit(audio, parent))
+            return;
+        if(!v.postVisit(audio, parent))
+            return;
+    }
+
     private static void traverse(Image image, Object parent, Visitor v) throws Exception {
         if (!v.preVisit(image, parent))
             return;
@@ -237,6 +248,8 @@ public class TTML2Helper extends TTML1Helper {
             traverse((Division) block, parent, v);
         else if (block instanceof Paragraph)
             traverse((Paragraph) block, parent, v);
+        else if (block instanceof Audio)
+            traverse((Audio) block, parent, v);
         else if (block instanceof Image)
             traverse((Image) block, parent, v);
     }
@@ -252,6 +265,8 @@ public class TTML2Helper extends TTML1Helper {
                 traverse((Span) element, parent, v);
             else if (element instanceof Break)
                 traverse((Break) element, parent, v);
+            else if (element instanceof Audio)
+                traverse((Audio) element, parent, v);
             else if (element instanceof Image)
                 traverse((Image) element, parent, v);
         } else if (content instanceof String) {
@@ -392,6 +407,10 @@ public class TTML2Helper extends TTML1Helper {
         else if (content instanceof Animate)
             return true;
         else if (content instanceof Set)
+            return true;
+        else if (content instanceof Audio)
+            return true;
+        else if (content instanceof Image)
             return true;
         else
             return super.isTimed(content);

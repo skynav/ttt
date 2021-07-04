@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -683,6 +683,7 @@ public class TimedTextVerifier implements VerifierContext {
         String reporterFileEncoding = null;
         boolean reporterFileAppend = false;
         boolean reporterIncludeSource = false;
+        int reporterInitialVerbosity = 0;
         List<String> skippedArgs = new java.util.ArrayList<String>();
         for (int i = 0, n = args.size(); i < n; ++i) {
             String arg = args.get(i);
@@ -706,6 +707,15 @@ public class TimedTextVerifier implements VerifierContext {
                     reporterIncludeSource = true;
                 } else if (option.equals("retain-reporter")) {
                     retainReporter = true;
+                } else if (option.equals("verbose-level")) {
+                    if (i + 1 >= n)
+                        throw new MissingOptionArgumentException("--" + option);
+                    String level = args.get(++i);
+                    try {
+                        reporterInitialVerbosity = Integer.parseInt(level);
+                    } catch (NumberFormatException e) {
+                        throw new InvalidOptionUsageException("verbose-level", "bad syntax: " + level);
+                    }
                 } else {
                     skippedArgs.add(arg);
                 }
@@ -714,6 +724,8 @@ public class TimedTextVerifier implements VerifierContext {
         }
         if (reporterName != null)
             setReporter(reporterName, reporterFileName, reporterFileEncoding, reporterFileAppend, reporterIncludeSource);
+        if (reporterInitialVerbosity > 0)
+            reporter.setVerbosityLevel(reporterInitialVerbosity);
         return skippedArgs;
     }
 
@@ -807,13 +819,16 @@ public class TimedTextVerifier implements VerifierContext {
                     if (arg.length() != 2)
                         throw new UnknownOptionException(arg);
                     i = parseShortOption(args, i, optionProcessor);
-                } else {
+                    continue;
+                } else if (arg.length() > 2) {
                     i = parseLongOption(args, i, optionProcessor);
+                    continue;
+                } else if (arg.length() == 2) {
+                    i = i + 1;
                 }
-            } else {
-                nonOptionIndex = i;
-                break;
             }
+            nonOptionIndex = i;
+            break;
         }
         List<String> nonOptionArgs = new java.util.ArrayList<String>();
         if (nonOptionIndex >= 0) {
@@ -827,6 +842,9 @@ public class TimedTextVerifier implements VerifierContext {
         Reporter reporter = getReporter();
         String option = args.get(index);
         assert option.length() == 2;
+        if (reporter.getVerbosityLevel() > 1) {
+            reporter.logInfo(reporter.message("*KEY*", "Option: {0}.", option));
+        }
         option = option.substring(1);
         switch (option.charAt(0)) {
         case 'd':
@@ -855,6 +873,27 @@ public class TimedTextVerifier implements VerifierContext {
         int numArgs = args.size();
         String option = arg;
         assert option.length() > 2;
+        if (reporter.getVerbosityLevel() > 1) {
+            String nextArg;
+            if (index + 1 < numArgs) {
+                nextArg = args.get(index + 1);
+                if (nextArg.equals("--"))
+                    nextArg = null;
+                else if (nextArg.startsWith("file:/"))
+                    nextArg = null;
+                else if (nextArg.startsWith("http:/"))
+                    nextArg = null;
+                else if (nextArg.startsWith("https:/"))
+                    nextArg = null;
+            } else {
+                nextArg = null;
+            }
+            if (nextArg == null) {
+                reporter.logInfo(reporter.message("*KEY*", "Option: {0}.", option));
+            } else {
+                reporter.logInfo(reporter.message("*KEY*", "Option: {0} = ''{1}''.", option, nextArg));
+            }
+        }
         option = option.substring(2);
         if (option.equals("debug")) {
             int debug = reporter.getDebugLevel();

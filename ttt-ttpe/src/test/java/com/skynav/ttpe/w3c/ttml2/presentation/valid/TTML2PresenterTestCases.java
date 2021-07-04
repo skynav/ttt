@@ -451,6 +451,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2ImageInBody() throws Exception {
+        performPresentationTest("ttml2-prstn-image-in-body.xml");
+    }
+
+    @Test
     public void testTTML2InitialIMSC11Test1() throws Exception {
         performPresentationTest("ttml2-prstn-initial-imsc11-1.xml");
     }
