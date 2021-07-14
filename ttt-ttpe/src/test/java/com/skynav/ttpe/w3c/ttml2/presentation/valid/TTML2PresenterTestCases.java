@@ -410,6 +410,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2FontSelectionStrategyLineHeightNormal() throws Exception {
+        performPresentationTest("ttml2-prstn-font-selection-strategy-line-height-normal.xml");
+    }
+
+    @Test
     public void testTTML2FontShearLinearMapping() throws Exception {
         performPresentationTest("ttml2-prstn-font-shear-linear-mapping.xml");
     }

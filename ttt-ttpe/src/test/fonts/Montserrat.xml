@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fonts version="1" xmlns="http://skynav.com/ns/ttpe">
+  <font>
+    <param name="family">Montserrat</param>
+    <param name="language">EN</param>
+    <param name="source">Montserrat-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Montserrat</param>
+    <param name="language">EN</param>
+    <param name="source">Montserrat-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Montserrat</param>
+    <param name="language">EN</param>
+    <param name="source">Montserrat-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Montserrat</param>
+    <param name="language">EN</param>
+    <param name="source">Montserrat-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Montserrat</param>
+    <param name="language">RU</param>
+    <param name="source">Montserrat-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Montserrat</param>
+    <param name="language">RU</param>
+    <param name="source">Montserrat-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Montserrat</param>
+    <param name="language">RU</param>
+    <param name="source">Montserrat-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Montserrat</param>
+    <param name="language">RU</param>
+    <param name="source">Montserrat-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+</fonts>

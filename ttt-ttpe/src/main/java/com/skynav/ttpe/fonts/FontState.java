@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -407,7 +407,7 @@ public class FontState {
             File f = new File(source);
             try {
                 if (f.exists()) {
-                    otf = new OTFParser(false, true).parse(f);
+                    otf = new OTFParser(false, true, true).parse(f);
                     nameTable = otf.getNaming();
                     os2Table = otf.getOS2Windows();
                     cmapSubtable = otf.getUnicodeCmap();
