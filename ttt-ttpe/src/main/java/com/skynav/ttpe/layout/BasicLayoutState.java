@@ -256,17 +256,25 @@ public class BasicLayoutState implements LayoutState {
         return !areas.empty() ? areas.peek().getBidiLevel() : -1;
     }
 
-    public Font getFont() {
-        Font f = null;
+    public Font[] getFonts() {
+        Font font = null;
         if (!areas.empty())
-            f = areas.peek().getFont();
-        if (f == null)
-            f = fontCache.getDefaultFont(getWritingMode().getAxis(Dimension.IPD), defaults.getFontSize());
-        return f;
+            font = areas.peek().getFont();
+        if (font == null)
+            font = fontCache.getDefaultFont(getWritingMode().getAxis(Dimension.IPD), defaults.getFontSize());
+        return new Font[] { font };
+    }
+
+    public Font getFirstFont() {
+        Font[] fonts = getFonts();
+        if ((fonts != null) && (fonts.length > 0) )
+            return fonts[0];
+        else
+            return null;
     }
 
     public Extent getFontSize() {
-        Font f = getFont();
+        Font f = getFirstFont();
         if (f != null)
             return f.getSize();
         else

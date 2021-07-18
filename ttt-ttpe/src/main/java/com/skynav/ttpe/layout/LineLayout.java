@@ -155,7 +155,7 @@ public class LineLayout {
         this.visibility = content.getVisibility(-1, defaults);
         this.wrap = content.getWrapOption(-1, defaults);
         // derived styles
-        this.font = content.getFont(-1, defaults);
+        this.font = content.getFirstFont(-1, defaults);
         this.lineHeight = content.getLineHeight(-1, defaults, font);
         this.lineShearAngle = Shear.toAngle(this.lineShear);
         this.shearAngle = Shear.toAngle(this.shear);
@@ -512,6 +512,10 @@ public class LineLayout {
             List<Decoration> d = getSegmentDecorations(decorations, text.length() - 1, text.length());
             l.addChild(new InlinePaddingArea(content.getElement(), endPadding, lineHeight, run.bidiLevel, d), LineArea.ENCLOSE_ALL);
         }
+    }
+
+    private static Font getFirstFont(Font[] fonts) {
+        return ((fonts != null) && (fonts.length > 0)) ? fonts[0] : null;
     }
 
     private SortedSet<FontFeature>
@@ -1197,29 +1201,33 @@ public class LineLayout {
         }
         // obtain fonts for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getFontIntervals(int from, int to, Font defaultFont) {
-            StyleAttribute fontAttr = StyleAttribute.FONT;
-            List<StyleAttributeInterval> fonts = new java.util.ArrayList<StyleAttributeInterval>();
-            int[] intervals = getAttributeIntervals(from, to, fontAttr);
+            StyleAttribute fontsAttr = StyleAttribute.FONTS;    // computed fonts (from which selection occurs)
+            StyleAttribute fontAttr = StyleAttribute.FONT;      // selected font
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, fontsAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
             for (int i = 0, n = intervals.length / 2; i < n; ++i) {
                 int s = start + intervals[i*2 + 0];
                 int e = start + intervals[i*2 + 1];
                 aci.setIndex(s);
-                Object v = aci.getAttribute(fontAttr);
+                Object v = aci.getAttribute(fontsAttr);
                 if (v == null)
-                    v = defaultFont;
-                fonts.add(new StyleAttributeInterval(fontAttr, v, s, e));
+                    v = new Font[] { defaultFont };
+                // FIXME - subdivide interval into individual fonts based on font selection strategy
+                v = getFirstFont((Font[]) v);
+                // FIXME - end
+                ais.add(new StyleAttributeInterval(fontAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            if (fonts.isEmpty())
-                fonts.add(new StyleAttributeInterval(fontAttr, defaultFont, -1, -1));
-            return fonts;
+            if (ais.isEmpty())
+                ais.add(new StyleAttributeInterval(fontAttr, defaultFont, -1, -1));
+            return ais;
         }
         // obtain background colors for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getBackgroundColorIntervals(int from, int to) {
             StyleAttribute backgroundColorAttr = StyleAttribute.BACKGROUND_COLOR;
-            List<StyleAttributeInterval> backgroundColors = new java.util.ArrayList<StyleAttributeInterval>();
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
             int[] intervals = getAttributeIntervals(from, to, backgroundColorAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
@@ -1229,15 +1237,15 @@ public class LineLayout {
                 aci.setIndex(s);
                 Object v = aci.getAttribute(backgroundColorAttr);
                 if ((v != null) && (v instanceof Color))
-                    backgroundColors.add(new StyleAttributeInterval(backgroundColorAttr, new BackgroundColor((Color) v), s, e));
+                    ais.add(new StyleAttributeInterval(backgroundColorAttr, new BackgroundColor((Color) v), s, e));
             }
             aci.setIndex(savedIndex);
-            return backgroundColors;
+            return ais;
         }
         // obtain colors for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getColorIntervals(int from, int to) {
             StyleAttribute colorAttr = StyleAttribute.COLOR;
-            List<StyleAttributeInterval> colors = new java.util.ArrayList<StyleAttributeInterval>();
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
             int[] intervals = getAttributeIntervals(from, to, colorAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
@@ -1247,17 +1255,17 @@ public class LineLayout {
                 aci.setIndex(s);
                 Object v = aci.getAttribute(colorAttr);
                 if (v != null)
-                    colors.add(new StyleAttributeInterval(colorAttr, v, s, e));
+                    ais.add(new StyleAttributeInterval(colorAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            if (colors.isEmpty() && (color != null) && !color.equals(defaults.getColor()))
-                colors.add(new StyleAttributeInterval(colorAttr, color, start + from, start + to));
-            return colors;
+            if (ais.isEmpty() && (color != null) && !color.equals(defaults.getColor()))
+                ais.add(new StyleAttributeInterval(colorAttr, color, start + from, start + to));
+            return ais;
         }
         // obtain outline for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getOutlineIntervals(int from, int to) {
             StyleAttribute outlineAttr = StyleAttribute.OUTLINE;
-            List<StyleAttributeInterval> outlines = new java.util.ArrayList<StyleAttributeInterval>();
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
             int[] intervals = getAttributeIntervals(from, to, outlineAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
@@ -1267,17 +1275,17 @@ public class LineLayout {
                 aci.setIndex(s);
                 Object v = aci.getAttribute(outlineAttr);
                 if (v != null)
-                    outlines.add(new StyleAttributeInterval(outlineAttr, v, s, e));
+                    ais.add(new StyleAttributeInterval(outlineAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            if (outlines.isEmpty() && (outline != null) && !outline.equals(defaults.getOutline()))
-                outlines.add(new StyleAttributeInterval(outlineAttr, outline, start + from, start + to));
-            return outlines;
+            if (ais.isEmpty() && (outline != null) && !outline.equals(defaults.getOutline()))
+                ais.add(new StyleAttributeInterval(outlineAttr, outline, start + from, start + to));
+            return ais;
         }
         // obtain colors for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getPaddingIntervals(int from, int to) {
             StyleAttribute paddingAttr = StyleAttribute.PADDING;
-            List<StyleAttributeInterval> paddings = new java.util.ArrayList<StyleAttributeInterval>();
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
             int[] intervals = getAttributeIntervals(from, to, paddingAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
@@ -1287,15 +1295,15 @@ public class LineLayout {
                 aci.setIndex(s);
                 Object v = aci.getAttribute(paddingAttr);
                 if (v != null)
-                    paddings.add(new StyleAttributeInterval(paddingAttr, v, s, e));
+                    ais.add(new StyleAttributeInterval(paddingAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            return paddings;
+            return ais;
         }
         // obtain visibility for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getVisibilityIntervals(int from, int to) {
             StyleAttribute visibilityAttr = StyleAttribute.VISIBILITY;
-            List<StyleAttributeInterval> visibilities = new java.util.ArrayList<StyleAttributeInterval>();
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
             int[] intervals = getAttributeIntervals(from, to, visibilityAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
@@ -1305,12 +1313,12 @@ public class LineLayout {
                 aci.setIndex(s);
                 Object v = aci.getAttribute(visibilityAttr);
                 if (v != null)
-                    visibilities.add(new StyleAttributeInterval(visibilityAttr, v, s, e));
+                    ais.add(new StyleAttributeInterval(visibilityAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            if (visibilities.isEmpty() && (visibility != null) && !visibility.equals(defaults.getVisibility()))
-                visibilities.add(new StyleAttributeInterval(visibilityAttr, visibility, start + from, start + to));
-            return visibilities;
+            if (ais.isEmpty() && (visibility != null) && !visibility.equals(defaults.getVisibility()))
+                ais.add(new StyleAttributeInterval(visibilityAttr, visibility, start + from, start + to));
+            return ais;
         }
         // obtain dominant orientation for specified interval FROM to TO of run
         private Orientation getDominantOrientation(int from, int to, Orientation defaultOrientation) {
@@ -1324,7 +1332,7 @@ public class LineLayout {
         // obtain orientation for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getOrientationIntervals(int from, int to) {
             StyleAttribute orientationAttr = StyleAttribute.ORIENTATION;
-            List<StyleAttributeInterval> orientations = new java.util.ArrayList<StyleAttributeInterval>();
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
             int[] intervals = getAttributeIntervals(from, to, orientationAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
@@ -1334,10 +1342,10 @@ public class LineLayout {
                 aci.setIndex(s);
                 Object v = aci.getAttribute(orientationAttr);
                 if (v != null)
-                    orientations.add(new StyleAttributeInterval(orientationAttr, v, s, e));
+                    ais.add(new StyleAttributeInterval(orientationAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            return orientations;
+            return ais;
         }
         // obtain dominant combination for specified interval FROM to TO of run
         private Combination getDominantCombination(int from, int to, Combination defaultCombination) {
@@ -1353,7 +1361,7 @@ public class LineLayout {
         // obtain combination for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getCombinationIntervals(int from, int to) {
             StyleAttribute combinationAttr = StyleAttribute.COMBINATION;
-            List<StyleAttributeInterval> combinations = new java.util.ArrayList<StyleAttributeInterval>();
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
             int[] intervals = getAttributeIntervals(from, to, combinationAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
@@ -1363,10 +1371,10 @@ public class LineLayout {
                 aci.setIndex(s);
                 Object v = aci.getAttribute(combinationAttr);
                 if (v != null)
-                    combinations.add(new StyleAttributeInterval(combinationAttr, v, s, e));
+                    ais.add(new StyleAttributeInterval(combinationAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            return combinations;
+            return ais;
         }
         // obtain dominant bidi level for run, which must be the same value from start to end in outer iterator
         private int getDominantLevel(int from, int to) {

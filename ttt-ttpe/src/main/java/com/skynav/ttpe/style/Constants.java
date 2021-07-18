@@ -48,6 +48,7 @@ public class Constants {
     public static final QName ttsExtentAttrName                         = new QName(NAMESPACE_TT_STYLE, "extent");
     public static final QName ttsFontFamilyAttrName                     = new QName(NAMESPACE_TT_STYLE, "fontFamily");
     public static final QName ttsFontKerningAttrName                    = new QName(NAMESPACE_TT_STYLE, "fontKerning");
+    public static final QName ttsFontSelectionStrategyAttrName          = new QName(NAMESPACE_TT_STYLE, "fontSelectionStrategy");
     public static final QName ttsFontShearAttrName                      = new QName(NAMESPACE_TT_STYLE, "fontShear");
     public static final QName ttsFontSizeAttrName                       = new QName(NAMESPACE_TT_STYLE, "fontSize");
     public static final QName ttsFontStyleAttrName                      = new QName(NAMESPACE_TT_STYLE, "fontStyle");
