@@ -328,7 +328,7 @@ public class Phrase {
             return null;
     }
 
-    public Font getFirstFont(int index, Defaults defaults) {
+    public Font getFirstAvailableFont(int index, Defaults defaults) {
         Font[] fonts = getFonts(index, defaults);
         if ((fonts != null) && (fonts.length > 0))
             return fonts[0];

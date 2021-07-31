@@ -2,28 +2,24 @@
 <fonts version="1" xmlns="http://skynav.com/ns/ttpe">
   <font>
     <param name="family">Space Mono</param>
-    <param name="language">EN</param>
     <param name="source">SpaceMono-Regular.ttf</param>
     <param name="style">NORMAL</param>
     <param name="weight">NORMAL</param>
   </font>
   <font>
     <param name="family">Space Mono</param>
-    <param name="language">EN</param>
     <param name="source">SpaceMono-Italic.ttf</param>
     <param name="style">ITALIC</param>
     <param name="weight">NORMAL</param>
   </font>
   <font>
     <param name="family">Space Mono</param>
-    <param name="language">EN</param>
     <param name="source">SpaceMono-Bold.ttf</param>
     <param name="style">NORMAL</param>
     <param name="weight">BOLD</param>
   </font>
   <font>
     <param name="family">Space Mono</param>
-    <param name="language">EN</param>
     <param name="source">SpaceMono-BoldItalic.ttf</param>
     <param name="style">ITALIC</param>
     <param name="weight">BOLD</param>

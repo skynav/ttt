@@ -2,7 +2,6 @@
 <fonts version="1" xmlns="http://skynav.com/ns/ttpe">
   <font>
     <param name="family">Salsa</param>
-    <param name="language">EN</param>
     <param name="source">Salsa-Regular.ttf</param>
     <param name="style">NORMAL</param>
     <param name="weight">NORMAL</param>

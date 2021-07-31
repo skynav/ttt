@@ -206,6 +206,10 @@ public class Font {
         return cache.getScaledFont(this, scale);
     }
 
+    public boolean hasGlyphMapping(String text, int prevIndex, int index, int nextIndex) {
+        return ls.hasGlyphMapping(key, text, prevIndex, index, nextIndex);
+    }
+
     public GlyphMapping getGlyphMapping(String text, SortedSet<FontFeature> features) {
         return ls.getGlyphMapping(key, text, features);
     }

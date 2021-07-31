@@ -121,7 +121,7 @@ public class LineLayout {
     private WritingMode writingMode;
 
     // derived style state
-    private Font font;
+    private Font firstAvailableFont;
     private double lineHeight;
     private double lineShearAngle;
     private double shearAngle;
@@ -155,8 +155,8 @@ public class LineLayout {
         this.visibility = content.getVisibility(-1, defaults);
         this.wrap = content.getWrapOption(-1, defaults);
         // derived styles
-        this.font = content.getFirstFont(-1, defaults);
-        this.lineHeight = content.getLineHeight(-1, defaults, font);
+        this.firstAvailableFont = content.getFirstAvailableFont(-1, defaults);
+        this.lineHeight = content.getLineHeight(-1, defaults, firstAvailableFont);
         this.lineShearAngle = Shear.toAngle(this.lineShear);
         this.shearAngle = Shear.toAngle(this.shear);
         this.whitespace = new WhitespaceState(state.getWhitespace());
@@ -370,7 +370,7 @@ public class LineLayout {
                 consumed += endPadding;
             }
         }
-        LineArea la = newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, bidiLevel, lineShearAngle, visibility, textAlign, color, font);
+        LineArea la = newLine(content, consume == Consume.MAX ? available : consumed, lineHeight, bidiLevel, lineShearAngle, visibility, textAlign, color, firstAvailableFont);
         return addTextAreas(la, breaks);
     }
 
@@ -396,8 +396,8 @@ public class LineLayout {
                 TextRun r = b.run;
                 if ((lastRun != null) && ((r != lastRun) || (l instanceof AnnotationArea))) {
                     if (!(l instanceof AnnotationArea))
-                        maybeAddAnnotationAreas(l, lastRunStart, r.start, font, advance, lineHeight);
-                    addTextArea(l, sb.toString(), decorations, font, advance, sPadding, ePadding, lineHeight, lastRun, lastRunStart);
+                        maybeAddAnnotationAreas(l, lastRunStart, r.start, firstAvailableFont, advance, lineHeight);
+                    addTextArea(l, sb.toString(), decorations, firstAvailableFont, advance, sPadding, ePadding, lineHeight, lastRun, lastRunStart);
                     sb.setLength(0);
                     decorations.clear();
                     advance = 0;
@@ -416,8 +416,8 @@ public class LineLayout {
             }
             if (sb.length() > 0) {
                 if (!(l instanceof AnnotationArea))
-                    maybeAddAnnotationAreas(l, lastRunStart, lastRun != null ? lastRun.end : -1, font, advance, lineHeight);
-                addTextArea(l, sb.toString(), decorations, font, advance, sPadding, ePadding, lineHeight, lastRun, lastRunStart);
+                    maybeAddAnnotationAreas(l, lastRunStart, lastRun != null ? lastRun.end : -1, firstAvailableFont, advance, lineHeight);
+                addTextArea(l, sb.toString(), decorations, firstAvailableFont, advance, sPadding, ePadding, lineHeight, lastRun, lastRunStart);
             }
             iterator.setIndex(savedIndex);
             breaks.clear();
@@ -512,10 +512,6 @@ public class LineLayout {
             List<Decoration> d = getSegmentDecorations(decorations, text.length() - 1, text.length());
             l.addChild(new InlinePaddingArea(content.getElement(), endPadding, lineHeight, run.bidiLevel, d), LineArea.ENCLOSE_ALL);
         }
-    }
-
-    private static Font getFirstFont(Font[] fonts) {
-        return ((fonts != null) && (fonts.length > 0)) ? fonts[0] : null;
     }
 
     private SortedSet<FontFeature>
@@ -1043,7 +1039,7 @@ public class LineLayout {
             this.start = start;
             this.end = end;
             int l = end - start;
-            this.fontIntervals = getFontIntervals(0, l, font);
+            this.fontIntervals = getFontIntervals(0, l, firstAvailableFont);
             this.paddingIntervals = getPaddingIntervals(0, l);
             this.orientation = getDominantOrientation(0, l, defaults.getOrientation());
             this.combination = getDominantCombination(0, l, defaults.getCombination());
@@ -1224,6 +1220,11 @@ public class LineLayout {
                 ais.add(new StyleAttributeInterval(fontAttr, defaultFont, -1, -1));
             return ais;
         }
+        // FIXME - remove
+        private Font getFirstFont(Font[] fonts) {
+            return ((fonts != null) && (fonts.length > 0)) ? fonts[0] : null;
+        }
+        // FIXME - end
         // obtain background colors for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getBackgroundColorIntervals(int from, int to) {
             StyleAttribute backgroundColorAttr = StyleAttribute.BACKGROUND_COLOR;

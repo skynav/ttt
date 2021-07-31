@@ -174,6 +174,24 @@ public class FontState {
             return 0;
     }
 
+    public boolean hasGlyphMapping(FontKey key, String text, int prevIndex, int index, int nextIndex) {
+        int i = index;
+        int iEnd = nextIndex;
+        if (maybeLoad(key)) {
+            while (i < iEnd) {
+                int c = text.codePointAt(i);
+                if (getGlyphId(c, false) != 0) {
+                    if (c < 0x10000)
+                        i += 1;
+                    else
+                        i += 2;
+                } else
+                    break;
+            }
+        }
+        return (i >= iEnd);
+    }
+
     public GlyphMapping getGlyphMapping(FontKey key, String text, SortedSet<FontFeature> features) {
         if (maybeLoad(key)) {
             GlyphMapping.Key gmk = GlyphMapping.makeKey(text, features);

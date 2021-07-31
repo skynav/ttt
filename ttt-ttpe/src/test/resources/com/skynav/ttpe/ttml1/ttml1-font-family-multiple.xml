@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang=""
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="dfxp-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head>
+    <metadata>
+      <ttm:desc>#fontFamily - multiple fonts</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="48px" tts:lineHeight="72px" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sGeometry1" tts:extent="480px 128px" tts:origin="400px 296px"/>
+      <style xml:id="sGeometry2" tts:extent="480px 32px" tts:origin="400px 1120px"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout"/>
+      <region xml:id="r2" style="sGeometry2 sLayout"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <div region="r1" begin="0s" end="1s" tts:fontFamily="Space Mono, Noto Sans">
+      <p>&#x0064;&#x03B4;&#x0434;</p>
+    </div>
+  </body>
+</tt>

@@ -114,7 +114,8 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
                     if (nb > 0) {
                         Emphasis emphasis = b.getEmphasis(-1, defaults);
                         if ((emphasis != null) && !emphasis.isNone()) {
-                            String emphasisText = emphasis.resolveText(b.getFirstFont(-1, defaults).isVertical() ? Axis.VERTICAL : Axis.HORIZONTAL);
+                            String emphasisText =
+                                emphasis.resolveText(b.getFirstAvailableFont(-1, defaults).isVertical() ? Axis.VERTICAL : Axis.HORIZONTAL);
                             assert (emphasisText != null) && (emphasisText.length() > 0);
                             emphasisText = emphasisText.substring(0,1);
                             StringBuffer sb = new StringBuffer();

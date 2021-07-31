@@ -87,7 +87,8 @@ public class StyleCollector {
     private int synthesizedStylesIndex;                 // index of next synthesized style identifier
     private Map<String,StyleSet> styles;                // map of all isd:css style sets, identified by id string
     private List<StyleAttributeInterval> attributes;    // text attributes being collected
-    private BidiLevelIterator bidi;                     // bidi iterator, reused as needed
+    private BidiLevelIterator bidiIterator;             // bidi level iterator, reused as needed
+    private FontRunIterator fontIterator;               // font run iterator, reused as needed
 
     public StyleCollector(StyleCollector sc) {
         this(sc, sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.fonts, sc.styles);
@@ -106,7 +107,8 @@ public class StyleCollector {
         this.language = language;
         this.fonts = (fonts != null) ? Arrays.copyOf(fonts, fonts.length) : null;
         this.styles = styles;
-        this.bidi = new BidiLevelIterator();
+        this.bidiIterator = new BidiLevelIterator();
+        this.fontIterator = new FontRunIterator();
     }
 
     public StyleCollector getParent() {
@@ -141,7 +143,7 @@ public class StyleCollector {
             return null;
     }
 
-    public Font getFirstFont() {
+    public Font getFirstAvailableFont() {
         Font[] fonts = getFonts();
         if ((fonts != null) && (fonts.length > 0))
             return fonts[0];
@@ -149,8 +151,8 @@ public class StyleCollector {
             return null;
     }
 
-    public Extent getFirstFontSize() {
-        Font font = getFirstFont();
+    public Extent getFirstAvailableFontSize() {
+        Font font = getFirstAvailableFont();
         if (font != null)
             return font.getSize();
         else
@@ -240,7 +242,7 @@ public class StyleCollector {
             com.skynav.ttv.model.value.TextReserve[] retReserve = new com.skynav.ttv.model.value.TextReserve[1];
             if (com.skynav.ttv.verifier.util.Reserve.isReserve(s.getValue(), new Location(), context, retReserve)) {
                 com.skynav.ttv.model.value.TextReserve ar = retReserve[0];
-                Extent fs = getFirstFontSize();
+                Extent fs = getFirstAvailableFontSize();
                 Length reserve = ar.getReserve();
                 double r = (reserve != null) ? Helpers.resolveLength(e, reserve, Axis.VERTICAL, extBounds, refBounds, fs, cellResolution) : -1;
                 v = new AnnotationReserve(ar.getPosition().name(), r);
@@ -406,6 +408,7 @@ public class StyleCollector {
             begin = end;
         collectContentOrientation(e, content, begin, end);
         collectContentBidiLevels(e, content, begin, end);
+        collectContentFontRuns(e, content, begin, end);
     }
 
     public void collectContentOrientation(Element e, String content, int begin, int end) {
@@ -488,7 +491,7 @@ public class StyleCollector {
     }
 
     protected void collectContentBidiLevels(String content, int begin, int end, int defaultLevel) {
-        BidiLevelIterator bi = bidi.setParagraph(content.substring(begin, end), defaultLevel);
+        BidiLevelIterator bi = bidiIterator.setParagraph(content.substring(begin, end), defaultLevel);
         int lastBegin = begin;
         int lastLevel = -1;
         int maxLevel = lastLevel;
@@ -510,6 +513,10 @@ public class StyleCollector {
         }
     }
 
+    protected void collectContentFontRuns(Element e, String content, int begin, int end) {
+        // IMPLEMENT ME
+    }
+    
     public void addEmbedding(Object object, int begin, int end) {
         addAttribute(StyleAttribute.EMBEDDING, object, begin, end);
     }
@@ -552,7 +559,7 @@ public class StyleCollector {
                     assert measures.size() == 1;
                     Measure m = measures.get(0);
                     Axis axis = writingMode.getAxis(BPD);
-                    Extent fs = getFirstFontSize();
+                    Extent fs = getFirstAvailableFontSize();
                     v = Double.valueOf(Helpers.resolveMeasure(e, m, axis, extBounds, refBounds, fs, cellResolution, null));
                 }
             }
@@ -589,7 +596,7 @@ public class StyleCollector {
                     assert measures.size() == 1;
                     Measure m = measures.get(0);
                     Axis axis = writingMode.getAxis(IPD);
-                    Extent fs = getFirstFontSize();
+                    Extent fs = getFirstAvailableFontSize();
                     v = Double.valueOf(Helpers.resolveMeasure(e, m, axis, extBounds, refBounds, fs, cellResolution, null));
                 }
             }
@@ -608,7 +615,7 @@ public class StyleCollector {
                 List<Length> lengths = new java.util.ArrayList<Length>();
                 if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
                     Length[] la = lengths.toArray(new Length[lengths.size()]);
-                    Extent fs = getFirstFontSize();
+                    Extent fs = getFirstAvailableFontSize();
                     padding = Helpers.resolvePadding(e, la, writingMode, extBounds, refBounds, fs, cellResolution);
                 }
             }
@@ -667,7 +674,7 @@ public class StyleCollector {
                 com.skynav.ttv.model.value.TextOutline to = retOutline[0];
                 com.skynav.ttv.model.value.Color toColor = to.getColor();
                 Color c = (toColor != null) ? new Color(toColor.getRed(), toColor.getGreen(), toColor.getBlue(), toColor.getAlpha()) : color;
-                Extent fs = getFirstFontSize();
+                Extent fs = getFirstAvailableFontSize();
                 Length thickness = to.getThickness();
                 double t = Helpers.resolveLength(e, thickness, Axis.VERTICAL, extBounds, refBounds, fs, cellResolution);
                 Length blur = to.getBlur();
@@ -723,7 +730,7 @@ public class StyleCollector {
         StyleSpecification s = styles.get(ttsLineHeightAttrName);
         Object v = null;
         if (s != null) {
-            Extent fs = getFirstFontSize();
+            Extent fs = getFirstAvailableFontSize();
             if (Keywords.isNormal(s.getValue())) {
                 v = Double.valueOf(fs.getDimension(Axis.VERTICAL) * 1.25);
             } else {
@@ -965,7 +972,7 @@ public class StyleCollector {
         List<Length> lengths = new java.util.ArrayList<Length>();
         if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
-            Extent fs = getFirstFontSize();
+            Extent fs = getFirstAvailableFontSize();
             Extent refBounds = this.refBounds;
             if (!Documents.isElement(e, isdRegionElementName))
                 refBounds = fs;

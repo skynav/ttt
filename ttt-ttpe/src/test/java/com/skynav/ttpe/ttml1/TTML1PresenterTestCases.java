@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Skynav, Inc. All rights reserved.
- *
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,13 +22,17 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+package com.skynav.ttpe.ttml1;
 
-package com.skynav.ttpe.fonts;
+import org.junit.Test;
 
-public enum FontSelectionStrategy {
-    AUTO,               // automatic (implementation dependent)
-    CHARACTER,          // character by character
-    CCS,                // combined character sequence
-    GC,                 // grapheme cluster
-    CONTEXT;            // character(s) with maximum optional context (i.e., maximum match of CHARACTER, CCS, and GC)
+import com.skynav.ttpe.app.PresenterTestDriver;
+
+public class TTML1PresenterTestCases extends PresenterTestDriver {
+
+    @Test
+    public void testTTML1FontFamilyMultiple() throws Exception {
+        performPresentationTest("ttml1-font-family-multiple.xml");
+    }
 }

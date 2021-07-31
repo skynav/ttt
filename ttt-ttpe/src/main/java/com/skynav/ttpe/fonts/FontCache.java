@@ -59,6 +59,10 @@ public class FontCache {
         return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.DEFAULT_VERTICAL : FontKey.DEFAULT_HORIZONTAL, size));
     }
 
+    public Font getLastResortFont(Axis axis, Extent size) {
+        return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.LAST_RESORT_VERTICAL : FontKey.LAST_RESORT_HORIZONTAL, size));
+    }
+
     public Font mapFont(List<String> families, FontStyle style, FontWeight weight, String language, Axis axis, Extent size, Set<FontFeature> features) {
         FontSpecification fs;
         if ((fs = findExactMatch(families, style, weight, language)) == null)
