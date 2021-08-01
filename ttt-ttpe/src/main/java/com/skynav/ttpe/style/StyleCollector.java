@@ -108,7 +108,7 @@ public class StyleCollector {
         this.fonts = (fonts != null) ? Arrays.copyOf(fonts, fonts.length) : null;
         this.styles = styles;
         this.bidiIterator = new BidiLevelIterator();
-        this.fontIterator = new FontRunIterator();
+        this.fontIterator = new FontRunIterator(fontCache);
     }
 
     public StyleCollector getParent() {
@@ -514,7 +514,27 @@ public class StyleCollector {
     }
 
     protected void collectContentFontRuns(Element e, String content, int begin, int end) {
-        // IMPLEMENT ME
+        collectContentFontRuns(content, begin, end, getFonts());
+    }
+
+    protected void collectContentFontRuns(String content, int begin, int end, Font[] fonts) {
+        FontRunIterator fi = fontIterator.setParagraph(content.substring(begin, end), fonts);
+        int lastBegin = begin;
+        Font lastFont = null;
+        for (int i = fi.first(); i != FontRunIterator.DONE; i = fi.next()) {
+            Font font = fi.font();
+            if (font != lastFont) {
+                if (lastFont != null) {
+                    addAttribute(StyleAttribute.FONT, lastFont, lastBegin, i);
+                }
+                lastFont = font;
+                lastBegin = i;
+            }
+        }
+        if (lastBegin < end) {
+            if (lastFont != null)
+                addAttribute(StyleAttribute.FONT, lastFont, lastBegin, end);
+        }
     }
     
     public void addEmbedding(Object object, int begin, int end) {
@@ -750,7 +770,7 @@ public class StyleCollector {
     private Font[] getFontsFromStyles(Element e, StyleSet styles) {
         StyleSpecification s;
         // families
-        List<String> fontFamilies = null;
+        List<String> fontFamilies = new java.util.ArrayList<String>();
         s = styles.get(ttsFontFamilyAttrName);
         if (s != null) {
             List<FontFamily> families = new java.util.ArrayList<FontFamily>();
@@ -764,8 +784,10 @@ public class StyleCollector {
                 }
             }
         }
-        if (fontFamilies == null)
-            fontFamilies = getDefaultFontFamilies(e, styles);
+        for (String familyName : getDefaultFontFamilies(e, styles)) {
+            if (!fontFamilies.contains(familyName))
+                fontFamilies.add(familyName);
+        }
         // style
         FontStyle fontStyle = null;
         s = styles.get(ttsFontStyleAttrName);

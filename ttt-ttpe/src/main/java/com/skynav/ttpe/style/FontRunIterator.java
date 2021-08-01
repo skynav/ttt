@@ -26,6 +26,8 @@
 package com.skynav.ttpe.style;
 
 import com.skynav.ttpe.fonts.Font;
+import com.skynav.ttpe.fonts.FontCache;
+import com.skynav.ttpe.fonts.FontSelectionStrategy;
 
 public class FontRunIterator {
 
@@ -34,12 +36,12 @@ public class FontRunIterator {
     private FontRunGenerator generator;
     private FontRun run;
 
-    public FontRunIterator() {
-        this.generator = new FontRunGenerator();
+    public FontRunIterator(FontCache fontCache) {
+        this.generator = new FontRunGenerator(fontCache);
     }
 
-    public FontRunIterator setParagraph(String text) {
-        generator.setPara(text);
+    public FontRunIterator setParagraph(String text, Font[] fonts) {
+        generator.setPara(text, fonts);
         setIndex(0);
         return this;
     }
@@ -68,7 +70,8 @@ public class FontRunIterator {
         if (index < 0)
             return DONE;
         else if (index < generator.getProcessedLength()) {
-            run = generator.getLogicalRun(index);
+            if ((index < current()) || (index >= limit()))
+                run = generator.getLogicalRun(index);
             return current();
         } else
             return DONE;
@@ -97,15 +100,102 @@ public class FontRunIterator {
     }
 
     static class FontRunGenerator {
-        public void setPara(String text) {
+        private FontCache fontCache;
+        private String text;
+        private int processedLength;
+        private Font[] fonts;
+        public FontRunGenerator(FontCache fontCache) {
+            this.fontCache = fontCache;
+        }
+        public void setPara(String text, Font[] fonts) {
+            this.text = text;
+            this.processedLength = text.length();
+            this.fonts = fonts;
         }
 
         public int getProcessedLength() {
-            return 0;
+            return processedLength;
         }
 
         public FontRun getLogicalRun(int index) {
-            return null;
+            Font fLast  = null;
+            int  iPrev  = -1;
+            int  iFirst = -1;
+            int  iLast  = -1;
+            for (int i = index, iEnd = getProcessedLength(); i < iEnd;) {
+                int iNext = getNextIndex(iPrev, i, iEnd);
+                for (Font f : fonts) {
+                    Font lastResortFont = getLastResortFont(f);
+                    if (f.hasGlyphMapping(text, iPrev, i, iNext) || (f == lastResortFont)) {
+                        if (f != fLast) {
+                            if (fLast != null) {
+                                return new FontRun(iFirst, iLast, fLast);
+                            }
+                            fLast = f;
+                            iFirst = i;
+                        }
+                        iPrev = i;
+                        i = iNext;
+                        iLast = iNext;
+                        break;
+                    }
+                }
+            }
+            if (fLast != null)
+                return new FontRun(iFirst, iLast, fLast);
+            else
+                return null;
+        }
+
+        private int getNextIndex(int previous, int from, int to) {
+            int next;
+            if (from >= to) {
+                next = to;
+            } else {
+                FontSelectionStrategy strategy = getFontSelectionStrategy(from, to);
+                if (strategy == FontSelectionStrategy.CHARACTER) {
+                    next = getNextIndexChar(previous, from, to);
+                } else if (strategy == FontSelectionStrategy.CCS) {
+                    next = getNextIndexCCS(previous, from, to);
+                } else if (strategy == FontSelectionStrategy.GC) {
+                    next = getNextIndexGC(previous, from, to);
+                } else if (strategy == FontSelectionStrategy.CONTEXT) {
+                    int nextCCS = getNextIndexCCS(previous, from, to);
+                    int nextGC  = getNextIndexGC(previous, from, to);
+                    if (nextGC > nextCCS)
+                        next = nextGC;
+                    else
+                        next = nextCCS;
+                } else {
+                    next = from;
+                }
+            }
+            return next;
+        }
+
+        private FontSelectionStrategy getFontSelectionStrategy(int from, int to) {
+            return FontSelectionStrategy.CHARACTER;
+        }
+
+        private int getNextIndexChar(int previous, int from, int to) {
+            if ((from + 1) <= to)
+                return from + 1;
+            else
+                return from;
+        }
+
+        private int getNextIndexCCS(int previous, int from, int to) {
+            // FIXME - IMPLEMENT
+            return getNextIndexChar(previous, from, to);
+        }
+
+        private int getNextIndexGC(int previous, int from, int to) {
+            // FIXME - IMPLEMENT
+            return getNextIndexCCS(previous, from, to);
+        }
+
+        private Font getLastResortFont(Font referenceFont) {
+            return fontCache.getLastResortFont(referenceFont.getAxis(), referenceFont.getSize());
         }
     }
 
