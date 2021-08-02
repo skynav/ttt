@@ -180,6 +180,8 @@ public class FontState {
         if (maybeLoad(key)) {
             while (i < iEnd) {
                 int c = text.codePointAt(i);
+                if (Characters.isZeroWidthWhitespace(c))
+                    c = Characters.UC_SPACE;
                 if (getGlyphId(c, false) != 0) {
                     if (c < 0x10000)
                         i += 1;

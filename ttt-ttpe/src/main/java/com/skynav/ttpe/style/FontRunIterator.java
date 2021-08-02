@@ -70,8 +70,7 @@ public class FontRunIterator {
         if (index < 0)
             return DONE;
         else if (index < generator.getProcessedLength()) {
-            if ((index < current()) || (index >= limit()))
-                run = generator.getLogicalRun(index);
+            run = generator.getLogicalRun(index);
             return current();
         } else
             return DONE;

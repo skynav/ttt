@@ -115,9 +115,7 @@ public class PhraseCollector {
     }
 
     protected void collectBreak(Element e) {
-        if (styleCollector.isDisplayed(e)) {
-            text.append((char) Characters.UC_LINE_SEPARATOR);
-        }
+        text.append((char) Characters.UC_LINE_SEPARATOR);
     }
 
     protected void clear() {

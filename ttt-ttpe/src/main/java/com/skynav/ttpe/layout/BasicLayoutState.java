@@ -261,7 +261,7 @@ public class BasicLayoutState implements LayoutState {
         if (!areas.empty())
             font = areas.peek().getFont();
         if (font == null)
-            font = fontCache.getDefaultFont(getWritingMode().getAxis(Dimension.IPD), defaults.getFontSize());
+            font = fontCache.getDefaultFont(getWritingMode().getAxis(Dimension.IPD), defaults.getFontSize(), getLanguage());
         return new Font[] { font };
     }
 

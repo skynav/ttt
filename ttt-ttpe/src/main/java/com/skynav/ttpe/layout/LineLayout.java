@@ -1197,34 +1197,26 @@ public class LineLayout {
         }
         // obtain fonts for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getFontIntervals(int from, int to, Font defaultFont) {
-            StyleAttribute fontsAttr = StyleAttribute.FONTS;    // computed fonts (from which selection occurs)
-            StyleAttribute fontAttr = StyleAttribute.FONT;      // selected font
+            StyleAttribute fontAttr = StyleAttribute.FONT;
             List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
-            int[] intervals = getAttributeIntervals(from, to, fontsAttr);
+            int[] intervals = getAttributeIntervals(from, to, fontAttr);
             AttributedCharacterIterator aci = iterator;
             int savedIndex = aci.getIndex();
             for (int i = 0, n = intervals.length / 2; i < n; ++i) {
                 int s = start + intervals[i*2 + 0];
                 int e = start + intervals[i*2 + 1];
                 aci.setIndex(s);
-                Object v = aci.getAttribute(fontsAttr);
+                Object v = aci.getAttribute(fontAttr);
                 if (v == null)
-                    v = new Font[] { defaultFont };
-                // FIXME - subdivide interval into individual fonts based on font selection strategy
-                v = getFirstFont((Font[]) v);
-                // FIXME - end
-                ais.add(new StyleAttributeInterval(fontAttr, v, s, e));
+                    v = defaultFont;
+                if ((v != null) && (v instanceof Font))
+                    ais.add(new StyleAttributeInterval(fontAttr, (Font) v, s, e));
             }
             aci.setIndex(savedIndex);
             if (ais.isEmpty())
                 ais.add(new StyleAttributeInterval(fontAttr, defaultFont, -1, -1));
             return ais;
         }
-        // FIXME - remove
-        private Font getFirstFont(Font[] fonts) {
-            return ((fonts != null) && (fonts.length > 0)) ? fonts[0] : null;
-        }
-        // FIXME - end
         // obtain background colors for specified interval FROM to TO of run
         private List<StyleAttributeInterval> getBackgroundColorIntervals(int from, int to) {
             StyleAttribute backgroundColorAttr = StyleAttribute.BACKGROUND_COLOR;
