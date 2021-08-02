@@ -870,20 +870,20 @@ public class SVGRenderProcessor extends RenderProcessor {
     }
 
     private void maybeStyleGlyphGroup(Element e, GlyphArea g, LineArea l) {
-        Font font = g.getFont();
-        if ((font != null) && !font.equals(l.getFont())) {
-            String fontFamily = font.getPreferredFamilyName();
+        Font gFont = g.getFont();
+        Font lFont = l.getFont();
+        String fontFamily = gFont.getPreferredFamilyName();
+        if (!fontFamily.equals(lFont.getPreferredFamilyName()))
             Documents.setAttribute(e, SVGDocumentFrame.fontFamilyAttrName, fontFamily);
-            Extent fontSize = font.getSize();
-            if (!fontSize.equals(l.getFont().getSize()))
-                Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontSize.getHeight()}));
-            FontStyle fontStyle = font.getStyle();
-            if (!fontStyle.equals(l.getFont().getStyle()))
-                Documents.setAttribute(e, SVGDocumentFrame.fontStyleAttrName, fontStyle.name().toLowerCase());
-            FontWeight fontWeight = font.getWeight();
-            if (!fontWeight.equals(l.getFont().getWeight()))
-                Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
-        }
+        Extent fontSize = gFont.getSize();
+        if (!fontSize.equals(lFont.getSize()))
+            Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontSize.getHeight()}));
+        FontStyle fontStyle = gFont.getStyle();
+        if (!fontStyle.equals(lFont.getStyle()))
+            Documents.setAttribute(e, SVGDocumentFrame.fontStyleAttrName, fontStyle.name().toLowerCase());
+        FontWeight fontWeight = gFont.getWeight();
+        if (!fontWeight.equals(lFont.getWeight()))
+            Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
     }
 
     private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> decorations, double bpdGlyphs, double baselineOffset) {
