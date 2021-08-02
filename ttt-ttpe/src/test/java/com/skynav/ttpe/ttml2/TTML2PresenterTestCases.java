@@ -83,8 +83,8 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    public void testTTML2SpanFontSizeAnomorphicLRTB() throws Exception {
-        performPresentationTest("ttml2-span-font-size-anomorphic-lrtb.xml");
+    public void testTTML2SpanFontSizeAnamorphicLRTB() throws Exception {
+        performPresentationTest("ttml2-span-font-size-anamorphic-lrtb.xml");
     }
 
     @Test
