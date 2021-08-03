@@ -31,4 +31,7 @@ public enum FontSelectionStrategy {
     CCS,                // combined character sequence
     GC,                 // grapheme cluster
     CONTEXT;            // character(s) with maximum optional context (i.e., maximum match of CHARACTER, CCS, and GC)
+    public static FontSelectionStrategy getDefaultAutoTreatment() {
+        return CONTEXT;
+    }
 }

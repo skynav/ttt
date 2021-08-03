@@ -40,8 +40,8 @@ public class FontRunIterator {
         this.generator = new FontRunGenerator(fontCache);
     }
 
-    public FontRunIterator setParagraph(String text, Font[] fonts) {
-        generator.setPara(text, fonts);
+    public FontRunIterator setParagraph(String text, Font[] fonts, FontSelectionStrategy fontSelectionStrategy) {
+        generator.setPara(text, fonts, fontSelectionStrategy);
         setIndex(0);
         return this;
     }
@@ -103,13 +103,15 @@ public class FontRunIterator {
         private String text;
         private int processedLength;
         private Font[] fonts;
+        private FontSelectionStrategy fontSelectionStrategy;
         public FontRunGenerator(FontCache fontCache) {
             this.fontCache = fontCache;
         }
-        public void setPara(String text, Font[] fonts) {
+        public void setPara(String text, Font[] fonts, FontSelectionStrategy fontSelectionStrategy) {
             this.text = text;
             this.processedLength = text.length();
             this.fonts = fonts;
+            this.fontSelectionStrategy = fontSelectionStrategy;
         }
 
         public int getProcessedLength() {
@@ -151,7 +153,7 @@ public class FontRunIterator {
             if (from >= to) {
                 next = to;
             } else {
-                FontSelectionStrategy strategy = getFontSelectionStrategy(from, to);
+                FontSelectionStrategy strategy = fontSelectionStrategy;
                 if (strategy == FontSelectionStrategy.CHARACTER) {
                     next = getNextIndexChar(previous, from, to);
                 } else if (strategy == FontSelectionStrategy.CCS) {
@@ -166,14 +168,10 @@ public class FontRunIterator {
                     else
                         next = nextCCS;
                 } else {
-                    next = from;
+                    next = getNextIndexChar(previous, from, to);
                 }
             }
             return next;
-        }
-
-        private FontSelectionStrategy getFontSelectionStrategy(int from, int to) {
-            return FontSelectionStrategy.CHARACTER;
         }
 
         private int getNextIndexChar(int previous, int from, int to) {
@@ -184,12 +182,40 @@ public class FontRunIterator {
         }
 
         private int getNextIndexCCS(int previous, int from, int to) {
-            // FIXME - IMPLEMENT
-            return getNextIndexChar(previous, from, to);
+            assert from >= 0;
+            assert from <  to;
+            int next = from;
+            int c = text.codePointAt(next);
+            if (Character.getType(c) != Character.NON_SPACING_MARK) {
+                if (c < 0x10000)
+                    next += 1;
+                else
+                    next += 2;
+                while (next < to) {
+                    c = text.codePointAt(next);
+                    if (Character.getType(c) != Character.NON_SPACING_MARK)
+                        return next;
+                    if (c < 0x10000)
+                        next += 1;
+                    else
+                        next += 2;
+                }
+            } else {
+                while (next < to) {
+                    c = text.codePointAt(next);
+                    if (Character.getType(c) != Character.NON_SPACING_MARK)
+                        return next;
+                    if (c < 0x10000)
+                        next += 1;
+                    else
+                        next += 2;
+                }
+            }
+            return next;
         }
 
         private int getNextIndexGC(int previous, int from, int to) {
-            // FIXME - IMPLEMENT
+            // FIXME - IMPLEMENT fully; for now, reduce to CCS
             return getNextIndexCCS(previous, from, to);
         }
 

@@ -514,11 +514,21 @@ public class StyleCollector {
     }
 
     protected void collectContentFontRuns(Element e, String content, int begin, int end) {
-        collectContentFontRuns(content, begin, end, getFonts());
+        collectContentFontRuns(content, begin, end, getFonts(), getFontSelectionStrategy());
     }
 
-    protected void collectContentFontRuns(String content, int begin, int end, Font[] fonts) {
-        FontRunIterator fi = fontIterator.setParagraph(content.substring(begin, end), fonts);
+    protected FontSelectionStrategy getFontSelectionStrategy() {
+        List<StyleAttributeInterval> intervals = getIntervals(StyleAttribute.FONT_SELECTION_STRATEGY);
+        FontSelectionStrategy fontSelectionStrategy = null;
+        if (!intervals.isEmpty())
+            fontSelectionStrategy = (FontSelectionStrategy) intervals.get(0).getValue();
+        if (fontSelectionStrategy == null)
+            fontSelectionStrategy = FontSelectionStrategy.getDefaultAutoTreatment();
+        return fontSelectionStrategy;
+    }
+
+    protected void collectContentFontRuns(String content, int begin, int end, Font[] fonts, FontSelectionStrategy fontSelectionStrategy) {
+        FontRunIterator fi = fontIterator.setParagraph(content.substring(begin, end), fonts, fontSelectionStrategy);
         int lastBegin = begin;
         Font lastFont = null;
         for (int i = fi.first(); i != FontRunIterator.DONE; i = fi.next()) {
@@ -735,6 +745,7 @@ public class StyleCollector {
 
     protected void collectCommonFontStyles(Element e, int begin, int end, StyleSet styles) {
         collectFontStyle(e, begin, end, styles);
+        collectFontSelectionStrategyStyle(e, begin, end, styles);
         collectLineHeightStyle(e, begin, end, styles);
     }
 
@@ -744,6 +755,22 @@ public class StyleCollector {
             addAttribute(StyleAttribute.FONTS, fonts, begin, end);
             setFonts(fonts);
         }
+    }
+
+    protected void collectFontSelectionStrategyStyle(Element e, int begin, int end, StyleSet styles) {
+        StyleSpecification s = styles.get(ttsFontSelectionStrategyAttrName);
+        Object v;
+        if (s != null)
+            v = FontSelectionStrategy.valueOf(s.getValue().toUpperCase());
+        else
+            v = getDefaultFontSelectionStrategy(e, styles);
+        if (v.equals(FontSelectionStrategy.AUTO)) {
+            FontSelectionStrategy treatFontSelectionStrategyAutoAs =
+                (FontSelectionStrategy) getContext().getExternalParameters().getParameter("treatFontSelectionStrategyAutoAs");
+            v = treatFontSelectionStrategyAutoAs;
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.FONT_SELECTION_STRATEGY, v, begin, end);
     }
 
     protected void collectLineHeightStyle(Element e, int begin, int end, StyleSet styles) {
