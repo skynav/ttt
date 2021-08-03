@@ -7,6 +7,15 @@ Copyright (c) 2007-2015, Google Corporation. Droid fonts are released under the
 Apache License, version 2.0, included herein as LICENSE.APACHE.txt.
 
 ********************************************************************************
+LAST RESORT FONTS
+********************************************************************************
+
+The Last Resort glyphs were drawn by Apple Inc. and Michael Everson of Evertype
+(https://github.com/unicode-org/last-resort-font). The Last Resort fonts are
+released under the Open Font License (OFL), Version 1.1, included herein as
+LICENSE.OFL.txt.
+
+********************************************************************************
 MONTSERRAT FONTS
 ********************************************************************************
 
