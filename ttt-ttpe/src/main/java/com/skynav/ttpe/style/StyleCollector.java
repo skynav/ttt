@@ -25,6 +25,7 @@
 
 package com.skynav.ttpe.style;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import com.skynav.ttpe.fonts.Font;
 import com.skynav.ttpe.fonts.FontCache;
 import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.fonts.FontKerning;
+import com.skynav.ttpe.fonts.FontSelectionStrategy;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.fonts.Orientation;
@@ -81,18 +83,19 @@ public class StyleCollector {
     private Extent cellResolution;                      // cell resolution of collector context, remains constant during collection
     private WritingMode writingMode;                    // writing mode of collector context, remains constant during collection
     private String language;                            // language of collector context, remains constant during collection
-    private Font font;                                  // font of current element being collected
+    private Font[] fonts;                               // fonts of current element being collected
     private int synthesizedStylesIndex;                 // index of next synthesized style identifier
     private Map<String,StyleSet> styles;                // map of all isd:css style sets, identified by id string
     private List<StyleAttributeInterval> attributes;    // text attributes being collected
-    private BidiLevelIterator bidi;                     // bidi iterator, reused as needed
+    private BidiLevelIterator bidiIterator;             // bidi level iterator, reused as needed
+    private FontRunIterator fontIterator;               // font run iterator, reused as needed
 
     public StyleCollector(StyleCollector sc) {
-        this(sc, sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.font, sc.styles);
+        this(sc, sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.fonts, sc.styles);
     }
 
     public StyleCollector
-        (StyleCollector parent, TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, Extent cellResolution, WritingMode writingMode, String language, Font font, Map<String,StyleSet> styles) {
+        (StyleCollector parent, TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, Extent cellResolution, WritingMode writingMode, String language, Font[] fonts, Map<String,StyleSet> styles) {
         this.parent = parent;
         this.context = context;
         this.defaults = defaults;
@@ -102,9 +105,10 @@ public class StyleCollector {
         this.cellResolution = cellResolution;
         this.writingMode = writingMode;
         this.language = language;
-        this.font = font;
+        this.fonts = (fonts != null) ? Arrays.copyOf(fonts, fonts.length) : null;
         this.styles = styles;
-        this.bidi = new BidiLevelIterator();
+        this.bidiIterator = new BidiLevelIterator();
+        this.fontIterator = new FontRunIterator(fontCache);
     }
 
     public StyleCollector getParent() {
@@ -127,12 +131,32 @@ public class StyleCollector {
         return defaults;
     }
 
-    protected void setFont(Font font) {
-        this.font = font;
+    protected void setFonts(Font[] fonts) {
+        assert fonts != null;
+        this.fonts = (fonts != null) ? Arrays.copyOf(fonts, fonts.length) : null;
     }
 
-    public Font getFont() {
-        return this.font;
+    public Font[] getFonts() {
+        if (this.fonts != null)
+            return Arrays.copyOf(this.fonts, this.fonts.length);
+        else
+            return null;
+    }
+
+    public Font getFirstAvailableFont() {
+        Font[] fonts = getFonts();
+        if ((fonts != null) && (fonts.length > 0))
+            return fonts[0];
+        else
+            return null;
+    }
+
+    public Extent getFirstAvailableFontSize() {
+        Font font = getFirstAvailableFont();
+        if (font != null)
+            return font.getSize();
+        else
+            return Extent.UNIT;
     }
 
     public Extent getExternalBounds() {
@@ -218,7 +242,7 @@ public class StyleCollector {
             com.skynav.ttv.model.value.TextReserve[] retReserve = new com.skynav.ttv.model.value.TextReserve[1];
             if (com.skynav.ttv.verifier.util.Reserve.isReserve(s.getValue(), new Location(), context, retReserve)) {
                 com.skynav.ttv.model.value.TextReserve ar = retReserve[0];
-                Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                Extent fs = getFirstAvailableFontSize();
                 Length reserve = ar.getReserve();
                 double r = (reserve != null) ? Helpers.resolveLength(e, reserve, Axis.VERTICAL, extBounds, refBounds, fs, cellResolution) : -1;
                 v = new AnnotationReserve(ar.getPosition().name(), r);
@@ -384,6 +408,7 @@ public class StyleCollector {
             begin = end;
         collectContentOrientation(e, content, begin, end);
         collectContentBidiLevels(e, content, begin, end);
+        collectContentFontRuns(e, content, begin, end);
     }
 
     public void collectContentOrientation(Element e, String content, int begin, int end) {
@@ -466,7 +491,7 @@ public class StyleCollector {
     }
 
     protected void collectContentBidiLevels(String content, int begin, int end, int defaultLevel) {
-        BidiLevelIterator bi = bidi.setParagraph(content.substring(begin, end), defaultLevel);
+        BidiLevelIterator bi = bidiIterator.setParagraph(content.substring(begin, end), defaultLevel);
         int lastBegin = begin;
         int lastLevel = -1;
         int maxLevel = lastLevel;
@@ -488,6 +513,40 @@ public class StyleCollector {
         }
     }
 
+    protected void collectContentFontRuns(Element e, String content, int begin, int end) {
+        collectContentFontRuns(content, begin, end, getFonts(), getFontSelectionStrategy());
+    }
+
+    protected FontSelectionStrategy getFontSelectionStrategy() {
+        List<StyleAttributeInterval> intervals = getIntervals(StyleAttribute.FONT_SELECTION_STRATEGY);
+        FontSelectionStrategy fontSelectionStrategy = null;
+        if (!intervals.isEmpty())
+            fontSelectionStrategy = (FontSelectionStrategy) intervals.get(0).getValue();
+        if (fontSelectionStrategy == null)
+            fontSelectionStrategy = FontSelectionStrategy.getDefaultAutoTreatment();
+        return fontSelectionStrategy;
+    }
+
+    protected void collectContentFontRuns(String content, int begin, int end, Font[] fonts, FontSelectionStrategy fontSelectionStrategy) {
+        FontRunIterator fi = fontIterator.setParagraph(content.substring(begin, end), fonts, fontSelectionStrategy);
+        int lastBegin = begin;
+        Font lastFont = null;
+        for (int i = fi.first(); i != FontRunIterator.DONE; i = fi.next()) {
+            Font font = fi.font();
+            if (font != lastFont) {
+                if (lastFont != null) {
+                    addAttribute(StyleAttribute.FONT, lastFont, lastBegin, i);
+                }
+                lastFont = font;
+                lastBegin = i;
+            }
+        }
+        if (lastBegin < end) {
+            if (lastFont != null)
+                addAttribute(StyleAttribute.FONT, lastFont, lastBegin, end);
+        }
+    }
+    
     public void addEmbedding(Object object, int begin, int end) {
         addAttribute(StyleAttribute.EMBEDDING, object, begin, end);
     }
@@ -530,7 +589,7 @@ public class StyleCollector {
                     assert measures.size() == 1;
                     Measure m = measures.get(0);
                     Axis axis = writingMode.getAxis(BPD);
-                    Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                    Extent fs = getFirstAvailableFontSize();
                     v = Double.valueOf(Helpers.resolveMeasure(e, m, axis, extBounds, refBounds, fs, cellResolution, null));
                 }
             }
@@ -567,7 +626,7 @@ public class StyleCollector {
                     assert measures.size() == 1;
                     Measure m = measures.get(0);
                     Axis axis = writingMode.getAxis(IPD);
-                    Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                    Extent fs = getFirstAvailableFontSize();
                     v = Double.valueOf(Helpers.resolveMeasure(e, m, axis, extBounds, refBounds, fs, cellResolution, null));
                 }
             }
@@ -586,7 +645,7 @@ public class StyleCollector {
                 List<Length> lengths = new java.util.ArrayList<Length>();
                 if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
                     Length[] la = lengths.toArray(new Length[lengths.size()]);
-                    Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                    Extent fs = getFirstAvailableFontSize();
                     padding = Helpers.resolvePadding(e, la, writingMode, extBounds, refBounds, fs, cellResolution);
                 }
             }
@@ -645,7 +704,7 @@ public class StyleCollector {
                 com.skynav.ttv.model.value.TextOutline to = retOutline[0];
                 com.skynav.ttv.model.value.Color toColor = to.getColor();
                 Color c = (toColor != null) ? new Color(toColor.getRed(), toColor.getGreen(), toColor.getBlue(), toColor.getAlpha()) : color;
-                Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+                Extent fs = getFirstAvailableFontSize();
                 Length thickness = to.getThickness();
                 double t = Helpers.resolveLength(e, thickness, Axis.VERTICAL, extBounds, refBounds, fs, cellResolution);
                 Length blur = to.getBlur();
@@ -686,22 +745,39 @@ public class StyleCollector {
 
     protected void collectCommonFontStyles(Element e, int begin, int end, StyleSet styles) {
         collectFontStyle(e, begin, end, styles);
+        collectFontSelectionStrategyStyle(e, begin, end, styles);
         collectLineHeightStyle(e, begin, end, styles);
     }
 
     protected void collectFontStyle(Element e, int begin, int end, StyleSet styles) {
-        Font f = getFontFromStyles(e, styles);
-        if (f != null) {
-            addAttribute(StyleAttribute.FONT, f, begin, end);
-            setFont(f);
+        Font[] fonts = getFontsFromStyles(e, styles);
+        if (fonts != null) {
+            addAttribute(StyleAttribute.FONTS, fonts, begin, end);
+            setFonts(fonts);
         }
+    }
+
+    protected void collectFontSelectionStrategyStyle(Element e, int begin, int end, StyleSet styles) {
+        StyleSpecification s = styles.get(ttsFontSelectionStrategyAttrName);
+        Object v;
+        if (s != null)
+            v = FontSelectionStrategy.valueOf(s.getValue().toUpperCase());
+        else
+            v = getDefaultFontSelectionStrategy(e, styles);
+        if (v.equals(FontSelectionStrategy.AUTO)) {
+            FontSelectionStrategy treatFontSelectionStrategyAutoAs =
+                (FontSelectionStrategy) getContext().getExternalParameters().getParameter("treatFontSelectionStrategyAutoAs");
+            v = treatFontSelectionStrategyAutoAs;
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.FONT_SELECTION_STRATEGY, v, begin, end);
     }
 
     protected void collectLineHeightStyle(Element e, int begin, int end, StyleSet styles) {
         StyleSpecification s = styles.get(ttsLineHeightAttrName);
         Object v = null;
         if (s != null) {
-            Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+            Extent fs = getFirstAvailableFontSize();
             if (Keywords.isNormal(s.getValue())) {
                 v = Double.valueOf(fs.getDimension(Axis.VERTICAL) * 1.25);
             } else {
@@ -718,10 +794,10 @@ public class StyleCollector {
             addAttribute(StyleAttribute.LINE_HEIGHT, v, begin, end);
     }
 
-    private Font getFontFromStyles(Element e, StyleSet styles) {
+    private Font[] getFontsFromStyles(Element e, StyleSet styles) {
         StyleSpecification s;
         // families
-        List<String> fontFamilies = null;
+        List<String> fontFamilies = new java.util.ArrayList<String>();
         s = styles.get(ttsFontFamilyAttrName);
         if (s != null) {
             List<FontFamily> families = new java.util.ArrayList<FontFamily>();
@@ -735,8 +811,10 @@ public class StyleCollector {
                 }
             }
         }
-        if (fontFamilies == null)
-            fontFamilies = getDefaultFontFamilies(e, styles);
+        for (String familyName : getDefaultFontFamilies(e, styles)) {
+            if (!fontFamilies.contains(familyName))
+                fontFamilies.add(familyName);
+        }
         // style
         FontStyle fontStyle = null;
         s = styles.get(ttsFontStyleAttrName);
@@ -798,7 +876,25 @@ public class StyleCollector {
         }
         if (fontFeatures.isEmpty())
             fontFeatures = getDefaultFontFeatures(e, styles);
-        return getFontCache().mapFont(fontFamilies, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
+        List<Font> mappedFonts = new java.util.ArrayList<Font>();
+        if (!fontFamilies.isEmpty()) {
+            List<String> ff =  new java.util.ArrayList<String>(1);
+            for (String family : fontFamilies) {
+                ff.clear();
+                ff.add(family);
+                Font f = getFontCache().mapFont(ff, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
+                if (f != null)
+                    mappedFonts.add(f);
+            }
+        } else {
+            Font f = getFontCache().mapFont(fontFamilies, fontStyle, fontWeight, language, writingMode.getAxis(IPD), fontSize, fontFeatures);
+            if (f != null)
+                mappedFonts.add(f);
+        }
+        if (!mappedFonts.isEmpty())
+            return mappedFonts.toArray(new Font[mappedFonts.size()]);
+        else
+            return null;
     }
 
     protected StyleSet getStyles(Element e) {
@@ -872,6 +968,10 @@ public class StyleCollector {
         return getDefaults().getFontFamilies();
     }
 
+    protected FontSelectionStrategy getDefaultFontSelectionStrategy(Element e, StyleSet styles) {
+        return getDefaults().getFontSelectionStrategy();
+    }
+
     protected FontStyle getDefaultFontStyle(Element e, StyleSet styles) {
         return getDefaults().getFontStyle();
     }
@@ -921,7 +1021,7 @@ public class StyleCollector {
         List<Length> lengths = new java.util.ArrayList<Length>();
         if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
-            Extent fs = (font != null) ? font.getSize() : Extent.UNIT;
+            Extent fs = getFirstAvailableFontSize();
             Extent refBounds = this.refBounds;
             if (!Documents.isElement(e, isdRegionElementName))
                 refBounds = fs;

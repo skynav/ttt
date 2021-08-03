@@ -406,7 +406,12 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2FontSelectionStrategy() throws Exception {
-        performPresentationTest("ttml2-prstn-font-selection-strategy.xml", true);
+        performPresentationTest("ttml2-prstn-font-selection-strategy.xml");
+    }
+
+    @Test
+    public void testTTML2FontSelectionStrategyLineHeightNormal() throws Exception {
+        performPresentationTest("ttml2-prstn-font-selection-strategy-line-height-normal.xml");
     }
 
     @Test

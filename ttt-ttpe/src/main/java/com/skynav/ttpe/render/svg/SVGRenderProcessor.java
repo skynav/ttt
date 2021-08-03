@@ -857,6 +857,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         }
         List<Decoration> decorations = a.getDecorations();
         Element e;
+        maybeStyleGlyphGroup(g, a, l);
         e = renderGlyphText(g, a, d, decorations, bpdGlyphs, baselineOffset);
         assert e != null;
         g.appendChild(e);
@@ -866,6 +867,23 @@ public class SVGRenderProcessor extends RenderProcessor {
             xCurrent += ipdGlyphs;
         }
         return g;
+    }
+
+    private void maybeStyleGlyphGroup(Element e, GlyphArea g, LineArea l) {
+        Font gFont = g.getFont();
+        Font lFont = l.getFont();
+        String fontFamily = gFont.getPreferredFamilyName();
+        if (!fontFamily.equals(lFont.getPreferredFamilyName()))
+            Documents.setAttribute(e, SVGDocumentFrame.fontFamilyAttrName, fontFamily);
+        Extent fontSize = gFont.getSize();
+        if (!fontSize.equals(lFont.getSize()))
+            Documents.setAttribute(e, SVGDocumentFrame.fontSizeAttrName, doubleFormatter.format(new Object[] {fontSize.getHeight()}));
+        FontStyle fontStyle = gFont.getStyle();
+        if (!fontStyle.equals(lFont.getStyle()))
+            Documents.setAttribute(e, SVGDocumentFrame.fontStyleAttrName, fontStyle.name().toLowerCase());
+        FontWeight fontWeight = gFont.getWeight();
+        if (!fontWeight.equals(lFont.getWeight()))
+            Documents.setAttribute(e, SVGDocumentFrame.fontWeightAttrName, fontWeight.name().toLowerCase());
     }
 
     private Element renderGlyphText(Element parent, GlyphArea a, Document d, List<Decoration> decorations, double bpdGlyphs, double baselineOffset) {

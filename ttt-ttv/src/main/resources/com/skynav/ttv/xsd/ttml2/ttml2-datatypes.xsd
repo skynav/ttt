@@ -211,6 +211,10 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="auto"/>
       <xs:enumeration value="character"/>
+      <!-- non-standard values -->
+      <xs:enumeration value="ccs"/>             <!-- combined character sequence -->
+      <xs:enumeration value="gc"/>              <!-- grapheme cluster -->
+      <xs:enumeration value="context"/>         <!-- maximal context -->
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="fontSize">

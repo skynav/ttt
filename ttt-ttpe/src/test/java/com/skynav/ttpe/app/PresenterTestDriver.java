@@ -219,6 +219,7 @@ public class PresenterTestDriver {
 
     private void maybeCheckDifferences(List<URI> output, URI input, TransformerContext context) {
         boolean checkedDifferences = false;
+        String differenceMessage = null;
         URI outputURI = null;
         URI controlURI = null;
         if ((output != null) && !output.isEmpty()) {
@@ -232,7 +233,14 @@ public class PresenterTestDriver {
                             File control = new File(joinComponents(components, ".expected.zip"));
                             if (control.exists()) {
                                 controlURI = control.toURI();
-                                checkDifferences(controlURI, outputURI);
+                                try {
+                                    checkDifferences(controlURI, outputURI);
+                                } catch (AssertionError e) {
+                                    Reporter reporter = context.getReporter();
+                                    reporter.logWarning(reporter.message("*KEY*", "[T]:Control comparison failed: {0}", e.getMessage()));
+                                    reporter.flush();
+                                    throw e;
+                                }
                                 checkedDifferences = true;
                             }
                         }

@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <fonts version="1" xmlns="http://skynav.com/ns/ttpe">
+  <!-- language neutral mappings -->
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="source">NotoSans-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="source">NotoSans-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="source">NotoSans-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="source">NotoSans-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <!-- language specific mappings -->
   <font>
     <param name="family">Noto Sans</param>
     <param name="language">EL</param>

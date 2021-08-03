@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-16 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
  
 package com.skynav.ttpe.ttml2;
 
-//import org.junit.Ignore;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.skynav.ttpe.app.PresenterTestDriver;
@@ -83,8 +83,8 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
-    public void testTTML2SpanFontSizeAnomorphicLRTB() throws Exception {
-        performPresentationTest("ttml2-span-font-size-anomorphic-lrtb.xml");
+    public void testTTML2SpanFontSizeAnamorphicLRTB() throws Exception {
+        performPresentationTest("ttml2-span-font-size-anamorphic-lrtb.xml");
     }
 
     @Test
@@ -382,6 +382,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-bidi-reorder-with-isolates.xml");
     }
 
+    @Ignore
     @Test
     public void testTTML2KoranicArabic() throws Exception {
         performPresentationTest("ttml2-koranic-arabic.xml");

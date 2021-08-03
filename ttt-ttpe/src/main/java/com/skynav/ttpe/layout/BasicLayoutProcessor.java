@@ -539,7 +539,7 @@ public class BasicLayoutProcessor extends LayoutProcessor {
     }
 
     private StyleCollector newStyleCollector(LayoutState ls) {
-        return new StyleCollector(null, context, ls.getFontCache(), defaults, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getCellResolution(), ls.getWritingMode(), ls.getLanguage(), ls.getFont(), ls.getStyles());
+        return new StyleCollector(null, context, ls.getFontCache(), defaults, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getCellResolution(), ls.getWritingMode(), ls.getLanguage(), ls.getFonts(), ls.getStyles());
     }
 
     protected void layoutParagraphs(Element e, List<Paragraph> paragraphs, LayoutState ls) {

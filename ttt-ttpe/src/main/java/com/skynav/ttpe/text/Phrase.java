@@ -27,6 +27,7 @@ package com.skynav.ttpe.text;
 
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -313,15 +314,24 @@ public class Phrase {
             return null;
     }
 
-    private static final StyleAttribute[] fontAttr = new StyleAttribute[] { StyleAttribute.FONT };
-    public Font getFont(int index, Defaults defaults) {
+    private static final StyleAttribute[] fontsAttr = new StyleAttribute[] { StyleAttribute.FONTS };
+    public Font[] getFonts(int index, Defaults defaults) {
         Object v;
         if (index < 0)
-            v = attributes.get(fontAttr[0]);
+            v = attributes.get(fontsAttr[0]);
         else
-            v = content.getIterator(fontAttr, index, index + 1).getAttribute(fontAttr[0]);
-        if (v instanceof Font)
-            return (Font) v;
+            v = content.getIterator(fontsAttr, index, index + 1).getAttribute(fontsAttr[0]);
+        if (v instanceof Font[]) {
+            Font[] fonts = (Font[]) v;
+            return Arrays.copyOf(fonts, fonts.length);
+        } else
+            return null;
+    }
+
+    public Font getFirstAvailableFont(int index, Defaults defaults) {
+        Font[] fonts = getFonts(index, defaults);
+        if ((fonts != null) && (fonts.length > 0))
+            return fonts[0];
         else
             return null;
     }

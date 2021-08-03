@@ -90,7 +90,8 @@ public interface LayoutState {
     Whitespace getWhitespace();
     WritingMode getWritingMode();
     int getBidiLevel();
-    Font getFont();
+    Font[] getFonts();
+    Font getFirstFont();
     double getAvailable(Dimension dimension);
     Extent getCellResolution();
     Extent getReferenceExtent();

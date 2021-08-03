@@ -33,6 +33,7 @@ import com.skynav.ttpe.fonts.Combination;
 import com.skynav.ttpe.fonts.FontFeature;
 import com.skynav.ttpe.fonts.FontKerning;
 import com.skynav.ttpe.fonts.FontKey;
+import com.skynav.ttpe.fonts.FontSelectionStrategy;
 import com.skynav.ttpe.fonts.FontStyle;
 import com.skynav.ttpe.fonts.FontWeight;
 import com.skynav.ttpe.fonts.Orientation;
@@ -67,6 +68,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private static final FontKerning defaultFontKerning                         = FontKerning.NORMAL;
     private static final double defaultFontShear                                = 0;
     private static final Extent defaultFontSize                                 = FontKey.DEFAULT_SIZE;
+    private static final FontSelectionStrategy defaultFontSelectionStrategy     = FontSelectionStrategy.AUTO;
     private static final FontStyle defaultFontStyle                             = FontKey.DEFAULT_STYLE;
     private static final FontWeight defaultFontWeight                           = FontKey.DEFAULT_WEIGHT;
     private static final double defaultIPD                                      = -1;
@@ -112,6 +114,7 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
     private FontKerning fontKerning                                             = defaultFontKerning;
     private double fontShear                                                    = defaultFontShear;
     private Extent fontSize                                                     = defaultFontSize;
+    private FontSelectionStrategy fontSelectionStrategy                         = defaultFontSelectionStrategy;
     private FontStyle fontStyle                                                 = defaultFontStyle;
     private FontWeight fontWeight                                               = defaultFontWeight;
     private double ipd                                                          = defaultIPD;
@@ -331,6 +334,14 @@ public class Defaults extends com.skynav.ttpe.parameter.Defaults {
 
     public Extent getFontSize() {
         return fontSize;
+    }
+
+    public void setFontSelectionStrategy(FontSelectionStrategy fontSelectionStrategy) {
+        this.fontSelectionStrategy = fontSelectionStrategy;
+    }
+
+    public FontSelectionStrategy getFontSelectionStrategy() {
+        return fontSelectionStrategy;
     }
 
     public void setFontStyle(FontStyle fontStyle) {

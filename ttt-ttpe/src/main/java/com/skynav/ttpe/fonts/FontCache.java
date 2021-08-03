@@ -55,8 +55,12 @@ public class FontCache {
         this.reporter = reporter;
     }
 
-    public Font getDefaultFont(Axis axis, Extent size) {
-        return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.DEFAULT_VERTICAL : FontKey.DEFAULT_HORIZONTAL, size));
+    public Font getDefaultFont(Axis axis, Extent size, String language) {
+        return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.DEFAULT_VERTICAL : FontKey.DEFAULT_HORIZONTAL, size, language));
+    }
+
+    public Font getLastResortFont(Axis axis, Extent size) {
+        return get(new FontKey((axis == Axis.VERTICAL) ? FontKey.LAST_RESORT_VERTICAL : FontKey.LAST_RESORT_HORIZONTAL, size));
     }
 
     public Font mapFont(List<String> families, FontStyle style, FontWeight weight, String language, Axis axis, Extent size, Set<FontFeature> features) {
@@ -162,7 +166,7 @@ public class FontCache {
             if (!matchesFamily.isEmpty())
                 return matchesFamily.get(0);
         }
-        Font f = getDefaultFont(axis, size);
+        Font f = getDefaultFont(axis, size, language);
         return (f != null) ? f.getSpecification() : null;
     }
 

@@ -47,10 +47,16 @@ public class FontKey {
         new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.HORIZONTAL, DEFAULT_SIZE, DEFAULT_FEATURES);
     public static final FontKey                 DEFAULT_VERTICAL   =
         new FontKey(DEFAULT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.VERTICAL, DEFAULT_SIZE, DEFAULT_FEATURES);
+    public static final String                  LAST_RESORT_FAMILY = "Last Resort";
+    public static final FontKey                 LAST_RESORT_HORIZONTAL =
+        new FontKey(LAST_RESORT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.HORIZONTAL, DEFAULT_SIZE, DEFAULT_FEATURES);
+    public static final FontKey                 LAST_RESORT_VERTICAL   =
+        new FontKey(LAST_RESORT_FAMILY, DEFAULT_STYLE, DEFAULT_WEIGHT, DEFAULT_LANGUAGE, Axis.VERTICAL, DEFAULT_SIZE, DEFAULT_FEATURES);
 
     static {
         List<String> l = new java.util.ArrayList<String>();
         l.add(DEFAULT_FAMILY);
+        l.add(LAST_RESORT_FAMILY);              // must be last
         DEFAULT_FAMILIES = Collections.unmodifiableList(l);
     }
 
@@ -63,6 +69,10 @@ public class FontKey {
     public Map<String,FontFeature> features;
 
     public FontKey(FontKey key, Extent size) {
+        this(key, size, DEFAULT_LANGUAGE);
+    }
+    
+    public FontKey(FontKey key, Extent size, String language) {
         this(key.family, key.style, key.weight, key.language, key.axis, size, DEFAULT_FEATURES);
     }
 

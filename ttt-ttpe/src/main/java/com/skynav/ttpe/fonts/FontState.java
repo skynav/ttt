@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-15 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -172,6 +172,26 @@ public class FontState {
             return scaleFontUnits(key, os2Table.getTypoDescender());
         else
             return 0;
+    }
+
+    public boolean hasGlyphMapping(FontKey key, String text, int prevIndex, int index, int nextIndex) {
+        int i = index;
+        int iEnd = nextIndex;
+        if (maybeLoad(key)) {
+            while (i < iEnd) {
+                int c = text.codePointAt(i);
+                if (Characters.isZeroWidthWhitespace(c))
+                    c = Characters.UC_SPACE;
+                if (getGlyphId(c, false) != 0) {
+                    if (c < 0x10000)
+                        i += 1;
+                    else
+                        i += 2;
+                } else
+                    break;
+            }
+        }
+        return (i >= iEnd);
     }
 
     public GlyphMapping getGlyphMapping(FontKey key, String text, SortedSet<FontFeature> features) {
@@ -407,7 +427,7 @@ public class FontState {
             File f = new File(source);
             try {
                 if (f.exists()) {
-                    otf = new OTFParser(false, true).parse(f);
+                    otf = new OTFParser(false, true, true).parse(f);
                     nameTable = otf.getNaming();
                     os2Table = otf.getOS2Windows();
                     cmapSubtable = otf.getUnicodeCmap();

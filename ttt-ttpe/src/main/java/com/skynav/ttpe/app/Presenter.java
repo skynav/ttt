@@ -65,6 +65,7 @@ import org.w3c.dom.Document;
 
 import org.xml.sax.InputSource;
 
+import com.skynav.ttpe.fonts.FontSelectionStrategy;
 import com.skynav.ttpe.layout.LayoutProcessor;
 import com.skynav.ttpe.render.DocumentFrame;
 import com.skynav.ttpe.render.Frame;
@@ -142,6 +143,8 @@ public class Presenter extends TimedTextTransformer {
         { "show-formats",               "",         "show output formats" },
         { "show-layouts",               "",         "show built-in layouts" },
         { "show-memory",                "",         "show memory statistics" },
+        { "treat-font-selection-strategy-auto-as", "TOKEN", "specify treatment for font selection strategy auto, where TOKEN is character|ccs|gc|context (default: " +
+            FontSelectionStrategy.getDefaultAutoTreatment().name().toLowerCase() + ")" },
     };
     private static final Collection<OptionSpecification> longOptions;
     static {
@@ -174,6 +177,7 @@ public class Presenter extends TimedTextTransformer {
     private boolean showLayouts;
     private boolean showRenderers;
     private boolean showMemory;
+    private FontSelectionStrategy treatFontSelectionStrategyAutoAs;
 
     // derived option state
     private LayoutProcessor layout;
@@ -339,6 +343,15 @@ public class Presenter extends TimedTextTransformer {
             showLayouts = true;
         } else if (option.equals("show-memory")) {
             showMemory = true;
+        } else if (option.equals("treat-font-selection-strategy-auto-as")) {
+            if (index + 1 > numArgs)
+                throw new MissingOptionArgumentException("--" + option);
+            String optionArg = args.get(++index);
+            try {
+                treatFontSelectionStrategyAutoAs = FontSelectionStrategy.valueOf(optionArg.toUpperCase());
+            } catch (Exception e) {
+                throw new InvalidOptionUsageException(option, "unknown font selection strategy: " + optionArg);
+            }
         } else {
             return super.parseLongOption(args, index);
         }
@@ -520,6 +533,10 @@ public class Presenter extends TimedTextTransformer {
             this.outputPattern = rendererOutputPattern;
             this.outputPatternFormatter = new MessageFormat(this.outputPattern, Locale.US);
         }
+        // auto font selection strategy treatment
+        if (treatFontSelectionStrategyAutoAs == null)
+            treatFontSelectionStrategyAutoAs = FontSelectionStrategy.getDefaultAutoTreatment();
+        getExternalParameters().setParameter("treatFontSelectionStrategyAutoAs", treatFontSelectionStrategyAutoAs);
     }
 
     @Override

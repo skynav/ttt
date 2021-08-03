@@ -7,11 +7,45 @@ Copyright (c) 2007-2015, Google Corporation. Droid fonts are released under the
 Apache License, version 2.0, included herein as LICENSE.APACHE.txt.
 
 ********************************************************************************
+LAST RESORT FONTS
+********************************************************************************
+
+The Last Resort glyphs were drawn by Apple Inc. and Michael Everson of Evertype
+(https://github.com/unicode-org/last-resort-font). The Last Resort fonts are
+released under the Open Font License (OFL), Version 1.1, included herein as
+LICENSE.OFL.txt.
+
+********************************************************************************
+MONTSERRAT FONTS
+********************************************************************************
+
+Copyright (c) 2011 The Montserrat Project Authors
+(https://github.com/JulietaUla/Montserrat). Montserrat fonts are released under
+the Open Font License (OFL), Version 1.1, included herein as LICENSE.OFL.txt.
+
+********************************************************************************
 NOTO FONTS
 ********************************************************************************
 
 Copyright (c) 2012-2015, Google Corporation. Noto fonts are released under the
 Apache License, version 2.0, included herein as LICENSE.APACHE.txt.
+
+********************************************************************************
+PT MONO FONTS
+********************************************************************************
+
+Copyright (c) 2011, ParaType Ltd. (http://www.paratype.com/public),
+with Reserved Font Names "PT Sans", "PT Serif", "PT Mono" and "ParaType".
+The PT Mono fonts are releasesd under the Open Font License (OFL), Version 1.1,
+included herein as LICENSE.OFL.txt.
+
+********************************************************************************
+SALSA FONTS
+********************************************************************************
+
+Copyright (c) 2011 by John Vargas Beltrán (john.vargasbeltran@gmail.com),
+with Reserved Font Name Salsa. The Salsa fonts are releasesd under the Open
+Font License (OFL), Version 1.1, included herein as LICENSE.OFL.txt.
 
 ********************************************************************************
 SIL FONTS
@@ -20,4 +54,13 @@ SIL FONTS
 Copyright (c) 2004-2015, SIL International (http://scripts.sil.org/) with
 Reserved Font Names "Lateef", "Scheherazade", and "SIL". SIL fonts are
 released under the Open Font License (OFL), Version 1.1, included herein as
-LICENSE.SILOFL.txt.
+LICENSE.OFL.txt.
+
+********************************************************************************
+SPACE MONO FONTS
+********************************************************************************
+
+Copyright 2016 Google Inc. All Rights Reserved. Space Mono fonts are released
+under the Open Font License (OFL), Version 1.1, included herein as
+LICENSE.OFL.txt.
+
