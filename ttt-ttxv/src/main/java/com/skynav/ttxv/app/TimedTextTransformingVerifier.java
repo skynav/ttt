@@ -37,7 +37,7 @@ public class TimedTextTransformingVerifier extends TimedTextTransformer {
 
     // banner text
     private static final String title = "Timed Text Transforming Verifier (TTXV) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-19 Skynav, Inc.";
+    private static final String copyright = "Copyright 2013-21 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     private static final String usageCommand =

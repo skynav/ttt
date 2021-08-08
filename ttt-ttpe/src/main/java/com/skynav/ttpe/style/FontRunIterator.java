@@ -106,6 +106,8 @@ public class FontRunIterator {
         private FontSelectionStrategy fontSelectionStrategy;
         public FontRunGenerator(FontCache fontCache) {
             this.fontCache = fontCache;
+            this.text = null;
+            this.fonts = null;
         }
         public void setPara(String text, Font[] fonts, FontSelectionStrategy fontSelectionStrategy) {
             this.text = text;

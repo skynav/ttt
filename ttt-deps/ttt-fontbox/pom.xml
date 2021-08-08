@@ -15,7 +15,7 @@
     <groupId>${project.groupId}</groupId>
     <artifactId>${project.artifactId}</artifactId>
     <!-- <version>${project.version}</version> -->
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <generatePom>false</generatePom>
   </properties>
 
@@ -60,9 +60,9 @@
             </goals>
             <configuration>
               <pomFile>pom.xml</pomFile>
-              <file>ttt-fontbox-3.0.0-SNAPSHOT.jar</file>
-              <sources>ttt-fontbox-3.0.0-SNAPSHOT-sources.jar</sources>
-              <javadoc>ttt-fontbox-3.0.0-SNAPSHOT-javadoc.jar</javadoc>
+              <file>ttt-fontbox-3.0.0.jar</file>
+              <sources>ttt-fontbox-3.0.0-sources.jar</sources>
+              <javadoc>ttt-fontbox-3.0.0-javadoc.jar</javadoc>
             </configuration>
           </execution>
         </executions>

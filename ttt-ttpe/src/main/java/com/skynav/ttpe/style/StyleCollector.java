@@ -150,7 +150,7 @@ public class StyleCollector {
 
     protected void setFonts(Font[] fonts) {
         assert fonts != null;
-        this.fonts = (fonts != null) ? Arrays.copyOf(fonts, fonts.length) : null;
+        this.fonts = Arrays.copyOf(fonts, fonts.length);
     }
 
     public Font[] getFonts() {
@@ -353,7 +353,7 @@ public class StyleCollector {
     public void collectImageStyles(Element e, int begin, int end) {
         assert (begin < 0) || (end - begin) > 0;
         StyleSet styles = getStyles(e);
-    
+
         // collect common styles
         collectCommonStyles(e, begin, end, styles);
 
@@ -365,7 +365,7 @@ public class StyleCollector {
             return;
 
     }
-    
+
     public Image getForegroundImage(Element e) {
         // [TBD] - copied to BasicLayoutState.java; need to unify as static method (if possible) in appropriate class
         // [TBD] - implement support for all source categories, at present only support 'src' attribute
@@ -602,7 +602,7 @@ public class StyleCollector {
                 addAttribute(StyleAttribute.FONT, lastFont, lastBegin, end);
         }
     }
-    
+
     public void addEmbedding(Object object, int begin, int end) {
         addAttribute(StyleAttribute.EMBEDDING, object, begin, end);
     }

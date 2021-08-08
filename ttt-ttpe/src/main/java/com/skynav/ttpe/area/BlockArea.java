@@ -67,7 +67,7 @@ public class BlockArea extends NonLeafAreaNode implements Block {
     public BlockArea(Element e, double ipd, double bpd, int level, double shearAngle, Visibility visibility) {
         this(e, ipd, bpd, level, shearAngle, visibility, 1);
     }
-    
+
     public BlockArea(Element e, double ipd, double bpd, int level, double shearAngle, Visibility visibility, double opacity) {
         super(e);
         this.ipd = ipd;

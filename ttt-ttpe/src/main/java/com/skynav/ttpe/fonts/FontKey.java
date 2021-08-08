@@ -71,7 +71,7 @@ public class FontKey {
     public FontKey(FontKey key, Extent size) {
         this(key, size, DEFAULT_LANGUAGE);
     }
-    
+
     public FontKey(FontKey key, Extent size, String language) {
         this(key.family, key.style, key.weight, key.language, key.axis, size, DEFAULT_FEATURES);
     }

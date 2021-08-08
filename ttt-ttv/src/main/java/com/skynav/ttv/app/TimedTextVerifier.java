@@ -146,7 +146,7 @@ public class TimedTextVerifier implements VerifierContext {
 
     // banner text
     private static final String title = "Timed Text Verifier (TTV) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright (c) 2013-19 Skynav, Inc.";
+    private static final String copyright = "Copyright (c) 2013-21 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     // usage text
@@ -336,7 +336,7 @@ public class TimedTextVerifier implements VerifierContext {
     private double[] parsedExternalExtent;
     private WallClockTime parsedExternalWallClockBegin;
     @SuppressWarnings("unused")
-	private ValidationMode validationMode;
+    private ValidationMode validationMode;
     @SuppressWarnings("unused")
     private ValidationAction validationAction;
 
@@ -440,7 +440,7 @@ public class TimedTextVerifier implements VerifierContext {
         Ignore;         // don't warn and do not abort processing
 
         @SuppressWarnings("unused")
-		public static ValidationAction valueOfIgnoringCase(String value) {
+        public static ValidationAction valueOfIgnoringCase(String value) {
             if (value == null)
                 throw new IllegalArgumentException();
             for (ValidationAction v: values()) {

@@ -86,7 +86,7 @@ public class MeasureImpl extends LengthImpl implements Measure {
         return sb.toString();
     }
     private void resolveTo(Length length) {
-        if (length != null) {
+        if (length == null) {
             length = PXL_0;
         }
         this.setLength(length);

@@ -83,7 +83,7 @@ public class InlineImageArea extends LeafInlineArea {
         else
             return null;
     }
-    
+
     @Override
     public Visibility getVisibility() {
         for (Decoration d : decorations) {

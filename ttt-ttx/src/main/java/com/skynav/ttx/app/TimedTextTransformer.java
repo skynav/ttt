@@ -61,7 +61,7 @@ public class TimedTextTransformer implements ResultProcessor, TransformerContext
 
     // banner text
     private static final String title = "Timed Text Transformer (TTX) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-19 Skynav, Inc.";
+    private static final String copyright = "Copyright 2013-21 Skynav, Inc.";
     private static final String banner = title + " " + copyright;
 
     // option and usage info

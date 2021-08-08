@@ -932,14 +932,14 @@ public class TTML2StyleVerifier extends TTML1StyleVerifier {
         // [TBD] - aggregate per-element 'animate' semantic verficatiion tests
         return !failed;
     }
-    
+
     @Override
     protected boolean verifySet(Object content, Locator locator, VerifierContext context) {
         boolean failed = false;
         // allow multiple styles, i.e., bypass style count constraint in superclass
         return !failed;
     }
-    
+
     @Override
     protected boolean verifyAttributeItem(Object content, Locator locator, StyleAccessor sa, VerifierContext context) {
         if (!super.verifyAttributeItem(content, locator, sa, context))

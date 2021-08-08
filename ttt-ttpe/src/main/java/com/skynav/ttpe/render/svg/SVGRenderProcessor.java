@@ -1382,8 +1382,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 if (y != 0)
                     Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {0,y}));
                 if (t != null) {
-                    if (fontMatrix != null)
-                        Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                    Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
                     gInner.appendChild(t);
                 }
                 gOuter.appendChild(gInner);
@@ -1475,8 +1474,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 if ((x != 0) || (y != 0))
                     Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,y}));
                 if (t != null) {
-                    if (fontMatrix != null)
-                        Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                    Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
                     gInner.appendChild(t);
                 }
                 gOuter.appendChild(gInner);

@@ -61,16 +61,16 @@ Next, change directory to the standalone JAR package, ``cd ../ttt-ttv-all``, the
 In order to run the presentation engine (from its standalone JAR), first change directory to the standalone JAR package, ``cd ../ttt-ttv-all``,
 then use the following (or equivalent):
 
-`java -jar target/ttt-ttv-all-7.1-SNAPSHOT.jar ttml.xml`
+`java -jar target/ttt-ttv-all-7.1.jar ttml.xml`
 
 Usage information can be obtained by using:
 
-`java -jar target/ttt-ttv-all-7.1-SNAPSHOT.jar --help`
+`java -jar target/ttt-ttv-all-7.1.jar --help`
 
 At present, this will output the following:
 
 <pre>
-Timed Text Verifier (TTV) [7.1-SNAPSHOT] Copyright (c) 2013-19 Skynav, Inc.
+Timed Text Verifier (TTV) [7.1] Copyright (c) 2013-21 Skynav, Inc.
 Usage: java -jar ttv.jar [options] URL*
   Short Options:
     -?                                  - see --help
@@ -114,6 +114,7 @@ Usage: java -jar ttv.jar [options] URL*
     --show-validator                    - show platform validator information
     --show-warning-tokens               - show warning tokens (use with --verbose to show more details)
     --treat-foreign-as TOKEN            - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: warning)
+    --treat-optional-validation-as MODE - treat optional validation mode as specified mode, where MODE is required|prohibited (default: required)
     --treat-warning-as-error            - treat warning as error (overrides --disable-warnings)
     --until-phase PHASE                 - verify up to specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: all)
     --verbose                           - enable verbose output (may be specified multiple times to increase verbosity level)
@@ -128,8 +129,8 @@ As a convenience, if a URL argument takes a relative form, then `ttv` attempts t
 Run `ttv` with the `--show-models` option to determine which verification models are supported, and which is the default model. If the `-v` option is added, this will additionally show the built-in schemas used by each model, as demonstrated by the following console log:
 
 <pre>
-$ java -jar target/ttt-ttv-all-7.1-SNAPSHOT.jar -v --show-models
-Timed Text Verifier (TTV) [7.1-SNAPSHOT] Copyright (c) 2013-19 Skynav, Inc.
+$ java -jar target/ttt-ttv-all-7.1.jar -v --show-models
+Timed Text Verifier (TTV) [7.1] Copyright (c) 2013-21 Skynav, Inc.
 Verification Models:
   ebuttd
     XSD: com/skynav/ttv/xsd/ebuttd/ebutt_d.xsd
@@ -165,15 +166,18 @@ Verification Models:
   ttml1 (default)
     XSD: com/skynav/ttv/xsd/ttml1/ttml1.xsd
   ttml2
-    XSD: com/skynav/ttv/xsd/ttml2/ttml2.xsd</pre>
+    XSD: com/skynav/ttv/xsd/ttml2/ttml2.xsd
+</pre>
 
 ## Testing
 
 Junit 4 is used to perform tests on `ttv` from *maven*. All tests are performed by using `mvn test`. An individual test can be performed using the following syntax, for example:
 
 <pre>
-  mvn -Dtest=ValidTestCases#testValidTTML2ConditionPrimary test
+  mvn test -Dtest=ValidTestCases#testValidTTML2ConditionPrimary
 </pre>
+
+See the `target/surefire-reports` directory for detailed test output.
 
 ## Annotations
 
@@ -220,17 +224,16 @@ An example of a document fragment that uses annotations follows (taken from the 
 
 <pre>
     $ java -version
-    java version "1.8.0_152"
-    Java(TM) SE Runtime Environment (build 1.8.0_152-b16)
-    Java HotSpot(TM) 64-Bit Server VM (build 25.152-b16, mixed mode)
+    java version "1.8.0_231"
+    Java(TM) SE Runtime Environment (build 1.8.0_231-b11)
+    Java HotSpot(TM) 64-Bit Server VM (build 25.231-b11, mixed mode)
 
     $ mvn -version
-    Apache Maven 3.5.3 (3383c37e1f9e9b3bc3df5050c29c8aff9f295297; 2018-02-24T12:49:05-07:00)
+    Apache Maven 3.8.1 (05c21c65bdfed0f71a2f2ada8b84da59348c4c5d)
     Maven home: /opt/local/share/java/maven3
-    Java version: 1.8.0_152, vendor: Oracle Corporation
-    Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/jre
+    Java version: 1.8.0_231, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home/jre
     Default locale: en_US, platform encoding: UTF-8
-    OS name: "mac os x", version: "10.13.6", arch: "x86_64", family: "mac"
+    OS name: "mac os x", version: "10.16", arch: "x86_64", family: "mac"
 </pre>
 
 ## Issues

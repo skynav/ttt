@@ -114,7 +114,7 @@ public class LineLayout {
     private double bpd;
     private Color color;
     @SuppressWarnings("unused")
-	private double ipd;
+    private double ipd;
     private double lineShear;
     private double opacity;
     private Outline outline;
@@ -194,7 +194,7 @@ public class LineLayout {
         }
         return layout(ipdAvailable, consume);
     }
-    
+
     public List<? extends LineArea> layout(double available, Consume consume) {
         List<LineArea> lines = new java.util.ArrayList<LineArea>();
         if (Math.abs(lineShearAngle) > 0.0001) {
@@ -1294,7 +1294,7 @@ public class LineLayout {
                     ais.add(new StyleAttributeInterval(opacityAttr, v, s, e));
             }
             aci.setIndex(savedIndex);
-            if (ais.isEmpty() && (opacity != defaults.getOpacity()))
+            if (ais.isEmpty() && (Math.abs(opacity - defaults.getOpacity()) > 0.00001))
                 ais.add(new StyleAttributeInterval(opacityAttr, (Double) opacity, start + from, start + to));
             return ais;
         }

@@ -4,50 +4,24 @@ Lambda CAP to TTML Converter
 
 ## Building
 
-In order to build **cap2tt**, run *ant* with one of the following targets:
-
-`ant build`
-
-Using the `build` target will (re)create the `cap2tt.jar` target under `bld/artifacts`.
-
-`ant clean-build`
-
-Using the `clean-build` target will first clean (delete) previously built classes and artifacts, and then perform a `build`.
-
-The full set of (public) `ant` targets can be listed by using `ant -p`, which presently outputs the following:
-
-<pre>
-Main targets:
-
- build               Build All
- build-cap2tt        Build CAP2TT
- clean-build         Clean and build all targets.
- clean-cap2tt-build  Clean and build CAP2TT.
- clean-cap2tt-test   Clean, build, and test CAP2TT
- clean-test          Clean, build, and test all targets.
- run-samples         Run converter with sample input test files
- test                Run all test suites
- test-apps           Run CAP2TT application tests
- test-cap2tt         Run all CAP2TT test suites
- test-converter      Run CAP2TT conversion test suite
-
-Default target: clean-test
-</pre>
+In order to build **cap2tt**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-cap2tt` directory.
+Next, change directory to the standalone JAR package, ``cd ../ttt-cap2tt-all``, then run `mvn clean install`.
 
 ## Running
 
-In order to run the convert, use the following (or an equivalent):
+In order to run the presentation engine (from its standalone JAR), first change directory to the standalone JAR package, ``cd ../ttt-cap2tt-all``,
+then use the following (or equivalent):
 
-`java -jar bld/artifacts/cap2tt.jar input.cap`
+`java -jar target/ttt-cap2tt-all-7.1.jar ttml.xml`
 
 Usage information can be obtained by using:
 
-`java -jar bld/artifacts/cap2tt.jar --help`
+`java -jar target/ttt-cap2tt-all-7.1.jar --help`
 
 At present, this will output the following:
 
 <pre>
-CAP To Timed Text (CAP2TT) [1.0.0dev] Copyright 2014 Skynav, Inc.
+Lambda CAP To Timed Text (CAP2TT) [7.1] Copyright 2014-21 Skynav, Inc.
 Usage: java -jar cap2tt.jar [options] URL*
   Short Options:
     -?                                  - see --help
@@ -56,11 +30,19 @@ Usage: java -jar cap2tt.jar [options] URL*
     -v                                  - see --verbose
   Long Options:
     --add-creation-metadata [BOOLEAN]   - add creation metadata (default: see configuration)
+    --allow-modified-utf8               - allow use of modififed utf-8
     --config FILE                       - specify path to configuration file
     --debug                             - enable debug output (may be specified multiple times to increase debug level)
     --debug-exceptions                  - enable stack traces on exceptions (implies --debug)
     --debug-level LEVEL                 - enable debug output at specified level (default: 0)
+    --default-alignment ALIGNMENT       - specify default alignment (default: "中央")
+    --default-kerning KERNING           - specify default kerning (default: "1")
+    --default-language LANGUAGE         - specify default language (default: "")
+    --default-placement PLACEMENT       - specify default placement (default: "横下")
     --default-region ID                 - specify identifier of default region (default: undefined)
+    --default-shear SHEAR               - specify default shear (default: "3")
+    --default-typeface TYPEFACE         - specify default typeface (default: "default")
+    --default-whitespace SPACE          - specify default xml space treatment ("default"|"preserve"; default: "default")
     --disable-warnings                  - disable warnings (both hide and don't count warnings)
     --expect-errors COUNT               - expect count errors or -1 meaning unspecified expectation (default: -1)
     --expect-warnings COUNT             - expect count warnings or -1 meaning unspecified expectation (default: -1)
@@ -72,17 +54,23 @@ Usage: java -jar cap2tt.jar [options] URL*
     --hide-resource-path                - hide resource path (default: show)
     --hide-warnings                     - hide warnings (but count them)
     --merge-styles [BOOLEAN]            - merge styles (default: see configuration)
+    --model NAME                        - specify model name (default: ttml2)
     --no-verbose                        - disable verbose output (resets verbosity level to 0)
     --no-warn-on TOKEN                  - disable warning specified by warning TOKEN, where multiple instances of this option may be specified
-    --output-directory DIRECTORY        - specify path to directory where TTML output is to be written
+    --output-directory DIRECTORY        - specify path to directory where TTML output is to be written; ignored if --output-file is specified
+    --output-disable [BOOLEAN]          - disable output (default: false)
     --output-encoding ENCODING          - specify character encoding of TTML output (default: UTF-8)
-    --output-indent                     - indent TTML output (default: no indent)
+    --output-file FILE                  - specify path to TTML output file, in which case only single input URI may be specified
+    --output-indent [BOOLEAN]           - indent TTML output (default: false)
     --output-pattern PATTERN            - specify TTML output file name pattern
     --quiet                             - don't show banner
     --reporter REPORTER                 - specify reporter, where REPORTER is null|text|xml (default: text)
     --reporter-file FILE                - specify path to file to which reporter output is to be written
     --reporter-file-append              - if reporter file already exists, then append output to it
     --reporter-file-encoding ENCODING   - specify character encoding of reporter output (default: utf-8)
+    --retain-document [BOOLEAN]         - retain document in results object (default: false)
+    --shear-map SHEARS                  - specify shear map (default: "0.0 6.345103 11.33775 16.78842 21.99875 27.97058")
+    --show-models                       - show supported output models
     --show-repository                   - show source code repository information
     --show-resource-location            - show resource location (default: show)
     --show-resource-path                - show resource path (default: show)
@@ -100,11 +88,7 @@ As a convenience, if a URL argument takes a relative form, then `cap2tt` attempt
 
 ## Testing
 
-Junit 4 is used to perform tests on `cap2tt`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
-
-A number of test targets are listed above for invocation from `ant`. The `clean-test` target is useful in order to perform a clean build then run all tests.
-
-In addition, the `run-samples` target will use the command line (not Junit) invocation path in order to run `cap2tt` on a number of sample input files.
+Junit 4 is used to perform tests on `cap2tt` from *maven*. All tests are performed by using `mvn test`. See the `target/surefire-reports` directory for detailed test output.
 
 ## Notes
 
@@ -112,20 +96,17 @@ In addition, the `run-samples` target will use the command line (not Junit) invo
 
 <pre>
     $ java -version
-    java version "1.6.0_65"
-    Java(TM) SE Runtime Environment (build 1.6.0_65-b14-466.1-11M4716)
-    Java HotSpot(TM) 64-Bit Server VM (build 20.65-b04-466.1, mixed mode)
+    java version "1.8.0_231"
+    Java(TM) SE Runtime Environment (build 1.8.0_231-b11)
+    Java HotSpot(TM) 64-Bit Server VM (build 25.231-b11, mixed mode)
 
-    $ ant -version
-    Apache Ant(TM) version 1.9.3 compiled on December 23 2013
-
-    $ java -cp /usr/share/java/junit.jar junit.runner.Version
-    4.12
+    $ mvn -version
+    Apache Maven 3.8.1 (05c21c65bdfed0f71a2f2ada8b84da59348c4c5d)
+    Maven home: /opt/local/share/java/maven3
+    Java version: 1.8.0_231, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home/jre
+    Default locale: en_US, platform encoding: UTF-8
+    OS name: "mac os x", version: "10.16", arch: "x86_64", family: "mac"
 </pre>
-
- * An (Helios) Eclipse workspace and `cap2tt` project are available under the `.eclipse` directory.
-
- * See the `dst` directory for archived source and binary releases.
 
 ## Issues
 

@@ -239,7 +239,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         // [TBD] - VERIFY SIZE is EQUAL TO NUMBER OF COMPONENT ISD INSTANCES
         return !failed;
     }
-    
+
     protected BigInteger getISDSequenceVersionAttribute(Object isdSequence) {
         assert isdSequence instanceof ISDSequence;
         BigInteger version;
@@ -293,7 +293,7 @@ public class TTML2SemanticsVerifier extends TTML1SemanticsVerifier {
         }
         return !failed;
     }
-    
+
     protected BigInteger getISDVersionAttribute(Object isd) {
         assert isd instanceof ISD;
         BigInteger version;

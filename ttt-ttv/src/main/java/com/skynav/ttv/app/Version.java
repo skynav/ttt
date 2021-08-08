@@ -26,7 +26,7 @@
 package com.skynav.ttv.app;
 
 public class Version {
-    public static final String CURRENT = "7.1-SNAPSHOT";
+    public static final String CURRENT = "7.1";
 
     public static String getVersion() {
         return CURRENT;

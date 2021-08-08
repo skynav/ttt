@@ -266,7 +266,7 @@ public class BasicLayoutState implements LayoutState {
 
     public Font getFirstFont() {
         Font[] fonts = getFonts();
-        if ((fonts != null) && (fonts.length > 0) )
+        if (fonts.length > 0)
             return fonts[0];
         else
             return null;

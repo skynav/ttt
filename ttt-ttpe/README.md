@@ -12,16 +12,16 @@ Next, change directory to the standalone JAR package, ``cd ../ttt-ttpe-all``, th
 In order to run the presentation engine (from its standalone JAR), first change directory to the standalone JAR package, ``cd ../ttt-ttpe-all``,
 then use the following (or equivalent):
 
-`java -jar target/ttt-ttpe-all-7.1-SNAPSHOT.jar ttml.xml`
+`java -jar target/ttt-ttpe-all-7.1.jar ttml.xml`
 
 Usage information can be obtained by using:
 
-`java -jar target/ttt-ttpe-all-7.1-SNAPSHOT.jar --help`
+`java -jar target/ttt-ttpe-all-7.1.jar --help`
 
 At present, this will output the following:
 
 <pre>
-Timed Text Presentation Engine (TTPE) [7.1-SNAPSHOT] Copyright 2014-19 Skynav, Inc.
+Timed Text Presentation Engine (TTPE) [7.1] Copyright 2014-21 Skynav, Inc.
 Usage: java -jar ttpe.jar [options] URL*
   Short Options:
     -?                                  - see --help
@@ -35,7 +35,7 @@ Usage: java -jar ttpe.jar [options] URL*
     --debug-level LEVEL                 - enable debug output at specified level (default: 0)
     --default-background-color COLOR    - default background color (default: "[0.0,0.0,0.0,0.0]")
     --default-color COLOR               - default foreground color (default: [1.0,1.0,1.0,1.0]")
-    --default-font-families FAMILIES    - default font families (default: "[Noto Sans]")
+    --default-font-families FAMILIES    - default font families (default: "[Noto Sans, Last Resort]")
     --default-whitespace SPACE          - default xml space treatment ("default"|"preserve"; default: "default")
     --disable-warnings                  - disable warnings (both hide and don't count warnings)
     --expect-errors COUNT               - expect count errors or -1 meaning unspecified expectation (default: -1)
@@ -114,7 +114,9 @@ Usage: java -jar ttpe.jar [options] URL*
     --svg-decoration COLOR              - paint decorations using specified color (default: color contrasting with specified background or black)
     --svg-mark-classes                  - mark area classes
     --transformer NAME                  - specify transformer name (default: isd)
+    --treat-font-selection-strategy-auto-as TOKEN- specify treatment for font selection strategy auto, where TOKEN is character|ccs|gc|context (default: context)
     --treat-foreign-as TOKEN            - specify treatment for foreign namespace vocabulary, where TOKEN is error|warning|info|allow (default: warning)
+    --treat-optional-validation-as MODE - treat optional validation mode as specified mode, where MODE is required|prohibited (default: required)
     --treat-warning-as-error            - treat warning as error (overrides --disable-warnings)
     --until-phase PHASE                 - verify up to specified phase, where PHASE is none|resource|wellformedness|validity|semantics|all (default: all)
     --verbose                           - enable verbose output (may be specified multiple times to increase verbosity level)
@@ -128,11 +130,13 @@ As a convenience, if a URL argument takes a relative form, then `ttpe` attempts 
 
 ## Testing
 
-Junit 4 is used to perform tests on `ttpe`. You should have previously installed the appropriate Junit 4 files in your `ant` runtime in order to use these features.
+Junit 4 is used to perform tests on `ttpe` from *maven*. All tests are performed by using `mvn test`. An individual test can be performed using the following syntax, for example:
 
-A number of test targets are listed above for invocation from `ant`. The `clean-test` target is useful in order to perform a clean build then run all tests.
+<pre>
+  mvn test -Dtest=com.skynav.ttpe.w3c.ttml2.presentation.valid.TTML2PresenterTestCases#testTTML2OpacityImageInline
+</pre>
 
-In addition, the `run-samples` target will use the command line (not Junit) invocation path in order to run `ttpe` on a number of sample input files.
+See the `target/surefire-reports` directory for detailed test output.
 
 ## Notes
 
@@ -140,20 +144,17 @@ In addition, the `run-samples` target will use the command line (not Junit) invo
 
 <pre>
     $ java -version
-    java version "1.6.0_65"
-    Java(TM) SE Runtime Environment (build 1.6.0_65-b14-466.1-11M4716)
-    Java HotSpot(TM) 64-Bit Server VM (build 20.65-b04-466.1, mixed mode)
+    java version "1.8.0_231"
+    Java(TM) SE Runtime Environment (build 1.8.0_231-b11)
+    Java HotSpot(TM) 64-Bit Server VM (build 25.231-b11, mixed mode)
 
-    $ ant -version
-    Apache Ant(TM) version 1.9.3 compiled on December 23 2013
-
-    $ java -cp /usr/share/java/junit.jar junit.runner.Version
-    4.12
+    $ mvn -version
+    Apache Maven 3.8.1 (05c21c65bdfed0f71a2f2ada8b84da59348c4c5d)
+    Maven home: /opt/local/share/java/maven3
+    Java version: 1.8.0_231, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home/jre
+    Default locale: en_US, platform encoding: UTF-8
+    OS name: "mac os x", version: "10.16", arch: "x86_64", family: "mac"
 </pre>
-
- * An (Helios) Eclipse workspace and `ttpe` project are available under the `.eclipse` directory.
-
- * See the `dst` directory for archived source and binary releases.
 
 ## Issues
 
