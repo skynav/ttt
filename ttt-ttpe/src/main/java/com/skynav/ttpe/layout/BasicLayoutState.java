@@ -406,6 +406,7 @@ public class BasicLayoutState implements LayoutState {
     }
 
     public Image getForegroundImage(Element e) {
+        // [TBD] - copied to StyleCollector.java; need to unify as static method (if possible) in appropriate class
         // [TBD] - implement support for all source categories, at present only support 'src' attribute
         QName an = sourceAttrName;
         String s = Documents.getAttribute(e, an);

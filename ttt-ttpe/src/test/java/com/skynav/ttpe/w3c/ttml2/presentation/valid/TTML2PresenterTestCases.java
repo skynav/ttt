@@ -552,7 +552,7 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
 
     @Test
     public void testTTML2OpacityImageInline() throws Exception {
-        performPresentationTest("ttml2-prstn-opacity-image-inline.xml", true);
+        performPresentationTest("ttml2-prstn-opacity-image-inline.xml");
     }
 
     @Test

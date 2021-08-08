@@ -51,6 +51,7 @@ import com.skynav.ttpe.area.CanvasArea;
 import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.Inline;
 import com.skynav.ttpe.area.InlineFillerArea;
+import com.skynav.ttpe.area.InlineImageArea;
 import com.skynav.ttpe.area.InlinePaddingArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.NonLeafAreaNode;
@@ -899,6 +900,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         maybeMarkClasses(gOuter, a, "text-v");
         Documents.setAttribute(gOuter, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
         boolean rotate = a.isRotatedOrientation() && !a.isCombined();
+        boolean combine = a.isCombined();
         TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL, rotate);
         GlyphMapping gm = a.getGlyphMapping();
         String text = gm.getGlyphsAsText();
@@ -906,7 +908,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         boolean btt = false;
         double ySaved = yCurrent;
         yCurrent = 0;
-        double shearAdvance = font.getShearAdvance(rotate, a.isCombined());
+        double shearAdvance = font.getShearAdvance(rotate, combine);
         if (shearAdvance < 0)
             yCurrent += -shearAdvance;
         boolean areaVisible = a.isVisible();
@@ -928,6 +930,23 @@ public class SVGRenderProcessor extends RenderProcessor {
                 glyphVisible = (decorationVisibility.getVisibility() == Visibility.VISIBLE);
             else
                 glyphVisible = areaVisible;
+            // background color if required
+            if (a.isVisible()) {
+                Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, i, j);
+                if ((decorationBackgroundColor != null) && glyphVisible) {
+                    BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
+                    Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+                    if (x != 0)
+                        Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                    if (baselineOffset > 0)
+                        Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {-baselineOffset}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ga + bgFuzz}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {bpdGlyphs}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
+                    gOuter.appendChild(eBackgroundColor);
+                }
+            }
             // outline if required
             Element tOutline;
             Decoration decorationOutline = findDecoration(decorations, Decoration.Type.OUTLINE, i, j);
@@ -1013,6 +1032,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
         maybeMarkClasses(gOuter, a, "text-h");
         boolean rotate = a.isRotatedOrientation() && !a.isCombined();
+        boolean combine = a.isCombined();
         TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL, rotate);
         GlyphMapping gm = a.getGlyphMapping();
         String text = gm.getGlyphsAsText();
@@ -1021,7 +1041,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         boolean rtl = false;
         double xSaved = xCurrent;
         xCurrent = 0;
-        double shearAdvance = font.getShearAdvance(rotate, a.isCombined());
+        double shearAdvance = font.getShearAdvance(rotate, combine);
         if ((shearAdvance < 0) && rotate)
             xCurrent += -shearAdvance;
         boolean areaVisible = a.isVisible();
@@ -1242,6 +1262,254 @@ public class SVGRenderProcessor extends RenderProcessor {
         return g.hasChildNodes() ? g : null;
     }
 
+    private Element renderImage(Element parent, InlineImageArea a, Document d) {
+        Element g = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        maybeMarkClasses(g, a, "image");
+        LineArea l = a.getLine();
+        double bpdLine = l.getBPD();
+        double bpdLineAnnotationBefore = l.getAnnotationBPD(AnnotationPosition.BEFORE);
+        double bpdLineSansAnnotationBefore = bpdLine - bpdLineAnnotationBefore;
+        double bpdLineAnnotationAfter = l.getAnnotationBPD(AnnotationPosition.AFTER);
+        double bpdLineSansAnnotation = bpdLine - (bpdLineAnnotationBefore + bpdLineAnnotationAfter);
+        double bpdImage = a.getBPD();
+        double baselineOffset;
+        double ipdImage = a.getIPD();
+        Font font = a.getFont();
+        boolean combined = a.isCombined();
+        if (a.isVertical()) {
+            double yOffset = 0;
+            boolean rotate = a.isRotatedOrientation();
+            baselineOffset = bpdLineAnnotationBefore;
+            if (rotate && !combined) {
+                if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                    baselineOffset += (bpdLineSansAnnotation - font.getHeight())/2 + font.getAscent();
+                else
+                    baselineOffset += (bpdLineSansAnnotation - bpdImage)/2 + font.getLeading()/2;
+            } else if (combined) {
+                if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                    baselineOffset += (bpdLineSansAnnotationBefore + ipdImage)/2;
+                else
+                    baselineOffset += (bpdLineSansAnnotationBefore - ipdImage)/2;
+                yOffset = font.getHeight();
+            } else {
+                baselineOffset += bpdLineSansAnnotation/2;
+            }
+            if (a.getWritingMode().getDirection(Dimension.BPD) == RL)
+                baselineOffset *= -1;
+            StringBuffer sb = new StringBuffer(translateFormatter.format(new Object[] {baselineOffset, yCurrent + yOffset}));
+            if (rotate && !combined)
+                sb.append(",rotate(90)");
+            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, sb.toString());
+        } else {
+            baselineOffset = font.getHeight() + bpdLineAnnotationBefore;
+            Documents.setAttribute(g, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {xCurrent, baselineOffset}));
+        }
+        List<Decoration> decorations = a.getDecorations();
+        Element e;
+        maybeStyleImageGroup(g, a, l);
+        e = renderImageText(g, a, d, decorations, bpdImage, baselineOffset);
+        assert e != null;
+        g.appendChild(e);
+        if (a.isVertical()) {
+            yCurrent += combined ? bpdImage : ipdImage;
+        } else {
+            xCurrent += ipdImage;
+        }
+        return g;
+    }
+
+    private Element renderImageText(Element parent, InlineImageArea a, Document d, List<Decoration> decorations, double bpdImage, double baselineOffset) {
+        if (a.isVertical() && !a.isRotatedOrientation() && !a.isCombined())
+            return renderImageTextVertical(parent, a, d, decorations, bpdImage, baselineOffset);
+        else
+            return renderImageTextHorizontal(parent, a, d, decorations, bpdImage, baselineOffset);
+    }
+
+    private Element renderImageTextVertical(Element parent, InlineImageArea a, Document d, List<Decoration> decorations, double bpdImage, double baselineOffset) {
+        Font font = a.getFont();
+        Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        maybeMarkClasses(gOuter, a, "image-v");
+        Documents.setAttribute(gOuter, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {-font.getWidth()/2,font.getAscent()}));
+        boolean rotate = a.isRotatedOrientation() && !a.isCombined();
+        boolean combine = a.isCombined();
+        TransformMatrix fontMatrix = font.getTransform(Axis.VERTICAL, rotate);
+        Image[] images = new Image[] { a.getImage() };
+        double[] advances = new double[] { a.getIPD() };
+        boolean btt = false;
+        double ySaved = yCurrent;
+        yCurrent = 0;
+        double shearAdvance = font.getShearAdvance(rotate, combine);
+        if (shearAdvance < 0)
+            yCurrent += -shearAdvance;
+        boolean areaVisible = a.isVisible();
+        for (int i = 0, n = advances.length; i < n; ++i) {
+            Image tImage = images[i];
+            double ia = advances[i];
+            double x = 0 /* [TBD] FIXME (bpdImage - ia) / 2 */;
+            double y = btt ? yCurrent - ia : yCurrent;
+            int j = i + 1;
+            // inline visibility
+            boolean imageVisible;
+            Decoration decorationVisibility = findDecoration(decorations, Decoration.Type.VISIBILITY, i, j);
+            if (decorationVisibility != null)
+                imageVisible = (decorationVisibility.getVisibility() == Visibility.VISIBLE);
+            else
+                imageVisible = areaVisible;
+            // text image
+            Element t;
+            if (imageVisible) {
+                Double tOpacity;
+                Double lOpacity = a.getLine().getOpacity();
+                Decoration decorationOpacity = findDecoration(decorations, Decoration.Type.OPACITY, i, j);
+                if (decorationOpacity != null)
+                    tOpacity = decorationOpacity.getOpacity();
+                else
+                    tOpacity = lOpacity;
+                FrameResource resource = addResource(tImage);
+                t = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
+                Documents.setAttribute(t, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {tImage.getWidth()}));
+                Documents.setAttribute(t, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {tImage.getHeight()}));
+                Documents.setAttribute(t, SVGDocumentFrame.preserveAspectRatioAttrName, "xMinYMin slice");
+                Documents.setAttribute(t, SVGDocumentFrame.xlinkHrefAttrName, resource.getName());
+                if (!tOpacity.equals(lOpacity) && (tOpacity < 1))
+                    Documents.setAttribute(t, SVGDocumentFrame.opacityAttrName, tOpacity.toString());
+            } else
+                t = null;
+            // group wrapper (gInner) if font transform required or using glyphs path
+            if (fontMatrix != null) {
+                Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+                maybeMarkClasses(gInner, a, "image-v-inner");
+                if (y != 0)
+                    Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {0,y}));
+                if (t != null) {
+                    if (fontMatrix != null)
+                        Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                    gInner.appendChild(t);
+                }
+                gOuter.appendChild(gInner);
+            } else {
+                if (t != null) {
+                    if (x != 0)
+                        Documents.setAttribute(t, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                    if (y != 0)
+                        Documents.setAttribute(t, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
+                    gOuter.appendChild(t);
+                }
+            }
+            yCurrent += btt ? -ia : ia;
+        }
+        yCurrent = ySaved;
+        return gOuter;
+    }
+
+    private Element renderImageTextHorizontal(Element parent, InlineImageArea a, Document d, List<Decoration> decorations, double bpdImage, double baselineOffset) {
+        Font font = a.getFont();
+        Element gOuter = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+        maybeMarkClasses(gOuter, a, "image-h");
+        boolean rotate = a.isRotatedOrientation() && !a.isCombined();
+        boolean combine = a.isCombined();
+        TransformMatrix fontMatrix = font.getTransform(Axis.HORIZONTAL, rotate);
+        Image[] images = new Image[] { a.getImage() };
+        double[] advances = new double[] { a.getIPD() };
+        boolean rtl = false;
+        double xSaved = xCurrent;
+        xCurrent = 0;
+        double shearAdvance = font.getShearAdvance(rotate, combine);
+        if ((shearAdvance < 0) && rotate)
+            xCurrent += -shearAdvance;
+        boolean areaVisible = a.isVisible();
+        for (int i = 0, n = advances.length; i < n; ++i) {
+            Image tImage = images[i];
+            double ia = advances[i];
+            double x = rtl ? xCurrent - ia : xCurrent;
+            double y = - font.getHeight() + getCrossShearAdjustment(a);
+            int j = i + 1;
+            // inline visibility
+            boolean imageVisible;
+            Decoration decorationVisibility = findDecoration(decorations, Decoration.Type.VISIBILITY, i, j);
+            if (decorationVisibility != null)
+                imageVisible = (decorationVisibility.getVisibility() == Visibility.VISIBLE);
+            else
+                imageVisible = areaVisible;
+            // text image
+            Element t;
+            if (imageVisible) {
+                Double tOpacity;
+                Double lOpacity = a.getLine().getOpacity();
+                Decoration decorationOpacity = findDecoration(decorations, Decoration.Type.OPACITY, i, j);
+                if (decorationOpacity != null)
+                    tOpacity = decorationOpacity.getOpacity();
+                else
+                    tOpacity = lOpacity;
+                FrameResource resource = addResource(tImage);
+                t = Documents.createElement(d, SVGDocumentFrame.svgImageEltName);
+                Documents.setAttribute(t, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {tImage.getWidth()}));
+                Documents.setAttribute(t, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {tImage.getHeight()}));
+                Documents.setAttribute(t, SVGDocumentFrame.preserveAspectRatioAttrName, "xMinYMin slice");
+                Documents.setAttribute(t, SVGDocumentFrame.xlinkHrefAttrName, resource.getName());
+                if (!tOpacity.equals(lOpacity) && (tOpacity < 1))
+                    Documents.setAttribute(t, SVGDocumentFrame.opacityAttrName, tOpacity.toString());
+            } else
+                t = null;
+            // background color if required
+            if (a.isVisible()) {
+                Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, i, j);
+                if ((decorationBackgroundColor != null) && imageVisible) {
+                    BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
+                    Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
+                    if (x != 0)
+                        Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                    if (baselineOffset > 0)
+                        Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {-baselineOffset}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ia + bgFuzz}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {bpdImage}));
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.fillAttrName, backgroundColor.toRGBString());
+                    Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.strokeAttrName, "none");
+                    gOuter.appendChild(eBackgroundColor);
+                }
+            }
+            // group wrapper (gInner) if font transform required
+            if (fontMatrix != null) {
+                Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
+                maybeMarkClasses(gInner, a, "image-h-inner");
+                if ((x != 0) || (y != 0))
+                    Documents.setAttribute(gInner, SVGDocumentFrame.transformAttrName, translateFormatter.format(new Object[] {x,y}));
+                if (t != null) {
+                    if (fontMatrix != null)
+                        Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
+                    gInner.appendChild(t);
+                }
+                gOuter.appendChild(gInner);
+            } else {
+                if (t != null) {
+                    if (x != 0)
+                        Documents.setAttribute(t, SVGDocumentFrame.xAttrName, doubleFormatter.format(new Object[] {x}));
+                    if (y != 0)
+                        Documents.setAttribute(t, SVGDocumentFrame.yAttrName, doubleFormatter.format(new Object[] {y}));
+                    gOuter.appendChild(t);
+                }
+            }
+            xCurrent += rtl ? -ia : ia;
+        }
+        xCurrent = xSaved;
+        return gOuter;
+    }
+
+    private double getCrossShearAdjustment(InlineImageArea a) {
+        if (a.isCombined()) {
+            AreaNode aPrev = a.getPreviousSibling();
+            if ((aPrev != null) && (aPrev instanceof InlineImageArea)) {
+                InlineImageArea aPrevImages = (InlineImageArea) aPrev;
+                if (!aPrevImages.isCombined())
+                    return - aPrevImages.getFont().getShearAdvance(false, true)/2;
+            }
+        }
+        return 0;
+    }
+
+    private void maybeStyleImageGroup(Element e, InlineImageArea g, LineArea l) {
+    }
+
     private Element renderFiller(Element parent, InlineFillerArea a, Document d) {
         double ipd = a.getIPD();
         Element g;
@@ -1299,6 +1567,8 @@ public class SVGRenderProcessor extends RenderProcessor {
             return renderGlyphs(parent, (GlyphArea) a, d);
         else if (a instanceof SpaceArea)
             return renderSpace(parent, (SpaceArea) a, d);
+        else if (a instanceof InlineImageArea)
+            return renderImage(parent, (InlineImageArea) a, d);
         else if (a instanceof InlineFillerArea)
             return renderFiller(parent, (InlineFillerArea) a, d);
         else if (a instanceof AnnotationArea)

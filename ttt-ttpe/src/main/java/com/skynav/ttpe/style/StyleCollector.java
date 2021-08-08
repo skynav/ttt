@@ -25,16 +25,21 @@
 
 package com.skynav.ttpe.style;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+
+import org.xml.sax.Locator;
 
 import com.skynav.ttpe.fonts.Combination;
 import com.skynav.ttpe.fonts.Font;
@@ -56,6 +61,7 @@ import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Measure;
 import com.skynav.ttv.util.Location;
+import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.StyleSet;
 import com.skynav.ttv.util.StyleSpecification;
 import com.skynav.ttv.verifier.util.Fonts;
@@ -89,6 +95,7 @@ public class StyleCollector {
     private List<StyleAttributeInterval> attributes;    // text attributes being collected
     private BidiLevelIterator bidiIterator;             // bidi level iterator, reused as needed
     private FontRunIterator fontIterator;               // font run iterator, reused as needed
+    private Locator baseLocator;                        // for resolving relative URIs, e.g., image@src
 
     public StyleCollector(StyleCollector sc) {
         this(sc, sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.fonts, sc.styles);
@@ -109,6 +116,16 @@ public class StyleCollector {
         this.styles = styles;
         this.bidiIterator = new BidiLevelIterator();
         this.fontIterator = new FontRunIterator(fontCache);
+        this.baseLocator = makeBaseLocator(context);
+    }
+
+    private static Locator makeBaseLocator(TransformerContext context) {
+        URI uri = (URI) context.getResourceState("sysid");
+        return Locators.getLocator(uri != null ? uri.toString() : null);
+    }
+
+    private Location getLocation(Element e, QName attributeName) {
+        return new Location(e, Documents.getName(e), attributeName, baseLocator);
     }
 
     public StyleCollector getParent() {
@@ -331,6 +348,45 @@ public class StyleCollector {
         if (v != null)
             addAttribute(StyleAttribute.WHITESPACE, v, begin, end);
 
+    }
+
+    public void collectImageStyles(Element e, int begin, int end) {
+        assert (begin < 0) || (end - begin) > 0;
+        StyleSet styles = getStyles(e);
+    
+        // collect common styles
+        collectCommonStyles(e, begin, end, styles);
+
+        // IMAGE
+        Image image = getForegroundImage(e);
+        if (image != Image.NONE)
+            addAttribute(StyleAttribute.IMAGE, image.makeContentBinding(e), begin, end);
+        else
+            return;
+
+    }
+    
+    public Image getForegroundImage(Element e) {
+        // [TBD] - copied to BasicLayoutState.java; need to unify as static method (if possible) in appropriate class
+        // [TBD] - implement support for all source categories, at present only support 'src' attribute
+        String s = Documents.getAttribute(e, sourceAttrName);
+        if (s != null) {
+            Image image;
+            if ((image = getImage(e, sourceAttrName, s)) != null)
+                return image;
+        }
+        return Image.NONE;
+    }
+
+    private Image getImage(Element e, QName attrName, String attrValue) {
+        if ((attrValue != null) && !attrValue.isEmpty()) {
+            com.skynav.ttv.model.value.Image[] retImage = new com.skynav.ttv.model.value.Image[1];
+            if (com.skynav.ttv.verifier.util.Images.isImage(attrValue, getLocation(e, attrName), context, retImage)) {
+                com.skynav.ttv.model.value.Image i = retImage[0];
+                return new Image(i.getURI(), i.getVerifiedType(), i.getVerifiedFormat(), i.getWidth(), i.getHeight());
+            }
+        }
+        return null;
     }
 
     public void maybeWrapWithBidiControls(Element e) {
@@ -575,6 +631,9 @@ public class StyleCollector {
         StyleSpecification s;
         Object v;
 
+        // FONT - must collect prior to use of getFirstAvailableFontSize()
+        collectCommonFontStyles(e, begin, end, styles);
+
         // BPD
         s = styles.get(ttsBPDAttrName);
         v = null;
@@ -609,8 +668,8 @@ public class StyleCollector {
         if (v != null)
             addAttribute(StyleAttribute.COLOR, v, begin, end);
 
-        // FONT
-        collectCommonFontStyles(e, begin, end, styles);
+        // OPACITY
+        collectOpacityStyle(e, begin, end, styles);
 
         // IPD
         s = styles.get(ttsIPDAttrName);
@@ -792,6 +851,31 @@ public class StyleCollector {
         }
         if (v != null)
             addAttribute(StyleAttribute.LINE_HEIGHT, v, begin, end);
+    }
+
+    protected void collectOpacityStyle(Element e, int begin, int end, StyleSet styles) {
+        StyleSpecification s = styles.get(ttsOpacityAttrName);
+        Object v = null;
+        if (s != null) {
+            v = ((String) s.getValue()).replace("INF", "Infinity");
+            Double d = Double.valueOf((String) v);
+            double opacity = d.doubleValue();
+            if (d.isNaN()) {
+                opacity = 1;
+            } else if (d.isInfinite()) {
+                if (opacity < 0)
+                    opacity = 0;
+                else
+                    opacity = 1;
+            } else if (opacity < 0) {
+                opacity = 0;
+            } else if (opacity > 1) {
+                opacity = 1;
+            }
+            v = Double.valueOf(opacity);
+        }
+        if (v != null)
+            addAttribute(StyleAttribute.OPACITY, v, begin, end);
     }
 
     private Font[] getFontsFromStyles(Element e, StyleSet styles) {
