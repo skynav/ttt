@@ -61,9 +61,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import com.skynav.cap2tt.converter.AbstractResourceConverter;
-import com.skynav.cap2tt.converter.AttributeSpecification;
-import com.skynav.cap2tt.converter.ConverterContext;
-import com.skynav.cap2tt.converter.Screen;
 
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.util.ComparableQName;

@@ -33,7 +33,6 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.skynav.ttpe.app.Namespace;
 import com.skynav.ttpe.render.Frame;
 import com.skynav.ttpe.render.FrameImage;
 import com.skynav.xml.helpers.Documents;

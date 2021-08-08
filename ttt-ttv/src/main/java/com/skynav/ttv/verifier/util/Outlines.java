@@ -33,9 +33,6 @@ import com.skynav.ttv.model.value.TextOutline;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.util.Colors;
-import com.skynav.ttv.verifier.util.Lengths;
-import com.skynav.ttv.verifier.util.NegativeTreatment;
 
 public class Outlines {
 

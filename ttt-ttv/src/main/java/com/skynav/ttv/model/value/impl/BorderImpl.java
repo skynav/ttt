@@ -30,7 +30,6 @@ import java.util.Arrays;
 import com.skynav.ttv.model.value.Border;
 import com.skynav.ttv.model.value.Color;
 import com.skynav.ttv.model.value.Length;
-import com.skynav.ttv.model.value.impl.LengthImpl;
 
 public class BorderImpl implements Border {
     private Style style;

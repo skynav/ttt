@@ -26,8 +26,6 @@
 
 package com.xfsi.xav.util;
 
-import com.xfsi.xav.util.Error;
-
 public class Progress {
 
     protected Error.Severity severity;

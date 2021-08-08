@@ -28,7 +28,6 @@ package com.skynav.cap2tt.converter.imsc;
 import java.util.List;
 
 import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
 
 import com.skynav.cap2tt.converter.AbstractResourceConverter;
 import com.skynav.cap2tt.converter.ConverterContext;

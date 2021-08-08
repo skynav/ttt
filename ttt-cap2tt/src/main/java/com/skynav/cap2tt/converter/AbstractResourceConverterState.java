@@ -31,11 +31,6 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import com.skynav.cap2tt.converter.Attribute;
-import com.skynav.cap2tt.converter.AttributeSpecification;
-import com.skynav.cap2tt.converter.ResourceConverter;
-import com.skynav.cap2tt.converter.Screen;
-
 public abstract class AbstractResourceConverterState {
 
     protected ResourceConverter converter;    // converter

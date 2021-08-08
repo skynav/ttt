@@ -28,7 +28,6 @@ package com.skynav.ttv.w3c.ttml2.validation.invalid;
 import java.net.URL;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 

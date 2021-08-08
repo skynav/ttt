@@ -335,7 +335,9 @@ public class TimedTextVerifier implements VerifierContext {
     private double parsedExternalDuration;
     private double[] parsedExternalExtent;
     private WallClockTime parsedExternalWallClockBegin;
-    private ValidationMode validationMode;
+    @SuppressWarnings("unused")
+	private ValidationMode validationMode;
+    @SuppressWarnings("unused")
     private ValidationAction validationAction;
 
     // global processing state
@@ -437,7 +439,8 @@ public class TimedTextVerifier implements VerifierContext {
         Warn,           // warn, but do not abort processing
         Ignore;         // don't warn and do not abort processing
 
-        public static ValidationAction valueOfIgnoringCase(String value) {
+        @SuppressWarnings("unused")
+		public static ValidationAction valueOfIgnoringCase(String value) {
             if (value == null)
                 throw new IllegalArgumentException();
             for (ValidationAction v: values()) {

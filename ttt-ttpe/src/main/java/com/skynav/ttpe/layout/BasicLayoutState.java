@@ -52,7 +52,6 @@ import com.skynav.ttpe.geometry.Dimension;
 import com.skynav.ttpe.geometry.Extent;
 import com.skynav.ttpe.geometry.Overflow;
 import com.skynav.ttpe.geometry.Point;
-import com.skynav.ttpe.geometry.Shear;
 import com.skynav.ttpe.geometry.TransformMatrix;
 import com.skynav.ttpe.geometry.WritingMode;
 import com.skynav.ttpe.style.BlockAlignment;

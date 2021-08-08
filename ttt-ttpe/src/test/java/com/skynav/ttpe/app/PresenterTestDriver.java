@@ -219,7 +219,6 @@ public class PresenterTestDriver {
 
     private void maybeCheckDifferences(List<URI> output, URI input, TransformerContext context) {
         boolean checkedDifferences = false;
-        String differenceMessage = null;
         URI outputURI = null;
         URI controlURI = null;
         if ((output != null) && !output.isEmpty()) {

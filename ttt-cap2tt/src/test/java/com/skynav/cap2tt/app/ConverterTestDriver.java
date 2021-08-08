@@ -43,7 +43,6 @@ import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
 
-import com.skynav.cap2tt.app.Converter;
 import com.skynav.cap2tt.converter.ConverterContext;
 import com.skynav.cap2tt.converter.Results;
 import com.skynav.ttv.util.TextReporter;

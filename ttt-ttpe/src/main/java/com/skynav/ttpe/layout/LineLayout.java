@@ -113,7 +113,8 @@ public class LineLayout {
     private int bidiLevel;
     private double bpd;
     private Color color;
-    private double ipd;
+    @SuppressWarnings("unused")
+	private double ipd;
     private double lineShear;
     private double opacity;
     private Outline outline;

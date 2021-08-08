@@ -105,7 +105,6 @@ import com.skynav.ttv.verifier.ttml.style.PitchVerifier;
 import com.skynav.ttv.verifier.ttml.style.PositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.ProgressionDimensionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyAlignVerifier;
-import com.skynav.ttv.verifier.ttml.style.RubyOffsetVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyPositionVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyReserveVerifier;
 import com.skynav.ttv.verifier.ttml.style.RubyVerifier;

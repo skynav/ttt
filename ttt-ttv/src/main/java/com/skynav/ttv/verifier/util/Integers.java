@@ -35,8 +35,6 @@ import org.xml.sax.Locator;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Reporter;
 import com.skynav.ttv.verifier.VerifierContext;
-import com.skynav.ttv.verifier.util.NegativeTreatment;
-import com.skynav.ttv.verifier.util.ZeroTreatment;
 
 public class Integers {
 

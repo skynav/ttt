@@ -29,10 +29,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import com.skynav.ttv.util.NullReporter;
-import com.skynav.ttv.util.TextReporter;
-import com.skynav.ttv.util.XMLReporter;
-
 public class Reporters {
 
     private static final Map<String,Class<? extends Reporter>> reporterMap;

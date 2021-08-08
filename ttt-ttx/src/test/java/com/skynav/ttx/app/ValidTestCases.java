@@ -32,7 +32,6 @@ import org.junit.Test;
 import static org.junit.Assert.fail;
 
 import com.skynav.ttv.app.TimedTextVerifier;
-import com.skynav.ttx.app.TimedTextTransformer;
 
 public class ValidTestCases {
     @Test
