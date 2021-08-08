@@ -40,6 +40,7 @@ import com.skynav.ttpe.area.GlyphArea;
 import com.skynav.ttpe.area.Inline;
 import com.skynav.ttpe.area.InlineBlockArea;
 import com.skynav.ttpe.area.InlineFillerArea;
+import com.skynav.ttpe.area.InlineImageArea;
 import com.skynav.ttpe.area.InlinePaddingArea;
 import com.skynav.ttpe.area.LineArea;
 import com.skynav.ttpe.area.SpaceArea;
@@ -58,6 +59,7 @@ import com.skynav.ttpe.style.BackgroundColor;
 import com.skynav.ttpe.style.Color;
 import com.skynav.ttpe.style.Decoration;
 import com.skynav.ttpe.style.Defaults;
+import com.skynav.ttpe.style.Image;
 import com.skynav.ttpe.style.InlineAlignment;
 import com.skynav.ttpe.style.LineFeedTreatment;
 import com.skynav.ttpe.style.Outline;
@@ -113,6 +115,7 @@ public class LineLayout {
     private Color color;
     private double ipd;
     private double lineShear;
+    private double opacity;
     private Outline outline;
     private double shear;
     private InlineAlignment textAlign;
@@ -149,6 +152,7 @@ public class LineLayout {
         this.color = content.getColor(-1, defaults);
         this.ipd = content.getBPD(-1, defaults);
         this.lineShear = content.getLineShear(-1, defaults);
+        this.opacity = content.getOpacity(-1, defaults);
         this.outline = content.getOutline(-1, defaults);
         this.shear = content.getShear(-1, defaults);
         this.textAlign = relativizeAlignment(content.getTextAlign(-1, defaults), this.writingMode);
@@ -265,15 +269,24 @@ public class LineLayout {
     }
 
     private static final StyleAttribute[] embeddingAttr = new StyleAttribute[] { StyleAttribute.EMBEDDING };
+    private static final StyleAttribute[] imageAttr = new StyleAttribute[] { StyleAttribute.IMAGE };
     private TextRun getNextTextRun() {
         int s = iterator.getIndex();
         char c = iterator.current();
         if (c == CharacterIterator.DONE)
             return null;
         else if (c == Characters.UC_OBJECT) {
+            TextRun r = null;
             Object embedding = iterator.getAttribute(embeddingAttr[0]);
+            if (embedding != null)
+                r = new EmbeddingRun(s, embedding);
+            Object imageBinding = iterator.getAttribute(imageAttr[0]);
+            if ((imageBinding != null) && (imageBinding instanceof Image.ContentBinding))
+                r = new ImageRun(s, (Image.ContentBinding) imageBinding);
+            if (r == null)
+                r = new IgnoredControlRun(s);
             iterator.setIndex(s + 1);
-            return new EmbeddingRun(s, embedding);
+            return r;
         } else if (isIgnoredControl(c)) {
             iterator.setIndex(s + 1);
             return new IgnoredControlRun(s);
@@ -465,6 +478,9 @@ public class LineLayout {
             }
         } else if (run instanceof EmbeddingRun) {
             l.addChild(((EmbeddingRun) run).getArea(), LineArea.ENCLOSE_ALL);
+        } else if (run instanceof ImageRun) {
+            List<Decoration> d = getSegmentDecorations(decorations, 0, 1);
+            l.addChild(((ImageRun) run).getArea(advance, lineHeight, d), LineArea.ENCLOSE_ALL);
         } else if (run instanceof NonWhitespaceRun) {
             int start = run.start;
             for (StyleAttributeInterval fai : run.getFontIntervals()) {
@@ -1102,6 +1118,7 @@ public class LineLayout {
             Set<StyleAttributeInterval> intervals = new java.util.TreeSet<StyleAttributeInterval>();
             intervals.addAll(getBackgroundColorIntervals(from, to));
             intervals.addAll(getColorIntervals(from, to));
+            intervals.addAll(getOpacityIntervals(from, to));
             intervals.addAll(getOutlineIntervals(from, to));
             intervals.addAll(getVisibilityIntervals(from, to));
             List<Decoration> decorations = new java.util.ArrayList<Decoration>();
@@ -1117,8 +1134,13 @@ public class LineLayout {
                         t = Decoration.Type.OUTLINE;
                     else if (v instanceof Visibility)
                         t = Decoration.Type.VISIBILITY;
-                    else
-                        t = null;
+                    else {
+                        StyleAttribute sa = i.getAttribute();
+                        if (sa == StyleAttribute.OPACITY)
+                            t = Decoration.Type.OPACITY;
+                        else
+                            t = null;
+                    }
                     decorations.add(new Decoration(i.getBegin() - start, i.getEnd() - start, t, v));
                 }
             }
@@ -1253,6 +1275,26 @@ public class LineLayout {
             aci.setIndex(savedIndex);
             if (ais.isEmpty() && (color != null) && !color.equals(defaults.getColor()))
                 ais.add(new StyleAttributeInterval(colorAttr, color, start + from, start + to));
+            return ais;
+        }
+        // obtain opacity for specified interval FROM to TO of run
+        private List<StyleAttributeInterval> getOpacityIntervals(int from, int to) {
+            StyleAttribute opacityAttr = StyleAttribute.OPACITY;
+            List<StyleAttributeInterval> ais = new java.util.ArrayList<StyleAttributeInterval>();
+            int[] intervals = getAttributeIntervals(from, to, opacityAttr);
+            AttributedCharacterIterator aci = iterator;
+            int savedIndex = aci.getIndex();
+            for (int i = 0, n = intervals.length / 2; i < n; ++i) {
+                int s = start + intervals[i*2 + 0];
+                int e = start + intervals[i*2 + 1];
+                aci.setIndex(s);
+                Object v = aci.getAttribute(opacityAttr);
+                if (v != null)
+                    ais.add(new StyleAttributeInterval(opacityAttr, v, s, e));
+            }
+            aci.setIndex(savedIndex);
+            if (ais.isEmpty() && (opacity != defaults.getOpacity()))
+                ais.add(new StyleAttributeInterval(opacityAttr, (Double) opacity, start + from, start + to));
             return ais;
         }
         // obtain outline for specified interval FROM to TO of run
@@ -1589,6 +1631,32 @@ public class LineLayout {
         private InlineBlockArea layoutEmbedding(Paragraph embedding, double available) {
             InlineBlockArea area = new InlineBlockArea(embedding.getElement());
             area.addChildren(new ParagraphLayout(embedding, state).layout(-1, available, Consume.FIT), LineArea.EXPAND_LINE);
+            return area;
+        }
+    }
+
+    private class ImageRun extends NonWhitespaceRun {
+        private Image.ContentBinding binding;
+        private InlineImageArea area;
+        ImageRun(int index, Image.ContentBinding binding) {
+            super(index, index + 1);
+            this.binding = binding;
+        }
+        @Override
+        double getAdvance(int from, int to, String script, String language, double available) {
+            Image image = binding.getImage();
+            double ipd;
+            if (writingMode.isVertical()) {
+                ipd = image.getHeight();
+            } else {
+                ipd = image.getWidth();
+            }
+            return ipd;
+        }
+        InlineImageArea getArea(double advance, double lineHeight, List<Decoration> decorations) {
+            if (area == null) {
+                area = new InlineImageArea(binding.getElement(), advance, lineHeight, bidiLevel, decorations, binding.getImage());
+            }
             return area;
         }
     }

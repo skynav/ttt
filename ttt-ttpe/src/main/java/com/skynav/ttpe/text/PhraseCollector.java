@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-18 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -100,8 +100,12 @@ public class PhraseCollector {
                 else if (Documents.isElement(c, ttSpanElementName)) {
                     maybeEmit(e);
                     collectSpan(c);
-                } else if (Documents.isElement(c, ttBreakElementName))
+                } else if (Documents.isElement(c, ttBreakElementName)) {
                     collectBreak(c);
+                } else if (Documents.isElement(c, ttImageElementName)) {
+                    maybeEmit(e);
+                    collectImage(c);
+                }
             }
         }
     }
@@ -118,6 +122,13 @@ public class PhraseCollector {
         text.append((char) Characters.UC_LINE_SEPARATOR);
     }
 
+    protected void collectImage(Element e) {
+        if (styleCollector.isDisplayed(e)) {
+            text.append((char) Characters.UC_OBJECT);
+            maybeEmit(e);
+        }
+    }
+
     protected void clear() {
         styleCollector.clear();
         this.phrases = null;
@@ -126,7 +137,11 @@ public class PhraseCollector {
 
     protected void maybeEmit(Element e) {
         if (text.length() > 0) {
-            styleCollector.collectSpanStyles(e, 0, text.length());
+            if (Documents.isElement(e, ttImageElementName)) {
+                styleCollector.collectImageStyles(e, 0, text.length());
+            } else {
+                styleCollector.collectSpanStyles(e, 0, text.length());
+            }
             emit(e);
         }
     }

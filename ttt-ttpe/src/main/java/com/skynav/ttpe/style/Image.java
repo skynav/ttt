@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Skynav, Inc. All rights reserved.
+ * Copyright 2016-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,8 @@
 package com.skynav.ttpe.style;
 
 import java.net.URI;
+
+import org.w3c.dom.Element;
 
 public class Image {
 
@@ -73,6 +75,10 @@ public class Image {
 
     public double getHeight() {
         return height;
+    }
+
+    public ContentBinding makeContentBinding(Element element) {
+        return new ContentBinding(this, element);
     }
 
     @Override
@@ -129,6 +135,21 @@ public class Image {
         }
         sb.append(']');
         return sb.toString();
+    }
+
+    public static class ContentBinding {
+        private Image image;
+        private Element element;
+        ContentBinding(Image image, Element element) {
+            this.image = image;
+            this.element = element;
+        }
+        public Image getImage() {
+            return image;
+        }
+        public Element getElement() {
+            return element;
+        }
     }
 
 }

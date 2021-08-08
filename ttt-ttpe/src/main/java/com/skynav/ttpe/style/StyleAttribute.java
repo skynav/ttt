@@ -47,12 +47,14 @@ public class StyleAttribute extends java.text.AttributedCharacterIterator.Attrib
     public static final StyleAttribute   FONT                      = new StyleAttribute("FONT");                      // com.skynav.ttpe.fonts.Font
     public static final StyleAttribute   FONT_SELECTION_STRATEGY   = new StyleAttribute("FONT_SELECTION_STRATEGY");   // com.skynav.ttpe.fonts.FontSelectionStrategy
     public static final StyleAttribute   FONTS                     = new StyleAttribute("FONTS");                     // com.skynav.ttpe.fonts.Font[]
+    public static final StyleAttribute   IMAGE                     = new StyleAttribute("IMAGE");                     // com.skynav.ttpe.style.Image.ContentBinding
     public static final StyleAttribute   INLINE_ALIGNMENT          = new StyleAttribute("INLINE_ALIGNMENT");          // com.skynav.ttpe.style.InlineAlignment
     public static final StyleAttribute   IPD                       = new StyleAttribute("IPD");                       // Double
     public static final StyleAttribute   LANGUAGE                  = new StyleAttribute("LANGUAGE");                  // String
     public static final StyleAttribute   LETTER_SPACING            = new StyleAttribute("LETTER_SPACING");            // Double
     public static final StyleAttribute   LINE_HEIGHT               = new StyleAttribute("LINE_HEIGHT");               // Double
     public static final StyleAttribute   LINE_SHEAR                = new StyleAttribute("LINE_SHEAR");                // Double
+    public static final StyleAttribute   OPACITY                   = new StyleAttribute("OPACITY");                   // Double
     public static final StyleAttribute   ORIENTATION               = new StyleAttribute("ORIENTATION");               // com.skynav.ttpe.style.Orientation
     public static final StyleAttribute   OUTLINE                   = new StyleAttribute("OUTLINE");                   // com.skynav.ttpe.style.Outline
     public static final StyleAttribute   PADDING                   = new StyleAttribute("PADDING");                   // Padding

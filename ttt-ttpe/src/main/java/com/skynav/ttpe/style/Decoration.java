@@ -33,6 +33,7 @@ public class Decoration implements Cloneable {
         EMPHASIS,
         HIGHLIGHT,
         LINING,
+        OPACITY,
         OUTLINE,
         VISIBILITY;
     }
@@ -99,6 +100,14 @@ public class Decoration implements Cloneable {
 
     public boolean isLining() {
         return getType() == Type.LINING;
+    }
+
+    public boolean isOpacity() {
+        return getType() == Type.OPACITY;
+    }
+
+    public Double getOpacity() {
+        return isOpacity() ? (Double) getValue() : null;
     }
 
     public boolean isOutline() {
