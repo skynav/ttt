@@ -400,6 +400,21 @@ public class Phrase {
             return null;
     }
 
+    private static final StyleAttribute[] opacityAttr = new StyleAttribute[] { StyleAttribute.OPACITY };
+    public Double getOpacity(int index, Defaults defaults) {
+        Object v;
+        if (index < 0)
+            v = attributes.get(opacityAttr[0]);
+        else
+            v = content.getIterator(opacityAttr, index, index + 1).getAttribute(opacityAttr[0]);
+        if (v == null)
+            v = defaults.getOpacity();
+        if (v instanceof Double)
+            return (Double) v;
+        else
+            return null;
+    }
+
     private static final StyleAttribute[] outlineAttr = new StyleAttribute[] { StyleAttribute.OUTLINE };
     public Outline getOutline(int index, Defaults defaults) {
         Object v;
