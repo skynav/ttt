@@ -2,19 +2,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>ttt-ttx</artifactId>
+  <artifactId>ttt-version</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>Timed Text Transformer</description>
+  <description>Timed Text Verifier</description>
   
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
     <version>7.2-SNAPSHOT</version>
   </parent>
-
-  <properties>
-    <test.basedir>${basedir}/run/test</test.basedir>
-  </properties>
 
   <scm>
     <connection>scm:git:https://github.com/skynav/ttt.git</connection>
@@ -30,16 +26,6 @@
   </distributionManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>com.skynav.ttt</groupId>
-      <artifactId>ttt-ttv</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.skynav.ttt</groupId>
-      <artifactId>ttt-version</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -59,6 +45,7 @@
           <headerLocation>${project.baseUri}src/tools/resources/checkstyle/LICENSE.txt</headerLocation>
           <linkXRef>false</linkXRef>
           <logViolationsToConsole>true</logViolationsToConsole>
+          <suppressionsLocation>${project.baseUri}src/tools/resources/checkstyle/suppressions.xml</suppressionsLocation>
         </configuration>
       </plugin>
       <plugin>
@@ -70,6 +57,7 @@
             <include>**/*TestCases.java</include>
           </includes>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <runOrder>alphabetical</runOrder>
         </configuration>
       </plugin>
     </plugins>
@@ -119,38 +107,5 @@
     </plugins>
   </reporting>
 
-  <profiles>
-    <profile>
-      <id>run-ttx</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>${exec.version}</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>java</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <mainClass>com.skynav.ttx.app.TimedTextTransformer</mainClass>
-              <arguments>
-                <argument>-v</argument>
-                <argument>--config</argument>
-                <argument>${test.basedir}/test.config.xml</argument>
-                <argument>${test.basedir}/test.xml</argument>
-              </arguments>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>
+

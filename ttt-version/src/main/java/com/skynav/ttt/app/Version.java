@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,20 +23,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.skynav.ttx.app;
+package com.skynav.ttt.app;
 
 public class Version {
-    public static final String CURRENT = "7.1";
+    public static final String CURRENT = "7.2-SNAPSHOT";
 
     public static String getVersion() {
         return CURRENT;
     }
-
-    public static void main(String[] args) {
-        System.out.println(getVersion());
-    }
 }
-
-
-
-

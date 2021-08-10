@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2013-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,8 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Node;
 
+import com.skynav.ttt.app.Copyright;
+import com.skynav.ttt.app.Version;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
@@ -60,8 +62,8 @@ import com.skynav.ttx.transformer.Transformers;
 public class TimedTextTransformer implements ResultProcessor, TransformerContext {
 
     // banner text
-    private static final String title = "Timed Text Transformer (TTX) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2013-21 Skynav, Inc.";
+    private static final String title = "Timed Text Transformer (TTX) [" + Version.getVersion() + "]";
+    private static final String copyright = Copyright.getCopyright();
     private static final String banner = title + " " + copyright;
 
     // option and usage info

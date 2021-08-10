@@ -4,7 +4,7 @@
 
   <groupId>com.skynav.ttt</groupId>
   <artifactId>ttt</artifactId>
-  <version>7.1</version>
+  <version>7.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Timed Text Toolkit</description>
@@ -48,6 +48,7 @@
 
   <modules>
     <module>ttt-tools</module>
+    <module>ttt-version</module>
     <module>ttt-ttv</module>
     <module>ttt-ttv-all</module>
     <module>ttt-ttx</module>
