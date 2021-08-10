@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.skynav.ttt</groupId>
     <artifactId>ttt</artifactId>
-    <version>7.1</version>
+    <version>7.2-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -33,6 +33,11 @@
     <dependency>
       <groupId>com.skynav.ttt</groupId>
       <artifactId>ttt-ttv</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.skynav.ttt</groupId>
+      <artifactId>ttt-version</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

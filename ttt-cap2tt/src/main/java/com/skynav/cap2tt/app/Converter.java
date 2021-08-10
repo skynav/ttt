@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 Skynav, Inc. All rights reserved.
+ * Copyright 2014-21 Skynav, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -86,6 +86,8 @@ import com.skynav.cap2tt.converter.Results;
 import com.skynav.cap2tt.converter.Screen;
 import com.skynav.cap2tt.converter.TextAttribute;
 
+import com.skynav.ttt.app.Copyright;
+import com.skynav.ttt.app.Version;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionProcessor;
@@ -198,10 +200,10 @@ public class Converter implements ConverterContext {
     public static final QName ttvaModelAttrName = new QName(Annotations.getNamespace(), "model");
 
     // banner text
-    public static final String title = "Lambda CAP To Timed Text (CAP2TT) [" + Version.CURRENT + "]";
-    public static final String copyright = "Copyright 2014-21 Skynav, Inc.";
+    public static final String title = "Lambda CAP To Timed Text (CAP2TT) [" + Version.getVersion() + "]";
+    public static final String copyright = Copyright.getCopyright();
     public static final String banner = title + " " + copyright;
-    public static final String creationSystem = "CAP2TT/" + Version.CURRENT;
+    public static final String creationSystem = "CAP2TT/" + Version.getVersion();
 
     // usage text
     public static final String repositoryURL = "https://github.com/skynav/cap2tt";
