@@ -93,6 +93,8 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
 
+import com.skynav.ttt.app.Copyright;
+import com.skynav.ttt.app.Version;
 import com.skynav.ttv.model.Model;
 import com.skynav.ttv.model.Models;
 import com.skynav.ttv.model.Profile;
@@ -145,8 +147,8 @@ public class TimedTextVerifier implements VerifierContext {
     private static final String defaultReporterFileEncoding = Reporters.getDefaultEncoding();
 
     // banner text
-    private static final String title = "Timed Text Verifier (TTV) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright (c) 2013-21 Skynav, Inc.";
+    private static final String title = "Timed Text Verifier (TTV) [" + Version.getVersion() + "]";
+    private static final String copyright = Copyright.getCopyright();
     private static final String banner = title + " " + copyright;
 
     // usage text

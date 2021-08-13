@@ -73,6 +73,8 @@ import com.skynav.ttpe.render.FrameImage;
 import com.skynav.ttpe.render.FrameResource;
 import com.skynav.ttpe.render.ImageFrame;
 import com.skynav.ttpe.render.RenderProcessor;
+import com.skynav.ttt.app.Copyright;
+import com.skynav.ttt.app.Version;
 import com.skynav.ttv.app.InvalidOptionUsageException;
 import com.skynav.ttv.app.MissingOptionArgumentException;
 import com.skynav.ttv.app.OptionSpecification;
@@ -92,8 +94,8 @@ import com.skynav.ttx.transformer.TransformerOptions;
 public class Presenter extends TimedTextTransformer {
 
     // banner text
-    private static final String title = "Timed Text Presentation Engine (TTPE) [" + Version.CURRENT + "]";
-    private static final String copyright = "Copyright 2014-21 Skynav, Inc.";
+    private static final String title = "Timed Text Presentation Engine (TTPE) [" + Version.getVersion() + "]";
+    private static final String copyright = Copyright.getCopyright();;
     private static final String banner = title + " " + copyright;
 
     // option and usage info
