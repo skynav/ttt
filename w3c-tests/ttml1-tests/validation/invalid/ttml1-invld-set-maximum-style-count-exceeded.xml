@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid set element - style count exceeded maximum of one -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head/>
+  <body>
+    <set/>
+    <set tts:display="auto"/>
+    <set tts:display="auto" tts:fontSize="10px"/>
+    <set tts:display="auto" tts:fontSize="10px" tts:fontStyle="italic"/>
+  </body>
+</tt>

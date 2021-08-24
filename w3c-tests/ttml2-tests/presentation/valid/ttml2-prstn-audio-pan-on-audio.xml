@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tta="http://www.w3.org/ns/ttml#audio"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+  </head>
+  <body>
+    <div>
+      <p begin="1s" end="3s">
+      <audio src="../resources/audio/ttml2-prstn-audio-pan-center-audio.mp3" type="audio/mpeg" tta:pan="0"/>
+        <span>Center audio</span>
+      </p>        
+      <p begin="4s" end="6s">
+        <audio src="../resources/audio/ttml2-prstn-audio-pan-audio-only-on-left.mp3" type="audio/mpeg" tta:pan="-1"/>
+        <span>Audio only on left</span>
+      </p>
+      <p begin="7s" end="9s">
+        <audio src="../resources/audio/ttml2-prstn-audio-pan-audio-only-on-right.mp3" type="audio/mpeg" tta:pan="1"/>
+        <span>Audio only on right</span>
+      </p>
+    </div>
+  </body>
+</tt>

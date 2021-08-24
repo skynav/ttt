@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - wall clock time expressions - date subset -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    ttp:timeBase="clock"
+    ttp:clockMode="utc"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="10" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head/>
+  <body>
+    <div begin="wallclock(1970-)"/>
+    <div begin="wallclock(1970-0)"/>
+    <div begin="wallclock(1970-00)"/>
+    <div begin="wallclock(1970-00-)"/>
+    <div begin="wallclock(1970-00-01)"/>
+    <div begin="wallclock(1970-00-31)"/>
+    <div begin="wallclock(1970-01-00)"/>
+    <div begin="wallclock(1970-01-32)"/>
+    <div begin="wallclock(1970-13-01)"/>
+    <div begin="wallclock(1970-13-31)"/>
+  </body>
+</tt>

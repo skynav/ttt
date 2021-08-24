@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- test tts:backgroundColor on space areas generated inline type elements: span (lrtb wm) -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-presentation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:origin="550px 290px" tts:extent="180px 140px"/>
+    </layout>
+  </head>
+  <body region="r0" tts:fontFamily="Noto Sans" tts:fontSize="24px" tts:lineHeight="30px" tts:color="black" tts:backgroundColor="#77DD77">
+    <div>
+      <p begin="1s" end="2s">the <span tts:backgroundColor="#FDFD96">quick brown fox jumps over the lazy</span> dog</p>
+    </div>
+  </body>
+</tt>

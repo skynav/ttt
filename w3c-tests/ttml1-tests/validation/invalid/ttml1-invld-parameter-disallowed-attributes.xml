@@ -1,0 +1,34 @@
+<!-- invalid - disallowed parameter attributes - all contexts - should produce 18 errors -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-transformation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="18" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head ttp:frameRate="30">
+    <metadata ttp:frameRate="30"/>
+    <ttm:title ttp:frameRate="30"/>
+    <ttm:desc ttp:frameRate="30"/>
+    <ttm:copyright ttp:frameRate="30"/>
+    <ttm:agent xml:id="agent" type="person" ttp:frameRate="30">
+      <ttm:name type="full" ttp:frameRate="30"/>
+    </ttm:agent>
+    <ttm:agent type="character">
+      <ttm:name type="alias"/>
+      <ttm:actor agent="agent" ttp:frameRate="30"/>
+    </ttm:agent>
+    <styling ttp:frameRate="30">
+      <style  ttp:frameRate="30"/>
+    </styling>
+    <layout ttp:frameRate="30">
+      <region ttp:frameRate="30"/>
+    </layout>
+  </head>
+  <body ttp:frameRate="30">
+    <set ttp:frameRate="30"/>
+    <div ttp:frameRate="30">
+      <p ttp:frameRate="30">
+        <span ttp:frameRate="30"/>
+        <br ttp:frameRate="30"/>
+      </p>
+    </div>
+  </body>
+</tt>

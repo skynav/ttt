@@ -1,0 +1,36 @@
+<!-- invalid - disallowed metadata attribute - all contexts - should produce 18 errors -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata" ttm:role="x-tt"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-transformation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="18" ttva:expectedWarnings="0" ttva:model="ttml1"
+    ttva:noWarnOn="references-other-extension-namespace references-non-standard-extension">
+  <head ttm:role="x-head">
+    <ttm:title ttm:role="x-title"/>
+    <ttm:desc ttm:role="x-desc"/>
+    <ttm:copyright ttm:role="x-copyright"/>
+    <ttm:agent xml:id="agent" type="person" ttm:role="x-agent">
+      <ttm:name type="full" ttm:role="x-name"/>
+    </ttm:agent>
+    <ttm:agent type="character">
+      <ttm:name type="alias"/>
+      <ttm:actor agent="agent" ttm:role="x-agent"/>
+    </ttm:agent>
+    <profile use="dfxp-full" ttm:role="x-profile" xmlns="http://www.w3.org/ns/ttml#parameter">
+      <features ttm:role="x-features">
+        <feature ttm:role="x-feature">#core</feature>
+      </features>
+      <extensions ttm:role="x-extensions">
+        <extension ttm:role="x-extension">http://example.com/ns/ttml/extension/#extension</extension>
+      </extensions>
+    </profile>
+    <styling ttm:role="x-styling">
+      <style  ttm:role="x-style"/>
+    </styling>
+    <layout ttm:role="x-layout">
+      <region ttm:role="x-region"/>
+    </layout>
+  </head>
+  <body>
+    <set ttm:role="x-set"/>
+  </body>
+</tt>

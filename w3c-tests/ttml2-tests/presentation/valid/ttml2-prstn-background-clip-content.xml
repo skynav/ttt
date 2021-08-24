@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#backgroundClip (padding)</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBody" tts:fontSize="10rh" tts:lineHeight="12rh" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0" tts:backgroundImage="../resources/images/ttml2-prstn-background-image-1.png"
+        tts:backgroundExtent="160px 64px" tts:backgroundRepeat="noRepeat" tts:backgroundOrigin="border" tts:backgroundClip="content"/>
+    </styling>
+    <layout>
+      <region xml:id="area1" style="sBackground" tts:extent="320px 128px" tts:position="center bottom 10%"
+        tts:displayAlign="center" tts:padding="10px" tts:border="10px solid rgba(255,0,0,64)"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <div region="area1" begin="0s" end="1s">
+      <p>Text</p>
+    </div>
+  </body>
+</tt>

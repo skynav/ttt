@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/ruby/ruby001.ttml -->
+<tt xml:lang="ja"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>Basic ruby text</ttm:desc>
+    </metadata>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="48px"/>
+    </styling>      
+    <layout>
+      <region tts:displayAlign="center" tts:textAlign="center" tts:backgroundColor="black" xml:id="r1" tts:position="center center" tts:extent="40% 40%"/>
+    </layout>
+  </head>
+  <body>
+    <div region="r1">
+      <p begin="0s" end="1s">
+        <span tts:ruby="container">
+          <span tts:ruby="base">利用許諾</span>
+          <span tts:ruby="text">ライセンス</span>
+        </span>
+      </p>
+    </div>
+  </body>
+</tt>

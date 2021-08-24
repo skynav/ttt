@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-presentation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head>
+    <metadata> 
+      <ttm:desc>Test tts:direction on p and span.</ttm:desc>
+    </metadata>
+  </head>
+  <body>
+    <div>
+      <p tts:direction="rtl">
+        <metadata>
+          <ttm:desc>tts:direction defines weak directionality so the latin script text appears left to right.</ttm:desc>
+        </metadata>
+        Left to right<br/>
+        <span xml:lang="iw">מימין לשמאל</span><br/>
+        <span tts:unicodeBidi="bidiOverride" tts:direction="rtl">Right to left</span>
+      </p>
+    </div>
+  </body>
+</tt>

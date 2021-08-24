@@ -1,0 +1,74 @@
+<!-- valid - all defined ttml element types - should produce 3 warnings with warn-on all -->
+<tt
+  xml:lang="en"
+  xmlns="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:tts="http://www.w3.org/ns/ttml#styling"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="3">
+  <head>
+    <metadata xml:id="m1"/>
+    <ttm:title xml:id="title">A Title</ttm:title>
+    <ttm:desc xml:id="description">This example TTML document attempts to use every element.</ttm:desc>
+    <ttm:copyright xml:id="copyright">Never and Anon.</ttm:copyright>
+    <ttm:agent xml:id="connery" type="person">
+      <ttm:name type="full">Sir Thomas Sean Connery</ttm:name>
+    </ttm:agent>
+    <ttm:agent xml:id="bond" type="character">
+      <ttm:name type="alias">007</ttm:name>
+      <ttm:actor agent="connery"/>
+    </ttm:agent>
+    <ttp:profile xml:id="profile" use="dfxp-presentation">
+      <metadata xml:id="m2"/>
+      <ttp:features xml:id="f1set" xml:base="http://www.w3.org/ns/ttml/feature/">
+        <metadata/>
+        <ttp:feature xml:id="f1" value="required">#fontStyle-italic</ttp:feature>
+      </ttp:features>
+      <ttp:extensions xml:id="e1set" xml:base="http://example.com/ns/ttml/extension/">
+        <metadata/>
+        <ttp:extension xml:id="e1" value="required">#image</ttp:extension>
+      </ttp:extensions>
+    </ttp:profile>
+    <styling>
+      <metadata xml:id="m3"/>
+      <style xml:id="s1" tts:color="red"/>
+    </styling>
+    <layout>
+      <metadata xml:id="m4"/>
+      <region xml:id="r1" style="s1">
+        <metadata xml:id="m5"/>
+        <set xml:id="a1" tts:zIndex="-1"/>
+        <style xml:id="s2" tts:color="green"/>
+      </region>
+    </layout>
+  </head>
+  <body region="r1">
+    <metadata xml:id="m6"/>
+    <set xml:id="a2" tts:display="auto"/>
+    <div>
+      <metadata xml:id="m7"/>
+      <set xml:id="a3" tts:writingMode="tb"/>
+      <p ttm:agent="bond">
+        <metadata xml:id="m8"/>
+        <set xml:id="a4" tts:visibility="hidden"/>
+        <span><metadata xml:id="m9"/><set xml:id="a5" tts:fontSize="20px"/>Text 1</span>
+        <br><metadata xml:id="m10"/><set xml:id="a6" tts:display="none"/></br>
+        <span><metadata xml:id="m11"/>Text 2</span>
+      </p>
+    </div>
+    <!-- nested divs and spans -->
+    <div>
+      <p>
+        <span>some <span>memorable</span> text</span>
+      </p>
+      <div>
+        <p>
+          <span>some <span>other</span> text</span>
+        </p>
+      </div>
+      <p>
+        <span>some <span>redundant</span> text</span>
+      </p>
+    </div>
+  </body>
+</tt>

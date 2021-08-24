@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad tts:rubyReserve value - empty value -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="4" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <style tts:rubyReserve="before -1px"/>
+      <style tts:rubyReserve="after -1px"/>
+      <style tts:rubyReserve="outside -1px"/>
+      <style tts:rubyReserve="both -1px"/>
+    </styling>
+  </head>
+</tt>

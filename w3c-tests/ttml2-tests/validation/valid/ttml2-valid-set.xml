@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tt:set in inline animation context with single style in all TTML1 contexts -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <layout>
+      <region xml:id="r1">
+        <set xml:id="a1" tts:zIndex="-1"/>
+      </region>
+    </layout>
+  </head>
+  <body>
+    <set xml:id="a2" tts:display="auto"/>
+    <div>
+      <set xml:id="a3" tts:opacity="0.8"/>
+      <p>
+        <set xml:id="a4" tts:visibility="hidden"/>
+        <span><set xml:id="a5" tts:fontSize="20px"/>Text 1</span>
+        <br><set xml:id="a6" tts:display="none"/></br>
+      </p>
+    </div>
+  </body>
+</tt>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - ttp:profile - @use specified -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="1" ttva:model="ttml2">
+  <head>
+    <!-- ignoring warning for use of non-standard designator (TTV) -->
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter" use="http://example.com/ttml/profile/ttml2-custom"/>
+  </head>
+</tt>

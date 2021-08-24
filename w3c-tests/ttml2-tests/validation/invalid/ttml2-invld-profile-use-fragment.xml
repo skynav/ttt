@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - ttp:profile - @use uses local fragment reference -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" 
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <ttp:profile xml:id="localProfile"/>
+    <ttp:profile use="#localProfile"/>
+  </head>
+</tt>

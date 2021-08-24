@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - nested isd:isd - @version not permitted on nested isd:isd -->
+<isd:sequence xml:lang="" xmlns:isd="http://www.w3.org/ns/ttml#isd"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <isd:isd begin="0s" end="indefinite" version="2"/>
+</isd:sequence>

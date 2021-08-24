@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - ttp:profile - @type - empty value -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter" type=""/>
+  </head>
+</tt>

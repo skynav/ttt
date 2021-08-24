@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - all TTML2 style properties that take <length> expression, using TTML1 <length> expression -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <!-- visual style properties -->
+      <initial tts:backgroundExtent="20px 30px"/>
+      <initial tts:backgroundPosition="left 1px bottom 1px"/>
+      <initial tts:border="1px solid red"/>
+      <initial tts:bpd="1px"/>
+      <initial tts:disparity="1px"/>
+      <initial tts:extent="1px 1px"/>
+      <initial tts:fontSize="1px"/>
+      <initial tts:ipd="1px"/>
+      <initial tts:letterSpacing="1px"/>
+      <initial tts:lineHeight="1px"/>
+      <initial tts:origin="1px 1px"/>
+      <initial tts:padding="1px"/>
+      <initial tts:position="bottom 1px right 1px"/>
+      <initial tts:rubyReserve="both 1px"/>
+      <initial tts:textOutline="red 1px"/>
+      <initial tts:textShadow="1px 1px red"/>
+    </styling>
+  </head>
+</tt>
+
+

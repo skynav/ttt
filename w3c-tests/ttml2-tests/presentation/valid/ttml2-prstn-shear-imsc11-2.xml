@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/shear/shear002.ttml -->
+<tt xml:lang="ja"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#shear with ruby and tatechuyoko (single line per paragraph)</ttm:desc>
+    </metadata>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="1.000001c"/>
+      <style xml:id="s1" tts:showBackground="whenActive" tts:backgroundColor="black" tts:textAlign="center" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="horizontal" style="s1" tts:extent="40% 60%" tts:origin="5% 5%"/>
+      <region xml:id="vertical" style="s1" tts:origin="55% 5%" tts:extent="40% 60%" tts:writingMode="tblr"/>
+      <region xml:id="caption" style="s1" tts:origin="10% 75%" tts:extent="80% 20%"/>
+    </layout>
+  </head>
+  <body>
+    <div begin="0s" end="1s">
+      <p region="horizontal" tts:shear="16.78842%">
+        <span tts:ruby="container">
+          <span tts:ruby="base">利用許諾</span>
+          <span tts:ruby="text">ライセンス</span>
+        </span>
+      </p>
+      <p region="vertical" tts:shear="16.78842%">
+        あい<span tts:textCombine="all">34</span>三四
+      </p>
+    </div>
+  </body>
+</tt>

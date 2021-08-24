@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/shear/shear001.ttml -->
+<tt xml:lang="ja"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#shear - no ruby or tatechuyoko</ttm:desc>
+    </metadata>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="1.000001c"/>
+      <style xml:id="s1" tts:showBackground="whenActive" tts:backgroundColor="black" tts:textAlign="center" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="horizontal" style="s1" tts:extent="40% 60%" tts:origin="5% 5%"/>
+      <region xml:id="vertical" style="s1" tts:origin="55% 5%" tts:extent="40% 60%" tts:writingMode="tblr"/>
+      <region xml:id="caption" style="s1" tts:origin="10% 75%" tts:extent="80% 20%"/>
+    </layout>
+  </head>
+  <body>
+    <div begin="0s" end="1s">
+      <p region="caption">Positive shear</p>
+      <p region="horizontal" tts:shear="16.78842%">
+        16.78842%<br/>三日坊主
+      </p>
+      <p region="vertical" tts:shear="16.78842%">
+        16.78842%<br/>三日坊主
+      </p>
+    </div>
+    <div begin="1s" end="2s">
+      <p region="caption">Positive shear</p>
+      <p region="horizontal" tts:shear="50%">
+        50%<br/>三日坊主
+      </p>
+      <p region="vertical" tts:shear="50%">
+        50%<br/>三日坊主
+      </p>
+    </div>
+    <div begin="2s" end="3s">
+      <p region="caption">Positive shear</p>
+      <p region="horizontal" tts:shear="64.333%">
+       64.333%<br/>三日坊主
+      </p>
+      <p region="vertical" tts:shear="64.333%">
+        64.333%<br/>三日坊主
+      </p>
+    </div>
+    <div begin="3s" end="4s">
+      <p region="caption">Negative shear</p>
+      <p region="horizontal" tts:shear="-16.78842%">
+        -16.78842%<br/>三日坊主
+      </p>
+      <p region="vertical" tts:shear="-16.78842%">
+        -16.78842%<br/>三日坊主
+      </p>
+    </div>
+    <div begin="4s" end="5s">
+      <p region="caption">Negative shear</p>
+      <p region="horizontal" tts:shear="-50%">
+        -50%<br/>三日坊主
+      </p>
+      <p region="vertical" tts:shear="-50%">
+        -50%<br/>三日坊主
+      </p>
+    </div>
+    <div begin="5s" end="6s">
+      <p region="caption">Negative shear</p>
+      <p region="horizontal" tts:shear="-64.333%">
+        -64.333%<br/>三日坊主
+      </p>
+      <p region="vertical" tts:shear="-64.333%">
+        -64.333%<br/>三日坊主
+      </p>
+    </div>
+  </body>
+</tt>

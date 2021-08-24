@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/lengthRootContainerRelative/lengthRootContainerRelative004.ttml -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#length-root-container-relative in padding</ttm:desc>
+    </metadata>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="1.000001c"/>
+    </styling>      
+    <layout>
+      <region xml:id="r1" tts:backgroundColor="black" tts:extent="90rw 40rh" tts:position="center bottom 5rh"
+        tts:displayAlign="before" tts:padding="0rh 5rw 10rh 20rw"/>
+      <region xml:id="r2" tts:backgroundColor="black" tts:extent="90rw 40rh" tts:position="center top 5rh"
+        tts:displayAlign="after" tts:padding="0rh 5rw 10rh 20rw"/>
+    </layout>
+  </head>
+  <body>
+    <div region="r1">
+      <p begin="0s" end="1s" tts:backgroundColor="blue">
+        tts:padding="0rh 5rw 10rh 20rw"<br/>
+        tts:displayAlign="before"
+      </p>
+    </div>
+    <div region="r2">
+      <p begin="0s" end="1s" tts:backgroundColor="blue">
+        tts:padding="0rh 5rw 10rh 20rw"<br/>
+        tts:displayAlign="after"
+      </p>
+    </div>
+  </body>
+</tt>

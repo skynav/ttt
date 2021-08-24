@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - unknown feature value attribute -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter">
+      <features>
+        <feature value="unknown">#fontSize</feature>
+      </features>
+    </profile>
+  </head>
+</tt>

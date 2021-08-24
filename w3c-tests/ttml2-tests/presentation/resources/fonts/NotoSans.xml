@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fonts version="1" xmlns="http://skynav.com/ns/ttpe">
+  <!-- language neutral mappings -->
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="source">NotoSans-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="source">NotoSans-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="source">NotoSans-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="source">NotoSans-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <!-- language specific mappings -->
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EL</param>
+    <param name="source">NotoSans-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EL</param>
+    <param name="source">NotoSans-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EL</param>
+    <param name="source">NotoSans-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EL</param>
+    <param name="source">NotoSans-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EN</param>
+    <param name="source">NotoSans-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EN</param>
+    <param name="source">NotoSans-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EN</param>
+    <param name="source">NotoSans-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">EN</param>
+    <param name="source">NotoSans-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">IW</param>
+    <param name="source">NotoSansHebrew-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">IW</param>
+    <param name="source">NotoSansHebrew-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">JA</param>
+    <param name="source">NotoSansJP-Regular.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">JA</param>
+    <param name="source">NotoSansJP-Bold.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">KO</param>
+    <param name="source">NotoSansKR-Regular.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">KO</param>
+    <param name="source">NotoSansKR-Bold.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">RU</param>
+    <param name="source">NotoSans-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">RU</param>
+    <param name="source">NotoSans-Italic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">RU</param>
+    <param name="source">NotoSans-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">RU</param>
+    <param name="source">NotoSans-BoldItalic.ttf</param>
+    <param name="style">ITALIC</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZH</param>
+    <param name="source">NotoSansSC-Regular.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZH</param>
+    <param name="source">NotoSansSC-Bold.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZHS</param>
+    <param name="source">NotoSansSC-Regular.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZHS</param>
+    <param name="source">NotoSansSC-Bold.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZHT</param>
+    <param name="source">NotoSansTC-Regular.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Sans</param>
+    <param name="language">ZHT</param>
+    <param name="source">NotoSansTC-Bold.otf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+</fonts>

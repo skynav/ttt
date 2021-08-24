@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#displayAlign-block</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="24px" tts:lineHeight="32px" tts:color="white" tts:textAlign="center"/>
+      <style xml:id="sGeometry1" tts:extent="600px 160px" tts:position="center top 10%"/>
+      <style xml:id="sGeometry2" tts:extent="600px 160px" tts:position="center"/>
+      <style xml:id="sGeometry3" tts:extent="600px 160px" tts:position="center bottom 10%"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout"/>
+      <region xml:id="r2" style="sBackground sGeometry2 sLayout"/>
+      <region xml:id="r3" style="sBackground sGeometry3 sLayout"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <div region="r1" begin="0s" end="1s" tts:bpd="128px" tts:displayAlign="before" tts:backgroundColor="#808080">
+      <p tts:textAlign="start">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sagittis ullamcorper porttitor.</p>
+    </div>
+    <div region="r2" begin="0s" end="1s" tts:bpd="128px" tts:displayAlign="center" tts:backgroundColor="#808080">
+      <p tts:textAlign="end">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sagittis ullamcorper porttitor.</p>
+    </div>
+    <div region="r3" begin="0s" end="1s" tts:bpd="128px" tts:displayAlign="after" tts:backgroundColor="#808080">
+      <p tts:textAlign="center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sagittis ullamcorper porttitor.</p>
+    </div>
+  </body>
+</tt>

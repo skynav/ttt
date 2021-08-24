@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - initial - multiple tts:* or tta:* attributes per initial element -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:tta="http://www.w3.org/ns/ttml#audio"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <!-- visual style properties -->
+      <initial tts:backgroundClip="content" tts:backgroundColor="black"/>
+      <initial tts:backgroundColor="black" tts:backgroundExtent="20px 30px"/>
+      <initial tts:backgroundExtent="20px 30px" tts:backgroundImage="../resources/test.png"/>
+      <initial tts:backgroundImage="../resources/test.png" tts:backgroundOrigin="padding"/>
+      <initial tts:backgroundOrigin="padding" tts:backgroundPosition="left bottom"/>
+      <initial tts:backgroundPosition="left bottom" tts:backgroundRepeat="noRepeat"/>
+      <initial tts:backgroundRepeat="noRepeat" tts:border="1px solid red"/>
+      <initial tts:border="1px solid red" tts:bpd="1px"/>
+      <initial tts:bpd="1px" tts:color="green"/>
+      <initial tts:color="green" tts:direction="rtl"/>
+      <initial tts:direction="rtl" tts:disparity="1px"/>
+      <initial tts:disparity="1px" tts:display="none"/>
+      <initial tts:display="none" tts:displayAlign="after"/>
+      <initial tts:displayAlign="after" tts:extent="1px 1px"/>
+      <initial tts:extent="1px 1px" tts:fontFamily="monospace"/>
+      <initial tts:fontFamily="monospace" tts:fontKerning="none"/>
+      <initial tts:fontKerning="none" tts:fontSelectionStrategy="character"/>
+      <initial tts:fontSelectionStrategy="character" tts:fontShear="1%"/>
+      <initial tts:fontShear="1%" tts:fontSize="1px"/>
+      <initial tts:fontSize="1px" tts:fontStyle="italic"/>
+      <initial tts:fontStyle="italic" tts:fontVariant="sub"/>
+      <initial tts:fontVariant="sub" tts:fontWeight="bold"/>
+      <initial tts:fontWeight="bold" tts:ipd="1px"/>
+      <initial tts:ipd="1px" tts:letterSpacing="1px"/>
+      <initial tts:letterSpacing="1px" tts:lineHeight="1px"/>
+      <initial tts:lineHeight="1px" tts:lineShear="1%"/>
+      <initial tts:lineShear="1%" tts:luminanceGain="0.9"/>
+      <initial tts:luminanceGain="0.9" tts:opacity="0.9"/>
+      <initial tts:opacity="0.9" tts:origin="1px 1px"/>
+      <initial tts:origin="1px 1px" tts:overflow="visible"/>
+      <initial tts:overflow="visible" tts:padding="1px"/>
+      <initial tts:padding="1px" tts:position="bottom right"/>
+      <initial tts:position="bottom right" tts:ruby="base"/>
+      <initial tts:ruby="base" tts:rubyAlign="spaceBetween"/>
+      <initial tts:rubyAlign="spaceBetween" tts:rubyPosition="after"/>
+      <initial tts:rubyPosition="after" tts:rubyReserve="both"/>
+      <initial tts:rubyReserve="both" tts:shear="1%"/>
+      <initial tts:shear="1%" tts:showBackground="whenActive"/>
+      <initial tts:showBackground="whenActive" tts:textAlign="end"/>
+      <initial tts:textAlign="end" tts:textCombine="all"/>
+      <initial tts:textCombine="all" tts:textDecoration="underline"/>
+      <initial tts:textDecoration="underline" tts:textEmphasis="dot"/>
+      <initial tts:textEmphasis="dot" tts:textOrientation="upright"/>
+      <initial tts:textOrientation="upright" tts:textOutline="red 1px"/>
+      <initial tts:textOutline="red 1px" tts:textShadow="1px 1px red"/>
+      <initial tts:textShadow="1px 1px red" tts:unicodeBidi="embed"/>
+      <initial tts:unicodeBidi="embed" tts:visibility="hidden"/>
+      <initial tts:visibility="hidden" tts:wrapOption="noWrap"/>
+      <initial tts:wrapOption="noWrap" tts:writingMode="tblr"/>
+      <initial tts:writingMode="tblr" tts:zIndex="1"/>
+      <initial tts:zIndex="1" tts:backgroundClip="content"/>
+      <!-- audio style properties -->
+      <initial tta:gain="0.9" tta:pan="0.5"/>
+      <initial tta:pan="0.5" tta:pitch="+10hz"/>
+      <initial tta:pitch="+10hz" tta:speak="normal"/>
+      <initial tta:speak="normal" tta:gain="0.9"/>
+    </styling>
+  </head>
+</tt>
+
+

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - fragment profile designator references nested profile -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:contentProfiles="#nestedContentProfile"
+    ttp:processorProfiles="#nestedProcessorProfile"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="4" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <!-- content profiles -->
+    <ttp:profile xml:id="nonNestedContentProfile" type="content">
+      <ttp:profile xml:id="nestedContentProfile" type="content"/>
+    </ttp:profile>
+    <ttp:profile xml:id="usesNonNestedContentProfile" type="content" use="#nonNestedContentProfile"/>         <!-- valid fragment designator -->
+    <ttp:profile xml:id="usesNestedContentProfile" type="content" use="#nestedContentProfile"/>               <!-- invalid fragment designator -->
+    <!-- processor profiles -->
+    <ttp:profile xml:id="nonNestedProcessorProfile" type="processor">
+      <ttp:profile xml:id="nestedProcessorProfile" type="processor"/>
+    </ttp:profile>
+    <ttp:profile xml:id="usesNonNestedProcessorProfile" type="processor" use="#nonNestedProcessorProfile"/>   <!-- valid fragment designator -->
+    <ttp:profile xml:id="usesNestedProcessorProfile" type="processor" use="#nestedProcessorProfile"/>         <!-- invalid fragment designator -->
+  </head>
+</tt>

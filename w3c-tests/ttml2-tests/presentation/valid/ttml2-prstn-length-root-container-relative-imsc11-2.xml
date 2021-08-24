@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/lengthRootContainerRelative/lengthRootContainerRelative002.ttml -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#length-root-container-relative in font size</ttm:desc>
+    </metadata>
+    <layout>
+      <region xml:id="r1" tts:backgroundColor="black" tts:extent="50rw 50rh" tts:color="white" tts:fontSize="10rh"/>
+    </layout>
+  </head>
+  <body>
+    <div region="r1">
+      <p begin="0s" end="1s">
+        10rh <span tts:fontSize="20rh">20rh</span>
+      </p>
+    </div>
+  </body>
+</tt>

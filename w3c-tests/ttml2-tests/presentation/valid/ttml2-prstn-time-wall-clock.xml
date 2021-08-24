@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#time-wall-clock</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0" tts:showBackground="whenActive"/>
+      <style xml:id="sBody" tts:fontSize="48px" tts:lineHeight="64px" tts:color="black" tts:textAlign="center" tts:fontWeight="bold"/>
+      <style xml:id="sGeometry" tts:extent="480px 128px" tts:position="center"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry sLayout"/>
+    </layout>
+  </head>
+  <body region="r1" style="sBody">
+    <div begin="wallclock(2018-12-31T23:59:45)" dur="10s">
+      <p>Happy New Year's Eve</p>
+    </div>
+    <div begin="wallclock(2019-01-01T00:00:05)" dur="10s">
+      <p>Happy New Year</p>
+    </div>
+  </body>
+</tt>

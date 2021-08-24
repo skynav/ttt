@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:displayAlign - all defined values in TTML2 on block generating elements -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head/>
+  <body tts:displayAlign="before">
+    <div tts:displayAlign="center">
+      <p tts:displayAlign="after"/>
+      <image src="../resources/test.png" type="image/png" tts:displayAlign="justify"/>
+    </div>
+  </body>
+</tt>

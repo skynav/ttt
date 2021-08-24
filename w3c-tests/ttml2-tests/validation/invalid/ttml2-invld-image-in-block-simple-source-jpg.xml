@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - use tt:image in block context with simple @src sourcing to invalid image/jpeg resources -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="6" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+  </head>
+  <body>
+    <div>
+      <image src="../resources/bad1.jpg" type="image/jpeg"/>
+      <image src="../resources/bad2.jpg" type="image/jpeg"/>
+      <image src="../resources/bad3.jpg" type="image/jpeg"/>
+    </div>
+  </body>
+</tt>

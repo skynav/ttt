@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:textEmphasis - #textEmphasis-minimal values (not exhaustive) -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <style tts:textEmphasis="none"/>
+      <style tts:textEmphasis="auto"/>
+      <style tts:textEmphasis="filled"/>
+      <style tts:textEmphasis="open"/>
+      <style tts:textEmphasis="circle"/>
+      <style tts:textEmphasis="dot"/>
+      <style tts:textEmphasis="sesame"/>
+      <style tts:textEmphasis="filled circle"/>
+      <style tts:textEmphasis="filled dot"/>
+      <style tts:textEmphasis="filled sesame"/>
+      <style tts:textEmphasis="circle filled"/>
+      <style tts:textEmphasis="dot filled"/>
+      <style tts:textEmphasis="sesame filled"/>
+      <style tts:textEmphasis="open circle"/>
+      <style tts:textEmphasis="open dot"/>
+      <style tts:textEmphasis="open sesame"/>
+      <style tts:textEmphasis="circle open"/>
+      <style tts:textEmphasis="dot open"/>
+      <style tts:textEmphasis="sesame open"/>
+      <style tts:textEmphasis="before"/>
+      <style tts:textEmphasis="after"/>
+      <style tts:textEmphasis="outside"/>
+      <style tts:textEmphasis="before filled circle"/>
+      <style tts:textEmphasis="before filled dot"/>
+      <style tts:textEmphasis="before filled sesame"/>
+      <style tts:textEmphasis="before circle filled"/>
+      <style tts:textEmphasis="before dot filled"/>
+      <style tts:textEmphasis="before sesame filled"/>
+      <style tts:textEmphasis="before open circle"/>
+      <style tts:textEmphasis="before open dot"/>
+      <style tts:textEmphasis="before open sesame"/>
+      <style tts:textEmphasis="before circle open"/>
+      <style tts:textEmphasis="before dot open"/>
+      <style tts:textEmphasis="before sesame open"/>
+      <style tts:textEmphasis="after filled circle"/>
+      <style tts:textEmphasis="after filled dot"/>
+      <style tts:textEmphasis="after filled sesame"/>
+      <style tts:textEmphasis="after circle filled"/>
+      <style tts:textEmphasis="after dot filled"/>
+      <style tts:textEmphasis="after sesame filled"/>
+      <style tts:textEmphasis="after open circle"/>
+      <style tts:textEmphasis="after open dot"/>
+      <style tts:textEmphasis="after open sesame"/>
+      <style tts:textEmphasis="after circle open"/>
+      <style tts:textEmphasis="after dot open"/>
+      <style tts:textEmphasis="after sesame open"/>
+      <style tts:textEmphasis="outside filled circle"/>
+      <style tts:textEmphasis="outside filled dot"/>
+      <style tts:textEmphasis="outside filled sesame"/>
+      <style tts:textEmphasis="outside circle filled"/>
+      <style tts:textEmphasis="outside dot filled"/>
+      <style tts:textEmphasis="outside sesame filled"/>
+      <style tts:textEmphasis="outside open circle"/>
+      <style tts:textEmphasis="outside open dot"/>
+      <style tts:textEmphasis="outside open sesame"/>
+      <style tts:textEmphasis="outside circle open"/>
+      <style tts:textEmphasis="outside dot open"/>
+      <style tts:textEmphasis="outside sesame open"/>
+      <style tts:textEmphasis="filled circle before"/>
+      <style tts:textEmphasis="filled dot before"/>
+      <style tts:textEmphasis="filled sesame before"/>
+      <style tts:textEmphasis="circle filled before"/>
+      <style tts:textEmphasis="dot filled before"/>
+      <style tts:textEmphasis="sesame filled before"/>
+      <style tts:textEmphasis="open circle before"/>
+      <style tts:textEmphasis="open dot before"/>
+      <style tts:textEmphasis="open sesame before"/>
+      <style tts:textEmphasis="circle open before"/>
+      <style tts:textEmphasis="dot open before"/>
+      <style tts:textEmphasis="sesame open before"/>
+      <style tts:textEmphasis="filled circle after"/>
+      <style tts:textEmphasis="filled dot after"/>
+      <style tts:textEmphasis="filled sesame after"/>
+      <style tts:textEmphasis="circle filled after"/>
+      <style tts:textEmphasis="dot filled after"/>
+      <style tts:textEmphasis="sesame filled after"/>
+      <style tts:textEmphasis="open circle after"/>
+      <style tts:textEmphasis="open dot after"/>
+      <style tts:textEmphasis="open sesame after"/>
+      <style tts:textEmphasis="circle open after"/>
+      <style tts:textEmphasis="dot open after"/>
+      <style tts:textEmphasis="sesame open after"/>
+      <style tts:textEmphasis="filled circle outside"/>
+      <style tts:textEmphasis="filled dot outside"/>
+      <style tts:textEmphasis="filled sesame outside"/>
+      <style tts:textEmphasis="circle filled outside"/>
+      <style tts:textEmphasis="dot filled outside"/>
+      <style tts:textEmphasis="sesame filled outside"/>
+      <style tts:textEmphasis="open circle outside"/>
+      <style tts:textEmphasis="open dot outside"/>
+      <style tts:textEmphasis="open sesame outside"/>
+      <style tts:textEmphasis="circle open outside"/>
+      <style tts:textEmphasis="dot open outside"/>
+      <style tts:textEmphasis="sesame open outside"/>
+    </styling>
+  </head>
+</tt>

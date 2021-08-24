@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:ruby - ruby base container with preserved whitespace that must nevertheless be ignored (for presentation) -->
+<tt xml:lang="ja" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>each paragraph (line) should have the same presentation, i.e., base container lwsp ignored</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sRegion" tts:showBackground="whenActive" tts:backgroundColor="black" tts:displayAlign="center"/>
+      <style xml:id="sText" tts:color="white" tts:textAlign="center" tts:fontSize="6.67rh" tts:lineHeight="8.0rh"/>
+    </styling>
+    <layout>
+      <region xml:id="text1" style="sRegion sText" tts:extent="80% 40%" tts:origin="5% 5%"/>
+      <region xml:id="text2" style="sRegion sText" tts:extent="80% 40%" tts:origin="5% 55%"/>
+    </layout>
+  </head>
+<body>
+  <div region="text1">
+    <p>
+      利<span tts:ruby="container">
+        <span tts:ruby="baseContainer" xml:space="default">&#x20;<span tts:ruby="base">利</span></span>
+        <span tts:ruby="textContainer"><span tts:ruby="text">り</span></span>
+      </span>利
+    </p>
+  </div>
+  <div region="text2">
+    <p>
+      利<span tts:ruby="container">
+        <span tts:ruby="baseContainer" xml:space="preserve">&#x20;<span tts:ruby="base">利</span></span>
+        <span tts:ruby="textContainer"><span tts:ruby="text">り</span></span>
+      </span>利
+    </p>
+  </div>
+</body>
+</tt>

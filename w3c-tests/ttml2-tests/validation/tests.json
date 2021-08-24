@@ -1,0 +1,1902 @@
+{
+    "#animate": {
+        "valid": [
+            { "test": "ttml2-valid-animate-discrete" },
+            { "test": "ttml2-valid-animate-fill" },
+            { "test": "ttml2-valid-animate-linear" },
+            { "test": "ttml2-valid-animate-out-of-line" },
+            { "test": "ttml2-valid-animate-paced" },
+            { "test": "ttml2-valid-animate-repeat-count" },
+            { "test": "ttml2-valid-animate-spline" },
+            { "test": "ttml2-valid-xml-id-missing", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-animate-animation-style-value" },
+            { "test": "ttml2-invld-bad-animate-negative-repeat-count" },
+            { "test": "ttml2-invld-bad-animate-non-animatable", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-default", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-linear", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-paced", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-spline", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-unknown-calculation-mode" },
+            { "test": "ttml2-invld-bad-animate-unknown-fill" },
+            { "test": "ttml2-invld-bad-animate-unknown-repeat-count" }
+        ]
+    },
+    "#animate-fill": {
+        "valid": [
+            { "test": "ttml2-valid-animate-fill" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-animate-unknown-fill" }
+        ]
+    },
+    "#animate-minimal": {
+        "valid": [
+            { "test": "ttml2-valid-animate-discrete" },
+            { "test": "ttml2-valid-animate-linear" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-animate-non-animatable", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-default", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-linear", "since": "2e" }
+        ]
+    },
+    "#animate-paced": {
+        "valid": [
+            { "test": "ttml2-valid-animate-paced" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-paced", "since": "2e" }
+        ]
+    },
+    "#animate-repeat": {
+        "valid": [
+            { "test": "ttml2-valid-animate-repeat-count" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-animate-unknown-repeat-count" }
+        ]
+    },
+    "#animate-spline": {
+        "valid": [
+            { "test": "ttml2-valid-animate-spline" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-spline", "since": "2e" }
+        ]
+    },
+    "#animation": {
+        "valid": [
+            { "test": "ttml2-valid-xml-id-missing", "since": "2e" }
+        ],
+        "invalid": []
+    },
+    "#animation-out-of-line": {
+        "valid": [
+            { "test": "ttml2-valid-animate-out-of-line" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-animate-animation-style-value" }
+        ]
+    },
+    "#animation-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-animate-discrete" },
+            { "test": "ttml2-valid-animate-fill" },
+            { "test": "ttml2-valid-animate-linear" },
+            { "test": "ttml2-valid-animate-out-of-line" },
+            { "test": "ttml2-valid-animate-paced" },
+            { "test": "ttml2-valid-animate-repeat-count" },
+            { "test": "ttml2-valid-animate-spline" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-animate-animation-style-value" },
+            { "test": "ttml2-invld-bad-animate-negative-repeat-count" },
+            { "test": "ttml2-invld-bad-animate-non-animatable", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-default", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-linear", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-paced", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-non-animatable-discrete-spline", "since": "2e" },
+            { "test": "ttml2-invld-bad-animate-unknown-calculation-mode" },
+            { "test": "ttml2-invld-bad-animate-unknown-fill" },
+            { "test": "ttml2-invld-bad-animate-unknown-repeat-count" },
+            { "test": "ttml2-invld-bad-set-non-animatable", "since": "2e" }
+        ]
+    },
+    "#audio": {
+        "valid": [
+            { "test": "ttml2-valid-audio-embedding" },
+            { "test": "ttml2-valid-audio-in-block" },
+            { "test": "ttml2-valid-audio-in-body", "since": "2e" },
+            { "test": "ttml2-valid-audio-in-inline" }
+        ],
+        "invalid": [
+            { "test": "ttml2-valid-audio-embedding-bad-resource", "exclude": true },
+            { "test": "ttml2-invld-audio-in-block-simple-source-mpeg", "exclude": true },
+            { "test": "ttml2-invld-audio-in-inline-simple-source-mpeg", "exclude": true }
+        ]
+    },
+    "#audio-description": {
+        "valid": [
+            { "test": "ttml2-valid-audio-in-block" },
+            { "test": "ttml2-valid-audio-in-body", "since": "2e" },
+            { "test": "ttml2-valid-audio-in-inline" },
+            { "test": "ttml2-valid-gain" },
+            { "test": "ttml2-valid-pan" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-audio-in-block-simple-source-mpeg", "exclude": true },
+            { "test": "ttml2-invld-audio-in-inline-simple-source-mpeg", "exclude": true },
+            { "test": "ttml2-invld-bad-gain-all-space" },
+            { "test": "ttml2-invld-bad-gain-empty" },
+            { "test": "ttml2-invld-bad-gain-real-syntax" },
+            { "test": "ttml2-invld-bad-gain-unknown-keyword" },
+            { "test": "ttml2-invld-bad-pan-all-space" },
+            { "test": "ttml2-invld-bad-pan-empty" },
+            { "test": "ttml2-invld-bad-pan-real-syntax" },
+            { "test": "ttml2-invld-bad-pan-unknown-keyword" }
+        ]
+    },
+    "#audio-speech": {
+        "valid": [
+            { "test": "ttml2-valid-pitch" },
+            { "test": "ttml2-valid-speak" },
+            { "test": "ttml2-valid-speech" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-pitch-all-space" },
+            { "test": "ttml2-invld-bad-pitch-empty" },
+            { "test": "ttml2-invld-bad-pitch-real-syntax" },
+            { "test": "ttml2-invld-bad-pitch-unknown-keyword" },
+            { "test": "ttml2-invld-bad-pitch-unknown-unit" },
+            { "test": "ttml2-invld-bad-speak-all-space" },
+            { "test": "ttml2-invld-bad-speak-empty" },
+            { "test": "ttml2-invld-bad-speak-unknown-keyword" }
+        ]
+    },
+    "#background": {
+        "valid": [
+            { "test": "ttml2-valid-background-clip" },
+            { "test": "ttml2-valid-background-color" },
+            { "test": "ttml2-valid-background-color-rgb-function-padded-component" },
+            { "test": "ttml2-valid-background-color-rgba-function-padded-component" },
+            { "test": "ttml2-valid-background-extent" },
+            { "test": "ttml2-valid-background-image" },
+            { "test": "ttml2-valid-background-origin" },
+            { "test": "ttml2-valid-background-position" },
+            { "test": "ttml2-valid-background-repeat" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-background-clip-all-space" },
+            { "test": "ttml2-invld-bad-background-clip-empty" },
+            { "test": "ttml2-invld-bad-background-clip-unknown-keyword" },
+            { "test": "ttml2-invld-bad-background-color-all-space" },
+            { "test": "ttml2-invld-bad-background-color-empty" },
+            { "test": "ttml2-invld-bad-background-color-rgb-function-bad-component-syntax" },
+            { "test": "ttml2-invld-bad-background-color-rgb-function-extra-component" },
+            { "test": "ttml2-invld-bad-background-color-rgb-function-missing-component" },
+            { "test": "ttml2-invld-bad-background-color-rgb-function-negative-component" },
+            { "test": "ttml2-invld-bad-background-color-rgb-function-out-of-range-component" },
+            { "test": "ttml2-invld-bad-background-color-rgb-hash-extra-digit" },
+            { "test": "ttml2-invld-bad-background-color-rgb-hash-garbage-after-digits" },
+            { "test": "ttml2-invld-bad-background-color-rgb-hash-missing-all-digits-garbage-after-hash" },
+            { "test": "ttml2-invld-bad-background-color-rgb-hash-missing-all-digits-hash-only" },
+            { "test": "ttml2-invld-bad-background-color-rgb-hash-missing-digit" },
+            { "test": "ttml2-invld-bad-background-color-rgb-hash-non-digit" },
+            { "test": "ttml2-invld-bad-background-color-rgb-hash-space-after-hash" },
+            { "test": "ttml2-invld-bad-background-color-rgba-function-bad-component-syntax" },
+            { "test": "ttml2-invld-bad-background-color-rgba-function-extra-component" },
+            { "test": "ttml2-invld-bad-background-color-rgba-function-missing-component" },
+            { "test": "ttml2-invld-bad-background-color-rgba-function-negative-component" },
+            { "test": "ttml2-invld-bad-background-color-rgba-function-out-of-range-component" },
+            { "test": "ttml2-invld-bad-background-color-rgba-hash-extra-digit" },
+            { "test": "ttml2-invld-bad-background-color-rgba-hash-missing-digit" },
+            { "test": "ttml2-invld-bad-background-color-rgba-hash-non-digit" },
+            { "test": "ttml2-invld-bad-background-color-space-padded-named-color" },
+            { "test": "ttml2-invld-bad-background-color-space-padded-rgb-function" },
+            { "test": "ttml2-invld-bad-background-color-space-padded-rgb-hash" },
+            { "test": "ttml2-invld-bad-background-color-space-padded-rgba-function" },
+            { "test": "ttml2-invld-bad-background-color-space-padded-rgba-hash" },
+            { "test": "ttml2-invld-bad-background-color-unknown-named-color" },
+            { "test": "ttml2-invld-bad-background-extent-all-space" },
+            { "test": "ttml2-invld-bad-background-extent-empty" },
+            { "test": "ttml2-invld-bad-background-extent-unknown-keyword" },
+            { "test": "ttml2-invld-bad-background-image-all-space" },
+            { "test": "ttml2-invld-bad-background-image-empty" },
+            { "test": "ttml2-invld-bad-background-image-unresolvable-fragment-uri" },
+            { "test": "ttml2-invld-bad-background-origin-all-space" },
+            { "test": "ttml2-invld-bad-background-origin-empty" },
+            { "test": "ttml2-invld-bad-background-origin-unknown-keyword" },
+            { "test": "ttml2-invld-bad-background-position-all-space" },
+            { "test": "ttml2-invld-bad-background-position-empty" },
+            { "test": "ttml2-invld-bad-background-position-unknown-keyword" },
+            { "test": "ttml2-invld-bad-background-repeat-all-space" },
+            { "test": "ttml2-invld-bad-background-repeat-empty" },
+            { "test": "ttml2-invld-bad-background-repeat-unknown-keyword" }
+        ]
+    },
+    "#background-image": {
+        "valid": [
+            { "test": "ttml2-valid-background-clip" },
+            { "test": "ttml2-valid-background-extent" },
+            { "test": "ttml2-valid-background-image" },
+            { "test": "ttml2-valid-background-origin" },
+            { "test": "ttml2-valid-background-position" },
+            { "test": "ttml2-valid-background-repeat" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-background-clip-all-space" },
+            { "test": "ttml2-invld-bad-background-clip-empty" },
+            { "test": "ttml2-invld-bad-background-clip-unknown-keyword" },
+            { "test": "ttml2-invld-bad-background-extent-all-space" },
+            { "test": "ttml2-invld-bad-background-extent-empty" },
+            { "test": "ttml2-invld-bad-background-extent-unknown-keyword" },
+            { "test": "ttml2-invld-bad-background-image-all-space" },
+            { "test": "ttml2-invld-bad-background-image-empty" },
+            { "test": "ttml2-invld-bad-background-image-unresolvable-fragment-uri" },
+            { "test": "ttml2-invld-bad-background-origin-all-space" },
+            { "test": "ttml2-invld-bad-background-origin-empty" },
+            { "test": "ttml2-invld-bad-background-origin-unknown-keyword" },
+            { "test": "ttml2-invld-bad-background-position-all-space" },
+            { "test": "ttml2-invld-bad-background-position-empty" },
+            { "test": "ttml2-invld-bad-background-position-unknown-keyword" },
+            { "test": "ttml2-invld-bad-background-repeat-all-space" },
+            { "test": "ttml2-invld-bad-background-repeat-empty" },
+            { "test": "ttml2-invld-bad-background-repeat-unknown-keyword" }
+        ]
+    },
+    "#backgroundClip": {
+        "valid": [
+            { "test": "ttml2-valid-background-clip" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-background-clip-all-space" },
+            { "test": "ttml2-invld-bad-background-clip-empty" },
+            { "test": "ttml2-invld-bad-background-clip-unknown-keyword" }
+        ]
+    },
+    "#backgroundExtent": {
+        "valid": [
+            { "test": "ttml2-valid-background-extent" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-background-extent-all-space" },
+            { "test": "ttml2-invld-bad-background-extent-empty" },
+            { "test": "ttml2-invld-bad-background-extent-unknown-keyword" }
+        ]
+    },
+    "#backgroundImage": {
+        "valid": [
+            { "test": "ttml2-valid-background-image" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-background-image-all-space" },
+            { "test": "ttml2-invld-bad-background-image-empty" },
+            { "test": "ttml2-invld-bad-background-image-unresolvable-fragment-uri" }
+        ]
+    },
+    "#backgroundOrigin": {
+        "valid": [
+            { "test": "ttml2-valid-background-origin" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-background-origin-all-space" },
+            { "test": "ttml2-invld-bad-background-origin-empty" },
+            { "test": "ttml2-invld-bad-background-origin-unknown-keyword" }
+        ]
+    },
+    "#backgroundPosition": {
+        "valid": [
+            { "test": "ttml2-valid-background-position" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-background-position-all-space" },
+            { "test": "ttml2-invld-bad-background-position-empty" },
+            { "test": "ttml2-invld-bad-background-position-unknown-keyword" }
+        ]
+    },
+    "#backgroundRepeat": {
+        "valid": [
+            { "test": "ttml2-valid-background-repeat" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-background-repeat-all-space" },
+            { "test": "ttml2-invld-bad-background-repeat-empty" },
+            { "test": "ttml2-invld-bad-background-repeat-unknown-keyword" }
+        ]
+    },
+    "#base-general": {
+        "valid": [
+            { "test": "ttml2-valid-base-general" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-base-general-all-space" }
+        ]
+    },
+    "#base-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-base" },
+            { "test": "ttml2-valid-base-general" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-base-general-all-space" }
+        ]
+    },
+    "#bidi-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-direction-p" },
+            { "test": "ttml2-valid-direction-span" },
+            { "test": "ttml2-valid-unicode-bidi-isolate" },
+            { "test": "ttml2-valid-unicode-bidi-1" },
+            { "test": "ttml2-valid-unicode-bidi-2" },
+            { "test": "ttml2-valid-unicode-bidi-isolate" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-direction-all-space" },
+            { "test": "ttml2-invld-bad-direction-empty" },
+            { "test": "ttml2-invld-bad-direction-unknown-keyword" },
+            { "test": "ttml2-invld-bad-unicode-bidi-all-space" },
+            { "test": "ttml2-invld-bad-unicode-bidi-empty" },
+            { "test": "ttml2-invld-bad-unicode-bidi-unknown-keyword" }
+        ]
+    },
+    "#border": {
+        "valid": [
+            { "test": "ttml2-valid-border" },
+            { "test": "ttml2-valid-border-block" },
+            { "test": "ttml2-valid-border-inline" },
+            { "test": "ttml2-valid-border-radii-1" },
+            { "test": "ttml2-valid-border-radii-2" },
+            { "test": "ttml2-valid-border-region" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-border-all-space" },
+            { "test": "ttml2-invld-bad-border-empty" },
+            { "test": "ttml2-invld-bad-border-extra-color" },
+            { "test": "ttml2-invld-bad-border-extra-radii" },
+            { "test": "ttml2-invld-bad-border-extra-style" },
+            { "test": "ttml2-invld-bad-border-extra-thickness" },
+            { "test": "ttml2-invld-bad-border-negative-thickness" },
+            { "test": "ttml2-invld-bad-border-radii-1-argument" },
+            { "test": "ttml2-invld-bad-border-radii-1-negative" },
+            { "test": "ttml2-invld-bad-border-radii-2-argument" },
+            { "test": "ttml2-invld-bad-border-radii-2-delimiter" },
+            { "test": "ttml2-invld-bad-border-radii-2-negative" },
+            { "test": "ttml2-invld-bad-border-radii-missing-length" },
+            { "test": "ttml2-invld-bad-border-unknown-keyword" }
+        ]
+    },
+    "#border-block": {
+        "valid": [
+            { "test": "ttml2-valid-border-block" }
+        ],
+        "invalid": []
+    },
+    "#border-inline": {
+        "valid": [
+            { "test": "ttml2-valid-border-inline" }
+        ],
+        "invalid": []
+    },
+    "#border-radii": {
+        "valid": [
+            { "test": "ttml2-valid-border-radii-1" },
+            { "test": "ttml2-valid-border-radii-2" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-border-radii-1-argument" },
+            { "test": "ttml2-invld-bad-border-radii-1-negative" },
+            { "test": "ttml2-invld-bad-border-radii-2-argument" },
+            { "test": "ttml2-invld-bad-border-radii-2-delimiter" },
+            { "test": "ttml2-invld-bad-border-radii-2-negative" },
+            { "test": "ttml2-invld-bad-border-radii-extra-length" },
+            { "test": "ttml2-invld-bad-border-radii-missing-length" }
+        ]
+    },
+    "#border-radii-1": {
+        "valid": [
+            { "test": "ttml2-valid-border-radii-1" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-border-radii-1-argument" },
+            { "test": "ttml2-invld-bad-border-radii-1-negative" }
+        ]
+    },
+    "#border-radii-2": {
+        "valid": [
+            { "test": "ttml2-valid-border-radii-2" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-border-radii-2-argument" },
+            { "test": "ttml2-invld-bad-border-radii-2-delimiter" },
+            { "test": "ttml2-invld-bad-border-radii-2-negative" }
+        ]
+    },
+    "#border-region": {
+        "valid": [
+            { "test": "ttml2-valid-border-region" }
+        ],
+        "invalid": []
+    },
+    "#bpd": {
+        "valid": [
+            { "test": "ttml2-valid-bpd" },
+            { "test": "ttml2-valid-bpd-block" },
+            { "test": "ttml2-valid-bpd-inline" },
+            { "test": "ttml2-valid-bpd-inline-block" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-bpd-all-space" },
+            { "test": "ttml2-invld-bad-bpd-empty" },
+            { "test": "ttml2-invld-bad-bpd-negative" },
+            { "test": "ttml2-invld-bad-bpd-unknown-keyword" }
+        ]
+    },
+    "#chunk": {
+        "valid": [
+            { "test": "ttml2-valid-data-embedding-chunked" },
+            { "test": "ttml2-valid-data-embedding-chunked-zero-length", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-data-chunked-bad-length", "since": "2e" },
+            { "test": "ttml2-invld-data-chunked-missing-type" },
+            { "test": "ttml2-invld-data-chunked-with-base", "since": "2e" },
+            { "test": "ttml2-invld-data-chunked-with-condition", "since": "2e" }
+        ]
+    },
+    "#condition": {
+        "valid": [
+            { "test": "ttml2-valid-condition-media" },
+            { "test": "ttml2-valid-condition-parameter" },
+            { "test": "ttml2-valid-condition-primary" },
+            { "test": "ttml2-valid-condition-supports" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-condition-media" },
+            { "test": "ttml2-invld-condition-parameter" },
+            { "test": "ttml2-invld-condition-primary" },
+            { "test": "ttml2-invld-condition-supports" }
+        ]
+    },
+    "#condition-fn-media": {
+        "valid": [
+            { "test": "ttml2-valid-condition-media" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-condition-media" }
+        ]
+    },
+    "#condition-fn-parameter": {
+        "valid": [
+            { "test": "ttml2-valid-condition-parameter" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-condition-parameter" }
+        ]
+    },
+    "#condition-fn-supports": {
+        "valid": [
+            { "test": "ttml2-valid-condition-supports" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-condition-supports" }
+        ]
+    },
+    "#condition-primary": {
+        "valid": [
+            { "test": "ttml2-valid-condition-primary" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-condition-primary" }
+        ]
+    },
+    "#content-sizing": {
+        "valid": [
+            { "test": "ttml2-valid-bpd" },
+            { "test": "ttml2-valid-bpd-block" },
+            { "test": "ttml2-valid-bpd-inline" },
+            { "test": "ttml2-valid-bpd-inline-block" },
+            { "test": "ttml2-valid-ipd" },
+            { "test": "ttml2-valid-ipd-block" },
+            { "test": "ttml2-valid-ipd-inline" },
+            { "test": "ttml2-valid-ipd-inline-block" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-bpd-all-space" },
+            { "test": "ttml2-invld-bad-bpd-empty" },
+            { "test": "ttml2-invld-bad-bpd-negative" },
+            { "test": "ttml2-invld-bad-bpd-unknown-keyword" },
+            { "test": "ttml2-invld-bad-ipd-all-space" },
+            { "test": "ttml2-invld-bad-ipd-empty" },
+            { "test": "ttml2-invld-bad-ipd-negative" },
+            { "test": "ttml2-invld-bad-ipd-unknown-keyword" }
+        ]
+    },
+    "#contentProfiles": {
+        "valid": [
+            { "test": "ttml2-valid-content-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-content-profiles-unquantified-single" },
+            { "test": "ttml2-valid-infer-processor-profile-method-loose" },
+            { "test": "ttml2-valid-infer-processor-profile-method-strict" },
+            { "test": "ttml2-valid-infer-processor-profile-source-first" },
+            { "test": "ttml2-valid-profile-designator" },
+            { "test": "ttml2-valid-profile-type-content" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-content-profiles-all-space" },
+            { "test": "ttml2-invld-content-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-content-profiles-empty" },
+            { "test": "ttml2-invld-content-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-content-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-content-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-infer-processor-profile-method-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-method-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-method-unknown-keyword" },
+            { "test": "ttml2-invld-infer-processor-profile-source-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-source-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-source-unknown-keyword" },
+            { "test": "ttml2-invld-profile-designator-fragment" },
+            { "test": "ttml2-invld-profile-type-all-space" },
+            { "test": "ttml2-invld-profile-type-empty" },
+            { "test": "ttml2-invld-profile-type-unknown-keyword" }
+        ]
+    },
+    "#contentProfiles-combined": {
+        "valid": [
+            { "test": "ttml2-valid-content-profile-combination-ignore" },
+            { "test": "ttml2-valid-content-profile-combination-least-restrictive" },
+            { "test": "ttml2-valid-content-profile-combination-most-restrictive" },
+            { "test": "ttml2-valid-content-profile-combination-replace" },
+            { "test": "ttml2-valid-content-profile-multiple" },
+            { "test": "ttml2-valid-content-profiles-quantified-all-multiple" },
+            { "test": "ttml2-valid-content-profiles-unquantified-multiple" },
+            { "test": "ttml2-valid-infer-processor-profile-source-combined" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-content-profile-combination-all-space" },
+            { "test": "ttml2-invld-content-profile-combination-empty" },
+            { "test": "ttml2-invld-content-profile-combination-unknown-keyword" }
+        ]
+    },
+    "#data": {
+        "valid": [
+            { "test": "ttml2-valid-data-embedding-chunked" },
+            { "test": "ttml2-valid-data-embedding-chunked-zero-length", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-reference", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-reference-missing-type", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-reference-with-metadata", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-simple" },
+            { "test": "ttml2-valid-data-embedding-simple-with-lwsp", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-simple-zero-length", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-sourced" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-data-chunked-bad-length", "since": "2e" },
+            { "test": "ttml2-invld-data-chunked-missing-type" },
+            { "test": "ttml2-invld-data-reference-internal-with-type" },
+            { "test": "ttml2-invld-data-simple-bad-length", "since": "2e" },
+            { "test": "ttml2-invld-data-simple-missing-type" },
+            { "test": "ttml2-invld-data-simple-non-alphabet", "since": "2e" }
+        ]
+    },
+    "#disparity": {
+        "valid": [
+            { "test": "ttml2-valid-disparity" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-disparity-all-space" },
+            { "test": "ttml2-invld-bad-disparity-empty" },
+            { "test": "ttml2-invld-bad-disparity-extra-length" },
+            { "test": "ttml2-invld-bad-disparity-unknown-unit" }
+        ]
+    },
+    "#display-inlineBlock": {
+        "valid": [
+            { "test": "ttml2-valid-display-inline-block" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-display-inline-block-non-span" }
+        ]
+    },
+    "#display-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-display-1" },
+            { "test": "ttml2-valid-display-2" },
+            { "test": "ttml2-valid-display-inline-block" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-display-all-space" },
+            { "test": "ttml2-invld-bad-display-empty" },
+            { "test": "ttml2-invld-bad-display-inline-block-non-span" },
+            { "test": "ttml2-invld-bad-display-unknown-keyword" }
+        ]
+    },
+    "#displayAlign-block": {
+        "valid": [
+            { "test": "ttml2-valid-display-align-2-block" }
+        ],
+        "invalid": []
+    },
+    "#displayAlign-justify": {
+        "valid": [
+            { "test": "ttml2-valid-display-align-justify" }
+        ],
+        "invalid": []
+    },
+    "#displayAlign-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-display-align-1" },
+            { "test": "ttml2-valid-display-align-1-region" },
+            { "test": "ttml2-valid-display-align-2" },
+            { "test": "ttml2-valid-display-align-2-block" },
+            { "test": "ttml2-valid-display-align-2-region" },
+            { "test": "ttml2-valid-display-align-justify" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-display-align-all-space" },
+            { "test": "ttml2-invld-bad-display-align-empty" },
+            { "test": "ttml2-invld-bad-display-align-unknown-keyword" }
+        ]
+    },
+    "#displayAspectRatio": {
+        "valid": [
+            { "test": "ttml2-valid-display-aspect-ratio-16-9" },
+            { "test": "ttml2-valid-display-aspect-ratio-4-3" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-display-aspect-ratio-all-space" },
+            { "test": "ttml2-invld-display-aspect-ratio-colon-delimiter-sans-whitespace" },
+            { "test": "ttml2-invld-display-aspect-ratio-comma-delimiter-with-whitespace" },
+            { "test": "ttml2-invld-display-aspect-ratio-empty" },
+            { "test": "ttml2-invld-display-aspect-ratio-extra-component" },
+            { "test": "ttml2-invld-display-aspect-ratio-missing-component" },
+            { "test": "ttml2-invld-display-aspect-ratio-negative-denominator" },
+            { "test": "ttml2-invld-display-aspect-ratio-negative-numerator" },
+            { "test": "ttml2-invld-display-aspect-ratio-unknown-keyword" },
+            { "test": "ttml2-invld-display-aspect-ratio-zero-denominator" },
+            { "test": "ttml2-invld-display-aspect-ratio-zero-numerator" }
+        ]
+    },
+    "#embedded-audio": {
+        "valid": [
+            { "test": "ttml2-valid-audio-embedding" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-audio-embedding-bad-resource", "exclude": true }
+        ]
+    },
+    "#embedded-content": {
+        "valid": [
+            { "test": "ttml2-valid-audio-embedding" },
+            { "test": "ttml2-valid-font-embedding" },
+            { "test": "ttml2-valid-image-embedding" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-audio-embedding-bad-resource", "exclude": true },
+            { "test": "ttml2-invld-image-embedding-bad-resource", "exclude": true }
+        ]
+    },
+    "#embedded-data": {
+        "valid": [
+            { "test": "ttml2-valid-data-embedding-chunked" },
+            { "test": "ttml2-valid-data-embedding-simple" },
+            { "test": "ttml2-valid-data-embedding-simple-with-lwsp", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-simple-zero-length", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-sourced" },
+            { "test": "ttml2-valid-resources-all" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-base-general-all-space" },
+            { "test": "ttml2-invld-data-chunked-missing-type" },
+            { "test": "ttml2-invld-data-reference-internal-with-type" },
+            { "test": "ttml2-invld-data-simple-missing-type" }
+        ]
+    },
+    "#embedded-font": {
+        "valid": [
+            { "test": "ttml2-valid-font-embedding" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-font-embedding-range-interval-extra-digit" },
+            { "test": "ttml2-invld-font-embedding-range-single-extra-digit" },
+            { "test": "ttml2-invld-font-embedding-range-unknown-keyword" },
+            { "test": "ttml2-invld-font-embedding-style-unknown-keyword" },
+            { "test": "ttml2-invld-font-embedding-weight-unknown-keyword" }
+        ]
+    },
+    "#embedded-image": {
+        "valid": [
+            { "test": "ttml2-valid-image-embedding" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-image-embedding-bad-resource", "exclude": true }
+        ]
+    },
+    "#extent-auto-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-extent-2-root-auto" }
+        ],
+        "invalid": []
+    },
+    "#extent-contain": {
+        "valid": [
+            { "test": "ttml2-valid-extent-2-region-contain" },
+            { "test": "ttml2-valid-extent-2-root-contain" }
+        ],
+        "invalid": []
+    },
+    "#extent-cover": {
+        "valid": [
+            { "test": "ttml2-valid-extent-2-region-cover" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-extent-root-cover" }
+        ]
+    },
+    "#extent-full-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-extent-1" },
+            { "test": "ttml2-valid-extent-1-region" },
+            { "test": "ttml2-valid-extent-1-root-auto" },
+            { "test": "ttml2-valid-extent-1-root-definite" },
+            { "test": "ttml2-valid-extent-2" },
+            { "test": "ttml2-valid-extent-2-image" },
+            { "test": "ttml2-valid-extent-2-length" },
+            { "test": "ttml2-valid-extent-2-measure" },
+            { "test": "ttml2-valid-extent-2-region" },
+            { "test": "ttml2-valid-extent-2-region-contain" },
+            { "test": "ttml2-valid-extent-2-region-cover" },
+            { "test": "ttml2-valid-extent-2-root-auto" },
+            { "test": "ttml2-valid-extent-2-root-contain" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-extent-all-space" },
+            { "test": "ttml2-invld-bad-extent-colon-delimiter-sans-whitespace" },
+            { "test": "ttml2-invld-bad-extent-comma-delimiter-with-whitespace" },
+            { "test": "ttml2-invld-bad-extent-empty" },
+            { "test": "ttml2-invld-bad-extent-extra-length" },
+            { "test": "ttml2-invld-bad-extent-missing-length" },
+            { "test": "ttml2-invld-bad-extent-missing-unit" },
+            { "test": "ttml2-invld-bad-extent-negative-height" },
+            { "test": "ttml2-invld-bad-extent-negative-height-root-relative" },
+            { "test": "ttml2-invld-bad-extent-negative-width" },
+            { "test": "ttml2-invld-bad-extent-negative-width-root-relative" },
+            { "test": "ttml2-invld-bad-extent-root-cover" },
+            { "test": "ttml2-invld-bad-extent-root-height" },
+            { "test": "ttml2-invld-bad-extent-root-measure-available" },
+            { "test": "ttml2-invld-bad-extent-root-measure-fit-content" },
+            { "test": "ttml2-invld-bad-extent-root-width" },
+            { "test": "ttml2-invld-bad-extent-unknown-keyword" },
+            { "test": "ttml2-invld-bad-extent-unknown-measure-keyword" },
+            { "test": "ttml2-invld-bad-extent-unknown-unit" }
+        ]
+    },
+    "#extent-image": {
+        "valid": [
+            { "test": "ttml2-valid-extent-2-image" }
+        ],
+        "invalid": []
+    },
+    "#extent-length-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-extent-2-length" }
+        ],
+        "invalid": []
+    },
+    "#extent-measure": {
+        "valid": [
+            { "test": "ttml2-valid-extent-2-measure" }
+        ],
+        "invalid": []
+    },
+    "#extent-region-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-extent-1-region" },
+            { "test": "ttml2-valid-extent-2-region" }
+        ],
+        "invalid": []
+    },
+    "#extent-root-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-extent-1-root-auto" },
+            { "test": "ttml2-valid-extent-1-root-definite" },
+            { "test": "ttml2-valid-extent-2-root-auto" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invlid-content-profile-extent-root-version-2", "since": "2e" }
+        ]
+    },
+    "#extent-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-extent-1" },
+            { "test": "ttml2-valid-extent-1-region" },
+            { "test": "ttml2-valid-extent-1-root-auto" },
+            { "test": "ttml2-valid-extent-1-root-definite" },
+            { "test": "ttml2-valid-extent-2-length" },
+            { "test": "ttml2-valid-extent-2-root-auto" }
+        ],
+        "invalid": []
+    },
+    "#font": {
+        "valid": [
+            { "test": "ttml2-valid-font-embedding" },
+            { "test": "ttml2-valid-font-embedding-family-case-sensitive", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-font-embedding-family", "since": "2e" },
+            { "test": "ttml2-invld-font-embedding-range-interval-extra-digit" },
+            { "test": "ttml2-invld-font-embedding-range-single-extra-digit" },
+            { "test": "ttml2-invld-font-embedding-range-unknown-keyword" },
+            { "test": "ttml2-invld-font-embedding-range-wildcard-too-many" },
+            { "test": "ttml2-invld-font-embedding-style-unknown-keyword" },
+            { "test": "ttml2-invld-font-embedding-weight-unknown-keyword" }
+        ]
+    },
+    "#fontKerning": {
+        "valid": [
+            { "test": "ttml2-valid-font-kerning" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-font-kerning-all-space" },
+            { "test": "ttml2-invld-bad-font-kerning-empty" },
+            { "test": "ttml2-invld-bad-font-kerning-unknown-keyword" }
+        ]
+    },
+    "#fontSelectionStrategy": {
+        "valid": [
+            { "test": "ttml2-valid-font-selection-strategy" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-font-selection-strategy-all-space" },
+            { "test": "ttml2-invld-bad-font-selection-strategy-empty" },
+            { "test": "ttml2-invld-bad-font-selection-strategy-unknown-keyword" }
+        ]
+    },
+    "#fontSelectionStrategy-character": {
+        "valid": [
+            { "test": "ttml2-valid-font-selection-strategy-character" }
+        ],
+        "invalid": []
+    },
+    "#fontShear": {
+        "valid": [
+            { "test": "ttml2-valid-font-shear" },
+            { "test": "ttml2-valid-font-shear-real-syntax", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-font-shear-all-space" },
+            { "test": "ttml2-invld-bad-font-shear-empty" },
+            { "test": "ttml2-invld-bad-font-shear-real-syntax", "exclude": true, "since": "2e" },
+            { "test": "ttml2-invld-bad-font-shear-unknown-keyword" }
+        ]
+    },
+    "#fontVariant": {
+        "valid": [
+            { "test": "ttml2-valid-font-variant" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-font-variant-all-space" },
+            { "test": "ttml2-invld-bad-font-variant-empty" },
+            { "test": "ttml2-invld-bad-font-variant-mixed-normal" },
+            { "test": "ttml2-invld-bad-font-variant-mixed-script" },
+            { "test": "ttml2-invld-bad-font-variant-mixed-width" },
+            { "test": "ttml2-invld-bad-font-variant-unknown-keyword" }
+        ]
+    },
+    "#gain": {
+        "valid": [
+            { "test": "ttml2-valid-gain" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-gain-all-space" },
+            { "test": "ttml2-invld-bad-gain-empty" },
+            { "test": "ttml2-invld-bad-gain-real-syntax" },
+            { "test": "ttml2-invld-bad-gain-unknown-keyword" }
+        ]
+    },
+    "#image": {
+        "valid": [
+            { "test": "ttml2-valid-image-embedding" },
+            { "test": "ttml2-valid-image-in-block-png" },
+            { "test": "ttml2-valid-image-in-body-png", "since": "2e" },
+            { "test": "ttml2-valid-image-in-block-simple-source-jpg" },
+            { "test": "ttml2-valid-image-in-block-simple-source-png" },
+            { "test": "ttml2-valid-image-in-body-png", "since": "2e" },
+            { "test": "ttml2-valid-image-in-inline-png" },
+            { "test": "ttml2-valid-image-in-inline-simple-source-jpg" },
+            { "test": "ttml2-valid-image-in-inline-simple-source-png" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-image-embedding-bad-resource", "exclude": true },
+            { "test": "ttml2-invld-image-in-block-simple-source-jpg", "exclude": true },
+            { "test": "ttml2-invld-image-in-block-simple-source-png", "exclude": true },
+            { "test": "ttml2-invld-image-in-inline-simple-source-jpg", "exclude": true },
+            { "test": "ttml2-invld-image-in-inline-simple-source-png", "exclude": true },
+            { "test": "ttml2-invld-image-unresolvable-fragment-uri" }
+        ]
+    },
+    "#image-png": {
+        "valid": [
+            { "test": "ttml2-valid-image-in-block-png" },
+            { "test": "ttml2-valid-image-in-block-simple-source-png" },
+            { "test": "ttml2-valid-image-in-body-png", "since": "2e" },
+            { "test": "ttml2-valid-image-in-inline-png" },
+            { "test": "ttml2-valid-image-in-inline-simple-source-png" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-image-in-block-simple-source-png", "exclude": true },
+            { "test": "ttml2-invld-image-in-inline-simple-source-png", "exclude": true }
+        ]
+    },
+    "#initial": {
+        "valid": [
+            { "test": "ttml2-valid-initial-duplicate" },
+            { "test": "ttml2-valid-initial-multiple" },
+            { "test": "ttml2-valid-initial-none" },
+            { "test": "ttml2-valid-initial-single" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-initial-nested-style" }
+        ]
+    },
+    "#ipd": {
+        "valid": [
+            { "test": "ttml2-valid-ipd" },
+            { "test": "ttml2-valid-ipd-block" },
+            { "test": "ttml2-valid-ipd-inline" },
+            { "test": "ttml2-valid-ipd-inline-block" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-ipd-all-space" },
+            { "test": "ttml2-invld-bad-ipd-empty" },
+            { "test": "ttml2-invld-bad-ipd-negative" },
+            { "test": "ttml2-invld-bad-ipd-unknown-keyword" }
+        ]
+    },
+    "#isd": {
+        "type": "isd",
+        "since": "2e",
+        "valid": [
+            { "test": "ttml2-valid-isd-sequence-size-non-zero" },
+            { "test": "ttml2-valid-isd-sequence-size-zero" },
+            { "test": "ttml2-valid-isd-sequence-version-2" },
+            { "test": "ttml2-valid-isd-single-version-2" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-isd-sequence-bad-size-0-minus" },
+            { "test": "ttml2-invld-isd-sequence-bad-size-0-plus" },
+            { "test": "ttml2-invld-isd-sequence-bad-size-1-minus" },
+            { "test": "ttml2-invld-isd-sequence-bad-size-1-plus" },
+            { "test": "ttml2-invld-isd-sequence-bad-version-0" },
+            { "test": "ttml2-invld-isd-sequence-bad-version-0-plus" },
+            { "test": "ttml2-invld-isd-sequence-bad-version-1" },
+            { "test": "ttml2-invld-isd-sequence-bad-version-1-plus" },
+            { "test": "ttml2-invld-isd-sequence-bad-version-2-plus" },
+            { "test": "ttml2-invld-isd-single-bad-version-0" },
+            { "test": "ttml2-invld-isd-single-bad-version-0-plus" },
+            { "test": "ttml2-invld-isd-single-bad-version-1" },
+            { "test": "ttml2-invld-isd-single-bad-version-1-plus" },
+            { "test": "ttml2-invld-isd-single-bad-version-2-plus" },
+            { "test": "ttml2-invld-isd-single-nested-bad-version" }
+        ]
+    },
+    "#layout": {
+        "valid": [
+            { "test": "ttml2-valid-xml-id-missing", "since": "2e" }
+        ],
+        "invalid": []
+    },
+    "#length-real-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-length-real-version-2", "since": "2e" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-root-container-relative": {
+        "valid": [
+            { "test": "ttml2-valid-length-2-root-container-relative" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-length-2-root-container-relative" }
+        ]
+    },
+    "#length-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-length-1" },
+            { "test": "ttml2-valid-length-2" },
+            { "test": "ttml2-valid-length-2-root-container-relative" },
+            { "test": "ttml2-valid-length-real-version-2", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-length-2-root-container-relative" }
+        ]
+    },
+    "#letterSpacing": {
+        "valid": [
+            { "test": "ttml2-valid-letter-spacing" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-letter-spacing-all-space" },
+            { "test": "ttml2-invld-bad-letter-spacing-empty" },
+            { "test": "ttml2-invld-bad-letter-spacing-extra-length" },
+            { "test": "ttml2-invld-bad-letter-spacing-unknown-keyword" },
+            { "test": "ttml2-invld-bad-letter-spacing-unknown-unit" }
+        ]
+    },
+    "#lineShear": {
+        "valid": [
+            { "test": "ttml2-valid-line-shear" },
+            { "test": "ttml2-valid-line-shear-real-syntax", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-line-shear-all-space" },
+            { "test": "ttml2-invld-bad-line-shear-empty" },
+            { "test": "ttml2-invld-bad-line-shear-real-syntax", "exclude": true, "since": "2e" },
+            { "test": "ttml2-invld-bad-line-shear-unknown-keyword" }
+        ]
+    },
+    "#luminanceGain": {
+        "valid": [
+            { "test": "ttml2-valid-luminance-gain" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-luminance-gain-all-space" },
+            { "test": "ttml2-invld-bad-luminance-gain-empty" },
+            { "test": "ttml2-invld-bad-luminance-gain-real-syntax" },
+            { "test": "ttml2-invld-bad-luminance-gain-sign-negative" },
+            { "test": "ttml2-invld-bad-luminance-gain-sign-positive" },
+            { "test": "ttml2-invld-bad-luminance-gain-unknown-keyword" }
+        ]
+    },
+    "#metadata-item": {
+        "valid": [
+            { "test": "ttml2-valid-metadata-item-named" },
+            { "test": "ttml2-valid-metadata-item-qualified" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-metadata-item-all-space" },
+            { "test": "ttml2-invld-metadata-item-empty" },
+            { "test": "ttml2-invld-metadata-item-qualified-missing-binding" }
+        ]
+    },
+    "#metadata-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-metadata-item-named" },
+            { "test": "ttml2-valid-metadata-item-qualified" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-metadata-item-all-space" },
+            { "test": "ttml2-invld-metadata-item-empty" },
+            { "test": "ttml2-invld-metadata-item-qualified-missing-binding" }
+        ]
+    },
+    "#opacity-block": {
+        "valid": [
+            { "test": "ttml2-valid-opacity-block" },
+            { "test": "ttml2-valid-opacity-out-of-range" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-opacity-all-space" },
+            { "test": "ttml2-invld-bad-opacity-empty" },
+            { "test": "ttml2-invld-bad-opacity-unknown-keyword" }
+        ]
+    },
+    "#opacity-image": {
+        "valid": [
+            { "test": "ttml2-valid-opacity-image-block", "since": "2e" },
+            { "test": "ttml2-valid-opacity-image-inline", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-opacity-all-space" },
+            { "test": "ttml2-invld-bad-opacity-empty" },
+            { "test": "ttml2-invld-bad-opacity-unknown-keyword" }
+        ]
+    },
+    "#opacity-inline": {
+        "valid": [
+            { "test": "ttml2-valid-opacity-inline" },
+            { "test": "ttml2-valid-opacity-out-of-range" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-opacity-all-space" },
+            { "test": "ttml2-invld-bad-opacity-empty" },
+            { "test": "ttml2-invld-bad-opacity-unknown-keyword" }
+        ]
+    },
+    "#opacity-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-opacity-block" },
+            { "test": "ttml2-valid-opacity-image-block", "since": "2e" },
+            { "test": "ttml2-valid-opacity-image-inline", "since": "2e" },
+            { "test": "ttml2-valid-opacity-inline" },
+            { "test": "ttml2-valid-opacity-out-of-range" },
+            { "test": "ttml2-valid-opacity-region" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-opacity-all-space" },
+            { "test": "ttml2-invld-bad-opacity-empty" },
+            { "test": "ttml2-invld-bad-opacity-unknown-keyword" }
+        ]
+    },
+    "#padding-block": {
+        "valid": [
+            { "test": "ttml2-valid-padding-block" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-padding-all-space" },
+            { "test": "ttml2-invld-bad-padding-comma-delimiter-with-whitespace" },
+            { "test": "ttml2-invld-bad-padding-empty" },
+            { "test": "ttml2-invld-bad-padding-extra-length" },
+            { "test": "ttml2-invld-bad-padding-missing-unit" },
+            { "test": "ttml2-invld-bad-padding-negative-before-and-after" },
+            { "test": "ttml2-invld-bad-padding-negative-start-and-end" },
+            { "test": "ttml2-invld-bad-padding-colon-delimiter-sans-whitespace" },
+            { "test": "ttml2-invld-bad-padding-unknown-unit" }
+        ]
+    },
+    "#padding-inline": {
+        "valid": [
+            { "test": "ttml2-valid-padding-inline" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-padding-all-space" },
+            { "test": "ttml2-invld-bad-padding-comma-delimiter-with-whitespace" },
+            { "test": "ttml2-invld-bad-padding-empty" },
+            { "test": "ttml2-invld-bad-padding-extra-length" },
+            { "test": "ttml2-invld-bad-padding-missing-unit" },
+            { "test": "ttml2-invld-bad-padding-negative-before-and-after" },
+            { "test": "ttml2-invld-bad-padding-negative-start-and-end" },
+            { "test": "ttml2-invld-bad-padding-colon-delimiter-sans-whitespace" },
+            { "test": "ttml2-invld-bad-padding-unknown-unit" }
+        ]
+    },
+    "#padding-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-padding" },
+            { "test": "ttml2-valid-padding-block" },
+            { "test": "ttml2-valid-padding-inline" },
+            { "test": "ttml2-valid-padding-region" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-padding-all-space" },
+            { "test": "ttml2-invld-bad-padding-comma-delimiter-with-whitespace" },
+            { "test": "ttml2-invld-bad-padding-empty" },
+            { "test": "ttml2-invld-bad-padding-extra-length" },
+            { "test": "ttml2-invld-bad-padding-missing-unit" },
+            { "test": "ttml2-invld-bad-padding-negative-before-and-after" },
+            { "test": "ttml2-invld-bad-padding-negative-start-and-end" },
+            { "test": "ttml2-invld-bad-padding-colon-delimiter-sans-whitespace" },
+            { "test": "ttml2-invld-bad-padding-unknown-unit" }
+        ]
+    },
+    "#pan": {
+        "valid": [
+            { "test": "ttml2-valid-pan" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-pan-all-space" },
+            { "test": "ttml2-invld-bad-pan-empty" },
+            { "test": "ttml2-invld-bad-pan-real-syntax" },
+            { "test": "ttml2-invld-bad-pan-unknown-keyword" }
+        ]
+    },
+    "#permitFeatureNarrowing": {
+        "valid": [
+            { "test": "ttml2-valid-permit-feature-narrowing-allow" },
+            { "test": "ttml2-valid-permit-feature-narrowing-disallow" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-permit-feature-narrowing-all-space" },
+            { "test": "ttml2-invld-permit-feature-narrowing-empty" },
+            { "test": "ttml2-invld-permit-feature-narrowing-unknown-keyword" }
+        ]
+    },
+    "#permitFeatureWidening": {
+        "valid": [
+            { "test": "ttml2-valid-permit-feature-widening-allow" },
+            { "test": "ttml2-valid-permit-feature-widening-disallow" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-permit-feature-widening-all-space" },
+            { "test": "ttml2-invld-permit-feature-widening-empty" },
+            { "test": "ttml2-invld-permit-feature-widening-unknown-keyword" }
+        ]
+    },
+    "#pitch": {
+        "valid": [
+            { "test": "ttml2-valid-pitch" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-pitch-all-space" },
+            { "test": "ttml2-invld-bad-pitch-empty" },
+            { "test": "ttml2-invld-bad-pitch-real-syntax" },
+            { "test": "ttml2-invld-bad-pitch-unknown-keyword" },
+            { "test": "ttml2-invld-bad-pitch-unknown-unit" }
+        ]
+    },
+    "#position": {
+        "valid": [
+            { "test": "ttml2-valid-position" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-position" },
+            { "test": "ttml2-invld-bad-position-all-space" },
+            { "test": "ttml2-invld-bad-position-empty" },
+            { "test": "ttml2-invld-bad-position-unknown-keyword" }
+        ]
+    },
+    "#presentation-audio": {
+        "valid": [
+            { "test": "ttml2-valid-presentation-audio", "since": "2e" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#presentation-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-content-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-content-profiles-unquantified-multiple" },
+            { "test": "ttml2-valid-content-profiles-unquantified-single" },
+            { "test": "ttml2-valid-infer-processor-profile-method-loose" },
+            { "test": "ttml2-valid-infer-processor-profile-method-strict" },
+            { "test": "ttml2-valid-infer-processor-profile-source-first" },
+            { "test": "ttml2-valid-presentation-1" },
+            { "test": "ttml2-valid-presentation-2" },
+            { "test": "ttml2-valid-processor-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-multiple" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-single" },
+            { "test": "ttml2-valid-processor-profiles-unquantified-single" },
+            { "test": "ttml2-valid-profile-designator" },
+            { "test": "ttml2-valid-profile-type-content" },
+            { "test": "ttml2-valid-profile-type-processor" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-content-profiles-all-space" },
+            { "test": "ttml2-invld-content-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-content-profiles-empty" },
+            { "test": "ttml2-invld-content-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-content-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-content-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-infer-processor-profile-method-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-method-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-method-unknown-keyword" },
+            { "test": "ttml2-invld-infer-processor-profile-source-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-source-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-source-unknown-keyword" },
+            { "test": "ttml2-invld-processor-profiles-all-space" },
+            { "test": "ttml2-invld-processor-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-processor-profiles-empty" },
+            { "test": "ttml2-invld-processor-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-profile-designator-fragment" },
+            { "test": "ttml2-invld-profile-designator-fragment-nested", "since": "2e" },
+            { "test": "ttml2-invld-profile-type-all-space" },
+            { "test": "ttml2-invld-profile-type-empty" },
+            { "test": "ttml2-invld-profile-type-unknown-keyword" }
+        ]
+    },
+    "#processorProfiles": {
+        "valid": [
+            { "test": "ttml2-valid-processor-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-multiple" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-single" },
+            { "test": "ttml2-valid-processor-profiles-unquantified-single" },
+            { "test": "ttml2-valid-profile-designator" },
+            { "test": "ttml2-valid-profile-type-processor" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-processor-profiles-all-space" },
+            { "test": "ttml2-invld-processor-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-processor-profiles-empty" },
+            { "test": "ttml2-invld-processor-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-profile-designator-fragment" },
+            { "test": "ttml2-invld-profile-type-all-space" },
+            { "test": "ttml2-invld-profile-type-empty" },
+            { "test": "ttml2-invld-profile-type-unknown-keyword" }
+        ]
+    },
+    "#processorProfiles-combined": {
+        "valid": [
+            { "test": "ttml2-valid-infer-processor-profile-source-combined" },
+            { "test": "ttml2-valid-processor-profile-combination-ignore" },
+            { "test": "ttml2-valid-processor-profile-combination-least-restrictive" },
+            { "test": "ttml2-valid-processor-profile-combination-most-restrictive" },
+            { "test": "ttml2-valid-processor-profile-combination-replace" },
+            { "test": "ttml2-valid-processor-profile-multiple" },
+            { "test": "ttml2-valid-processor-profiles-quantified-all-multiple" },
+            { "test": "ttml2-valid-processor-profiles-unquantified-multiple" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-processor-profile-combination-all-space" },
+            { "test": "ttml2-invld-processor-profile-combination-empty" },
+            { "test": "ttml2-invld-processor-profile-combination-unknown-keyword" }
+        ]
+    },
+    "#profile-full-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-content-profile-combination-ignore" },
+            { "test": "ttml2-valid-content-profile-combination-least-restrictive" },
+            { "test": "ttml2-valid-content-profile-combination-most-restrictive" },
+            { "test": "ttml2-valid-content-profile-combination-replace" },
+            { "test": "ttml2-valid-content-profile-multiple" },
+            { "test": "ttml2-valid-content-profile-nested" },
+            { "test": "ttml2-valid-content-profiles-quantified-all-multiple" },
+            { "test": "ttml2-valid-content-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-content-profiles-unquantified-multiple" },
+            { "test": "ttml2-valid-content-profiles-unquantified-single" },
+            { "test": "ttml2-valid-infer-processor-profile-method-loose" },
+            { "test": "ttml2-valid-infer-processor-profile-method-strict" },
+            { "test": "ttml2-valid-infer-processor-profile-source-combined" },
+            { "test": "ttml2-valid-infer-processor-profile-source-first" },
+            { "test": "ttml2-valid-permit-feature-narrowing-allow" },
+            { "test": "ttml2-valid-permit-feature-narrowing-disallow" },
+            { "test": "ttml2-valid-permit-feature-widening-allow" },
+            { "test": "ttml2-valid-permit-feature-widening-disallow" },
+            { "test": "ttml2-valid-processor-profile-combination-ignore" },
+            { "test": "ttml2-valid-processor-profile-combination-least-restrictive" },
+            { "test": "ttml2-valid-processor-profile-combination-most-restrictive" },
+            { "test": "ttml2-valid-processor-profile-combination-replace" },
+            { "test": "ttml2-valid-processor-profile-multiple" },
+            { "test": "ttml2-valid-processor-profile-nested" },
+            { "test": "ttml2-valid-processor-profiles-quantified-all-multiple" },
+            { "test": "ttml2-valid-processor-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-multiple" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-single" },
+            { "test": "ttml2-valid-processor-profiles-unquantified-multiple" },
+            { "test": "ttml2-valid-processor-profiles-unquantified-single" },
+            { "test": "ttml2-valid-profile-combine-ignore", "since": "2e" },
+            { "test": "ttml2-valid-profile-combine-least-restrictive" },
+            { "test": "ttml2-valid-profile-combine-most-restrictive" },
+            { "test": "ttml2-valid-profile-combine-replace" },
+            { "test": "ttml2-valid-profile-designator" },
+            { "test": "ttml2-valid-profile-type-content" },
+            { "test": "ttml2-valid-profile-type-processor" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-content-profile-combination-all-space" },
+            { "test": "ttml2-invld-content-profile-combination-empty" },
+            { "test": "ttml2-invld-content-profile-combination-unknown-keyword" },
+            { "test": "ttml2-invld-content-profiles-all-space" },
+            { "test": "ttml2-invld-content-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-content-profiles-empty" },
+            { "test": "ttml2-invld-content-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-content-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-content-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-infer-processor-profile-method-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-method-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-method-unknown-keyword" },
+            { "test": "ttml2-invld-infer-processor-profile-source-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-source-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-source-unknown-keyword" },
+            { "test": "ttml2-invld-permit-feature-narrowing-all-space" },
+            { "test": "ttml2-invld-permit-feature-narrowing-empty" },
+            { "test": "ttml2-invld-permit-feature-narrowing-unknown-keyword" },
+            { "test": "ttml2-invld-permit-feature-widening-all-space" },
+            { "test": "ttml2-invld-permit-feature-widening-empty" },
+            { "test": "ttml2-invld-permit-feature-widening-unknown-keyword" },
+            { "test": "ttml2-invld-processor-profile-combination-all-space" },
+            { "test": "ttml2-invld-processor-profile-combination-empty" },
+            { "test": "ttml2-invld-processor-profile-combination-unknown-keyword" },
+            { "test": "ttml2-invld-processor-profiles-all-space" },
+            { "test": "ttml2-invld-processor-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-processor-profiles-empty" },
+            { "test": "ttml2-invld-processor-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-profile-combine-all-space" },
+            { "test": "ttml2-invld-profile-combine-empty" },
+            { "test": "ttml2-invld-profile-combine-unknown-keyword" },
+            { "test": "ttml2-invld-profile-designator-fragment" },
+            { "test": "ttml2-invld-profile-designator-fragment-nested", "since": "2e" },
+            { "test": "ttml2-invld-profile-designator-registry-undefined", "since": "2e" },
+            { "test": "ttml2-invld-profile-nested-mixed" },
+            { "test": "ttml2-invld-profile-type-all-space" },
+            { "test": "ttml2-invld-profile-type-empty" },
+            { "test": "ttml2-invld-profile-type-unknown-keyword" },
+            { "test": "ttml2-invld-profile-use-fragment", "since": "2e" }
+        ]
+    },
+    "#profile-nesting": {
+        "valid": [
+            { "test": "ttml2-valid-content-profile-nested" },
+            { "test": "ttml2-valid-processor-profile-nested" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-profile-designator-fragment-nested", "since": "2e" },
+            { "test": "ttml2-invld-profile-nested-mixed" }
+        ]
+    },
+    "#profile-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-content-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-content-profiles-unquantified-multiple" },
+            { "test": "ttml2-valid-content-profiles-unquantified-single" },
+            { "test": "ttml2-valid-infer-processor-profile-method-loose" },
+            { "test": "ttml2-valid-infer-processor-profile-method-strict" },
+            { "test": "ttml2-valid-infer-processor-profile-source-first" },
+            { "test": "ttml2-valid-processor-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-multiple" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-single" },
+            { "test": "ttml2-valid-processor-profiles-unquantified-single" },
+            { "test": "ttml2-valid-profile-designator" },
+            { "test": "ttml2-valid-profile-type-content" },
+            { "test": "ttml2-valid-profile-type-processor" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-content-profiles-all-space" },
+            { "test": "ttml2-invld-content-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-content-profiles-empty" },
+            { "test": "ttml2-invld-content-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-content-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-content-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-infer-processor-profile-method-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-method-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-method-unknown-keyword" },
+            { "test": "ttml2-invld-infer-processor-profile-source-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-source-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-source-unknown-keyword" },
+            { "test": "ttml2-invld-processor-profiles-all-space" },
+            { "test": "ttml2-invld-processor-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-processor-profiles-empty" },
+            { "test": "ttml2-invld-processor-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-profile-designator-fragment" },
+            { "test": "ttml2-invld-profile-designator-fragment-nested", "since": "2e" },
+            { "test": "ttml2-invld-profile-type-all-space" },
+            { "test": "ttml2-invld-profile-type-empty" },
+            { "test": "ttml2-invld-profile-type-unknown-keyword" },
+            { "test": "ttml2-invld-profile-use-fragment", "since": "2e" }
+        ]
+    },
+    "#region-implied-animation": {
+        "valid": [
+            { "test": "ttml2-valid-region-implied-animation" }
+        ],
+        "invalid": []
+    },
+    "#region-inline": {
+        "valid": [
+            { "test": "ttml2-valid-region-inline" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-region-inline-div-multiple" },
+            { "test": "ttml2-invld-region-inline-image" },
+            { "test": "ttml2-invld-region-inline-p-multiple" },
+            { "test": "ttml2-invld-region-inline-span" },
+            { "test": "ttml2-invld-region-inline-timing" }
+        ]
+    },
+    "#resources": {
+        "valid": [
+            { "test": "ttml2-valid-data-embedding-chunked" },
+            { "test": "ttml2-valid-data-embedding-simple" },
+            { "test": "ttml2-valid-data-embedding-simple-with-lwsp", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-simple-zero-length", "since": "2e" },
+            { "test": "ttml2-valid-data-embedding-sourced" },
+            { "test": "ttml2-valid-resources-all" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-data-chunked-missing-type" },
+            { "test": "ttml2-invld-data-reference-internal-with-type" },
+            { "test": "ttml2-invld-data-simple-missing-type" }
+        ]
+    },
+    "#ruby": {
+        "valid": [
+            { "test": "ttml2-valid-ruby" },
+            { "test": "ttml2-valid-ruby-span" },
+            { "test": "ttml2-valid-ruby-span-delimiters" },
+            { "test": "ttml2-valid-ruby-span-shortcuts" },
+            { "test": "ttml2-valid-ruby-span-shortcuts-delimiters" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-ruby-all-space" },
+            { "test": "ttml2-invld-bad-ruby-empty" },
+            { "test": "ttml2-invld-bad-ruby-unknown-keyword" }
+        ]
+    },
+    "#ruby-full": {
+        "valid": [
+            { "test": "ttml2-valid-ruby" },
+            { "test": "ttml2-valid-ruby-align" },
+            { "test": "ttml2-valid-ruby-align-minimal" },
+            { "test": "ttml2-valid-ruby-align-with-base" },
+            { "test": "ttml2-valid-ruby-span" },
+            { "test": "ttml2-valid-ruby-span-delimiters" },
+            { "test": "ttml2-valid-ruby-span-shortcuts" },
+            { "test": "ttml2-valid-ruby-span-shortcuts-delimiters" },
+            { "test": "ttml2-valid-ruby-position" },
+            { "test": "ttml2-valid-ruby-reserve" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-ruby-align-all-space" },
+            { "test": "ttml2-invld-bad-ruby-align-empty" },
+            { "test": "ttml2-invld-bad-ruby-align-unknown-keyword" },
+            { "test": "ttml2-invld-bad-ruby-all-space" },
+            { "test": "ttml2-invld-bad-ruby-empty" },
+            { "test": "ttml2-invld-bad-ruby-unknown-keyword" },
+            { "test": "ttml2-invld-bad-ruby-position-all-space" },
+            { "test": "ttml2-invld-bad-ruby-position-empty" },
+            { "test": "ttml2-invld-bad-ruby-position-unknown-keyword" },
+            { "test": "ttml2-invld-bad-ruby-reserve-all-space" },
+            { "test": "ttml2-invld-bad-ruby-reserve-empty" },
+            { "test": "ttml2-invld-bad-ruby-reserve-negative" },
+            { "test": "ttml2-invld-bad-ruby-reserve-unknown-keyword" }
+        ]
+    },
+    "#rubyAlign": {
+        "valid": [
+            { "test": "ttml2-valid-ruby-align" },
+            { "test": "ttml2-valid-ruby-align-minimal" },
+            { "test": "ttml2-valid-ruby-align-with-base" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-ruby-align-all-space" },
+            { "test": "ttml2-invld-bad-ruby-align-empty" },
+            { "test": "ttml2-invld-bad-ruby-align-unknown-keyword" }
+        ]
+    },
+    "#rubyAlign-minimal": {
+        "valid": [
+            { "test": "ttml2-valid-ruby-align-minimal" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-ruby-align-all-space" },
+            { "test": "ttml2-invld-bad-ruby-align-empty" },
+            { "test": "ttml2-invld-bad-ruby-align-unknown-keyword" }
+        ]
+    },
+    "#rubyAlign-withBase": {
+        "valid": [
+            { "test": "ttml2-valid-ruby-align-with-base" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-ruby-align-all-space" },
+            { "test": "ttml2-invld-bad-ruby-align-empty" },
+            { "test": "ttml2-invld-bad-ruby-align-unknown-keyword" }
+        ]
+    },
+    "#rubyPosition": {
+        "valid": [
+            { "test": "ttml2-valid-ruby-position" },
+            { "test": "ttml2-valid-ruby-span" },
+            { "test": "ttml2-valid-ruby-span-delimiters" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-ruby-position-all-space" },
+            { "test": "ttml2-invld-bad-ruby-position-empty" },
+            { "test": "ttml2-invld-bad-ruby-position-unknown-keyword" }
+        ]
+    },
+    "#rubyReserve": {
+        "valid": [
+            { "test": "ttml2-valid-ruby-reserve" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-ruby-reserve-all-space" },
+            { "test": "ttml2-invld-bad-ruby-reserve-empty" },
+            { "test": "ttml2-invld-bad-ruby-reserve-negative" },
+            { "test": "ttml2-invld-bad-ruby-reserve-unknown-keyword" }
+        ]
+    },
+    "#set": {
+        "valid": [
+            { "test": "ttml2-valid-xml-id-missing", "since": "2e" }
+        ],
+        "invalid": []
+    },
+    "#set-fill": {
+        "valid": [
+            { "test": "ttml2-valid-set-fill" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-set-unknown-fill" }
+        ]
+    },
+    "#set-multiple-styles": {
+        "valid": [
+            { "test": "ttml2-valid-set-multiple-styles" }
+        ],
+        "invalid": []
+    },
+    "#set-repeat": {
+        "valid": [
+            { "test": "ttml2-valid-set-repeat-count" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-set-negative-repeat-count" },
+            { "test": "ttml2-invld-bad-set-unknown-repeat-count" }
+        ]
+    },
+    "#shear": {
+        "valid": [
+            { "test": "ttml2-valid-shear" },
+            { "test": "ttml2-valid-shear-real-syntax", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-shear-all-space" },
+            { "test": "ttml2-invld-bad-shear-empty" },
+            { "test": "ttml2-invld-bad-shear-real-syntax", "exclude": true, "since": "2e" },
+            { "test": "ttml2-invld-bad-shear-unknown-keyword" }
+        ]
+    },
+    "#source": {
+        "valid": [
+            { "test": "ttml2-valid-data-embedding-sourced" },
+            { "test": "ttml2-valid-image-in-block-png" },
+            { "test": "ttml2-valid-image-in-inline-png" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-base-general-all-space" }
+        ]
+    },
+    "#speak": {
+        "valid": [
+            { "test": "ttml2-valid-speak" },
+            { "test": "ttml2-valid-speak-implied-audio", "since": "2e" },
+            { "test": "ttml2-valid-speak-implied-audio-disabled", "since": "2e" },
+            { "test": "ttml2-valid-speak-implied-audio-source", "since": "2e" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-speak-all-space" },
+            { "test": "ttml2-invld-bad-speak-empty" },
+            { "test": "ttml2-invld-bad-speak-unknown-keyword" }
+        ]
+    },
+    "#speech": {
+        "valid": [
+            { "test": "ttml2-valid-speech" }
+        ],
+        "invalid": []
+    },
+    "#textAlign-justify": {
+        "valid": [
+            { "test": "ttml2-valid-text-align-justify" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-align-all-space" },
+            { "test": "ttml2-invld-bad-text-align-empty" },
+            { "test": "ttml2-invld-bad-text-align-unknown-keyword" }
+        ]
+    },
+    "#textAlign-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-text-align-absolute" },
+            { "test": "ttml2-valid-text-align-justify" },
+            { "test": "ttml2-valid-text-align-justify" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-align-all-space" },
+            { "test": "ttml2-invld-bad-text-align-empty" },
+            { "test": "ttml2-invld-bad-text-align-unknown-keyword" }
+        ]
+    },
+    "#textCombine": {
+        "valid": [
+            { "test": "ttml2-valid-text-combine" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-combine-all-space" },
+            { "test": "ttml2-invld-bad-text-combine-empty" },
+            { "test": "ttml2-invld-bad-text-combine-unknown-keyword" }
+        ]
+    },
+    "#textEmphasis": {
+        "valid": [
+            { "test": "ttml2-valid-text-emphasis-color" },
+            { "test": "ttml2-valid-text-emphasis-minimal" },
+            { "test": "ttml2-valid-text-emphasis-quoted-string" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-emphasis-all-space" },
+            { "test": "ttml2-invld-bad-text-emphasis-empty" },
+            { "test": "ttml2-invld-bad-text-emphasis-unknown-keyword" }
+        ]
+    },
+    "#textEmphasis-color": {
+        "valid": [
+            { "test": "ttml2-valid-text-emphasis-color" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-emphasis-all-space" },
+            { "test": "ttml2-invld-bad-text-emphasis-empty" },
+            { "test": "ttml2-invld-bad-text-emphasis-unknown-keyword" }
+        ]
+    },
+    "#textEmphasis-minimal": {
+        "valid": [
+            { "test": "ttml2-valid-text-emphasis-minimal" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-emphasis-all-space" },
+            { "test": "ttml2-invld-bad-text-emphasis-empty" },
+            { "test": "ttml2-invld-bad-text-emphasis-unknown-keyword" }
+        ]
+    },
+    "#textEmphasis-quoted-string": {
+        "valid": [
+            { "test": "ttml2-valid-text-emphasis-quoted-string" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-emphasis-all-space" },
+            { "test": "ttml2-invld-bad-text-emphasis-empty" },
+            { "test": "ttml2-invld-bad-text-emphasis-unknown-keyword" }
+        ]
+    },
+    "#textOrientation": {
+        "valid": [
+            { "test": "ttml2-valid-text-orientation" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-orientation-all-space" },
+            { "test": "ttml2-invld-bad-text-orientation-empty" },
+            { "test": "ttml2-invld-bad-text-orientation-unknown-keyword" }
+        ]
+    },
+    "#textShadow": {
+        "valid": [
+            { "test": "ttml2-valid-text-shadow" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-text-shadow-all-space" },
+            { "test": "ttml2-invld-bad-text-shadow-empty" },
+            { "test": "ttml2-invld-bad-text-shadow-extra-length" },
+            { "test": "ttml2-invld-bad-text-shadow-misplaced-color" },
+            { "test": "ttml2-invld-bad-text-shadow-missing-length" },
+            { "test": "ttml2-invld-bad-text-shadow-negative-blur" },
+            { "test": "ttml2-invld-bad-text-shadow-unknown-color" }
+        ]
+    },
+    "#time-wall-clock": {
+        "valid": [
+            { "test": "ttml2-valid-wall-clock-date-time" },
+            { "test": "ttml2-valid-wall-clock-date" },
+            { "test": "ttml2-valid-wall-clock-wall-time" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-wall-clock-date-time" },
+            { "test": "ttml2-invld-wall-clock-date" },
+            { "test": "ttml2-invld-wall-clock-wall-time" }
+        ]
+    },
+    "#transformation-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-content-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-content-profiles-unquantified-multiple" },
+            { "test": "ttml2-valid-content-profiles-unquantified-single" },
+            { "test": "ttml2-valid-infer-processor-profile-method-loose" },
+            { "test": "ttml2-valid-infer-processor-profile-method-strict" },
+            { "test": "ttml2-valid-infer-processor-profile-source-first" },
+            { "test": "ttml2-valid-processor-profiles-quantified-all-single" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-multiple" },
+            { "test": "ttml2-valid-processor-profiles-quantified-any-single" },
+            { "test": "ttml2-valid-processor-profiles-unquantified-single" },
+            { "test": "ttml2-valid-profile-designator" },
+            { "test": "ttml2-valid-profile-type-content" },
+            { "test": "ttml2-valid-profile-type-processor" },
+            { "test": "ttml2-valid-transformation-1" },
+            { "test": "ttml2-valid-transformation-2" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-content-profiles-all-space" },
+            { "test": "ttml2-invld-content-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-content-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-content-profiles-empty" },
+            { "test": "ttml2-invld-content-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-content-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-content-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-infer-processor-profile-method-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-method-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-method-unknown-keyword" },
+            { "test": "ttml2-invld-infer-processor-profile-source-all-space" },
+            { "test": "ttml2-invld-infer-processor-profile-source-empty" },
+            { "test": "ttml2-invld-infer-processor-profile-source-unknown-keyword" },
+            { "test": "ttml2-invld-processor-profiles-all-space" },
+            { "test": "ttml2-invld-processor-profiles-designator-delimiter-syntax" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator-absolutized" },
+            { "test": "ttml2-invld-processor-profiles-duplicate-designator" },
+            { "test": "ttml2-invld-processor-profiles-empty" },
+            { "test": "ttml2-invld-processor-profiles-quantified-no-designator" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-syntax" },
+            { "test": "ttml2-invld-processor-profiles-quantifier-unknown" },
+            { "test": "ttml2-invld-profile-designator-fragment" },
+            { "test": "ttml2-invld-profile-designator-fragment-nested", "since": "2e" },
+            { "test": "ttml2-invld-profile-type-all-space" },
+            { "test": "ttml2-invld-profile-type-empty" },
+            { "test": "ttml2-invld-profile-type-unknown-keyword" }
+        ]
+    },
+    "#unicodeBidi-isolate": {
+        "valid": [
+            { "test": "ttml2-valid-unicode-bidi-isolate" }
+        ],
+        "invalid": []
+    },
+    "#unicodeBidi-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-unicode-bidi-1" },
+            { "test": "ttml2-valid-unicode-bidi-1" },
+            { "test": "ttml2-valid-unicode-bidi-isolate" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-unicode-bidi-all-space" },
+            { "test": "ttml2-invld-bad-unicode-bidi-empty" },
+            { "test": "ttml2-invld-bad-unicode-bidi-unknown-keyword" }
+        ]
+    },
+    "#validation": {
+        "valid": [
+            { "test": "ttml2-valid-validation-optional" },
+            { "test": "ttml2-valid-validation-prohibited" },
+            { "test": "ttml2-valid-validation-required" },
+            { "test": "ttml2-valid-validation-action-abort" },
+            { "test": "ttml2-valid-validation-action-ignore" },
+            { "test": "ttml2-valid-validation-action-warn" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-validation-action-all-space" },
+            { "test": "ttml2-invld-validation-action-empty" },
+            { "test": "ttml2-invld-validation-action-unknown-keyword" },
+            { "test": "ttml2-invld-validation-all-space" },
+            { "test": "ttml2-invld-validation-empty" },
+            { "test": "ttml2-invld-validation-unknown-keyword" }
+        ]
+    },
+    "#visibility-image": {
+        "valid": [
+            { "test": "ttml2-valid-visibility-image" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-visibility-all-space" },
+            { "test": "ttml2-invld-bad-visibility-empty" },
+            { "test": "ttml2-invld-bad-visibility-unknown-keyword" }
+        ]
+    },
+    "#visibility-version-2": {
+        "valid": [
+            { "test": "ttml2-valid-visibility" },
+            { "test": "ttml2-valid-visibility-image" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-bad-visibility-all-space" },
+            { "test": "ttml2-invld-bad-visibility-empty" },
+            { "test": "ttml2-invld-bad-visibility-unknown-keyword" }
+        ]
+    },
+    "#xlink": {
+        "valid": [
+            { "test": "ttml2-valid-xlink-href-image-in-block" },
+            { "test": "ttml2-valid-xlink-href-image-in-inline" },
+            { "test": "ttml2-valid-xlink-href-span" }
+        ],
+        "invalid": [
+            { "test": "ttml2-invld-xlink-href-all-space" },
+            { "test": "ttml2-invld-xlink-href-empty", "exclude": true },
+            { "test": "ttml2-invld-xlink-href-nested-image", "since": "2e" },
+            { "test": "ttml2-invld-xlink-href-nested-span" }
+        ]
+    }
+}

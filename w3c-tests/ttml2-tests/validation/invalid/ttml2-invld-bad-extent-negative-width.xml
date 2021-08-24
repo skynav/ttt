@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - tts:extent value - negative width -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <layout>
+      <region xml:id="r1" tts:extent="-10.1% 20.0%"/>
+    </layout>
+  </head>
+</tt>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - xml:base in #base-general context - empty uri -->
+<tt xml:lang="en" xml:base="&#x0009;&#x000A;&#x000D;&#x0020;" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata" 
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="32" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+    <metadata xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+      <ttm:agent xml:id="a" type="other" xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+        <ttm:name type="other" xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+      </ttm:agent>
+      <ttm:agent type="other">
+        <ttm:actor agent="a" xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+      </ttm:agent>
+      <ttm:copyright xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+      <ttm:desc xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+      <ttm:item name="altText" xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+      <ttm:title xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+    </metadata>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter" xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+      <features xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+      <extensions xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+    </profile>
+    <resources xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+      <data xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+        <source xml:base="&#x0009;&#x000A;&#x000D;&#x0020;" src="http://www.w3.org/ns/ttml/resource/#empty" type="application/octet-stream"/>
+      </data>
+      <audio xml:base="&#x0009;&#x000A;&#x000D;&#x0020;" src="../resources/test.mp3" type="audio/mpeg"/>
+      <font xml:base="&#x0009;&#x000A;&#x000D;&#x0020;" src="../resources/test.otf" type="font/otf"/>
+      <image xml:base="&#x0009;&#x000A;&#x000D;&#x0020;" src="../resources/test.png" type="image/png"/>
+    </resources>
+    <styling xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+      <initial xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+      <style xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+    </styling>
+    <layout xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+      <region xml:id="r1" xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+    </layout>
+    <animation xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+      <animate xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+      <set xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+    </animation>
+  </head>
+  <body xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+    <div xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+      <p xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+        <span xml:base="&#x0009;&#x000A;&#x000D;&#x0020;">
+          <br xml:base="&#x0009;&#x000A;&#x000D;&#x0020;"/>
+        </span>
+      </p>
+    </div>
+  </body>
+</tt>

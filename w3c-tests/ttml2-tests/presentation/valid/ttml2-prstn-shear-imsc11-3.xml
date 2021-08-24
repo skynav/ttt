@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/shear/shear003.ttml -->
+<tt xml:lang="ja"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#shear with ruby and tatechuyoko (multiple lines per paragraph)</ttm:desc>
+    </metadata>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="1.000001c"/>
+      <style xml:id="s1" tts:showBackground="whenActive" tts:backgroundColor="black" tts:writingMode="tbrl"/>
+    </styling>
+    <layout>
+      <region xml:id="vertical" style="s1" tts:origin="55% 5%" tts:extent="40% 90%"/>
+    </layout>
+  </head>
+  <body>
+    <div begin="0s" end="1s" region="vertical">
+      <p tts:rubyAlign="spaceAround" tts:textAlign="center" tts:shear="16.67%">
+        <span tts:ruby="container">
+          <span tts:ruby="baseContainer"><span tts:ruby="base">山</span></span>
+          <span tts:ruby="textContainer"><span tts:ruby="text">やま</span></span>
+        </span>
+        の<br/>
+        最多<span tts:textCombine="all">1998</span>年
+      </p>
+    </div>
+  </body>
+</tt>

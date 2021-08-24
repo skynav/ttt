@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tta="http://www.w3.org/ns/ttml#audio"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>At 1s in this should play the referenced audio beginning 0.8s into that audio, and ending 1.6s into that audio.
+      The result should be the words "On time" - if "Early in" plays then clipBegin was not applied.
+      If "Late out" plays then clipEnd was not applied.</ttm:desc>
+    </metadata>
+  </head>
+  <body>
+    <div>
+      <p begin="1s" end="3s">
+        <audio src="../resources/audio/ttml2-prstn-audio-clipbegin-end.mp3" type="audio/mpeg" clipBegin="0.8s" clipEnd="1.6s"/>
+        On time
+      </p>
+    </div>
+  </body>
+</tt>

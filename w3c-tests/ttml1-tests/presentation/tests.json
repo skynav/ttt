@@ -1,0 +1,741 @@
+{
+    "#animation": {
+        "valid": [
+            { "test": "ttml2-prstn-animation" },
+            { "test": "ttml2-prstn-set-duration-implicit" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#backgroundColor-block": {
+        "valid": [
+            { "test": "ttml2-prstn-background-color-block" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#backgroundColor-inline": {
+        "valid": [
+            { "test": "ttml2-prstn-background-color-inline-lrtb" },
+            { "test": "ttml2-prstn-background-color-inline-spaces-lrtb" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#backgroundColor-region": {
+        "valid": [
+            { "test": "ttml2-prstn-background-color-region" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#backgroundColor": {
+        "valid": [
+            { "test": "ttml2-prstn-background-color-block" },
+            { "test": "ttml2-prstn-background-color-inline-lrtb" },
+            { "test": "ttml2-prstn-background-color-inline-spaces-lrtb" },
+            { "test": "ttml2-prstn-background-color-region" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#bidi": {
+        "valid": [
+            { "test": "ttml2-prstn-direction" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#cellResolution": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#clockMode-gps": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#clockMode-local": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#clockMode-utc": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#clockMode": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#color": {
+        "valid": [
+            { "test": "ttml2-prstn-color" },
+            { "test": "ttml2-prstn-color-rgb-with-lwsp" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#content": {
+        "valid": [
+            { "test": "ttml2-prstn-break" },
+            { "test": "ttml2-prstn-unknown-attribute" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#core": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#direction": {
+        "valid": [
+            { "test": "ttml2-prstn-direction" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#display": {
+        "valid": [
+            { "test": "ttml2-prstn-display-1" },
+            { "test": "ttml2-prstn-display-2" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#display-block": {
+        "valid": [
+            { "test": "ttml2-prstn-display-1" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#display-inline": {
+        "valid": [
+            { "test": "ttml2-prstn-display-1" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#display-region": {
+        "valid": [
+            { "test": "ttml2-prstn-display-2" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#displayAlign": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#dropMode": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#dropMode-dropNTSC": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#dropMode-dropPAL": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#dropMode-nonDrop": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#extent": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#extent-region": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#extent-root": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontFamily": {
+        "valid": [
+            { "test": "ttml2-prstn-font-family" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontFamily-generic": {
+        "valid": [
+            { "test": "ttml2-prstn-font-family" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontFamily-non-generic": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontSize": {
+        "valid": [
+            { "test": "ttml2-prstn-font-size-anamorphic-cell" },
+            { "test": "ttml2-prstn-font-size-anamorphic-em" },
+            { "test": "ttml2-prstn-font-size-inherited-em" },
+            { "test": "ttml2-prstn-font-size-region-em" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontSize-anamorphic": {
+        "valid": [
+            { "test": "ttml2-prstn-font-size-anamorphic-cell" },
+            { "test": "ttml2-prstn-font-size-anamorphic-em" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontSize-isomorphic": {
+        "valid": [
+            { "test": "ttml2-prstn-font-size-inherited-em" },
+            { "test": "ttml2-prstn-font-size-region-em" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontStyle": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontStyle-italic": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontStyle-oblique": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontWeight": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontWeight-bold": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#frameRate": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#frameRateMultiplier": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#layout": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-cell": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-em": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-integer": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-negative": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-percentage": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-pixel": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-positive": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-real": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#lineBreak-uax14": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#lineHeight": {
+        "valid": [
+            { "test": "ttml2-prstn-lineHeight" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#markerMode": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#markerMode-continuous": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#markerMode-discontinuous": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#metadata": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#nested-div": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#nested-span": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#opacity": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#origin": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#overflow": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#overflow-visible": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#padding": {
+        "valid": [
+            { "test": "ttml2-prstn-padding-region" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#padding-1": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#padding-2": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#padding-3": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#padding-4": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#pixelAspectRatio": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#presentation": {
+        "valid": [
+            { "test": "ttml2-prstn-unknown-attribute" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#profile": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#showBackground": {
+        "valid": [
+            { "test": "ttml2-prstn-show-background" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#structure": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling": {
+        "valid": [
+            { "test": "ttml2-prstn-initial-non-inherited" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-chained": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-inheritance-content": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-inheritance-region": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-inline": {
+        "valid": [
+            { "test": "ttml2-prstn-initial-non-inherited" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-nested": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-referential": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#subFrameRate": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#textAlign": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#textAlign-absolute": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#textAlign-relative": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#textDecoration": {
+        "valid": [
+            { "test": "ttml2-prstn-text-decoration" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textDecoration-over": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#textDecoration-through": {
+        "valid": [
+            { "test": "ttml2-prstn-text-decoration" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textDecoration-under": {
+        "valid": [
+            { "test": "ttml2-prstn-text-decoration" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textOutline": {
+        "valid": [
+            { "test": "ttml2-prstn-text-outline" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textOutline-blurred": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#textOutline-unblurred": {
+        "valid": [
+            { "test": "ttml2-prstn-text-outline" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#tickRate": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#time-clock": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#time-clock-with-frames": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#time-offset": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#time-offset-with-frames": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#time-offset-with-ticks": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timeBase-clock": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timeBase-media": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timeBase-smpte": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timeContainer": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timing": {
+        "valid": [
+            { "test": "ttml2-prstn-break-duration-implicit" },
+            { "test": "ttml2-prstn-anonymous-span-duration-implicit" },
+            { "test": "ttml2-prstn-region-timing" },
+            { "test": "ttml2-prstn-set-duration-implicit" },
+            { "test": "ttml2-prstn-span-duration-implicit" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#transformation": {
+        "valid": [
+            { "test": "ttml2-prstn-unknown-attribute" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#unicodeBidi": {
+        "valid": [
+            { "test": "ttml2-prstn-direction" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#visibility": {
+        "valid": [
+            { "test": "ttml2-prstn-visibility" },
+            { "test": "ttml2-prstn-visibility-1" },
+            { "test": "ttml2-prstn-visibility-2" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#visibility-block": {
+        "valid": [
+            { "test": "ttml2-prstn-visibility" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#visibility-inline": {
+        "valid": [
+            { "test": "ttml2-prstn-visibility" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#visibility-region": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#wrapOption": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode-horizontal": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode-horizontal-lr": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode-horizontal-rl": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode-vertical": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#zIndex": {
+        "valid": [
+            { "test": "ttml2-prstn-z-index" }
+        ],
+        "invalid": [
+        ]
+    }
+}

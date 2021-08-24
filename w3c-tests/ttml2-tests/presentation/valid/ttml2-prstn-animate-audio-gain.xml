@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tta="http://www.w3.org/ns/ttml#audio"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+  </head>
+  <body>
+    <metadata>
+      <ttm:desc>This test plays a 440Hz tone. Between 1s and 6s the gain is reduced by 0.2 each second.</ttm:desc>
+    </metadata>
+    <div>
+      <p>
+        <span>
+          <animate begin="0s" end="6s" tta:gain="1;0.8;0.6;0.4;0.2;0"/>
+          <audio src="../resources/audio/ttml2-prstn-audio-gain-440hz-tone.wav" type="audio/vnd.wave"/>
+          This tone reduces in volume each second.</span>
+      </p>
+    </div>
+  </body>
+</tt>
+

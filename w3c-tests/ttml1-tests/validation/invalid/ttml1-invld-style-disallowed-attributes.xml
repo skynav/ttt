@@ -1,0 +1,33 @@
+<!-- invalid - disallowed style attribute - all contexts - should produce 15 errors -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:display="auto"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="15" ttva:expectedWarnings="0" ttva:model="ttml1"
+    ttva:noWarnOn="references-other-extension-namespace references-non-standard-extension">
+  <head tts:display="auto">
+    <ttm:title tts:display="auto"/>
+    <ttm:desc tts:display="auto"/>
+    <ttm:copyright tts:display="auto"/>
+    <ttm:agent xml:id="agent" type="person" tts:display="auto">
+      <ttm:name type="full" tts:display="auto"/>
+    </ttm:agent>
+    <ttm:agent type="character">
+      <ttm:name type="alias"/>
+      <ttm:actor agent="agent" tts:display="auto"/>
+    </ttm:agent>
+    <profile use="dfxp-full" tts:display="auto" xmlns="http://www.w3.org/ns/ttml#parameter">
+      <features tts:display="auto">
+        <feature tts:display="auto">#core</feature>
+      </features>
+      <extensions tts:display="auto">
+        <extension tts:display="auto">http://example.com/ns/ttml/extension/#extension</extension>
+      </extensions>
+    </profile>
+    <styling tts:display="auto">
+    </styling>
+    <layout tts:display="auto">
+    </layout>
+  </head>
+  <body/>
+</tt>

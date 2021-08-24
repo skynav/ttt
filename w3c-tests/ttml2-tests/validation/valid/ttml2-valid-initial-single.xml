@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - initial - single tts:* or tta:* attribute per initial element -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:tta="http://www.w3.org/ns/ttml#audio"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <!-- visual style properties -->
+      <initial tts:backgroundClip="content"/>
+      <initial tts:backgroundColor="black"/>
+      <initial tts:backgroundExtent="20px 30px"/>
+      <initial tts:backgroundImage="../resources/test.png"/>
+      <initial tts:backgroundOrigin="padding"/>
+      <initial tts:backgroundPosition="left bottom"/>
+      <initial tts:backgroundRepeat="noRepeat"/>
+      <initial tts:border="1px solid red"/>
+      <initial tts:bpd="1px"/>
+      <initial tts:color="green"/>
+      <initial tts:direction="rtl"/>
+      <initial tts:disparity="1px"/>
+      <initial tts:display="none"/>
+      <initial tts:displayAlign="after"/>
+      <initial tts:extent="1px 1px"/>
+      <initial tts:fontFamily="monospace"/>
+      <initial tts:fontKerning="none"/>
+      <initial tts:fontSelectionStrategy="character"/>
+      <initial tts:fontShear="1%"/>
+      <initial tts:fontSize="1px"/>
+      <initial tts:fontStyle="italic"/>
+      <initial tts:fontVariant="sub"/>
+      <initial tts:fontWeight="bold"/>
+      <initial tts:ipd="1px"/>
+      <initial tts:letterSpacing="1px"/>
+      <initial tts:lineHeight="1px"/>
+      <initial tts:lineShear="1%"/>
+      <initial tts:luminanceGain="0.9"/>
+      <initial tts:opacity="0.9"/>
+      <initial tts:origin="1px 1px"/>
+      <initial tts:overflow="visible"/>
+      <initial tts:padding="1px"/>
+      <initial tts:position="bottom right"/>
+      <initial tts:ruby="base"/>
+      <initial tts:rubyAlign="spaceBetween"/>
+      <initial tts:rubyPosition="after"/>
+      <initial tts:rubyReserve="both"/>
+      <initial tts:shear="1%"/>
+      <initial tts:showBackground="whenActive"/>
+      <initial tts:textAlign="end"/>
+      <initial tts:textCombine="all"/>
+      <initial tts:textDecoration="underline"/>
+      <initial tts:textEmphasis="dot"/>
+      <initial tts:textOrientation="upright"/>
+      <initial tts:textOutline="red 1px"/>
+      <initial tts:textShadow="1px 1px red"/>
+      <initial tts:unicodeBidi="embed"/>
+      <initial tts:visibility="hidden"/>
+      <initial tts:wrapOption="noWrap"/>
+      <initial tts:writingMode="tblr"/>
+      <initial tts:zIndex="1"/>
+      <!-- audio style properties -->
+      <initial tta:gain="0.9"/>
+      <initial tta:pan="0.5"/>
+      <initial tta:pitch="+10hz"/>
+      <initial tta:speak="normal"/>
+    </styling>
+  </head>
+</tt>
+
+

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:textEmphasis - partial set of values with color (not exhaustive) -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <style tts:textEmphasis="auto"/>
+      <style tts:textEmphasis="filled red"/>
+      <style tts:textEmphasis="open green"/>
+      <style tts:textEmphasis="circle blue"/>
+      <style tts:textEmphasis="dot red"/>
+      <style tts:textEmphasis="sesame green"/>
+      <style tts:textEmphasis="filled circle red"/>
+      <style tts:textEmphasis="filled dot green"/>
+      <style tts:textEmphasis="filled sesame blue"/>
+      <style tts:textEmphasis="circle filled red"/>
+      <style tts:textEmphasis="dot filled green"/>
+      <style tts:textEmphasis="sesame filled blue"/>
+      <style tts:textEmphasis="open circle red"/>
+      <style tts:textEmphasis="open dot green"/>
+      <style tts:textEmphasis="open sesame blue"/>
+      <style tts:textEmphasis="circle open red"/>
+      <style tts:textEmphasis="dot open green"/>
+      <style tts:textEmphasis="sesame open blue"/>
+      <style tts:textEmphasis="red"/>
+      <style tts:textEmphasis="green"/>
+      <style tts:textEmphasis="blue"/>
+      <style tts:textEmphasis="current"/>
+      <style tts:textEmphasis="before red"/>
+      <style tts:textEmphasis="after green"/>
+      <style tts:textEmphasis="outside blue"/>
+      <style tts:textEmphasis="filled dot red before"/>
+      <style tts:textEmphasis="filled dot green before"/>
+      <style tts:textEmphasis="filled dot blue before"/>
+      <style tts:textEmphasis="filled dot red after"/>
+      <style tts:textEmphasis="filled dot green after"/>
+      <style tts:textEmphasis="filled dot blue after"/>
+      <style tts:textEmphasis="auto red before"/>
+      <style tts:textEmphasis="auto green before"/>
+      <style tts:textEmphasis="auto blue before"/>
+    </styling>
+  </head>
+</tt>

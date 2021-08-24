@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tta="http://www.w3.org/ns/ttml#audio"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+  </head>
+  <body>
+    <metadata>
+      <ttm:desc>This test plays a 440Hz tone. Between 0s and 2s the pan varies from left to right in two steps.</ttm:desc>
+    </metadata>
+    <div>
+      <p>
+        <span>
+          <animate begin="0s" end="2s" tta:pan="-1;0;1"/>
+          <audio src="../resources/audio/ttml2-prstn-audio-gain-440hz-tone.wav" type="audio/vnd.wave"/>
+          This tone pans from left to right between 0s and 2s.</span>
+      </p>
+    </div>
+  </body>
+</tt>

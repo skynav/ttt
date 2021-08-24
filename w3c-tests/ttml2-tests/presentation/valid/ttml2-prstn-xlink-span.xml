@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#xlink (link)</ttm:desc>
+    </metadata>
+    <layout>
+      <region xml:id="area1" tts:extent="640px 120px" tts:position="center" tts:backgroundColor="#A0A0A0" tts:displayAlign="center"/>
+    </layout>
+  </head>
+  <body>
+    <div region="area1" begin="0s" end="1s">
+      <p tts:color="red" tts:fontWeight="bold" tts:fontSize="48px" tts:lineHeight="60px" tts:textAlign="center">
+        <span xlink:href="http://nowhere.org">LINK</span>
+      </p>
+    </div>
+  </body>
+</tt>

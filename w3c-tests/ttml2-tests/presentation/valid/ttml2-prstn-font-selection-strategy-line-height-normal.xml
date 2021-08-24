@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#fontSelectionStrategy</ttm:desc>
+      <ttm:desc>
+        N.B. that (1) line height normal is resolved against a paragraph's font families, including implementation
+        defined fall back fonts; (2) the TTML2 spec (10.2.27) presently says that the font selected from these families, F0,
+        is the "the first font obtained when sequentially mapping each font family in FF to a set of available fonts" and
+        that this mapping is constrained by tts:fontSelectionStrategy; (3) this specification test does not specify what
+        content to use when performing this mapping: e.g., the entire paragraph's content, the first character of the paragraph, etc.,
+        are among the possibilities; (4) CSS Fonts Module Level 4 defines "first available font" as the first font whose
+        unicode-range includes the U+0020 (SPACE) character (regardless of whether that font has a mapping of this character to a glyph);
+        (5) finally, the semantics of tts:fontSelectionStrategy="auto" are implementation dependent, and may very well be the same
+        as tts:fontSelectionStrategy="character"; (6) as a result of the aforesaid, this test is not necessarily portable among
+        different implementations: more specifically, the expectations file associated with this test was produced by an
+        implementation that assigns F0 to the first font in the font family list specified below, namely, "PT Mono", regardless
+        of paragraph content, and, as such, resolves tts:lineHeight="normal" to the same value regardless of the setting of
+        tts:fontSelectionStrategy (on the paragraph).
+      </ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="48px" tts:lineHeight="normal" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sGeometry1" tts:extent="480px 128px" tts:position="center"/>
+      <style xml:id="sGeometry2" tts:extent="480px 32px" tts:position="center bottom 10%"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout"/>
+      <region xml:id="r2" style="sGeometry2 sLayout"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <div region="r1" begin="0s" end="1s" tts:fontFamily="PT Mono,Noto Sans" tts:fontSelectionStrategy="auto">
+      <p>a&#x0300;e&#x0300;i&#x0300;o&#x0300;u&#x0300;<br/>a&#x0300;e&#x0300;i&#x0300;o&#x0300;u&#x0300;</p>
+    </div>
+    <div region="r2" begin="0s" end="1s" tts:fontSize="24px" tts:lineHeight="32px">
+      <p>auto strategy</p>
+    </div>
+    <div region="r1" begin="2s" end="3s" tts:fontFamily="PT Mono,Noto Sans" tts:fontSelectionStrategy="character">
+      <p>a&#x0300;e&#x0300;i&#x0300;o&#x0300;u&#x0300;<br/>a&#x0300;e&#x0300;i&#x0300;o&#x0300;u&#x0300;</p>
+    </div>
+    <div region="r2" begin="2s" end="3s" tts:fontSize="24px" tts:lineHeight="32px">
+      <p>per-character strategy</p>
+    </div>
+  </body>
+</tt>

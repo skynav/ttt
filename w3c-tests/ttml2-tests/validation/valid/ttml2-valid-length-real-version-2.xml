@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - non-real-number in <length> that exercises all syntactic forms (after https://github.com/w3c/ttml2/pull/944 merger) -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <style tts:fontSize="0.0px"/>     <!-- supported since TTML1 1e -->
+      <style tts:fontSize=".0px"/>      <!-- supported since TTML1 1e -->
+      <style tts:fontSize="0.px"/>      <!-- supported since TTML2 2e -->
+      <style tts:fontSize="0.0%"/>      <!-- supported since TTML1 1e -->
+      <style tts:fontSize=".0%"/>       <!-- supported since TTML1 1e -->
+      <style tts:fontSize="0.%"/>       <!-- supported since TTML2 2e -->
+    </styling>
+  </head>
+</tt>

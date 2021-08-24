@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-presentation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml1"
+    ttva:processingOptions="ttpe { treat-foreign-as: allow; }">
+  <head>
+    <metadata> 
+      <ttm:desc>Test unknown attributes in the TT namespaces.</ttm:desc>
+    </metadata>
+  </head>
+  <body>
+    <div>
+      <p tts:foo="7.5c">This text must appear.</p>
+    </div>
+  </body>
+</tt>

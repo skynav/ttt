@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#padding-region</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#C0C0C0"/>
+      <style xml:id="sBody" tts:fontSize="36px" tts:lineHeight="72px" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sGeometry1" tts:extent="480px 128px" tts:position="left 10% top 20%"/>
+      <style xml:id="sGeometry2" tts:extent="480px 128px" tts:position="right 10% top 20%"/>
+      <style xml:id="sGeometry3" tts:extent="480px 128px" tts:position="left 10% bottom 20%"/>
+      <style xml:id="sGeometry4" tts:extent="480px 128px" tts:position="right 10% bottom 20%"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout" tts:padding="28px"/>
+      <region xml:id="r2" style="sBackground sGeometry2 sLayout" tts:padding="28px 10px"/>
+      <region xml:id="r3" style="sBackground sGeometry3 sLayout" tts:padding="14px 20px 42px"/>
+      <region xml:id="r4" style="sBackground sGeometry4 sLayout" tts:padding="14px 10px 42px 20px"/>
+    </layout>
+  </head>
+  <body style="sBody" tts:backgroundColor="#A0A0A0">
+    <div region="r1" begin="0s" end="1s">
+      <p>28px</p>
+    </div>
+    <div region="r2" begin="0s" end="1s">
+      <p>28px 10px</p>
+    </div>
+    <div region="r3" begin="0s" end="1s">
+      <p>14px 20px 42px</p>
+    </div>
+    <div region="r4" begin="0s" end="1s">
+      <p>14px 10px 42px 20px</p>
+    </div>
+  </body>
+</tt>

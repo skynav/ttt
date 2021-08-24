@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- test tts:showBackground -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-presentation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:origin="560px 72px" tts:extent="160px 120px" tts:backgroundColor="#77DD77" tts:showBackground="whenActive" tts:displayAlign="center"/>
+      <region xml:id="r1" tts:origin="740px 72px" tts:extent="400px 40px" tts:showBackground="whenActive"/>
+
+      <region xml:id="r2" tts:origin="560px 300px" tts:extent="160px 120px" tts:backgroundColor="#77DD77" tts:showBackground="whenActive" tts:displayAlign="center"/>
+      <region xml:id="r3" tts:origin="740px 300px" tts:extent="400px 40px" tts:showBackground="whenActive"/>
+
+      <region xml:id="r4" tts:origin="560px 528px" tts:extent="160px 120px" tts:backgroundColor="#77DD77" tts:showBackground="always" tts:displayAlign="center"/>
+      <region xml:id="r5" tts:origin="740px 528px" tts:extent="400px 40px" tts:showBackground="whenActive"/>
+    </layout>
+  </head>
+  <body begin="1s" end="2s">
+    <div region="r0" tts:color="black" tts:fontSize="24px" tts:textAlign="center">
+      <p>X</p>
+    </div>
+    <div region="r1" tts:color="yellow" tts:fontSize="16px">
+      <p>tts:showBackground='whenActive'<br/>with content</p>
+    </div>
+    <div region="r2" tts:color="black" tts:fontSize="24px" tts:textAlign="center">
+      <p></p>
+    </div>
+    <div region="r3" tts:color="yellow" tts:fontSize="16px">
+      <p>tts:showBackground='whenActive'<br/>without content</p>
+    </div>
+    <div region="r4" tts:color="black" tts:fontSize="24px" tts:textAlign="center">
+      <p></p>
+    </div>
+    <div region="r5" tts:color="yellow" tts:fontSize="16px">
+      <p>tts:showBackground='always'<br/>without content</p>
+    </div>
+  </body>
+</tt>

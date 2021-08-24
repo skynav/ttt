@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/lengthRootContainerRelative/lengthRootContainerRelative005.ttml -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#length-root-container-relative in text shadow</ttm:desc>
+    </metadata>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="1.000001c"/>
+      <style xml:id="r1" tts:lineHeight="125%" tts:textAlign="center" tts:displayAlign="before"/>
+      <style xml:id="p1" tts:backgroundColor="black"/>
+    </styling>      
+    <layout>
+      <region xml:id="r" style="r1" tts:extent="80% 80%" tts:origin="10% 10%"/>
+    </layout>
+  </head>
+  <body region="r">
+    <div>
+      <p style="p1">
+        I serve it with greens in those 
+        <span tts:textShadow="1.5rw -1.5rh 0.5rh white">shadowy scenes,</span>
+        <br/>
+        And I use it for striking a light:
+      </p>
+    </div>
+  </body>
+</tt>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - unknown repeat count keyword on tt:set -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="14" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <animation>
+      <set repeatCount="-0"/>
+      <set repeatCount="-1"/>
+      <set repeatCount="-10"/>
+      <set repeatCount="-999999999"/>
+      <set repeatCount="-0.0"/>
+      <set repeatCount="-1.0"/>
+      <set repeatCount="-10.0"/>
+      <set repeatCount="-999999999.999999999"/>
+      <set repeatCount="-0.1"/>
+      <set repeatCount="-1.1"/>
+      <set repeatCount="-10.1"/>
+      <set repeatCount="-.0"/>
+      <set repeatCount="-.1"/>
+      <set repeatCount="-.999999999"/>
+    </animation>
+  </head>
+</tt>

@@ -1,0 +1,18 @@
+<!-- valid - all defined ttml1 parameters -->
+<tt:tt
+  xml:lang="en"
+  xml:space="default"
+  ttp:cellResolution="3 5"
+  ttp:clockMode="utc"
+  ttp:dropMode="nonDrop"
+  ttp:frameRate="30"
+  ttp:frameRateMultiplier="1000 1001"
+  ttp:markerMode="discontinuous"
+  ttp:pixelAspectRatio="4 3"
+  ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-presentation"
+  ttp:subFrameRate="2"
+  ttp:tickRate="60"
+  ttp:timeBase="media"
+  xmlns:tt="http://www.w3.org/ns/ttml"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0"/>

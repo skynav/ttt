@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fonts version="1" xmlns="http://skynav.com/ns/ttpe">
+  <font>
+    <param name="family">Noto Naskh</param>
+    <param name="language">AR</param>
+    <param name="source">NotoNaskhArabic-Regular.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+  </font>
+  <font>
+    <param name="family">Noto Naskh</param>
+    <param name="language">AR</param>
+    <param name="source">NotoNaskhArabic-Bold.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">BOLD</param>
+  </font>
+</fonts>

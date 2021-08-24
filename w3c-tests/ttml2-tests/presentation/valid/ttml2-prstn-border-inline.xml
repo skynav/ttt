@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#border-inline (unrounded)</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="10rh" tts:lineHeight="12rh" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sBorderR" tts:border="4px solid red"/>
+      <style xml:id="sBorderG" tts:border="4px solid green"/>
+      <style xml:id="sBorderB" tts:border="4px solid blue"/>
+      <style xml:id="sBorder0" tts:border="4px solid #000000"/>
+      <style xml:id="sBorder1" tts:border="4px solid #ffffff"/>
+      <style xml:id="sGeometry" tts:extent="320px 128px" tts:position="center bottom 10%"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sBorder0 sGeometry sLayout"/>
+    </layout>
+  </head>
+  <body region="r1" style="sBody sBorderR">
+    <div style="sBorderG" begin="0s" end="1s">
+      <p style="sBorderB"><span style="sBorder1">Text</span></p>
+    </div>
+  </body>
+</tt>

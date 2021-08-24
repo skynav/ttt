@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - ttp:profile - nested with mixed types -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="3" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <!-- processor profile nested in content profile not permitted -->
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter" type="content" use="ttml2-presentation">
+      <profile type="processor" use="ttml2-transformation"/>                                            <!-- not ok -->
+    </profile>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter" type="content" use="ttml2-presentation">
+      <profile use="ttml2-transformation"/>    <!-- defaults to processor type -->                      <!-- not ok -->
+    </profile>
+    <!-- content profile nested in processor profile not permitted -->
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter" type="processor" use="ttml2-presentation">
+      <profile type="content" use="ttml2-transformation"/>                                              <!-- not ok -->
+    </profile>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter" type="processor" use="ttml2-presentation">
+      <profile use="ttml2-transformation"/>    <!-- defaults to processor type -->                      <!-- ok -->
+    </profile>
+  </head>
+</tt>

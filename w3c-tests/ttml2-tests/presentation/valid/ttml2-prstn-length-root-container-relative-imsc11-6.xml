@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/lengthRootContainerRelative/lengthRootContainerRelative006.ttml -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#length-root-container-relative in text outline</ttm:desc>
+    </metadata>
+    <layout>
+      <region xml:id="r1" tts:position="center" tts:extent="60rw 45rh" tts:backgroundColor="#B0B0B0" tts:color="white"/>
+    </layout>
+  </head>
+  <body region="r1">
+    <div>
+      <p begin="0s" end="10s" tts:fontSize="10rh" tts:lineHeight="15rh" tts:textAlign="center">
+        <span tts:textOutline="black 0.5rh">This text has a 0.5rh (5%) outline that is black.</span>
+      </p>
+    </div>
+  </body>
+</tt>
