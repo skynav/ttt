@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>tts:extent with root container relative lengths on tt:region element</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="24px" tts:lineHeight="32px" tts:color="white" tts:textAlign="center"/>
+      <style xml:id="sGeometry1" tts:position="center top 10%"/>
+      <style xml:id="sGeometry2" tts:position="center top 44%"/>
+      <style xml:id="sGeometry3" tts:position="center bottom 10%"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout" tts:extent="40rw 20rh" />
+      <region xml:id="r2" style="sBackground sGeometry2 sLayout" tts:extent="50rw 25rh" />
+      <region xml:id="r3" style="sBackground sGeometry3 sLayout" tts:extent="60rw 30rh" />
+    </layout>
+  </head>
+  <body style="sBody">
+    <div region="r1" begin="0s" end="1s" tts:backgroundColor="#808080">
+      <p tts:textAlign="start">
+        Lorem ipsum dolor sit amet,<br/>
+        consectetur adipiscing elit.<br/>
+        Nunc sagittis ullamcorper porttitor.
+      </p>
+    </div>
+    <div region="r2" begin="0s" end="1s" tts:backgroundColor="#808080">
+      <p tts:textAlign="center">
+        Lorem ipsum dolor sit amet,<br/>
+        consectetur adipiscing elit.<br/>
+        Nunc sagittis ullamcorper porttitor.
+      </p>
+    </div>
+    <div region="r3" begin="0s" end="1s" tts:backgroundColor="#808080">
+      <p tts:textAlign="end">
+        Lorem ipsum dolor sit amet,<br/>
+        consectetur adipiscing elit.<br/>
+        Nunc sagittis ullamcorper porttitor.
+      </p>
+    </div>
+  </body>
+</tt>

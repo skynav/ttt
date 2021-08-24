@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/rubyReserve/rubyReserve001.ttml -->
+<tt xml:lang="ja"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="48px"/>
+      <style xml:id="s1" tts:displayAlign="before" tts:backgroundColor="black" tts:textAlign="left" tts:padding="2%"/>
+      <style xml:id="blue" tts:backgroundColor="blue"/>
+      <style xml:id="green" tts:backgroundColor="green"/>
+    </styling>
+    <layout>
+      <region xml:id="with-reserve" style="s1" tts:extent="60% 30%" tts:origin="30% 10%" tts:rubyReserve="outside"/>
+      <region xml:id="without-reserve" style="s1" tts:extent="60% 30%" tts:origin="30% 60%"/>
+    </layout>
+  </head>
+  <body>
+    <div>
+      <p region="without-reserve" begin="0s" end="1s" style="blue">
+      スペイン外人部隊の<span tts:ruby="container"><span tts:ruby="base">歌</span><span tts:ruby="text">うた</span></span>です<br/>
+      遠征でよく<span tts:ruby="container"><span tts:ruby="base">歌</span><span tts:ruby="text">うた</span></span>いました      
+      </p>
+      <p region="with-reserve" begin="0s" end="1s" style="green">
+      スペイン外人部隊の<span tts:ruby="container"><span tts:ruby="base">歌</span><span tts:ruby="text">うた</span></span>です<br/>
+      遠征でよく<span tts:ruby="container"><span tts:ruby="base">歌</span><span tts:ruby="text">うた</span></span>いました      
+      </p>
+      <p region="without-reserve" begin="1s" end="2s" style="blue">
+      スペイン外人部隊の歌です<br/>遠征でよく歌いました
+      </p>
+      <p region="with-reserve" begin="1s" end="2s" style="green">
+      スペイン外人部隊の歌です<br/>遠征でよく歌いました
+      </p>
+    </div>
+  </body>
+</tt>

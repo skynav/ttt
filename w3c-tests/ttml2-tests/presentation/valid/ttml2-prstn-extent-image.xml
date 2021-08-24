@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#extent-auto-version-2 (image)</ttm:desc>
+    </metadata>
+    <layout>
+      <region xml:id="area1" tts:extent="640px 360px" tts:position="center" tts:backgroundColor="#A0A0A0" tts:displayAlign="center"/>
+      <region xml:id="area2" tts:extent="180px 320px" tts:position="center left 70px" tts:backgroundColor="#A0A0A0" tts:displayAlign="center"/>
+      <region xml:id="area3" tts:extent="180px 320px" tts:position="center right 70px" tts:backgroundColor="#A0A0A0" tts:displayAlign="center"/>
+    </layout>
+  </head>
+  <body>
+    <div region="area1" begin="0s" end="1s">
+      <image src="../resources/images/ttml2-prstn-image.png" type="image/png" tts:extent="auto"/>
+    </div>
+    <div region="area2" begin="0s" end="1s">
+      <image src="../resources/images/ttml2-prstn-image.png" type="image/png" tts:extent="360px 640px"/>
+    </div>
+    <div region="area3" begin="0s" end="1s">
+      <image src="../resources/images/ttml2-prstn-image.png" type="image/png" tts:extent="360px 640px"/>
+    </div>
+  </body>
+</tt>

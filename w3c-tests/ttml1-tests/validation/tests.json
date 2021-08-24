@@ -1,0 +1,1039 @@
+{
+    "#animation": {
+        "valid": [
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-set-maximum-style-count-exceeded" }
+        ]
+    },
+    "#backgroundColor-block": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#backgroundColor-inline": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#backgroundColor-region": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#backgroundColor": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#bidi": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#cellResolution": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-cell-resolution-all-space" },
+            { "test": "ttml1-invld-bad-cell-resolution-delimiter" },
+            { "test": "ttml1-invld-bad-cell-resolution-empty" },
+            { "test": "ttml1-invld-bad-cell-resolution-extra-integer" },
+            { "test": "ttml1-invld-bad-cell-resolution-missing-integer" },
+            { "test": "ttml1-invld-bad-cell-resolution-negative" },
+            { "test": "ttml1-invld-bad-cell-resolution-with-units" },
+            { "test": "ttml1-invld-bad-cell-resolution-zero" }
+        ]
+    },
+    "#clockMode-gps": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#clockMode-local": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#clockMode-utc": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#clockMode": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#color": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-color-rgb-function-bad-component-syntax" },
+            { "test": "ttml1-invld-bad-color-rgb-function-extra-component" },
+            { "test": "ttml1-invld-bad-color-rgb-function-missing-component" },
+            { "test": "ttml1-invld-bad-color-rgb-function-negative-component" },
+            { "test": "ttml1-invld-bad-color-rgb-function-out-of-range-component" },
+            { "test": "ttml1-invld-bad-color-rgb-function-padded-component" },
+            { "test": "ttml1-invld-bad-color-rgb-hash-extra-digit" },
+            { "test": "ttml1-invld-bad-color-rgb-hash-garbage-after-digits" },
+            { "test": "ttml1-invld-bad-color-rgb-hash-missing-all-digits-garbage-after-hash" },
+            { "test": "ttml1-invld-bad-color-rgb-hash-missing-all-digits-hash-only" },
+            { "test": "ttml1-invld-bad-color-rgb-hash-missing-digit" },
+            { "test": "ttml1-invld-bad-color-rgb-hash-non-digit" },
+            { "test": "ttml1-invld-bad-color-rgb-hash-space-after-hash" },
+            { "test": "ttml1-invld-bad-color-rgba-function-bad-component-syntax" },
+            { "test": "ttml1-invld-bad-color-rgba-function-extra-component" },
+            { "test": "ttml1-invld-bad-color-rgba-function-missing-component" },
+            { "test": "ttml1-invld-bad-color-rgba-function-negative-component" },
+            { "test": "ttml1-invld-bad-color-rgba-function-out-of-range-component" },
+            { "test": "ttml1-invld-bad-color-rgba-function-padded-component" },
+            { "test": "ttml1-invld-bad-color-rgba-hash-extra-digit" },
+            { "test": "ttml1-invld-bad-color-rgba-hash-missing-digit" },
+            { "test": "ttml1-invld-bad-color-rgba-hash-non-digit" },
+            { "test": "ttml1-invld-bad-color-space-padded-named-color" },
+            { "test": "ttml1-invld-bad-color-space-padded-rgb-function" },
+            { "test": "ttml1-invld-bad-color-space-padded-rgb-hash" },
+            { "test": "ttml1-invld-bad-color-space-padded-rgba-function" },
+            { "test": "ttml1-invld-bad-color-space-padded-rgba-hash" },
+            { "test": "ttml1-invld-bad-color-unknown-named-color" }
+        ]
+    },
+    "#content": {
+        "valid": [
+            { "test": "ttml1-valid-all-elements" },
+            { "test": "ttml1-valid-simple" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#core": {
+        "valid": [
+            { "test": "ttml1-valid-all-elements" },
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-lang" },
+            { "test": "ttml1-invld-missing-lang" },
+            { "test": "ttml1-invld-non-unique-id" }
+        ]
+    },
+    "#direction": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#display": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#display-block": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#display-inline": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#display-region": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#displayAlign": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#dropMode": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#dropMode-dropNTSC": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#dropMode-dropPAL": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#dropMode-nonDrop": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#extent": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-extent-all-space" },
+            { "test": "ttml1-invld-bad-extent-comma-delimiter-with-whitespace" },
+            { "test": "ttml1-invld-bad-extent-empty" },
+            { "test": "ttml1-invld-bad-extent-extra-length" },
+            { "test": "ttml1-invld-bad-extent-missing-length" },
+            { "test": "ttml1-invld-bad-extent-missing-unit" },
+            { "test": "ttml1-invld-bad-extent-negative-height" },
+            { "test": "ttml1-invld-bad-extent-negative-width" },
+            { "test": "ttml1-invld-bad-extent-root-height" },
+            { "test": "ttml1-invld-bad-extent-root-width" },
+            { "test": "ttml1-invld-bad-extent-semicolon-delimiter-sans-whitespace" },
+            { "test": "ttml1-invld-bad-extent-unknown-unit" }
+        ]
+    },
+    "#extent-region": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#extent-root": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontFamily": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-font-family-empty-item-final" },
+            { "test": "ttml1-invld-bad-font-family-empty-item-medial" },
+            { "test": "ttml1-invld-bad-font-family-empty" },
+            { "test": "ttml1-invld-bad-font-family-quoted-empty" },
+            { "test": "ttml1-invld-bad-font-family-quoted-extra-unrecognized" },
+            { "test": "ttml1-invld-bad-font-family-quoted-incomplete-escape" },
+            { "test": "ttml1-invld-bad-font-family-quoted-unterminated" },
+            { "test": "ttml1-invld-bad-font-family-unquoted-bad-following" },
+            { "test": "ttml1-invld-bad-font-family-unquoted-bad-initial" },
+            { "test": "ttml1-invld-bad-font-family-unquoted-double-hyphen" },
+            { "test": "ttml1-invld-bad-font-family-unquoted-incomplete-escape" },
+            { "test": "ttml1-invld-bad-font-family-unquoted-missing-initial" },
+            { "test": "ttml1-invld-bad-font-family-unquoted-reserved-inherit" },
+            { "test": "ttml1-invld-bad-font-family-unquoted-reserved-initial" }
+        ]
+    },
+    "#fontFamily-generic": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" },
+            { "test": "ttml1-valid-font-family-quoted-generic" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontFamily-non-generic": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontSize": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-font-size-all-space" },
+            { "test": "ttml1-invld-bad-font-size-comma-delimiter-with-whitespace" },
+            { "test": "ttml1-invld-bad-font-size-empty" },
+            { "test": "ttml1-invld-bad-font-size-extra-length" },
+            { "test": "ttml1-invld-bad-font-size-missing-unit" },
+            { "test": "ttml1-invld-bad-font-size-mixed-units" },
+            { "test": "ttml1-invld-bad-font-size-negative-height" },
+            { "test": "ttml1-invld-bad-font-size-negative-width" },
+            { "test": "ttml1-invld-bad-font-size-semicolon-delimiter-sans-whitespace" },
+            { "test": "ttml1-invld-bad-font-size-unknown-unit" }
+        ]
+    },
+    "#fontSize-anamorphic": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontSize-isomorphic": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontStyle": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontStyle-italic": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontStyle-oblique": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontWeight": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#fontWeight-bold": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#frameRate": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-frame-rate-all-space" },
+            { "test": "ttml1-invld-bad-frame-rate-empty" },
+            { "test": "ttml1-invld-bad-frame-rate-negative" },
+            { "test": "ttml1-invld-bad-frame-rate-zero" }
+        ]
+    },
+    "#frameRateMultiplier": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-frame-rate-multiplier-all-space" },
+            { "test": "ttml1-invld-bad-frame-rate-multiplier-delimiter" },
+            { "test": "ttml1-invld-bad-frame-rate-multiplier-empty" },
+            { "test": "ttml1-invld-bad-frame-rate-multiplier-extra-integer" },
+            { "test": "ttml1-invld-bad-frame-rate-multiplier-missing-integer" },
+            { "test": "ttml1-invld-bad-frame-rate-multiplier-negative" },
+            { "test": "ttml1-invld-bad-frame-rate-multiplier-with-units" },
+            { "test": "ttml1-invld-bad-frame-rate-multiplier-zero" }
+        ]
+    },
+    "#layout": {
+        "valid": [
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-region-all-space" },
+            { "test": "ttml1-invld-bad-region-empty" },
+            { "test": "ttml1-invld-bad-region-idref-unresolvable" },
+            { "test": "ttml1-invld-bad-region-idref-wrong-eltype" }
+        ]
+    },
+    "#length": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-cell": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-em": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-integer": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-negative": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-percentage": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-pixel": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-positive": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#length-real": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#lineBreak-uax14": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#lineHeight": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-line-height-all-space" },
+            { "test": "ttml1-invld-bad-line-height-empty" },
+            { "test": "ttml1-invld-bad-line-height-extra-length" },
+            { "test": "ttml1-invld-bad-line-height-missing-unit" },
+            { "test": "ttml1-invld-bad-line-height-negative-height" },
+            { "test": "ttml1-invld-bad-line-height-unknown-unit" }
+        ]
+    },
+    "#markerMode": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#markerMode-continuous": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#markerMode-discontinuous": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-dur-disallowed-smpte-discontinuous" }
+        ]
+    },
+    "#metadata": {
+        "valid": [
+            { "test": "ttml1-valid-agent-idref-duplicate" },
+            { "test": "ttml1-valid-agent-missing-actor" },
+            { "test": "ttml1-valid-agent-missing-name" },
+            { "test": "ttml1-valid-all-metadata" },
+            { "test": "ttml1-valid-foreign-metadata" },
+            { "test": "ttml1-valid-role-duplicate" },
+            { "test": "ttml1-valid-role-extension" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-actor-agent-idref-multiple" },
+            { "test": "ttml1-invld-bad-actor-agent-idref-non-significant" },
+            { "test": "ttml1-invld-bad-actor-agent-idref-wrong-eltype" },
+            { "test": "ttml1-invld-bad-agent-idref-non-significant" },
+            { "test": "ttml1-invld-bad-agent-idref-wrong-eltype" },
+            { "test": "ttml1-invld-metadata-disallowed-attributes" },
+            { "test": "ttml1-invld-metadata-non-element-content" },
+            { "test": "ttml1-invld-metadata-unknown-attributes" }
+        ]
+    },
+    "#nested-div": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#nested-span": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#opacity": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" },
+            { "test": "ttml1-valid-opacity-out-of-range" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#origin": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" },
+            { "test": "ttml1-valid-origin-negative" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-origin-all-space" },
+            { "test": "ttml1-invld-bad-origin-comma-delimiter-with-whitespace" },
+            { "test": "ttml1-invld-bad-origin-empty" },
+            { "test": "ttml1-invld-bad-origin-extra-length" },
+            { "test": "ttml1-invld-bad-origin-missing-length" },
+            { "test": "ttml1-invld-bad-origin-missing-unit" },
+            { "test": "ttml1-invld-bad-origin-semicolon-delimiter-sans-whitespace" },
+            { "test": "ttml1-invld-bad-origin-unknown-unit" }
+        ]
+    },
+    "#overflow": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#overflow-visible": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#padding": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-padding-all-space" },
+            { "test": "ttml1-invld-bad-padding-comma-delimiter-with-whitespace" },
+            { "test": "ttml1-invld-bad-padding-empty" },
+            { "test": "ttml1-invld-bad-padding-extra-length" },
+            { "test": "ttml1-invld-bad-padding-missing-unit" },
+            { "test": "ttml1-invld-bad-padding-negative-before-and-after" },
+            { "test": "ttml1-invld-bad-padding-negative-start-and-end" },
+            { "test": "ttml1-invld-bad-padding-semicolon-delimiter-sans-whitespace" },
+            { "test": "ttml1-invld-bad-padding-unknown-unit" }
+        ]
+    },
+    "#padding-1": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#padding-2": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-padding-missing-unit" },
+            { "test": "ttml1-invld-bad-padding-negative-before-and-after" },
+            { "test": "ttml1-invld-bad-padding-negative-start-and-end" },
+            { "test": "ttml1-invld-bad-padding-semicolon-delimiter-sans-whitespace" },
+            { "test": "ttml1-invld-bad-padding-unknown-unit" }
+        ]
+    },
+    "#padding-3": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#padding-4": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#pixelAspectRatio": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-pixel-aspect-ratio-all-space" },
+            { "test": "ttml1-invld-bad-pixel-aspect-ratio-delimiter" },
+            { "test": "ttml1-invld-bad-pixel-aspect-ratio-empty" },
+            { "test": "ttml1-invld-bad-pixel-aspect-ratio-extra-integer" },
+            { "test": "ttml1-invld-bad-pixel-aspect-ratio-missing-integer" },
+            { "test": "ttml1-invld-bad-pixel-aspect-ratio-negative" },
+            { "test": "ttml1-invld-bad-pixel-aspect-ratio-with-units" },
+            { "test": "ttml1-invld-bad-pixel-aspect-ratio-zero" }
+        ]
+    },
+    "#presentation": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#profile": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" },
+            { "test": "ttml1-valid-all-profiles" },
+            { "test": "ttml1-valid-extension-non-standard" },
+            { "test": "ttml1-valid-extensions-base-other-namespace" },
+            { "test": "ttml1-valid-profile-attribute-ignored" },
+            { "test": "ttml1-valid-profile-attribute-non-standard" },
+            { "test": "ttml1-valid-profile-extension-non-standard-in-other-namespace" },
+            { "test": "ttml1-valid-profile-missing" },
+            { "test": "ttml1-valid-profile-non-standard" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-extension-empty-designation-token" },
+            { "test": "ttml1-invld-bad-extension-missing-designation" },
+            { "test": "ttml1-invld-bad-extension-unknown-designation-token" },
+            { "test": "ttml1-invld-bad-extensions-base-empty" },
+            { "test": "ttml1-invld-bad-extensions-base-non-absolute" },
+            { "test": "ttml1-invld-bad-extensions-base-syntax" },
+            { "test": "ttml1-invld-bad-feature-empty-designation-token" },
+            { "test": "ttml1-invld-bad-feature-missing-designation" },
+            { "test": "ttml1-invld-bad-feature-unknown-designation-token" },
+            { "test": "ttml1-invld-bad-feature-unknown-namespace" },
+            { "test": "ttml1-invld-bad-features-base-empty" },
+            { "test": "ttml1-invld-bad-features-base-non-absolute" },
+            { "test": "ttml1-invld-bad-features-base-syntax" },
+            { "test": "ttml1-invld-bad-features-base-unknown-namespace" },
+            { "test": "ttml1-invld-bad-profile-attribute-empty" },
+            { "test": "ttml1-invld-bad-profile-attribute-syntax" },
+            { "test": "ttml1-invld-bad-profile-attribute-unknown-absolute-designator" },
+            { "test": "ttml1-invld-bad-profile-attribute-unknown-relative-designator" },
+            { "test": "ttml1-invld-bad-profile-extension-empty-designation" },
+            { "test": "ttml1-invld-bad-profile-extension-missing-designation" },
+            { "test": "ttml1-invld-bad-profile-extension-unknown-designation" },
+            { "test": "ttml1-invld-bad-profile-extension-unknown-value" },
+            { "test": "ttml1-invld-bad-profile-feature-empty-designation" },
+            { "test": "ttml1-invld-bad-profile-feature-missing-designation" },
+            { "test": "ttml1-invld-bad-profile-feature-unknown-designation" },
+            { "test": "ttml1-invld-bad-profile-feature-unknown-value" },
+            { "test": "ttml1-invld-bad-profile-use-attribute-empty" },
+            { "test": "ttml1-invld-bad-profile-use-attribute-syntax" },
+            { "test": "ttml1-invld-bad-profile-use-attribute-unknown-absolute-designator" },
+            { "test": "ttml1-invld-bad-profile-use-attribute-unknown-relative-designator" }
+        ]
+    },
+    "#showBackground": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#structure": {
+        "valid": [
+            { "test": "ttml1-valid-all-elements" },
+            { "test": "ttml1-valid-foreign" },
+            { "test": "ttml1-valid-simple" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-non-well-formed-start-tag" },
+            { "test": "ttml1-invld-non-well-formed-xml-declaration" }
+        ]
+    },
+    "#styling": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" },
+            { "test": "ttml1-valid-style-idref-duplicate-with-intervening" },
+            { "test": "ttml1-valid-style-idref-duplicate-without-intervening" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-style-all-space" },
+            { "test": "ttml1-invld-bad-style-empty" },
+            { "test": "ttml1-invld-bad-style-idref-loop-length-1" },
+            { "test": "ttml1-invld-bad-style-idref-loop-length-2" },
+            { "test": "ttml1-invld-bad-style-idref-loop-length-4" },
+            { "test": "ttml1-invld-bad-style-idref-non-significant" },
+            { "test": "ttml1-invld-bad-style-idref-unresolvable" },
+            { "test": "ttml1-invld-bad-style-idref-wrong-eltype" },
+            { "test": "ttml1-invld-style-disallowed-attributes" },
+            { "test": "ttml1-invld-style-unknown-attributes" }
+        ]
+    },
+    "#styling-chained": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-inheritance-content": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-inheritance-region": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-inline": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-nested": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#styling-referential": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#subFrameRate": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-sub-frame-rate-all-space" },
+            { "test": "ttml1-invld-bad-sub-frame-rate-empty" },
+            { "test": "ttml1-invld-bad-sub-frame-rate-negative" },
+            { "test": "ttml1-invld-bad-sub-frame-rate-zero" }
+        ]
+    },
+    "#textAlign": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textAlign-absolute": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textAlign-relative": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textDecoration": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textDecoration-over": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textDecoration-through": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textDecoration-under": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#textOutline": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-text-outline-all-space" },
+            { "test": "ttml1-invld-bad-text-outline-bad-blur-color" },
+            { "test": "ttml1-invld-bad-text-outline-bad-blur-missing-units" },
+            { "test": "ttml1-invld-bad-text-outline-bad-blur-negative" },
+            { "test": "ttml1-invld-bad-text-outline-bad-thickness-color" },
+            { "test": "ttml1-invld-bad-text-outline-bad-thickness-missing-units" },
+            { "test": "ttml1-invld-bad-text-outline-bad-thickness-negative" },
+            { "test": "ttml1-invld-bad-text-outline-empty" },
+            { "test": "ttml1-invld-bad-text-outline-missing-thickness" }
+        ]
+    },
+    "#textOutline-blurred": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-text-outline-bad-blur-color" },
+            { "test": "ttml1-invld-bad-text-outline-bad-blur-missing-units" },
+            { "test": "ttml1-invld-bad-text-outline-bad-blur-negative" }
+        ]
+    },
+    "#textOutline-unblurred": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-text-outline-all-space" },
+            { "test": "ttml1-invld-bad-text-outline-bad-thickness-color" },
+            { "test": "ttml1-invld-bad-text-outline-bad-thickness-missing-units" },
+            { "test": "ttml1-invld-bad-text-outline-bad-thickness-negative" },
+            { "test": "ttml1-invld-bad-text-outline-empty" },
+            { "test": "ttml1-invld-bad-text-outline-missing-thickness" }
+        ]
+    },
+    "#tickRate": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-tick-rate-all-space" },
+            { "test": "ttml1-invld-bad-tick-rate-empty" },
+            { "test": "ttml1-invld-bad-tick-rate-negative" },
+            { "test": "ttml1-invld-bad-tick-rate-zero" }
+        ]
+    },
+    "#time-clock": {
+        "valid": [
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-begin-clock-time-extra-part-empty" },
+            { "test": "ttml1-invld-bad-begin-clock-time-extra-part" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-empty" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-exceeds-frame-rate" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-extra-sub-part" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-in-clock-mode" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-missing-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-non-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-sub-frame-exceeds-sub-frame-rate" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-sub-frame-sub-part-empty" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-sub-frame-sub-part-non-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-whole-sub-part-empty" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-whole-sub-part-missing-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-frames-whole-sub-part-non-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-hours-empty-with-minutes-and-seconds" },
+            { "test": "ttml1-invld-bad-begin-clock-time-hours-empty-with-minutes-only" },
+            { "test": "ttml1-invld-bad-begin-clock-time-hours-missing-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-hours-non-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-internal-whitespace" },
+            { "test": "ttml1-invld-bad-begin-clock-time-minutes-empty-with-seconds" },
+            { "test": "ttml1-invld-bad-begin-clock-time-minutes-empty-without-seconds" },
+            { "test": "ttml1-invld-bad-begin-clock-time-minutes-exceeds-59" },
+            { "test": "ttml1-invld-bad-begin-clock-time-minutes-extra-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-minutes-missing-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-minutes-non-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-empty" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-exceeds-60-with-fraction" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-exceeds-60" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-extra-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-extra-sub-part" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-fraction-sub-part-empty" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-fraction-sub-part-non-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-missing-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-missing" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-non-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-whole-sub-part-empty" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-whole-sub-part-missing-digit" },
+            { "test": "ttml1-invld-bad-begin-clock-time-seconds-whole-sub-part-non-digit" }
+        ]
+    },
+    "#time-clock-with-frames": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#time-offset": {
+        "valid": [
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-begin-offset-time-fraction-part-empty-with-metric" },
+            { "test": "ttml1-invld-bad-begin-offset-time-fraction-part-empty-without-metric" },
+            { "test": "ttml1-invld-bad-begin-offset-time-frames-in-clock-mode" },
+            { "test": "ttml1-invld-bad-begin-offset-time-garbage-after-metric" },
+            { "test": "ttml1-invld-bad-begin-offset-time-metric-non-letter-with-fraction" },
+            { "test": "ttml1-invld-bad-begin-offset-time-metric-non-letter-without-fraction" },
+            { "test": "ttml1-invld-bad-begin-offset-time-missing-metric-with-fraction" },
+            { "test": "ttml1-invld-bad-begin-offset-time-missing-metric-without-fraction" },
+            { "test": "ttml1-invld-bad-begin-offset-time-non-digit" },
+            { "test": "ttml1-invld-bad-begin-offset-time-unknown-metric-wrong-case" },
+            { "test": "ttml1-invld-bad-begin-offset-time-unknown-metric" }
+        ]
+    },
+    "#time-offset-with-frames": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#time-offset-with-ticks": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timeBase-clock": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timeBase-media": {
+        "valid": [
+            { "test": "ttml1-valid-all-parameters" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#timeBase-smpte": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timeContainer": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#timing": {
+        "valid": [
+            { "test": "ttml1-valid-all-timing" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-begin-empty" },
+            { "test": "ttml1-invld-bad-dur-disallowed-smpte-discontinuous" }
+        ]
+    },
+    "#transformation": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#unicodeBidi": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-unicode-bidi-all-space" },
+            { "test": "ttml1-invld-bad-unicode-bidi-empty" },
+            { "test": "ttml1-invld-bad-unicode-bidi-unknown-keyword" }
+        ]
+    },
+    "#visibility": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#visibility-block": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#visibility-inline": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#visibility-region": {
+        "valid": [
+        ],
+        "invalid": [
+        ]
+    },
+    "#wrapOption": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode-horizontal": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode-horizontal-lr": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode-horizontal-rl": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode-vertical": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#writingMode": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+        ]
+    },
+    "#zIndex": {
+        "valid": [
+            { "test": "ttml1-valid-all-styles" }
+        ],
+        "invalid": [
+            { "test": "ttml1-invld-bad-z-index-all-space" },
+            { "test": "ttml1-invld-bad-z-index-empty" },
+            { "test": "ttml1-invld-bad-z-index-extra-integer" },
+            { "test": "ttml1-invld-bad-z-index-non-integer-real" },
+            { "test": "ttml1-invld-bad-z-index-non-integer-token" }
+        ]
+    }
+}

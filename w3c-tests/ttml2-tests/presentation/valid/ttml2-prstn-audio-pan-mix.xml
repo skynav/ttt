@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tta="http://www.w3.org/ns/ttml#audio"
+    ttp:profile="ttml2-presentation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+  </head>
+  <body>
+    <div>
+      <metadata>
+        <ttm:desc>This test plays a 440Hz tone. Between 1s and 3s the sound is panned to the left and an audio file is played panned to the right.</ttm:desc>
+      </metadata>
+      <audio src="../resources/audio/ttml2-prstn-audio-gain-440hz-tone.wav" type="audio/vnd.wave"/>
+      <p begin="1s" end="3s" tta:pan="-1">
+        <span>
+          <audio src="../resources/audio/ttml2-prstn-audio-pan-audio-only-on-right.mp3" type="audio/mpeg" tta:pan="1"/>
+          This is normal volume</span>
+      </p>
+    </div>
+    <div>
+      <p>This text should not result in any audio.</p>
+    </div>
+  </body>
+</tt>

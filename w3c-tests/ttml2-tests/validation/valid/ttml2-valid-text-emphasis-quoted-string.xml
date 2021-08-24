@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:textEmphasis - #textEmphasis-quoted-string values (not exhaustive) -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <!-- use &#x25B2; (BLACK UP-POINTING TRIANGLE) in quoted string -->
+      <style tts:textEmphasis="'&#x25B2;'"/>
+      <style tts:textEmphasis="'&#x25B2;' before"/>
+      <style tts:textEmphasis="'&#x25B2;' after"/>
+      <style tts:textEmphasis="'&#x25B2;' outside"/>
+      <style tts:textEmphasis="before '&#x25B2;'"/>
+      <style tts:textEmphasis="after '&#x25B2;'"/>
+      <style tts:textEmphasis="outside '&#x25B2;'"/>
+      <style tts:textEmphasis='"&#x25B2;"'/>
+      <style tts:textEmphasis='"&#x25B2;" before'/>
+      <style tts:textEmphasis='"&#x25B2;" after'/>
+      <style tts:textEmphasis='"&#x25B2;" outside'/>
+      <style tts:textEmphasis='before "&#x25B2;"'/>
+      <style tts:textEmphasis='after "&#x25B2;"'/>
+      <style tts:textEmphasis='outside "&#x25B2;"'/>
+    </styling>
+  </head>
+</tt>

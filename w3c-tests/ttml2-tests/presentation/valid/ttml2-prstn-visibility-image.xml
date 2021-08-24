@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/image/image001.ttml -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#visibility-image</ttm:desc>
+    </metadata>
+    <layout>
+      <region xml:id="area1" tts:origin="320px 120px" tts:extent="640px 120px" tts:backgroundColor="#A0A0A0"/>
+      <region xml:id="area2" tts:origin="320px 480px" tts:extent="640px 120px" tts:backgroundColor="#A0A0A0"/>
+    </layout>
+  </head>
+  <body>
+    <div region="area1" begin="0s" end="1s">
+      <image src="../resources/images/ttml2-prstn-image-imsc11-1.png" type="image/png" tts:visibility="visible"/>
+    </div>
+    <div region="area2" begin="0s" end="1s">
+      <image src="../resources/images/ttml2-prstn-image-imsc11-1.png" type="image/png" tts:visibility="hidden"/>
+    </div>
+  </body>
+</tt>

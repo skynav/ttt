@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - isd:sequence - bad @version value - zero (0) -->
+<isd:sequence xml:lang="" xmlns:isd="http://www.w3.org/ns/ttml#isd" version="0"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="1" ttva:expectedWarnings="0" ttva:model="ttml2"/>

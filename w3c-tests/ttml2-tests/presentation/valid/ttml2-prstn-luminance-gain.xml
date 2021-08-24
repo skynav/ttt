@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#luminanceGain</ttm:desc>
+    </metadata>
+    <layout>
+      <region tts:displayAlign="center" tts:backgroundColor="black" tts:color="white" tts:textAlign="center" xml:id="r1" tts:luminanceGain="4"/>
+    </layout>
+  </head>
+  <body>
+    <div region="r1" begin="0s" end="1s">
+      <p tts:fontSize="72px" tts:lineHeight="94px">
+        &#x2588;
+      </p>
+      <p tts:fontSize="24px" tts:lineHeight="30px">
+        Display pixels at the center of the rectangle above should have
+        an RGB value of (0xA0, 0xA0, 0xA0) when encoded using the
+        Reference PQ EOTF and full-range quantization over 8-bits.
+      </p>
+    </div>
+  </body>
+</tt>

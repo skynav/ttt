@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - inline region in block contexts (div and p) - timing attributes not permitted on region -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="8" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head/>
+  <body>
+    <div>
+      <region begin="0s"/>
+    </div>
+    <div>
+      <region end="0s"/>
+    </div>
+    <div>
+      <region dur="0s"/>
+    </div>
+    <div>
+      <region timeContainer="par"/>
+    </div>
+    <div>
+      <p>
+        <region begin="0s"/>
+      </p>
+      <p>
+        <region end="0s"/>
+      </p>
+      <p>
+        <region dur="0s"/>
+      </p>
+      <p>
+        <region timeContainer="par"/>
+      </p>
+    </div>
+  </body>
+</tt>

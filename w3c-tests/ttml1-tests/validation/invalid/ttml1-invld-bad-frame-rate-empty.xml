@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad ttp:frameRate value - empty -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-transformation" ttp:frameRate=""
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head/>
+  <body/>
+</tt>

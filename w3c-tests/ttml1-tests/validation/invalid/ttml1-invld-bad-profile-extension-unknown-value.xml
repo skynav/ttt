@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - unknown extension value attribute -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="ttml1"
+    ttva:noWarnOn="references-other-extension-namespace references-non-standard-extension">
+  <head>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter">
+      <extensions>
+        <extension value="unknown">http://example.com/ns/ttml/extension/#myExtension</extension>
+      </extensions>
+    </profile>
+  </head>
+</tt>

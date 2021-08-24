@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:opacity - out of range values - should produce 5 warnings -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="5">
+  <head/>
+  <body>
+    <div tts:opacity="NaN"/>
+    <div tts:opacity="-INF"/>
+    <div tts:opacity="-.0000001"/>
+    <div tts:opacity="1.0000001"/>
+    <div tts:opacity="INF"/>
+  </body>
+</tt>

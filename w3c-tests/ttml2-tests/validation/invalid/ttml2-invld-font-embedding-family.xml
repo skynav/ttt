@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - tt:font - @family - use of generic family name - edition(2) -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="8" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <resources>
+      <font src="../resources/test.otf" type="font/otf" family="default"/>
+      <font src="../resources/test.otf" type="font/otf" family="monospace"/>
+      <font src="../resources/test.otf" type="font/otf" family="sansSerif"/>
+      <font src="../resources/test.otf" type="font/otf" family="serif"/>
+      <font src="../resources/test.otf" type="font/otf" family="monospaceSansSerif"/>
+      <font src="../resources/test.otf" type="font/otf" family="monospaceSerif"/>
+      <font src="../resources/test.otf" type="font/otf" family="proportionalSansSerif"/>
+      <font src="../resources/test.otf" type="font/otf" family="proportionalSerif"/>
+    </resources>
+  </head>
+  <body/>
+</tt>

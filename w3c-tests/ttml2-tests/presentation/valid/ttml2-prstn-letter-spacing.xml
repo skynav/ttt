@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#letterSpacing</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="48px" tts:lineHeight="72px" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sGeometry1" tts:extent="480px 128px" tts:position="left 10% top 10%"/>
+      <style xml:id="sGeometry2" tts:extent="480px 128px" tts:position="left 10% center"/>
+      <style xml:id="sGeometry3" tts:extent="480px 128px" tts:position="right 10% top 10%"/>
+      <style xml:id="sGeometry4" tts:extent="480px 128px" tts:position="right 10% center"/>
+      <style xml:id="sGeometry5" tts:extent="480px 32px" tts:position="center bottom 10%"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout"/>
+      <region xml:id="r2" style="sBackground sGeometry2 sLayout"/>
+      <region xml:id="r3" style="sBackground sGeometry3 sLayout"/>
+      <region xml:id="r4" style="sBackground sGeometry4 sLayout"/>
+      <region xml:id="r5" style="sGeometry5 sLayout"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <!-- interval [0,1) -->
+    <div region="r1" begin="0s" end="1s" tts:fontKerning="normal" tts:letterSpacing="0px">
+      <p>AVATAR</p>
+    </div>
+    <div region="r2" begin="0s" end="1s" tts:fontKerning="normal" tts:letterSpacing="6px">
+      <p>AVATAR</p>
+    </div>
+    <div region="r3" begin="0s" end="1s" tts:fontKerning="normal" tts:letterSpacing="12px">
+      <p>AVATAR</p>
+    </div>
+    <div region="r4" begin="0s" end="1s" tts:fontKerning="normal" tts:letterSpacing="24px">
+      <p>AVATAR</p>
+    </div>
+    <div region="r5" begin="0s" end="1s" tts:fontSize="24px" tts:lineHeight="32px">
+      <p>letter spacing + kerning</p>
+    </div>
+    <!-- interval [2,3) -->
+    <div region="r1" begin="2s" end="3s" tts:fontKerning="none" tts:letterSpacing="0px">
+      <p>AVATAR</p>
+    </div>
+    <div region="r2" begin="2s" end="3s" tts:fontKerning="none" tts:letterSpacing="6px">
+      <p>AVATAR</p>
+    </div>
+    <div region="r3" begin="2s" end="3s" tts:fontKerning="none" tts:letterSpacing="12px">
+      <p>AVATAR</p>
+    </div>
+    <div region="r4" begin="2s" end="3s" tts:fontKerning="none" tts:letterSpacing="24px">
+      <p>AVATAR</p>
+    </div>
+    <div region="r5" begin="2s" end="3s" tts:fontSize="24px" tts:lineHeight="32px">
+      <p>letter spacing - kerning</p>
+    </div>
+  </body>
+</tt>

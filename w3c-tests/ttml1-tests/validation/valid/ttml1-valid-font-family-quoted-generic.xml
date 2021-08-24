@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - tts:fontFamily - uses quoted generic family name - should produce 1 warning with warn-on all -->
+<tt xml:lang=""
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:profile="http://www.w3.org/ns/ttml/profile/dfxp-full"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="1">
+  <head/>
+  <body>
+    <div tts:fontFamily="'default'"/>
+  </body>
+</tt>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/textCombine/textCombine001.ttml -->
+<tt xml:lang="ja"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="48px"/>
+      <style xml:id="s1" tts:backgroundColor="black" tts:textAlign="center" tts:displayAlign="center" tts:writingMode="tbrl"/>
+    </styling>
+    <layout>
+      <region style="s1" xml:id="tbrlLeft" tts:extent="10% 80%" tts:position="left 20% center" />
+      <region style="s1" xml:id="tbrlRight" tts:extent="10% 80%" tts:position="right 20% center" />
+    </layout>
+  </head>
+  <body>
+    <div begin="0s" end="1s">
+      <p region="tbrlLeft">あい<span tts:textCombine="none">AB34</span>三四</p>
+      <p region="tbrlRight">あい<span tts:textCombine="all">AB34</span>三四</p>
+    </div>
+  </body>
+</tt>

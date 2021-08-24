@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - wall clock time expressions - wall-time subset -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    ttp:timeBase="clock"
+    ttp:clockMode="utc"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head/>
+  <body>
+    <div begin="wallclock(00:00:00)"/>
+    <div begin="wallclock(00:00:00.0)"/>
+    <div begin="wallclock(23:59:59)"/>
+    <div begin="wallclock(23:59:59.999999999)"/>
+    <div begin="wallclock(23:59:60)"/>
+    <div begin="wallclock(23:59:60.0)"/>
+  </body>
+</tt>

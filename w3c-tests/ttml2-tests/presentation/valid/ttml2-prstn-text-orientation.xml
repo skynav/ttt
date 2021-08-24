@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="ja"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#textOrientation</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="24px" tts:lineHeight="32px" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sGeometry1" tts:extent="128px 480px" tts:position="center right 10%"/>
+      <style xml:id="sGeometry2" tts:extent="128px 480px" tts:position="center"/>
+      <style xml:id="sGeometry3" tts:extent="128px 480px" tts:position="center left 10%"/>
+      <style xml:id="sLayout" tts:writingMode="tbrl" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout"/>
+      <region xml:id="r2" style="sBackground sGeometry2 sLayout"/>
+      <region xml:id="r3" style="sBackground sGeometry3 sLayout"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <div region="r1" begin="0s" end="1s">
+      <p tts:textOrientation="mixed">月火水Abc<br/>def木金土</p>
+    </div>
+    <div region="r2" begin="0s" end="1s">
+      <p tts:textOrientation="upright">月火水Abc<br/>def木金土</p>
+    </div>
+    <div region="r3" begin="0s" end="1s">
+      <p tts:textOrientation="sideways">月火水Abc<br/>def木金土</p>
+    </div>
+  </body>
+</tt>

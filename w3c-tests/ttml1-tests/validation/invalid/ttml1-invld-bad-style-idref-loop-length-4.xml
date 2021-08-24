@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad @style - idref references - style has a circular style reference chain of length 4 -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-transformation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="4" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head>
+    <styling>
+      <style xml:id="s0"/>
+      <style xml:id="s1" style="s0"/>
+      <style xml:id="s2" style="s0 s3 s1"/>
+      <style xml:id="s3" style="s0 s4 s1"/>
+      <style xml:id="s4" style="s0 s5 s1"/>
+      <style xml:id="s5" style="s0 s2 s1"/>
+    </styling>
+  </head>
+  <body/>
+</tt>

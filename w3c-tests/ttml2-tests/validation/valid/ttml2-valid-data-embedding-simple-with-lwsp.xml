@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - use tt:data simple data embedding in data defining context (resources) - with interleaved lwsp -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <resources>
+      <data xml:id="data1" type="application/octet-stream" length="10">
+        V&#x0009;E&#x0009;V&#x0009;T&#x0009;V&#x0009;C&#x0009;A&#x0009;x&#x0009;I&#x0009;D&#x0009;I&#x0009;g&#x0009;M&#x0009;w&#x0009;=&#x0009;=
+      </data>
+      <data xml:id="data2" type="application/octet-stream" length="10">
+        V&#x000A;E&#x000A;V&#x000A;T&#x000A;V&#x000A;C&#x000A;A&#x000A;x&#x000A;I&#x000A;D&#x000A;I&#x000A;g&#x000A;M&#x000A;w&#x000A;=&#x000A;=
+      </data>
+      <data xml:id="data3" type="application/octet-stream" length="10">
+        V&#x000D;E&#x000D;V&#x000D;T&#x000D;V&#x000D;C&#x000D;A&#x000D;x&#x000D;I&#x000D;D&#x000D;I&#x000D;g&#x000D;M&#x000D;w&#x000D;=&#x000D;=
+      </data>
+      <data xml:id="data4" type="application/octet-stream" length="10">
+        V&#x0020;E&#x0020;V&#x0020;T&#x0020;V&#x0020;C&#x0020;A&#x0020;x&#x0020;I&#x0020;D&#x0020;I&#x0020;g&#x0020;M&#x0020;w&#x0020;=&#x0020;=
+      </data>
+    </resources>
+  </head>
+  <body/>
+</tt>

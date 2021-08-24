@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#fontVariant (half-width and full-width)</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="48px" tts:lineHeight="72px" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sGeometry1" tts:extent="640px 128px" tts:position="center"/>
+      <style xml:id="sGeometry2" tts:extent="640px 32px" tts:position="center bottom 10%"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout"/>
+      <region xml:id="r2" style="sGeometry2 sLayout"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <div xml:lang="ja" region="r1" begin="0s" end="1s" tts:fontVariant="half">
+      <!-- specify full-width katakana characters, to be converted to half-width variant glyphs -->
+      <p>&#x30A2;&#x30A4;&#x30A6;&#x30A8;&#x30AA;&#x30FB;&#x30AB;&#x30AD;&#x30AF;&#x30B1;&#x30B3;</p>
+    </div>
+    <div region="r2" begin="0s" end="1s" tts:fontSize="24px" tts:lineHeight="32px">
+      <p>half width variants</p>
+    </div>
+      <!-- specify half-width katakana characters, to be converted to full-width variant glyphs -->
+    <div xml:lang="ja" region="r1" begin="2s" end="3s" tts:fontVariant="full">
+      <p>&#xFF71;&#xFF72;&#xFF73;&#xFF74;&#xFF75;&#x30FB;&#xFF76;&#xFF77;&#xFF79;&#xFF79;&#xFF7A;</p>
+    </div>
+    <div region="r2" begin="2s" end="3s" tts:fontSize="24px" tts:lineHeight="32px">
+      <p>full width variants</p>
+    </div>
+  </body>
+</tt>

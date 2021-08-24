@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - extension - non-standard extension - should produce 2 warnings with warn-on all -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="2">
+  <head>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter">
+      <extensions>
+        <extension>http://example.com/ns/ttml/extension/#foo</extension>
+      </extensions>
+    </profile>
+  </head>
+</tt>

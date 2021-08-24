@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/displayAspectRatio/displayAspectRatio004.ttml -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    ttp:displayAspectRatio="16 9"
+    tts:extent="160px 90px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#display-aspect-ratio (16:9) with image content</ttm:desc>
+    </metadata>
+    <layout>
+      <region xml:id="area1" tts:extent="160px 90px"/>
+    </layout>
+  </head>
+  <body>
+    <div begin="1s" end="9s" region="area1">
+      <image src="../resources/images/ttml2-prstn-display-aspect-ratio-imsc11-4.png" type="image/png"/>
+    </div>
+  </body>
+</tt>

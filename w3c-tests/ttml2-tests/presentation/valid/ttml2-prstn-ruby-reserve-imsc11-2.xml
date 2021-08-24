@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/rubyReserve/rubyReserve002.ttml -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>tts:rubyReserve lengths</ttm:desc>
+    </metadata>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="48px"/>
+      <style xml:id="s1" tts:displayAlign="before" tts:backgroundColor="black" tts:textAlign="left" tts:padding="2%"/>
+      <style xml:id="blue" tts:backgroundColor="blue"/>
+    </styling>
+    <layout>
+      <region xml:id="top" style="s1" tts:extent="60% 46%" tts:origin="30% 2%"/>
+      <region xml:id="bottom" style="s1" tts:extent="60% 46%" tts:origin="30% 52%"/>
+    </layout>
+  </head>
+  <body>
+    <div>
+      <p region="top" begin="0s" end="4s" style="blue"  tts:rubyReserve="outside">
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">default length</span></span><br/>
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">outside</span></span>
+      </p>
+      <p region="bottom" begin="0s" end="1s" style="blue" tts:rubyReserve="outside 1em">
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">1em length</span></span><br/>
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">outside</span></span>
+      </p>
+      <p region="bottom" begin="1s" end="2s" style="blue" tts:rubyReserve="outside 100%">
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">100% length</span></span><br/>
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">outside</span></span>
+      </p>
+      <p region="bottom" begin="2s" end="3s" style="blue" tts:rubyReserve="outside 72px">
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">72px length</span></span><br/>
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">outside</span></span>
+      </p>
+      <p region="bottom" begin="3s" end="4s" style="blue" tts:rubyReserve="outside 6.7rh">
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">6.7rh length</span></span><br/>
+        <span tts:ruby="container"><span tts:ruby="base">rubyReserve</span><span tts:ruby="text">outside</span></span>
+      </p>
+    </div>
+  </body>
+</tt>

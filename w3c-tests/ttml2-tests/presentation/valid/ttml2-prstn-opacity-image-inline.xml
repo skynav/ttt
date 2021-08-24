@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#opacity-image</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+      <style xml:id="sBody" tts:fontSize="36px" tts:lineHeight="48px" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sInfo" tts:fontSize="18px" tts:lineHeight="20px"/>
+      <style xml:id="sDiv1"/>
+      <style xml:id="sDiv2"/>
+      <style xml:id="sDiv3"/>
+      <style xml:id="sGeometry1" tts:extent="480px 128px" tts:position="center top 10%"/>
+      <style xml:id="sGeometry2" tts:extent="480px 128px" tts:position="center"/>
+      <style xml:id="sGeometry3" tts:extent="480px 128px" tts:position="center bottom 10%"/>
+      <style xml:id="sLayout" tts:displayAlign="center"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" style="sBackground sGeometry1 sLayout"/>
+      <region xml:id="r2" style="sBackground sGeometry2 sLayout"/>
+      <region xml:id="r3" style="sBackground sGeometry3 sLayout"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <div region="r1" style="sDiv1" begin="0s" end="1s">
+      <p>A flag <image src="../resources/images/icons8-france-48.png" type="image/png" tts:opacity="0.25"/> icon.</p>
+      <p style="sInfo">25% Opacity</p>
+    </div>
+    <div region="r2" style="sDiv2" begin="0s" end="1s">
+      <p>A flag <image src="../resources/images/icons8-germany-48.png" type="image/png" tts:opacity="0.5"/> icon.</p>
+      <p style="sInfo">50% Opacity</p>
+    </div>
+    <div region="r3" style="sDiv3" begin="0s" end="1s">
+      <p>A flag <image src="../resources/images/icons8-united-kingdom-48.png" type="image/png" tts:opacity="1.0"/> icon.</p>
+      <p style="sInfo">100% Opacity</p>
+    </div>
+  </body>
+</tt>

@@ -1,0 +1,53 @@
+<!-- valid - all defined ttml metadata items in all permitted contexts -->
+<tt
+  xml:lang="en"
+  xmlns="http://www.w3.org/ns/ttml"
+  xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+  xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+  xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="1">
+  <head>
+    <metadata/>
+    <ttm:title>A Title</ttm:title>
+    <ttm:desc>This example TTML document attempts to use metadata in every permitted context.</ttm:desc>
+    <ttm:copyright>Never and Anon.</ttm:copyright>
+    <ttm:agent xml:id="connery" type="person">
+      <ttm:name type="full">Sir Thomas Sean Connery</ttm:name>
+    </ttm:agent>
+    <ttm:agent xml:id="bond" type="character">
+      <ttm:name type="alias">007</ttm:name>
+      <ttm:actor agent="connery"/>
+    </ttm:agent>
+    <ttp:profile use="dfxp-full">
+      <metadata/>
+      <ttp:features>
+        <metadata/>
+      </ttp:features>
+      <ttp:extensions>
+        <metadata/>
+      </ttp:extensions>
+    </ttp:profile>
+    <styling>
+      <metadata/>
+    </styling>
+    <layout>
+      <metadata/>
+      <region>
+        <metadata/>
+      </region>
+    </layout>
+  </head>
+  <body ttm:role="action" ttm:agent="bond">
+    <metadata ttm:role="x-custom" ttm:agent="bond"/>
+    <set>
+      <metadata/>
+    </set>
+    <div ttm:role="description" ttm:agent="bond">
+      <metadata/>
+      <p ttm:agent="bond" ttm:role="dialog">
+        <metadata/>
+        <span ttm:role="expletive" ttm:agent="bond"><metadata/></span>
+        <br ttm:role="kinesic lyrics music narration quality sound source suppressed reproduction thought title transcription" ttm:agent="bond"><metadata/></br>
+      </p>
+    </div>
+  </body>
+</tt>

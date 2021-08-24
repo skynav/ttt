@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/textEmphasis/textEmphasis001.ttml -->
+<tt xml:lang="ja"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="48px"/>
+    </styling>
+    <layout>
+      <region xml:id="r1" tts:displayAlign="center" tts:textAlign="center" tts:backgroundColor="black" tts:position="center center" tts:extent="40% 40%"/>
+    </layout>
+  </head>
+  <body>
+    <div region="r1">
+      <p begin="0s" end="1s">
+        <span tts:textEmphasis="filled circle">花</span>
+        <span tts:textEmphasis="filled dot">よ</span>
+        <span tts:textEmphasis="filled sesame">り</span>
+        <span tts:textEmphasis="open circle">だ</span>
+        <span tts:textEmphasis="open dot">ん</span>
+        <span tts:textEmphasis="open sesame">ご</span>
+        <br/>
+        <span tts:textEmphasis="filled circle">花</span>
+        <span tts:textEmphasis="filled dot">よ</span>
+        <span tts:textEmphasis="filled sesame">り</span>
+        <span tts:textEmphasis="open circle">だ</span>
+        <span tts:textEmphasis="open dot">ん</span>
+        <span tts:textEmphasis="open sesame">ご</span>
+      </p>
+    </div>
+  </body>
+</tt>

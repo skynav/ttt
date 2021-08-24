@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    ttp:validation="required"
+    ttp:validationAction="warn"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="1" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>
+        invalid embedded font family name - matches generic font family;
+        requires (1) that implementation support semantics of ttp:validationAction='warn'
+        with respect to invalid family used with embedded font element below and
+        (2) that implementation not use an italic font to render the 'default' generic font family;
+        successful results should produce one validation warning and text should be rendered in
+        a normal (not italic) font face;
+      </ttm:desc>
+    </metadata>
+    <resources>
+      <font src="../resources/fonts/NotoSans-Italic.ttf" type="font/ttf" family="default"/>
+    </resources>
+    <styling>
+      <style xml:id="sBody" tts:fontFamily="default" tts:fontSize="18px" tts:lineHeight="22px" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+    </styling>
+    <layout>
+      <region xml:id="area1" style="sBackground" tts:extent="480px 128px" tts:position="center" tts:displayAlign="center"/>
+    </layout>
+  </head>
+  <body region="area1" style="sBody">
+    <div>
+      <p>Should Not Be Italic!</p>
+    </div>
+  </body>
+</tt>

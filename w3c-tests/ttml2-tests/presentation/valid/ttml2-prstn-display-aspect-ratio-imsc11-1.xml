@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- derived from imsc-tests/imsc1_1/ttml/displayAspectRatio/displayAspectRatio001.ttml -->
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    ttp:displayAspectRatio="4 3"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#display-aspect-ratio (4:3)</ttm:desc>
+    </metadata>
+    <styling>
+      <initial tts:color="white"/>
+      <initial tts:fontSize="1.000001c"/>
+    </styling>      
+    <layout>
+      <region xml:id="area1" tts:origin="0% 0%" tts:extent="100% 100%" tts:backgroundColor="green" tts:displayAlign="center"/>
+    </layout>
+  </head>
+  <body tts:lineHeight="100%">
+    <div>			
+      <p region="area1" begin="1s" end="9s">
+        This region should have
+        (a) an aspect ratio of 4:3,
+        (b) be centered within the related video object,
+        (c) be entirely within the related video object frame, and
+        (d) have a height or width equal to that of the related video object frame.
+      </p>
+    </div>
+  </body>
+</tt>

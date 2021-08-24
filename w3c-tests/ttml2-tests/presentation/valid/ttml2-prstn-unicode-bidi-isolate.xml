@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    ttp:profile="ttml2-presentation"
+    ttp:validation="prohibited"
+    tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <metadata>
+      <ttm:desc>#unicodeBidi-isolate</ttm:desc>
+    </metadata>
+    <styling>
+      <style xml:id="sBody" tts:fontFamily="NotoSans" tts:fontSize="48px" tts:lineHeight="60px" tts:color="black" tts:textAlign="center"/>
+      <style xml:id="sBackground" tts:backgroundColor="#A0A0A0"/>
+    </styling>
+    <layout>
+      <region xml:id="area1" style="sBackground" tts:extent="480px 128px" tts:position="center top 20%" tts:displayAlign="center"/>
+      <region xml:id="area2" style="sBackground" tts:extent="480px 128px" tts:position="center bottom 20%" tts:displayAlign="center"/>
+    </layout>
+  </head>
+  <body style="sBody">
+    <div region="area1" begin="0s" end="1s">
+      <p tts:direction="ltr">&#x200D;&#x05d3; &lt; <span tts:unicodeBidi="isolate">b &gt; c</span> &lt; &#x05d0;&#x200C;</p>
+      <p tts:direction="ltr">&#x200D;&#x05d3; &lt; <span tts:unicodeBidi="isolate">&#x05d2; &lt; &#x05d1;</span> &lt; &#x05d0;&#x200C;</p>
+    </div>
+    <div region="area2" begin="0s" end="1s">
+      <p tts:direction="ltr">&#x05d0; &gt; <span tts:unicodeBidi="isolate">b &gt; c</span> &gt; &#x05d3;</p>
+      <p tts:direction="ltr">&#x05d0; &gt; <span tts:unicodeBidi="isolate">&#x05d1; &gt; &#x05d2;</span> &gt; &#x05d3;</p>
+    </div>
+  </body>
+</tt>

@@ -1,0 +1,10 @@
+<!-- invalid - unknown metadata attributes in TT Metadata namespace - should produce 2 errors -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="dfxp-transformation"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="2" ttva:expectedWarnings="0" ttva:model="ttml1">
+  <head/>
+  <body ttm:foo="bar">
+    <div ttm:bar="baz"/>
+  </body>
+</tt>

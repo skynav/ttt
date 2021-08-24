@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- invalid - bad tts:position values -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="24" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+    <styling>
+      <!-- bad 1-component values -->
+      <style tts:position="foo"/>
+      <style tts:position="1x"/>
+      <!-- bad 2-component values -->
+      <style tts:position="left foo"/>
+      <style tts:position="foo top"/>
+      <style tts:position="50% left"/>
+      <style tts:position="top 50%"/>
+      <style tts:position="bottom 50%"/>
+      <!-- bad 3-component values -->
+      <style tts:position="top center 1px"/>
+      <style tts:position="top 1px 1px"/>
+      <style tts:position="bottom center 1px"/>
+      <style tts:position="bottom 1px 1px"/>
+      <style tts:position="left left 1px"/>
+      <style tts:position="right right 1px"/>
+      <style tts:position="left center 1px"/>
+      <style tts:position="left 1px 1px"/>
+      <style tts:position="right center 1px"/>
+      <style tts:position="right 1px 1px"/>
+      <style tts:position="top top 1px"/>
+      <style tts:position="bottom bottom 1px"/>
+      <!-- bad 4-component values -->
+      <style tts:position="center 1px center 1px"/>
+      <style tts:position="center 1px left 1px"/>
+      <style tts:position="center 1px right 1px"/>
+      <style tts:position="left 1px center 1px"/>
+      <style tts:position="right 1px center 1px"/>
+    </styling>
+  </head>
+</tt>

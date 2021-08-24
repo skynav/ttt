@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fonts version="1" xmlns="http://skynav.com/ns/ttpe">
+  <font>
+    <param name="family">Lateef</param>
+    <param name="language">AR</param>
+    <param name="source">LateefRegOT.ttf</param>
+    <param name="style">NORMAL</param>
+    <param name="weight">NORMAL</param>
+    <param name="forcePath">913-953,1068-1114</param>
+  </font>
+</fonts>

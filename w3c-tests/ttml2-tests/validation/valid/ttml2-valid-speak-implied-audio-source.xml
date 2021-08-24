@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - use tt:speak with explicit audio but implied source -->
+<tt xml:lang="" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-transformation"
+    xmlns:tta="http://www.w3.org/ns/ttml#audio"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="0" ttva:model="ttml2">
+  <head>
+  </head>
+  <body>
+    <div>
+      <p>
+        <span tta:speak="normal">
+          <audio tta:gain="0.5"/>
+          Test 1 2 3
+        </span>
+      </p>
+    </div>
+  </body>
+</tt>

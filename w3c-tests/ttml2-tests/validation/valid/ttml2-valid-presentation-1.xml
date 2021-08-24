@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- valid - all essential features included in #presentation -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:warnOn="all" ttva:expectedErrors="0" ttva:expectedWarnings="2" ttva:model="ttml2">
+  <head>
+    <profile xmlns="http://www.w3.org/ns/ttml#parameter">
+      <features>
+        <feature>#presentation</feature>
+      </features>
+      <extensions xml:base="http://example.com/ttml/profile/ttml1-custom">
+        <extension>#presentation</extension>
+      </extensions>
+    </profile>
+    <styling>
+      <style/>
+    </styling>
+    <layout>
+      <region xml:id="r1"/>
+    </layout>
+  </head>
+  <body region="r1" xml:space="default" begin="0s" end="30s" timeContainer="par">
+    <div dur="10s">
+      <p>
+        <span/>
+        <br/>
+      </p>
+    </div>
+  </body>
+</tt>
+
+
