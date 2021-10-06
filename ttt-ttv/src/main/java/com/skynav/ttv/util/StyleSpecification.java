@@ -31,20 +31,22 @@ public class StyleSpecification implements Comparable<StyleSpecification> {
 
     private ComparableQName name;
     private String value;
+    private boolean inherited;
 
-    public StyleSpecification(String nsUri, String localName, String value) {
-        this(new ComparableQName(nsUri, localName), value);
+    public StyleSpecification(String nsUri, String localName, String value, boolean inherited) {
+        this(new ComparableQName(nsUri, localName), value, inherited);
     }
 
-    public StyleSpecification(QName name, String value) {
-        this(new ComparableQName(name), value);
+    public StyleSpecification(QName name, String value, boolean inherited) {
+        this(new ComparableQName(name), value, inherited);
     }
 
-    public StyleSpecification(ComparableQName name, String value) {
+    public StyleSpecification(ComparableQName name, String value, boolean inherited) {
         assert name != null;
         assert value != null;
         this.name = name;
         this.value = value;
+        this.inherited = inherited;
     }
 
     public ComparableQName getName() {
@@ -57,7 +59,8 @@ public class StyleSpecification implements Comparable<StyleSpecification> {
 
     public int compareTo(StyleSpecification other) {
         int d = name.compareTo(other.name);
-        return (d != 0) ? d : value.compareTo(other.value);
+        d = (d != 0) ? d : value.compareTo(other.value);
+        return (d != 0) ? d : (inherited ? 1 : 0) - (other.inherited ? 1 : 0);
     }
 
     @Override
@@ -65,6 +68,7 @@ public class StyleSpecification implements Comparable<StyleSpecification> {
         int hc = 23;
         hc = hc * 31 + name.hashCode();
         hc = hc * 31 + value.hashCode();
+        hc = hc * 2 + (inherited ? 1 : 0);
         return hc;
     }
 
@@ -77,7 +81,7 @@ public class StyleSpecification implements Comparable<StyleSpecification> {
             else if (!value.equals(other.value))
                 return false;
             else
-                return true;
+                return inherited == other.inherited;
         } else
             return false;
     }
@@ -89,8 +93,14 @@ public class StyleSpecification implements Comparable<StyleSpecification> {
         sb.append(name);
         sb.append(',');
         sb.append(value);
+        if (inherited)
+            sb.append(",inherited");
         sb.append(']');
         return sb.toString();
+    }
+
+    public boolean isInherited() {
+        return inherited;
     }
 
 }

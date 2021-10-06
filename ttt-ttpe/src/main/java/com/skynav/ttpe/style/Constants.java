@@ -33,6 +33,7 @@ public class Constants {
 
     // Namespaces
     public static final String ttsNamespace                             = NAMESPACE_TT_STYLE;
+    public static final String tttExtensionsNamespace                   = NAMESPACE_TTT_EXTENSIONS;
 
     // ISD Style Attribute Names
     public static final QName isdCSSAttrName                            = new QName(NAMESPACE_TT_ISD, "css");

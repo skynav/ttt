@@ -37,6 +37,7 @@ public abstract class TTMLHelper extends ISDHelper {
     public static final String NAMESPACE_TT_METADATA            = TTML.Constants.NAMESPACE_TT_METADATA;
     public static final String NAMESPACE_TT_STYLE               = TTML.Constants.NAMESPACE_TT_STYLE;
     public static final String NAMESPACE_TT_PARAMETER           = TTML.Constants.NAMESPACE_TT_PARAMETER;
+    public static final String NAMESPACE_TTT_EXTENSIONS         = TTML.Constants.NAMESPACE_TTT_EXTENSIONS;
 
     public boolean hasUsableContent(Element elt) {
         if (isParagraphElement(elt))

@@ -124,13 +124,13 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
                             Text t = d.createTextNode(sb.toString());
                             eText = Documents.createElement(d, ttSpanElementName);
                             StyleSet styles = styleCollector.addStyles(eText);
-                            styles.merge(ttsRubyPositionAttrName, getRubyPosition(emphasis));
+                            styles.merge(ttsRubyPositionAttrName, getRubyPosition(emphasis), false);
                             Color emphasisColor = emphasis.getColor();
                             if (emphasisColor != null)
-                                styles.merge(ttsColorAttrName, getColor(emphasisColor));
+                                styles.merge(ttsColorAttrName, getColor(emphasisColor), false);
                             Outline outline = b.getOutline(-1, defaults);
                             if ((outline != null) && !outline.isNone())
-                                styles.merge(ttsTextOutlineAttrName, getOutline(outline));
+                                styles.merge(ttsTextOutlineAttrName, getOutline(outline), false);
                             eText.appendChild(t);
                             collectText(eText, true);
                         }

@@ -498,7 +498,7 @@ public abstract class AbstractResourceConverter implements ResourceConverter {
                 Attr a = (Attr) node;
                 String ns = a.getNamespaceURI();
                 if (isInlinedStyle(a)) {
-                    styles.merge(new StyleSpecification(new ComparableQName(ns, a.getLocalName()), a.getValue()));
+                    styles.merge(new StyleSpecification(new ComparableQName(ns, a.getLocalName()), a.getValue(), false));
                 }
             }
         }
