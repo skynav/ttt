@@ -55,18 +55,20 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
     private List<Integer> baseStarts;                           // indices into base phrases list of start of base containers
     private Map<Phrase,List<Phrase>> annotations;               // annotations expressed as map from bases to annotation lists
     private int currentBase;                                    // current index into bases when processing text container and text spans
+    private PhraseCollector          destination;               // add collected phrases to this destination. Currently always a ParagraphPhraseCollector.
 
-    public AnnotatedPhraseCollector(AnnotationStyleCollector styleCollector) {
+    public AnnotatedPhraseCollector(AnnotationStyleCollector styleCollector, PhraseCollector destination) {
         super(styleCollector);
         this.currentBase = -1;
+        this.destination = destination;
     }
 
-    public List<Phrase> collect(Element e) {
+    public void collectToDestination(Element e) {
         Annotation annotation = styleCollector.getAnnotation(e);
         if (annotation == Annotation.EMPHASIS)
-            return collectEmphasized(e);
+            collectEmphasized(e);
         else
-            return collectAnnotated(e);
+            collectAnnotated(e);
     }
 
     @Override
@@ -84,12 +86,16 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
         }
     }
 
-    private List<Phrase> collectEmphasized(Element e) {
+    @Override
+    protected void add(Phrase p) {
+        destination.add(p);
+    }
+
+    private void collectEmphasized(Element e) {
         clear();
         collectBaseWithEmphasis(e);
         collectTextWithEmphasis(e);
         emit(e);
-        return extract();
     }
 
     private void collectBaseWithEmphasis(Element eBase) {
@@ -158,7 +164,7 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
         return o.toTextOutlineString();
     }
 
-    private List<Phrase> collectAnnotated(Element e) {
+    private void collectAnnotated(Element e) {
         clear();
         for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Text) {
@@ -196,7 +202,6 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
         if (bases != null)
             addBaseStart();
         emit(e);
-        return extract();
     }
 
     private void collectBaseContainer(Element e) {
@@ -255,14 +260,24 @@ public class AnnotatedPhraseCollector extends PhraseCollector {
     }
 
     private void collectBase(Element e, boolean emphasis) {
+        // Note that there will never be a mixture of text and nested spans,
+        // so this text accumulator will not get used if destination.collectSpan
+        // is used and vice-versa. This is because, if there is an explicit
+        // nested span alongside the text, the text will get moved into an
+        // anonymous span. More precisely, because the explicit nested span
+        // exists, step 3 from
+        //      https://www.w3.org/TR/ttml2/#procedure-construct-anonymous-spans
+        // will not run.
         StringBuffer text = new StringBuffer();
         for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Text) {
                 String t = ((Text) n).getWholeText();
                 if (t != null)
                     text.append(t);
+            } else if (n instanceof Element && Documents.isElement((Element) n, ttSpanElementName)) {
+                destination.collectSpan((Element) n);
             } else {
-                // [TBD] handle nested spans when collecting emphasis as base content
+                // [TBD] determine if this can even happen
             }
         }
         if (emphasis) {
