@@ -101,6 +101,7 @@ public class PhraseCollector {
                     maybeEmit(e);
                     collectSpan(c);
                 } else if (Documents.isElement(c, ttBreakElementName)) {
+                    maybeEmit(e);
                     collectBreak(c);
                 } else if (Documents.isElement(c, ttImageElementName)) {
                     maybeEmit(e);
@@ -119,7 +120,8 @@ public class PhraseCollector {
     }
 
     protected void collectBreak(Element e) {
-        text.append((char) Characters.UC_LINE_SEPARATOR);
+        assert text.length() == 0;
+        add(new BreakPhrase(e, BreakPhrase.Break.LINE));
     }
 
     protected void collectImage(Element e) {

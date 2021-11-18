@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="ja" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
+<head>
+<styling>
+<initial tts:fontFamily="Noto Sans"/>
+<initial tts:fontSize="4rh"/>
+<initial tts:lineHeight="5rh"/>
+<initial tts:showBackground="whenActive"/>
+</styling>
+<layout>
+<region xml:id="r1" tts:displayAlign="after" tts:extent="80rw 25rh" tts:position="center bottom 5rh"/>
+</layout>
+</head>
+<body region="r1">
+<div>
+<p begin="00:02:05:00" end="00:02:08:00">line1<br/>line2<br/><br/>line3-after &lt;br/&gt;&lt;br/&gt;</p>
+</div>
+</body>
+</tt>
