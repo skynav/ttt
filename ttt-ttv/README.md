@@ -53,12 +53,12 @@ The model used to perform phase 3 (validity) and phase 4 (semantics) verificatio
 
 ## Building
 
-In order to build **ttpe**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-ttv` directory.
+In order to build **ttv**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-ttv` directory.
 Next, change directory to the standalone JAR package, ``cd ../ttt-ttv-all``, then run `mvn clean install`.
 
 ## Running
 
-In order to run the presentation engine (from its standalone JAR), first change directory to the standalone JAR package, ``cd ../ttt-ttv-all``,
+In order to run the validator (from its standalone JAR), first change directory to the standalone JAR package, ``cd ../ttt-ttv-all``,
 then use the following (or equivalent):
 
 `java -jar target/ttt-ttv-all-7.1.jar ttml.xml`
