@@ -47,7 +47,7 @@ A verification *model* includes the following information:
  * one or more namespace URI strings, which must match the target namespaces of their respective schemas
  * a JAXB context path, used when creating the JAXB context for unmarshalling
  * a collection of acceptable root JAXB content classes, used to verify the root element
- * additional model specific verification tools used during the semantic verification phase
+ * additional model specific verification parameters used during the semantic verification phase
 
 The model used to perform phase 3 (validity) and phase 4 (semantics) verification is determined as follows: if a `--force-model` option is present, then the forced model is used; otherwise, if the resource specifies a `ttva:model` annotation, then the annotated model is used; otherwise, if the `--model` option is present, then it is used; otherwise, the default model is used. In order to determine the default model, invoke **ttv** with the `--show-models` option.
 
