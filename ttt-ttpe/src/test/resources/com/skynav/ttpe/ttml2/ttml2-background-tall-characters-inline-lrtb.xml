@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- test overlapping wrapped lines with background colors (lrtb wm) -->
+<tt xml:lang="en" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
+  <head>
+    <layout>
+      <region xml:id="r0" tts:origin="545px 290px" tts:extent="190px 120px"/>
+    </layout>
+  </head>
+  <body region="r0" tts:fontFamily="Noto Sans" tts:fontSize="24px" tts:lineHeight="24px" tts:color="black" tts:backgroundColor="#77DD77">
+    <div>
+      <p begin="1s" end="2s">╳╳╳╳╳╳╳╳<span tts:backgroundColor="#FDFD96" tts:padding="10px">╳╳╳</span><span tts:backgroundColor="#FE0000" tts:padding="10px" xml:space="preserve"> </span><span tts:backgroundColor="#FDFD96" tts:padding="10px">╳╳╳╳</span> ╳╳╳ ╳╳╳╳</p>
+    </div>
+  </body>
+</tt>

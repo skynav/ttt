@@ -151,6 +151,10 @@ public class SVGRenderProcessor extends RenderProcessor {
     private Color decorationColor;
     private MessageFormat outputPatternResourceFormatter;
 
+    private enum Pass {
+        BACKGROUND, OUTLINE, MAIN, DONE
+    }
+
     // render state
     private double xCurrent;
     private double yCurrent;
@@ -159,6 +163,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     private int lineGenerationIndex;
     private List<FrameResource> resources;
     private int resourceGenerationIndex;
+    private Pass currentPass;
 
     public SVGRenderProcessor(TransformerContext context) {
         super(context);
@@ -174,6 +179,7 @@ public class SVGRenderProcessor extends RenderProcessor {
     private void resetRenderState(boolean restart) {
         xCurrent = 0;
         yCurrent = 0;
+        currentPass = Pass.BACKGROUND;
         regions = null;
         paragraphGenerationIndex = 0;
         lineGenerationIndex = 0;
@@ -432,15 +438,25 @@ public class SVGRenderProcessor extends RenderProcessor {
                 eSVG.appendChild(eDecoration);
             }
             Point contentOrigin = a.getContentOrigin();
-            xCurrent = contentOrigin.getX();
-            yCurrent = contentOrigin.getY();
             WritingMode wm = a.getWritingMode();
-            if (wm.isVertical()) {
-                if (wm.getDirection(Dimension.BPD) == RL)
-                    xCurrent += a.getContentExtent().getWidth();
+            Pass parentContextPass = currentPass;
+            for (Pass pass : Pass.values()) {
+                if (pass != Pass.DONE) {
+                    // Work on this pass
+                    currentPass = pass;
+
+                    // Reset position per-pass
+                    xCurrent = contentOrigin.getX();
+                    yCurrent = contentOrigin.getY();
+                    if (wm.isVertical() && wm.getDirection(Dimension.BPD) == RL)
+                        xCurrent += a.getContentExtent().getWidth();
+
+                    eGroup.appendChild(renderChildren(eSVG, a, d));
+
+                    paragraphGenerationIndex = 0;
+                }
             }
-            eGroup.appendChild(renderChildren(eSVG, a, d));
-            paragraphGenerationIndex = 0;
+            currentPass = parentContextPass;
             return eGroup;
         }
     }
@@ -523,7 +539,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         if (extent == null)
             extent = new Extent(a.getIPD(), a.getBPD());
         Color bColor = a.getBackgroundColor();
-        if ((bColor != null) && !bColor.isTransparent()) {
+        if ((bColor != null) && !bColor.isTransparent() && currentPass == Pass.BACKGROUND) {
             Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
             Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
             Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.heightAttrName, doubleFormatter.format(new Object[] {extent.getHeight()}));
@@ -532,7 +548,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             e.appendChild(eBackgroundColor);
         }
         Image bImage = a.getBackgroundImage();
-        if ((bImage != null) && !bImage.isNone()) {
+        if ((bImage != null) && !bImage.isNone() && currentPass == Pass.BACKGROUND) {
             FrameResource resource = addResource(bImage);
             Element eBackgroundImage = Documents.createElement(d, SVGDocumentFrame.svgImageEltName);
             Documents.setAttribute(eBackgroundImage, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {extent.getWidth()}));
@@ -563,14 +579,16 @@ public class SVGRenderProcessor extends RenderProcessor {
         }
         if (Documents.getAttribute(eBlockGroup, SVGDocumentFrame.classAttrName, null) == null)
             maybeMarkClasses(eBlockGroup, a, "block");
-        return eBlockGroup;
+        if (eBlockGroup.hasChildNodes() || currentPass == Pass.MAIN)
+            return eBlockGroup;
+        return null;
     }
 
     private Element renderImage(Element parent, BlockImageArea a, Document d) {
         Element e = parent;
         if (a.isVisible()) {
             Image image = a.getImage();
-            if ((image != null) && !image.isNone()) {
+            if ((image != null) && !image.isNone() && currentPass == Pass.MAIN) {
                 FrameResource resource = addResource(image);
                 Element eImage = Documents.createElement(d, SVGDocumentFrame.svgImageEltName);
                 Documents.setAttribute(eImage, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {image.getWidth()}));
@@ -654,7 +672,9 @@ public class SVGRenderProcessor extends RenderProcessor {
         e = renderChildren(e, a, d);
         xCurrent = xSaved;
         yCurrent = ySaved;
-        return e;
+        if ((e != null && e.hasChildNodes()) || currentPass == Pass.MAIN)
+            return e;
+        return null;
     }
 
     private Element renderLine(Element parent, LineArea a, Document d) {
@@ -716,7 +736,9 @@ public class SVGRenderProcessor extends RenderProcessor {
             yCurrent += a.getBPD();
         }
         ++lineGenerationIndex;
-        return e;
+        if ((e != null && e.hasChildNodes()) || currentPass == Pass.MAIN)
+            return e;
+        return null;
     }
 
     private boolean hasLineDecoration() {
@@ -744,7 +766,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         }
         // baseline [TBD]
         // bounding box
-        if (showBoundingBox) {
+        if (showBoundingBox && currentPass == Pass.MAIN) {
             Element eDecoration = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
             Documents.setAttribute(eDecoration, SVGDocumentFrame.fillAttrName, "none");
             Documents.setAttribute(eDecoration, SVGDocumentFrame.strokeAttrName, decorationColor.toRGBString());
@@ -758,7 +780,7 @@ public class SVGRenderProcessor extends RenderProcessor {
         }
         // crop marks [TBD]
         // label
-        if (showLabel) {
+        if (showLabel && currentPass == Pass.MAIN) {
             Element eDecorationLabel = Documents.createElement(d, SVGDocumentFrame.svgTextEltName);
             String label = "P" + (paragraphGenerationIndex + 1) + "L" + (lineGenerationIndex + 1);
             Documents.setAttribute(eDecorationLabel, SVGDocumentFrame.fontFamilyAttrName, "sans-serif");
@@ -860,14 +882,18 @@ public class SVGRenderProcessor extends RenderProcessor {
         Element e;
         maybeStyleGlyphGroup(g, a, l);
         e = renderGlyphText(g, a, d, decorations, bpdGlyphs, baselineOffset);
-        assert e != null;
-        g.appendChild(e);
+        if (currentPass == Pass.MAIN)
+            assert e != null;
+        if ((e != null && e.hasChildNodes()) || currentPass == Pass.MAIN)
+            g.appendChild(e);
         if (a.isVertical()) {
             yCurrent += combined ? bpdGlyphs : ipdGlyphs;
         } else {
             xCurrent += ipdGlyphs;
         }
-        return g;
+        if (g.hasChildNodes() || currentPass == Pass.MAIN)
+            return g;
+        return null;
     }
 
     private void maybeStyleGlyphGroup(Element e, GlyphArea g, LineArea l) {
@@ -931,7 +957,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             else
                 glyphVisible = areaVisible;
             // background color if required
-            if (a.isVisible()) {
+            if (a.isVisible() && currentPass == Pass.BACKGROUND) {
                 Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, i, j);
                 if ((decorationBackgroundColor != null) && glyphVisible) {
                     BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
@@ -950,7 +976,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             // outline if required
             Element tOutline;
             Decoration decorationOutline = findDecoration(decorations, Decoration.Type.OUTLINE, i, j);
-            if ((decorationOutline != null) && glyphVisible) {
+            if ((decorationOutline != null) && glyphVisible && currentPass == Pass.OUTLINE) {
                 Outline outline = decorationOutline.getOutline();
                 if (tGlyphsPath != null)
                     tOutline = Documents.createElement(d, SVGDocumentFrame.svgPathEltName);
@@ -967,7 +993,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 tOutline = null;
             // text
             Element t;
-            if (glyphVisible) {
+            if (glyphVisible && currentPass == Pass.MAIN) {
                 Color tColor;
                 Color lColor = a.getLine().getColor();
                 Decoration decorationColor = findDecoration(decorations, Decoration.Type.COLOR, i, j);
@@ -1004,7 +1030,8 @@ public class SVGRenderProcessor extends RenderProcessor {
                         Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
                     gInner.appendChild(t);
                 }
-                gOuter.appendChild(gInner);
+                if (gInner.hasChildNodes() || currentPass == Pass.MAIN)
+                    gOuter.appendChild(gInner);
             } else {
                 if (tOutline != null) {
                     if (x != 0)
@@ -1024,7 +1051,9 @@ public class SVGRenderProcessor extends RenderProcessor {
             yCurrent += btt ? -ga : ga;
         }
         yCurrent = ySaved;
-        return gOuter;
+        if (gOuter.hasChildNodes() || currentPass == Pass.MAIN)
+            return gOuter;
+        return null;
     }
 
     private Element renderGlyphTextHorizontal(Element parent, GlyphArea a, Document d, List<Decoration> decorations, double bpdGlyphs, double baselineOffset) {
@@ -1072,7 +1101,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             else
                 glyphVisible = areaVisible;
             // background color if required
-            if (a.isVisible()) {
+            if (a.isVisible() && currentPass == Pass.BACKGROUND) {
                 Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, i, j);
                 if ((decorationBackgroundColor != null) && glyphVisible) {
                     BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
@@ -1091,7 +1120,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             // outline if required
             Element tOutline;
             Decoration decorationOutline = findDecoration(decorations, Decoration.Type.OUTLINE, i, j);
-            if ((decorationOutline != null) && glyphVisible) {
+            if ((decorationOutline != null) && glyphVisible && currentPass == Pass.OUTLINE) {
                 Outline outline = decorationOutline.getOutline();
                 if (tGlyphsPath != null)
                     tOutline = Documents.createElement(d, SVGDocumentFrame.svgPathEltName);
@@ -1108,7 +1137,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 tOutline = null;
             // text
             Element t;
-            if (glyphVisible) {
+            if (glyphVisible && currentPass == Pass.MAIN) {
                 Color tColor;
                 Color lColor = a.getLine().getColor();
                 Decoration decorationColor = findDecoration(decorations, Decoration.Type.COLOR, i, j);
@@ -1130,7 +1159,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             } else
                 t = null;
             // group wrapper (gInner) if font transform required or using glyphs path
-            if ((fontMatrix != null) || (tGlyphsPath != null) && ((x != 0) || (y != 0))) {
+            if ((t != null || tOutline != null) && (fontMatrix != null || (tGlyphsPath != null && (x != 0 || y != 0)))) {
                 Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
                 maybeMarkClasses(gInner, a, "text-h-inner");
                 if ((x != 0) || (y != 0))
@@ -1145,7 +1174,8 @@ public class SVGRenderProcessor extends RenderProcessor {
                         Documents.setAttribute(t, SVGDocumentFrame.transformAttrName, matrixFormatter.format(new Object[] {fontMatrix.toString()}));
                     gInner.appendChild(t);
                 }
-                gOuter.appendChild(gInner);
+                if (gInner.hasChildNodes() || currentPass == Pass.MAIN)
+                    gOuter.appendChild(gInner);
             } else {
                 if (tOutline != null) {
                     if (x != 0)
@@ -1165,7 +1195,9 @@ public class SVGRenderProcessor extends RenderProcessor {
             xCurrent += rtl ? -ga : ga;
         }
         xCurrent = xSaved;
-        return gOuter;
+        if (gOuter.hasChildNodes() || currentPass == Pass.MAIN)
+            return gOuter;
+        return null;
     }
 
     private double getCrossShearAdjustment(GlyphArea a) {
@@ -1243,7 +1275,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             spaceVisible = areaVisible;
         // background color if required
         Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, 0, 1);
-        if ((decorationBackgroundColor != null) && spaceVisible) {
+        if ((decorationBackgroundColor != null) && spaceVisible && currentPass == Pass.BACKGROUND) {
             BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
             Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
             if (baselineOffset > 0)
@@ -1308,14 +1340,18 @@ public class SVGRenderProcessor extends RenderProcessor {
         Element e;
         maybeStyleImageGroup(g, a, l);
         e = renderImageText(g, a, d, decorations, bpdImage, baselineOffset);
-        assert e != null;
-        g.appendChild(e);
+        if (currentPass == Pass.MAIN)
+            assert e != null;
+        if ((e != null && e.hasChildNodes()) || currentPass == Pass.MAIN)
+            g.appendChild(e);
         if (a.isVertical()) {
             yCurrent += combined ? bpdImage : ipdImage;
         } else {
             xCurrent += ipdImage;
         }
-        return g;
+        if (g.hasChildNodes() || currentPass == Pass.MAIN)
+            return g;
+        return null;
     }
 
     private Element renderImageText(Element parent, InlineImageArea a, Document d, List<Decoration> decorations, double bpdImage, double baselineOffset) {
@@ -1357,7 +1393,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 imageVisible = areaVisible;
             // text image
             Element t;
-            if (imageVisible) {
+            if (imageVisible && currentPass == Pass.MAIN) {
                 Double tOpacity;
                 Double lOpacity = a.getLine().getOpacity();
                 Decoration decorationOpacity = findDecoration(decorations, Decoration.Type.OPACITY, i, j);
@@ -1376,7 +1412,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             } else
                 t = null;
             // group wrapper (gInner) if font transform required or using glyphs path
-            if (fontMatrix != null) {
+            if (fontMatrix != null && (t != null || currentPass == Pass.MAIN)) {
                 Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
                 maybeMarkClasses(gInner, a, "image-v-inner");
                 if (y != 0)
@@ -1398,7 +1434,9 @@ public class SVGRenderProcessor extends RenderProcessor {
             yCurrent += btt ? -ia : ia;
         }
         yCurrent = ySaved;
-        return gOuter;
+        if (gOuter.hasChildNodes() || currentPass == Pass.MAIN)
+            return gOuter;
+        return null;
     }
 
     private Element renderImageTextHorizontal(Element parent, InlineImageArea a, Document d, List<Decoration> decorations, double bpdImage, double baselineOffset) {
@@ -1432,7 +1470,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 imageVisible = areaVisible;
             // text image
             Element t;
-            if (imageVisible) {
+            if (imageVisible && currentPass == Pass.MAIN) {
                 Double tOpacity;
                 Double lOpacity = a.getLine().getOpacity();
                 Decoration decorationOpacity = findDecoration(decorations, Decoration.Type.OPACITY, i, j);
@@ -1453,7 +1491,7 @@ public class SVGRenderProcessor extends RenderProcessor {
             // background color if required
             if (a.isVisible()) {
                 Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, i, j);
-                if ((decorationBackgroundColor != null) && imageVisible) {
+                if ((decorationBackgroundColor != null) && imageVisible && currentPass == Pass.BACKGROUND) {
                     BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
                     Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
                     if (x != 0)
@@ -1468,7 +1506,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 }
             }
             // group wrapper (gInner) if font transform required
-            if (fontMatrix != null) {
+            if (fontMatrix != null && (t != null || currentPass == Pass.MAIN)) {
                 Element gInner = Documents.createElement(d, SVGDocumentFrame.svgGroupEltName);
                 maybeMarkClasses(gInner, a, "image-h-inner");
                 if ((x != 0) || (y != 0))
@@ -1490,7 +1528,9 @@ public class SVGRenderProcessor extends RenderProcessor {
             xCurrent += rtl ? -ia : ia;
         }
         xCurrent = xSaved;
-        return gOuter;
+        if (gOuter.hasChildNodes() || currentPass == Pass.MAIN)
+            return gOuter;
+        return null;
     }
 
     private double getCrossShearAdjustment(InlineImageArea a) {
@@ -1527,7 +1567,7 @@ public class SVGRenderProcessor extends RenderProcessor {
                 paddingVisible = areaVisible;
             // background color if required
             Decoration decorationBackgroundColor = findDecoration(decorations, Decoration.Type.BACKGROUND_COLOR, 0, 1);
-            if ((decorationBackgroundColor != null) && paddingVisible) {
+            if ((decorationBackgroundColor != null) && paddingVisible && currentPass == Pass.BACKGROUND) {
                 BackgroundColor backgroundColor = decorationBackgroundColor.getBackgroundColor();
                 Element eBackgroundColor = Documents.createElement(d, SVGDocumentFrame.svgRectEltName);
                 Documents.setAttribute(eBackgroundColor, SVGDocumentFrame.widthAttrName, doubleFormatter.format(new Object[] {ipd + bgFuzz}));
