@@ -302,6 +302,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     }
 
     @Test
+    public void testTTML2ThickTextOutlineOnRubyMixed() throws Exception {
+        performPresentationTest("ttml2-thick-text-outline-on-ruby-mixed.xml");
+    }
+
+    @Test
     public void testTTML2TextOutlineOnEmphasisMixed() throws Exception {
         performPresentationTest("ttml2-text-outline-on-emphasis-mixed.xml");
     }
@@ -500,6 +505,11 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
     @Test
     public void testTTML2PaddingInlineLRTB() throws Exception {
         performPresentationTest("ttml2-padding-inline-lrtb.xml");
+    }
+
+    @Test
+    public void testTTML2BackgroundTallCharactersInlineLRTB() throws Exception {
+        performPresentationTest("ttml2-background-tall-characters-inline-lrtb.xml");
     }
 
     @Test
