@@ -26,6 +26,7 @@
 package com.skynav.ttpe.layout;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import java.util.Stack;
 
 import javax.xml.namespace.QName;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 import org.xml.sax.Locator;
@@ -573,7 +575,7 @@ public class BasicLayoutState implements LayoutState {
     public Point getPosition(Element e, Extent extent) {
         StyleSpecification s = getStyles(e).get(ttsPositionAttrName);
         if ((s == null) && (getStyles(e).get(ttsOriginAttrName) == null) && (context.getModel().getTTMLVersion() >= 2))
-            s = new StyleSpecification(ttsPositionAttrName, defaults.getPositionComponents());
+            s = new StyleSpecification(ttsPositionAttrName, defaults.getPositionComponents(), false);
         if (s != null) {
             String v = s.getValue();
             String [] components = v.split("[ \t\r\n]+");
@@ -718,12 +720,21 @@ public class BasicLayoutState implements LayoutState {
     private StyleSet parseStyle(Element e, String id) {
         assert Documents.isElement(e, isdComputedStyleSetElementName);
         StyleSet styles = new StyleSet(id);
+        List<String> inheritedAttrsList = new ArrayList<String>();
+        try {
+            inheritedAttrsList = Arrays.asList(e.getAttributeNS(tttExtensionsNamespace, "inherited").split(","));
+        } catch (DOMException ex) {
+            // If there is no inherited property, that must mean none of the
+            // attributes on this element are inherited. This can happen
+            // during normal operation.
+        }
         for (Map.Entry<QName,String> a : Documents.getAttributes(e).entrySet()) {
             QName qn = a.getKey();
             String ns = qn.getNamespaceURI();
             if (ns != null) {
-                if (ns.equals(ttsNamespace) || qn.equals(xmlLanguageAttrName))
-                    styles.merge(new StyleSpecification(ns, qn.getLocalPart(), a.getValue()));
+                if (ns.equals(ttsNamespace) || qn.equals(xmlLanguageAttrName)) {
+                    styles.merge(new StyleSpecification(ns, qn.getLocalPart(), a.getValue(), inheritedAttrsList.contains(qn.toString())));
+                }
             }
         }
         String condition = Documents.getAttribute(e, conditionAttrName, null);

@@ -38,5 +38,6 @@ public class TTML {
         public static final String NAMESPACE_TT_PROFILE = "http://www.w3.org/ns/ttml/profile/";
         public static final String NAMESPACE_TT_RESOURCE = "http://www.w3.org/ns/ttml/resource/";
         public static final String NAMESPACE_TT_STYLE = "http://www.w3.org/ns/ttml#styling";
+        public static final String NAMESPACE_TTT_EXTENSIONS = "ttt_extensions";
     }
 }

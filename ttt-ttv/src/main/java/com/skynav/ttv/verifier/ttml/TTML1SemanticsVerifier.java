@@ -258,7 +258,7 @@ public class TTML1SemanticsVerifier extends AbstractVerifier implements Semantic
             for (Map.Entry<QName,String> e : attrs.entrySet()) {
                 QName qn = e.getKey();
                 if (!qn.equals(qnId))
-                    css.merge(qn, e.getValue());
+                    css.merge(qn, e.getValue(), false);
             }
             return css;
         } else

@@ -115,8 +115,7 @@ public class ParagraphCollector {
         }
 
         private void collectAsAnnotation(Element e) {
-            for (Phrase p : new AnnotatedPhraseCollector(new AnnotationStyleCollector(styleCollector, null)).collect(e))
-                add(p);
+            new AnnotatedPhraseCollector(new AnnotationStyleCollector(styleCollector, null), this).collectToDestination(e);
         }
 
         private void collectAsParagraph(Element e) {

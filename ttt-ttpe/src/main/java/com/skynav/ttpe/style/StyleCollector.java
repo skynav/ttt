@@ -60,6 +60,7 @@ import com.skynav.ttv.model.value.FontFamily;
 import com.skynav.ttv.model.value.FontVariant;
 import com.skynav.ttv.model.value.Length;
 import com.skynav.ttv.model.value.Measure;
+import com.skynav.ttv.model.value.impl.LengthImpl;
 import com.skynav.ttv.util.Location;
 import com.skynav.ttv.util.Locators;
 import com.skynav.ttv.util.StyleSet;
@@ -1103,12 +1104,48 @@ public class StyleCollector {
         Integer[] minMax = new Integer[] { 1, 2 };
         Object[] treatments = new Object[] { NegativeTreatment.Allow, MixedUnitsTreatment.Allow };
         List<Length> lengths = new java.util.ArrayList<Length>();
-        if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
+        // % and em units are always computed relative to a parent font size. If
+        // there is no well defined parent font size, % and em units may not be
+        // used.
+        Extent fs = getDefaults().getFontSize();
+        if (parent != null)
+            fs = parent.getFirstAvailableFontSize();
+        // if isInherited and parent == null, that means the property was
+        // inherited from a referenced <style>, and not directly from an
+        // ancestor element. Per TTML2 spec section 10.4.4.3, the computed value
+        // shouldn't be evaluated on <style> on style elements, so for this case
+        // the we should behave as if the property was not inherited.
+        if (s.isInherited() && parent != null) {
+            // avoid calculating the computed value of the same font size more
+            // than once. inherit the computed value instead of the configured
+            // value, otherwise the same font size percentage can get applied
+            // multiple times, shrinking the font size each time.
+            assert parent.getFirstAvailableFont() != null;
+            // It seems to produce correct outputs without copying the extent,
+            // but we copy it anyway to avoid needing to change existing unit
+            // tests. The == operator is being used on these in
+            // SVGRenderProcessor.java, affecting SVG outputs, although they
+            // render the same.
+            return new Extent(fs);
+        } else if (Lengths.isLengths(s.getValue(), new Location(), context, minMax, treatments, lengths)) {
             assert lengths.size() > 0;
-            Extent fs = getFirstAvailableFontSize();
             Extent refBounds = this.refBounds;
             if (!Documents.isElement(e, isdRegionElementName))
                 refBounds = fs;
+            // special rule for tts:fontSize: "If the relative unit is EMs
+            // (em), then the referenced value is determined as if percentage
+            // units were used, where 1em equals 100%." TTML2 section 10.2.21.
+            // It's necessary to bypass the normal "relative to current font
+            // size" meaning for em units, as current font size can't be
+            // specified relative to itself.
+            for (int i = 0; i < lengths.size(); i++)
+            {
+                Length l = lengths.get(i);
+                if (l.getUnits() == Length.Unit.Em)
+                {
+                    lengths.set(i, new LengthImpl(l.getValue() * 100, Length.Unit.Percentage));
+                }
+            }
             double w, h;
             if (lengths.size() == 1) {
                 h = Helpers.resolveLength(e, lengths.get(0), Axis.VERTICAL, extBounds, refBounds, fs, cellResolution);

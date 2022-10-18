@@ -938,12 +938,20 @@ public class ISD {
 
         private static void generateAttributes(StyleSet ss, Element elt) {
             String id = ss.getId();
+            StringBuilder inheritedList = new StringBuilder();
             if ((id != null) && !id.isEmpty()) {
                 for (StyleSpecification s : ss.getStyles().values()) {
                     ComparableQName n = s.getName();
                     elt.setAttributeNS(n.getNamespaceURI(), n.getLocalPart(), s.getValue());
+                    if (s.isInherited()) {
+                        if (inheritedList.length() > 0)
+                            inheritedList.append(',');
+                        inheritedList.append(n);
+                    }
                 }
                 elt.setAttributeNS(XML.xmlNamespace, "id", id);
+                if (inheritedList.length() > 0)
+                    elt.setAttributeNS(TTMLHelper.NAMESPACE_TTT_EXTENSIONS, "inherited", inheritedList.toString());
             }
         }
 
@@ -1179,7 +1187,7 @@ public class ISD {
                     if (override != null)
                         value = override.getValue();
                 }
-                return new StyleSpecification(new ComparableQName(styleName), value);
+                return new StyleSpecification(new ComparableQName(styleName), value, false);
             } else
                 return null;
         }
@@ -1211,8 +1219,12 @@ public class ISD {
                             s = getInitialStyle(elt, name, context, overrides);
                         else if (specialStyleInheritance(elt, name, sss, context))
                             s = getSpecialInheritedStyle(elt, name, sss, specifiedStyleSets, context);
-                        else
+                        else {
                             s = getNearestAncestorStyle(elt, name, specifiedStyleSets);
+                            // mark the style as inherited rather than applied directly
+                            if (s != null)
+                                s = new StyleSpecification(s.getName(), s.getValue(), true);
+                        }
                         if ((s != null) && (doesStyleApply(elt, name, context) || TTMLHelper.isRootStylingElement(elt)))
                             sss.merge(s);
                     }
@@ -1282,7 +1294,7 @@ public class ISD {
                     if (nsUri != null) {
                         QName styleName = new ComparableQName(a.getNamespaceURI(), a.getLocalName());
                         if (isDefinedStyle(styleName, context))
-                            styles.merge(new StyleSpecification(styleName, a.getValue()));
+                            styles.merge(new StyleSpecification(styleName, a.getValue(), false));
                     }
                 }
             }

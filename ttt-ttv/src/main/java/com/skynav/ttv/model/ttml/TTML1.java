@@ -146,6 +146,7 @@ public class TTML1 {
                 namespaceURIs.add(new URI(Constants.NAMESPACE_TT_METADATA));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_TT_PARAMETER));
                 namespaceURIs.add(new URI(Constants.NAMESPACE_TT_STYLE));
+                namespaceURIs.add(new URI(Constants.NAMESPACE_TTT_EXTENSIONS));
                 this.namespaceURIs = namespaceURIs.toArray(new URI[namespaceURIs.size()]);
                 this.profileNamespaceUri = new URI(Constants.NAMESPACE_TT_PROFILE);
                 this.featureNamespaceUri = new URI(Constants.NAMESPACE_TT_FEATURE);
@@ -218,6 +219,7 @@ public class TTML1 {
                 normalizedPrefixes1.put(Constants.NAMESPACE_TT_PARAMETER, "ttp");
                 normalizedPrefixes1.put(Constants.NAMESPACE_TT_STYLE, "tts");
                 normalizedPrefixes1.put(Constants.NAMESPACE_TT_ISD, "isd");
+                normalizedPrefixes1.put(Constants.NAMESPACE_TTT_EXTENSIONS, "ttt");
                 normalizedPrefixes1.put(Annotations.getNamespace(), Annotations.getNamespacePrefix());
             }
             return normalizedPrefixes1;

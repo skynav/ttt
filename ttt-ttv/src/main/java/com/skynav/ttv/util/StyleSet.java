@@ -110,8 +110,8 @@ public class StyleSet extends AbstractMap<ComparableQName, StyleSpecification> i
             this.styles.putAll(styles);
     }
 
-    public void merge(QName name, String value) {
-        merge(new StyleSpecification(name, value));
+    public void merge(QName name, String value, boolean inherited) {
+        merge(new StyleSpecification(name, value, inherited));
     }
 
     public void merge(StyleSpecification style) {
