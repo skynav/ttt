@@ -6,6 +6,7 @@ Timed Text Presentation Engine
 
 In order to build **ttpe**, first perform the instructions at https://github.com/skynav/ttt, then run `mvn clean install` from this `ttt-ttpe` directory.
 Next, change directory to the standalone JAR package, ``cd ../ttt-ttpe-all``, then run `mvn clean install`.
+A build profile is required for windows users who have to run `mvn clean install -Pwindows`.
 
 ## Running
 
