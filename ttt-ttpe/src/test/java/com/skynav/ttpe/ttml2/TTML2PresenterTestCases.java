@@ -532,4 +532,8 @@ public class TTML2PresenterTestCases extends PresenterTestDriver {
         performPresentationTest("ttml2-shear-rl-with-bpd.xml");
     }
 
+    @Test
+    public void testTTML2WritingmodeParagraph() throws Exception {
+        performPresentationTest("ttml2-writingmode-paragraph.xml");
+    }
 }

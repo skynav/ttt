@@ -535,11 +535,11 @@ public class BasicLayoutProcessor extends LayoutProcessor {
         Display display = ls.getDisplay(e);
         if (display == Display.NONE)
             return;
-        layoutParagraphs(e, new ParagraphCollector(newStyleCollector(ls)).collect(e), ls);
+        layoutParagraphs(e, new ParagraphCollector(newStyleCollector(ls, e)).collect(e), ls);
     }
 
-    private StyleCollector newStyleCollector(LayoutState ls) {
-        return new StyleCollector(null, context, ls.getFontCache(), defaults, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getCellResolution(), ls.getWritingMode(), ls.getLanguage(), ls.getFonts(), ls.getStyles());
+    private StyleCollector newStyleCollector(LayoutState ls, Element e) {
+        return new StyleCollector(null, context, ls.getFontCache(), defaults, ls.getExternalExtent(), ls.getReferenceExtent(), ls.getCellResolution(), ls.getWritingMode(), ls.getLanguage(), ls.getFonts(), ls.getStyles(), e);
     }
 
     protected void layoutParagraphs(Element e, List<Paragraph> paragraphs, LayoutState ls) {

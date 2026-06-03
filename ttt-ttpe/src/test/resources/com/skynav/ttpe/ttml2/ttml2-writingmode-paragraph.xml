@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="IW" xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter" ttp:profile="ttml2-presentation"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling" tts:extent="1280px 720px"
+    xmlns:ttva="http://skynav.com/ns/ttv/annotations" ttva:model="ttml2">
+  <head>
+    <styling>
+      <style xml:id="p_rtl" tts:direction="rtl"/>
+    </styling>
+    <layout>
+      <region xml:id="R0" tts:origin="10% 10%" tts:extent="80% 60%" tts:displayAlign="after"/>
+      <region xml:id="R1" tts:origin="10% 10%" tts:extent="80% 80%" tts:displayAlign="after"/>
+    </layout>
+  </head>
+  <body tts:textAlign="center" tts:fontFamily="Noto Sans" tts:fontSize="36px" tts:lineHeight="45px">
+    <div xml:id="e_4" region="R1" begin="10:00:13.200" end="10:00:14.200">
+      <p style="p_rtl"><span>הפה שלי בוער, אחי.</span></p>
+    </div>
+    <div xml:id="e_21" region="R0" begin="10:01:09.080" end="10:01:13.520">
+      <p style="p_rtl"><span>לקראת הגאולה הזאת,</span></p>
+      <p style="p_rtl"><span>מההזדמנות לעבור את 21 הימים.</span></p>
+    </div>
+    <div xml:id="e_21_v2" region="R0" begin="10:02:09.080" end="10:02:13.520">
+      <p style="p_rtl"><span>לקראת הגאולה הזאת,<br/>מההזדמנות לעבור את 21 הימים.</span></p>
+    </div>
+  </body>
+</tt>
+
+

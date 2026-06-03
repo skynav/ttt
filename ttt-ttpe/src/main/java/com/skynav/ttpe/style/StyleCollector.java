@@ -93,17 +93,18 @@ public class StyleCollector {
     private Font[] fonts;                               // fonts of current element being collected
     private int synthesizedStylesIndex;                 // index of next synthesized style identifier
     private Map<String,StyleSet> styles;                // map of all isd:css style sets, identified by id string
+    private Element styleElement;                       // some styles have different semantics depending on what element they're applied to
     private List<StyleAttributeInterval> attributes;    // text attributes being collected
     private BidiLevelIterator bidiIterator;             // bidi level iterator, reused as needed
     private FontRunIterator fontIterator;               // font run iterator, reused as needed
     private Locator baseLocator;                        // for resolving relative URIs, e.g., image@src
 
     public StyleCollector(StyleCollector sc) {
-        this(sc, sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.fonts, sc.styles);
+        this(sc, sc.context, sc.fontCache, sc.defaults, sc.extBounds, sc.refBounds, sc.cellResolution, sc.writingMode, sc.language, sc.fonts, sc.styles, sc.styleElement);
     }
 
     public StyleCollector
-        (StyleCollector parent, TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, Extent cellResolution, WritingMode writingMode, String language, Font[] fonts, Map<String,StyleSet> styles) {
+        (StyleCollector parent, TransformerContext context, FontCache fontCache, Defaults defaults, Extent extBounds, Extent refBounds, Extent cellResolution, WritingMode writingMode, String language, Font[] fonts, Map<String,StyleSet> styles, Element styleElement) {
         this.parent = parent;
         this.context = context;
         this.defaults = defaults;
@@ -115,6 +116,7 @@ public class StyleCollector {
         this.language = language;
         this.fonts = (fonts != null) ? Arrays.copyOf(fonts, fonts.length) : null;
         this.styles = styles;
+        this.styleElement = styleElement;
         this.bidiIterator = new BidiLevelIterator();
         this.fontIterator = new FontRunIterator(fontCache);
         this.baseLocator = makeBaseLocator(context);
@@ -515,6 +517,21 @@ public class StyleCollector {
     }
 
     private int getDefaultBidiLevel() {
+        // from TTML2 10.2.12 tts:direction:
+        //  When applied to a p element, the computed value of this property
+        //  explicitly establishes the paragraph level [...]
+        if ("p".equals(styleElement.getLocalName())) {
+            StyleSet styles = getStyles(styleElement);
+            StyleSpecification s = styles.get(ttsDirectionAttrName);
+            if (s != null) {
+                String v = s.getValue().toLowerCase();
+                if (v.equals("ltr"))
+                    return 0;
+                else if (v.equals("rtl"))
+                    return 1;
+            }
+        }
+
         if (writingMode.getAxis(IPD) == Axis.VERTICAL)
             return 0;
         else
