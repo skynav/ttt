@@ -15,6 +15,7 @@
 
   <properties>
     <icu4j.version>54.1.1</icu4j.version>
+    <logging.version>1.0.4</logging.version>
   </properties>
 
   <dependencies>
@@ -54,6 +55,19 @@
       <version>3.0.0</version>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>windows</id>
+      <dependencies>
+        <dependency>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+          <version>${logging.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
